@@ -9706,6 +9706,9 @@ const docTemplate = `{
         "thunderdome.RetroActionComment": {
             "type": "object",
             "properties": {
+                "action_id": {
+                    "type": "string"
+                },
                 "comment": {
                     "type": "string"
                 },
@@ -9713,9 +9716,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
-                },
-                "retro_id": {
                     "type": "string"
                 },
                 "updated_date": {
@@ -9740,6 +9740,12 @@ const docTemplate = `{
         "thunderdome.RetroItem": {
             "type": "object",
             "properties": {
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.RetroItemComment"
+                    }
+                },
                 "content": {
                     "type": "string"
                 },
@@ -9753,6 +9759,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.RetroItemComment": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "item_id": {
+                    "type": "string"
+                },
+                "updated_date": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

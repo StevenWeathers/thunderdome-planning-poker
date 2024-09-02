@@ -50,11 +50,12 @@ type Retro struct {
 
 // RetroItem can be a pro (went well/worked), con (needs improvement), or a question
 type RetroItem struct {
-	ID      string `json:"id" db:"id"`
-	UserID  string `json:"userId" db:"user_id"`
-	GroupID string `json:"groupId" db:"group_id"`
-	Content string `json:"content" db:"content"`
-	Type    string `json:"type" db:"type"`
+	ID       string              `json:"id" db:"id"`
+	UserID   string              `json:"userId" db:"user_id"`
+	GroupID  string              `json:"groupId" db:"group_id"`
+	Content  string              `json:"content" db:"content"`
+	Type     string              `json:"type" db:"type"`
+	Comments []*RetroItemComment `json:"comments"`
 }
 
 // RetroGroup is a grouping of retro items
@@ -76,7 +77,17 @@ type RetroAction struct {
 // RetroActionComment A retro action comment by a user
 type RetroActionComment struct {
 	ID          string `json:"id"`
-	RetroID     string `json:"retro_id"`
+	ActionID    string `json:"action_id"`
+	UserID      string `json:"user_id"`
+	Comment     string `json:"comment"`
+	CreateDate  string `json:"created_date"`
+	UpdatedDate string `json:"updated_date"`
+}
+
+// RetroItemComment A retro item comment by a user
+type RetroItemComment struct {
+	ID          string `json:"id"`
+	ItemID      string `json:"item_id"`
 	UserID      string `json:"user_id"`
 	Comment     string `json:"comment"`
 	CreateDate  string `json:"created_date"`
@@ -133,4 +144,7 @@ type RetroDataSvc interface {
 	GetRetroVotes(RetroID string) []*RetroVote
 	GroupUserVote(RetroID string, GroupID string, UserID string) ([]*RetroVote, error)
 	GroupUserSubtractVote(RetroID string, GroupID string, UserID string) ([]*RetroVote, error)
+	ItemCommentAdd(RetroID string, ItemID string, UserID string, Comment string) ([]*RetroItem, error)
+	ItemCommentEdit(RetroID string, CommentID string, Comment string) ([]*RetroItem, error)
+	ItemCommentDelete(RetroID string, CommentID string) ([]*RetroItem, error)
 }

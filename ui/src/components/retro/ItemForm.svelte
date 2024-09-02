@@ -5,21 +5,49 @@
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import TrashIcon from '../icons/TrashIcon.svelte';
+  import CommentIcon from '../icons/CommentIcon.svelte';
+  import ItemComments from './ItemComments.svelte';
 
-  export let handleSubmit = () => {};
-  export let handleDelete = () => {};
+  export let sendSocketEvent = (event: string, value: any) => {};
   export let itemType = 'worked';
   export let content = '';
   export let newItemPlaceholder = 'What worked well...';
   export let phase = 'brainstorm';
   export let isFacilitator = false;
   export let items = [];
+  export let users = [];
   export let feedbackVisibility = 'visible';
+
+  let showComments = false;
+  let selectedItemId = null;
+
+  const toggleComments = itemId => () => {
+    showComments = !showComments;
+    selectedItemId = itemId;
+  };
+
+  const handleDelete = (type, id) => () => {
+    sendSocketEvent(
+      `delete_item`,
+      JSON.stringify({
+        id,
+        type,
+        phase,
+      }),
+    );
+  };
 
   const handleFormSubmit = evt => {
     evt.preventDefault();
 
-    handleSubmit(itemType, content);
+    sendSocketEvent(
+      `create_item`,
+      JSON.stringify({
+        type: itemType,
+        content,
+        phase: phase,
+      }),
+    );
     content = '';
   };
 </script>
@@ -83,21 +111,43 @@
               </div>
             </div>
           </div>
-          <div class="flex-shrink ps-2">
-            {#if phase === 'brainstorm'}
+          <div class="flex-none flex gap-x-2 ps-2">
+            <div>
               <button
-                on:click="{handleDelete(itemType, item.id)}"
-                class="pe-2 pt-1 {item.userId !== $user.id
-                  ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-red-500'}"
-                disabled="{item.userId !== $user.id}"
+                class="inline-block align-middle text-blue-400 dark:text-sky-400"
+                on:click="{toggleComments(item.id)}"
               >
-                <TrashIcon />
+                {item.comments.length}&nbsp;
+                <CommentIcon width="14" height="14" />
               </button>
+            </div>
+            {#if phase === 'brainstorm'}
+              <div>
+                <button
+                  on:click="{handleDelete(itemType, item.id)}"
+                  class="inline-block align-middle {item.userId !== $user.id
+                    ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-red-500'}"
+                  disabled="{item.userId !== $user.id}"
+                >
+                  <TrashIcon />
+                </button>
+              </div>
             {/if}
           </div>
         </div>
       </div>
     {/each}
   </div>
+
+  {#if showComments}
+    <ItemComments
+      toggleComments="{toggleComments()}"
+      selectedItemId="{selectedItemId}"
+      items="{items}"
+      users="{users}"
+      isFacilitator="{isFacilitator}"
+      sendSocketEvent="{sendSocketEvent}"
+    />
+  {/if}
 </div>
