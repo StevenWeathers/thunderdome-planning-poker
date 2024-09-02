@@ -16,8 +16,6 @@ const (
 	contextKeyOrgRole        contextKey = "orgRole"
 	contextKeyDepartmentRole contextKey = "departmentRole"
 	contextKeyTeamRole       contextKey = "teamRole"
-	adminUserType            string     = "ADMIN"
-	guestUserType            string     = "GUEST"
 )
 
 var validate *validator.Validate
@@ -33,6 +31,11 @@ type WebsocketConfig struct {
 	PingPeriodSec int
 }
 
+type AuthProvider struct {
+	Enabled bool
+	thunderdome.AuthProviderConfig
+}
+
 // Config contains configuration values used by the APIs
 type Config struct {
 	Port                  string
@@ -44,15 +47,17 @@ type Config struct {
 	AppDomain string
 	// PathPrefix allows the application to be run on a shared domain
 	PathPrefix string
+	// SecureProtocol whether the application is accessed through HTTPS
+	SecureProtocol bool
 	// Whether the external API is enabled
 	ExternalAPIEnabled bool
 	// Whether the external API requires user verified email
 	ExternalAPIVerifyRequired bool
 	// Number of API keys a user can create
 	UserAPIKeyLimit int
-	// Whether LDAP is enabled for authentication
+	// Whether LDAP authentication is enabled for self-hosted
 	LdapEnabled bool
-	// Whether header authentication is enabled
+	// Whether header authentication is enabled for self-hosted
 	HeaderAuthEnabled bool
 	// Feature flag for Poker Planning
 	FeaturePoker bool
@@ -86,6 +91,7 @@ type Config struct {
 	ShowActiveCountries       bool
 	SubscriptionsEnabled      bool
 
+	GoogleAuth AuthProvider
 	WebsocketConfig
 }
 

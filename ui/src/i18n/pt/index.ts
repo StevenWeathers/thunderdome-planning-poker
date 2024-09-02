@@ -58,27 +58,23 @@ const pt: Translation = {
   appSubtitle: 'Aplicação de Planning Poker Agile de Código Aberto',
   appVersion: 'Versão {version}',
   associateTeam: 'Equipe Associada',
-  authError:
-    '{friendly|{false:Erro encontrado ao tentar autenticar o guerreiro, true:Erro encontrado ao tentar autenticar o jogador}}',
+  authError: 'Erro encontrado ao tentar autenticar o jogador',
   autoFinishVoting: 'Finalização automática de votação',
   avatarAltText: 'Espaço reservado para o Avatar',
   back: 'Voltar',
-  battleAbandon: '{friendly|{false:Abandonar Batalha, true:Abandonar jogo}}',
-  battleCreate: '{friendly|{false:Criar batalha, true:Criar jogo}}',
-  battleDelete: '{friendly|{false:Excluir Batalha, true:Excluir jogo}}',
-  battleEdit: '{friendly|{false:Editar Batalha, true:Editar jogo}}',
+  battleAbandon: 'Abandonar jogo',
+  battleCreate: 'Criar jogo',
+  battleDelete: 'Excluir jogo',
+  battleEdit: 'Editar jogo',
   battleEditPointsDisabled:
     'A votação está ativa, não é possível modificar os pontos permitidos.',
-  battleJoin: '{friendly|{false:Junte-se à Batalha, true:Entrar no jogo}}',
-  battleName: '{friendly|{false:Nome da Batalha, true:Nome do jogo}}',
-  battleRemoveError:
-    '{friendly|{false:Erro ao tentar remover a batalha., true:Erro ao tentar remover o jogo.}}',
-  battleRemoveSuccess:
-    '{friendly|{false:Batalha removida com sucesso., true:Jogo removido com sucesso.}}',
-  battles: '{friendly|{false:Batalhas, true:Jogos}}',
-  battlesActive: '{friendly|{false:Batalhas ativas, true:Jogos ativos}}',
-  battlesActiveUsers:
-    '{friendly|{false:Usuários ativos da batalha, true:Usuários ativos do jogo}}',
+  battleJoin: 'Entrar no jogo',
+  battleName: 'Nome do jogo',
+  battleRemoveError: 'Erro ao tentar remover o jogo.',
+  battleRemoveSuccess: 'Jogo removido com sucesso.',
+  battles: 'Jogos',
+  battlesActive: 'Jogos ativos',
+  battlesActiveUsers: 'Usuários ativos do jogo',
   becomeFacilitator: 'Tornar-se Facilitador',
   becomeLeader: 'Tornar-se líder',
   becomeParticipant: 'Tornar-se Participante',
@@ -114,15 +110,13 @@ const pt: Translation = {
   createAlertSuccess: 'Alerta criado com sucesso',
   createARetro: 'Criar uma Retro',
   createAStoryboard: 'Criar um Storyboard',
-  createBattleError:
-    '{friendly|{false:Erro encontrado ao criar batalha, true:Erro encontrado ao criar o jogo}}',
+  createBattleError: 'Erro encontrado ao criar o jogo',
   createOrgError: 'Erro tentar criar organização',
   createRetro: 'Criar Retro',
   createRetroErrorMessage: 'Erro encontrado ao criar retro',
   createStoryboard: 'Criar Storyboard',
   createUserError: 'Erro ao criar usuário',
-  customizableBattleOptions:
-    '{friendly|{false:Opções de batalha personalizáveis, true:Opções de jogo personalizáveis}}',
+  customizableBattleOptions: 'Opções de jogo personalizáveis',
   dateCreated: 'Data de criação',
   dateUpdated: 'Data de atualização',
   delete: 'Excluir',
@@ -130,11 +124,9 @@ const pt: Translation = {
   deleteActionItemSuccess: 'Item de ação excluído com sucesso',
   deleteAlertError: 'Erro ao tentar excluir alerta',
   deleteAlertSuccess: 'Alerta excluído com sucesso',
-  deleteBattle: '{friendly|{false:Excluir batalha, true:Excluir jogo}}',
-  deleteBattleConfirmText:
-    '{friendly|{false:Tem certeza de que deseja excluir esta batalha?, true:Tem certeza de que deseja excluir este jogo?}}',
-  deleteBattleError:
-    '{friendly|{false:error deleting battle, true:error deleting game}}',
+  deleteBattle: 'Excluir jogo',
+  deleteBattleConfirmText: 'Tem certeza de que deseja excluir este jogo?',
+  deleteBattleError: 'error deleting game',
   deleteCheckinError: 'Erro ao excluir check-in',
   deleteDepartment: 'Excluir departamento',
   deleteDepartmentConfirmText:
@@ -193,10 +185,8 @@ const pt: Translation = {
   returnToLogin: 'Return to Login',
   getAlertsError: 'Erro ao obter alertas',
   getApikeysError: 'Erro ao obter chaves de API',
-  getBattleError:
-    '{friendly|{false:Erro ao obter batalha, true:Erro ao obter jogo}}',
-  getBattlesError:
-    '{friendly|{false:Erro ao obter batalhas, true:Erro ao obter jogos}}',
+  getBattleError: 'Erro ao obter jogo',
+  getBattlesError: 'Erro ao obter jogos',
   getCheckinsError: 'Erro ao obter o check-ins',
   getOrganizationsError: 'Erro ao obter organizações',
   getRetroErrorMessage: 'Erro ao obter retro',
@@ -213,12 +203,10 @@ const pt: Translation = {
   hostedDesc:
     '{linkOpen}Thunderdome.dev{linkClose} é um serviço hospedado gratuito (SaaS) sem anúncios.',
   hostedOrSelfHosted: 'Serviço hospedado ou auto-hospedado',
-  importCsv:
-    '{friendly|{false:Importar planos de um arquivo CSV, true:Importar stories de um arquivo CSV}}',
+  importCsv: 'Importar stories de um arquivo CSV',
   importCsvFileBadFileTypeError: 'Erro, tipo de arquivo não suportado',
   importCsvFileReadFileError: 'Erro ao ler o arquivo',
-  importJiraXML:
-    '{friendly|{false:Importar planos de XML do Jira, true:Importar histórias de XML do Jira}}',
+  importJiraXML: 'Importar histórias de XML do Jira',
   importJiraXMLBadFileTypeError: 'Tipo de arquivo incorreto',
   importJiraXMLReadFileError: 'Erro ao ler o arquivo',
   incorrectPassCode: 'Código de acesso incorreto',
@@ -235,17 +223,14 @@ const pt: Translation = {
   joinStoryboard: 'Junte-se ao storyboard',
   joinStoryboardError:
     'Erro ao ingressar no storyboard, atualize e tente novamente.',
-  landingCountries: {
-    true: 'Usuários em mais de {count} países',
-    false: 'Guerreiros em mais de {count} países',
-  },
+  landingCountries: 'Usuários em mais de {count} países',
   landingFeatureOpenSourceText:
     'Confira o {repoOpen}repositório no GitHub{repoClose} para solicitar ou contribuir com melhorias, traduções de localidades e correções de bugs ou para {donateOpen}Doar{donateClose}.',
   landingFeatureOpenSourceTitle: 'Código aberto',
   landingSalesPitch:
     'Colaboração de equipes remotas com agile story pointing, retrospectiva de sprint, story mapping e check-in assíncrono da equipe.',
   landingTitle:
-    '{friendly|{false:Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido, true:Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido}}',
+    'Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido',
   lastActive: 'Ativo pela última vez',
   leader: 'Líder',
   leaderPasscode: 'Código de acesso de Líder',
@@ -259,8 +244,7 @@ const pt: Translation = {
   loginForStoryboard:
     'ou {loginOpen}Login{loginClose} para entrar no storyboard',
   logout: 'Sair',
-  logoutError:
-    '{friendly|{false:Erro encontrado ao tentar sair, true:Erro encontrado ao tentar fazer logout do usuário}}',
+  logoutError: 'Erro encontrado ao tentar fazer logout do usuário',
   makeFacilitator: 'Tornar Facilitador',
   mfa2faLabel: 'Autenticação 2FA/MFA',
   mfa2faRemove: 'Remover 2FA/MFA',
@@ -284,8 +268,7 @@ const pt: Translation = {
   needsImprovement: 'Precisa de melhorias',
   nextPhase: 'Próxima Fase',
   noComments: 'Sem comentários...',
-  oldBattleCleanError:
-    '{friendly|{false:Erro encontrado ao limpar batalhas, true:Erro encontrado ao limpar jogos}}',
+  oldBattleCleanError: 'Erro encontrado ao limpar jogos',
   oldGuestsCleanError: 'Erro encontrado ao limpar convidados',
   oldRetrosCleanError: 'Erro ao tentar limpar retros',
   oldStoryboardsCleanError: 'Erro ao tentar limpar storyboards',
@@ -313,17 +296,15 @@ const pt: Translation = {
   personas: "Persona's",
   planAcceptanceCriteria: 'Critérios de Aceitação',
   planAcceptanceCriteriaPlaceholder: 'Insira os critérios de aceitação',
-  planAdd: '{friendly|{false:Adicionar Plano, true:Adicionar história}}',
+  planAdd: 'Adicionar história',
   planDescription: 'Descrição',
   planDescriptionPlaceholder: 'Digite uma descrição',
   planLink: 'Link',
   planLinkInvalid:
     'O link não é um URL absoluto válido. Ex. deve incluir protocolo (HTTP/HTTPS)',
-  planLinkPlaceholder:
-    '{friendly|{false:Insira um link para o plano, true:Insira um link para a história}}',
-  planName: '{friendly|{false:Nome do Plano, true:Nome da História}}',
-  planNamePlaceholder:
-    '{friendly|{false:Digite o nome do plano, true:Digite o nome da história}}',
+  planLinkPlaceholder: 'Insira um link para a história',
+  planName: 'Nome da História',
+  planNamePlaceholder: 'Digite o nome da história',
   planPriority: 'Prioridade',
   planPriorityBlocker: 'Impedimento',
   planPriorityHigh: 'Alta',
@@ -334,9 +315,9 @@ const pt: Translation = {
   planPriorityPlaceholder: 'Selecione uma prioridade',
   planReferenceId: 'ID de referência',
   planReferenceIdPlaceholder: 'Insira um ID de referência',
-  plans: '{friendly|{false:Planos, true:Histórias}}',
-  planSkip: '{friendly|{false:Ignorar Plano, true:Pular Story}}',
-  planType: '{friendly|{false:Tipo de Plano, true:Tipo de História}}',
+  plans: 'Histórias',
+  planSkip: 'Pular Story',
+  planType: 'Tipo de História',
   planTypeBug: 'Bug',
   planTypeEpic: 'Épico',
   planTypePlaceholder: 'Tipos',
@@ -357,9 +338,8 @@ const pt: Translation = {
   reloadingRetro: 'Oops, recarregando Retro...',
   reloadingStoryboard: 'Oops, recarregando Storyboard...',
   remove: 'Remover',
-  removeBattle: '{friendly|{false:Remover batalha, true:Remover jogo}}',
-  removeBattleConfirmText:
-    '{friendly|{false:Tem certeza de que deseja remover esta batalha?, true:Tem certeza de que deseja remover este jogo?}}',
+  removeBattle: 'Remover jogo',
+  removeBattleConfirmText: 'Tem certeza de que deseja remover este jogo?',
   removeRetro: 'Remover Retro',
   removeRetroConfirmText: 'Tem certeza de que deseja remover este retro?',
   removeStoryboard: 'Remove Storyboard',
@@ -400,10 +380,8 @@ const pt: Translation = {
   selectTeam: 'Selecione uma Equipe',
   selfHostedDesc:
     'Alternativamente, você pode {linkOpen}executá-lo em seu próprio servidor{linkClose}.',
-  sessionDuplicate:
-    '{friendly|{false:Existe uma sessão de batalha duplicada para o seu ID, true:Existe uma sessão de jogo duplicada para o seu ID}}',
-  showActiveBattles:
-    '{friendly|{false:Mostrar batalhas ativas, true:Mostrar jogos ativos}}',
+  sessionDuplicate: 'Existe uma sessão de jogo duplicada para o seu ID',
+  showActiveBattles: 'Mostrar jogos ativos',
   showActiveRetros: 'Mostrar retros ativos',
   showActiveStoryboards: 'Mostrar storyboards ativos',
   showBlockedCheckins: 'Mostrar apenas check-ins que exigem discussão',
@@ -435,8 +413,7 @@ const pt: Translation = {
   teamCreateSuccess: 'Equipe criada com sucesso.',
   teamDeleteError: 'Erro ao tentar excluir equipe',
   teamDeleteSuccess: 'Equipe excluída com sucesso.',
-  teamGetBattlesError:
-    '{friendly|{false:Erro ao obter batalhas de equipe, true:Erro ao obter jogos de equipe}}',
+  teamGetBattlesError: 'Erro ao obter jogos de equipe',
   teamGetError: 'Erro ao obter equipe',
   teamGetRetroActionsError: 'erro ao obter ações retro',
   teamGetRetrosError: 'Erro ao obter retros da equipe',
@@ -455,8 +432,7 @@ const pt: Translation = {
   totalPoints: 'Total',
   totalVotes: 'Total de votos',
   type: 'Tipo',
-  unknownWarrior:
-    '{friendly|{false:Guerreiro Desconhecido, true:Jogador desconhecido}}',
+  unknownWarrior: 'Jogador desconhecido',
   unpointed: 'Sem pontuação ({count})',
   updateActionItemError: 'Erro ao atualizar o item de ação',
   updateActionItemSuccess: 'Item de ação atualizado com sucesso',
@@ -468,7 +444,7 @@ const pt: Translation = {
   userAddError: 'Erro ao tentar adicionar usuário.',
   userAddSuccess: 'Usuário adicionado com sucesso.',
   userEmail: 'E-mail do usuário',
-  userEmailPlaceholder: 'Insira o e-mail de um usuário registrado',
+  userEmailPlaceholder: 'Enter the users email',
   userName: 'Nome de Usuário',
   userRemoveError: 'Erro ao tentar remover usuário.',
   userRemoveSuccess: 'Usuário removido com sucesso.',
@@ -489,9 +465,8 @@ const pt: Translation = {
   votingFinish: 'Encerrar votação',
   votingLocked: 'Votação bloqueada',
   votingRestart: 'Recomeçar votação',
-  warriorCreate: '{friendly|{false:Criar Guerreiro, true:Criar usuário}}',
-  warriorInvite:
-    '{friendly|{false:Convide um Guerreiro, true:Convide um jogador}}',
+  warriorCreate: 'Criar usuário',
+  warriorInvite: 'Convide um jogador',
   warriorNudge: 'Cutucar',
   works: 'Funciona',
   writeCommentPlaceholder: 'Escreva um comentário...',
@@ -499,11 +474,10 @@ const pt: Translation = {
   yesterdayPlaceholder: 'Ontem eu...',
   yourRetros: 'Suas Retros',
   yourStoryboards: 'Seus Storyboards',
-  addPlan: '{friendly|{false:Adicionar Plano, true:Adicionar história}}',
-  battleNamePlaceholder:
-    '{friendly|{false:Digite um nome para a batalha, true:Digite o nome do jogo}}',
+  addPlan: 'Adicionar história',
+  battleNamePlaceholder: 'Digite o nome do jogo',
   autoFinishVotingLabel:
-    '{friendly|{false:Terminar a votação automaticamente quando todos os jogadores tiverem votado, true:Terminar a votação automaticamente quando todos os jogadores tiverem votado}}',
+    'Terminar a votação automaticamente quando todos os jogadores tiverem votado',
   averageRoundingOptions: {
     ceil: 'Para cima (teto)',
     floor: 'Para baixo (chão)',
@@ -547,35 +521,22 @@ const pt: Translation = {
   company: 'Empresa',
   verified: 'Verificado',
   registeredUsers: 'Usuários Registrados',
-  myBattles: '{friendly|{false:Minhas Batalhas, true:Meus jogos}}',
-  createBattle: '{friendly|{false:Criar uma batalha, true:Criar um jogo}}',
-  countPlansPointed: {
-    true: '{totalPointed} de {totalPlans} histórias pontuadas',
-    false: '{totalPointed} de {totalPlans} planos apontados',
-  },
-  myBattlesError:
-    '{friendly|{false:Erro ao encontrar suas batalhas, true:Erro ao encontrar seus jogos}}',
-  warriorJoined: {
-    true: '{name} entrou no jogo',
-    false: '{name} juntou-se à batalha',
-  },
-  warriorRetreated: {
-    true: '{name} deixou o jogo',
-    false: '{name} recuou da batalha',
-  },
-  planSkipped: '{friendly|{false:Plano ignorado, true:História ignorada}}',
+  myBattles: 'Meus jogos',
+  createBattle: 'Criar um jogo',
+  countPlansPointed: '{totalPointed} de {totalPlans} histórias pontuadas',
+  myBattlesError: 'Erro ao encontrar seus jogos',
+  warriorJoined: '{name} entrou no jogo',
+  warriorRetreated: '{name} deixou o jogo',
+  planSkipped: 'História ignorada',
   warriorVoted: '{name} votou',
   warriorRetractedVote: '{name} retirou o voto',
-  battleDeleted: '{friendly|{false:Batalha excluída, true:Jogo excluído}}',
+  battleDeleted: 'Jogo excluído',
   warriorNudgeMessage: 'tic tac... {name}, esperando você votar.',
-  battle: '{friendly|{false:Batalha, true:Jogo}}',
-  warriors: '{friendly|{false:Guerreiros, true:Jogadores}}',
-  battleSocketReconnecting:
-    '{friendly|{false:Ooops, recarregando planos de batalha..., true:Ooops, recarregando jogo...}}',
-  battleSocketError:
-    '{friendly|{false:Erro ao entrar na batalha atualize e tente novamente., true:Erro ao entrar no jogo atualize e tente novamente.}}',
-  battleLoading:
-    '{friendly|{false:Carregando planos de batalha..., true:Carregando jogo...}}',
+  battle: 'Jogo',
+  warriors: 'Jogadores',
+  battleSocketReconnecting: 'Ooops, recarregando jogo...',
+  battleSocketError: 'Erro ao entrar no jogo atualize e tente novamente.',
+  battleLoading: 'Carregando jogo...',
   votingNotStarted: 'Votação não iniciada',
   password: 'Senha',
   passwordPlaceholder: 'Digite uma senha',
@@ -592,10 +553,7 @@ const pt: Translation = {
   guestRegisterError: 'Erro encontrado ao tentar registrar como convidado',
   registerError: 'Erro encontrado ao tentar registrar conta',
   enlistToBattle: 'Aliste-se para a Batalha',
-  loginForBattle: {
-    true: 'ou {loginOpen}Entre{loginClose} para participar do Jogo',
-    false: 'ou {loginOpen}Entre{loginClose} para participar da Batalha',
-  },
+  loginForBattle: 'ou {loginOpen}Entre{loginClose} para participar do Jogo',
   yourNamePlaceholder: 'Digite seu nome',
   createAccountFormTitle:
     'Criar uma Conta {optionalOpen}(opcional){optionalClose}',
@@ -608,19 +566,15 @@ const pt: Translation = {
   companyPlaceholder: 'Digite o nome de sua empresa (opcional)',
   jobTitle: 'Profissão',
   jobTitlePlaceholder: 'Digite sua profissão (opcional)',
-  enableBattleNotifications:
-    '{friendly|{false:Ativar notificações de batalha, true:Ativar notificações do jogo}}',
+  enableBattleNotifications: 'Ativar notificações do jogo',
   avatar: 'Avatar',
   updateProfile: 'Atualizar Perfil',
   guestUsers: 'Usuários Convidados',
   maintenance: 'Manutenção',
   cleanGuests: 'Limpar Convidados com mais de {daysOld} dias',
-  cleanBattles: {
-    true: 'Limpar Jogos com mais de {daysOld} dias',
-    false: 'Limpar Batalhas com mais de {daysOld} dias',
-  },
+  cleanBattles: 'Limpar Jogos com mais de {daysOld} dias',
   chooseLocalePlaceholder: 'Escolha sua localidade preferida (opcional)',
-  importPlans: '{friendly|{false:Importar Planos, true:Importar Stories}}',
+  importPlans: 'Importar Stories',
   selectFile: 'selecionar arquivo...',
   theme: 'Tema',
   assignees: 'Responsáveis',
@@ -631,12 +585,35 @@ const pt: Translation = {
   userUpdateSuccess: 'Successfully updated user.',
   userUpdateError: 'Error updating user.',
   userInvites: 'User Invites',
-  userNotFoundInviteSent: 'User not found, invite sent',
+  userInviteSent: 'User invite sent',
   userInviteConfirmDelete: 'Are you sure you want to delete this user invite?',
   userInviteDelete: 'Delete Invite',
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  inviteUserFieldNote: 'An invite to join the {pageType} will be sent.',
+  requiresOrganizationMember: 'User must already be in Organization.',
+  teamUpdateSuccess: 'Team updated successfully',
+  teamUpdateError: 'Error updating Team',
+  orgUpdateSuccess: 'Organization updated successfully',
+  orgUpdateError: 'Error updating Organization',
+  deptUpdateSuccess: 'Department updated successfully',
+  deptUpdateError: 'Error updating Department',
+  hideVoterIdentity: 'Hide Voter Identity',
+  storyboardName: 'Storyboard Name',
+  storyboardNamePlaceholder: 'Enter a storyboard name',
+  retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
+  phaseAutoAdvanceLabel: 'Automatically advance phases',
+  removeOnlyFacilitatorError: "Can't remove the only facilitator",
+  noGamesFound: 'No games found, try creating one.',
+  noRetrosFound: 'No retros found, try creating one.',
+  noStoryboardsFound: 'No storyboards found, try creating one.',
+  retroDescription:
+    'A sprint retrospective is a review conducted after a sprint that plays a key role in the Agile methodology. A sprint retrospective aims to determine what went well and where you had problems and identify areas where you can improve.',
+  pokerDescription:
+    'Scrum poker, also known as “planning poker” and “pointing poker”, is a gamified technique that development teams use to guess the effort of project management tasks. These estimations are based on the entire group’s input and consensus, making them more engaging and accurate than other methods.',
+  storyboardDescription:
+    'User story mapping (storyboard) is a visualization of the journey a customer takes with a product, from beginning to end. It includes all the tasks they’d typically complete as part of that journey.',
 };
 
 export default pt;

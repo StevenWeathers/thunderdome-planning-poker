@@ -2,7 +2,7 @@
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../global/TextInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
 
   export let toggleEditStoryboard = () => {};
   export let handleStoryboardEdit = () => {};
@@ -33,13 +33,13 @@
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
         for="storyboardName"
       >
-        Storyboard Name
+        {$LL.storyboardName()}
       </label>
       <div class="control">
         <TextInput
           name="storyboardName"
           bind:value="{storyboardName}"
-          placeholder="Enter a storyboard name"
+          placeholder="{$LL.storyboardNamePlaceholder()}"
           id="storyboardName"
           required
         />

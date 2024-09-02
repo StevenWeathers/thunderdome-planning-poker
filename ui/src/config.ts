@@ -24,21 +24,20 @@ const AppConfig =
         DefaultLocale: 'en',
         Subscription: {},
       };
-const {
-  PathPrefix,
-  DefaultLocale: fallbackLocale,
-  FriendlyUIVerbs,
-} = AppConfig;
 
-const defaultAppRoutes = {
+const { PathPrefix, DefaultLocale } = AppConfig;
+
+const appRoutes = {
   landing: `${PathPrefix}/`,
   register: `${PathPrefix}/register`,
   login: `${PathPrefix}/login`,
   resetPwd: `${PathPrefix}/reset-password`,
   verifyAct: `${PathPrefix}/verify-account`,
   profile: `${PathPrefix}/profile`,
-  games: `${PathPrefix}/battles`,
-  game: `${PathPrefix}/battle`,
+  battles: `${PathPrefix}/battles`,
+  battle: `${PathPrefix}/battle`,
+  games: `${PathPrefix}/games`,
+  game: `${PathPrefix}/game`,
   retros: `${PathPrefix}/retros`,
   retro: `${PathPrefix}/retro`,
   storyboards: `${PathPrefix}/storyboards`,
@@ -47,7 +46,7 @@ const defaultAppRoutes = {
   organization: `${PathPrefix}/organization`,
   team: `${PathPrefix}/team`,
   admin: `${PathPrefix}/admin`,
-  adminPokerGames: `${PathPrefix}/admin/battles`,
+  adminPokerGames: `${PathPrefix}/admin/games`,
   adminRetros: `${PathPrefix}/admin/retros`,
   adminStoryboards: `${PathPrefix}/admin/storyboards`,
   adminTeams: `${PathPrefix}/admin/teams`,
@@ -61,17 +60,12 @@ const defaultAppRoutes = {
   privacyPolicy: `${PathPrefix}/privacy-policy`,
   termsConditions: `${PathPrefix}/terms-conditions`,
   support: `${PathPrefix}/support`,
+  invite: `${PathPrefix}/invite`,
 };
-const friendlyAppRoutes = {
-  ...defaultAppRoutes,
-  games: `${PathPrefix}/games`,
-  game: `${PathPrefix}/game`,
-};
-const appRoutes = FriendlyUIVerbs ? friendlyAppRoutes : defaultAppRoutes;
 
 export {
   locales,
-  fallbackLocale,
+  DefaultLocale,
   appRoutes,
   PathPrefix,
   AppConfig,

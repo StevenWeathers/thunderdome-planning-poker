@@ -19,6 +19,7 @@
   const storyboardsPageLimit = 10;
   let storyboardCount = 0;
   let storyboardsPage = 1;
+  let loading = true;
 
   function getStoryboards() {
     const retrosOffset = (storyboardsPage - 1) * storyboardsPageLimit;
@@ -30,10 +31,12 @@
       .then(function (result) {
         storyboards = result.data;
         storyboardCount = result.meta.count;
+        loading = false;
       })
       .catch(function (error) {
         notifications.danger($LL.getStoryboardsErrorMessage());
         eventTag('fetch_storyboards', 'engagement', 'failure');
+        loading = false;
       });
   }
 
@@ -180,14 +183,22 @@
 
   <div class="flex flex-wrap">
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
-      <BoxList
-        items="{storyboards}"
-        itemType="storyboard"
-        showOwnerName="{true}"
-        ownerNameField="teamName"
-        pageRoute="{appRoutes.storyboard}"
-        joinBtnText="{$LL.joinStoryboard()}"
-      />
+      {#if storyboardCount > 0}
+        <BoxList
+          items="{storyboards}"
+          itemType="storyboard"
+          showOwnerName="{true}"
+          ownerNameField="teamName"
+          pageRoute="{appRoutes.storyboard}"
+          joinBtnText="{$LL.joinStoryboard()}"
+        />
+      {:else if loading === false}
+        <div
+          class="w-full my-10 text-lg md:text-xl dark:text-white text-center"
+        >
+          {$LL.noStoryboardsFound()}
+        </div>
+      {/if}
       {#if storyboardCount > storyboardsPageLimit}
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
@@ -218,5 +229,9 @@
         />
       </div>
     </div>
+  </div>
+
+  <div class="w-full text-gray-600 dark:text-gray-300">
+    <p class="py-8 md:text-lg italic">{$LL.storyboardDescription()}</p>
   </div>
 </PageLayout>

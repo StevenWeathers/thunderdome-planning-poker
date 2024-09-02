@@ -21,7 +21,7 @@ test.describe("Organization Page", () => {
     await expect(orgPage.page.locator("h1")).toContainText(testOrgName);
   });
 
-  test("can add user to organization", async ({ registeredPage }) => {
+  test("can invite user to organization", async ({ registeredPage }) => {
     const verifiedEmail = "e2everified@thunderdome.dev";
     const testOrgName = "E2E TEST ORGANIZATION UA";
     const orgPage = new OrganizationPage(registeredPage.page);
@@ -38,7 +38,7 @@ test.describe("Organization Page", () => {
     await orgPage.page.locator('[data-testid="useradd-confirm"]').click();
 
     await expect(
-      orgPage.page.locator('[data-testid="user-email"]', {
+      orgPage.page.locator('[data-testid="invite-user-email"]', {
         hasText: verifiedEmail,
       }),
     ).toBeVisible();

@@ -3,7 +3,7 @@
   import { AppConfig } from '../../config';
   import { validatePasswords } from '../../validationUtils';
   import SolidButton from '../global/SolidButton.svelte';
-  import TextInput from '../global/TextInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
 
   export let handleUpdate = () => {};
   export let toggleForm = () => {};

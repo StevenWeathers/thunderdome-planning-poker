@@ -19,6 +19,7 @@
   import TableNav from '../../components/table/TableNav.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
+  import Toggle from '../../components/forms/Toggle.svelte';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -124,11 +125,7 @@
           battles = result.data;
         })
         .catch(function () {
-          notifications.danger(
-            $LL.teamGetBattlesError({
-              friendly: AppConfig.FriendlyUIVerbs,
-            }),
-          );
+          notifications.danger($LL.teamGetBattlesError());
         });
     }
   }
@@ -301,9 +298,7 @@
             <h2
               class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
             >
-              {$LL.battles({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              {$LL.battles()}
             </h2>
           </div>
         </div>
@@ -323,9 +318,7 @@
                 </div>
                 <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                   <HollowButton href="{appRoutes.game}/{battle.id}">
-                    {$LL.battleJoin({
-                      friendly: AppConfig.FriendlyUIVerbs,
-                    })}
+                    {$LL.battleJoin()}
                   </HollowButton>
                 </div>
               </div>
@@ -380,26 +373,13 @@
               </h3>
 
               <div class="text-right mb-4">
-                <div
-                  class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
-                >
-                  <input
-                    type="checkbox"
-                    name="completedActionItems"
-                    id="completedActionItems"
-                    bind:checked="{completedActionItems}"
-                    on:change="{changeRetroActionCompletedToggle}"
-                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                  />
-                  <label
-                    for="completedActionItems"
-                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                  >
-                  </label>
-                </div>
-                <label for="completedActionItems" class="dark:text-gray-300"
-                  >{$LL.showCompletedActionItems()}</label
-                >
+                <Toggle
+                  name="completedActionItems"
+                  id="completedActionItems"
+                  bind:checked="{completedActionItems}"
+                  changeHandler="{changeRetroActionCompletedToggle}"
+                  label="{$LL.showCompletedActionItems()}"
+                />
               </div>
             </div>
 

@@ -35,7 +35,7 @@ async function globalSetup(config: FullConfig) {
   const adminLoginPage = new LoginPage(adminPage);
   await adminLoginPage.goto();
   await adminLoginPage.login(au.email, au.password);
-  await expect(adminLoginPage.page.locator("h1")).toHaveText("My Battles");
+  await expect(adminLoginPage.page.locator("h1")).toHaveText("My Games");
   await adminLoginPage.page
     .context()
     .storageState({ path: "storage/adminStorageState.json" });
@@ -49,7 +49,7 @@ async function globalSetup(config: FullConfig) {
   await registeredRegisterPage.goto();
   await registeredRegisterPage.login(ru.email, ru.password);
   await expect(registeredRegisterPage.page.locator("h1")).toHaveText(
-    "My Battles",
+    "My Games",
   );
   await registeredRegisterPage.page
     .context()
@@ -63,7 +63,7 @@ async function globalSetup(config: FullConfig) {
   const userVerifiedPage = new LoginPage(verifiedPage);
   await userVerifiedPage.goto();
   await userVerifiedPage.login(vu.email, vu.password);
-  await expect(userVerifiedPage.page.locator("h1")).toHaveText("My Battles");
+  await expect(userVerifiedPage.page.locator("h1")).toHaveText("My Games");
   await userVerifiedPage.page
     .context()
     .storageState({ path: "storage/verifiedStorageState.json" });
@@ -74,7 +74,7 @@ async function globalSetup(config: FullConfig) {
   const guestRegisterPage = new RegisterPage(guestPage);
   await guestRegisterPage.goto();
   await guestRegisterPage.createGuestUser("E2E Guest");
-  await expect(guestRegisterPage.page.locator("h1")).toHaveText("My Battles");
+  await expect(guestRegisterPage.page.locator("h1")).toHaveText("My Games");
   await guestRegisterPage.page
     .context()
     .storageState({ path: "storage/guestStorageState.json" });
@@ -86,7 +86,7 @@ async function globalSetup(config: FullConfig) {
   await deleteGuestRegisterPage.goto();
   await deleteGuestRegisterPage.createGuestUser("E2E Delete Guest");
   await expect(deleteGuestRegisterPage.page.locator("h1")).toHaveText(
-    "My Battles",
+    "My Games",
   );
   await deleteGuestRegisterPage.page
     .context()
@@ -100,9 +100,7 @@ async function globalSetup(config: FullConfig) {
   const deleteRegisteredPage = new LoginPage(deleteRegPage);
   await deleteRegisteredPage.goto();
   await deleteRegisteredPage.login(dru.email, dru.password);
-  await expect(deleteRegisteredPage.page.locator("h1")).toHaveText(
-    "My Battles",
-  );
+  await expect(deleteRegisteredPage.page.locator("h1")).toHaveText("My Games");
   await deleteRegisteredPage.page
     .context()
     .storageState({ path: "storage/deleteRegisteredStorageState.json" });

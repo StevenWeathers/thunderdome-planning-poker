@@ -9,8 +9,8 @@
   import NavUserMenu from './NavUserMenu.svelte';
   import ArrowRight from '../icons/ArrowRight.svelte';
   import LocaleMenu from './LocaleMenu.svelte';
-  import DomeLogo from './DomeLogo.svelte';
-  import DomeLogoLight from './DomeLogoLight.svelte';
+  import DomeLogo from '../logos/DomeLogo.svelte';
+  import DomeLogoLight from '../logos/DomeLogoLight.svelte';
 
   export let xfetch;
   export let router;
@@ -67,9 +67,7 @@
         });
       })
       .catch(function (err) {
-        notifications.danger(
-          $LL.authError({ friendly: AppConfig.FriendlyUIVerbs }),
-        );
+        notifications.danger($LL.authError());
         eventTag('login', 'engagement', 'failure');
       });
   }
@@ -184,9 +182,7 @@
                     ? activePageClass
                     : pageClass}"
                 >
-                  {$LL.battles({
-                    friendly: AppConfig.FriendlyUIVerbs,
-                  })}
+                  {$LL.battles()}
                 </a>
               </li>
             {/if}

@@ -13,43 +13,67 @@
   import TableContainer from '../table/TableContainer.svelte';
   import TableNav from '../table/TableNav.svelte';
   import CrudActions from '../table/CrudActions.svelte';
+  import { createEventDispatcher } from 'svelte';
 
   export let xfetch;
   export let notifications;
   export let eventTag;
+  export let orgId = '';
+  export let deptId = '';
   export let teamPrefix = '';
   export let isAdmin = false;
   export let pageType = '';
   export let users = [];
   export let getUsers = () => {};
+
+  const dispatch = createEventDispatcher();
+
   let showAddUser = false;
   let showUpdateUser = false;
   let updateUser = {};
   let showRemoveUser = false;
   let removeUserId = null;
 
-  function handleUserAdd(email, role) {
+  function handleUserAdd({ id, email, role }) {
     const body = {
-      email,
+      user_id: id,
       role,
     };
 
     xfetch(`${teamPrefix}/users`, { body })
       .then(result => result.json())
-      .then(function (result) {
+      .then(function () {
         eventTag(`${pageType}_add_user`, 'engagement', 'success');
         toggleAddUser();
-        if (result.meta.user_invited) {
-          notifications.success($LL.userNotFoundInviteSent());
-        } else {
-          notifications.success($LL.userAddSuccess());
-        }
+        dispatch('user-added');
+        notifications.success($LL.userAddSuccess());
 
         getUsers();
       })
       .catch(function () {
         notifications.danger($LL.userAddError());
         eventTag(`${pageType}_add_user`, 'engagement', 'failure');
+      });
+  }
+
+  function handleUserInvite({ id, email, role }) {
+    const body = {
+      email,
+      role,
+    };
+
+    xfetch(`${teamPrefix}/invites`, { body })
+      .then(result => result.json())
+      .then(function (result) {
+        eventTag(`${pageType}_invite_user`, 'engagement', 'success');
+        toggleAddUser();
+        dispatch('user-invited');
+        notifications.success($LL.userInviteSent());
+        getUsers();
+      })
+      .catch(function () {
+        notifications.danger($LL.userAddError());
+        eventTag(`${pageType}_invite_user`, 'engagement', 'failure');
       });
   }
 
@@ -181,7 +205,12 @@
     <AddUser
       toggleAdd="{toggleAddUser}"
       handleAdd="{handleUserAdd}"
+      handleInvite="{handleUserInvite}"
       pageType="{pageType}"
+      orgId="{orgId}"
+      deptId="{deptId}"
+      xfetch="{xfetch}"
+      notifications="{notifications}"
     />
   {/if}
 

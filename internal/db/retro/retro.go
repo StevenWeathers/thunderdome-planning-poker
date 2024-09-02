@@ -23,7 +23,7 @@ type Service struct {
 }
 
 // RetroCreate adds a new retro
-func (d *Service) RetroCreate(OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*thunderdome.Retro, error) {
+func (d *Service) RetroCreate(OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool) (*thunderdome.Retro, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -43,11 +43,13 @@ func (d *Service) RetroCreate(OwnerID string, RetroName string, Format string, J
 		encryptedFacilitatorCode = EncryptedCode
 	}
 
-	var b = &thunderdome.Retro{
+	var retro = &thunderdome.Retro{
 		OwnerID:              OwnerID,
 		Name:                 RetroName,
 		Format:               Format,
 		Phase:                "intro",
+		PhaseTimeLimitMin:    PhaseTimeLimitMin,
+		PhaseAutoAdvance:     PhaseAutoAdvance,
 		Users:                make([]*thunderdome.RetroUser, 0),
 		Items:                make([]*thunderdome.RetroItem, 0),
 		ActionItems:          make([]*thunderdome.RetroAction, 0),
@@ -56,7 +58,7 @@ func (d *Service) RetroCreate(OwnerID string, RetroName string, Format string, J
 	}
 
 	err := d.DB.QueryRow(
-		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7, null);`,
+		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7, $8, $9, null);`,
 		OwnerID,
 		RetroName,
 		Format,
@@ -64,16 +66,18 @@ func (d *Service) RetroCreate(OwnerID string, RetroName string, Format string, J
 		encryptedFacilitatorCode,
 		MaxVotes,
 		BrainstormVisibility,
-	).Scan(&b.Id)
+		PhaseTimeLimitMin,
+		PhaseAutoAdvance,
+	).Scan(&retro.Id)
 	if err != nil {
 		return nil, fmt.Errorf("create retro query error: %v", err)
 	}
 
-	return b, nil
+	return retro, nil
 }
 
 // TeamRetroCreate adds a new retro associated to a team
-func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*thunderdome.Retro, error) {
+func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool) (*thunderdome.Retro, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -98,6 +102,8 @@ func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID st
 		Name:                 RetroName,
 		Format:               Format,
 		Phase:                "intro",
+		PhaseTimeLimitMin:    0,
+		PhaseAutoAdvance:     PhaseAutoAdvance,
 		Users:                make([]*thunderdome.RetroUser, 0),
 		Items:                make([]*thunderdome.RetroItem, 0),
 		ActionItems:          make([]*thunderdome.RetroAction, 0),
@@ -106,7 +112,7 @@ func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID st
 	}
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7, $8);`,
+		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`,
 		OwnerID,
 		RetroName,
 		Format,
@@ -114,6 +120,8 @@ func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID st
 		encryptedFacilitatorCode,
 		MaxVotes,
 		BrainstormVisibility,
+		PhaseTimeLimitMin,
+		PhaseAutoAdvance,
 		TeamID,
 	).Scan(&b.Id)
 	if err != nil {
@@ -124,7 +132,7 @@ func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID st
 }
 
 // EditRetro updates the retro by ID
-func (d *Service) EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string) error {
+func (d *Service) EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -146,9 +154,10 @@ func (d *Service) EditRetro(RetroID string, RetroName string, JoinCode string, F
 
 	if _, err := d.DB.Exec(`UPDATE thunderdome.retro
     SET name = $2, join_code = $3, facilitator_code = $4, max_votes = $5,
-        brainstorm_visibility = $6, updated_date = NOW()
+        brainstorm_visibility = $6, phase_auto_advance = $7, updated_date = NOW()
     WHERE id = $1;`,
-		RetroID, RetroName, encryptedJoinCode, encryptedFacilitatorCode, maxVotes, brainstormVisibility,
+		RetroID, RetroName, encryptedJoinCode, encryptedFacilitatorCode,
+		maxVotes, brainstormVisibility, phaseAutoAdvance,
 	); err != nil {
 		return fmt.Errorf("edit retro query error: %v", err)
 	}
@@ -176,7 +185,8 @@ func (d *Service) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, e
 	var ReadyUsers string
 	err := d.DB.QueryRow(
 		`SELECT
-			r.id, r.name, r.owner_id, r.format, r.phase, COALESCE(r.join_code, ''), COALESCE(r.facilitator_code, ''),
+			r.id, r.name, r.owner_id, r.format, r.phase, r.phase_time_limit_min, r.phase_time_start, r.phase_auto_advance,
+			 COALESCE(r.join_code, ''), COALESCE(r.facilitator_code, ''),
 			r.max_votes, r.brainstorm_visibility, r.ready_users, r.created_date, r.updated_date,
 			CASE WHEN COUNT(rf) = 0 THEN '[]'::json ELSE array_to_json(array_agg(rf.user_id)) END AS facilitators
 		FROM thunderdome.retro r 
@@ -190,6 +200,9 @@ func (d *Service) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, e
 		&b.OwnerID,
 		&b.Format,
 		&b.Phase,
+		&b.PhaseTimeLimitMin,
+		&b.PhaseTimeStart,
+		&b.PhaseAutoAdvance,
 		&JoinCode,
 		&FacilitatorCode,
 		&b.MaxVotes,
@@ -271,7 +284,7 @@ func (d *Service) RetroGetByUser(UserID string, Limit int, Offset int) ([]*thund
 		retros AS (
 			SELECT id from user_retros UNION ALL SELECT id FROM team_retros
 		)
-		SELECT r.id, r.name, r.owner_id, r.format, r.phase, r.created_date, r.updated_date,
+		SELECT r.id, r.name, r.owner_id, r.format, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.created_date, r.updated_date,
 		  MIN(COALESCE(t.name, '')) as teamName
 		FROM thunderdome.retro r
 		LEFT JOIN user_teams t ON t.id = r.team_id
@@ -293,6 +306,8 @@ func (d *Service) RetroGetByUser(UserID string, Limit int, Offset int) ([]*thund
 			&b.OwnerID,
 			&b.Format,
 			&b.Phase,
+			&b.PhaseTimeLimitMin,
+			&b.PhaseAutoAdvance,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 			&b.TeamName,
@@ -318,7 +333,7 @@ func (d *Service) RetroConfirmFacilitator(RetroID string, userID string) error {
 	err = d.DB.QueryRow(
 		"SELECT user_id FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2",
 		RetroID, userID).Scan(&facilitatorId)
-	if err != nil && role != "ADMIN" {
+	if err != nil && role != thunderdome.AdminUserType {
 		return fmt.Errorf("get retro facilitator error: %v", err)
 	}
 
@@ -330,7 +345,7 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 	var users = make([]*thunderdome.RetroUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			u.id, u.name, su.active, u.avatar, COALESCE(u.email, '')
+			u.id, u.name, su.active, u.avatar, COALESCE(u.email, ''), COALESCE(u.picture, '')
 		FROM thunderdome.retro_user su
 		LEFT JOIN thunderdome.users u ON su.user_id = u.id
 		WHERE su.retro_id = $1
@@ -341,7 +356,7 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w thunderdome.RetroUser
-			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.Email); err != nil {
+			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.Email, &w.PictureURL); err != nil {
 				d.Logger.Error("get retro users error", zap.Error(err))
 			} else {
 				if w.Email != "" {
@@ -411,6 +426,19 @@ func (d *Service) RetroFacilitatorAdd(RetroID string, UserID string) ([]string, 
 
 // RetroFacilitatorRemove removes a retro facilitator
 func (d *Service) RetroFacilitatorRemove(RetroID string, UserID string) ([]string, error) {
+	facilitatorCount := 0
+	err := d.DB.QueryRow(
+		`SELECT count(user_id) FROM thunderdome.retro_facilitator WHERE retro_id = $1;`,
+		RetroID,
+	).Scan(&facilitatorCount)
+	if err != nil {
+		return nil, fmt.Errorf("retro remove facilitator query error: %v", err)
+	}
+
+	if facilitatorCount == 1 {
+		return nil, fmt.Errorf("ONLY_FACILITATOR")
+	}
+
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2;`,
 		RetroID, UserID); err != nil {
@@ -460,9 +488,11 @@ func (d *Service) RetroAbandon(RetroID string, UserID string) ([]*thunderdome.Re
 func (d *Service) RetroAdvancePhase(RetroID string, Phase string) (*thunderdome.Retro, error) {
 	var b thunderdome.Retro
 	err := d.DB.QueryRow(
-		`UPDATE thunderdome.retro SET updated_date = NOW(), phase = $2, ready_users = '[]'::jsonb WHERE id = $1 RETURNING name;`,
+		`UPDATE thunderdome.retro 
+			SET updated_date = NOW(), phase = $2, phase_time_start = NOW(), ready_users = '[]'::jsonb 
+			WHERE id = $1 RETURNING name, phase_time_start;`,
 		RetroID, Phase,
-	).Scan(&b.Name)
+	).Scan(&b.Name, &b.PhaseTimeStart)
 	if err != nil {
 		return nil, fmt.Errorf("retro advance phase query error: %v", err)
 	}
@@ -528,7 +558,7 @@ func (d *Service) GetRetros(Limit int, Offset int) ([]*thunderdome.Retro, int, e
 	}
 
 	rows, retrosErr := d.DB.Query(`
-		SELECT r.id, r.name, r.format, r.phase, r.created_date, r.updated_date
+		SELECT r.id, r.name, r.format, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.created_date, r.updated_date
 		FROM thunderdome.retro r
 		GROUP BY r.id ORDER BY r.created_date DESC
 		LIMIT $1 OFFSET $2;
@@ -547,6 +577,8 @@ func (d *Service) GetRetros(Limit int, Offset int) ([]*thunderdome.Retro, int, e
 			&b.Name,
 			&b.Format,
 			&b.Phase,
+			&b.PhaseTimeLimitMin,
+			&b.PhaseAutoAdvance,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
@@ -574,7 +606,7 @@ func (d *Service) GetActiveRetros(Limit int, Offset int) ([]*thunderdome.Retro, 
 	}
 
 	rows, retrosErr := d.DB.Query(`
-		SELECT r.id, r.name, r.format, r.phase, r.created_date, r.updated_date
+		SELECT r.id, r.name, r.format, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.created_date, r.updated_date
 		FROM thunderdome.retro_user ru
 		LEFT JOIN thunderdome.retro r ON r.id = ru.retro_id
 		WHERE ru.active IS TRUE GROUP BY r.id
@@ -594,6 +626,8 @@ func (d *Service) GetActiveRetros(Limit int, Offset int) ([]*thunderdome.Retro, 
 			&b.Name,
 			&b.Format,
 			&b.Phase,
+			&b.PhaseTimeLimitMin,
+			&b.PhaseAutoAdvance,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {

@@ -63,7 +63,7 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 // @Tags         team
 // @Produce      json
 // @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Team}
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.UserTeam}
 // @Success      403     object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /users/{userId}/teams [get]
@@ -168,36 +168,86 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 	}
 }
 
-type userAddMeta struct {
-	Invited bool `json:"user_invited"`
-	Added   bool `json:"user_added"`
-}
-
-type teamAddUserRequestBody struct {
-	Email string `json:"email" validate:"required,email"`
-	Role  string `json:"role" enums:"MEMBER,ADMIN" validate:"required,oneof=MEMBER ADMIN"`
-}
-
-// handleTeamAddUser handles adding user to a team
-// @Summary      Add Team User
-// @Description  Adds a user to the team
+// handleTeamUpdate handles updating a team
+// @Summary      Update Team
+// @Description  Updates a team
 // @Tags         team
 // @Produce      json
-// @Param        teamId  path    string                  true  "the team ID"
-// @Param        user    body    teamAddUserRequestBody  true  "new team user object"
-// @Success      200     object  standardJsonResponse{}
+// @Param        teamId  path    string                 true  "the team ID"
+// @Param        team    body    teamCreateRequestBody  true  "updated team object"
+// @Success      200     object  standardJsonResponse{data=thunderdome.Team}
 // @Success      403     object  standardJsonResponse{}
 // @Success      500     object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/users [post]
-func (s *Service) handleTeamAddUser() http.HandlerFunc {
+// @Router       /teams/{teamId} [put]
+func (s *Service) handleTeamUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 
-		var u = teamAddUserRequestBody{}
+		var team = teamCreateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &team)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(team)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+		}
+
+		NewTeam, err := s.TeamDataSvc.TeamUpdate(ctx, TeamID, team.Name)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamUpdate error", zap.Error(err),
+				zap.String("team_id", TeamID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, NewTeam, nil)
+	}
+}
+
+type userAddMeta struct {
+	Invited bool `json:"user_invited"`
+	Added   bool `json:"user_added"`
+}
+
+type teamInviteUserRequestBody struct {
+	Email string `json:"email" validate:"required,email"`
+	Role  string `json:"role" enums:"MEMBER,ADMIN" validate:"required,oneof=MEMBER ADMIN"`
+}
+
+// handleTeamInviteUser handles inviting user to a team
+// @Summary      Invite Team User
+// @Description  Invites a user to the team
+// @Tags         team
+// @Produce      json
+// @Param        teamId  path    string                  true  "the team ID"
+// @Param        user    body    teamInviteUserRequestBody  true  "new team user object"
+// @Success      200     object  standardJsonResponse{}
+// @Success      403     object  standardJsonResponse{}
+// @Success      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/invites [post]
+func (s *Service) handleTeamInviteUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+
+		var u = teamInviteUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -217,49 +267,49 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
-			inviteID, inviteErr := s.TeamDataSvc.TeamInviteUser(ctx, TeamID, UserEmail, u.Role)
-			if inviteErr != nil {
-				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(inviteErr),
+		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled {
+			User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
+			if UserErr == nil {
+				_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+				if err != nil {
+					s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(err), zap.String("team_id", TeamID),
+						zap.String("user_id", User.Id), zap.String("team_role", u.Role),
+						zap.String("session_user_id", SessionUserID))
+					s.Failure(w, r, http.StatusInternalServerError, err)
+					return
+				}
+				s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
+				return
+			} else if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
+				s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(UserErr),
 					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, UserErr)
 				return
 			}
-			team, teamErr := s.TeamDataSvc.TeamGet(ctx, TeamID)
-			if teamErr != nil {
-				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(teamErr),
-					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, teamErr)
-				return
-			}
-			emailErr := s.Email.SendTeamInvite(team.Name, UserEmail, inviteID)
-			if emailErr != nil {
-				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(emailErr),
-					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, emailErr)
-				return
-			}
+		}
 
-			s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
-			return
-		} else if UserErr != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(UserErr),
+		inviteID, inviteErr := s.TeamDataSvc.TeamInviteUser(ctx, TeamID, UserEmail, u.Role)
+		if inviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(inviteErr),
 				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, UserErr)
+			s.Failure(w, r, http.StatusInternalServerError, inviteErr)
+			return
+		}
+		team, teamErr := s.TeamDataSvc.TeamGet(ctx, TeamID)
+		if teamErr != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(teamErr),
+				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, teamErr)
 			return
 		}
 
-		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
-		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("user_id", User.Id), zap.String("team_role", u.Role),
-				zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
+		emailErr := s.Email.SendTeamInvite(team.Name, UserEmail, inviteID)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(emailErr),
+				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
 		}
 
-		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
+		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
 	}
 }
 
@@ -308,7 +358,7 @@ func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 
 		_, err := s.TeamDataSvc.TeamUpdateUser(ctx, TeamID, UserID, u.Role)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(err), zap.String("team_id", TeamID),
+			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(err), zap.String("team_id", TeamID),
 				zap.String("user_id", UserID), zap.String("team_role", u.Role),
 				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)

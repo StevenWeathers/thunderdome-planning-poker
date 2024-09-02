@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { quill } from '../quill';
+  import { quill } from '../../quill';
 
   export let content = '';
   export let placeholder = '';

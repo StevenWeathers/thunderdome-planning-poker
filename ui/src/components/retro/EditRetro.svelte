@@ -2,8 +2,9 @@
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   export let toggleEditRetro = () => {};
   export let handleRetroEdit = () => {};
@@ -12,6 +13,7 @@
   export let facilitatorCode = '';
   export let maxVotes = '3';
   export let brainstormVisibility = 'visible';
+  export let phaseAutoAdvance = true;
 
   const brainstormVisibilityOptions = [
     {
@@ -37,6 +39,7 @@
       facilitatorCode,
       maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
+      phase_auto_advance: phaseAutoAdvance,
     };
 
     handleRetroEdit(retro);
@@ -135,6 +138,15 @@
           </option>
         {/each}
       </SelectInput>
+    </div>
+
+    <div class="mb-4">
+      <Checkbox
+        bind:checked="{phaseAutoAdvance}"
+        id="phaseAutoAdvance"
+        name="phaseAutoAdvance"
+        label="{$LL.phaseAutoAdvanceLabel()}"
+      />
     </div>
 
     <div class="text-right">

@@ -8,10 +8,10 @@
   import ChevronDown from '../icons/ChevronDown.svelte';
   import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig } from '../../config';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
-  import Editor from '../Editor.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import Editor from '../forms/Editor.svelte';
+  import { onMount } from 'svelte';
 
   export let handlePlanAdd = () => {};
   export let toggleAddPlan = () => {};
@@ -56,6 +56,9 @@
   export let acceptanceCriteria = '';
   export let priority = 99;
 
+  /** @type {TextInput} */
+  let planNameTextInput;
+
   const isAbsolute = new RegExp('^([a-z]+://|//)', 'i');
   let descriptionExpanded = false;
   let acceptanceExpanded = false;
@@ -91,13 +94,18 @@
       toggleAddPlan();
     }
   }
+
+  // Focus the plan name input field when the modal is opened
+  onMount(() => {
+    planNameTextInput.focus();
+  });
 </script>
 
 <Modal closeModal="{toggleAddPlan}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
   <form on:submit="{handleSubmit}" name="addPlan">
     <div class="mb-4">
       <label class="block font-bold mb-2 dark:text-gray-400" for="planType">
-        {$LL.planType({ friendly: AppConfig.FriendlyUIVerbs })}
+        {$LL.planType()}
       </label>
       <SelectInput
         name="planType"
@@ -106,9 +114,7 @@
         required
       >
         <option value="" disabled>
-          {$LL.planTypePlaceholder({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}
+          {$LL.planTypePlaceholder()}
         </option>
         {#each planTypes as pType}
           <option value="{pType}">{pType}</option>
@@ -117,15 +123,14 @@
     </div>
     <div class="mb-4">
       <label class="block font-bold mb-2 dark:text-gray-400" for="planName">
-        {$LL.planName({ friendly: AppConfig.FriendlyUIVerbs })}
+        {$LL.planName()}
       </label>
       <TextInput
         id="planName"
         name="planName"
+        bind:this="{planNameTextInput}"
         bind:value="{planName}"
-        placeholder="{$LL.planNamePlaceholder({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}"
+        placeholder="{$LL.planNamePlaceholder()}"
       />
     </div>
     <div class="mb-4">
@@ -147,9 +152,7 @@
         id="planLink"
         name="planLink"
         bind:value="{planLink}"
-        placeholder="{$LL.planLinkPlaceholder({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}"
+        placeholder="{$LL.planLinkPlaceholder()}"
       />
     </div>
     <div class="mb-4">

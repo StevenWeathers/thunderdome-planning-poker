@@ -15,6 +15,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type addUserRequestBody struct {
+	UserID string `json:"user_id" validate:"required,uuid"`
+	Role   string `json:"role" enums:"MEMBER,ADMIN" validate:"required,oneof=MEMBER ADMIN"`
+}
+
 type organizationResponse struct {
 	Organization *thunderdome.Organization `json:"organization"`
 	Role         string                    `json:"role"`
@@ -35,7 +40,7 @@ type orgTeamResponse struct {
 // @Param        userId  path    string  true   "the user ID to get organizations for"
 // @Param        limit   query   int     false  "Max number of results to return"
 // @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Organization}
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.UserOrganization}
 // @Failure      403     object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /users/{userId}/organizations [get]
@@ -147,6 +152,57 @@ func (s *Service) handleCreateOrganization() http.HandlerFunc {
 	}
 }
 
+// handleOrganizationUpdate handles updating an organization
+// @Summary      Update Organization
+// @Description  Update organization
+// @Tags         organization
+// @Produce      json
+// @Param        orgId        path    string                 true  "organization id"
+// @Param        organization  body    teamCreateRequestBody  true  "updated organization object"
+// @Success      200           object  standardJsonResponse{data=thunderdome.Organization}
+// @Failure      403           object  standardJsonResponse{}
+// @Failure      500           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId} [put]
+func (s *Service) handleOrganizationUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+
+		var team = teamCreateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &team)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		Organization, err := s.OrganizationDataSvc.OrganizationUpdate(ctx, OrgID, team.Name)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCreateOrganization error", zap.Error(err),
+				zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("organization_name", team.Name))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, Organization, nil)
+	}
+}
+
 // handleGetOrganizationTeams gets a list of teams associated to the organization
 // @Summary      Get Organization Teams
 // @Description  Get a list of organization teams
@@ -250,19 +306,19 @@ func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 	}
 }
 
-// handleOrganizationAddUser handles adding user to an organization
-// @Summary      Add Org User
-// @Description  Add user to organization
+// handleOrganizationInviteUser handles inviting user to an organization
+// @Summary      Invite Org User
+// @Description  Invite user to organization
 // @Tags         organization
 // @Produce      json
 // @Param        orgId  path    string                  true  "organization id"
-// @Param        user   body    teamAddUserRequestBody  true  "new organization user object"
+// @Param        user   body    teamInviteUserRequestBody  true  "new organization user object"
 // @Success      200    object  standardJsonResponse{}
 // @Failure      403    object  standardJsonResponse{}
 // @Failure      500    object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /organizations/{orgId}/users [post]
-func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
+// @Router       /organizations/{orgId}/invites [post]
+func (s *Service) handleOrganizationInviteUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -273,7 +329,7 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
-		var u = teamAddUserRequestBody{}
+		var u = teamInviteUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -288,50 +344,51 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
-			inviteID, inviteErr := s.OrganizationDataSvc.OrganizationInviteUser(ctx, OrgID, UserEmail, u.Role)
-			if inviteErr != nil {
-				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(inviteErr),
-					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, UserErr)
+		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled {
+			User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
+			if UserErr == nil {
+				_, err := s.OrganizationDataSvc.OrganizationAddUser(ctx, OrgID, User.Id, u.Role)
+				if err != nil {
+					s.Logger.Ctx(ctx).Error(
+						"handleOrganizationInviteUser error", zap.Error(err), zap.String("user_id", User.Id),
+						zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID),
+						zap.String("user_role", u.Role))
+					s.Failure(w, r, http.StatusInternalServerError, err)
+					return
+				}
+				s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
+				return
+			} else if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
+				s.Logger.Ctx(ctx).Error(
+					"handleOrganizationInviteUser error", zap.Error(UserErr), zap.String("user_email", UserEmail),
+					zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
+				s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 				return
 			}
-			org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
-			if orgErr != nil {
-				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(orgErr),
-					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, orgErr)
-				return
-			}
-			emailErr := s.Email.SendOrganizationInvite(org.Name, UserEmail, inviteID)
-			if emailErr != nil {
-				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(emailErr),
-					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, emailErr)
-				return
-			}
-			s.Success(w, r, http.StatusOK, nil, nil)
+		}
+
+		inviteID, inviteErr := s.OrganizationDataSvc.OrganizationInviteUser(ctx, OrgID, UserEmail, u.Role)
+		if inviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationInviteUser error", zap.Error(inviteErr),
+				zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, inviteErr)
 			return
-		} else if UserErr != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleOrganizationAddUser error", zap.Error(UserErr), zap.String("user_email", UserEmail),
-				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
-			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+		}
+		org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
+		if orgErr != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationInviteUser error", zap.Error(orgErr),
+				zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, orgErr)
 			return
 		}
 
-		_, err := s.OrganizationDataSvc.OrganizationAddUser(ctx, OrgID, User.Id, u.Role)
-		if err != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleOrganizationAddUser error", zap.Error(err), zap.String("user_id", User.Id),
-				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID),
-				zap.String("user_role", u.Role))
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
+		emailErr := s.Email.SendOrganizationInvite(org.Name, UserEmail, inviteID)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationInviteUser error", zap.Error(emailErr),
+				zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
 	}
 }
 
@@ -376,7 +433,7 @@ func (s *Service) handleOrganizationUpdateUser() http.HandlerFunc {
 		_, err := s.OrganizationDataSvc.OrganizationUpdateUser(ctx, OrgID, UserID, u.Role)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleOrganizationAddUser error", zap.Error(err), zap.String("user_id", UserID),
+				"handleOrganizationInviteUser error", zap.Error(err), zap.String("user_id", UserID),
 				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID),
 				zap.String("user_role", u.Role))
 			s.Failure(w, r, http.StatusInternalServerError, err)
@@ -494,7 +551,7 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Produce      json
 // @Param        orgId   path    string                  true  "organization id"
 // @Param        teamId  path    string                  true  "team id"
-// @Param        user    body    teamAddUserRequestBody  true  "new team user object"
+// @Param        user    body    addUserRequestBody  true  "new team user object"
 // @Success      200     object  standardJsonResponse{}
 // @Failure      403     object  standardJsonResponse{}
 // @Failure      500     object  standardJsonResponse{}
@@ -513,7 +570,7 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		var u = teamAddUserRequestBody{}
+		var u = addUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -526,34 +583,22 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := u.Email
-
-		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleOrganizationTeamAddUser error", zap.Error(UserErr), zap.String("organization_id", OrgID),
-				zap.String("session_user_id", SessionUserID), zap.String("team_role", u.Role),
-				zap.String("team_id", TeamID), zap.String("user_id", User.Id))
-			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
-			return
-		}
-
-		OrgRole, roleErr := s.OrganizationDataSvc.OrganizationUserRole(ctx, User.Id, OrgID)
+		OrgRole, roleErr := s.OrganizationDataSvc.OrganizationUserRole(ctx, u.UserID, OrgID)
 		if OrgRole == "" || roleErr != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleOrganizationTeamAddUser error", zap.Error(roleErr), zap.String("organization_id", OrgID),
 				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole),
-				zap.String("team_role", u.Role), zap.String("team_id", TeamID), zap.String("user_id", User.Id))
+				zap.String("team_role", u.Role), zap.String("team_id", TeamID), zap.String("user_id", u.UserID))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
-		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, u.UserID, u.Role)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleOrganizationTeamAddUser error", zap.Error(err), zap.String("organization_id", OrgID),
 				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole),
-				zap.String("team_role", u.Role), zap.String("team_id", TeamID), zap.String("user_id", User.Id))
+				zap.String("team_role", u.Role), zap.String("team_id", TeamID), zap.String("user_id", u.UserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -599,11 +644,11 @@ func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 }
 
 // handleGetOrganizationUserInvites gets a list of user invites associated to the organization
-// @Summary      Get Team User Invites
-// @Description  Get a list of user invites associated to the team
+// @Summary      Get Organization User Invites
+// @Description  Get a list of user invites associated to the organization
 // @Tags         organization
 // @Produce      json
-// @Param        organizationId  path    string  true  "the org ID"
+// @Param        orgId  path    string  true  "the org ID"
 // @Success      200     object  standardJsonResponse{data=[]thunderdome.OrganizationUserInvite}
 // @Security     ApiKeyAuth
 // @Router       /organizations/{orgId}/invites [get]
@@ -612,11 +657,11 @@ func (s *Service) handleGetOrganizationUserInvites() http.HandlerFunc {
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		orgId := vars["organizationId"]
+		orgId := vars["orgId"]
 
 		invites, err := s.OrganizationDataSvc.OrganizationGetUserInvites(ctx, orgId)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetOrganizationUserInvites error", zap.Error(err), zap.String("team_id", orgId),
+			s.Logger.Ctx(ctx).Error("handleGetOrganizationUserInvites error", zap.Error(err), zap.String("organization_id", orgId),
 				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 		}

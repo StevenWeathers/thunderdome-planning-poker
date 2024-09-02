@@ -11,11 +11,19 @@
   export let retroId;
   export let storyboardId;
   export let subscription = false;
+  export let orgInviteId;
+  export let teamInviteId;
 
   const { AllowRegistration, LdapEnabled } = AppConfig;
 
   let registerLink = AllowRegistration ? appRoutes.register : '';
   if (AllowRegistration) {
+    if (teamInviteId) {
+      registerLink = `${registerLink}/team/${teamInviteId}`;
+    }
+    if (orgInviteId) {
+      registerLink = `${registerLink}/organization/${orgInviteId}`;
+    }
     if (battleId) {
       registerLink = `${registerLink}/battle/${battleId}`;
     }
@@ -31,6 +39,12 @@
   }
 
   let targetPage = appRoutes.games;
+  if (teamInviteId) {
+    targetPage = `${appRoutes.invite}/team/${teamInviteId}`;
+  }
+  if (orgInviteId) {
+    targetPage = `${appRoutes.invite}/organization/${orgInviteId}`;
+  }
   if (subscription) {
     targetPage = `${appRoutes.subscriptionPricing}`;
   }

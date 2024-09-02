@@ -17,6 +17,7 @@
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
+  import InvitesList from '../../components/team/InvitesList.svelte';
 
   export let xfetch;
   export let router;
@@ -27,7 +28,9 @@
 
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
+  const deptPrefix = `/api/organizations/${organizationId}/departments/${departmentId}`;
 
+  let invitesList;
   let organization = {
     id: organizationId,
     name: '',
@@ -40,6 +43,7 @@
   let organizationRole = '';
   let teams = [];
   let users = [];
+  let invites = [];
   let showCreateTeam = false;
   let showDeleteTeam = false;
   let deleteTeamId = null;
@@ -139,6 +143,42 @@
       });
   }
 
+  let defaultTeam = {
+    id: '',
+    name: '',
+  };
+  let selectedTeam = { ...defaultTeam };
+  let showTeamUpdate = false;
+
+  function toggleUpdateTeam(team) {
+    return () => {
+      selectedTeam = team;
+      showTeamUpdate = !showTeamUpdate;
+    };
+  }
+
+  function updateTeamHandler(name) {
+    const body = {
+      name,
+    };
+
+    xfetch(
+      `/api/organizations/${organizationId}/departments/${departmentId}/teams/${selectedTeam.id}`,
+      { body, method: 'PUT' },
+    )
+      .then(res => res.json())
+      .then(function () {
+        eventTag('update_department_team', 'engagement', 'success');
+        getTeams();
+        toggleUpdateTeam(defaultTeam)();
+        notifications.success(`${$LL.teamUpdateSuccess()}`);
+      })
+      .catch(function () {
+        notifications.danger(`${$LL.teamUpdateError()}`);
+        eventTag('update_department_team', 'engagement', 'failure');
+      });
+  }
+
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
@@ -218,7 +258,7 @@
               <RowCol type="action">
                 {#if isAdmin}
                   <CrudActions
-                    editBtnEnabled="{false}"
+                    editBtnClickHandler="{toggleUpdateTeam(team)}"
                     deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
                   />
                 {/if}
@@ -230,6 +270,19 @@
     </TableContainer>
   </div>
 
+  {#if isAdmin}
+    <div class="w-full mb-6 lg:mb-8">
+      <InvitesList
+        xfetch="{xfetch}"
+        eventTag="{eventTag}"
+        notifications="{notifications}"
+        pageType="department"
+        teamPrefix="{deptPrefix}"
+        bind:this="{invitesList}"
+      />
+    </div>
+  {/if}
+
   <UsersList
     users="{users}"
     getUsers="{getUsers}"
@@ -238,6 +291,8 @@
     notifications="{notifications}"
     isAdmin="{isAdmin}"
     pageType="department"
+    orgId="{organizationId}"
+    deptId="{departmentId}"
     teamPrefix="/api/organizations/{organizationId}/departments/{departmentId}"
   />
 
@@ -245,6 +300,14 @@
     <CreateTeam
       toggleCreate="{toggleCreateTeam}"
       handleCreate="{createTeamHandler}"
+    />
+  {/if}
+
+  {#if showTeamUpdate}
+    <CreateTeam
+      teamName="{selectedTeam.name}"
+      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
+      handleCreate="{updateTeamHandler}"
     />
   {/if}
 

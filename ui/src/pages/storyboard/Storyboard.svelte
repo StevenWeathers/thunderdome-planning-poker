@@ -25,7 +25,7 @@
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
   import PageLayout from '../../components/PageLayout.svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
 
   export let storyboardId;
   export let notifications;
@@ -314,6 +314,11 @@
   };
 
   const handleRemoveFacilitator = userId => () => {
+    if (storyboard.facilitators.length === 1) {
+      notifications.danger($LL.removeOnlyFacilitatorError());
+      return;
+    }
+
     sendSocketEvent(
       'facilitator_remove',
       JSON.stringify({

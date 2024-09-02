@@ -2020,6 +2020,71 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update organization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Update Organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization id",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated organization object",
+                        "name": "organization",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamCreateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.Organization"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -2231,6 +2296,72 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an organization department",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Update Department",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the department ID",
+                        "name": "deptId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated department object",
+                        "name": "department",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamCreateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.Department"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -2250,6 +2381,176 @@ const docTemplate = `{
                         "type": "string",
                         "description": "the department ID",
                         "name": "departmentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/invites": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a list of user invites associated to the department",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Get Department User Invites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the org ID",
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the dept ID",
+                        "name": "departmentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.DepartmentUserInvite"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Invite a department User",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Invite Department User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the department ID",
+                        "name": "departmentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new department user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamInviteUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/invites/{inviteId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete user invite from department",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Delete Department User Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization id",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the dept ID",
+                        "name": "departmentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "invite id",
+                        "name": "inviteId",
                         "in": "path",
                         "required": true
                     }
@@ -2507,7 +2808,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.teamAddUserRequestBody"
+                            "$ref": "#/definitions/http.addUserRequestBody"
                         }
                     }
                 ],
@@ -2617,7 +2918,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.teamAddUserRequestBody"
+                            "$ref": "#/definitions/http.addUserRequestBody"
                         }
                     }
                 ],
@@ -2759,19 +3060,19 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get a list of user invites associated to the team",
+                "description": "Get a list of user invites associated to the organization",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "organization"
                 ],
-                "summary": "Get Team User Invites",
+                "summary": "Get Organization User Invites",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "the org ID",
-                        "name": "organizationId",
+                        "name": "orgId",
                         "in": "path",
                         "required": true
                     }
@@ -2796,6 +3097,59 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Invite user to organization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Invite Org User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization id",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new organization user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamInviteUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
                 }
@@ -3075,7 +3429,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.teamAddUserRequestBody"
+                            "$ref": "#/definitions/http.addUserRequestBody"
                         }
                     }
                 ],
@@ -3149,59 +3503,6 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Add user to organization",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization"
-                ],
-                "summary": "Add Org User",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "organization id",
-                        "name": "orgId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "new organization user object",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.teamAddUserRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -4394,6 +4695,71 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "team"
+                ],
+                "summary": "Update Team",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated team object",
+                        "name": "team",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamCreateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.Team"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -4997,6 +5363,59 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Invites a user to the team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "team"
+                ],
+                "summary": "Invite Team User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new team user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamInviteUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
             }
         },
         "/teams/{teamId}/invites/{inviteId}": {
@@ -5366,59 +5785,6 @@ const docTemplate = `{
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Adds a user to the team",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "team"
-                ],
-                "summary": "Add Team User",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the team ID",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "new team user object",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.teamAddUserRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
                 }
@@ -6378,6 +6744,141 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{userId}/invite/department/{inviteId}": {
+            "post": {
+                "description": "Processes an department invite for the user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "User Department Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/invite/organization/{inviteId}": {
+            "post": {
+                "description": "Processes an organization invite for the user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "User Organization Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/invite/team/{inviteId}": {
+            "post": {
+                "description": "Processes a team invite for the user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "User Team Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userId}/jira-instances": {
             "get": {
                 "security": [
@@ -6711,7 +7212,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/thunderdome.Organization"
+                                                "$ref": "#/definitions/thunderdome.UserOrganization"
                                             }
                                         }
                                     }
@@ -7305,7 +7806,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/thunderdome.Team"
+                                                "$ref": "#/definitions/thunderdome.UserTeam"
                                             }
                                         }
                                     }
@@ -7942,6 +8443,25 @@ const docTemplate = `{
                 }
             }
         },
+        "http.addUserRequestBody": {
+            "type": "object",
+            "required": [
+                "role",
+                "user_id"
+            ],
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "MEMBER",
+                        "ADMIN"
+                    ]
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "http.alertRequestBody": {
             "type": "object",
             "required": [
@@ -8364,6 +8884,15 @@ const docTemplate = `{
                     "maximum": 9,
                     "minimum": 1
                 },
+                "phaseAutoAdvance": {
+                    "type": "boolean"
+                },
+                "phaseTimeLimitMin": {
+                    "type": "integer",
+                    "maximum": 59,
+                    "minimum": 0,
+                    "example": 10
+                },
                 "retroName": {
                     "type": "string",
                     "example": "sprint 10 retro"
@@ -8452,7 +8981,18 @@ const docTemplate = `{
                 }
             }
         },
-        "http.teamAddUserRequestBody": {
+        "http.teamCreateRequestBody": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.teamInviteUserRequestBody": {
             "type": "object",
             "required": [
                 "email",
@@ -8468,17 +9008,6 @@ const docTemplate = `{
                         "MEMBER",
                         "ADMIN"
                     ]
-                }
-            }
-        },
-        "http.teamCreateRequestBody": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string"
                 }
             }
         },
@@ -8586,9 +9115,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "orgInviteId": {
-                    "type": "string"
-                },
                 "password1": {
                     "type": "string",
                     "maxLength": 72,
@@ -8598,9 +9124,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 72,
                     "minLength": 6
-                },
-                "teamInviteId": {
-                    "type": "string"
                 }
             }
         },
@@ -8836,6 +9359,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "organization_id": {
+                    "type": "string"
+                },
                 "updatedDate": {
                     "type": "string"
                 }
@@ -8857,6 +9383,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.DepartmentUserInvite": {
+            "type": "object",
+            "properties": {
+                "created_date": {
+                    "type": "string"
+                },
+                "department_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "expire_date": {
+                    "type": "string"
+                },
+                "invite_id": {
                     "type": "string"
                 },
                 "role": {
@@ -9019,6 +9571,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "pictureUrl": {
+                    "type": "string"
+                },
                 "rank": {
                     "type": "string"
                 },
@@ -9082,6 +9637,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phase": {
+                    "type": "string"
+                },
+                "phase_auto_advance": {
+                    "type": "boolean"
+                },
+                "phase_time_limit_min": {
+                    "type": "integer"
+                },
+                "phase_time_start": {
                     "type": "string"
                 },
                 "readyUsers": {
@@ -9212,6 +9776,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
                     "type": "string"
                 }
             }
@@ -9492,6 +10059,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "pictureUrl": {
+                    "type": "string"
                 }
             }
         },
@@ -9542,10 +10112,16 @@ const docTemplate = `{
                 "createdDate": {
                     "type": "string"
                 },
+                "department_id": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "organization_id": {
                     "type": "string"
                 },
                 "updatedDate": {
@@ -9607,6 +10183,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
                     "type": "string"
                 },
                 "role": {
@@ -9673,14 +10252,14 @@ const docTemplate = `{
                 "locale": {
                     "type": "string"
                 },
-                "mfaEnabled": {
-                    "type": "boolean"
-                },
                 "name": {
                     "type": "string"
                 },
                 "notificationsEnabled": {
                     "type": "boolean"
+                },
+                "picture": {
+                    "type": "string"
                 },
                 "rank": {
                     "type": "string"
@@ -9727,6 +10306,52 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.UserOrganization": {
+            "type": "object",
+            "properties": {
+                "createdDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updatedDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.UserTeam": {
+            "type": "object",
+            "properties": {
+                "createdDate": {
+                    "type": "string"
+                },
+                "department_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updatedDate": {
                     "type": "string"
                 }
             }

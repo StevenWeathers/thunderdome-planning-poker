@@ -1,6 +1,6 @@
 <script lang="ts">
   import UserIcon from '../icons/UserIcon.svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import UserAvatar from '../user/UserAvatar.svelte';
@@ -65,7 +65,7 @@
         });
       })
       .catch(function () {
-        notifications.danger($LL.logoutError(AppConfig.FriendlyUIVerbs));
+        notifications.danger($LL.logoutError());
         eventTag('logout', 'engagement', 'failure');
       });
   }
@@ -95,6 +95,7 @@
   >
     <UserAvatar
       warriorId="{$user.id}"
+      pictureUrl="{profile.picture}"
       gravatarHash="{profile.gravatarHash}"
       class="object-cover w-10 h-10 rounded-full"
     />

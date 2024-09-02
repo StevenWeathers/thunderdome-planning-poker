@@ -1,5 +1,6 @@
 <script lang="ts">
   import './app.css';
+  import './tailwind.css';
   import './unreset.css';
   import '../node_modules/quill/dist/quill.core.css';
   import '../node_modules/quill/dist/quill.snow.css';
@@ -58,12 +59,14 @@
   import TermsConditions from './pages/support/TermsConditions.svelte';
   import Support from './pages/support/Support.svelte';
   import { loadLocale } from './i18n/i18n-util.sync';
+  import Invite from './pages/team/Invite.svelte';
 
   const {
     FeaturePoker,
     FeatureRetro,
     FeatureStoryboard,
     SubscriptionsEnabled,
+    DefaultLocale,
   } = AppConfig;
 
   let notifications;
@@ -73,7 +76,8 @@
     activeWarrior = w;
   });
 
-  const detectedLocale = activeWarrior.locale || detectLocale();
+  const detectedLocale =
+    activeWarrior.locale || detectLocale() || DefaultLocale;
   loadLocale(detectedLocale);
   setLocale(detectedLocale);
 
@@ -138,6 +142,20 @@
       name: 'login',
     };
   });
+  router.on(`${appRoutes.login}/team/:teamInviteId`, params => {
+    currentPage = {
+      route: Login,
+      params,
+      name: 'login',
+    };
+  });
+  router.on(`${appRoutes.login}/organization/:orgInviteId`, params => {
+    currentPage = {
+      route: Login,
+      params,
+      name: 'login',
+    };
+  });
   router.on(`${appRoutes.resetPwd}/:resetId`, params => {
     currentPage = {
       route: ResetPassword,
@@ -199,6 +217,27 @@
       route: Register,
       params,
       name: 'register',
+    };
+  });
+  router.on(`${appRoutes.invite}/organization/:inviteId`, params => {
+    currentPage = {
+      route: Invite,
+      params: { inviteType: 'organization', ...params },
+      name: 'invite',
+    };
+  });
+  router.on(`${appRoutes.invite}/department/:inviteId`, params => {
+    currentPage = {
+      route: Invite,
+      params: { inviteType: 'department', ...params },
+      name: 'invite',
+    };
+  });
+  router.on(`${appRoutes.invite}/team/:inviteId`, params => {
+    currentPage = {
+      route: Invite,
+      params: { inviteType: 'team', ...params },
+      name: 'invite',
     };
   });
   router.on(`${appRoutes.organization}/:organizationId`, params => {
@@ -367,6 +406,12 @@
   });
 
   if (FeaturePoker) {
+    router.on(appRoutes.battles, () => {
+      router.route(appRoutes.games);
+    });
+    router.on(`${appRoutes.battle}/:battleId`, params => {
+      router.route(`${appRoutes.game}/${params.battleId}`);
+    });
     router.on(appRoutes.games, () => {
       currentPage = {
         route: Battles,
@@ -396,13 +441,19 @@
       };
     });
     router.on(`${appRoutes.register}/battle/:battleId`, params => {
+      router.route(`${appRoutes.register}/game/${params.battleId}`);
+    });
+    router.on(`${appRoutes.login}/battle/:battleId`, params => {
+      router.route(`${appRoutes.login}/game/${params.battleId}`);
+    });
+    router.on(`${appRoutes.register}/game/:battleId`, params => {
       currentPage = {
         route: Register,
         params,
         name: 'register',
       };
     });
-    router.on(`${appRoutes.login}/battle/:battleId`, params => {
+    router.on(`${appRoutes.login}/game/:battleId`, params => {
       currentPage = {
         route: Login,
         params,

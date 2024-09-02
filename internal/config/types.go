@@ -16,18 +16,20 @@ type Config struct {
 }
 
 type Http struct {
-	CookieHashkey          string `mapstructure:"cookie_hashkey"`
 	Port                   string
 	SecureCookie           bool   `mapstructure:"secure_cookie"`
 	BackendCookieName      string `mapstructure:"backend_cookie_name"`
 	SessionCookieName      string `mapstructure:"session_cookie_name"`
 	FrontendCookieName     string `mapstructure:"frontend_cookie_name"`
+	AuthStateCookieName    string `mapstructure:"auth_state_cookie_name"`
 	Domain                 string
 	PathPrefix             string `mapstructure:"path_prefix"`
+	SecureProtocol         bool   `mapstructure:"secure_protocol"`
 	WriteTimeout           int    `mapstructure:"write_timeout"`
 	ReadTimeout            int    `mapstructure:"read_timeout"`
 	IdleTimeout            int    `mapstructure:"idle_timeout"`
 	ReadHeaderTimeout      int    `mapstructure:"read_header_timeout"`
+	CookieHashkey          string `mapstructure:"cookie_hashkey"`
 	WebsocketWriteWaitSec  int    `mapstructure:"websocket_write_wait_sec"`
 	WebsocketPingPeriodSec int    `mapstructure:"websocket_ping_period_sec"`
 	WebsocketPongWaitSec   int    `mapstructure:"websocket_pong_wait_sec"`
@@ -85,7 +87,6 @@ type AppConfig struct {
 	AllowJiraImport           bool     `mapstructure:"allow_jira_import"`
 	AllowCsvImport            bool     `mapstructure:"allow_csv_import"`
 	DefaultLocale             string   `mapstructure:"default_locale"`
-	FriendlyUiVerbs           bool     `mapstructure:"friendly_ui_verbs"`
 	AllowExternalApi          bool     `mapstructure:"allow_external_api"`
 	ExternalApiVerifyRequired bool     `mapstructure:"external_api_verify_required"`
 	UserApikeyLimit           int      `mapstructure:"user_apikey_limit"`
@@ -105,10 +106,17 @@ type Feature struct {
 	Storyboard bool
 }
 
+type Google struct {
+	Enabled      bool   `mapstructure:"enabled"`
+	ClientID     string `mapstructure:"client_id"`
+	ClientSecret string `mapstructure:"client_secret"`
+}
+
 type Auth struct {
 	Method string
 	Ldap   AuthLdap
 	Header AuthHeader
+	Google
 }
 
 type AuthHeader struct {

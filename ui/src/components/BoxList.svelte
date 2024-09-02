@@ -3,7 +3,6 @@
   import LL from '../i18n/i18n-svelte';
   import { user } from '../stores';
   import LeaderIcon from './icons/LeaderIcon.svelte';
-  import { AppConfig } from '../config';
 
   export let items: Array<object> = [];
   export let pageRoute: string = '';
@@ -58,7 +57,7 @@
           <div
             class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
           >
-            {$LL.countPlansPointed[AppConfig.FriendlyUIVerbs]({
+            {$LL.countPlansPointed({
               totalPointed: item.plans.filter(p => p.points !== '').length,
               totalPlans: item.plans.length,
             })}

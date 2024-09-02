@@ -19,7 +19,7 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
 
   export let battleId: string;
   export let notifications;
@@ -125,7 +125,7 @@
         }
         if ($user.notificationsEnabled) {
           notifications.success(
-            `${$LL.warriorJoined[AppConfig.FriendlyUIVerbs]({
+            `${$LL.warriorJoined({
               name: joinedWarrior.name,
             })}
     `,
@@ -141,7 +141,7 @@
 
         if ($user.notificationsEnabled) {
           notifications.danger(
-            `${$LL.warriorRetreated[AppConfig.FriendlyUIVerbs]({
+            `${$LL.warriorRetreated({
               name: leftWarrior.name,
             })}
     `,
@@ -178,11 +178,7 @@
         battle.votingLocked = true;
         vote = '';
         if ($user.notificationsEnabled) {
-          notifications.warning(
-            $LL.planSkipped({
-              friendly: AppConfig.FriendlyUIVerbs,
-            }),
-          );
+          notifications.warning($LL.planSkipped());
         }
         break;
       case 'vote_activity':
@@ -263,9 +259,7 @@
         break;
       case 'battle_conceded':
         // poker over, goodbye.
-        notifications.warning(
-          $LL.battleDeleted({ friendly: AppConfig.FriendlyUIVerbs }),
-        );
+        notifications.warning($LL.battleDeleted());
         router.route(appRoutes.games);
         break;
       case 'jab_warrior':
@@ -304,11 +298,7 @@
           });
         } else if (e.code === 4003) {
           eventTag('socket_duplicate', 'battle', '', () => {
-            notifications.danger(
-              $LL.sessionDuplicate({
-                friendly: AppConfig.FriendlyUIVerbs,
-              }),
-            );
+            notifications.danger($LL.sessionDuplicate());
             router.route(`${appRoutes.games}`);
           });
         } else if (e.code === 4002) {
@@ -489,7 +479,7 @@
 
 <svelte:head>
   <title
-    >{$LL.battle({ friendly: AppConfig.FriendlyUIVerbs })}
+    >{$LL.battle()}
     {battle.name} | {$LL.appName()}</title
   >
 </svelte:head>
@@ -525,8 +515,8 @@
               >[{currentStory.referenceId}]</span
             >
           {/if}
-          &nbsp;<span data-testid="currentplan-name"
-            >{#if currentStory.name === ''}[{$LL.votingNotStarted()}]{:else}{currentStory.name}{/if}</span
+          <span data-testid="currentplan-name"
+            >{#if currentStory.name === ''}[{$LL.votingNotStarted()}]{:else}&nbsp;{currentStory.name}{/if}</span
           >
         </h1>
         <h2
@@ -590,9 +580,7 @@
             <h3
               class="text-3xl text-white leading-tight font-semibold font-rajdhani uppercase"
             >
-              {$LL.warriors({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              {$LL.warriors()}
             </h3>
           </div>
 
@@ -607,6 +595,7 @@
                 autoFinishVoting="{battle.autoFinishVoting}"
                 sendSocketEvent="{sendSocketEvent}"
                 eventTag="{eventTag}"
+                notifications="{notifications}"
               />
             {/if}
           {/each}
@@ -637,18 +626,14 @@
                 onClick="{toggleEditBattle}"
                 testid="battle-edit"
               >
-                {$LL.battleEdit({
-                  friendly: AppConfig.FriendlyUIVerbs,
-                })}
+                {$LL.battleEdit()}
               </HollowButton>
               <HollowButton
                 color="red"
                 onClick="{toggleDeleteBattle}"
                 testid="battle-delete"
               >
-                {$LL.battleDelete({
-                  friendly: AppConfig.FriendlyUIVerbs,
-                })}
+                {$LL.battleDelete()}
               </HollowButton>
             </div>
           {:else}
@@ -658,9 +643,7 @@
                 onClick="{abandonBattle}"
                 testid="battle-abandon"
               >
-                {$LL.battleAbandon({
-                  friendly: AppConfig.FriendlyUIVerbs,
-                })}
+                {$LL.battleAbandon()}
               </HollowButton>
             </div>
           {/if}
@@ -710,11 +693,7 @@
           </div>
 
           <div class="text-right">
-            <SolidButton type="submit"
-              >{$LL.battleJoin({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}</SolidButton
-            >
+            <SolidButton type="submit">{$LL.battleJoin()}</SolidButton>
           </div>
         </form>
       </div>
@@ -723,9 +702,7 @@
     <div class="flex items-center">
       <div class="flex-1 text-center">
         <h1 class="text-5xl text-teal-500 leading-tight font-bold">
-          {$LL.battleSocketReconnecting({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}
+          {$LL.battleSocketReconnecting()}
         </h1>
       </div>
     </div>
@@ -733,9 +710,7 @@
     <div class="flex items-center">
       <div class="flex-1 text-center">
         <h1 class="text-5xl text-red-500 leading-tight font-bold">
-          {$LL.battleSocketError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}
+          {$LL.battleSocketError()}
         </h1>
       </div>
     </div>
@@ -743,7 +718,7 @@
     <div class="flex items-center">
       <div class="flex-1 text-center">
         <h1 class="text-5xl text-green-500 leading-tight font-bold">
-          {$LL.battleLoading({ friendly: AppConfig.FriendlyUIVerbs })}
+          {$LL.battleLoading()}
         </h1>
       </div>
     </div>
@@ -753,12 +728,8 @@
     <DeleteConfirmation
       toggleDelete="{toggleDeleteBattle}"
       handleDelete="{concedeBattle}"
-      confirmText="{$LL.deleteBattleConfirmText({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
-      confirmBtnText="{$LL.deleteBattle({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
+      confirmText="{$LL.deleteBattleConfirmText()}"
+      confirmBtnText="{$LL.deleteBattle()}"
     />
   {/if}
 </PageLayout>

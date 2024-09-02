@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
   import HeadCol from '../../components/table/HeadCol.svelte';
   import AdminPageLayout from '../../components/AdminPageLayout.svelte';
@@ -13,6 +13,7 @@
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
+  import Toggle from '../../components/forms/Toggle.svelte';
 
   export let xfetch;
   export let router;
@@ -36,11 +37,7 @@
         battleCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger(
-          $LL.getBattlesError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.getBattlesError());
       });
   }
 
@@ -70,7 +67,7 @@
 
 <svelte:head>
   <title
-    >{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
+    >{$LL.battles()}
     {$LL.admin()} | {$LL.appName()}</title
   >
 </svelte:head>
@@ -83,28 +80,14 @@
   </div>
 
   <TableContainer>
-    <TableNav
-      title="{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}"
-      createBtnEnabled="{false}"
-    >
-      <label class="inline-flex items-center cursor-pointer">
-        <input
-          type="checkbox"
-          class="sr-only peer"
-          name="activeBattles"
-          id="activeBattles"
-          bind:checked="{activeBattles}"
-          on:change="{changeActiveBattlesToggle}"
-        />
-        <div
-          class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-        ></div>
-        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-          {$LL.showActiveBattles({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}
-        </span>
-      </label>
+    <TableNav title="{$LL.battles()}" createBtnEnabled="{false}">
+      <Toggle
+        name="activeBattles"
+        id="activeBattles"
+        bind:checked="{activeBattles}"
+        changeHandler="{changeActiveBattlesToggle}"
+        label="{$LL.showActiveBattles()}"
+      />
     </TableNav>
     <Table>
       <tr slot="header">
@@ -126,7 +109,7 @@
           <TableRow itemIndex="{i}">
             <RowCol>
               <a
-                href="{appRoutes.admin}/battles/{battle.id}"
+                href="{appRoutes.adminPokerGames}/{battle.id}"
                 class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                 >{battle.name}</a
               >
@@ -139,9 +122,7 @@
             </RowCol>
             <RowCol type="action">
               <HollowButton href="{appRoutes.game}/{battle.id}">
-                {$LL.battleJoin({
-                  friendly: AppConfig.FriendlyUIVerbs,
-                })}
+                {$LL.battleJoin()}
               </HollowButton>
             </RowCol>
           </TableRow>

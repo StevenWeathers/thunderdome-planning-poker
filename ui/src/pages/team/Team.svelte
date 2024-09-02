@@ -29,6 +29,8 @@
   import TableNav from '../../components/table/TableNav.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
+  import Toggle from '../../components/forms/Toggle.svelte';
+  import InvitesList from '../../components/team/InvitesList.svelte';
 
   export let xfetch;
   export let router;
@@ -45,6 +47,8 @@
   const retroActionsPageLimit = 5;
   const storyboardsPageLimit = 1000;
   const usersPageLimit = 1000;
+
+  let invitesList;
 
   let team = {
     id: teamId,
@@ -64,7 +68,6 @@
   let retros = [];
   let retroActions = [];
   let storyboards = [];
-  let invites = [];
   let showCreateBattle = false;
   let showCreateRetro = false;
   let showCreateStoryboard = false;
@@ -82,9 +85,6 @@
   let storyboardsPage = 1;
   let totalRetroActions = 0;
   let completedActionItems = false;
-  let showInviteUser = false;
-  let showDeleteInvite = false;
-  let deleteInviteId = '';
 
   let organizationRole = '';
   let departmentRole = '';
@@ -137,15 +137,6 @@
     showDeleteTeam = !showDeleteTeam;
   };
 
-  const toggleInviteUser = () => {
-    showInviteUser = !showInviteUser;
-  };
-
-  const toggleDeleteInvite = inviteId => () => {
-    showDeleteInvite = !showDeleteInvite;
-    deleteInviteId = inviteId;
-  };
-
   let showRetroActionComments = false;
   let selectedRetroAction = null;
   const toggleRetroActionComments = id => () => {
@@ -189,26 +180,12 @@
       });
   }
 
-  function getInvites() {
-    xfetch(`${teamPrefix}/invites`)
-      .then(res => res.json())
-      .then(function (result) {
-        invites = result.data;
-      })
-      .catch(function () {
-        notifications.danger('error getting team invites');
-      });
-  }
-
   function getUsers() {
     const usersOffset = (usersPage - 1) * usersPageLimit;
     xfetch(`${teamPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`)
       .then(res => res.json())
       .then(function (result) {
         users = result.data;
-        if (isAdmin) {
-          getInvites();
-        }
       })
       .catch(function () {
         notifications.danger($LL.teamGetUsersError());
@@ -226,11 +203,7 @@
           battles = result.data;
         })
         .catch(function () {
-          notifications.danger(
-            $LL.teamGetBattlesError({
-              friendly: AppConfig.FriendlyUIVerbs,
-            }),
-          );
+          notifications.danger($LL.teamGetBattlesError());
         });
     }
   }
@@ -293,19 +266,11 @@
       .then(function () {
         eventTag('team_remove_battle', 'engagement', 'success');
         toggleRemoveBattle(null)();
-        notifications.success(
-          $LL.battleRemoveSuccess({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.success($LL.battleRemoveSuccess());
         getBattles();
       })
       .catch(function () {
-        notifications.danger(
-          $LL.battleRemoveError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.battleRemoveError());
         eventTag('team_remove_battle', 'engagement', 'failure');
       });
   }
@@ -340,22 +305,6 @@
       });
   }
 
-  function handleDeleteInvite() {
-    xfetch(`${teamPrefix}/invites/${deleteInviteId}`, {
-      method: 'DELETE',
-    })
-      .then(function () {
-        eventTag('team_delete_invite', 'engagement', 'success');
-        toggleDeleteInvite(null)();
-        notifications.success('Successfully deleted user invite');
-        getInvites();
-      })
-      .catch(function () {
-        notifications.danger('Error deleting user invite');
-        eventTag('team_delete_invite', 'engagement', 'failure');
-      });
-  }
-
   function handleDeleteTeam() {
     xfetch(`${teamPrefix}`, {
       method: 'DELETE',
@@ -384,11 +333,10 @@
 
   let showRetroActionEdit = false;
   let selectedAction = null;
-  let selectedActionRetroId = null;
   const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
-    selectedAction = retroActions.find(r => r.id === id);
-    selectedActionRetroId = retroId;
+    selectedAction =
+      retroId !== null ? retroActions.find(r => r.id === id) : null;
   };
 
   function handleRetroActionEdit(action) {
@@ -527,15 +475,13 @@
           <h2
             class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
           >
-            {$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
+            {$LL.battles()}
           </h2>
         </div>
         <div class="flex-1 text-right">
           {#if isTeamMember}
             <SolidButton onClick="{toggleCreateBattle}"
-              >{$LL.battleCreate({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              >{$LL.battleCreate()}
             </SolidButton>
           {/if}
         </div>
@@ -546,9 +492,7 @@
           items="{battles}"
           itemType="battle"
           pageRoute="{appRoutes.game}"
-          joinBtnText="{$LL.battleJoin({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}"
+          joinBtnText="{$LL.battleJoin()}"
           isAdmin="{isAdmin}"
           toggleRemove="{toggleRemoveBattle}"
         />
@@ -607,24 +551,13 @@
               title="{$LL.retroActionItems()}"
               createBtnEnabled="{false}"
             >
-              <label class="inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  class="sr-only peer"
-                  name="completedActionItems"
-                  id="completedActionItems"
-                  bind:checked="{completedActionItems}"
-                  on:change="{changeRetroActionCompletedToggle}"
-                />
-                <div
-                  class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                ></div>
-                <span
-                  class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  {$LL.showCompletedActionItems()}
-                </span>
-              </label>
+              <Toggle
+                name="completedActionItems"
+                id="completedActionItems"
+                bind:checked="{completedActionItems}"
+                changeHandler="{changeRetroActionCompletedToggle}"
+                label="{$LL.showCompletedActionItems()}"
+              />
             </TableNav>
             <Table>
               <tr slot="header">
@@ -761,42 +694,14 @@
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <TableContainer>
-        <TableNav title="{$LL.userInvites()}" createBtnEnabled="{false}" />
-        <Table>
-          <tr slot="header">
-            <HeadCol>{$LL.email()}</HeadCol>
-            <HeadCol>{$LL.role()}</HeadCol>
-            <HeadCol>{$LL.dateCreated()}</HeadCol>
-            <HeadCol>{$LL.expireDate()}</HeadCol>
-            <HeadCol />
-          </tr>
-          <tbody slot="body" let:class="{className}" class="{className}">
-            {#each invites as item, i}
-              <TableRow itemIndex="{i}">
-                <RowCol>
-                  {item.email}
-                </RowCol>
-                <RowCol>
-                  {item.role}
-                </RowCol>
-                <RowCol>
-                  {new Date(item.created_date).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(item.expire_date).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  <CrudActions
-                    editBtnEnabled="{false}"
-                    deleteBtnClickHandler="{toggleDeleteInvite(item.invite_id)}"
-                  />
-                </RowCol>
-              </TableRow>
-            {/each}
-          </tbody>
-        </Table>
-      </TableContainer>
+      <InvitesList
+        xfetch="{xfetch}"
+        eventTag="{eventTag}"
+        notifications="{notifications}"
+        pageType="team"
+        teamPrefix="{teamPrefix}"
+        bind:this="{invitesList}"
+      />
     </div>
   {/if}
 
@@ -809,6 +714,11 @@
     isAdmin="{isAdmin}"
     pageType="team"
     teamPrefix="{teamPrefix}"
+    orgId="{organizationId}"
+    deptId="{departmentId}"
+    on:user-invited="{() => {
+      invitesList.f('user-invited');
+    }}"
   />
 
   {#if isAdmin && !organizationId && !departmentId}
@@ -824,12 +734,8 @@
       toggleDelete="{toggleRemoveBattle(null)}"
       handleDelete="{handleBattleRemove}"
       permanent="{false}"
-      confirmText="{$LL.removeBattleConfirmText({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
-      confirmBtnText="{$LL.removeBattle({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
+      confirmText="{$LL.removeBattleConfirmText()}"
+      confirmBtnText="{$LL.removeBattle()}"
     />
   {/if}
 
@@ -871,7 +777,6 @@
       action="{selectedAction}"
       handleAssigneeAdd="{handleRetroActionAssigneeAdd}"
       handleAssigneeRemove="{handleRetroActionAssigneeRemove}"
-      retroId="{selectedActionRetroId}"
     />
   {/if}
 
@@ -886,15 +791,6 @@
       eventTag="{eventTag}"
       notifications="{notifications}"
       isAdmin="{isAdmin}"
-    />
-  {/if}
-
-  {#if showDeleteInvite}
-    <DeleteConfirmation
-      toggleDelete="{toggleDeleteInvite(null)}"
-      handleDelete="{handleDeleteInvite}"
-      confirmText="{$LL.userInviteConfirmDelete()}"
-      confirmBtnText="{$LL.userInviteDelete()}"
     />
   {/if}
 </PageLayout>

@@ -269,7 +269,10 @@
     if (ExternalAPIEnabled) {
       getApiKeys();
     }
-    if ($user.subscribed) {
+    if (
+      (SubscriptionsEnabled && $user.subscribed) ||
+      (!SubscriptionsEnabled && $user.rank !== 'GUEST')
+    ) {
       getJiraInstances();
     }
   });
@@ -503,106 +506,108 @@
         </div>
       {/if}
 
-      {#if SubscriptionsEnabled}
-        <div class="ms-8">
-          <div class="flex w-full">
-            <div class="flex-1">
-              <h2
-                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-              >
-                Jira Instances
-              </h2>
-            </div>
-            {#if $user.subscribed}
-              <div class="flex-1">
-                <div class="text-right">
-                  <HollowButton
-                    onClick="{toggleCreateJiraInstance}"
-                    testid="jirainstance-create"
-                  >
-                    Add Jira Instance
-                  </HollowButton>
-                </div>
-              </div>
-            {/if}
+      <div class="ms-8">
+        <div class="flex w-full">
+          <div class="flex-1">
+            <h2
+              class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+            >
+              Jira Instances
+            </h2>
           </div>
-          <div class="flex flex-col">
-            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div
-                class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-              >
-                <div
-                  class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
+          {#if (SubscriptionsEnabled && $user.subscribed) || (!SubscriptionsEnabled && $user.rank !== 'GUEST')}
+            <div class="flex-1">
+              <div class="text-right">
+                <HollowButton
+                  onClick="{toggleCreateJiraInstance}"
+                  testid="jirainstance-create"
                 >
-                  {#if !$user.subscribed}
-                    <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
-                      Must be subscribed to setup Jira integrations
-                    </p>
-                  {:else}
-                    <table
-                      class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                  Add Jira Instance
+                </HollowButton>
+              </div>
+            </div>
+          {/if}
+        </div>
+        <div class="flex flex-col">
+          <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div
+              class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+            >
+              <div
+                class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
+              >
+                {#if SubscriptionsEnabled && !$user.subscribed}
+                  <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
+                    Must be subscribed to setup Jira integrations
+                  </p>
+                {:else if !SubscriptionsEnabled && $user.rank === 'GUEST'}
+                  <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
+                    Must be logged in to setup Jira integrations
+                  </p>
+                {:else}
+                  <table
+                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                  >
+                    <thead class="bg-gray-50 dark:bg-gray-800">
+                      <tr>
+                        <th
+                          scope="col"
+                          class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        >
+                          Host
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        >
+                          Client Mail
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                          <span class="sr-only">{$LL.actions()}</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
                     >
-                      <thead class="bg-gray-50 dark:bg-gray-800">
-                        <tr>
-                          <th
-                            scope="col"
-                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      {#each jiraInstances as ji, i}
+                        <tr
+                          class:bg-slate-100="{i % 2 !== 0}"
+                          class:dark:bg-gray-800="{i % 2 !== 0}"
+                          data-testid="apikey"
+                          data-apikeyid="{ji.id}"
+                        >
+                          <td
+                            class="px-6 py-4 whitespace-nowrap"
+                            data-testid="jira-host">{ji.host}</td
                           >
-                            Host
-                          </th>
-                          <th
-                            scope="col"
-                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          <td
+                            class="px-6 py-4 whitespace-nowrap"
+                            data-testid="jira-clientmail"
                           >
-                            Client Mail
-                          </th>
-                          <th scope="col" class="relative px-6 py-3">
-                            <span class="sr-only">{$LL.actions()}</span>
-                          </th>
+                            {ji.client_mail}
+                          </td>
+                          <td
+                            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                          >
+                            <HollowButton
+                              color="red"
+                              onClick="{deleteJiraInstance(ji.id)}"
+                              testid="jira-delete"
+                            >
+                              {$LL.delete()}
+                            </HollowButton>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody
-                        class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
-                      >
-                        {#each jiraInstances as ji, i}
-                          <tr
-                            class:bg-slate-100="{i % 2 !== 0}"
-                            class:dark:bg-gray-800="{i % 2 !== 0}"
-                            data-testid="apikey"
-                            data-apikeyid="{ji.id}"
-                          >
-                            <td
-                              class="px-6 py-4 whitespace-nowrap"
-                              data-testid="jira-host">{ji.host}</td
-                            >
-                            <td
-                              class="px-6 py-4 whitespace-nowrap"
-                              data-testid="jira-clientmail"
-                            >
-                              {ji.client_mail}
-                            </td>
-                            <td
-                              class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                            >
-                              <HollowButton
-                                color="red"
-                                onClick="{deleteJiraInstance(ji.id)}"
-                                testid="jira-delete"
-                              >
-                                {$LL.delete()}
-                              </HollowButton>
-                            </td>
-                          </tr>
-                        {/each}
-                      </tbody>
-                    </table>
-                  {/if}
-                </div>
+                      {/each}
+                    </tbody>
+                  </table>
+                {/if}
               </div>
             </div>
           </div>
         </div>
-      {/if}
+      </div>
     </div>
 
     {#if !LdapEnabled && !HeaderAuthEnabled}

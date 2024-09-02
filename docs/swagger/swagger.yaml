@@ -31,6 +31,19 @@ definitions:
     required:
     - content
     type: object
+  http.addUserRequestBody:
+    properties:
+      role:
+        enum:
+        - MEMBER
+        - ADMIN
+        type: string
+      user_id:
+        type: string
+    required:
+    - role
+    - user_id
+    type: object
   http.alertRequestBody:
     properties:
       active:
@@ -311,6 +324,13 @@ definitions:
         maximum: 9
         minimum: 1
         type: integer
+      phaseAutoAdvance:
+        type: boolean
+      phaseTimeLimitMin:
+        example: 10
+        maximum: 59
+        minimum: 0
+        type: integer
       retroName:
         example: sprint 10 retro
         type: string
@@ -374,7 +394,14 @@ definitions:
     required:
     - type
     type: object
-  http.teamAddUserRequestBody:
+  http.teamCreateRequestBody:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  http.teamInviteUserRequestBody:
     properties:
       email:
         type: string
@@ -386,13 +413,6 @@ definitions:
     required:
     - email
     - role
-    type: object
-  http.teamCreateRequestBody:
-    properties:
-      name:
-        type: string
-    required:
-    - name
     type: object
   http.teamResponse:
     properties:
@@ -463,8 +483,6 @@ definitions:
         type: string
       name:
         type: string
-      orgInviteId:
-        type: string
       password1:
         maxLength: 72
         minLength: 6
@@ -472,8 +490,6 @@ definitions:
       password2:
         maxLength: 72
         minLength: 6
-        type: string
-      teamInviteId:
         type: string
     required:
     - email
@@ -635,6 +651,8 @@ definitions:
         type: string
       name:
         type: string
+      organization_id:
+        type: string
       updatedDate:
         type: string
     type: object
@@ -649,6 +667,23 @@ definitions:
       id:
         type: string
       name:
+        type: string
+      pictureUrl:
+        type: string
+      role:
+        type: string
+    type: object
+  thunderdome.DepartmentUserInvite:
+    properties:
+      created_date:
+        type: string
+      department_id:
+        type: string
+      email:
+        type: string
+      expire_date:
+        type: string
+      invite_id:
         type: string
       role:
         type: string
@@ -755,6 +790,8 @@ definitions:
         type: string
       name:
         type: string
+      pictureUrl:
+        type: string
       rank:
         type: string
       spectator:
@@ -797,6 +834,12 @@ definitions:
       ownerId:
         type: string
       phase:
+        type: string
+      phase_auto_advance:
+        type: boolean
+      phase_time_limit_min:
+        type: integer
+      phase_time_start:
         type: string
       readyUsers:
         items:
@@ -882,6 +925,8 @@ definitions:
       id:
         type: string
       name:
+        type: string
+      pictureUrl:
         type: string
     type: object
   thunderdome.RetroVote:
@@ -1066,6 +1111,8 @@ definitions:
         type: string
       name:
         type: string
+      pictureUrl:
+        type: string
     type: object
   thunderdome.Subscription:
     properties:
@@ -1098,9 +1145,13 @@ definitions:
     properties:
       createdDate:
         type: string
+      department_id:
+        type: string
       id:
         type: string
       name:
+        type: string
+      organization_id:
         type: string
       updatedDate:
         type: string
@@ -1141,6 +1192,8 @@ definitions:
       id:
         type: string
       name:
+        type: string
+      pictureUrl:
         type: string
       role:
         type: string
@@ -1184,12 +1237,12 @@ definitions:
         type: string
       locale:
         type: string
-      mfaEnabled:
-        type: boolean
       name:
         type: string
       notificationsEnabled:
         type: boolean
+      picture:
+        type: string
       rank:
         type: string
       theme:
@@ -1220,6 +1273,36 @@ definitions:
       userId:
         type: string
       userName:
+        type: string
+    type: object
+  thunderdome.UserOrganization:
+    properties:
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      updatedDate:
+        type: string
+    type: object
+  thunderdome.UserTeam:
+    properties:
+      createdDate:
+        type: string
+      department_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: string
+      role:
+        type: string
+      updatedDate:
         type: string
     type: object
   thunderdome.Vote:
@@ -2802,6 +2885,45 @@ paths:
       summary: Get Organization
       tags:
       - organization
+    put:
+      description: Update organization
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: updated organization object
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Organization'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization
+      tags:
+      - organization
   /organizations/{orgId}/departments:
     get:
       description: get list of organizations departments
@@ -2926,6 +3048,153 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Department
+      tags:
+      - organization
+    put:
+      description: Update an organization department
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: deptId
+        required: true
+        type: string
+      - description: updated department object
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Department'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department
+      tags:
+      - organization
+  /organizations/{orgId}/departments/{departmentId}/invites:
+    get:
+      description: Get a list of user invites associated to the department
+      parameters:
+      - description: the org ID
+        in: path
+        name: organizationId
+        required: true
+        type: string
+      - description: the dept ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.DepartmentUserInvite'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Department User Invites
+      tags:
+      - organization
+    post:
+      description: Invite a department User
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: new department user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamInviteUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Invite Department User
+      tags:
+      - organization
+  /organizations/{orgId}/departments/{departmentId}/invites/{inviteId}:
+    delete:
+      description: Delete user invite from department
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the dept ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: invite id
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Department User Invite
       tags:
       - organization
   /organizations/{orgId}/departments/{departmentId}/teams:
@@ -3065,7 +3334,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/http.teamAddUserRequestBody'
+          $ref: '#/definitions/http.addUserRequestBody'
       produces:
       - application/json
       responses:
@@ -3133,7 +3402,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/http.teamAddUserRequestBody'
+          $ref: '#/definitions/http.addUserRequestBody'
       produces:
       - application/json
       responses:
@@ -3227,11 +3496,11 @@ paths:
       - organization
   /organizations/{orgId}/invites:
     get:
-      description: Get a list of user invites associated to the team
+      description: Get a list of user invites associated to the organization
       parameters:
       - description: the org ID
         in: path
-        name: organizationId
+        name: orgId
         required: true
         type: string
       produces:
@@ -3250,7 +3519,41 @@ paths:
               type: object
       security:
       - ApiKeyAuth: []
-      summary: Get Team User Invites
+      summary: Get Organization User Invites
+      tags:
+      - organization
+    post:
+      description: Invite user to organization
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new organization user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamInviteUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Invite Org User
       tags:
       - organization
   /organizations/{orgId}/invites/{inviteId}:
@@ -3417,7 +3720,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/http.teamAddUserRequestBody'
+          $ref: '#/definitions/http.addUserRequestBody'
       produces:
       - application/json
       responses:
@@ -3468,40 +3771,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Organization Users
-      tags:
-      - organization
-    post:
-      description: Add user to organization
-      parameters:
-      - description: organization id
-        in: path
-        name: orgId
-        required: true
-        type: string
-      - description: new organization user object
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/http.teamAddUserRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Add Org User
       tags:
       - organization
   /organizations/{orgId}/users/{userId}:
@@ -4269,6 +4538,45 @@ paths:
       summary: Get Team
       tags:
       - team
+    put:
+      description: Updates a team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: updated team object
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Team'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team
+      tags:
+      - team
   /teams/{teamId}/battles:
     get:
       description: Get a list of battles associated to the team
@@ -4620,6 +4928,40 @@ paths:
       summary: Get Team User Invites
       tags:
       - team
+    post:
+      description: Invites a user to the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new team user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamInviteUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Invite Team User
+      tags:
+      - team
   /teams/{teamId}/invites/{inviteId}:
     delete:
       description: Delete a user invite from the team
@@ -4844,40 +5186,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Team users
-      tags:
-      - team
-    post:
-      description: Adds a user to the team
-      parameters:
-      - description: the team ID
-        in: path
-        name: teamId
-        required: true
-        type: string
-      - description: new team user object
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/http.teamAddUserRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Add Team User
       tags:
       - team
   /teams/{teamId}/users/{userId}:
@@ -5462,6 +5770,96 @@ paths:
       summary: Create Poker Game
       tags:
       - poker
+  /users/{userId}/invite/department/{inviteId}:
+    post:
+      description: Processes an department invite for the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: User Department Invite
+      tags:
+      - user
+  /users/{userId}/invite/organization/{inviteId}:
+    post:
+      description: Processes an organization invite for the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: User Organization Invite
+      tags:
+      - user
+  /users/{userId}/invite/team/{inviteId}:
+    post:
+      description: Processes a team invite for the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: User Team Invite
+      tags:
+      - user
   /users/{userId}/jira-instances:
     get:
       description: get list of Jira instances associated to user
@@ -5664,7 +6062,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/thunderdome.Organization'
+                    $ref: '#/definitions/thunderdome.UserOrganization'
                   type: array
               type: object
         "403":
@@ -6025,7 +6423,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/thunderdome.Team'
+                    $ref: '#/definitions/thunderdome.UserTeam'
                   type: array
               type: object
         "403":
