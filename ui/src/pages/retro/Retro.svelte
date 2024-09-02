@@ -339,17 +339,6 @@
     selectedAction = retro.actionItems.find(r => r.id === id);
   };
 
-  const handleItemAdd = (type, content) => {
-    sendSocketEvent(
-      `create_item`,
-      JSON.stringify({
-        type,
-        content,
-        phase: retro.phase,
-      }),
-    );
-  };
-
   const handleUserReady = userId => () => {
     sendSocketEvent(`user_ready`, userId);
   };
@@ -373,17 +362,6 @@
       JSON.stringify({
         groupId,
         name,
-      }),
-    );
-  };
-
-  const handleItemDelete = (type, id) => () => {
-    sendSocketEvent(
-      `delete_item`,
-      JSON.stringify({
-        id,
-        type,
-        phase: retro.phase,
       }),
     );
   };
@@ -809,33 +787,33 @@
           {#if retro.phase === 'brainstorm'}
             <div class="w-full grid gap-4 grid-cols-3">
               <ItemForm
-                handleSubmit="{handleItemAdd}"
-                handleDelete="{handleItemDelete}"
+                sendSocketEvent="{sendSocketEvent}"
                 itemType="worked"
                 newItemPlaceholder="{$LL.retroWorkedPlaceholder()}"
                 phase="{retro.phase}"
                 isFacilitator="{isFacilitator}"
                 items="{workedItems}"
+                users="{retro.users}"
                 feedbackVisibility="{retro.brainstormVisibility}"
               />
               <ItemForm
-                handleSubmit="{handleItemAdd}"
-                handleDelete="{handleItemDelete}"
+                sendSocketEvent="{sendSocketEvent}"
                 itemType="improve"
                 newItemPlaceholder="{$LL.retroImprovePlaceholder()}"
                 phase="{retro.phase}"
                 isFacilitator="{isFacilitator}"
                 items="{improveItems}"
+                users="{retro.users}"
                 feedbackVisibility="{retro.brainstormVisibility}"
               />
               <ItemForm
-                handleSubmit="{handleItemAdd}"
-                handleDelete="{handleItemDelete}"
+                sendSocketEvent="{sendSocketEvent}"
                 itemType="question"
                 newItemPlaceholder="{$LL.retroQuestionPlaceholder()}"
                 phase="{retro.phase}"
                 isFacilitator="{isFacilitator}"
                 items="{questionItems}"
+                users="{retro.users}"
                 feedbackVisibility="{retro.brainstormVisibility}"
               />
             </div>

@@ -879,13 +879,13 @@ definitions:
     type: object
   thunderdome.RetroActionComment:
     properties:
+      action_id:
+        type: string
       comment:
         type: string
       created_date:
         type: string
       id:
-        type: string
-      retro_id:
         type: string
       updated_date:
         type: string
@@ -901,6 +901,10 @@ definitions:
     type: object
   thunderdome.RetroItem:
     properties:
+      comments:
+        items:
+          $ref: '#/definitions/thunderdome.RetroItemComment'
+        type: array
       content:
         type: string
       groupId:
@@ -910,6 +914,21 @@ definitions:
       type:
         type: string
       userId:
+        type: string
+    type: object
+  thunderdome.RetroItemComment:
+    properties:
+      comment:
+        type: string
+      created_date:
+        type: string
+      id:
+        type: string
+      item_id:
+        type: string
+      updated_date:
+        type: string
+      user_id:
         type: string
     type: object
   thunderdome.RetroUser:

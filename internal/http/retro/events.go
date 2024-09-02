@@ -31,6 +31,71 @@ func (b *Service) CreateItem(ctx context.Context, RetroID string, UserID string,
 	return msg, nil, false
 }
 
+// ItemCommentAdd creates a retro item comment
+func (b *Service) ItemCommentAdd(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		ItemID  string `json:"item_id"`
+		Comment string `json:"comment"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
+
+	items, err := b.RetroService.ItemCommentAdd(RetroID, rs.ItemID, UserID, rs.Comment)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := createSocketEvent("items_updated", string(updatedItems), "")
+
+	return msg, nil, false
+}
+
+// ItemCommentEdit updates a retro item comment
+func (b *Service) ItemCommentEdit(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		CommentID string `json:"comment_id"`
+		Comment   string `json:"comment"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
+
+	items, err := b.RetroService.ItemCommentEdit(RetroID, rs.CommentID, rs.Comment)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := createSocketEvent("items_updated", string(updatedItems), "")
+
+	return msg, nil, false
+}
+
+// ItemCommentDelete deletes a retro item comment
+func (b *Service) ItemCommentDelete(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		CommentID string `json:"comment_id"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
+
+	items, err := b.RetroService.ItemCommentDelete(RetroID, rs.CommentID)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := createSocketEvent("items_updated", string(updatedItems), "")
+
+	return msg, nil, false
+}
+
 // UserMarkReady marks a user as ready to advance to next phase
 func (b *Service) UserMarkReady(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	readyUsers, err := b.RetroService.MarkUserReady(RetroID, UserID)

@@ -1,6 +1,7 @@
 package retro
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -71,16 +72,32 @@ func (d *Service) GetRetroItems(RetroID string) []*thunderdome.RetroItem {
 	var items = make([]*thunderdome.RetroItem, 0)
 
 	itemRows, itemsErr := d.DB.Query(
-		`SELECT id, user_id, group_id, content, type FROM thunderdome.retro_item WHERE retro_id = $1 ORDER BY created_date ASC;`,
+		`SELECT
+				ri.id, ri.user_id, ri.group_id, ri.content, ri.type,
+				COALESCE(
+					json_agg(rc ORDER BY rc.created_date) FILTER (WHERE rc.id IS NOT NULL), '[]'
+				) AS comments
+			FROM thunderdome.retro_item ri
+			LEFT JOIN thunderdome.retro_item_comment rc ON rc.item_id = ri.id
+			WHERE ri.retro_id = $1
+			GROUP BY ri.id, ri.created_date
+			ORDER BY ri.created_date ASC;`,
 		RetroID,
 	)
 	if itemsErr == nil {
 		defer itemRows.Close()
 		for itemRows.Next() {
-			var ri = &thunderdome.RetroItem{}
-			if err := itemRows.Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type); err != nil {
+			var comments string
+			var ri = &thunderdome.RetroItem{
+				Comments: make([]*thunderdome.RetroItemComment, 0),
+			}
+			if err := itemRows.Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type, &comments); err != nil {
 				d.Logger.Error("get retro items query scan error", zap.Error(err))
 			} else {
+				jsonErr := json.Unmarshal([]byte(comments), &ri.Comments)
+				if jsonErr != nil {
+					d.Logger.Error("retro item comments json error", zap.Error(jsonErr))
+				}
 				items = append(items, ri)
 			}
 		}
@@ -215,4 +232,49 @@ func (d *Service) GroupUserSubtractVote(RetroID string, GroupID string, UserID s
 	votes := d.GetRetroVotes(RetroID)
 
 	return votes, nil
+}
+
+// ItemCommentAdd adds a comment to a retro item
+func (d *Service) ItemCommentAdd(RetroID string, ItemID string, UserID string, Comment string) ([]*thunderdome.RetroItem, error) {
+	if _, err := d.DB.Exec(
+		`INSERT INTO thunderdome.retro_item_comment (item_id, user_id, comment) VALUES ($1, $2, $3);`,
+		ItemID,
+		UserID,
+		Comment,
+	); err != nil {
+		d.Logger.Error("ItemCommentAdd error", zap.Error(err))
+	}
+
+	items := d.GetRetroItems(RetroID)
+
+	return items, nil
+}
+
+// ItemCommentEdit edits a retro item comment
+func (d *Service) ItemCommentEdit(RetroID string, CommentID string, Comment string) ([]*thunderdome.RetroItem, error) {
+	if _, err := d.DB.Exec(
+		`UPDATE thunderdome.retro_item_comment SET comment = $2 WHERE id = $1;`,
+		CommentID,
+		Comment,
+	); err != nil {
+		d.Logger.Error("ItemCommentEdit error", zap.Error(err))
+	}
+
+	items := d.GetRetroItems(RetroID)
+
+	return items, nil
+}
+
+// ItemCommentDelete deletes a retro item comment
+func (d *Service) ItemCommentDelete(RetroID string, CommentID string) ([]*thunderdome.RetroItem, error) {
+	if _, err := d.DB.Exec(
+		`DELETE FROM thunderdome.retro_item_comment WHERE id = $1;`,
+		CommentID,
+	); err != nil {
+		d.Logger.Error("ItemCommentDelete error", zap.Error(err))
+	}
+
+	items := d.GetRetroItems(RetroID)
+
+	return items, nil
 }
