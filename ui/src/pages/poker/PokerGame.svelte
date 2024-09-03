@@ -571,6 +571,7 @@
           eventTag="{eventTag}"
           notifications="{notifications}"
           xfetch="{xfetch}"
+          gameId="{battle.id}"
         />
       </div>
 

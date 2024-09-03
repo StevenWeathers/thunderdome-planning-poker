@@ -19,6 +19,7 @@
   export let eventTag;
   export let notifications;
   export let xfetch;
+  export let gameId = '';
 
   let defaultPlan = {
     id: '',
@@ -459,5 +460,6 @@
     handlePlanAdd="{handlePlanAdd}"
     xfetch="{xfetch}"
     eventTag="{eventTag}"
+    gameId="{gameId}"
   />
 {/if}
