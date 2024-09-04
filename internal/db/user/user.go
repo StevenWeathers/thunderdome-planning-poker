@@ -162,7 +162,7 @@ func (d *Service) GetUserByEmail(ctx context.Context, UserEmail string) (*thunde
 
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT u.id, u.name, u.email, u.type, c.verified, u.disabled
-				FROM thunderdome.auth_crednetial c
+				FROM thunderdome.auth_credential c
 				JOIN thunderdome.users u ON c.user_id = u.id
 				WHERE c.email = $1`,
 		db.SanitizeEmail(UserEmail),
