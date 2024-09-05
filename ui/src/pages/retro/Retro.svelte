@@ -66,6 +66,7 @@
   let JoinPassRequired = false;
   let joinPasscode = '';
   let voteLimitReached = false;
+  let allUsersVoted = false;
   let showEditRetro = false;
   let phaseTimeStart = new Date();
   let phaseTimeLimitMin = 0;
@@ -83,12 +84,15 @@
     }, {});
     let userVoteCount = 0;
     let result = [];
+    let voteCount = 0;
+    const playerCount = retro.users.filter(u => u.active).length;
 
     retro.items.map(item => {
       groupMap[item.groupId].items.push(item);
     });
 
     retro.votes.map(vote => {
+      ++voteCount;
       groupMap[vote.groupId].votes.push(vote.userId);
       if (vote.userId === $user.id) {
         ++userVoteCount;
@@ -97,6 +101,8 @@
     });
 
     voteLimitReached = userVoteCount === retro.maxVotes;
+    allUsersVoted = voteCount === playerCount * retro.maxVotes;
+    phaseReadyCheck();
 
     result = Object.values(groupMap);
     if (retro.phase === 'action' || retro.phase === 'completed') {
@@ -527,19 +533,25 @@
     const activeUsers = retro.users.filter(u => u.active);
     let allReady = retro.readyUsers.length === activeUsers.length;
 
-    if (
-      isFacilitator &&
-      retro.phase_auto_advance &&
-      retro.phase === 'brainstorm' &&
-      allReady
-    ) {
-      sendSocketEvent(
-        'phase_all_ready',
-        JSON.stringify({
-          phase: 'group',
-        }),
-      );
-      eventTag('phase_all_ready', 'retro', '');
+    if (isFacilitator && retro.phase_auto_advance) {
+      if (retro.phase === 'brainstorm' && allReady) {
+        sendSocketEvent(
+          'phase_all_ready',
+          JSON.stringify({
+            phase: 'group',
+          }),
+        );
+        eventTag('phase_all_ready', 'retro', '');
+      }
+      if (allUsersVoted) {
+        sendSocketEvent(
+          'phase_all_ready',
+          JSON.stringify({
+            phase: 'action',
+          }),
+        );
+        eventTag('phase_all_voted', 'retro', '');
+      }
     }
   }
 
