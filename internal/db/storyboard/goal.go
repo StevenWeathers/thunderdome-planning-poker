@@ -62,7 +62,9 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
             sg.sort_order,
             sg.name,
             COALESCE(json_agg(to_jsonb(t) - 'goal_id' ORDER BY t.sort_order) FILTER (WHERE t.id IS NOT NULL), '[]') AS columns,
-            COALESCE(json_agg(to_jsonb(sgp) - 'goal_id') FILTER (WHERE sgp.goal_id IS NOT NULL), '[]') AS personas
+            (SELECT COALESCE(json_agg(to_jsonb(sp)) FILTER (WHERE gp.goal_id IS NOT NULL), '[]') AS personas
+            FROM thunderdome.storyboard_goal_persona gp
+            LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = gp.persona_id) as personas
         FROM thunderdome.storyboard_goal sg
         LEFT JOIN (
             SELECT
@@ -89,11 +91,6 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
             ) stss ON stss.column_id = sc.id
             GROUP BY sc.id
         ) t ON t.goal_id = sg.id
-        LEFT JOIN (
-            SELECT gp.goal_id, sp.*
-            FROM thunderdome.storyboard_goal_persona gp
-            LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = gp.persona_id
-        ) sgp ON sgp.goal_id = sg.id
         WHERE sg.storyboard_id = $1
         GROUP BY sg.id, sg.sort_order
         ORDER BY sg.sort_order;`,
