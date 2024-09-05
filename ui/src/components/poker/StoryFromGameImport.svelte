@@ -30,7 +30,7 @@
   }
 
   function getGameStories() {
-    if (selectedGameIdx === null) {
+    if (selectedGameIdx === '') {
       notifications.danger('Game not selected');
       return;
     }
@@ -57,7 +57,7 @@
 
 <div class="mb-4">
   <SelectInput
-    id="jirainstance"
+    id="selectedGame"
     bind:value="{selectedGameIdx}"
     on:change="{getGameStories}"
   >
