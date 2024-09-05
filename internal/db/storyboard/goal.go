@@ -70,15 +70,13 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
                 COALESCE(
                     json_agg(stss ORDER BY stss.sort_order) FILTER (WHERE stss.id IS NOT NULL), '[]'
                 ) AS stories,
-                COALESCE(
-                    json_agg(scp) FILTER (WHERE scp.column_id IS NOT NULL), '[]'
+                (SELECT COALESCE(
+                    json_agg(sp) FILTER (WHERE cp.column_id IS NOT NULL), '[]'
                 ) AS personas
-            FROM thunderdome.storyboard_column sc
-            LEFT JOIN (
-                SELECT cp.column_id, sp.*
                 FROM thunderdome.storyboard_column_persona cp
                 LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = cp.persona_id
-            ) scp ON scp.column_id = sc.id
+                WHERE cp.column_id = sc.id) AS personas
+            FROM thunderdome.storyboard_column sc
             LEFT JOIN (
                 SELECT
                     ss.*,
@@ -97,7 +95,7 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
             LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = gp.persona_id
         ) sgp ON sgp.goal_id = sg.id
         WHERE sg.storyboard_id = $1
-        GROUP BY sg.id
+        GROUP BY sg.id, sg.sort_order
         ORDER BY sg.sort_order;`,
 		StoryboardID,
 	)
