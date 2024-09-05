@@ -252,7 +252,7 @@
         data-storyid="{plan.id}"
       >
         <div class="w-full lg:w-1/3 mb-4 lg:mb-0">
-          <div class="inline-block font-bold align-middle dark:text-white">
+          <div class="inline-block font-bold align-middle dark:text-white mr-1">
             {#if plan.link !== ''}
               <a
                 href="{plan.link}"
@@ -275,7 +275,6 @@
             <svelte:component this="{priorities[plan.priority].icon}" />
             <span data-testid="plan-name">{plan.name}</span>
           </div>
-          &nbsp;
           {#if plan.points !== ''}
             <div
               class="inline-block font-bold text-green-600 dark:text-lime-400
