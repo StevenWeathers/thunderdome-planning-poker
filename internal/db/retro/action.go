@@ -117,13 +117,14 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 
 	actionRows, err := d.DB.Query(
 		`SELECT ra.id, ra.content, ra.completed, ra.retro_id,
-				COALESCE(
+				(SELECT COALESCE(
 					json_agg(rac ORDER BY rac.created_date) FILTER (WHERE rac.id IS NOT NULL), '[]'
-				) AS comments,
+				) AS comments
+				FROM thunderdome.retro_action_comment rac 
+				WHERE rac.action_id = ra.id) AS comments,
 				COALESCE(json_agg(json_build_object('id', u.id, 'name', u.name, 'email', COALESCE(u.email, ''), 'avatar', u.avatar))
  		 			FILTER (WHERE u.id IS NOT NULL), '[]') AS assignees
 				FROM thunderdome.retro_action ra
-				LEFT JOIN thunderdome.retro_action_comment rac ON rac.action_id = ra.id
 				LEFT JOIN thunderdome.retro_action_assignee as t ON t.action_id = ra.id
 				LEFT JOIN thunderdome.users u ON t.user_id = u.id
 				WHERE ra.retro_id IN (SELECT id FROM thunderdome.retro WHERE team_id = $1) AND ra.completed = $2
