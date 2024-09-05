@@ -87,35 +87,37 @@
       </div>
     </div>
 
-    <div class="w-full mb-4">
-      <div
-        class="text-red-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
-      >
-        {$LL.blockers()}
+    <div class="w-full md:grid md:grid-cols-2 md:gap-4">
+      <div class="mb-4">
+        <div
+          class="text-red-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+        >
+          {$LL.blockers()}
+        </div>
+        <div class="bg-white">
+          <Editor
+            content="{blockers}"
+            placeholder="{$LL.blockersPlaceholder()}"
+            id="blockers"
+            handleTextChange="{c => (blockers = c)}"
+          />
+        </div>
       </div>
-      <div class="bg-white">
-        <Editor
-          content="{blockers}"
-          placeholder="{$LL.blockersPlaceholder()}"
-          id="blockers"
-          handleTextChange="{c => (blockers = c)}"
-        />
-      </div>
-    </div>
 
-    <div class="w-full mb-4">
-      <div
-        class="text-green-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
-      >
-        {$LL.discuss()}
-      </div>
-      <div class="bg-white">
-        <Editor
-          content="{discuss}"
-          placeholder="{$LL.discussPlaceholder()}"
-          id="discuss"
-          handleTextChange="{c => (discuss = c)}"
-        />
+      <div class="mb-4">
+        <div
+          class="text-green-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+        >
+          {$LL.discuss()}
+        </div>
+        <div class="bg-white">
+          <Editor
+            content="{discuss}"
+            placeholder="{$LL.discussPlaceholder()}"
+            id="discuss"
+            handleTextChange="{c => (discuss = c)}"
+          />
+        </div>
       </div>
     </div>
 
