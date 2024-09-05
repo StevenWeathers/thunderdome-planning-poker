@@ -91,6 +91,11 @@
           Header: false,
         },
         {
+          Name: 'Import Poker Stories from Storyboards',
+          Included: false,
+          Header: false,
+        },
+        {
           Name: 'Future premium features',
           Included: false,
           Header: false,
@@ -171,6 +176,11 @@
         },
         {
           Name: 'Import Poker Stories from existing Games',
+          Included: true,
+          Header: false,
+        },
+        {
+          Name: 'Import Poker Stories from Storyboards',
           Included: true,
           Header: false,
         },
@@ -259,6 +269,11 @@
           Header: false,
         },
         {
+          Name: 'Import Poker Stories from Storyboards',
+          Included: true,
+          Header: false,
+        },
+        {
           Name: 'Future premium features',
           Included: true,
           Header: false,
@@ -339,6 +354,11 @@
         },
         {
           Name: 'Import Poker Stories from existing Games',
+          Included: true,
+          Header: false,
+        },
+        {
+          Name: 'Import Poker Stories from Storyboards',
           Included: true,
           Header: false,
         },
