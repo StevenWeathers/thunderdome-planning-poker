@@ -96,6 +96,11 @@
           Header: false,
         },
         {
+          Name: `Team Checkins show user's previous checkin during today's checkin`,
+          Included: false,
+          Header: false,
+        },
+        {
           Name: 'Future premium features',
           Included: false,
           Header: false,
@@ -181,6 +186,11 @@
         },
         {
           Name: 'Import Poker Stories from Storyboards',
+          Included: true,
+          Header: false,
+        },
+        {
+          Name: `Team Checkins show user's previous checkin during today's checkin`,
           Included: true,
           Header: false,
         },
@@ -274,6 +284,11 @@
           Header: false,
         },
         {
+          Name: `Team Checkins show user's previous checkin during today's checkin`,
+          Included: true,
+          Header: false,
+        },
+        {
           Name: 'Future premium features',
           Included: true,
           Header: false,
@@ -359,6 +374,11 @@
         },
         {
           Name: 'Import Poker Stories from Storyboards',
+          Included: true,
+          Header: false,
+        },
+        {
+          Name: `Team Checkins show user's previous checkin during today's checkin`,
           Included: true,
           Header: false,
         },
