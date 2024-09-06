@@ -4,6 +4,9 @@
   import LL from '../../i18n/i18n-svelte';
   import Editor from '../forms/Editor.svelte';
   import Toggle from '../forms/Toggle.svelte';
+  import { AppConfig, appRoutes } from '../../config';
+  import { user } from '../../stores';
+  import { onMount } from 'svelte';
 
   export let toggleCheckin = () => {};
   export let handleCheckin = () => {};
@@ -15,6 +18,20 @@
   export let blockers = '';
   export let discuss = '';
   export let goalsMet = true;
+  export let notifications;
+  export let xfetch;
+  export let eventTag;
+  export let teamPrefix = '';
+
+  let userSubscribed = false;
+  let lastCheckin = {
+    id: '',
+    yesterday: '',
+    today: '',
+    blockers: '',
+    discuss: '',
+    goalsMet: false,
+  };
 
   function onSubmit(e) {
     e.preventDefault();
@@ -38,10 +55,97 @@
       });
     }
   }
+
+  function getLastCheckin() {
+    xfetch(`${teamPrefix}/checkins/users/${userId}/last`)
+      .then(res => res.json())
+      .then(result => {
+        if (!result.data) {
+          return;
+        }
+        lastCheckin = result.data;
+      })
+      .catch(([err, response]) => {
+        if (response.status === 204) {
+          return;
+        }
+        notifications.danger('Error getting last checkin');
+        eventTag('checkin_last_error', 'checkin', '');
+      });
+  }
+
+  onMount(() => {
+    if (
+      !AppConfig.SubscriptionsEnabled ||
+      (AppConfig.SubscriptionsEnabled && $user.subscribed)
+    ) {
+      userSubscribed = true;
+      getLastCheckin();
+    }
+  });
 </script>
 
 <Modal closeModal="{toggleCheckin}" widthClasses="md:w-2/3">
   <form on:submit="{onSubmit}" name="teamCheckin" class="flex flex-wrap mt-8">
+    {#if userSubscribed}
+      {#if lastCheckin.id !== ''}
+        <div
+          class="w-full mb-4 p-4 border border-gray-300 dark:border-gray-600 rounded"
+        >
+          <div class="text-gray-500 dark:text-gray-300">
+            <div
+              class="mb-2 font-bold text-lg uppercase font-rajdhani tracking-wide border-b border-gray-200 dark:border-gray-700"
+            >
+              Last Checkin
+            </div>
+            <div class="w-full md:grid md:grid-cols-2 md:gap-4">
+              <div>
+                <div
+                  class="text-gray-500 dark:text-gray-300 uppercase font-rajdhani tracking-wide mb-2"
+                >
+                  {$LL.yesterday()}
+                </div>
+                <div>{@html lastCheckin.yesterday}</div>
+              </div>
+              <div>
+                <div
+                  class="text-gray-500 dark:text-gray-300 uppercase font-rajdhani tracking-wide mb-2"
+                >
+                  {$LL.today()}
+                </div>
+                <div>{@html lastCheckin.today}</div>
+              </div>
+              <div>
+                <div
+                  class="text-gray-500 dark:text-gray-300 uppercase font-rajdhani tracking-wide mb-2"
+                >
+                  {$LL.blockers()}
+                </div>
+                <div>{@html lastCheckin.blockers}</div>
+              </div>
+              <div>
+                <div
+                  class="text-gray-500 dark:text-gray-300 uppercase font-rajdhani tracking-wide mb-2"
+                >
+                  {$LL.discuss()}
+                </div>
+                <div>{@html lastCheckin.discuss}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/if}
+    {:else}
+      <div class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
+        <a
+          href="{appRoutes.subscriptionPricing}"
+          class="underline"
+          target="_blank">Subscribe</a
+        >
+        to see your last checkin for convenience.
+      </div>
+    {/if}
+
     <div class="w-full md:grid md:grid-cols-2 md:gap-4">
       <div>
         <div class="mb-2">
@@ -85,9 +189,7 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="w-full md:grid md:grid-cols-2 md:gap-4">
       <div class="mb-4">
         <div
           class="text-red-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"

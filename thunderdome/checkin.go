@@ -33,4 +33,5 @@ type CheckinDataSvc interface {
 	CheckinComment(ctx context.Context, TeamId string, CheckinId string, UserId string, Comment string) error
 	CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error
 	CheckinCommentDelete(ctx context.Context, CommentId string) error
+	CheckinLastByUser(ctx context.Context, TeamId string, UserId string) (*TeamCheckin, error)
 }

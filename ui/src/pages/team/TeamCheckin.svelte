@@ -739,6 +739,10 @@
         toggleCheckin="{toggleCheckin}"
         handleCheckin="{handleCheckin}"
         handleCheckinEdit="{handleCheckinEdit}"
+        xfetch="{xfetch}"
+        eventTag="{eventTag}"
+        notifications="{notifications}"
+        teamPrefix="{teamPrefix}"
       />
     {:else}
       <Checkin

@@ -203,6 +203,31 @@ func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc 
 	}
 }
 
+// subscribedUserOnly validates that the request was made by a subscribed user
+func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
+
+		if !s.Config.SubscriptionsEnabled {
+			h(w, r)
+			return
+		}
+
+		// admins can bypass active subscriber functions
+		if UserType != thunderdome.AdminUserType {
+			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, UserID)
+			if subscriberErr != nil {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
+				return
+			}
+		}
+
+		h(w, r)
+	}
+}
+
 // orgUserOnly validates that the request was made by a valid user of the organization
 func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
