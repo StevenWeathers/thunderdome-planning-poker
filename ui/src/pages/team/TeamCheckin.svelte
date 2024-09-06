@@ -323,7 +323,11 @@
         eventTag('socket_error', 'checkin', '');
       },
       onclose: e => {
-        if (e.code === 4004) {
+        if (e.code === 4005) {
+          eventTag('not_team_user', 'checkin', '', () => {
+            ws.close();
+          });
+        } else if (e.code === 4004) {
           eventTag('not_found', 'checkin', '', () => {
             router.route(appRoutes.teams);
           });
@@ -739,6 +743,10 @@
         toggleCheckin="{toggleCheckin}"
         handleCheckin="{handleCheckin}"
         handleCheckinEdit="{handleCheckinEdit}"
+        xfetch="{xfetch}"
+        eventTag="{eventTag}"
+        notifications="{notifications}"
+        teamPrefix="{teamPrefix}"
       />
     {:else}
       <Checkin

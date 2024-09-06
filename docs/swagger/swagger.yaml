@@ -4919,6 +4919,36 @@ paths:
       summary: Delete Team Checkin Comment
       tags:
       - team
+  /teams/{teamId}/checkins/users/{userId}/last:
+    get:
+      description: Get Users last checkin for team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the user id to get last checkin for
+        in: path
+        name: userId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.TeamCheckin'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Users last checkin for team
+      tags:
+      - team
   /teams/{teamId}/invites:
     get:
       description: Get a list of user invites associated to the team

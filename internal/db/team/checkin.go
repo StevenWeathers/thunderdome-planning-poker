@@ -90,6 +90,39 @@ func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date st
 	return Checkins, err
 }
 
+// CheckinLastByUser gets the last checkin by a user
+func (d *CheckinService) CheckinLastByUser(ctx context.Context, TeamId string, UserId string) (*thunderdome.TeamCheckin, error) {
+	var checkin thunderdome.TeamCheckin
+
+	err := d.DB.QueryRowContext(ctx, `SELECT
+ 		tc.id, COALESCE(tc.yesterday, ''), COALESCE(tc.today, ''),
+ 		COALESCE(tc.blockers, ''), coalesce(tc.discuss, ''),
+ 		tc.goals_met, tc.created_date, tc.updated_date
+		FROM thunderdome.team_checkin tc
+		WHERE tc.team_id = $1 AND tc.user_id = $2
+		ORDER BY tc.created_date DESC LIMIT 1;
+		`,
+		TeamId,
+		UserId,
+	).Scan(
+		&checkin.Id,
+		&checkin.Yesterday,
+		&checkin.Today,
+		&checkin.Blockers,
+		&checkin.Discuss,
+		&checkin.GoalsMet,
+		&checkin.CreatedDate,
+		&checkin.UpdatedDate)
+
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf("NO_LAST_CHECKIN")
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &checkin, err
+}
+
 // CheckinCreate creates a team checkin
 func (d *CheckinService) CheckinCreate(
 	ctx context.Context,

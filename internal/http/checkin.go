@@ -60,6 +60,50 @@ func (s *Service) handleCheckinsGet() http.HandlerFunc {
 	}
 }
 
+// handleCheckinLastByUser gets the last checkin by user
+// @Summary      Get Users last checkin for team
+// @Description  Get Users last checkin for team
+// @Tags         team
+// @Produce      json
+// @Param        teamId  path    string  true   "the team ID"
+// @Param        userId      path   string  false  "the user id to get last checkin for"
+// @Success      200     object  standardJsonResponse{data=thunderdome.TeamCheckin}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/checkins/users/{userId}/last [get]
+func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		UserID := vars["userId"]
+
+		Checkin, err := s.CheckinDataSvc.CheckinLastByUser(ctx, TeamID, UserID)
+		if err != nil && err.Error() != "NO_LAST_CHECKIN" {
+			s.Logger.Ctx(ctx).Error("handleCheckinLastByUser error", zap.Error(err),
+				zap.String("team_id", TeamID),
+				zap.String("user_id", UserID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		} else if err != nil && err.Error() == "NO_LAST_CHECKIN" {
+			s.Logger.Ctx(ctx).Warn("handleCheckinLastByUser NO_LAST_CHECKIN",
+				zap.String("team_id", TeamID),
+				zap.String("user_id", UserID),
+				zap.String("session_user_id", SessionUserID))
+			s.Success(w, r, http.StatusNoContent, nil, nil)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, Checkin, nil)
+	}
+}
+
 type checkinCreateRequestBody struct {
 	UserId    string `json:"userId" validate:"required,uuid"`
 	Yesterday string `json:"yesterday"`
