@@ -32,8 +32,8 @@ body:
       description: Was this bug experienced on your self hosted instance of Thunderdome?
       multiple: false
       options:
-        - Yes
-        - No
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: input
