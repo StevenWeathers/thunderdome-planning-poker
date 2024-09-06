@@ -258,9 +258,22 @@ func (d *Service) RetroGetByUser(UserID string, Limit int, Offset int) ([]*thund
 	var Count int
 
 	e := d.DB.QueryRow(`
-		SELECT COUNT(*) FROM thunderdome.retro r
-		LEFT JOIN thunderdome.retro_user u ON r.id = u.retro_id
-		WHERE u.user_id = $1 AND u.abandoned = false;
+		WITH user_teams AS (
+			SELECT t.id FROM thunderdome.team_user tu
+			LEFT JOIN thunderdome.team t ON t.id = tu.team_id
+			WHERE tu.user_id = $1
+		),
+		team_retros AS (
+			SELECT id FROM thunderdome.retro WHERE team_id IN (SELECT id FROM user_teams)
+		),
+		user_retros AS (
+			SELECT u.retro_id AS id FROM thunderdome.retro_user u
+			WHERE u.user_id = $1 AND u.abandoned = false
+		),
+		retros AS (
+			SELECT id from user_retros UNION ALL SELECT id FROM team_retros
+		)
+		SELECT COUNT(*) FROM retros;
 	`, UserID).Scan(
 		&Count,
 	)

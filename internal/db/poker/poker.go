@@ -329,9 +329,22 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 	var games = make([]*thunderdome.Poker, 0)
 
 	e := d.DB.QueryRow(`
-		SELECT COUNT(*) FROM thunderdome.poker b
-		LEFT JOIN thunderdome.poker_user bw ON b.id = bw.poker_id
-		WHERE bw.user_id = $1 AND bw.abandoned = false;
+		WITH user_teams AS (
+			SELECT t.id FROM thunderdome.team_user tu
+			LEFT JOIN thunderdome.team t ON t.id = tu.team_id
+			WHERE tu.user_id = $1
+		),
+		team_games AS (
+			SELECT id FROM thunderdome.poker WHERE team_id IN (SELECT id FROM user_teams)
+		),
+		user_games AS (
+			SELECT u.poker_id AS id FROM thunderdome.poker_user u
+			WHERE u.user_id = $1 AND u.abandoned = false
+		),
+		games AS (
+			SELECT id from user_games UNION ALL SELECT id FROM team_games
+		)
+		SELECT COUNT(*) FROM games;
 	`, UserID).Scan(
 		&Count,
 	)

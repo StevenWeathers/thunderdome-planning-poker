@@ -221,9 +221,22 @@ func (d *Service) GetStoryboardsByUser(UserID string, Limit int, Offset int) ([]
 	var storyboards = make([]*thunderdome.Storyboard, 0)
 
 	e := d.DB.QueryRow(`
-		SELECT COUNT(*) FROM thunderdome.storyboard s
-		LEFT JOIN thunderdome.storyboard_user u ON s.id = u.storyboard_id
-		WHERE u.user_id = $1 AND u.abandoned = false;
+		WITH user_teams AS (
+			SELECT t.id FROM thunderdome.team_user tu
+			LEFT JOIN thunderdome.team t ON t.id = tu.team_id
+			WHERE tu.user_id = $1
+		),
+		team_storyboards AS (
+			SELECT id FROM thunderdome.storyboard WHERE team_id IN (SELECT id FROM user_teams)
+		),
+		user_storyboards AS (
+			SELECT u.storyboard_id AS id FROM thunderdome.storyboard_user u
+			WHERE u.user_id = $1 AND u.abandoned = false
+		),
+		storyboards AS (
+			SELECT id from user_storyboards UNION ALL SELECT id FROM team_storyboards
+		)
+		SELECT COUNT(*) FROM storyboards;
 	`, UserID).Scan(
 		&Count,
 	)
