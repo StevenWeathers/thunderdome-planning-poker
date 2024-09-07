@@ -49,6 +49,7 @@ type AppConfig struct {
 	RepoURL                   string
 	SubscriptionsEnabled      bool
 	Subscription              SubscriptionConfig
+	RetroDefaultTemplateID    string
 }
 
 type UIConfig struct {

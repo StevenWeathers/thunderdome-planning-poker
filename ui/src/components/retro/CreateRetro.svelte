@@ -25,7 +25,9 @@
   let teams = [];
   let selectedTeam = '';
   let phaseTimeLimitMin = 0;
+  let templateId = '';
   let phaseAutoAdvance = true;
+  let publicTemplates = [];
 
   /** @type {TextInput} */
   let retroNameTextInput;
@@ -56,13 +58,13 @@
 
     const body = {
       retroName,
-      format: 'worked_improve_question',
       joinCode,
       facilitatorCode,
       maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
       phaseTimeLimitMin: parseInt(`${phaseTimeLimitMin}`, 10),
       phaseAutoAdvance,
+      templateId,
     };
 
     if (selectedTeam !== '') {
@@ -101,11 +103,24 @@
       });
   }
 
+  function getTemplatesPublic() {
+    xfetch(`/api/retro-templates/public`)
+      .then(res => res.json())
+      .then(function (result) {
+        publicTemplates = result.data;
+        templateId = AppConfig.RetroDefaultTemplateID;
+      })
+      .catch(function () {
+        notifications.danger('error getting public templates');
+      });
+  }
+
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.register);
     }
     getTeams();
+    getTemplatesPublic();
 
     // Focus the retro name input field
     retroNameTextInput.focus();
@@ -156,6 +171,22 @@
       </SelectInput>
     </div>
   {/if}
+
+  <div class="mb-4">
+    <label
+      class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
+      for="templateId"
+    >
+      Retro Template
+    </label>
+    <SelectInput bind:value="{templateId}" id="templateId" name="templateId">
+      {#each publicTemplates as template}
+        <option value="{template.id}">
+          {template.name}
+        </option>
+      {/each}
+    </SelectInput>
+  </div>
 
   <div class="mb-4">
     <label

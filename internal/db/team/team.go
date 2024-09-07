@@ -411,7 +411,7 @@ func (d *Service) TeamDelete(ctx context.Context, TeamID string) error {
 func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Retro {
 	var retros = make([]*thunderdome.Retro, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT r.id, r.name, r.format, r.phase
+		`SELECT r.id, r.name, r.template_id, r.phase
         FROM thunderdome.retro r
         WHERE r.team_id = $1
         ORDER BY r.created_date DESC
@@ -430,7 +430,7 @@ func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, O
 			if err := rows.Scan(
 				&tb.Id,
 				&tb.Name,
-				&tb.Format,
+				&tb.TemplateID,
 				&tb.Phase,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_retro_list query scan error", zap.Error(err))

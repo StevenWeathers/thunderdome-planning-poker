@@ -1,22 +1,25 @@
 <script lang="ts">
-  import SmileCircle from '../icons/SmileCircleIcon.svelte';
-  import FrownCircle from '../icons/FrownCircleIcon.svelte';
-  import QuestionCircle from '../icons/QuestionCircleIcon.svelte';
+  import SmileCircleIcon from '../icons/SmileCircleIcon.svelte';
+  import FrownCircleIcon from '../icons/FrownCircleIcon.svelte';
+  import QuestionCircleIcon from '../icons/QuestionCircleIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import TrashIcon from '../icons/TrashIcon.svelte';
   import CommentIcon from '../icons/CommentIcon.svelte';
   import ItemComments from './ItemComments.svelte';
+  import AngryCircleIcon from '../icons/AngryCircleIcon.svelte';
 
   export let sendSocketEvent = (event: string, value: any) => {};
-  export let itemType = 'worked';
+  export let itemType = '';
   export let content = '';
-  export let newItemPlaceholder = 'What worked well...';
+  export let newItemPlaceholder = '';
   export let phase = 'brainstorm';
   export let isFacilitator = false;
   export let items = [];
   export let users = [];
   export let feedbackVisibility = 'visible';
+  export let icon = '';
+  export let color = 'blue';
 
   let showComments = false;
   let selectedItemId = null;
@@ -54,15 +57,34 @@
 
 <div class="">
   <div class="flex items-center mb-4">
-    <div class="flex-shrink pe-2">
-      {#if itemType === 'worked'}
-        <SmileCircle class="w-8 h-8 text-green-500 dark:text-lime-400" />
-      {:else if itemType === 'improve'}
-        <FrownCircle class="w-8 h-8 text-red-500" />
-      {:else if itemType === 'question'}
-        <QuestionCircle class="w-8 h-8 text-blue-500 dark:text-sky-400" />
-      {/if}
-    </div>
+    {#if icon !== ''}
+      <div
+        class="flex-shrink pe-2"
+        class:text-green-400="{color === 'green'}"
+        class:dark:text-lime-400="{color === 'green'}"
+        class:text-red-500="{color === 'red'}"
+        class:text-blue-400="{color === 'blue'}"
+        class:dark:text-sky-400="{color === 'blue'}"
+        class:text-yellow-500="{color === 'yellow'}"
+        class:dark:text-yellow-400="{color === 'yellow'}"
+        class:text-orange-500="{color === 'orange'}"
+        class:dark:text-orange-400="{color === 'orange'}"
+        class:text-teal-500="{color === 'teal'}"
+        class:dark:text-teal-400="{color === 'teal'}"
+        class:text-indigo-500="{color === 'purple'}"
+        class:dark:text-indigo-400="{color === 'purple'}"
+      >
+        {#if icon === 'smiley'}
+          <SmileCircleIcon class="w-8 h-8" />
+        {:else if icon === 'frown'}
+          <FrownCircleIcon class="w-8 h-8" />
+        {:else if icon === 'question'}
+          <QuestionCircleIcon class="w-8 h-8" />
+        {:else if icon === 'angry'}
+          <AngryCircleIcon class="w-8 h-8" />
+        {/if}
+      </div>
+    {/if}
     <div class="flex-grow">
       <form on:submit="{handleFormSubmit}" class="flex">
         <input
@@ -82,14 +104,22 @@
     </div>
   </div>
   <div>
-    {#each items as item}
+    {#each items.filter(i => i.type === itemType) as item}
       <div
         class="p-2 mb-2 bg-white dark:bg-gray-800 shadow item-list-item border-s-4"
-        class:border-green-400="{item.type === 'worked'}"
-        class:dark:border-lime-400="{item.type === 'worked'}"
-        class:border-red-500="{item.type === 'improve'}"
-        class:border-blue-400="{item.type === 'question'}"
-        class:dark:border-sky-400="{item.type === 'question'}"
+        class:border-green-400="{color === 'green'}"
+        class:dark:border-lime-400="{color === 'green'}"
+        class:border-red-500="{color === 'red'}"
+        class:border-blue-400="{color === 'blue'}"
+        class:dark:border-sky-400="{color === 'blue'}"
+        class:border-yellow-500="{color === 'yellow'}"
+        class:dark:border-yellow-400="{color === 'yellow'}"
+        class:border-orange-500="{color === 'orange'}"
+        class:dark:border-orange-400="{color === 'orange'}"
+        class:border-teal-500="{color === 'teal'}"
+        class:dark:border-teal-400="{color === 'teal'}"
+        class:border-indigo-500="{color === 'purple'}"
+        class:dark:border-indigo-400="{color === 'purple'}"
         data-itemType="{itemType}"
         data-itemId="{item.id}"
       >

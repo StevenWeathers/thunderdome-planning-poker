@@ -9,23 +9,27 @@ import (
 )
 
 // SendRetroOverview sends the retro overview (items, action items) email to attendees
-func (s *Service) SendRetroOverview(retro *thunderdome.Retro, UserName string, UserEmail string) error {
+func (s *Service) SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, UserName string, UserEmail string) error {
+	columnMap := make(map[string]string)
+	var columnsList string
+	for _, column := range template.Format.Columns {
+		columnMap[column.Name] = fmt.Sprintf(`
+## %s
+
+`, column.Label)
+	}
 	var retroActionsList string
-	var retroWorksList string
-	var retroImproveList string
-	var retroQuestionList string
 	for _, action := range retro.ActionItems {
 		retroActionsList += formatRetroActionWithAssignee(action)
 	}
 	for _, item := range retro.Items {
-		switch item.Type {
-		case "worked":
-			retroWorksList += formatRetroItemForMarkdownList(item.Content)
-		case "improve":
-			retroImproveList += formatRetroItemForMarkdownList(item.Content)
-		case "question":
-			retroQuestionList += formatRetroItemForMarkdownList(item.Content)
-		}
+		columnMap[item.Type] += formatRetroItemForMarkdownList(item.Content)
+	}
+	for _, column := range template.Format.Columns {
+		columnsList += fmt.Sprintf(`
+%s
+
+`, columnMap[column.Name])
 	}
 
 	subject := fmt.Sprintf("Here is your %s Retro Overview", retro.Name)
@@ -38,15 +42,7 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, UserName string, U
 			FreeMarkdown: `
 ## Action Items
 ` + hermes.Markdown(retroActionsList) + `
-
-## Works
-` + hermes.Markdown(retroWorksList) + `
-
-## Needs Improvement
-` + hermes.Markdown(retroImproveList) + `
-
-## Questions
-` + hermes.Markdown(retroQuestionList) + `
+` + hermes.Markdown(columnsList) + `
 
 `,
 		},
@@ -58,6 +54,7 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, UserName string, U
 		return err
 	}
 
+	//s.Logger.Info("Sending Retro Overview Email", zap.String("email_body", emailBody))
 	sendErr := s.send(
 		UserName,
 		UserEmail,

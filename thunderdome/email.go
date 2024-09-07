@@ -15,5 +15,5 @@ type EmailService interface {
 	SendUserSubscriptionActive(UserName string, UserEmail string, SubscriptionType string) error
 	SendUserSubscriptionDeactivated(UserName string, UserEmail string, SubscriptionType string) error
 	// SendRetroOverview sends the retro overview (items, action items) email to attendees
-	SendRetroOverview(retro *Retro, UserName string, UserEmail string) error
+	SendRetroOverview(retro *Retro, template *RetroTemplate, UserName string, UserEmail string) error
 }

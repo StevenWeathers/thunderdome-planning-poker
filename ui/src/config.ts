@@ -23,6 +23,7 @@ const AppConfig =
         PathPrefix: '',
         DefaultLocale: 'en',
         Subscription: {},
+        RetroDefaultTemplateID: '',
       };
 
 const { PathPrefix, DefaultLocale } = AppConfig;

@@ -62,7 +62,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
 		AppDomain:     a.Config.AppDomain,
-	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.RetroDataSvc, a.Email)
+	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc,
+		a.RetroDataSvc, a.RetroTemplateDataSvc, a.Email)
 	storyboardSvc := storyboard.New(storyboard.Config{
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
@@ -304,10 +305,29 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments", a.userOnly(a.handleRetroActionCommentAdd())).Methods("POST")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments/{commentId}", a.userOnly(a.handleRetroActionCommentEdit())).Methods("PUT")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments/{commentId}", a.userOnly(a.handleRetroActionCommentDelete())).Methods("DELETE")
+
+		// Retro Templates
+		apiRouter.HandleFunc("/retro-templates/public", a.userOnly(a.handleGetPublicRetroTemplates())).Methods("GET")
+		// Organization templates
+		orgRouter.HandleFunc("/{organizationId}/retro-templates", a.userOnly(a.orgUserOnly(a.handleGetOrganizationRetroTemplates()))).Methods("GET")
+		//orgRouter.HandleFunc("/{organizationId}/retro-templates", a.userOnly(a.orgAdminOnly(a.handleCreateOrganizationRetroTemplate()))).Methods("POST")
+		//orgRouter.HandleFunc("/{organizationId}/retro-templates/{templateId}", a.userOnly(a.handleUpdateOrganizationRetroTemplate())).Methods("PUT")
+		//orgRouter.HandleFunc("/organizations/{organizationId}/retro-templates/{templateId}", a.userOnly(a.handleDeleteOrganizationRetroTemplate())).Methods("DELETE")
+		// Team templates
+		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates()))).Methods("GET")
+		//teamRouter.HandleFunc("/teams/{teamId}/retro-templates", a.userOnly(a.handleCreateTeamRetroTemplate())).Methods("POST")
+		//teamRouter.HandleFunc("/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.handleUpdateTeamRetroTemplate())).Methods("PUT")
+		//teamRouter.HandleFunc("/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.handleDeleteTeamRetroTemplate())).Methods("DELETE")
+		// General template operations
+		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleGetRetroTemplates()))).Methods("GET")
+		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleGetRetroTemplateById()))).Methods("GET")
+		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleRetroTemplateCreate()))).Methods("POST")
+		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateUpdate()))).Methods("PUT")
+		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateDelete()))).Methods("DELETE")
 		apiRouter.HandleFunc("/retro/{retroId}", retroSvc.ServeWs())
 	}
 	// storyboard(s)
-	if a.Config.FeatureRetro {
+	if a.Config.FeatureStoryboard {
 		userRouter.HandleFunc("/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleStoryboardCreate()))).Methods("POST")
 		userRouter.HandleFunc("/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleGetUserStoryboards()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/storyboards", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamStoryboards()))).Methods("GET")

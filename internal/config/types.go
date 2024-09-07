@@ -98,6 +98,7 @@ type AppConfig struct {
 	OrganizationsEnabled      bool     `mapstructure:"organizations_enabled"`
 	RequireTeams              bool     `mapstructure:"require_teams"`
 	SubscriptionsEnabled      bool     `mapstructure:"subscriptions_enabled"`
+	RetroDefaultTemplateID    string   `mapstructure:"retro_default_template_id"`
 }
 
 type Feature struct {

@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"go.uber.org/zap"
 )
 
 // CreateItem creates a retro item
@@ -534,7 +535,15 @@ func (b *Service) SendCompletedEmails(retro *thunderdome.Retro) {
 	for _, user := range users {
 		// don't send emails to guest's as they have no email
 		if user.Email != "" {
-			b.EmailService.SendRetroOverview(retro, user.Name, user.Email)
+			template, err := b.TemplateService.GetTemplateById(context.Background(), retro.TemplateID)
+			if err != nil {
+				b.logger.Error("Error getting template", zap.Error(err))
+			} else {
+				err := b.EmailService.SendRetroOverview(retro, template, user.Name, user.Email)
+				if err != nil {
+					b.logger.Error("Error sending retro overview email", zap.Error(err))
+				}
+			}
 		}
 	}
 }

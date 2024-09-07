@@ -27,6 +27,7 @@ type Retro struct {
 	Id                   string         `json:"id" db:"id"`
 	OwnerID              string         `json:"ownerId" db:"owner_id"`
 	Name                 string         `json:"name" db:"name"`
+	TemplateID           string         `json:"template_id" db:"template_id"`
 	Users                []*RetroUser   `json:"users"`
 	Groups               []*RetroGroup  `json:"groups"`
 	Items                []*RetroItem   `json:"items"`
@@ -34,7 +35,6 @@ type Retro struct {
 	Votes                []*RetroVote   `json:"votes"`
 	ReadyUsers           []string       `json:"readyUsers"`
 	Facilitators         []string       `json:"facilitators"`
-	Format               string         `json:"format" db:"format"`
 	Phase                string         `json:"phase" db:"phase"`
 	PhaseTimeLimitMin    int            `json:"phase_time_limit_min" db:"phase_time_limit_min"`
 	PhaseTimeStart       time.Time      `json:"phase_time_start" db:"phase_time_start"`
@@ -43,6 +43,7 @@ type Retro struct {
 	FacilitatorCode      string         `json:"facilitatorCode" db:"facilitator_code"`
 	MaxVotes             int            `json:"maxVotes" db:"max_votes"`
 	BrainstormVisibility string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
+	Template             RetroTemplate  `json:"template"`
 	TeamName             string         `json:"teamName"`
 	CreatedDate          string         `json:"createdDate" db:"created_date"`
 	UpdatedDate          string         `json:"updatedDate" db:"updated_date"`
@@ -101,8 +102,8 @@ type RetroVote struct {
 }
 
 type RetroDataSvc interface {
-	RetroCreate(OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool) (*Retro, error)
-	TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool) (*Retro, error)
+	RetroCreate(OwnerID string, RetroName string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool, TemplateID string) (*Retro, error)
+	TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool, TemplateID string) (*Retro, error)
 	EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
 	RetroGet(RetroID string, UserID string) (*Retro, error)
 	RetroGetByUser(UserID string, Limit int, Offset int) ([]*Retro, int, error)

@@ -88,6 +88,7 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("config.organizations_enabled", true)
 	viper.SetDefault("config.require_teams", false)
 	viper.SetDefault("config.subscriptions_enabled", false)
+	viper.SetDefault("config.retro_default_template_id", "5c3b4783-82cb-45a4-ac7b-c956c6b4047e")
 
 	viper.SetDefault("subscription.account_secret", "")
 	viper.SetDefault("subscription.webhook_secret", "")
