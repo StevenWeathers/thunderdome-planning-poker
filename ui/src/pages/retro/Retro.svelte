@@ -14,7 +14,6 @@
   import Export from '../../components/retro/Export.svelte';
   import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon.svelte';
   import GroupPhase from '../../components/retro/GroupPhase.svelte';
-  import ItemForm from '../../components/retro/ItemForm.svelte';
   import VotePhase from '../../components/retro/VotePhase.svelte';
   import GroupedItems from '../../components/retro/GroupedItems.svelte';
   import CheckCircleIcon from '../../components/icons/CheckCircleIcon.svelte';
@@ -26,6 +25,7 @@
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import TextInput from '../../components/forms/TextInput.svelte';
   import PhaseTimer from '../../components/retro/PhaseTimer.svelte';
+  import BrainstormPhase from '../../components/retro/BrainstormPhase.svelte';
 
   export let retroId;
   export let notifications;
@@ -58,6 +58,14 @@
     facilitatorCode: '',
     joinCode: '',
     readyUsers: [],
+    template: {
+      id: '',
+      name: '',
+      description: '',
+      format: {
+        columns: [],
+      },
+    },
   };
   let showDeleteRetro = false;
   let actionItem = '';
@@ -165,6 +173,10 @@
         phaseTimeStart = new Date(r.phase_time_start);
 
         groupedItems = organizeItemsByGroup();
+
+        if (retro.phase !== 'completed') {
+          showExport = false;
+        }
         break;
       case 'items_updated': {
         const parsedValue = JSON.parse(parsedEvent.value);
@@ -565,31 +577,6 @@
       router.route(`${loginOrRegister}/retro/${retroId}`);
     }
   });
-
-  $: workedItems =
-    retro.items &&
-    retro.items.reduce((prev, item) => {
-      if (item.type === 'worked') {
-        prev.push(item);
-      }
-      return prev;
-    }, []);
-  $: improveItems =
-    retro.items &&
-    retro.items.reduce((prev, item) => {
-      if (item.type === 'improve') {
-        prev.push(item);
-      }
-      return prev;
-    }, []);
-  $: questionItems =
-    retro.items &&
-    retro.items.reduce((prev, item) => {
-      if (item.type === 'question') {
-        prev.push(item);
-      }
-      return prev;
-    }, []);
 </script>
 
 <style>
@@ -797,38 +784,15 @@
             </div>
           {/if}
           {#if retro.phase === 'brainstorm'}
-            <div class="w-full grid gap-4 grid-cols-3">
-              <ItemForm
-                sendSocketEvent="{sendSocketEvent}"
-                itemType="worked"
-                newItemPlaceholder="{$LL.retroWorkedPlaceholder()}"
-                phase="{retro.phase}"
-                isFacilitator="{isFacilitator}"
-                items="{workedItems}"
-                users="{retro.users}"
-                feedbackVisibility="{retro.brainstormVisibility}"
-              />
-              <ItemForm
-                sendSocketEvent="{sendSocketEvent}"
-                itemType="improve"
-                newItemPlaceholder="{$LL.retroImprovePlaceholder()}"
-                phase="{retro.phase}"
-                isFacilitator="{isFacilitator}"
-                items="{improveItems}"
-                users="{retro.users}"
-                feedbackVisibility="{retro.brainstormVisibility}"
-              />
-              <ItemForm
-                sendSocketEvent="{sendSocketEvent}"
-                itemType="question"
-                newItemPlaceholder="{$LL.retroQuestionPlaceholder()}"
-                phase="{retro.phase}"
-                isFacilitator="{isFacilitator}"
-                items="{questionItems}"
-                users="{retro.users}"
-                feedbackVisibility="{retro.brainstormVisibility}"
-              />
-            </div>
+            <BrainstormPhase
+              items="{retro.items}"
+              phase="{retro.phase}"
+              isFacilitator="{isFacilitator}"
+              sendSocketEvent="{sendSocketEvent}"
+              template="{retro.template}"
+              users="{retro.users}"
+              brainstormVisibility="{retro.brainstormVisibility}"
+            />
           {/if}
           {#if retro.phase === 'group'}
             <div class="w-full grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
@@ -836,6 +800,7 @@
                 groups="{groupedItems}"
                 handleItemChange="{handleItemGroupChange}"
                 handleGroupNameChange="{handleGroupNameChange}"
+                columns="{retro.template.format.columns}"
               />
             </div>
           {/if}
@@ -847,6 +812,7 @@
                   handleVote="{handleVote}"
                   handleVoteSubtract="{handleVoteSubtract}"
                   voteLimitReached="{voteLimitReached}"
+                  columns="{retro.template.format.columns}"
                 />
               </div>
             </div>
@@ -854,7 +820,10 @@
           {#if retro.phase === 'action' || retro.phase === 'completed'}
             <div class="w-full md:w-2/3">
               <div class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
-                <GroupedItems groups="{groupedItems}" />
+                <GroupedItems
+                  groups="{groupedItems}"
+                  columns="{retro.template.format.columns}"
+                />
               </div>
             </div>
             <div class="w-full md:w-1/3">

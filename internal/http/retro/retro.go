@@ -45,6 +45,7 @@ type Service struct {
 	UserService           thunderdome.UserDataSvc
 	AuthService           thunderdome.AuthDataSvc
 	RetroService          thunderdome.RetroDataSvc
+	TemplateService       thunderdome.RetroTemplateDataSvc
 	EmailService          thunderdome.EmailService
 }
 
@@ -55,7 +56,8 @@ func New(
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	userService thunderdome.UserDataSvc, authService thunderdome.AuthDataSvc,
-	retroService thunderdome.RetroDataSvc, emailService thunderdome.EmailService,
+	retroService thunderdome.RetroDataSvc, templateService thunderdome.RetroTemplateDataSvc,
+	emailService thunderdome.EmailService,
 ) *Service {
 	rs := &Service{
 		config:                config,
@@ -65,6 +67,7 @@ func New(
 		UserService:           userService,
 		AuthService:           authService,
 		RetroService:          retroService,
+		TemplateService:       templateService,
 		EmailService:          emailService,
 	}
 

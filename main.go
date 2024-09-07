@@ -18,6 +18,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/auth"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/poker"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/retro"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/retrotemplate"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/storyboard"
 	subscriptionData "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/team"
@@ -110,6 +111,7 @@ func main() {
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
 	subscriptionDataSvc := &subscriptionData.Service{DB: d.DB, Logger: logger}
 	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
+	retroTemplateDataSvc := &retrotemplate.Service{DB: d.DB, Logger: logger}
 	cook := cookie.New(cookie.Config{
 		AppDomain:           c.Http.Domain,
 		PathPrefix:          c.Http.PathPrefix,
@@ -167,6 +169,7 @@ func main() {
 			CleanupStoryboardsDaysOld: c.Config.CleanupStoryboardsDaysOld,
 			CleanupGuestsDaysOld:      c.Config.CleanupGuestsDaysOld,
 			RequireTeams:              c.Config.RequireTeams,
+			RetroDefaultTemplateID:    c.Config.RetroDefaultTemplateID,
 			AuthLdapUrl:               c.Auth.Ldap.Url,
 			AuthLdapUseTls:            c.Auth.Ldap.UseTls,
 			AuthLdapBindname:          c.Auth.Ldap.Bindname,
@@ -196,23 +199,24 @@ func main() {
 				PongWaitSec:   c.Http.WebsocketPongWaitSec,
 			},
 		},
-		Email:               emailSvc,
-		Cookie:              cook,
-		Logger:              logger,
-		UserDataSvc:         userService,
-		ApiKeyDataSvc:       apkService,
-		AlertDataSvc:        alertService,
-		AuthDataSvc:         authService,
-		PokerDataSvc:        battleService,
-		CheckinDataSvc:      checkinService,
-		RetroDataSvc:        retroService,
-		StoryboardDataSvc:   storyboardService,
-		TeamDataSvc:         teamService,
-		OrganizationDataSvc: organizationService,
-		AdminDataSvc:        adminService,
-		SubscriptionDataSvc: subscriptionDataSvc,
-		JiraDataSvc:         jiraDataSvc,
-		SubscriptionSvc:     subscriptionService,
+		Email:                emailSvc,
+		Cookie:               cook,
+		Logger:               logger,
+		UserDataSvc:          userService,
+		ApiKeyDataSvc:        apkService,
+		AlertDataSvc:         alertService,
+		AuthDataSvc:          authService,
+		PokerDataSvc:         battleService,
+		CheckinDataSvc:       checkinService,
+		RetroDataSvc:         retroService,
+		StoryboardDataSvc:    storyboardService,
+		TeamDataSvc:          teamService,
+		OrganizationDataSvc:  organizationService,
+		AdminDataSvc:         adminService,
+		SubscriptionDataSvc:  subscriptionDataSvc,
+		JiraDataSvc:          jiraDataSvc,
+		RetroTemplateDataSvc: retroTemplateDataSvc,
+		SubscriptionSvc:      subscriptionService,
 		UIConfig: thunderdome.UIConfig{
 			AnalyticsEnabled: c.Analytics.Enabled,
 			AnalyticsID:      c.Analytics.ID,
@@ -248,6 +252,7 @@ func main() {
 				SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
 				Subscription:              c.Subscription,
 				RepoURL:                   repoURL,
+				RetroDefaultTemplateID:    c.Config.RetroDefaultTemplateID,
 			},
 		},
 	}, FSS, HFS)

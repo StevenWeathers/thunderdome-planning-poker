@@ -51,14 +51,12 @@ test.describe("registered user", () => {
     const retroName = "Test API Create Retro";
     const brainstormVisibility = "visible";
     const maxVotes = 3;
-    const format = "worked_improve_question";
 
     const b = await apiContext.post(`users/${user.id}/retros`, {
       data: {
         retroName,
         brainstormVisibility,
         maxVotes,
-        format,
       },
     });
     expect(b.ok()).toBeTruthy();
@@ -66,7 +64,6 @@ test.describe("registered user", () => {
     expect(retro.data).toMatchObject({
       name: retroName,
       brainstormVisibility,
-      format,
     });
   });
 
@@ -74,14 +71,12 @@ test.describe("registered user", () => {
     const retroName = "Test API Retros";
     const brainstormVisibility = "hidden";
     const maxVotes = 3;
-    const format = "worked_improve_question";
 
     const b = await apiContext.post(`users/${user.id}/retros`, {
       data: {
         retroName,
         brainstormVisibility,
         maxVotes,
-        format,
       },
     });
     expect(b.ok()).toBeTruthy();
@@ -100,7 +95,6 @@ test.describe("registered user", () => {
     const retroName = "Test API Create Team Retro";
     const brainstormVisibility = "hidden";
     const maxVotes = 3;
-    const format = "worked_improve_question";
 
     const t = await apiContext.post(`users/${user.id}/teams`, {
       data: {
@@ -116,7 +110,6 @@ test.describe("registered user", () => {
           retroName,
           brainstormVisibility,
           maxVotes,
-          format,
         },
       },
     );

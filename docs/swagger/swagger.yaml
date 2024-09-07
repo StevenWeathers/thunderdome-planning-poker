@@ -312,11 +312,6 @@ definitions:
       facilitatorCode:
         example: likeaboss
         type: string
-      format:
-        enum:
-        - worked_improve_question
-        example: worked_improve_question
-        type: string
       joinCode:
         example: iammadmax
         type: string
@@ -334,11 +329,30 @@ definitions:
       retroName:
         example: sprint 10 retro
         type: string
+      templateId:
+        type: string
     required:
     - brainstormVisibility
-    - format
     - maxVotes
     - retroName
+    type: object
+  http.retroTemplateRequestBody:
+    properties:
+      description:
+        type: string
+      format:
+        $ref: '#/definitions/thunderdome.RetroTemplateFormat'
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      organizationId:
+        type: string
+      teamId:
+        type: string
+    required:
+    - format
+    - name
     type: object
   http.standardJsonResponse:
     properties:
@@ -813,8 +827,6 @@ definitions:
         items:
           type: string
         type: array
-      format:
-        type: string
       groups:
         items:
           $ref: '#/definitions/thunderdome.RetroGroup'
@@ -846,6 +858,10 @@ definitions:
           type: string
         type: array
       teamName:
+        type: string
+      template:
+        $ref: '#/definitions/thunderdome.RetroTemplate'
+      template_id:
         type: string
       updatedDate:
         type: string
@@ -930,6 +946,45 @@ definitions:
         type: string
       user_id:
         type: string
+    type: object
+  thunderdome.RetroTemplate:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      description:
+        type: string
+      format:
+        $ref: '#/definitions/thunderdome.RetroTemplateFormat'
+      id:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      organizationId:
+        type: string
+      teamId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  thunderdome.RetroTemplateFormat:
+    properties:
+      columns:
+        items:
+          properties:
+            color:
+              type: string
+            icon:
+              type: string
+            label:
+              type: string
+            name:
+              type: string
+          type: object
+        type: array
     type: object
   thunderdome.RetroUser:
     properties:
@@ -3865,6 +3920,237 @@ paths:
       summary: Update Org User
       tags:
       - organization
+  /organizations/{organizationId}/retro-templates:
+    get:
+      description: get list of retro templates for an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: organizationId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Retro Templates
+      tags:
+      - retroTemplate
+  /retro-templates:
+    get:
+      description: get list of retro templates
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTemplate'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retro Templates
+      tags:
+      - retroTemplate
+    post:
+      description: Creates a retro template
+      parameters:
+      - description: new retro template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Retro Template
+      tags:
+      - retroTemplate
+  /retro-templates/{templateId}:
+    delete:
+      description: Deletes a Retro Template
+      parameters:
+      - description: the retro template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Retro Template
+      tags:
+      - retroTemplate
+    get:
+      description: get a specific retro template by its ID
+      parameters:
+      - description: the retro template ID
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTemplate'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retro Template by ID
+      tags:
+      - retroTemplate
+    put:
+      description: Updates a Retro Template
+      parameters:
+      - description: the retro template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: retro template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Retro Template
+      tags:
+      - retroTemplate
+  /retro-templates/public:
+    get:
+      description: get list of public retro templates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTemplate'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Get Public Retro Templates
+      tags:
+      - retroTemplate
   /retros:
     get:
       description: get list of retros
@@ -5085,6 +5371,42 @@ paths:
       summary: Get Retro Actions
       tags:
       - team
+  /teams/{teamId}/retro-templates:
+    get:
+      description: get list of retro templates for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Retro Templates
+      tags:
+      - retroTemplate
   /teams/{teamId}/retros:
     get:
       description: Get a list of retros associated to the team

@@ -69,6 +69,8 @@ type Config struct {
 	OrganizationsEnabled bool
 	// Which avatar service is utilized
 	AvatarService string
+	// ID of default template to select for Retro creation
+	RetroDefaultTemplateID string
 	// Whether to use the OS filesystem or embedded
 	EmbedUseOS                bool
 	CleanupBattlesDaysOld     int
@@ -96,26 +98,27 @@ type Config struct {
 }
 
 type Service struct {
-	Config              *Config
-	Cookie              *cookie.Cookie
-	UIConfig            thunderdome.UIConfig
-	Router              *mux.Router
-	Email               thunderdome.EmailService
-	Logger              *otelzap.Logger
-	UserDataSvc         thunderdome.UserDataSvc
-	ApiKeyDataSvc       thunderdome.APIKeyDataSvc
-	AlertDataSvc        thunderdome.AlertDataSvc
-	AuthDataSvc         thunderdome.AuthDataSvc
-	PokerDataSvc        thunderdome.PokerDataSvc
-	CheckinDataSvc      thunderdome.CheckinDataSvc
-	RetroDataSvc        thunderdome.RetroDataSvc
-	StoryboardDataSvc   thunderdome.StoryboardDataSvc
-	TeamDataSvc         thunderdome.TeamDataSvc
-	OrganizationDataSvc thunderdome.OrganizationDataSvc
-	AdminDataSvc        thunderdome.AdminDataSvc
-	JiraDataSvc         thunderdome.JiraDataSvc
-	SubscriptionDataSvc thunderdome.SubscriptionDataSvc
-	SubscriptionSvc     *subscription.Service
+	Config               *Config
+	Cookie               *cookie.Cookie
+	UIConfig             thunderdome.UIConfig
+	Router               *mux.Router
+	Email                thunderdome.EmailService
+	Logger               *otelzap.Logger
+	UserDataSvc          thunderdome.UserDataSvc
+	ApiKeyDataSvc        thunderdome.APIKeyDataSvc
+	AlertDataSvc         thunderdome.AlertDataSvc
+	AuthDataSvc          thunderdome.AuthDataSvc
+	PokerDataSvc         thunderdome.PokerDataSvc
+	CheckinDataSvc       thunderdome.CheckinDataSvc
+	RetroDataSvc         thunderdome.RetroDataSvc
+	StoryboardDataSvc    thunderdome.StoryboardDataSvc
+	TeamDataSvc          thunderdome.TeamDataSvc
+	OrganizationDataSvc  thunderdome.OrganizationDataSvc
+	AdminDataSvc         thunderdome.AdminDataSvc
+	JiraDataSvc          thunderdome.JiraDataSvc
+	SubscriptionDataSvc  thunderdome.SubscriptionDataSvc
+	RetroTemplateDataSvc thunderdome.RetroTemplateDataSvc
+	SubscriptionSvc      *subscription.Service
 }
 
 // standardJsonResponse structure used for all restful APIs response body
