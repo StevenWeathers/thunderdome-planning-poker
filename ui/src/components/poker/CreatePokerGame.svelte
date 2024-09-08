@@ -17,10 +17,10 @@
   export let xfetch;
   export let apiPrefix = '/api';
 
-  const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
 
-  let points = AppConfig.DefaultPointValues;
+  let allowedPointValues = [];
+  let points = [];
   let battleName = '';
   let plans = [];
   let autoFinishVoting = true;
@@ -29,7 +29,9 @@
   let leaderCode = '';
   let selectedTeam = '';
   let teams = [];
+  let estimateScales = [];
   let hideVoterIdentity = false;
+  let selectedEstimationScale = '';
 
   /** @type {TextInput} */
   let battleNameTextInput;
@@ -88,6 +90,7 @@
       hideVoterIdentity,
       joinCode,
       leaderCode,
+      estimationScaleId: selectedEstimationScale,
     };
 
     if (selectedTeam !== '') {
@@ -127,6 +130,36 @@
       });
   }
 
+  function getPublicEstimateScales() {
+    xfetch(`/api/estimation-scales/public`)
+      .then(res => res.json())
+      .then(function (result) {
+        estimateScales = estimateScales.concat(result.data);
+        result.data.map(scale => {
+          console.log(scale);
+          if (scale.isPublic && scale.defaultScale) {
+            console.log('default scale', scale);
+            allowedPointValues = scale.values;
+            points = scale.values;
+            selectedEstimationScale = scale.id;
+          }
+        });
+      })
+      .catch(function () {
+        notifications.danger($LL.getTeamsError());
+      });
+  }
+
+  const updatePointValues = () => {
+    const scale = estimateScales.find(
+      scale => scale.id === selectedEstimationScale,
+    );
+    if (scale) {
+      allowedPointValues = scale.values;
+      points = scale.values;
+    }
+  };
+
   let showImport = false;
 
   const toggleImport = () => {
@@ -138,6 +171,7 @@
       router.route(appRoutes.register);
     }
     getTeams();
+    getPublicEstimateScales();
 
     // Focus the battle name input field
     battleNameTextInput.focus();
@@ -187,6 +221,28 @@
       </SelectInput>
     </div>
   {/if}
+
+  <div class="mb-4">
+    <label
+      class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
+      for="estimationScale"
+    >
+      Estimation Scale
+    </label>
+    <SelectInput
+      bind:value="{selectedEstimationScale}"
+      on:change="{updatePointValues}"
+      id="estimationScale"
+      name="estimationScale"
+    >
+      <option value="" disabled>Select an estimation scale</option>
+      {#each estimateScales as scale}
+        <option value="{scale.id}">
+          {scale.name}
+        </option>
+      {/each}
+    </SelectInput>
+  </div>
 
   <div class="mb-4">
     <h3 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">

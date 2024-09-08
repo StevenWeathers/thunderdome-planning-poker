@@ -19,20 +19,19 @@
     let average = 0;
 
     if (activePlan.votes.length > 0) {
-      const votesToAverage = activePlan.votes
-        .filter(v => {
-          const voteWarrior = warriors.find(w => w.id === v.warriorId) || {};
-          const { spectator = false } = voteWarrior;
-          return !spectator && v.vote !== '?' && v.vote !== '☕️';
-        })
-        .map(v => {
-          const vote = v.vote === '1/2' ? 0.5 : parseInt(v.vote);
-          return vote;
-        });
+      let sum = 0;
+      let votesToAverage = activePlan.votes.reduce((prev, v) => {
+        const voteWarrior = warriors.find(w => w.id === v.warriorId) || {};
+        const { spectator = false } = voteWarrior;
 
-      const sum = votesToAverage.length
-        ? votesToAverage.reduce((previous, current) => (current += previous))
-        : 0;
+        if (!spectator && !isNaN(v.vote)) {
+          const vote = v.vote === '1/2' ? 0.5 : parseInt(v.vote);
+          prev.push(vote);
+          sum += vote;
+        }
+
+        return prev;
+      }, []);
 
       const preAverage = sum / votesToAverage.length || 0;
       if (preAverage !== 0.5) {

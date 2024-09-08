@@ -97,6 +97,217 @@
                 }
             }
         },
+        "/admin/estimation-scales": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of estimation scales",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Get Estimation Scales",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.EstimationScale"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates an estimation scale",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Create Estimation Scale",
+                "parameters": [
+                    {
+                        "description": "new estimation scale object",
+                        "name": "scale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.estimationScaleRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns created estimation scale",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.EstimationScale"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/estimation-scales/{scaleId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates an Estimation Scale",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Update Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the estimation scale ID to update",
+                        "name": "scaleId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "estimation scale object to update",
+                        "name": "scale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.estimationScaleRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns updated estimation scale",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.EstimationScale"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes an Estimation Scale",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Delete Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the estimation scale ID to delete",
+                        "name": "scaleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns success message",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/organizations": {
             "get": {
                 "security": [
@@ -146,6 +357,291 @@
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/retro-templates": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of retro templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Get Retro Templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.RetroTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a retro template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Create Retro Template",
+                "parameters": [
+                    {
+                        "description": "new retro template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.retroTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/retro-templates/{templateId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get a specific retro template by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Get Retro Template by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro template ID",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a Retro Template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Update Retro Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "retro template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.retroTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a Retro Template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Delete Retro Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     },
                     "500": {
@@ -1228,7 +1724,7 @@
                 "summary": "Logout",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -1282,7 +1778,7 @@
                 "summary": "Remove MFA",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -1296,7 +1792,7 @@
                 "summary": "MFA Setup Generate secret and QR code",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -1320,7 +1816,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -1817,6 +2313,114 @@
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/estimation-scales/public": {
+            "get": {
+                "description": "get list of all public estimation scales",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Get Public Estimation Scales",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.EstimationScale"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/estimation-scales/public/{scaleId}": {
+            "get": {
+                "description": "get a specific public estimation scale by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Get Public Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Estimation Scale ID",
+                        "name": "scaleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.EstimationScale"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -3044,6 +3648,132 @@
                 }
             }
         },
+        "/organizations/{orgId}/estimation-scales": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of estimation scales for a specific organization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Get Organization Estimation Scales",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.EstimationScale"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates an estimation scale for a specific organization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Create Organization Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new estimation scale object",
+                        "name": "scale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.privateEstimationScaleRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns created estimation scale",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.EstimationScale"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/organizations/{orgId}/invites": {
             "get": {
                 "security": [
@@ -3675,124 +4405,6 @@
                 }
             }
         },
-        "/retro-templates": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get list of retro templates",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "retroTemplate"
-                ],
-                "summary": "Get Retro Templates",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max number of results to return",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/http.standardJsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/thunderdome.RetroTemplate"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Creates a retro template",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "retroTemplate"
-                ],
-                "summary": "Create Retro Template",
-                "parameters": [
-                    {
-                        "description": "new retro template object",
-                        "name": "template",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.retroTemplateRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/http.standardJsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/retro-templates/public": {
             "get": {
                 "description": "get list of public retro templates",
@@ -3823,173 +4435,6 @@
                                     }
                                 }
                             ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/retro-templates/{templateId}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get a specific retro template by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "retroTemplate"
-                ],
-                "summary": "Get Retro Template by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the retro template ID",
-                        "name": "templateId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/http.standardJsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Updates a Retro Template",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "retroTemplate"
-                ],
-                "summary": "Update Retro Template",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the retro template ID to update",
-                        "name": "templateId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "retro template object to update",
-                        "name": "template",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.retroTemplateRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/http.standardJsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Deletes a Retro Template",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "retroTemplate"
-                ],
-                "summary": "Delete Retro Template",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the retro template ID to delete",
-                        "name": "templateId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     },
                     "500": {
@@ -5746,6 +6191,132 @@
                 }
             }
         },
+        "/teams/{teamId}/estimation-scales": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of estimation scales for a specific team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Get Team Estimation Scales",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.EstimationScale"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates an estimation scale for a specific team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Create Team Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new estimation scale object",
+                        "name": "scale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.privateEstimationScaleRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns created estimation scale",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.EstimationScale"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teams/{teamId}/invites": {
             "get": {
                 "security": [
@@ -6419,18 +6990,6 @@
                     },
                     {
                         "type": "string",
-                        "description": "the organization ID",
-                        "name": "orgId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
                         "description": "the team ID",
                         "name": "teamId",
                         "in": "path"
@@ -6503,18 +7062,6 @@
                     },
                     {
                         "type": "string",
-                        "description": "the organization ID",
-                        "name": "orgId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
                         "description": "the team ID",
                         "name": "teamId",
                         "in": "path"
@@ -6584,18 +7131,6 @@
                         "name": "userId",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "the organization ID",
-                        "name": "orgId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
-                        "in": "path"
                     },
                     {
                         "type": "string",
@@ -7173,24 +7708,6 @@
                         "name": "userId",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "the organization ID",
-                        "name": "orgId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the team ID",
-                        "name": "teamId",
-                        "in": "path"
                     },
                     {
                         "description": "new poker game object",
@@ -7918,24 +8435,6 @@
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "the organization ID",
-                        "name": "orgId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the team ID",
-                        "name": "teamId",
-                        "in": "path"
-                    },
-                    {
                         "description": "new retro object",
                         "name": "retro",
                         "in": "body",
@@ -8071,24 +8570,6 @@
                         "name": "userId",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "the organization ID",
-                        "name": "orgId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the team ID",
-                        "name": "teamId",
-                        "in": "path"
                     },
                     {
                         "description": "new storyboard object",
@@ -8662,12 +9143,6 @@
                     },
                     {
                         "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
                         "description": "the team ID",
                         "name": "teamId",
                         "in": "path"
@@ -8746,12 +9221,6 @@
                     },
                     {
                         "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
                         "description": "the team ID",
                         "name": "teamId",
                         "in": "path"
@@ -8826,12 +9295,6 @@
                         "type": "string",
                         "description": "the organization ID",
                         "name": "orgId",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "the department ID",
-                        "name": "departmentId",
                         "in": "path"
                     },
                     {
@@ -9024,6 +9487,9 @@
                         "type": "string"
                     }
                 },
+                "estimationScaleId": {
+                    "type": "string"
+                },
                 "hideVoterIdentity": {
                     "type": "boolean"
                 },
@@ -9156,6 +9622,44 @@
                 },
                 "teamRole": {
                     "type": "string"
+                }
+            }
+        },
+        "http.estimationScaleRequestBody": {
+            "type": "object",
+            "required": [
+                "name",
+                "scaleType",
+                "values"
+            ],
+            "properties": {
+                "defaultScale": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "scaleType": {
+                    "type": "string",
+                    "enum": [
+                        "fibonacci",
+                        "t-shirt",
+                        "powers_of_two",
+                        "custom"
+                    ]
+                },
+                "values": {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -9312,6 +9816,31 @@
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "http.privateEstimationScaleRequestBody": {
+            "type": "object",
+            "required": [
+                "name",
+                "values"
+            ],
+            "properties": {
+                "defaultScale": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "values": {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -9929,6 +10458,50 @@
                 }
             }
         },
+        "thunderdome.EstimationScale": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "defaultScale": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organizationId": {
+                    "type": "string"
+                },
+                "scaleType": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "thunderdome.JiraInstance": {
             "type": "object",
             "properties": {
@@ -10005,6 +10578,12 @@
                     "type": "boolean"
                 },
                 "createdDate": {
+                    "type": "string"
+                },
+                "estimationScale": {
+                    "$ref": "#/definitions/thunderdome.EstimationScale"
+                },
+                "estimationScaleId": {
                     "type": "string"
                 },
                 "hideVoterIdentity": {

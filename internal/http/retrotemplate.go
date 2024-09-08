@@ -30,7 +30,7 @@ type retroTemplateRequestBody struct {
 // @Success      200     object  standardJsonResponse{data=[]thunderdome.RetroTemplate}
 // @Failure      500     object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /retro-templates [get]
+// @Router       /admin/retro-templates [get]
 func (s *Service) handleGetRetroTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -65,7 +65,7 @@ func (s *Service) handleGetRetroTemplates() http.HandlerFunc {
 // @Failure      400       object  standardJsonResponse{}
 // @Failure      500       object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /retro-templates [post]
+// @Router       /admin/retro-templates [post]
 func (s *Service) handleRetroTemplateCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -123,7 +123,7 @@ func (s *Service) handleRetroTemplateCreate() http.HandlerFunc {
 // @Failure      400         object  standardJsonResponse{}
 // @Failure      500         object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /retro-templates/{templateId} [put]
+// @Router       /admin/retro-templates/{templateId} [put]
 func (s *Service) handleRetroTemplateUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -187,7 +187,7 @@ func (s *Service) handleRetroTemplateUpdate() http.HandlerFunc {
 // @Failure      400         object  standardJsonResponse{}
 // @Failure      500         object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /retro-templates/{templateId} [delete]
+// @Router       /admin/retro-templates/{templateId} [delete]
 func (s *Service) handleRetroTemplateDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -222,7 +222,7 @@ func (s *Service) handleRetroTemplateDelete() http.HandlerFunc {
 // @Failure      404         object  standardJsonResponse{}
 // @Failure      500         object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /retro-templates/{templateId} [get]
+// @Router       /admin/retro-templates/{templateId} [get]
 func (s *Service) handleGetRetroTemplateById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

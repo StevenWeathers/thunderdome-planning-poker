@@ -277,6 +277,25 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(pokerSvc))).Methods("POST")
 		apiRouter.HandleFunc("/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryDelete(pokerSvc))).Methods("DELETE")
 		apiRouter.HandleFunc("/arena/{battleId}", pokerSvc.ServeBattleWs())
+
+		// estimation scales
+		// Public estimation scale routes
+		apiRouter.HandleFunc("/estimation-scales/public", a.userOnly(a.handleGetPublicEstimationScales())).Methods("GET")
+		apiRouter.HandleFunc("/estimation-scales/public/{scaleId}", a.userOnly(a.handleGetPublicEstimationScale())).Methods("GET")
+
+		// Organization-specific estimation scale routes
+		orgRouter.HandleFunc("/{orgId}/estimation-scales", a.userOnly(a.subscribedUserOnly(a.orgUserOnly(a.handleGetOrganizationEstimationScales())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/estimation-scales", a.userOnly(a.subscribedUserOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleCreate())))).Methods("POST")
+
+		// Team-specific estimation scale routes
+		teamRouter.HandleFunc("/{teamId}/estimation-scales", a.userOnly(a.subscribedUserOnly(a.teamUserOnly(a.handleGetTeamEstimationScales())))).Methods("GET")
+		teamRouter.HandleFunc("/{teamId}/estimation-scales", a.userOnly(a.subscribedUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate())))).Methods("POST")
+
+		// Admin estimation scale routes
+		adminRouter.HandleFunc("/estimation-scales", a.userOnly(a.adminOnly(a.handleGetEstimationScales()))).Methods("GET")
+		adminRouter.HandleFunc("/estimation-scales", a.userOnly(a.adminOnly(a.handleEstimationScaleCreate()))).Methods("POST")
+		adminRouter.HandleFunc("/estimation-scales/{scaleId}", a.userOnly(a.adminOnly(a.handleEstimationScaleUpdate()))).Methods("PUT")
+		adminRouter.HandleFunc("/estimation-scales/{scaleId}", a.userOnly(a.adminOnly(a.handleEstimationScaleDelete()))).Methods("DELETE")
 	}
 	// retro(s)
 	if a.Config.FeatureRetro {

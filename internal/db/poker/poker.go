@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"strings"
+
+	"github.com/jackc/pgx/v5/pgtype"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -26,8 +26,7 @@ type Service struct {
 }
 
 // CreateGame creates a new story pointing session
-func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name string, PointValuesAllowed []string, Stories []*thunderdome.Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*thunderdome.Poker, error) {
-	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
+func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name string, EstimationScaleID string, PointValuesAllowed []string, Stories []*thunderdome.Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*thunderdome.Poker, error) {
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
 
@@ -59,22 +58,62 @@ func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name str
 		Facilitators:         make([]string, 0),
 		JoinCode:             JoinCode,
 		FacilitatorCode:      FacilitatorCode,
+		EstimationScaleID:    EstimationScaleID,
 	}
 	b.Facilitators = append(b.Facilitators, FacilitatorID)
 
-	e := d.DB.QueryRowContext(ctx,
-		`SELECT pokerid FROM thunderdome.poker_create($1, $2, $3, $4, $5, $6, $7, $8, null);`,
-		FacilitatorID,
-		Name,
-		string(pointValuesJSON),
-		AutoFinishVoting,
-		PointAverageRounding,
-		HideVoterIdentity,
-		encryptedJoinCode,
-		encryptedLeaderCode,
+	tx, err := d.DB.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		d.Logger.Error("create poker error", zap.Error(err))
+	}
+
+	// Insert into poker table
+	err = tx.QueryRowContext(ctx, `
+            INSERT INTO thunderdome.poker 
+            (owner_id, name, estimation_scale_id, point_values_allowed, auto_finish_voting, point_average_rounding,
+             hide_voter_identity, join_code, leader_code)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING id
+        `, FacilitatorID, Name, EstimationScaleID, PointValuesAllowed, AutoFinishVoting,
+		PointAverageRounding, HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode,
 	).Scan(&b.Id)
-	if e != nil {
-		return nil, fmt.Errorf("poker create query error: %v", e)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
+		}
+		d.Logger.Error("create poker error", zap.Error(err))
+		return nil, fmt.Errorf("failed to insert into poker table: %v", err)
+	}
+
+	// Insert into poker_facilitator table
+	_, err = tx.Exec(`
+            INSERT INTO thunderdome.poker_facilitator (poker_id, user_id)
+            VALUES ($1, $2)
+        `, &b.Id, FacilitatorID)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
+		}
+		d.Logger.Error("create poker error", zap.Error(err))
+		return nil, fmt.Errorf("failed to insert into poker_facilitator table: %v", err)
+	}
+
+	// Insert into poker_user table
+	_, err = tx.Exec(`
+            INSERT INTO thunderdome.poker_user (poker_id, user_id)
+            VALUES ($1, $2)
+        `, &b.Id, FacilitatorID)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
+		}
+		d.Logger.Error("create poker error", zap.Error(err))
+		return nil, fmt.Errorf("failed to insert into poker_user table: %v", err)
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		d.Logger.Error("update drivers: unable to commit", zap.Error(commitErr))
+		return nil, fmt.Errorf("failed to create poker game: %v", commitErr)
 	}
 
 	for _, plan := range Stories {
@@ -107,8 +146,7 @@ func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name str
 }
 
 // TeamCreateGame creates a new story pointing session associated to a team
-func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, FacilitatorID string, Name string, PointValuesAllowed []string, Stories []*thunderdome.Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*thunderdome.Poker, error) {
-	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
+func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, FacilitatorID string, Name string, EstimationScaleID string, PointValuesAllowed []string, Stories []*thunderdome.Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*thunderdome.Poker, error) {
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
 
@@ -140,24 +178,60 @@ func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, Facilitator
 		Facilitators:         make([]string, 0),
 		JoinCode:             JoinCode,
 		FacilitatorCode:      FacilitatorCode,
+		EstimationScaleID:    EstimationScaleID,
 		TeamID:               TeamID,
 	}
 	b.Facilitators = append(b.Facilitators, FacilitatorID)
 
-	e := d.DB.QueryRowContext(ctx,
-		`SELECT pokerid FROM thunderdome.poker_create($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
-		FacilitatorID,
-		Name,
-		string(pointValuesJSON),
-		AutoFinishVoting,
-		PointAverageRounding,
-		HideVoterIdentity,
-		encryptedJoinCode,
-		encryptedLeaderCode,
-		TeamID,
+	tx, err := d.DB.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		d.Logger.Error("create poker error", zap.Error(err))
+	}
+
+	// Insert into poker table
+	err = tx.QueryRowContext(ctx, `
+            INSERT INTO thunderdome.poker 
+            (owner_id, name, estimation_scale_id, point_values_allowed, auto_finish_voting, point_average_rounding,
+             hide_voter_identity, join_code, leader_code, team_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            RETURNING id
+        `, FacilitatorID, Name, EstimationScaleID, PointValuesAllowed, AutoFinishVoting,
+		PointAverageRounding, HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode, TeamID,
 	).Scan(&b.Id)
-	if e != nil {
-		return nil, fmt.Errorf("team create poker query error: %v", e)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
+		}
+		return nil, fmt.Errorf("failed to insert into poker table: %v", err)
+	}
+
+	// Insert into poker_facilitator table
+	_, err = tx.Exec(`
+            INSERT INTO thunderdome.poker_facilitator (poker_id, user_id)
+            VALUES ($1, $2)
+        `, &b.Id, FacilitatorID)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
+		}
+		return nil, fmt.Errorf("failed to insert into poker_facilitator table: %v", err)
+	}
+
+	// Insert into poker_user table
+	_, err = tx.Exec(`
+            INSERT INTO thunderdome.poker_user (poker_id, user_id)
+            VALUES ($1, $2)
+        `, &b.Id, FacilitatorID)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
+		}
+		return nil, fmt.Errorf("failed to insert into poker_user table: %v", err)
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		d.Logger.Error("update drivers: unable to commit", zap.Error(commitErr))
+		return nil, fmt.Errorf("failed to create poker game: %v", commitErr)
 	}
 
 	for _, plan := range Stories {
@@ -191,7 +265,6 @@ func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, Facilitator
 
 // UpdateGame updates the game by ID
 func (d *Service) UpdateGame(PokerID string, Name string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, FacilitatorCode string, TeamID string) error {
-	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
 
@@ -216,7 +289,7 @@ func (d *Service) UpdateGame(PokerID string, Name string, PointValuesAllowed []s
 		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5,
 		 hide_voter_identity = $6, join_code = $7, leader_code = $8, updated_date = NOW(), team_id = NULLIF($9, '')::uuid
 		WHERE id = $1`,
-		PokerID, Name, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding,
+		PokerID, Name, PointValuesAllowed, AutoFinishVoting, PointAverageRounding,
 		HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode, TeamID,
 	); err != nil {
 		return fmt.Errorf("update poker query error: %v", err)
@@ -225,79 +298,86 @@ func (d *Service) UpdateGame(PokerID string, Name string, PointValuesAllowed []s
 	return nil
 }
 
-// GetFacilitatorCode retrieve the game leader_code
-func (d *Service) GetFacilitatorCode(PokerID string) (string, error) {
-	var EncryptedLeaderCode string
-
-	if err := d.DB.QueryRow(`
-		SELECT COALESCE(leader_code, '') FROM thunderdome.poker
-		WHERE id = $1`,
-		PokerID,
-	).Scan(&EncryptedLeaderCode); err != nil {
-		return "", fmt.Errorf("get poker facilitator code query error: %v", err)
-	}
-
-	if EncryptedLeaderCode == "" {
-		return "", fmt.Errorf("poker facilitator code not set")
-	}
-	DecryptedCode, codeErr := db.Decrypt(EncryptedLeaderCode, d.AESHashKey)
-	if codeErr != nil {
-		return "", fmt.Errorf("get poker facilitator code decrypt error: %v", codeErr)
-	}
-
-	return DecryptedCode, nil
-}
-
 // GetGame gets a game by ID
 func (d *Service) GetGame(PokerID string, UserID string) (*thunderdome.Poker, error) {
 	var b = &thunderdome.Poker{
-		Id:                 PokerID,
-		Users:              make([]*thunderdome.PokerUser, 0),
-		Stories:            make([]*thunderdome.Story, 0),
-		VotingLocked:       true,
-		PointValuesAllowed: make([]string, 0),
-		AutoFinishVoting:   true,
-		Facilitators:       make([]string, 0),
+		Id:           PokerID,
+		Users:        make([]*thunderdome.PokerUser, 0),
+		Stories:      make([]*thunderdome.Story, 0),
+		VotingLocked: true,
+		Facilitators: make([]string, 0),
 	}
 
 	// get game
-	var pv string
 	var facilitators string
 	var JoinCode string
 	var FacilitatorCode string
+	var estimationScaleJSON []byte
+	var vArray pgtype.Array[string]
+	m := pgtype.NewMap()
 	e := d.DB.QueryRow(
 		`
-		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.point_values_allowed, b.auto_finish_voting, 
+		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.auto_finish_voting, 
 		b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''),
-		 COALESCE(b.team_id::text, ''), b.created_date, b.updated_date,
-		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
+		b.estimation_scale_id, b.point_values_allowed, COALESCE(b.team_id::text, ''), b.created_date, b.updated_date,
+		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders,
+		COALESCE(
+			json_build_object(
+				'id', es.id,
+				'name', es.name,
+				'description', es.description,
+				'scale_type', es.scale_type,
+				'values', es.values,
+				'created_by', es.created_by,
+				'created_at', es.created_at,
+				'updated_at', es.updated_at,
+				'is_public', es.is_public,
+				'organization_id', es.organization_id,
+				'team_id', es.team_id,
+				'default_scale', es.default_scale
+			)::jsonb,
+			'{}'::jsonb
+		) AS estimation_scale
 		FROM thunderdome.poker b
 		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
+		LEFT JOIN thunderdome.estimation_scale es ON b.estimation_scale_id = es.id
 		WHERE b.id = $1
-		GROUP BY b.id`,
+		GROUP BY b.id, es.id`,
 		PokerID,
 	).Scan(
 		&b.Id,
 		&b.Name,
 		&b.VotingLocked,
 		&b.ActiveStoryID,
-		&pv,
 		&b.AutoFinishVoting,
 		&b.PointAverageRounding,
 		&b.HideVoterIdentity,
 		&JoinCode,
 		&FacilitatorCode,
+		&b.EstimationScaleID,
+		m.SQLScanner(&vArray),
 		&b.TeamID,
 		&b.CreatedDate,
 		&b.UpdatedDate,
 		&facilitators,
+		&estimationScaleJSON,
 	)
 	if e != nil {
 		return nil, fmt.Errorf("get poker query error: %v", e)
 	}
 
+	b.PointValuesAllowed = vArray.Elements
+
 	_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
-	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
+
+	// Unmarshal the estimation scale JSON into the EstimationScale field
+	if len(estimationScaleJSON) > 0 {
+		var estimationScale thunderdome.EstimationScale
+		if err := json.Unmarshal(estimationScaleJSON, &estimationScale); err != nil {
+			return nil, fmt.Errorf("error unmarshaling estimation scale: %v", err)
+		}
+		b.EstimationScale = &estimationScale
+	}
 
 	isFacilitator := db.Contains(b.Facilitators, UserID)
 
@@ -378,23 +458,45 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 		  p.point_average_rounding, p.created_date, p.updated_date,
 		  CASE WHEN COUNT(s) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(s))) END AS stories,
 		  CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators,
-		  min(COALESCE(t.name, '')) as team_name
+		  min(COALESCE(t.name, '')) as team_name, p.estimation_scale_id,
+		  COALESCE(
+			json_build_object(
+				'id', es.id,
+				'name', es.name,
+				'description', es.description,
+				'scale_type', es.scale_type,
+				'values', es.values,
+				'created_by', es.created_by,
+				'created_at', es.created_at,
+				'updated_at', es.updated_at,
+				'is_public', es.is_public,
+				'organization_id', es.organization_id,
+				'team_id', es.team_id,
+				'default_scale', es.default_scale
+			)::jsonb,
+			'{}'::jsonb
+		) AS estimation_scale
 		FROM thunderdome.poker p
 		LEFT JOIN stories AS s ON s.poker_id = p.id
 		LEFT JOIN facilitators AS bl ON bl.poker_id = p.id
 		LEFT JOIN user_teams t ON t.id = p.team_id
+		LEFT JOIN thunderdome.estimation_scale es ON p.estimation_scale_id = es.id
 		WHERE p.id IN (SELECT id FROM games)
-		GROUP BY p.id ORDER BY p.created_date DESC
+		GROUP BY p.id, p.created_date, es.id
+		ORDER BY p.created_date DESC
 		LIMIT $2 OFFSET $3
 	`, UserID, Limit, Offset)
 	if gamesErr != nil {
+		d.Logger.Error("get poker by user query error", zap.Error(gamesErr))
 		return nil, Count, fmt.Errorf("get poker by user query error: %v", gamesErr)
 	}
 
 	defer gameRows.Close()
 	for gameRows.Next() {
 		var stories string
-		var pv string
+		var estimationScale string
+		var vArray pgtype.Array[string]
+		m := pgtype.NewMap()
 		var facilitators string
 		var b = &thunderdome.Poker{
 			Users:              make([]*thunderdome.PokerUser, 0),
@@ -409,7 +511,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 			&b.Name,
 			&b.VotingLocked,
 			&b.ActiveStoryID,
-			&pv,
+			m.SQLScanner(&vArray),
 			&b.AutoFinishVoting,
 			&b.PointAverageRounding,
 			&b.CreatedDate,
@@ -417,269 +519,21 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 			&stories,
 			&facilitators,
 			&b.TeamName,
+			&b.EstimationScaleID,
+			&estimationScale,
 		); err != nil {
-			d.Logger.Error("error getting poker by user", zap.Error(e))
+			d.Logger.Error("error getting poker by user", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(stories), &b.Stories)
-			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
+			_ = json.Unmarshal([]byte(estimationScale), &b.EstimationScale)
+			b.PointValuesAllowed = vArray.Elements
 
 			games = append(games, b)
 		}
 	}
 
 	return games, Count, nil
-}
-
-// ConfirmFacilitator confirms the user is a facilitator of the game
-func (d *Service) ConfirmFacilitator(PokerID string, UserID string) error {
-	var facilitatorID string
-	var role string
-	err := d.DB.QueryRow("SELECT type FROM thunderdome.users WHERE id = $1", UserID).Scan(&role)
-	if err != nil {
-		return fmt.Errorf("confirm poker facilitator get user role error: %v", err)
-	}
-
-	e := d.DB.QueryRow("SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2", PokerID, UserID).Scan(&facilitatorID)
-	if e != nil && role != thunderdome.AdminUserType {
-		return fmt.Errorf("confirm poker facilitator query error: %v", err)
-	}
-
-	return nil
-}
-
-// GetUserActiveStatus checks game active status of User
-func (d *Service) GetUserActiveStatus(PokerID string, UserID string) error {
-	var active bool
-
-	err := d.DB.QueryRow(`
-		SELECT coalesce(active, FALSE)
-		FROM thunderdome.poker_user
-		WHERE user_id = $2 AND poker_id = $1;`,
-		PokerID,
-		UserID,
-	).Scan(
-		&active,
-	)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return fmt.Errorf("poker get user active status query error: %v", err)
-	} else if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return err
-	}
-
-	if active {
-		return errors.New("DUPLICATE_BATTLE_USER")
-	}
-
-	return nil
-}
-
-// GetUsers retrieves the users for a given game
-func (d *Service) GetUsers(PokerID string) []*thunderdome.PokerUser {
-	var users = make([]*thunderdome.PokerUser, 0)
-	rows, err := d.DB.Query(
-		`SELECT
-			u.id, u.name, u.type, u.avatar, pu.active, pu.spectator, COALESCE(u.email, ''), COALESCE(u.picture, '')
-		FROM thunderdome.poker_user pu
-		LEFT JOIN thunderdome.users u ON pu.user_id = u.id
-		WHERE pu.poker_id = $1
-		ORDER BY u.name`,
-		PokerID,
-	)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var w thunderdome.PokerUser
-			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash, &w.PictureURL); err != nil {
-				d.Logger.Error("error getting poker users", zap.Error(err))
-			} else {
-				if w.GravatarHash != "" {
-					w.GravatarHash = db.CreateGravatarHash(w.GravatarHash)
-				} else {
-					w.GravatarHash = db.CreateGravatarHash(w.Id)
-				}
-				users = append(users, &w)
-			}
-		}
-	}
-
-	return users
-}
-
-// GetActiveUsers retrieves the active users for a given game
-func (d *Service) GetActiveUsers(PokerID string) []*thunderdome.PokerUser {
-	var users = make([]*thunderdome.PokerUser, 0)
-	rows, err := d.DB.Query(
-		`SELECT
-			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, ''), COALESCE(w.picture, '')
-		FROM thunderdome.poker_user bw
-		LEFT JOIN thunderdome.users w ON bw.user_id = w.id
-		WHERE bw.poker_id = $1 AND bw.active = true
-		ORDER BY w.name`,
-		PokerID,
-	)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var w thunderdome.PokerUser
-			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash, &w.PictureURL); err != nil {
-				d.Logger.Error("error getting active poker users", zap.Error(err))
-			} else {
-				if w.GravatarHash != "" {
-					w.GravatarHash = db.CreateGravatarHash(w.GravatarHash)
-				} else {
-					w.GravatarHash = db.CreateGravatarHash(w.Id)
-				}
-				users = append(users, &w)
-			}
-		}
-	}
-
-	return users
-}
-
-// AddUser adds a user by ID to the game by ID
-func (d *Service) AddUser(PokerID string, UserID string) ([]*thunderdome.PokerUser, error) {
-	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.poker_user (poker_id, user_id, active)
-		VALUES ($1, $2, true)
-		ON CONFLICT (poker_id, user_id) DO UPDATE SET active = true, abandoned = false`,
-		PokerID,
-		UserID,
-	); err != nil {
-		d.Logger.Error("error adding user to poker", zap.Error(err))
-	}
-
-	users := d.GetUsers(PokerID)
-
-	return users, nil
-}
-
-// RetreatUser removes a user from the current game by ID
-func (d *Service) RetreatUser(PokerID string, UserID string) []*thunderdome.PokerUser {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.poker_user SET active = false WHERE poker_id = $1 AND user_id = $2`, PokerID, UserID); err != nil {
-		d.Logger.Error("error updating poker user to active false", zap.Error(err))
-	}
-
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.Logger.Error("error updating user last active timestamp", zap.Error(err))
-	}
-
-	users := d.GetUsers(PokerID)
-
-	return users
-}
-
-// AbandonGame removes a user from the current game by ID and sets abandoned true
-func (d *Service) AbandonGame(PokerID string, UserID string) ([]*thunderdome.PokerUser, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.poker_user SET active = false, abandoned = true WHERE poker_id = $1 AND user_id = $2`, PokerID, UserID); err != nil {
-		return nil, fmt.Errorf("error updating game user to abandoned: %v", err)
-	}
-
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		return nil, fmt.Errorf("error updating user last active timestamp: %v", err)
-	}
-
-	users := d.GetUsers(PokerID)
-
-	return users, nil
-}
-
-// AddFacilitator makes a user a facilitator of the game
-func (d *Service) AddFacilitator(PokerID string, UserID string) ([]string, error) {
-	facilitators := make([]string, 0)
-
-	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.poker_facilitator (poker_id, user_id) VALUES ($1, $2);`,
-		PokerID, UserID); err != nil {
-		return nil, fmt.Errorf("poker add facilitator query error: %v", err)
-	}
-
-	rows, facilitatorErr := d.DB.Query(`
-		SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1;
-	`, PokerID)
-	if facilitatorErr != nil {
-		return facilitators, nil
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		var leader string
-		if err := rows.Scan(
-			&leader,
-		); err != nil {
-			d.Logger.Error("poker_facilitator query scan error", zap.Error(err))
-		} else {
-			facilitators = append(facilitators, leader)
-		}
-	}
-
-	return facilitators, nil
-}
-
-// RemoveFacilitator removes a user from game facilitators
-func (d *Service) RemoveFacilitator(PokerID string, UserID string) ([]string, error) {
-	facilitators := make([]string, 0)
-	facilitatorCount := 0
-	err := d.DB.QueryRow(
-		`SELECT count(user_id) FROM thunderdome.poker_facilitator WHERE poker_id = $1;`,
-		PokerID,
-	).Scan(&facilitatorCount)
-	if err != nil {
-		return nil, fmt.Errorf("poker remove facilitator query error: %v", err)
-	}
-
-	if facilitatorCount == 1 {
-		return nil, fmt.Errorf("ONLY_FACILITATOR")
-	}
-
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2;`,
-		PokerID, UserID); err != nil {
-		return nil, fmt.Errorf("poker remove facilitator query error: %v", err)
-	}
-
-	rows, facilitatorErr := d.DB.Query(`
-		SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1;
-	`, PokerID)
-	if facilitatorErr != nil {
-		return facilitators, nil
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		var leader string
-		if err := rows.Scan(
-			&leader,
-		); err != nil {
-			d.Logger.Error("poker_facilitator query scan error", zap.Error(err))
-		} else {
-			facilitators = append(facilitators, leader)
-		}
-	}
-
-	return facilitators, nil
-}
-
-// ToggleSpectator changes a game users spectator status
-func (d *Service) ToggleSpectator(PokerID string, UserID string, Spectator bool) ([]*thunderdome.PokerUser, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.poker_user SET spectator = $3 WHERE poker_id = $1 AND user_id = $2`, PokerID, UserID, Spectator); err != nil {
-		return nil, fmt.Errorf("poker toggle spectator query error: %v", err)
-	}
-
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.Logger.Error("error updating user last active timestamp", zap.Error(err))
-	}
-
-	users := d.GetUsers(PokerID)
-
-	return users, nil
 }
 
 // DeleteGame removes all game associations and the game itself by PokerID
@@ -690,29 +544,6 @@ func (d *Service) DeleteGame(PokerID string) error {
 	}
 
 	return nil
-}
-
-// AddFacilitatorsByEmail adds additional game facilitators by email
-func (d *Service) AddFacilitatorsByEmail(ctx context.Context, PokerID string, FacilitatorEmails []string) ([]string, error) {
-	var facilitators string
-	var newFacilitators []string
-
-	for i, email := range FacilitatorEmails {
-		FacilitatorEmails[i] = db.SanitizeEmail(email)
-	}
-	emails := strings.Join(FacilitatorEmails[:], ",")
-
-	e := d.DB.QueryRowContext(ctx,
-		`SELECT facilitators FROM thunderdome.poker_facilitator_add_by_email($1, $2);`,
-		PokerID, emails,
-	).Scan(&facilitators)
-	if e != nil {
-		return nil, fmt.Errorf("error adding poker facilitator by email: %v", e)
-	}
-
-	_ = json.Unmarshal([]byte(facilitators), &newFacilitators)
-
-	return newFacilitators, nil
 }
 
 // GetGames gets a list of games
@@ -743,7 +574,8 @@ func (d *Service) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, int, er
 
 	defer rows.Close()
 	for rows.Next() {
-		var pv string
+		var vArray pgtype.Array[string]
+		m := pgtype.NewMap()
 		var facilitators string
 		var ActiveStoryID sql.NullString
 		var b = &thunderdome.Poker{
@@ -759,7 +591,7 @@ func (d *Service) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, int, er
 			&b.Name,
 			&b.VotingLocked,
 			&ActiveStoryID,
-			&pv,
+			m.SQLScanner(&vArray),
 			&b.AutoFinishVoting,
 			&b.PointAverageRounding,
 			&b.CreatedDate,
@@ -768,7 +600,7 @@ func (d *Service) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, int, er
 		); err != nil {
 			d.Logger.Error("get poker games query error", zap.Error(err))
 		} else {
-			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
+			b.PointValuesAllowed = vArray.Elements
 			_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
 			b.ActiveStoryID = ActiveStoryID.String
 			games = append(games, b)
@@ -807,7 +639,8 @@ func (d *Service) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Poker, i
 
 	defer rows.Close()
 	for rows.Next() {
-		var pv string
+		var vArray pgtype.Array[string]
+		m := pgtype.NewMap()
 		var facilitators string
 		var ActiveStoryID sql.NullString
 		var b = &thunderdome.Poker{
@@ -823,7 +656,7 @@ func (d *Service) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Poker, i
 			&b.Name,
 			&b.VotingLocked,
 			&ActiveStoryID,
-			&pv,
+			m.SQLScanner(&vArray),
 			&b.AutoFinishVoting,
 			&b.PointAverageRounding,
 			&b.CreatedDate,
@@ -832,7 +665,7 @@ func (d *Service) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Poker, i
 		); err != nil {
 			d.Logger.Error("get active poker games query error", zap.Error(err))
 		} else {
-			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
+			b.PointValuesAllowed = vArray.Elements
 			_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
 			b.ActiveStoryID = ActiveStoryID.String
 			games = append(games, b)
