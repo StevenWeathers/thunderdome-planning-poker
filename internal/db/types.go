@@ -12,16 +12,17 @@ import (
 
 // Config holds all the configuration for the db
 type Config struct {
-	Host            string
-	Port            int
-	User            string
-	Password        string
-	Name            string
-	SSLMode         string
-	AESHashkey      string
-	MaxOpenConns    int
-	MaxIdleConns    int
-	ConnMaxLifetime int
+	Host                   string
+	Port                   int
+	User                   string
+	Password               string
+	Name                   string
+	SSLMode                string
+	AESHashkey             string
+	MaxOpenConns           int
+	MaxIdleConns           int
+	ConnMaxLifetime        int
+	DefaultEstimationScale []string
 }
 
 // Service contains all the methods to interact with DB

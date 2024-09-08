@@ -83,16 +83,17 @@ func main() {
 	//oidcEnabled := c.Auth.Method == "oidc"
 
 	d := db.New(c.Admin.Email, &db.Config{
-		Host:            c.Db.Host,
-		Port:            c.Db.Port,
-		User:            c.Db.User,
-		Password:        c.Db.Pass,
-		Name:            c.Db.Name,
-		SSLMode:         c.Db.Sslmode,
-		AESHashkey:      c.Config.AesHashkey,
-		MaxIdleConns:    c.Db.MaxIdleConns,
-		MaxOpenConns:    c.Db.MaxOpenConns,
-		ConnMaxLifetime: c.Db.ConnMaxLifetime,
+		Host:                   c.Db.Host,
+		Port:                   c.Db.Port,
+		User:                   c.Db.User,
+		Password:               c.Db.Pass,
+		Name:                   c.Db.Name,
+		SSLMode:                c.Db.Sslmode,
+		AESHashkey:             c.Config.AesHashkey,
+		MaxIdleConns:           c.Db.MaxIdleConns,
+		MaxOpenConns:           c.Db.MaxOpenConns,
+		ConnMaxLifetime:        c.Db.ConnMaxLifetime,
+		DefaultEstimationScale: c.Config.AllowedPointValues,
 	}, logger)
 
 	userService := &user.Service{DB: d.DB, Logger: logger}

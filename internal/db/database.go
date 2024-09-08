@@ -94,5 +94,17 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Service {
 		}
 	}
 
+	// backwards compatibility for self-hosted instances with custom estimation scale configured
+	// will be removed in v5 and documented in the release notes
+	if len(d.Config.DefaultEstimationScale) > 0 {
+		if _, err := d.DB.Exec(
+			`UPDATE thunderdome.estimation_scale SET values = $1 WHERE scale_type = 'thunderdome_default' AND
+		values <> $1;`,
+			d.Config.DefaultEstimationScale,
+		); err != nil {
+			d.Logger.Ctx(ctx).Error("failed to update thunderdome_default estimation scale", zap.Error(err))
+		}
+	}
+
 	return d
 }

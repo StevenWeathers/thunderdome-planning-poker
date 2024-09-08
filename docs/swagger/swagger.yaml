@@ -89,6 +89,8 @@ definitions:
         items:
           type: string
         type: array
+      estimationScaleId:
+        type: string
       hideVoterIdentity:
         type: boolean
       joinCode:
@@ -181,6 +183,33 @@ definitions:
         $ref: '#/definitions/thunderdome.Team'
       teamRole:
         type: string
+    type: object
+  http.estimationScaleRequestBody:
+    properties:
+      defaultScale:
+        type: boolean
+      description:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      scaleType:
+        enum:
+        - fibonacci
+        - t-shirt
+        - powers_of_two
+        - custom
+        type: string
+      values:
+        items:
+          type: string
+        minItems: 2
+        type: array
+    required:
+    - name
+    - scaleType
+    - values
     type: object
   http.forgotPasswordRequestBody:
     properties:
@@ -283,6 +312,23 @@ definitions:
         type: string
       type:
         type: string
+    type: object
+  http.privateEstimationScaleRequestBody:
+    properties:
+      defaultScale:
+        type: boolean
+      description:
+        type: string
+      name:
+        type: string
+      values:
+        items:
+          type: string
+        minItems: 2
+        type: array
+    required:
+    - name
+    - values
     type: object
   http.resetPasswordRequestBody:
     properties:
@@ -702,6 +748,35 @@ definitions:
       role:
         type: string
     type: object
+  thunderdome.EstimationScale:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      defaultScale:
+        type: boolean
+      description:
+        type: string
+      id:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      organizationId:
+        type: string
+      scaleType:
+        type: string
+      teamId:
+        type: string
+      updatedAt:
+        type: string
+      values:
+        items:
+          type: string
+        type: array
+    type: object
   thunderdome.JiraInstance:
     properties:
       access_token:
@@ -752,6 +827,10 @@ definitions:
       autoFinishVoting:
         type: boolean
       createdDate:
+        type: string
+      estimationScale:
+        $ref: '#/definitions/thunderdome.EstimationScale'
+      estimationScaleId:
         type: string
       hideVoterIdentity:
         type: boolean
@@ -1565,10 +1644,6 @@ paths:
         in: path
         name: orgId
         type: string
-      - description: the department ID
-        in: path
-        name: departmentId
-        type: string
       - description: the team ID
         in: path
         name: teamId
@@ -1616,10 +1691,6 @@ paths:
         in: path
         name: orgId
         type: string
-      - description: the department ID
-        in: path
-        name: departmentId
-        type: string
       - description: the team ID
         in: path
         name: teamId
@@ -1666,10 +1737,6 @@ paths:
       - description: the organization ID
         in: path
         name: orgId
-        type: string
-      - description: the department ID
-        in: path
-        name: departmentId
         type: string
       - description: the team ID
         in: path
@@ -1756,6 +1823,132 @@ paths:
       summary: Get API Keys
       tags:
       - admin
+  /admin/estimation-scales:
+    get:
+      description: get list of estimation scales
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.EstimationScale'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Estimation Scales
+      tags:
+      - estimation-scale
+    post:
+      description: Creates an estimation scale
+      parameters:
+      - description: new estimation scale object
+        in: body
+        name: scale
+        required: true
+        schema:
+          $ref: '#/definitions/http.estimationScaleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns created estimation scale
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.EstimationScale'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Estimation Scale
+      tags:
+      - estimation-scale
+  /admin/estimation-scales/{scaleId}:
+    delete:
+      description: Deletes an Estimation Scale
+      parameters:
+      - description: the estimation scale ID to delete
+        in: path
+        name: scaleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns success message
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Estimation Scale
+      tags:
+      - estimation-scale
+    put:
+      description: Updates an Estimation Scale
+      parameters:
+      - description: the estimation scale ID to update
+        in: path
+        name: scaleId
+        required: true
+        type: string
+      - description: estimation scale object to update
+        in: body
+        name: scale
+        required: true
+        schema:
+          $ref: '#/definitions/http.estimationScaleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated estimation scale
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.EstimationScale'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Estimation Scale
+      tags:
+      - estimation-scale
   /admin/organizations:
     get:
       description: Get a list of organizations
@@ -1792,6 +1985,177 @@ paths:
       summary: Get Organizations
       tags:
       - admin
+  /admin/retro-templates:
+    get:
+      description: get list of retro templates
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTemplate'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retro Templates
+      tags:
+      - retroTemplate
+    post:
+      description: Creates a retro template
+      parameters:
+      - description: new retro template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Retro Template
+      tags:
+      - retroTemplate
+  /admin/retro-templates/{templateId}:
+    delete:
+      description: Deletes a Retro Template
+      parameters:
+      - description: the retro template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Retro Template
+      tags:
+      - retroTemplate
+    get:
+      description: get a specific retro template by its ID
+      parameters:
+      - description: the retro template ID
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTemplate'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retro Template by ID
+      tags:
+      - retroTemplate
+    put:
+      description: Updates a Retro Template
+      parameters:
+      - description: the retro template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: retro template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Retro Template
+      tags:
+      - retroTemplate
   /admin/search/users/email:
     get:
       description: Get list of registered users filtered by Email likeness
@@ -2443,7 +2807,7 @@ paths:
       description: Logs the user out by deleting session cookies
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Logout
       tags:
       - auth
@@ -2452,7 +2816,7 @@ paths:
       description: Removes MFA requirement from user auth
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Remove MFA
       tags:
       - auth
@@ -2487,7 +2851,7 @@ paths:
       description: Generates MFA secret and QR Code
       responses:
         "200":
-          description: ""
+          description: OK
       summary: MFA Setup Generate secret and QR code
       tags:
       - auth
@@ -2502,7 +2866,7 @@ paths:
           $ref: '#/definitions/http.mfaSetupValidateRequestBody'
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Validate MFA Setup passcode
       tags:
       - auth
@@ -2817,6 +3181,72 @@ paths:
       summary: Delete Poker Story
       tags:
       - poker
+  /estimation-scales/public:
+    get:
+      description: get list of all public estimation scales
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.EstimationScale'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Get Public Estimation Scales
+      tags:
+      - estimation-scale
+  /estimation-scales/public/{scaleId}:
+    get:
+      description: get a specific public estimation scale by ID
+      parameters:
+      - description: Estimation Scale ID
+        in: path
+        name: scaleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.EstimationScale'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Get Public Estimation Scale
+      tags:
+      - estimation-scale
   /maintenance/clean-battles:
     delete:
       description: Deletes battles older than {config.cleanup_battles_days_old} based
@@ -3568,6 +3998,82 @@ paths:
       summary: Update Department User
       tags:
       - organization
+  /organizations/{orgId}/estimation-scales:
+    get:
+      description: get list of estimation scales for a specific organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.EstimationScale'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Estimation Scales
+      tags:
+      - estimation-scale
+    post:
+      description: Creates an estimation scale for a specific organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new estimation scale object
+        in: body
+        name: scale
+        required: true
+        schema:
+          $ref: '#/definitions/http.privateEstimationScaleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns created estimation scale
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.EstimationScale'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Estimation Scale
+      tags:
+      - estimation-scale
   /organizations/{orgId}/invites:
     get:
       description: Get a list of user invites associated to the organization
@@ -3954,177 +4460,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Organization Retro Templates
-      tags:
-      - retroTemplate
-  /retro-templates:
-    get:
-      description: get list of retro templates
-      parameters:
-      - description: Max number of results to return
-        in: query
-        name: limit
-        type: integer
-      - description: Starting point to return rows from, should be multiplied by limit
-          or 0
-        in: query
-        name: offset
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/thunderdome.RetroTemplate'
-                  type: array
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Get Retro Templates
-      tags:
-      - retroTemplate
-    post:
-      description: Creates a retro template
-      parameters:
-      - description: new retro template object
-        in: body
-        name: template
-        required: true
-        schema:
-          $ref: '#/definitions/http.retroTemplateRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/thunderdome.RetroTemplate'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Create Retro Template
-      tags:
-      - retroTemplate
-  /retro-templates/{templateId}:
-    delete:
-      description: Deletes a Retro Template
-      parameters:
-      - description: the retro template ID to delete
-        in: path
-        name: templateId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Delete Retro Template
-      tags:
-      - retroTemplate
-    get:
-      description: get a specific retro template by its ID
-      parameters:
-      - description: the retro template ID
-        in: path
-        name: templateId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/thunderdome.RetroTemplate'
-              type: object
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Get Retro Template by ID
-      tags:
-      - retroTemplate
-    put:
-      description: Updates a Retro Template
-      parameters:
-      - description: the retro template ID to update
-        in: path
-        name: templateId
-        required: true
-        type: string
-      - description: retro template object to update
-        in: body
-        name: template
-        required: true
-        schema:
-          $ref: '#/definitions/http.retroTemplateRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/thunderdome.RetroTemplate'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Update Retro Template
       tags:
       - retroTemplate
   /retro-templates/public:
@@ -5235,6 +5570,82 @@ paths:
       summary: Get Users last checkin for team
       tags:
       - team
+  /teams/{teamId}/estimation-scales:
+    get:
+      description: get list of estimation scales for a specific team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.EstimationScale'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Estimation Scales
+      tags:
+      - estimation-scale
+    post:
+      description: Creates an estimation scale for a specific team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new estimation scale object
+        in: body
+        name: scale
+        required: true
+        schema:
+          $ref: '#/definitions/http.privateEstimationScaleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns created estimation scale
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.EstimationScale'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Estimation Scale
+      tags:
+      - estimation-scale
   /teams/{teamId}/invites:
     get:
       description: Get a list of user invites associated to the team
@@ -5641,14 +6052,6 @@ paths:
         name: userId
         required: true
         type: string
-      - description: the organization ID
-        in: path
-        name: orgId
-        type: string
-      - description: the department ID
-        in: path
-        name: departmentId
-        type: string
       - description: the team ID
         in: path
         name: teamId
@@ -5692,14 +6095,6 @@ paths:
         name: userId
         required: true
         type: string
-      - description: the organization ID
-        in: path
-        name: orgId
-        type: string
-      - description: the department ID
-        in: path
-        name: departmentId
-        type: string
       - description: the team ID
         in: path
         name: teamId
@@ -5742,14 +6137,6 @@ paths:
         in: path
         name: userId
         required: true
-        type: string
-      - description: the organization ID
-        in: path
-        name: orgId
-        type: string
-      - description: the department ID
-        in: path
-        name: departmentId
         type: string
       - description: the team ID
         in: path
@@ -6098,18 +6485,6 @@ paths:
         in: path
         name: userId
         required: true
-        type: string
-      - description: the organization ID
-        in: path
-        name: orgId
-        type: string
-      - description: the department ID
-        in: path
-        name: departmentId
-        type: string
-      - description: the team ID
-        in: path
-        name: teamId
         type: string
       - description: new poker game object
         in: body
@@ -6562,18 +6937,6 @@ paths:
         name: userId
         required: true
         type: string
-      - description: the organization ID
-        in: path
-        name: orgId
-        type: string
-      - description: the department ID
-        in: path
-        name: departmentId
-        type: string
-      - description: the team ID
-        in: path
-        name: teamId
-        type: string
       - description: new retro object
         in: body
         name: retro
@@ -6656,18 +7019,6 @@ paths:
         in: path
         name: userId
         required: true
-        type: string
-      - description: the organization ID
-        in: path
-        name: orgId
-        type: string
-      - description: the department ID
-        in: path
-        name: departmentId
-        type: string
-      - description: the team ID
-        in: path
-        name: teamId
         type: string
       - description: new storyboard object
         in: body

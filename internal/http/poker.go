@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"slices"
 	"strconv"
 
 	"go.uber.org/zap"
@@ -51,6 +52,7 @@ func (s *Service) handleGetUserGames() http.HandlerFunc {
 
 type battleRequestBody struct {
 	BattleName           string               `json:"name" validate:"required"`
+	EstimationScaleID    string               `json:"estimationScaleId"`
 	PointValuesAllowed   []string             `json:"pointValuesAllowed" validate:"required"`
 	AutoFinishVoting     bool                 `json:"autoFinishVoting"`
 	Plans                []*thunderdome.Story `json:"plans"`
@@ -111,12 +113,40 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 			return
 		}
 
+		// set a default for backwards compatibility
+		scale := &thunderdome.EstimationScale{}
+		var scaleErr error
+		if b.EstimationScaleID == "" {
+			scale, scaleErr = s.PokerDataSvc.GetDefaultPublicEstimationScale(ctx)
+			if scaleErr != nil {
+				s.Logger.Error("create poker error", zap.Error(scaleErr))
+				s.Failure(w, r, http.StatusInternalServerError, scaleErr)
+				return
+			}
+			b.EstimationScaleID = scale.ID
+		} else {
+			scale, scaleErr = s.PokerDataSvc.GetEstimationScale(ctx, b.EstimationScaleID)
+			if scaleErr != nil {
+				s.Logger.Error("create poker error", zap.Error(scaleErr))
+				s.Failure(w, r, http.StatusInternalServerError, scaleErr)
+				return
+			}
+		}
+
+		// verify that the point values allowed are in the estimation scale
+		for _, point := range b.PointValuesAllowed {
+			if !slices.Contains(scale.Values, point) {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "POINT_VALUES_NOT_IN_SCALE"))
+				return
+			}
+		}
+
 		var newBattle *thunderdome.Poker
 		var err error
 		// if battle created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = s.PokerDataSvc.TeamCreateGame(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+				newBattle, err = s.PokerDataSvc.TeamCreateGame(ctx, TeamID, UserID, b.BattleName, b.EstimationScaleID, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 				if err != nil {
 					s.Logger.Ctx(ctx).Error("handlePokerCreate error", zap.Error(err),
 						zap.String("entity_user_id", UserID), zap.String("team_id", TeamID),
@@ -129,7 +159,7 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newBattle, err = s.PokerDataSvc.CreateGame(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+			newBattle, err = s.PokerDataSvc.CreateGame(ctx, UserID, b.BattleName, b.EstimationScaleID, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 			if err != nil {
 				s.Logger.Ctx(ctx).Error("handlePokerCreate error", zap.Error(err),
 					zap.String("entity_user_id", UserID), zap.String("poker_name", b.BattleName),
