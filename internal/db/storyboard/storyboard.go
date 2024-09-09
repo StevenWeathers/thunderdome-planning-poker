@@ -234,7 +234,7 @@ func (d *Service) GetStoryboardsByUser(UserID string, Limit int, Offset int) ([]
 			WHERE u.user_id = $1 AND u.abandoned = false
 		),
 		storyboards AS (
-			SELECT id from user_storyboards UNION ALL SELECT id FROM team_storyboards
+			SELECT id from user_storyboards UNION SELECT id FROM team_storyboards
 		)
 		SELECT COUNT(*) FROM storyboards;
 	`, UserID).Scan(
@@ -258,7 +258,7 @@ func (d *Service) GetStoryboardsByUser(UserID string, Limit int, Offset int) ([]
 			WHERE u.user_id = $1 AND u.abandoned = false
 		),
 		storyboards AS (
-			SELECT id from user_storyboards UNION ALL SELECT id FROM team_storyboards
+			SELECT id from user_storyboards UNION SELECT id FROM team_storyboards
 		)
 		SELECT s.id, s.name, s.owner_id, s.created_date, s.updated_date,
 		  min(COALESCE(t.name, '')) as team_name

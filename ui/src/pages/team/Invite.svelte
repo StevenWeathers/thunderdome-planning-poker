@@ -4,8 +4,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import { appRoutes } from '../../config';
   import SolidButton from '../../components/global/SolidButton.svelte';
-  import CheckIcon from '../../components/icons/CheckIcon.svelte';
-  import AlertIcon from '../../components/icons/AlertIcon.svelte';
+  import { Check, TriangleAlert } from 'lucide-svelte';
 
   export let router;
   export let xfetch;
@@ -84,7 +83,7 @@
           <div
             class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900 p-2 flex items-center justify-center mx-auto mb-3.5"
           >
-            <AlertIcon class="w-8 h-8 text-red-500 dark:text-red-400" />
+            <TriangleAlert class="w-8 h-8 text-red-500 dark:text-red-400" />
             <span class="sr-only">Failure</span>
           </div>
           <div class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -95,7 +94,9 @@
           <div
             class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 p-2 flex items-center justify-center mx-auto mb-3.5"
           >
-            <CheckIcon class="w-8 h-8 text-green-500 dark:text-green-400" />
+            <Check
+              class="inline-block w-8 h-8 text-green-500 dark:text-green-400"
+            />
             <span class="sr-only">Success</span>
           </div>
           <div class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">

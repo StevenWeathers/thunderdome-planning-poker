@@ -1,8 +1,8 @@
 <script lang="ts">
   import SolidButton from '../global/SolidButton.svelte';
-  import ClipboardIcon from '../icons/ClipboardIcon.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
+  import { ClipboardCopy } from 'lucide-svelte';
 
   export let notifications;
   export let hostname = '';
@@ -70,7 +70,7 @@
         additionalClasses="flex items-center leading-normal
             whitespace-no-wrap text-sm"
       >
-        <ClipboardIcon />
+        <ClipboardCopy />
       </SolidButton>
     </div>
   </div>
@@ -97,7 +97,7 @@
             additionalClasses="flex items-center leading-normal
                 whitespace-no-wrap text-sm"
           >
-            <ClipboardIcon />
+            <ClipboardCopy />
           </SolidButton>
         </div>
       </div>

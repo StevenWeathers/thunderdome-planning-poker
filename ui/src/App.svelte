@@ -34,23 +34,24 @@
   import VerifyAccount from './pages/user/VerifyAccount.svelte';
   import WarriorProfile from './pages/user/UserProfile.svelte';
   import Admin from './pages/admin/Admin.svelte';
-  import AdminUsers from './pages/admin/Users.svelte';
-  import AdminUser from './pages/admin/User.svelte';
-  import AdminOrganizations from './pages/admin/Organizations.svelte';
-  import AdminOrganization from './pages/admin/Organization.svelte';
-  import AdminDepartment from './pages/admin/Department.svelte';
-  import AdminTeams from './pages/admin/Teams.svelte';
-  import AdminTeam from './pages/admin/Team.svelte';
-  import AdminApikeys from './pages/admin/ApiKeys.svelte';
+  import AdminUsers from './pages/admin/user/Users.svelte';
+  import AdminUser from './pages/admin/user/User.svelte';
+  import AdminOrganizations from './pages/admin/team/Organizations.svelte';
+  import AdminOrganization from './pages/admin/team/Organization.svelte';
+  import AdminDepartment from './pages/admin/team/Department.svelte';
+  import AdminTeams from './pages/admin/team/Teams.svelte';
+  import AdminTeam from './pages/admin/team/Team.svelte';
+  import AdminApikeys from './pages/admin/user/ApiKeys.svelte';
   import AdminAlerts from './pages/admin/Alerts.svelte';
-  import AdminBattles from './pages/admin/PokerGames.svelte';
-  import AdminBattle from './pages/admin/PokerGame.svelte';
-  import AdminRetros from './pages/admin/Retros.svelte';
-  import AdminRetro from './pages/admin/Retro.svelte';
-  import AdminStoryboards from './pages/admin/Storyboards.svelte';
-  import AdminStoryboard from './pages/admin/Storyboard.svelte';
+  import AdminBattles from './pages/admin/poker/PokerGames.svelte';
+  import AdminBattle from './pages/admin/poker/PokerGame.svelte';
+  import AdminRetros from './pages/admin/retro/Retros.svelte';
+  import AdminRetro from './pages/admin/retro/Retro.svelte';
+  import AdminStoryboards from './pages/admin/storyboard/Storyboards.svelte';
+  import AdminStoryboard from './pages/admin/storyboard/Storyboard.svelte';
   import AdminSubscriptions from './pages/admin/Subscriptions.svelte';
   import AdminSubscription from './pages/admin/Subscription.svelte';
+  import AdminEstimationScales from './pages/admin/poker/EstimationScales.svelte';
   import { setLocale } from './i18n/i18n-svelte';
   import { detectLocale } from './i18n/i18n-util';
   import Confirmation from './pages/subscription/Confirmation.svelte';
@@ -458,6 +459,13 @@
         route: Login,
         params,
         name: 'login',
+      };
+    });
+    router.on(`${appRoutes.adminEstimationScales}`, () => {
+      currentPage = {
+        route: AdminEstimationScales,
+        params: {},
+        name: 'admin-estimation-scales',
       };
     });
   }

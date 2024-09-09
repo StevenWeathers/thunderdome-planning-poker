@@ -1,9 +1,9 @@
 <script lang="ts">
-  import CommentIcon from '../icons/CommentIcon.svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import Comment from './Comment.svelte';
+  import { MessageSquareMore } from 'lucide-svelte';
 
   export let checkin = {};
   export let userMap = {};
@@ -31,7 +31,7 @@
 </script>
 
 <button class="text-blue-500 dark:text-sky-400" on:click="{toggleComments}">
-  <CommentIcon />&nbsp;{checkin.comments.length}
+  <MessageSquareMore class="inline-block" />&nbsp;{checkin.comments.length}
   {checkin.comments.length === 1 ? 'Comment' : $LL.comments()}
 </button>
 {#if showComments}

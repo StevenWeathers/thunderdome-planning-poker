@@ -7,7 +7,7 @@
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
   import ThemeSelector from './ThemeSelector.svelte';
   import NavUserMenu from './NavUserMenu.svelte';
-  import ArrowRight from '../icons/ArrowRight.svelte';
+  import { ArrowRight } from 'lucide-svelte';
   import LocaleMenu from './LocaleMenu.svelte';
   import DomeLogo from '../logos/DomeLogo.svelte';
   import DomeLogoLight from '../logos/DomeLogoLight.svelte';
@@ -120,14 +120,14 @@
                 on:click="{headerLogin}"
                 class="text-sm md:text-base block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
                 >{$LL.login()}
-                <ArrowRight class="ms-2 inline-block" />
+                <ArrowRight class="h-4 w-4 ms-2 inline-block" />
               </button>
             {:else}
               <a
                 href="{appRoutes.login}"
                 class="text-sm md:text-base block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
                 >{$LL.login()}
-                <ArrowRight class="ms-2 inline-block" />
+                <ArrowRight class="h-4 w-4 ms-2 inline-block" />
               </a>
             {/if}
           </li>

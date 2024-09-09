@@ -28,6 +28,7 @@ const AppConfig =
 
 const { PathPrefix, DefaultLocale } = AppConfig;
 
+const adminPrefix = `${PathPrefix}/admin`;
 const appRoutes = {
   landing: `${PathPrefix}/`,
   register: `${PathPrefix}/register`,
@@ -46,16 +47,17 @@ const appRoutes = {
   teams: `${PathPrefix}/teams`,
   organization: `${PathPrefix}/organization`,
   team: `${PathPrefix}/team`,
-  admin: `${PathPrefix}/admin`,
-  adminPokerGames: `${PathPrefix}/admin/games`,
-  adminRetros: `${PathPrefix}/admin/retros`,
-  adminStoryboards: `${PathPrefix}/admin/storyboards`,
-  adminTeams: `${PathPrefix}/admin/teams`,
-  adminOrganizations: `${PathPrefix}/admin/organizations`,
-  adminApiKeys: `${PathPrefix}/admin/apikeys`,
-  adminAlerts: `${PathPrefix}/admin/alerts`,
-  adminUsers: `${PathPrefix}/admin/users`,
-  adminSubscriptions: `${PathPrefix}/admin/subscriptions`,
+  admin: adminPrefix,
+  adminPokerGames: `${adminPrefix}/games`,
+  adminRetros: `${adminPrefix}/retros`,
+  adminStoryboards: `${adminPrefix}/storyboards`,
+  adminTeams: `${adminPrefix}/teams`,
+  adminOrganizations: `${adminPrefix}/organizations`,
+  adminApiKeys: `${adminPrefix}/apikeys`,
+  adminAlerts: `${adminPrefix}/alerts`,
+  adminUsers: `${adminPrefix}/users`,
+  adminSubscriptions: `${adminPrefix}/subscriptions`,
+  adminEstimationScales: `${adminPrefix}/estimation-scales`,
   subscriptionPricing: `${PathPrefix}/subscriptions/pricing`,
   subscriptionConfirmation: `${PathPrefix}/subscriptions/confirmation`,
   privacyPolicy: `${PathPrefix}/privacy-policy`,

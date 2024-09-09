@@ -1,7 +1,7 @@
 <script lang="ts">
   import { locales } from '../../config';
   import { createEventDispatcher } from 'svelte';
-  import WorldIcon from '../icons/WorldIcon.svelte';
+  import { Globe } from 'lucide-svelte';
 
   export let currentPage;
   export let selectedLocale = 'en';
@@ -49,7 +49,7 @@
     type="button"
     on:click="{toggleMenu}"
   >
-    <WorldIcon />
+    <Globe />
   </button>
 
   {#if showMenu}

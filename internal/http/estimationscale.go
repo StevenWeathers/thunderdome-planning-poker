@@ -15,7 +15,7 @@ import (
 type estimationScaleRequestBody struct {
 	Name         string   `json:"name" validate:"required"`
 	Description  string   `json:"description"`
-	ScaleType    string   `json:"scaleType" validate:"required,oneof=fibonacci t-shirt powers_of_two custom"`
+	ScaleType    string   `json:"scaleType" validate:"required,oneof=modified_fibonacci fibonacci t_shirt powers_of_two custom"`
 	Values       []string `json:"values" validate:"required,min=2"`
 	IsPublic     bool     `json:"isPublic"`
 	DefaultScale bool     `json:"defaultScale"`
@@ -96,6 +96,7 @@ func (s *Service) handleEstimationScaleCreate() http.HandlerFunc {
 			Values:       scale.Values,
 			DefaultScale: scale.DefaultScale,
 			IsPublic:     scale.IsPublic,
+			CreatedBy:    SessionUserID,
 		}
 
 		createdScale, err := s.PokerDataSvc.CreateEstimationScale(ctx, &es)
@@ -154,6 +155,7 @@ func (s *Service) handleEstimationScaleUpdate() http.HandlerFunc {
 		}
 
 		es := thunderdome.EstimationScale{
+			ID:           ID,
 			Name:         scale.Name,
 			Description:  scale.Description,
 			ScaleType:    scale.ScaleType,
@@ -298,6 +300,8 @@ func (s *Service) handleOrganizationEstimationScaleCreate() http.HandlerFunc {
 			Values:         scale.Values,
 			DefaultScale:   scale.DefaultScale,
 			OrganizationID: OrgID,
+			CreatedBy:      SessionUserID,
+			IsPublic:       false,
 		}
 
 		createdScale, err := s.PokerDataSvc.CreateEstimationScale(ctx, &es)
@@ -396,6 +400,8 @@ func (s *Service) handleTeamEstimationScaleCreate() http.HandlerFunc {
 			Values:       scale.Values,
 			DefaultScale: scale.DefaultScale,
 			TeamID:       TeamID,
+			CreatedBy:    SessionUserID,
+			IsPublic:     false,
 		}
 
 		createdScale, err := s.PokerDataSvc.CreateEstimationScale(ctx, &es)
@@ -469,5 +475,209 @@ func (s *Service) handleGetPublicEstimationScale() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, scale, nil)
+	}
+}
+
+// handleOrganizationEstimationScaleDelete handles deleting an organization's estimation scale
+// @Summary      Delete Organization Estimation Scale
+// @Description  Deletes an Organization Estimation Scale
+// @Tags         estimation-scale
+// @Produce      json
+// @Param        scaleId  path    string                        true  "the estimation scale ID to delete"
+// @Success      200      object  standardJsonResponse{}        "returns success message"
+// @Failure      500      object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organization/{orgId}/estimation-scales/{scaleId} [delete]
+func (s *Service) handleOrganizationEstimationScaleDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		ScaleID := vars["scaleId"]
+		OrgID := vars["orgID"]
+		idErr := validate.Var(ScaleID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		err := s.PokerDataSvc.DeleteOrganizationEstimationScale(ctx, OrgID, ScaleID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationEstimationScaleDelete error", zap.Error(err), zap.String("scale_id", ScaleID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, "Estimation scale deleted successfully", nil)
+	}
+}
+
+// handleTeamEstimationScaleDelete handles deleting a team's estimation scale
+// @Summary      Delete Team Estimation Scale
+// @Description  Deletes an Team Estimation Scale
+// @Tags         estimation-scale
+// @Produce      json
+// @Param        scaleId  path    string                        true  "the estimation scale ID to delete"
+// @Success      200      object  standardJsonResponse{}        "returns success message"
+// @Failure      500      object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /team/{teamId}/estimation-scales/{scaleId} [delete]
+func (s *Service) handleTeamEstimationScaleDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		ScaleID := vars["scaleId"]
+		TeamID := vars["teamId"]
+		idErr := validate.Var(ScaleID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		err := s.PokerDataSvc.DeleteTeamEstimationScale(ctx, TeamID, ScaleID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamEstimationScaleDelete error", zap.Error(err), zap.String("scale_id", ScaleID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, "Estimation scale deleted successfully", nil)
+	}
+}
+
+// handleTeamEstimationScaleUpdate updates a team estimation scale
+// @Summary      Update Team Estimation Scale
+// @Description  Updates a Team Estimation Scale
+// @Tags         estimation-scale
+// @Produce      json
+// @Param        scaleId  path    string                                                 true  "the estimation scale ID to update"
+// @Param        scale    body    privateEstimationScaleRequestBody                             true  "estimation scale object to update"
+// @Success      200      object  standardJsonResponse{data=thunderdome.EstimationScale} "returns updated estimation scale"
+// @Failure      500      object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/estimation-scales/{scaleId} [put]
+func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		ID := vars["scaleId"]
+		TeamID := vars["teamId"]
+		idErr := validate.Var(ID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		var scale = privateEstimationScaleRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &scale)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(scale)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		es := thunderdome.EstimationScale{
+			ID:           ID,
+			Name:         scale.Name,
+			Description:  scale.Description,
+			ScaleType:    "custom",
+			Values:       scale.Values,
+			DefaultScale: scale.DefaultScale,
+			TeamID:       TeamID,
+			IsPublic:     false,
+		}
+
+		updatedScale, err := s.PokerDataSvc.UpdateEstimationScale(ctx, &es)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleEstimationScaleUpdate error", zap.Error(err),
+				zap.String("scale_id", ID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, updatedScale, nil)
+	}
+}
+
+// handleOrganizationEstimationScaleUpdate updates an organization estimation scale
+// @Summary      Update Organization Estimation Scale
+// @Description  Updates an Organization Estimation Scale
+// @Tags         estimation-scale
+// @Produce      json
+// @Param        scaleId  path    string                                                 true  "the estimation scale ID to update"
+// @Param        scale    body    privateEstimationScaleRequestBody                             true  "estimation scale object to update"
+// @Success      200      object  standardJsonResponse{data=thunderdome.EstimationScale} "returns updated estimation scale"
+// @Failure      500      object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/estimation-scales/{scaleId} [put]
+func (s *Service) handleOrganizationEstimationScaleUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		ID := vars["scaleId"]
+		OrgID := vars["orgId"]
+		idErr := validate.Var(ID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		var scale = privateEstimationScaleRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &scale)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(scale)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		es := thunderdome.EstimationScale{
+			ID:             ID,
+			Name:           scale.Name,
+			Description:    scale.Description,
+			ScaleType:      "custom",
+			Values:         scale.Values,
+			DefaultScale:   scale.DefaultScale,
+			OrganizationID: OrgID,
+			IsPublic:       false,
+		}
+
+		updatedScale, err := s.PokerDataSvc.UpdateEstimationScale(ctx, &es)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleEstimationScaleUpdate error", zap.Error(err),
+				zap.String("scale_id", ID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, updatedScale, nil)
 	}
 }

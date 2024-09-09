@@ -9,13 +9,13 @@
   import CreateAlert from '../../components/alert/CreateAlert.svelte';
   import RowCol from '../../components/table/RowCol.svelte';
   import TableRow from '../../components/table/TableRow.svelte';
-  import CheckIcon from '../../components/icons/CheckIcon.svelte';
   import Table from '../../components/table/Table.svelte';
-  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import AdminPageLayout from '../../components/admin/AdminPageLayout.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
+  import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
   export let xfetch;
   export let router;
@@ -186,23 +186,17 @@
             </RowCol>
             <RowCol>
               {#if alert.active}
-                <span class="text-green-600">
-                  <CheckIcon />
-                </span>
+                <BooleanDisplay boolValue="{alert.active}" />
               {/if}
             </RowCol>
             <RowCol>
               {#if alert.registeredOnly}
-                <span class="text-green-600">
-                  <CheckIcon />
-                </span>
+                <BooleanDisplay boolValue="{alert.registeredOnly}" />
               {/if}
             </RowCol>
             <RowCol>
               {#if alert.allowDismiss}
-                <span class="text-green-600">
-                  <CheckIcon />
-                </span>
+                <BooleanDisplay boolValue="{alert.allowDismiss}" />
               {/if}
             </RowCol>
             <RowCol>

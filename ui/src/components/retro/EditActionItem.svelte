@@ -4,9 +4,9 @@
   import LL from '../../i18n/i18n-svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import UserAvatar from '../user/UserAvatar.svelte';
-  import TrashIcon from '../icons/TrashIcon.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
+  import { Trash2 } from 'lucide-svelte';
 
   export let toggleEdit = () => {};
   export let handleEdit = action => {};
@@ -141,7 +141,7 @@
                   assignee.id,
                 )}"
               >
-                <TrashIcon />
+                <Trash2 />
               </HollowButton>
             </div>
           </div>

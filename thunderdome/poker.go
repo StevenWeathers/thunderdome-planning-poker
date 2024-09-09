@@ -168,4 +168,8 @@ type PokerDataSvc interface {
 	GetTeamEstimationScales(ctx context.Context, teamID string, limit, offset int) ([]*EstimationScale, int, error)
 	// GetEstimationScale retrieves an estimation scale by its ID
 	GetEstimationScale(ctx context.Context, id string) (*EstimationScale, error)
+	// DeleteOrganizationEstimationScale deletes an organization's estimation scale by its ID
+	DeleteOrganizationEstimationScale(ctx context.Context, orgID string, scaleID string) error
+	// DeleteTeamEstimationScale deletes a team's estimation scale by its ID
+	DeleteTeamEstimationScale(ctx context.Context, teamID string, scaleID string) error
 }

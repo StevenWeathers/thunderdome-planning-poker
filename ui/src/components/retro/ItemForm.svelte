@@ -1,13 +1,15 @@
 <script lang="ts">
-  import SmileCircleIcon from '../icons/SmileCircleIcon.svelte';
-  import FrownCircleIcon from '../icons/FrownCircleIcon.svelte';
-  import QuestionCircleIcon from '../icons/QuestionCircleIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import TrashIcon from '../icons/TrashIcon.svelte';
-  import CommentIcon from '../icons/CommentIcon.svelte';
   import ItemComments from './ItemComments.svelte';
-  import AngryCircleIcon from '../icons/AngryCircleIcon.svelte';
+  import {
+    Angry,
+    CircleHelp,
+    Frown,
+    MessageSquareMore,
+    Smile,
+    Trash2,
+  } from 'lucide-svelte';
 
   export let sendSocketEvent = (event: string, value: any) => {};
   export let itemType = '';
@@ -75,13 +77,13 @@
         class:dark:text-indigo-400="{color === 'purple'}"
       >
         {#if icon === 'smiley'}
-          <SmileCircleIcon class="w-8 h-8" />
+          <Smile class="w-8 h-8" />
         {:else if icon === 'frown'}
-          <FrownCircleIcon class="w-8 h-8" />
+          <Frown class="w-8 h-8" />
         {:else if icon === 'question'}
-          <QuestionCircleIcon class="w-8 h-8" />
+          <CircleHelp class="w-8 h-8" />
         {:else if icon === 'angry'}
-          <AngryCircleIcon class="w-8 h-8" />
+          <Angry class="w-8 h-8" />
         {/if}
       </div>
     {/if}
@@ -148,7 +150,11 @@
                 on:click="{toggleComments(item.id)}"
               >
                 {item.comments.length}&nbsp;
-                <CommentIcon width="14" height="14" />
+                <MessageSquareMore
+                  width="14"
+                  height="14"
+                  class="inline-block"
+                />
               </button>
             </div>
             {#if phase === 'brainstorm'}
@@ -160,7 +166,7 @@
                     : 'text-gray-500 dark:text-gray-400 hover:text-red-500'}"
                   disabled="{item.userId !== $user.id}"
                 >
-                  <TrashIcon />
+                  <Trash2 />
                 </button>
               </div>
             {/if}

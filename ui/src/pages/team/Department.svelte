@@ -4,7 +4,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
-  import ChevronRight from '../../components/icons/ChevronRight.svelte';
+  import { ChevronRight } from 'lucide-svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
@@ -199,12 +199,12 @@
   <div class="mb-6 lg:mb-8 dark:text-white">
     <h1 class="text-3xl font-semibold font-rajdhani">
       <span class="uppercase">{$LL.department()}</span>
-      <ChevronRight class="w-8 h-8" />
+      <ChevronRight class="w-8 h-8 inline-block" />
       {department.name}
     </h1>
     <div class="text-xl font-semibold font-rajdhani">
       <span class="uppercase">{$LL.organization()}</span>
-      <ChevronRight />
+      <ChevronRight class="inline-block" />
       <a
         class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
         href="{appRoutes.organization}/{organization.id}"

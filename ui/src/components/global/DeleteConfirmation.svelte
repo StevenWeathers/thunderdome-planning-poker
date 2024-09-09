@@ -1,7 +1,7 @@
 <script lang="ts">
   import Modal from './Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import AlertIcon from '../icons/AlertIcon.svelte';
+  import { TriangleAlert } from 'lucide-svelte';
 
   export let confirmText = '';
   export let confirmBtnText = 'Confirm Delete';
@@ -15,7 +15,7 @@
     <div
       class="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 p-2 flex items-center justify-center mx-auto mb-3.5"
     >
-      <AlertIcon class="w-8 h-8 text-gray-600 dark:text-gray-400" />
+      <TriangleAlert class="w-8 h-8 text-gray-600 dark:text-gray-400" />
     </div>
     <div
       class="text-center text-gray-800 dark:text-gray-100 mb-4 font-semibold text-lg"

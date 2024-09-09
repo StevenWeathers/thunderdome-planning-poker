@@ -1,7 +1,7 @@
 <script lang="ts">
   import { user } from '../../stores.ts';
   import { appRoutes } from '../../config';
-  import ArrowRight from '../icons/ArrowRight.svelte';
+  import { ArrowRight } from 'lucide-svelte';
 
   export let subscribeLink = '';
   export let planEnabled = false;
@@ -29,7 +29,7 @@
         class="flex items-center mt-auto text-white bg-indigo-500 border-0 py-2 px-4 w-full focus:outline-none hover:bg-indigo-600 rounded"
       >
         Subscribe Today
-        <ArrowRight />
+        <ArrowRight class="h-4 w-4 inline-block" />
       </a>
       <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
         Payments processed by Stripe.

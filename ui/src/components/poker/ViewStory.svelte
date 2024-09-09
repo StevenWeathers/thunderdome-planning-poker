@@ -1,12 +1,14 @@
 <script lang="ts">
-  import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte';
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import NoSymbolIcon from '../icons/NoSymbol.svelte';
-  import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
-  import DoubleChevronUp from '../icons/DoubleChevronUp.svelte';
-  import ChevronDown from '../icons/ChevronDown.svelte';
-  import ChevronUp from '../icons/ChevronUp.svelte';
+  import {
+    Ban,
+    ChevronDown,
+    ChevronsDown,
+    ChevronsUp,
+    ChevronUp,
+    ExternalLink,
+  } from 'lucide-svelte';
   import Bars2 from '../icons/Bars2.svelte';
 
   export let togglePlanView = () => {};
@@ -26,11 +28,11 @@
     },
     1: {
       name: $LL.planPriorityBlocker(),
-      icon: NoSymbolIcon,
+      icon: Ban,
     },
     2: {
       name: $LL.planPriorityHighest(),
-      icon: DoubleChevronUp,
+      icon: ChevronsUp,
     },
     3: {
       name: $LL.planPriorityHigh(),
@@ -46,7 +48,7 @@
     },
     6: {
       name: $LL.planPriorityLowest(),
-      icon: DoubleChevronDown,
+      icon: ChevronsDown,
     },
   };
 </script>
@@ -78,7 +80,7 @@
         target="_blank"
         class="text-blue-800 hover:text-blue-600 dark:text-sky-400 dark:hover:text-sky-600"
       >
-        <ExternalLinkIcon />
+        <ExternalLink class="inline-block" />
         {planLink}
       </a>
     {/if}
@@ -87,8 +89,10 @@
     <div class="font-bold mb-2 dark:text-gray-400">
       {$LL.planPriority()}
     </div>
-    <svelte:component this="{priorities[priority].icon}" />{priorities[priority]
-      .name}
+    <svelte:component
+      this="{priorities[priority].icon}"
+      class="inline-block w-6 h-6"
+    />{priorities[priority].name}
   </div>
   <div class="mb-4">
     <div class="font-bold mb-2 dark:text-gray-400">

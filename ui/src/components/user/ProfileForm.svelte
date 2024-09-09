@@ -1,6 +1,5 @@
 <script lang="ts">
   import SolidButton from '../global/SolidButton.svelte';
-  import VerifiedIcon from '../icons/VerifiedIcon.svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import { countryList } from '../../country';
   import { AppConfig } from '../../config';
@@ -16,6 +15,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
+  import { BadgeCheck } from 'lucide-svelte';
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
@@ -165,7 +165,7 @@
           data-testid="user-verified"
         >
           {$LL.verified()}
-          <VerifiedIcon class="inline fill-current h-4 w-4" />
+          <BadgeCheck class="inline h-4 w-4" />
         </span>
       {:else if profile.rank !== 'GUEST'}
         <button

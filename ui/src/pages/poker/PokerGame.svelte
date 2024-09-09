@@ -8,7 +8,6 @@
   import VoteResults from '../../components/poker/VoteResults.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
-  import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon.svelte';
   import EditPokerGame from '../../components/poker/EditPokerGame.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
@@ -20,6 +19,7 @@
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
   import TextInput from '../../components/forms/TextInput.svelte';
+  import { ExternalLink } from 'lucide-svelte';
 
   export let battleId: string;
   export let notifications;
@@ -498,7 +498,7 @@
               class="text-blue-800 dark:text-sky-400 inline-block"
               data-testid="currentplan-link"
             >
-              <ExternalLinkIcon class="w-8 h-8" />
+              <ExternalLink class="w-8 h-8" />
             </a>
           {/if}
           {#if currentStory.type}

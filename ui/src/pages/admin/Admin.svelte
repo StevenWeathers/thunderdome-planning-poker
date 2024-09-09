@@ -1,27 +1,33 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import AdminPageLayout from '../../components/admin/AdminPageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import UserIcon from '../../components/icons/UserIcon.svelte';
-  import UserRankRegisteredIcon from '../../components/icons/UserRankRegisteredIcon.svelte';
-  import LightingBoltIcon from '../../components/icons/LightningBoltIcon.svelte';
-  import UsersIcon from '../../components/icons/UsersIcon.svelte';
-  import OfficeBuildingIcon from '../../components/icons/OfficeBuildingIcon.svelte';
-  import ShieldExclamationIcon from '../../components/icons/ShieldExclamationIcon.svelte';
-  import CheckCircleIcon from '../../components/icons/CheckCircleIcon.svelte';
-  import FrownCircleIcon from '../../components/icons/FrownCircleIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import SmileCircleIcon from '../../components/icons/SmileCircleIcon.svelte';
-  import QuestionCircleIcon from '../../components/icons/QuestionCircleIcon.svelte';
-  import CheckIcon from '../../components/icons/CheckIcon.svelte';
-  import UserGroupIcon from '../../components/icons/UserGroupIcon.svelte';
-  import DocumentTextIcon from '../../components/icons/DocumentTextIcon.svelte';
-  import KeyIcon from '../../components/icons/KeyIcon.svelte';
-  import UserRankGuestIcon from '../../components/icons/UserRankGuestIcon.svelte';
+  import {
+    BarChart2,
+    Building,
+    CircleUser,
+    Columns2,
+    FileText,
+    Gamepad,
+    Ghost,
+    Key,
+    LayoutDashboard,
+    LibraryBig,
+    MessageCircleQuestion,
+    Network,
+    RefreshCcw,
+    Smile,
+    SquareCheckBig,
+    User,
+    UserRound,
+    Users,
+    Zap,
+  } from 'lucide-svelte';
 
   export let xfetch;
   export let router;
@@ -64,6 +70,10 @@
     storyboardColumnCount: 0,
     storyboardStoryCount: 0,
     storyboardPersonaCount: 0,
+    estimationScaleCount: 0,
+    publicEstimationScaleCount: 0,
+    organizationEstimationScaleCount: 0,
+    teamEstimationScaleCount: 0,
   };
 
   function getAppStats() {
@@ -141,6 +151,201 @@
 
     getAppStats();
   });
+
+  $: statGroups = [
+    {
+      title: $LL.users(),
+      bgColor: 'bg-indigo-500',
+      stats: [
+        {
+          name: 'guestUsers',
+          count: appStats.unregisteredUserCount,
+          icon: Ghost,
+          active: true,
+        },
+        {
+          name: 'registeredUsers',
+          count: appStats.registeredUserCount,
+          icon: CircleUser,
+          active: true,
+        },
+        {
+          name: 'apiKeys',
+          count: appStats.apikeyCount,
+          icon: Key,
+          active: ExternalAPIEnabled,
+        },
+      ],
+    },
+    {
+      title: $LL.organizations(),
+      bgColor: 'bg-orange-500 dark:bg-orange-400',
+      stats: [
+        {
+          name: 'organizations',
+          count: appStats.organizationCount,
+          icon: Building,
+          active: OrganizationsEnabled,
+        },
+        {
+          name: 'departments',
+          count: appStats.departmentCount,
+          icon: Network,
+          active: OrganizationsEnabled,
+        },
+        {
+          name: 'teams',
+          count: appStats.teamCount,
+          icon: Users,
+          active: true,
+        },
+      ],
+    },
+    {
+      title: $LL.battles(),
+      bgColor: 'bg-red-500',
+      stats: [
+        {
+          name: 'battles',
+          count: appStats.battleCount,
+          icon: Gamepad,
+          active: FeaturePoker,
+        },
+        {
+          name: 'plans',
+          count: appStats.planCount,
+          icon: FileText,
+          active: FeaturePoker,
+        },
+        {
+          name: 'battlesActive',
+          count: appStats.activeBattleCount,
+          icon: Zap,
+          active: FeaturePoker,
+        },
+        {
+          name: 'battlesActiveUsers',
+          count: appStats.activeBattleUserCount,
+          icon: User,
+          active: FeaturePoker,
+        },
+      ],
+    },
+    {
+      title: $LL.retros(),
+      bgColor: 'bg-green-500 dark:bg-lime-400',
+      stats: [
+        {
+          name: 'retros',
+          count: appStats.retroCount,
+          icon: RefreshCcw,
+          active: FeatureRetro,
+        },
+        {
+          name: 'retroItems',
+          count: appStats.retroItemCount,
+          icon: Smile,
+          active: FeatureRetro,
+        },
+        {
+          name: 'retroActionItems',
+          count: appStats.retroActionCount,
+          icon: SquareCheckBig,
+          active: FeatureRetro,
+        },
+        {
+          name: 'activeRetros',
+          count: appStats.activeRetroCount,
+          icon: MessageCircleQuestion,
+          active: FeatureRetro,
+        },
+        {
+          name: 'activeRetroUsers',
+          count: appStats.activeRetroUserCount,
+          icon: User,
+          active: FeatureRetro,
+        },
+      ],
+    },
+    {
+      title: $LL.storyboards(),
+      bgColor: 'bg-emerald-500 dark:bg-emerald-400',
+      stats: [
+        {
+          name: 'storyboards',
+          count: appStats.storyboardCount,
+          icon: LayoutDashboard,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'storyboardGoals',
+          count: appStats.storyboardGoalCount,
+          icon: SquareCheckBig,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'storyboardColumns',
+          count: appStats.storyboardColumnCount,
+          icon: Columns2,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'storyboardStories',
+          count: appStats.storyboardStoryCount,
+          icon: LibraryBig,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'storyboardPersonas',
+          count: appStats.storyboardPersonaCount,
+          icon: UserRound,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'activeStoryboards',
+          count: appStats.activeStoryboardCount,
+          icon: Zap,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'activeStoryboardUsers',
+          count: appStats.activeStoryboardUserCount,
+          icon: User,
+          active: FeatureStoryboard,
+        },
+      ],
+    },
+    {
+      title: $LL.estimationScales(),
+      bgColor: 'bg-yellow-500',
+      stats: [
+        {
+          name: 'estimationScales',
+          count: appStats.estimationScaleCount,
+          icon: BarChart2,
+          active: FeaturePoker,
+        },
+        {
+          name: 'publicEstimationScales',
+          count: appStats.publicEstimationScaleCount,
+          icon: BarChart2,
+          active: FeaturePoker,
+        },
+        {
+          name: 'organizationEstimationScales',
+          count: appStats.organizationEstimationScaleCount,
+          icon: BarChart2,
+          active: FeaturePoker,
+        },
+        {
+          name: 'teamEstimationScales',
+          count: appStats.teamEstimationScaleCount,
+          icon: BarChart2,
+          active: FeaturePoker,
+        },
+      ],
+    },
+  ];
 </script>
 
 <svelte:head>
@@ -148,461 +353,52 @@
 </svelte:head>
 
 <AdminPageLayout activePage="admin">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.admin()}
-    </h1>
-  </div>
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-    <div
-      class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-    >
-      <div class="flex flex-row items-center">
-        <div class="flex-shrink pe-4">
-          <div class="rounded p-3 bg-blue-400 text-white">
-            <UserRankGuestIcon width="28" height="28" />
+  <div class="grid grid-cols-2 gap-4 mb-4">
+    {#each statGroups as group}
+      {#if group.stats.some(stat => stat.active)}
+        <div
+          class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg p-4"
+        >
+          <h2
+            class="text-2xl font-semibold mb-2 dark:text-white font-semibold font-rajdhani uppercase"
+          >
+            {group.title}
+          </h2>
+          <div class="grid grid-cols-2 gap-4">
+            {#if group.stats.filter(stat => stat.active).length > 0}
+              {#each group.stats.filter(stat => stat.active) as stat}
+                <div
+                  class="bg-gray-100 dark:bg-gray-700 rounded-lg p-2 transition-all duration-300 hover:shadow-md hover:scale-105"
+                >
+                  <div class="flex gap-2 content-center">
+                    <div class="flex-none items-center content-center">
+                      <div
+                        class="w-12 h-12 justify-center text-center content-center rounded-full {group.bgColor} text-white mr-2"
+                      >
+                        <svelte:component
+                          this="{stat.icon}"
+                          width="26"
+                          height="26"
+                          class="mx-auto"
+                        />
+                      </div>
+                    </div>
+                    <div class="flex-grow">
+                      <h3 class="text-lg font-medium dark:text-gray-200 mb-2">
+                        {$LL[stat.name]()}
+                      </h3>
+                      <p class="text-3xl font-bold dark:text-white">
+                        {stat.count}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            {/if}
           </div>
         </div>
-        <div class="flex-1 text-right md:text-center">
-          <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-            {$LL.guestUsers()}
-          </h5>
-          <h3 class="font-bold text-3xl dark:text-white">
-            {appStats.unregisteredUserCount}
-          </h3>
-        </div>
-      </div>
-    </div>
-    <div
-      class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-    >
-      <div class="flex flex-row items-center">
-        <div class="flex-shrink pe-4">
-          <div class="rounded p-3 bg-indigo-500 text-white">
-            <UserRankRegisteredIcon width="28" height="28" />
-          </div>
-        </div>
-        <div class="flex-1 text-right md:text-center">
-          <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-            {$LL.registeredUsers()}
-          </h5>
-          <h3 class="font-bold text-3xl dark:text-white">
-            {appStats.registeredUserCount}
-          </h3>
-        </div>
-      </div>
-    </div>
-    {#if ExternalAPIEnabled}
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-cyan-500 text-white">
-              <KeyIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.apiKeys()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.apikeyCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-    {/if}
-    {#if FeaturePoker}
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-red-500 text-white">
-              <ShieldExclamationIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.battles()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.battleCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-teal-500 text-white">
-              <DocumentTextIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.plans()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.planCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-yellow-500 text-white">
-              <LightingBoltIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.battlesActive()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.activeBattleCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-green-500 text-white">
-              <UserIcon width="28" height="28" />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.battlesActiveUsers()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.activeBattleUserCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-    {/if}
-    {#if OrganizationsEnabled}
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-orange-500 text-white">
-              <OfficeBuildingIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.organizations()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.organizationCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-rose-500 text-white">
-              <UserGroupIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.departments()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.departmentCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-    {/if}
-    <div
-      class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-    >
-      <div class="flex flex-row items-center">
-        <div class="flex-shrink pe-4">
-          <div class="rounded p-3 bg-purple-500 text-white">
-            <UsersIcon />
-          </div>
-        </div>
-        <div class="flex-1 text-right md:text-center">
-          <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-            {$LL.teams()}
-          </h5>
-          <h3 class="font-bold text-3xl dark:text-white">
-            {appStats.teamCount}
-          </h3>
-        </div>
-      </div>
-    </div>
-    <div
-      class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-    >
-      <div class="flex flex-row items-center">
-        <div class="flex-shrink pe-4">
-          <div class="rounded p-3 bg-lime-500 text-white">
-            <CheckIcon />
-          </div>
-        </div>
-        <div class="flex-1 text-right md:text-center">
-          <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-            {$LL.teamCheckins()}
-          </h5>
-          <h3 class="font-bold text-3xl dark:text-white">
-            {appStats.teamCheckinsCount}
-          </h3>
-        </div>
-      </div>
-    </div>
-    {#if FeatureRetro}
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-fuchsia-500 text-white">
-              <FrownCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.retros()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.retroCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-amber-500 text-white">
-              <QuestionCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.activeRetros()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.activeRetroCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-pink-500 text-white">
-              <UserIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.activeRetroUsers()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.activeRetroUserCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-emerald-500 text-white">
-              <SmileCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.retroItems()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.retroItemCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-violet-500 text-white">
-              <CheckCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.retroActionItems()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.retroActionCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-    {/if}
-    {#if FeatureStoryboard}
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-fuchsia-500 text-white">
-              <CheckCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.storyboards()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.storyboardCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-amber-500 text-white">
-              <CheckCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.activeStoryboards()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.activeStoryboardCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-pink-500 text-white">
-              <UserIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.activeStoryboardUsers()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.activeStoryboardUserCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-emerald-500 text-white">
-              <CheckCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.storyboardGoals()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.storyboardGoalCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-violet-500 text-white">
-              <CheckCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.storyboardColumns()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.storyboardColumnCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-violet-500 text-white">
-              <CheckCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.storyboardStories()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.storyboardStoryCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-shrink pe-4">
-            <div class="rounded p-3 bg-violet-500 text-white">
-              <CheckCircleIcon />
-            </div>
-          </div>
-          <div class="flex-1 text-right md:text-center">
-            <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.storyboardPersonas()}
-            </h5>
-            <h3 class="font-bold text-3xl dark:text-white">
-              {appStats.storyboardPersonaCount}
-            </h3>
-          </div>
-        </div>
-      </div>
-    {/if}
+      {/if}
+    {/each}
   </div>
 
   <div class="w-full">

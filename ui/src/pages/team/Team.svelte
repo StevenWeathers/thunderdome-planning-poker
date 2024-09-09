@@ -4,7 +4,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
-  import ChevronRight from '../../components/icons/ChevronRight.svelte';
+  import { ChevronRight, MessageSquareMore } from 'lucide-svelte';
   import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
   import CreateRetro from '../../components/retro/CreateRetro.svelte';
   import CreateStoryboard from '../../components/storyboard/CreateStoryboard.svelte';
@@ -21,7 +21,6 @@
   import Modal from '../../components/global/Modal.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
-  import CommentIcon from '../../components/icons/CommentIcon.svelte';
   import BoxList from '../../components/BoxList.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
@@ -30,7 +29,8 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import Toggle from '../../components/forms/Toggle.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
-  import Checkmark from '../../components/pricing/Checkmark.svelte';
+  import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
+  import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
   export let xfetch;
   export let router;
@@ -53,10 +53,12 @@
   let team = {
     id: teamId,
     name: '',
+    subscribed: false,
   };
   let organization = {
     id: organizationId,
     name: '',
+    subscribed: false,
   };
   let department = {
     id: departmentId,
@@ -68,6 +70,7 @@
   let retros = [];
   let retroActions = [];
   let storyboards = [];
+  let estimationScales = [];
   let showCreateBattle = false;
   let showCreateRetro = false;
   let showCreateStoryboard = false;
@@ -137,6 +140,32 @@
     showDeleteTeam = !showDeleteTeam;
   };
 
+  const scalesPageLimit = 20;
+  let scaleCount = 0;
+  let scalesPage = 1;
+
+  const changeScalesPage = evt => {
+    scalesPage = evt.detail;
+    getEstimationScales();
+  };
+
+  function getEstimationScales() {
+    const scalesOffset = (scalesPage - 1) * scalesPageLimit;
+    if (FeaturePoker) {
+      xfetch(
+        `${teamPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`,
+      )
+        .then(res => res.json())
+        .then(function (result) {
+          estimationScales = result.data;
+          scaleCount = result.meta.count;
+        })
+        .catch(function () {
+          notifications.danger('Failed to get estimation scales');
+        });
+    }
+  }
+
   let showRetroActionComments = false;
   let selectedRetroAction = null;
   const toggleRetroActionComments = id => () => {
@@ -174,6 +203,7 @@
         getRetrosActions();
         getStoryboards();
         getUsers();
+        getEstimationScales();
       })
       .catch(function () {
         notifications.danger($LL.teamGetError());
@@ -430,14 +460,14 @@
     <div class="flex-1">
       <h1 class="text-3xl font-semibold font-rajdhani dark:text-white">
         <span class="uppercase">{$LL.team()}</span>
-        <ChevronRight class="w-8 h-8" />
+        <ChevronRight class="w-8 h-8 inline-block" />
         {team.name}
       </h1>
 
       {#if organizationId}
         <div class="text-xl font-semibold font-rajdhani dark:text-white">
           <span class="uppercase">{$LL.organization()}</span>
-          <ChevronRight />
+          <ChevronRight class="inline-block" />
           <a
             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
             href="{appRoutes.organization}/{organization.id}"
@@ -446,9 +476,9 @@
           </a>
           {#if departmentId}
             &nbsp;
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
             <span class="uppercase">{$LL.department()}</span>
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
             <a
               class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
               href="{appRoutes.organization}/{organization.id}/department/{department.id}"
@@ -584,12 +614,14 @@
                       </div>
                     </RowCol>
                     <RowCol>
-                      {#if item.completed}
-                        <Checkmark class="text-green-600" />
-                      {/if}
+                      <BooleanDisplay boolValue="{item.completed}" />
                     </RowCol>
                     <RowCol>
-                      <CommentIcon width="22" height="22" />
+                      <MessageSquareMore
+                        width="22"
+                        height="22"
+                        class="inline-block"
+                      />
                       <button
                         class="text-lg text-blue-400 dark:text-sky-400"
                         on:click="{toggleRetroActionComments(item.id)}"
@@ -707,6 +739,43 @@
       invitesList.f('user-invited');
     }}"
   />
+
+  {#if FeaturePoker}
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
+        <EstimationScalesList
+          xfetch="{xfetch}"
+          eventTag="{eventTag}"
+          notifications="{notifications}"
+          isEntityAdmin="{isAdmin}"
+          apiPrefix="{teamPrefix}"
+          organizationId="{organizationId}"
+          departmentId="{departmentId}"
+          teamId="{teamId}"
+          scales="{estimationScales}"
+          getScales="{getEstimationScales}"
+          scaleCount="{scaleCount}"
+          scalesPage="{scalesPage}"
+          scalesPageLimit="{scalesPageLimit}"
+          changePage="{changeScalesPage}"
+        />
+      {:else}
+        <h3
+          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+        >
+          Estimation Scales
+        </h3>
+        <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
+          <a
+            href="{appRoutes.subscriptionPricing}"
+            class="underline"
+            target="_blank">Subscribe Today</a
+          >
+          to create custom Poker Estimation Scales
+        </p>
+      {/if}
+    </div>
+  {/if}
 
   {#if isAdmin && !organizationId && !departmentId}
     <div class="w-full text-center mt-8">

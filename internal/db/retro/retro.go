@@ -281,7 +281,7 @@ func (d *Service) RetroGetByUser(UserID string, Limit int, Offset int) ([]*thund
 			WHERE u.user_id = $1 AND u.abandoned = false
 		),
 		retros AS (
-			SELECT id from user_retros UNION ALL SELECT id FROM team_retros
+			SELECT id from user_retros UNION SELECT id FROM team_retros
 		)
 		SELECT COUNT(*) FROM retros;
 	`, UserID).Scan(
@@ -305,7 +305,7 @@ func (d *Service) RetroGetByUser(UserID string, Limit int, Offset int) ([]*thund
 			WHERE u.user_id = $1 AND u.abandoned = false
 		),
 		retros AS (
-			SELECT id from user_retros UNION ALL SELECT id FROM team_retros
+			SELECT id from user_retros UNION SELECT id FROM team_retros
 		)
 		SELECT r.id, r.name, r.owner_id, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.template_id, r.created_date, r.updated_date,
 		  MIN(COALESCE(t.name, '')) as teamName,

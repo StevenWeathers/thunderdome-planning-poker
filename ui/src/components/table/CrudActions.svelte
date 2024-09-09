@@ -1,8 +1,6 @@
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
-  import EditIcon from '../icons/EditIcon.svelte';
-  import TrashIcon from '../icons/TrashIcon.svelte';
-  import EyeIcon from '../icons/EyeIcon.svelte';
+  import { Eye, Pencil, Trash2 } from 'lucide-svelte';
 
   export let detailsLink = '';
   export let editBtnEnabled = true;
@@ -17,7 +15,7 @@
   <slot />
   {#if detailsLink !== ''}
     <a href="{detailsLink}" class="hover:text-blue-500">
-      <EyeIcon />
+      <Eye />
       <span class="sr-only">View Details</span>
     </a>
   {/if}
@@ -28,7 +26,7 @@
       data-testid="{editBtnTestId}"
     >
       <span class="sr-only">{$LL.edit()}</span>
-      <EditIcon />
+      <Pencil />
     </button>
   {/if}
   {#if deleteBtnEnabled}
@@ -38,7 +36,7 @@
       data-testid="{deleteBtnTestId}"
     >
       <span class="sr-only">{$LL.delete()}</span>
-      <TrashIcon />
+      <Trash2 />
     </button>
   {/if}
 </div>

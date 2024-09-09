@@ -1,11 +1,11 @@
 <script lang="ts">
   import Modal from '../global/Modal.svelte';
   import HollowButton from '../global/HollowButton.svelte';
-  import UserIcon from '../icons/UserIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import Editor from '../forms/Editor.svelte';
+  import { User } from 'lucide-svelte';
 
   export let toggleStoryForm = () => {};
   export let sendSocketEvent = () => {};
@@ -301,7 +301,9 @@
                 data-commentid="{comment.id}"
               >
                 <div class="font-bold">
-                  <UserIcon class="h-4 w-4" />&nbsp;{userMap[comment.user_id]}
+                  <User class="h-4 w-4 inline-block" />&nbsp;{userMap[
+                    comment.user_id
+                  ]}
                 </div>
                 {#if selectedComment !== null && selectedComment.id === comment.id}
                   <div class="w-full my-2">

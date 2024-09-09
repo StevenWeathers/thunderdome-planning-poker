@@ -8,6 +8,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
+  import SelectWithSubtext from '../forms/SelectWithSubtext.svelte';
 
   export let xfetch;
   export let notifications;
@@ -115,6 +116,10 @@
       });
   }
 
+  const updateSelectedTemplate = event => {
+    templateId = event.detail.id;
+  };
+
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.register);
@@ -173,19 +178,18 @@
   {/if}
 
   <div class="mb-4">
-    <label
+    <div
       class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-      for="templateId"
     >
       Retro Template
-    </label>
-    <SelectInput bind:value="{templateId}" id="templateId" name="templateId">
-      {#each publicTemplates as template}
-        <option value="{template.id}">
-          {template.name}
-        </option>
-      {/each}
-    </SelectInput>
+    </div>
+    <SelectWithSubtext
+      on:change="{updateSelectedTemplate}"
+      items="{publicTemplates}"
+      label="Select an estimation scale..."
+      selectedItemId="{templateId}"
+      itemType="retro_template"
+    />
   </div>
 
   <div class="mb-4">

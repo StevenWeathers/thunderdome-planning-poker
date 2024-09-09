@@ -1,14 +1,10 @@
 <script lang="ts">
-  import LeaderIcon from '../icons/LeaderIcon.svelte';
-  import WarriorRankPrivate from '../icons/UserRankGuestIcon.svelte';
-  import WarriorRankCorporal from '../icons/UserRankRegisteredIcon.svelte';
-  import WarriorRankGeneral from '../icons/UserRankAdmin.svelte';
   import UserAvatar from '../user/UserAvatar.svelte';
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import { user as sessionUser } from '../../stores';
-  import VoteIcon from '../icons/VoteIcon.svelte';
   import BecomeLeader from './BecomeFacilitator.svelte';
+  import { CircleUser, Crown, Ghost, Vote } from 'lucide-svelte';
 
   export let voted = false;
   export let warrior = {};
@@ -90,11 +86,11 @@
         >
           {#if showRank}
             {#if warrior.rank == 'ADMIN'}
-              <WarriorRankGeneral />
+              <Crown class="inline-block text-yellow-500" />
             {:else if warrior.rank == 'REGISTERED'}
-              <WarriorRankCorporal />
+              <CircleUser class="inline-block" />
             {:else}
-              <WarriorRankPrivate />
+              <Ghost class="inline-block" />
             {/if}
           {/if}
           {#if autoFinishVoting && warrior.spectator}
@@ -111,7 +107,7 @@
         </p>
         <p class="text-l text-gray-700 leading-tight">
           {#if leaders.includes(warrior.id)}
-            <LeaderIcon />
+            <Crown class="inline-block text-yellow-500" />
             {#if isLeader}
               &nbsp;
               <button
@@ -179,7 +175,7 @@
         {#if !warrior.spectator}
           {#if voted && points === ''}
             <span class="text-green-500 dark:text-lime-400">
-              <VoteIcon class="h-8 w-8" />
+              <Vote class="h-8 w-8" />
             </span>
           {:else if voted && points !== ''}
             <span

@@ -2566,6 +2566,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/organization/{orgId}/estimation-scales/{scaleId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes an Organization Estimation Scale",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Delete Organization Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the estimation scale ID to delete",
+                        "name": "scaleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns success message",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/organizations/{orgId}": {
             "get": {
                 "security": [
@@ -5475,6 +5515,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/team/{teamId}/estimation-scales/{scaleId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes an Team Estimation Scale",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Delete Team Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the estimation scale ID to delete",
+                        "name": "scaleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns success message",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teams/{teamId}": {
             "get": {
                 "security": [
@@ -6300,6 +6380,67 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "returns created estimation scale",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.EstimationScale"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/teams/{teamId}/estimation-scales/{scaleId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates an Organization Estimation Scale",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Update Organization Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the estimation scale ID to update",
+                        "name": "scaleId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "estimation scale object to update",
+                        "name": "scale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.privateEstimationScaleRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns updated estimation scale",
                         "schema": {
                             "allOf": [
                                 {
@@ -9656,8 +9797,9 @@ const docTemplate = `{
                 "scaleType": {
                     "type": "string",
                     "enum": [
+                        "modified_fibonacci",
                         "fibonacci",
-                        "t-shirt",
+                        "t_shirt",
                         "powers_of_two",
                         "custom"
                     ]
@@ -10319,10 +10461,19 @@ const docTemplate = `{
                 "departmentCount": {
                     "type": "integer"
                 },
+                "estimationScaleCount": {
+                    "type": "integer"
+                },
                 "organizationCount": {
                     "type": "integer"
                 },
+                "organizationEstimationScaleCount": {
+                    "type": "integer"
+                },
                 "planCount": {
+                    "type": "integer"
+                },
+                "publicEstimationScaleCount": {
                     "type": "integer"
                 },
                 "registeredUserCount": {
@@ -10356,6 +10507,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "teamCount": {
+                    "type": "integer"
+                },
+                "teamEstimationScaleCount": {
                     "type": "integer"
                 },
                 "unregisteredUserCount": {
@@ -10547,6 +10701,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "subscribed": {
+                    "type": "boolean"
                 },
                 "updatedDate": {
                     "type": "string"
@@ -11316,6 +11473,9 @@ const docTemplate = `{
                 "organization_id": {
                     "type": "string"
                 },
+                "subscribed": {
+                    "type": "boolean"
+                },
                 "updatedDate": {
                     "type": "string"
                 }
@@ -11517,6 +11677,9 @@ const docTemplate = `{
                 "role": {
                     "type": "string"
                 },
+                "subscribed": {
+                    "type": "boolean"
+                },
                 "updatedDate": {
                     "type": "string"
                 }
@@ -11542,6 +11705,9 @@ const docTemplate = `{
                 },
                 "role": {
                     "type": "string"
+                },
+                "subscribed": {
+                    "type": "boolean"
                 },
                 "updatedDate": {
                     "type": "string"

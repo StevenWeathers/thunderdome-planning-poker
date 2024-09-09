@@ -4,9 +4,8 @@
   import HollowButton from '../global/HollowButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
-  import UserIcon from '../icons/UserIcon.svelte';
-  import TrashIcon from '../icons/TrashIcon.svelte';
   import LL from '../../i18n/i18n-svelte';
+  import { Trash2, User } from 'lucide-svelte';
 
   export let toggleColumnEdit = () => {};
   export let handleColumnRevision = () => {};
@@ -96,7 +95,7 @@
         {#each column.personas as persona}
           <div class="flex text-gray-700 dark:text-gray-400 mb-2">
             <div class="w-1/4">
-              <UserIcon />
+              <User class="inline-block" />
             </div>
             <div class="w-2/4 text-lg">{persona.name} ({persona.role})</div>
             <div class="w-1/4 text-right">
@@ -107,7 +106,7 @@
                   persona_id: persona.id,
                 })}"
               >
-                <TrashIcon />
+                <Trash2 />
               </HollowButton>
             </div>
           </div>

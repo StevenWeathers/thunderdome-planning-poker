@@ -1,7 +1,6 @@
 <script lang="ts">
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
-  import DownCarrotIcon from '../icons/ChevronDown.svelte';
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
@@ -9,6 +8,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
+  import { ChevronDown } from 'lucide-svelte';
 
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
@@ -151,7 +151,7 @@
           class="pointer-events-none absolute inset-y-0 end-0 flex
                     items-center px-2 text-gray-700 dark:text-gray-400"
         >
-          <DownCarrotIcon />
+          <ChevronDown class="inline-block" />
         </div>
       </div>
     </div>
