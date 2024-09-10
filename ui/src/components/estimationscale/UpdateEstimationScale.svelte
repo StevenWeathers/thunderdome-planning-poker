@@ -83,9 +83,6 @@
         .map(v => v.trim())
         .filter(v => v !== '');
 
-      // Remove duplicates
-      values = [...new Set(values)];
-
       // Update the input field with the cleaned values
       target.value = values.join(', ');
     } else {
