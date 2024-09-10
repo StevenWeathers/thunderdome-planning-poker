@@ -555,7 +555,7 @@
         );
         eventTag('phase_all_ready', 'retro', '');
       }
-      if (allUsersVoted) {
+      if (retro.phase === 'vote' && allUsersVoted) {
         sendSocketEvent(
           'phase_all_ready',
           JSON.stringify({
