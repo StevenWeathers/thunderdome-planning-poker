@@ -1,14 +1,16 @@
 <script lang="ts">
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
-  import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import NoSymbolIcon from '../icons/NoSymbol.svelte';
-  import DoubleChevronUp from '../icons/DoubleChevronUp.svelte';
-  import ChevronUp from '../icons/ChevronUp.svelte';
+  import {
+    Ban,
+    ChevronDown,
+    ChevronsDown,
+    ChevronsUp,
+    ChevronUp,
+    ExternalLink,
+  } from 'lucide-svelte';
   import Bars2 from '../icons/Bars2.svelte';
-  import ChevronDown from '../icons/ChevronDown.svelte';
-  import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
   import AddPlan from './AddStory.svelte';
   import ViewPlan from './ViewStory.svelte';
   import ImportModal from './ImportModal.svelte';
@@ -39,11 +41,11 @@
     },
     1: {
       name: $LL.planPriorityBlocker(),
-      icon: NoSymbolIcon,
+      icon: Ban,
     },
     2: {
       name: $LL.planPriorityHighest(),
-      icon: DoubleChevronUp,
+      icon: ChevronsUp,
     },
     3: {
       name: $LL.planPriorityHigh(),
@@ -59,7 +61,7 @@
     },
     6: {
       name: $LL.planPriorityLowest(),
-      icon: DoubleChevronDown,
+      icon: ChevronsDown,
     },
   };
 
@@ -259,7 +261,7 @@
                 target="_blank"
                 class="text-blue-800 dark:text-sky-400"
               >
-                <ExternalLinkIcon />
+                <ExternalLink class="inline-block" />
               </a>
               &nbsp;
             {/if}
@@ -272,7 +274,10 @@
             </div>
             &nbsp;
             {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-            <svelte:component this="{priorities[plan.priority].icon}" />
+            <svelte:component
+              this="{priorities[plan.priority].icon}"
+              class="inline-block w-6 h-6"
+            />
             <span data-testid="plan-name">{plan.name}</span>
           </div>
           {#if plan.points !== ''}
@@ -335,7 +340,7 @@
                   target="_blank"
                   class="text-blue-800 dark:text-sky-400"
                 >
-                  <ExternalLinkIcon />
+                  <ExternalLink class="inline-block" />
                 </a>
                 &nbsp;
               {/if}
@@ -348,7 +353,10 @@
               </div>
               &nbsp;
               {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-              <svelte:component this="{priorities[plan.priority].icon}" />
+              <svelte:component
+                this="{priorities[plan.priority].icon}"
+                class="inline-block w-6 h-6"
+              />
               <span data-testid="plan-name">{plan.name}</span>
             </div>
             &nbsp;

@@ -2,7 +2,7 @@
   import HollowButton from './global/HollowButton.svelte';
   import LL from '../i18n/i18n-svelte';
   import { user } from '../stores';
-  import LeaderIcon from './icons/LeaderIcon.svelte';
+  import { Crown } from 'lucide-svelte';
 
   export let items: Array<object> = [];
   export let pageRoute: string = '';
@@ -31,7 +31,7 @@
       >
         {#if showFacilitatorIcon}
           {#if item[facilitatorsKey].includes($user.id)}
-            <LeaderIcon />&nbsp;
+            <Crown class="inline-block text-yellow-500" />&nbsp;
           {/if}
         {/if}
         <span data-testid="{itemType}-name">{item.name}</span>

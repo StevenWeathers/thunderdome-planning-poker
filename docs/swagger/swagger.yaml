@@ -196,8 +196,9 @@ definitions:
         type: string
       scaleType:
         enum:
+        - modified_fibonacci
         - fibonacci
-        - t-shirt
+        - t_shirt
         - powers_of_two
         - custom
         type: string
@@ -652,9 +653,15 @@ definitions:
         type: integer
       departmentCount:
         type: integer
+      estimationScaleCount:
+        type: integer
       organizationCount:
         type: integer
+      organizationEstimationScaleCount:
+        type: integer
       planCount:
+        type: integer
+      publicEstimationScaleCount:
         type: integer
       registeredUserCount:
         type: integer
@@ -677,6 +684,8 @@ definitions:
       teamCheckinsCount:
         type: integer
       teamCount:
+        type: integer
+      teamEstimationScaleCount:
         type: integer
       unregisteredUserCount:
         type: integer
@@ -802,6 +811,8 @@ definitions:
         type: string
       name:
         type: string
+      subscribed:
+        type: boolean
       updatedDate:
         type: string
     type: object
@@ -1306,6 +1317,8 @@ definitions:
         type: string
       organization_id:
         type: string
+      subscribed:
+        type: boolean
       updatedDate:
         type: string
     type: object
@@ -1438,6 +1451,8 @@ definitions:
         type: string
       role:
         type: string
+      subscribed:
+        type: boolean
       updatedDate:
         type: string
     type: object
@@ -1455,6 +1470,8 @@ definitions:
         type: string
       role:
         type: string
+      subscribed:
+        type: boolean
       updatedDate:
         type: string
     type: object
@@ -3327,6 +3344,31 @@ paths:
       summary: Clean Old Storyboards
       tags:
       - maintenance
+  /organization/{orgId}/estimation-scales/{scaleId}:
+    delete:
+      description: Deletes an Organization Estimation Scale
+      parameters:
+      - description: the estimation scale ID to delete
+        in: path
+        name: scaleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns success message
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Organization Estimation Scale
+      tags:
+      - estimation-scale
   /organizations/{orgId}:
     delete:
       description: Delete an Organization
@@ -5120,6 +5162,31 @@ paths:
       summary: Update Subscription
       tags:
       - subscription
+  /team/{teamId}/estimation-scales/{scaleId}:
+    delete:
+      description: Deletes an Team Estimation Scale
+      parameters:
+      - description: the estimation scale ID to delete
+        in: path
+        name: scaleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns success message
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Estimation Scale
+      tags:
+      - estimation-scale
   /teams/{teamId}:
     delete:
       description: Delete a Team
@@ -5644,6 +5711,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create Team Estimation Scale
+      tags:
+      - estimation-scale
+  /teams/{teamId}/estimation-scales/{scaleId}:
+    put:
+      description: Updates an Organization Estimation Scale
+      parameters:
+      - description: the estimation scale ID to update
+        in: path
+        name: scaleId
+        required: true
+        type: string
+      - description: estimation scale object to update
+        in: body
+        name: scale
+        required: true
+        schema:
+          $ref: '#/definitions/http.privateEstimationScaleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated estimation scale
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.EstimationScale'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Estimation Scale
       tags:
       - estimation-scale
   /teams/{teamId}/invites:

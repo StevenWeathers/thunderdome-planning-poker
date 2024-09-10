@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ThumbsUp from '../icons/ThumbsUp.svelte';
+  import { ThumbsUp } from 'lucide-svelte';
 
   export let groups = [];
   export let columns = [];

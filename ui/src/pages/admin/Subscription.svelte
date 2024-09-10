@@ -7,11 +7,11 @@
   import HeadCol from '../../components/table/HeadCol.svelte';
   import RowCol from '../../components/table/RowCol.svelte';
   import TableRow from '../../components/table/TableRow.svelte';
-  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import AdminPageLayout from '../../components/admin/AdminPageLayout.svelte';
   import Table from '../../components/table/Table.svelte';
-  import CheckIcon from '../../components/icons/CheckIcon.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
+  import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -113,11 +113,7 @@
             {subscription.type}
           </RowCol>
           <RowCol>
-            {#if subscription.active}
-              <span class="text-green-600">
-                <CheckIcon />
-              </span>
-            {/if}
+            <BooleanDisplay boolValue="{subscription.active}" />
           </RowCol>
           <RowCol>
             {new Date(subscription.created_date).toLocaleString()}

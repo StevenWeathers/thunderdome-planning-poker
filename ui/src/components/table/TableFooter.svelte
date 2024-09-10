@@ -1,6 +1,5 @@
 <script lang="ts">
-  import ChevronLeft from '../icons/ChevronLeft.svelte';
-  import ChevronRight from '../icons/ChevronRight.svelte';
+  import { ChevronLeft, ChevronRight } from 'lucide-svelte';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
@@ -80,7 +79,7 @@
         on:keypress="{() => current > 1 && setCurrent(current - 1)}"
       >
         <span class="sr-only">Previous</span>
-        <ChevronLeft class="w-5 h-5" />
+        <ChevronLeft class="w-5 h-5 inline-block" />
       </button>
     </li>
     {#each arr_pages as i}
@@ -116,7 +115,7 @@
         on:keypress="{() => current < num_pages && setCurrent(current + 1)}"
       >
         <span class="sr-only">Next</span>
-        <ChevronRight class="w-5 h-5" />
+        <ChevronRight class="w-5 h-5 inline-block" />
       </button>
     </li>
   </ul>

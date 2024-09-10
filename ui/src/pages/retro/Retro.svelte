@@ -2,7 +2,13 @@
   import Sockette from 'sockette';
   import { onDestroy, onMount } from 'svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import ChevronRight from '../../components/icons/ChevronRight.svelte';
+  import {
+    Check,
+    ChevronRight,
+    ExternalLink,
+    Pencil,
+    SquareCheckBig,
+  } from 'lucide-svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditRetro from '../../components/retro/EditRetro.svelte';
@@ -12,13 +18,9 @@
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
   import LL from '../../i18n/i18n-svelte';
   import Export from '../../components/retro/Export.svelte';
-  import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon.svelte';
   import GroupPhase from '../../components/retro/GroupPhase.svelte';
   import VotePhase from '../../components/retro/VotePhase.svelte';
   import GroupedItems from '../../components/retro/GroupedItems.svelte';
-  import CheckCircleIcon from '../../components/icons/CheckCircleIcon.svelte';
-  import PencilIcon from '../../components/icons/EditIcon.svelte';
-  import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import UserCard from '../../components/retro/UserCard.svelte';
   import InviteUser from '../../components/retro/InviteUser.svelte';
   import PageLayout from '../../components/PageLayout.svelte';
@@ -687,7 +689,7 @@
             >
           </div>
           <div class="flex-initial px-1">
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
           </div>
           <div
             class="flex-initial px-1 {retro.phase === 'brainstorm' &&
@@ -698,7 +700,7 @@
             >
           </div>
           <div class="flex-initial px-1">
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
           </div>
           <div
             class="flex-initial px-1 {retro.phase === 'group' &&
@@ -707,7 +709,7 @@
             <button on:click="{setPhase('group')}">{$LL.group()}</button>
           </div>
           <div class="flex-initial px-1">
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
           </div>
           <div
             class="flex-initial px-1 {retro.phase === 'vote' &&
@@ -716,7 +718,7 @@
             <button on:click="{setPhase('vote')}">{$LL.vote()}</button>
           </div>
           <div class="flex-initial px-1">
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
           </div>
           <div
             class="flex-initial px-1 {retro.phase === 'action' &&
@@ -725,7 +727,7 @@
             <button on:click="{setPhase('action')}">{$LL.actionItems()}</button>
           </div>
           <div class="flex-initial px-1">
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
           </div>
           <div
             class="flex-initial px-1 {retro.phase === 'completed' &&
@@ -778,7 +780,7 @@
                   target="_blank"
                   class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                 >
-                  <ExternalLinkIcon class="w-6 h-6 md:w-8 md:h-8" />
+                  <ExternalLink class="w-6 h-6 md:w-8 md:h-8" />
                 </a>
               </p>
             </div>
@@ -831,7 +833,7 @@
                 {#if retro.phase === 'action'}
                   <div class="flex items-center mb-4">
                     <div class="flex-shrink pe-2">
-                      <CheckCircleIcon
+                      <SquareCheckBig
                         class="w-8 h-8 text-indigo-500 dark:text-violet-400"
                       />
                     </div>
@@ -864,7 +866,7 @@
                           class="pe-2 pt-1 text-gray-500 dark:text-gray-400
                                                 hover:text-blue-500"
                         >
-                          <PencilIcon />
+                          <Pencil />
                         </button>
                       </div>
                       <div class="flex-grow dark:text-white">
@@ -900,7 +902,9 @@
                                             justify-center items-center me-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
                         >
-                          <CheckboxIcon />
+                          <Check
+                            class="hidden w-4 h-4 text-green-600 pointer-events-none"
+                          />
                         </div>
                         <label for="{i}Completed" class="select-none"></label>
                       </div>

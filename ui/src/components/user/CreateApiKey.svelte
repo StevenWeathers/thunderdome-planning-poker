@@ -1,10 +1,10 @@
 <script lang="ts">
   import SolidButton from '../global/SolidButton.svelte';
-  import ClipboardIcon from '../icons/ClipboardIcon.svelte';
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import TextInput from '../forms/TextInput.svelte';
+  import { ClipboardCopy } from 'lucide-svelte';
 
   export let handleApiKeyCreate = () => {};
   export let toggleCreateApiKey = () => {};
@@ -129,7 +129,7 @@
             additionalClasses="flex items-center leading-normal
                         whitespace-no-wrap text-sm"
           >
-            <ClipboardIcon />
+            <ClipboardCopy />
           </SolidButton>
         </div>
       </div>

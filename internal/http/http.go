@@ -284,12 +284,24 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/estimation-scales/public/{scaleId}", a.userOnly(a.handleGetPublicEstimationScale())).Methods("GET")
 
 		// Organization-specific estimation scale routes
-		orgRouter.HandleFunc("/{orgId}/estimation-scales", a.userOnly(a.subscribedUserOnly(a.orgUserOnly(a.handleGetOrganizationEstimationScales())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/estimation-scales", a.userOnly(a.subscribedUserOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleCreate())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationEstimationScales())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleCreate())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleUpdate())))).Methods("PUT")
+		orgRouter.HandleFunc("/{orgId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleDelete())))).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetTeamEstimationScales())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.departmentTeamAdminOnly(a.handleTeamEstimationScaleCreate())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.departmentTeamAdminOnly(a.handleTeamEstimationScaleUpdate())))).Methods("PUT")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.departmentTeamAdminOnly(a.handleTeamEstimationScaleDelete())))).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.orgTeamOnly(a.handleGetTeamEstimationScales())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.orgTeamAdminOnly(a.handleTeamEstimationScaleCreate())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.orgTeamAdminOnly(a.handleTeamEstimationScaleUpdate())))).Methods("PUT")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.orgTeamAdminOnly(a.handleTeamEstimationScaleDelete())))).Methods("DELETE")
 
 		// Team-specific estimation scale routes
-		teamRouter.HandleFunc("/{teamId}/estimation-scales", a.userOnly(a.subscribedUserOnly(a.teamUserOnly(a.handleGetTeamEstimationScales())))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/estimation-scales", a.userOnly(a.subscribedUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate())))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/estimation-scales", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamEstimationScales())))).Methods("GET")
+		teamRouter.HandleFunc("/{teamId}/estimation-scales", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate())))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamEstimationScaleUpdate())))).Methods("PUT")
+		teamRouter.HandleFunc("/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamEstimationScaleDelete())))).Methods("DELETE")
 
 		// Admin estimation scale routes
 		adminRouter.HandleFunc("/estimation-scales", a.userOnly(a.adminOnly(a.handleGetEstimationScales()))).Methods("GET")

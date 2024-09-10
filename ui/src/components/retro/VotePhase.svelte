@@ -1,6 +1,6 @@
 <script lang="ts">
   import { user } from '../../stores';
-  import ThumbsUp from '../icons/ThumbsUp.svelte';
+  import { ThumbsUp } from 'lucide-svelte';
 
   export let groups = [];
   export let handleVote = () => {};

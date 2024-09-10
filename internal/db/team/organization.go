@@ -25,8 +25,10 @@ func (d *OrganizationService) OrganizationGet(ctx context.Context, OrgID string)
 	var org = &thunderdome.Organization{}
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT o.id, o.name, o.created_date, o.updated_date
+		`SELECT o.id, o.name, o.created_date, o.updated_date,
+ 		CASE WHEN s.id IS NOT NULL AND s.expires > NOW() AND s.active = true THEN true ELSE false END AS is_subscribed
         FROM thunderdome.organization o
+        LEFT JOIN thunderdome.subscription s ON o.id = s.organization_id
         WHERE o.id = $1;`,
 		OrgID,
 	).Scan(
@@ -34,6 +36,7 @@ func (d *OrganizationService) OrganizationGet(ctx context.Context, OrgID string)
 		&org.Name,
 		&org.CreatedDate,
 		&org.UpdatedDate,
+		&org.Subscribed,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting organization: %v", err)
@@ -453,4 +456,29 @@ func (d *OrganizationService) OrganizationList(ctx context.Context, Limit int, O
 	}
 
 	return organizations
+}
+
+func (d *OrganizationService) OrganizationIsSubscribed(ctx context.Context, OrgID string) (bool, error) {
+	var subscribed bool
+
+	err := d.DB.QueryRowContext(ctx,
+		`SELECT 
+    COALESCE(
+        (SELECT TRUE 
+         FROM thunderdome.subscription 
+         WHERE organization_id = $1
+           AND active = TRUE 
+           AND expires > CURRENT_TIMESTAMP
+         LIMIT 1),
+        FALSE
+    ) AS is_subscribed;`,
+		OrgID,
+	).Scan(
+		&subscribed,
+	)
+	if err != nil {
+		return false, fmt.Errorf("error getting organization subscription: %v", err)
+	}
+
+	return subscribed, nil
 }

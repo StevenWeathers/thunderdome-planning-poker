@@ -4,9 +4,8 @@
   import Crossmark from '../../components/pricing/Crossmark.svelte';
   import { user } from '../../stores.ts';
   import { AppConfig, appRoutes } from '../../config.ts';
-  import ArrowRight from '../../components/icons/ArrowRight.svelte';
+  import { ArrowRight, ShieldCheck } from 'lucide-svelte';
   import PayPeriodToggle from '../../components/pricing/PayPeriodToggle.svelte';
-  import ShieldCheck from '../../components/icons/ShieldCheck.svelte';
 
   const { RepoURL } = AppConfig;
 
@@ -79,6 +78,11 @@
           Included: true,
           Header: true,
           ColorClass: 'text-green-600 dark:text-lime-400',
+        },
+        {
+          Name: 'Custom Poker Estimation Scales',
+          Included: false,
+          Header: false,
         },
         {
           Name: 'Import Poker Stories from Jira',
@@ -175,6 +179,11 @@
           ColorClass: 'text-green-600 dark:text-lime-400',
         },
         {
+          Name: 'Custom Poker Estimation Scales',
+          Included: false,
+          Header: false,
+        },
+        {
           Name: 'Import Poker Stories from Jira',
           Included: true,
           Header: false,
@@ -269,6 +278,11 @@
           ColorClass: 'text-green-600 dark:text-lime-400',
         },
         {
+          Name: 'Custom Poker Estimation Scales',
+          Included: true,
+          Header: false,
+        },
+        {
           Name: 'Import Poker Stories from Jira',
           Included: true,
           Header: false,
@@ -361,6 +375,11 @@
           Included: true,
           Header: true,
           ColorClass: 'text-green-600 dark:text-lime-400',
+        },
+        {
+          Name: 'Custom Poker Estimation Scales',
+          Included: true,
+          Header: false,
         },
         {
           Name: 'Import Poker Stories from Jira',
@@ -521,7 +540,7 @@
                   href="{appRoutes.register}/subscription"
                   class="flex items-center mt-auto text-white bg-indigo-500 border-0 py-2 px-4 w-full focus:outline-none hover:bg-indigo-600 rounded"
                   >Register
-                  <ArrowRight />
+                  <ArrowRight class="h-4 w-4" />
                 </a>
               {/if}
             {:else}
@@ -568,7 +587,7 @@
             target="_blank"
           >
             Get started
-            <ArrowRight class="inline" />
+            <ArrowRight class="h-4 w-4 inline" />
           </a>
         </div>
       </div>

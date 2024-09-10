@@ -12,21 +12,23 @@
   import PersonasForm from '../../components/storyboard/PersonasForm.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import DownCarrotIcon from '../../components/icons/ChevronDown.svelte';
   import DeleteStoryboard from '../../components/storyboard/DeleteStoryboard.svelte';
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
-  import UpCarrotIcon from '../../components/icons/ChevronUp.svelte';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
-  import UsersIcon from '../../components/icons/UsersIcon.svelte';
-  import EditIcon from '../../components/icons/EditIcon.svelte';
-  import CommentIcon from '../../components/icons/CommentIcon.svelte';
   import PageLayout from '../../components/PageLayout.svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
   import TextInput from '../../components/forms/TextInput.svelte';
-  import UserIcon from '../../components/icons/UserIcon.svelte';
+  import {
+    ChevronDown,
+    ChevronUp,
+    MessageSquareMore,
+    Pencil,
+    User,
+    Users,
+  } from 'lucide-svelte';
 
   export let storyboardId;
   export let notifications;
@@ -694,7 +696,7 @@
               testid="personas-toggle"
             >
               {$LL.personas()}
-              <DownCarrotIcon additionalClasses="ms-1" />
+              <ChevronDown class="ms-1 inline-block" />
             </HollowButton>
             {#if showPersonas}
               <div
@@ -767,7 +769,7 @@
               testid="colorlegend-toggle"
             >
               {$LL.colorLegend()}
-              <DownCarrotIcon additionalClasses="ms-1" />
+              <ChevronDown class="ms-1 inline-block" />
             </HollowButton>
             {#if showColorLegend}
               <div
@@ -817,9 +819,9 @@
               onClick="{toggleUsersPanel}"
               testid="users-toggle"
             >
-              <UsersIcon additionalClasses="me-1" height="18" width="18" />
+              <Users class="me-1 inline-block" height="18" width="18" />
               {$LL.users()}
-              <DownCarrotIcon additionalClasses="ms-1" />
+              <ChevronDown class="ms-1 inline-block" />
             </HollowButton>
             {#if showUsers}
               <div
@@ -868,9 +870,9 @@
               <h2 class="inline-block align-middle pt-1">
                 <button on:click="{toggleGoalCollapse(goal.id)}">
                   {#if collapseGoals.includes(goal.id)}
-                    <DownCarrotIcon additionalClasses="me-1" />
+                    <ChevronDown class="me-1 inline-block" />
                   {:else}
-                    <UpCarrotIcon additionalClasses="me-1" />
+                    <ChevronUp class="me-1 inline-block" />
                   {/if}
                 </button>{goal.name}&nbsp;<GoalEstimate
                   columns="{goal.columns}"
@@ -918,7 +920,7 @@
                     {#each goalColumn.personas as persona}
                       <div class="mt-4 dark:text-gray-300 text-right">
                         <div class="font-bold">
-                          <UserIcon class="h-4 w-4" />
+                          <User class="inline-block h-4 w-4" />
                           {persona.name}
                         </div>
                         <div class="text-sm">{persona.role}</div>
@@ -950,7 +952,7 @@
                           title="{$LL.storyboardEditColumn()}"
                           data-testid="column-edit"
                         >
-                          <EditIcon />
+                          <Pencil />
                         </button>
                       </div>
                     </div>
@@ -1032,7 +1034,7 @@
                                                                 align-middle"
                                     >
                                       {story.comments.length}
-                                      <CommentIcon />
+                                      <MessageSquareMore class="inline-block" />
                                     </span>
                                   {/if}
                                 </div>
@@ -1092,7 +1094,9 @@
                                                                 align-middle"
                                         >
                                           {story.comments.length}
-                                          <CommentIcon />
+                                          <MessageSquareMore
+                                            class="inline-block"
+                                          />
                                         </span>
                                       {/if}
                                     </div>

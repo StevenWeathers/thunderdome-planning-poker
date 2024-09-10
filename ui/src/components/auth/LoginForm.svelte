@@ -4,7 +4,7 @@
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
-  import LockIcon from '../icons/LockIcon.svelte';
+  import { Lock } from 'lucide-svelte';
 
   export let registerLink = '';
   export let targetPage = appRoutes.landing;
@@ -215,8 +215,8 @@
         class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-700 dark:border-transparent dark:hover:bg-indigo-600 dark:focus:ring-indigo-400 dark:focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
       >
         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-          <LockIcon
-            class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+          <Lock
+            class="h-5 w-5 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-400 dark:group-hover:text-indigo-300"
           />
         </span>
         {$LL.login()}

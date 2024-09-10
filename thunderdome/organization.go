@@ -9,6 +9,7 @@ import (
 type Organization struct {
 	Id          string    `json:"id"`
 	Name        string    `json:"name"`
+	Subscribed  *bool     `json:"subscribed,omitempty"`
 	CreatedDate time.Time `json:"createdDate"`
 	UpdatedDate time.Time `json:"updatedDate"`
 }
@@ -89,6 +90,7 @@ type OrganizationDataSvc interface {
 	OrganizationTeamUserRole(ctx context.Context, UserID string, OrgID string, TeamID string) (string, string, error)
 	OrganizationDelete(ctx context.Context, OrgID string) error
 	OrganizationList(ctx context.Context, Limit int, Offset int) []*Organization
+	OrganizationIsSubscribed(ctx context.Context, OrgID string) (bool, error)
 
 	DepartmentUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string) (string, string, error)
 	DepartmentGet(ctx context.Context, DepartmentID string) (*Department, error)

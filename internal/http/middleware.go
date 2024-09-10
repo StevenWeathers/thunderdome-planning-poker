@@ -640,3 +640,63 @@ func (s *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		h(w, r.WithContext(ctx))
 	}
 }
+
+// subscribedOrgOnly validates that the request was made by a subscribed organization only
+func (s *Service) subscribedOrgOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ctx := r.Context()
+		UserType := ctx.Value(contextKeyUserType).(string)
+		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		if !s.Config.SubscriptionsEnabled {
+			h(w, r)
+			return
+		}
+
+		if UserType != thunderdome.AdminUserType {
+			subscribed, err := s.OrganizationDataSvc.OrganizationIsSubscribed(ctx, OrgID)
+			if err != nil || !subscribed {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_SUBSCRIPTION_REQUIRED"))
+				return
+			}
+		}
+
+		h(w, r.WithContext(ctx))
+	}
+}
+
+// subscribedTeamOnly validates that the request was made by a subscribed team only
+func (s *Service) subscribedTeamOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ctx := r.Context()
+		UserType := ctx.Value(contextKeyUserType).(string)
+		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		if !s.Config.SubscriptionsEnabled {
+			h(w, r)
+			return
+		}
+
+		if UserType != thunderdome.AdminUserType {
+			subscribed, err := s.TeamDataSvc.TeamIsSubscribed(ctx, TeamID)
+			if err != nil || !subscribed {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "TEAM_SUBSCRIPTION_REQUIRED"))
+				return
+			}
+		}
+
+		h(w, r.WithContext(ctx))
+	}
+}

@@ -5,8 +5,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import Checkin from '../../components/checkin/Checkin.svelte';
-  import ChevronRight from '../../components/icons/ChevronRight.svelte';
-  import TrashIcon from '../../components/icons/TrashIcon.svelte';
+  import { ChevronRight, Pencil, Trash2 } from 'lucide-svelte';
   import Comments from '../../components/checkin/Comments.svelte';
   import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';
@@ -20,7 +19,6 @@
   } from '../../dateUtils';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import BlockedPing from '../../components/checkin/BlockedPing.svelte';
-  import EditIcon from '../../components/icons/EditIcon.svelte';
   import Picker from '../../components/timezone-picker/Picker.svelte';
   import Toggle from '../../components/forms/Toggle.svelte';
 
@@ -438,7 +436,7 @@
         <div
           class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white"
         >
-          <ChevronRight class="w-8 h-8" />
+          <ChevronRight class="w-8 h-8 inline-block" />
         </div>
         <div class="inline-block">
           <input
@@ -461,7 +459,7 @@
       {#if organizationId}
         <div class="text-xl font-semibold font-rajdhani dark:text-white">
           <span class="uppercase">{$LL.organization()}</span>
-          <ChevronRight />
+          <ChevronRight class="inline-block" />
           <a
             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
             href="{appRoutes.organization}/{organization.id}"
@@ -469,17 +467,17 @@
           >
           {#if departmentId}
             &nbsp;
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
             <span class="uppercase">{$LL.department()}</span>
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
             <a
               class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
               href="{appRoutes.organization}/{organization.id}/department/{department.id}"
               >{department.name}</a
             >
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
             <span class="uppercase">{$LL.team()}</span>
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
             <a
               class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
               href="{appRoutes.organization}/{organization.id}/department/{department.id}"
@@ -487,9 +485,9 @@
               {team.name}
             </a>
           {:else}
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
             <span class="uppercase">{$LL.team()}</span>
-            <ChevronRight />
+            <ChevronRight class="inline-block" />
             <a
               class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
               href="{appRoutes.organization}/{organization.id}/team/{team.id}"
@@ -501,7 +499,7 @@
       {:else}
         <div class="text-2xl font-semibold font-rajdhani dark:text-white">
           <span class="uppercase">{$LL.team()}</span>
-          <ChevronRight />
+          <ChevronRight class="inline-block" />
           <a
             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
             href="{appRoutes.team}/{team.id}"
@@ -645,7 +643,7 @@
                         data-testid="checkin-edit"
                       >
                         <span class="sr-only">{$LL.edit()}</span>
-                        <EditIcon />
+                        <Pencil />
                       </button>
                       <button
                         on:click="{() => {
@@ -656,7 +654,7 @@
                         data-testid="checkin-delete"
                       >
                         <span class="sr-only">{$LL.delete()}</span>
-                        <TrashIcon />
+                        <Trash2 />
                       </button>
                     </div>
                   {/if}

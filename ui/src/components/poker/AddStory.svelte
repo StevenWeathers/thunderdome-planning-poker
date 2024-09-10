@@ -1,12 +1,14 @@
 <script lang="ts">
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
-  import NoSymbol from '../icons/NoSymbol.svelte';
-  import DoubleChevronUp from '../icons/DoubleChevronUp.svelte';
-  import ChevronUp from '../icons/ChevronUp.svelte';
+  import {
+    Ban,
+    ChevronDown,
+    ChevronsDown,
+    ChevronsUp,
+    ChevronUp,
+  } from 'lucide-svelte';
   import Bars2 from '../icons/Bars2.svelte';
-  import ChevronDown from '../icons/ChevronDown.svelte';
-  import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
@@ -31,11 +33,11 @@
 
   // going by common Jira issue priorities for now
   const priorities = [
-    { name: $LL.planPriorityBlocker(), value: 1, icon: NoSymbol },
+    { name: $LL.planPriorityBlocker(), value: 1, icon: Ban },
     {
       name: $LL.planPriorityHighest(),
       value: 2,
-      icon: DoubleChevronUp,
+      icon: ChevronsUp,
     },
     { name: $LL.planPriorityHigh(), value: 3, icon: ChevronUp },
     { name: $LL.planPriorityMedium(), value: 4, icon: Bars2 },
@@ -43,7 +45,7 @@
     {
       name: $LL.planPriorityLowest(),
       value: 6,
-      icon: DoubleChevronDown,
+      icon: ChevronsDown,
     },
   ];
 
@@ -165,7 +167,10 @@
         </option>
         {#each priorities as p}
           <option value="{p.value}">
-            <svelte:component this="{p.icon}" />{p.name}</option
+            <svelte:component
+              this="{p.icon}"
+              class="inline-block w-6 h-6"
+            />{p.name}</option
           >
         {/each}
       </SelectInput>

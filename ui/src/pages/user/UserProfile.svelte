@@ -4,7 +4,6 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import UpdatePasswordForm from '../../components/user/UpdatePasswordForm.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import CheckIcon from '../../components/icons/CheckIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
@@ -14,6 +13,7 @@
   import CreateJiraInstance from '../../components/jira/CreateJiraInstance.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import UserSubscriptionsList from '../../components/subscription/UserSubscriptionsList.svelte';
+  import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
   export let xfetch;
   export let router;
@@ -464,9 +464,7 @@
                             data-testid="apikey-active"
                             data-active="{apk.active}"
                           >
-                            {#if apk.active}
-                              <span class="text-green-600"><CheckIcon /></span>
-                            {/if}
+                            <BooleanDisplay boolValue="{apk.active}" />
                           </td>
                           <td class="px-6 py-4 whitespace-nowrap">
                             {new Date(apk.updatedDate).toLocaleString()}

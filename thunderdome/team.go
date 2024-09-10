@@ -10,6 +10,7 @@ type Team struct {
 	Name           string    `json:"name"`
 	OrganizationId string    `json:"organization_id"`
 	DepartmentId   string    `json:"department_id"`
+	Subscribed     *bool     `json:"subscribed,omitempty"`
 	CreatedDate    time.Time `json:"createdDate"`
 	UpdatedDate    time.Time `json:"updatedDate"`
 }
@@ -63,4 +64,5 @@ type TeamDataSvc interface {
 	TeamAddStoryboard(ctx context.Context, TeamID string, StoryboardID string) error
 	TeamRemoveStoryboard(ctx context.Context, TeamID string, StoryboardID string) error
 	TeamList(ctx context.Context, Limit int, Offset int) ([]*Team, int)
+	TeamIsSubscribed(ctx context.Context, TeamID string) (bool, error)
 }

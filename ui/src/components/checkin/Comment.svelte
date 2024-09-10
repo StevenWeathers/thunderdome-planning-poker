@@ -1,9 +1,9 @@
 <script lang="ts">
-  import UserIcon from '../icons/UserIcon.svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import SolidButton from '../global/SolidButton.svelte';
+  import { User } from 'lucide-svelte';
 
   export let checkinId = {};
   export let comment = {};
@@ -36,7 +36,8 @@
   data-commentid="{comment.id}"
 >
   <div class="font-bold">
-    <UserIcon class="h-4 w-4" />&nbsp;{userMap[comment.user_id] || '...'}
+    <User class="h-4 w-4 inline-block" />&nbsp;{userMap[comment.user_id] ||
+      '...'}
   </div>
   {#if showEdit}
     <div class="w-full my-2">

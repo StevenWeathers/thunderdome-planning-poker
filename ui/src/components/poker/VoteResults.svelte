@@ -1,7 +1,7 @@
 <script lang="ts">
   import PointCard from './PointCard.svelte';
-  import WarriorIcon from '../icons/UserIcon.svelte';
   import LL from '../../i18n/i18n-svelte';
+  import { User } from 'lucide-svelte';
 
   export let activePlanId = '';
   export let plans = [];
@@ -94,7 +94,7 @@
   <div class="w-1/3 dark:text-white">
     <div class="mb-2">{$LL.totalVotes()}</div>
     <span data-testid="voteresult-total">{totalVotes}</span>
-    <WarriorIcon class="h-5 w-5" />
+    <User class="h-5 w-5 inline-block" />
   </div>
   <div class="w-1/3 dark:text-white">
     <div class="mb-2">{$LL.voteResultsAverage()}</div>
@@ -135,7 +135,7 @@
           class="relative leading-none"
           title="{$LL.showVoters()}"
         >
-          <WarriorIcon class="h-5 w-5" />
+          <User class="h-5 w-5 inline-block" />
           <span
             class="text-sm text-right text-gray-900 font-normal w-48
                         absolute start-0 top-0 -mt-2 ms-4 bg-white p-2 rounded

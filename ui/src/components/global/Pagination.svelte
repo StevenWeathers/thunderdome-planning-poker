@@ -1,7 +1,6 @@
 <script lang="ts">
-  import ChevronLeftIcon from '../icons/ChevronLeft.svelte';
-  import ChevronRightIcon from '../icons/ChevronRight.svelte';
   import { createEventDispatcher } from 'svelte';
+  import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -61,7 +60,7 @@
     on:click="{() => current > 1 && setCurrent(current - 1)}"
     on:keypress="{() => current > 1 && setCurrent(current - 1)}"
   >
-    <ChevronLeftIcon class="w-6 h-6" />
+    <ChevronLeft class="w-6 h-6 inline-block" />
   </div>
   <div class="flex h-12 font-medium">
     {#each arr_pages as i}
@@ -97,6 +96,6 @@
     on:click="{() => current < num_pages && setCurrent(current + 1)}"
     on:keypress="{() => current < num_pages && setCurrent(current + 1)}"
   >
-    <ChevronRightIcon class="w-6 h-6" />
+    <ChevronRight class="w-6 h-6 inline-block" />
   </div>
 </div>

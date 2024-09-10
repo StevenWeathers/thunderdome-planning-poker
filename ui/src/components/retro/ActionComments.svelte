@@ -2,8 +2,8 @@
   import Modal from '../global/Modal.svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import UserIcon from '../icons/UserIcon.svelte';
   import { user } from '../../stores';
+  import { User } from 'lucide-svelte';
 
   export let xfetch;
   export let eventTag;
@@ -106,7 +106,9 @@
         data-commentid="{comment.id}"
       >
         <div class="font-bold">
-          <UserIcon class="h-4 w-4" />&nbsp;{userMap[comment.user_id] || '...'}
+          <User class="h-4 w-4 inline-block" />&nbsp;{userMap[
+            comment.user_id
+          ] || '...'}
         </div>
         {#if selectedComment !== null && selectedComment.id === comment.id}
           <div class="w-full my-2">

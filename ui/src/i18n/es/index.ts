@@ -598,6 +598,36 @@ const es: Translation = {
     'Scrum poker, also known as “planning poker” and “pointing poker”, is a gamified technique that development teams use to guess the effort of project management tasks. These estimations are based on the entire group’s input and consensus, making them more engaging and accurate than other methods.',
   storyboardDescription:
     'User story mapping (storyboard) is a visualization of the journey a customer takes with a product, from beginning to end. It includes all the tasks they’d typically complete as part of that journey.',
+  estimationScaleNamePlaceholder: 'Enter scale name',
+  description: 'Description',
+  estimationScaleDescriptionPlaceholder: 'Enter scale description',
+  scaleType: 'Scale Type',
+  estimationScaleTypePlaceholder: 'Select scale type',
+  scaleValues: 'Scale Values',
+  estimationScaleValuesPlaceholder: 'Enter comma-separated values',
+  estimationScaleValuesHelp:
+    'Enter values separated by commas (e.g., 1, 2, 3, 5, 8)',
+  estimationScaleIsPublic: 'Make this scale public',
+  estimationScaleDefault: 'Set as default scale',
+  estimationScaleSave: 'Save Scale',
+  estimationScales: 'Estimation Scales',
+  estimationScaleCreate: 'Create Estimation Scale',
+  estimationScaleCreateSuccess: 'Estimation scale successfully created',
+  estimationScaleCreateError: 'Error creating estimation scale',
+  estimationScaleUpdateSuccess: 'Estimation scale successfully updated',
+  estimationScaleUpdateError: 'Error updating estimation scale',
+  estimationScaleRemoveSuccess: 'Estimation scale successfully removed',
+  estimationScaleRemoveError: 'Error removing estimation scale',
+  removeEstimationScaleConfirmText:
+    'Are you sure you want to remove this estimation scale?',
+  removeEstimationScale: 'Remove Estimation Scale',
+  yes: 'Yes',
+  no: 'No',
+  isPublic: 'Public',
+  defaultScale: 'Default',
+  publicEstimationScales: 'Public Estimation Scales',
+  organizationEstimationScales: 'Organization Estimation Scales',
+  teamEstimationScales: 'Team Estimation Scales',
 };
 
 export default es;

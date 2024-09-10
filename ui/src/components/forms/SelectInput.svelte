@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ChevronDown from '../icons/ChevronDown.svelte';
+  import { ChevronDown } from 'lucide-svelte';
 
   export let value: string = '';
 </script>
@@ -19,6 +19,6 @@
     class="pointer-events-none absolute inset-y-0 end-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
   >
-    <ChevronDown />
+    <ChevronDown class="inline-block" />
   </div>
 </div>

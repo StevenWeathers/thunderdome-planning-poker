@@ -1,7 +1,5 @@
 <script lang="ts">
-  import SunIcon from '../icons/SunIcon.svelte';
-  import SystemIcon from '../icons/SystemIcon.svelte';
-  import MoonIcon from '../icons/MoonIcon.svelte';
+  import { MonitorCog, MoonStar, Sun } from 'lucide-svelte';
 
   export let currentPage;
 
@@ -44,8 +42,8 @@
     type="button"
     on:click="{toggleMenu}"
   >
-    <SunIcon class="dark:hidden h-5 w-5" />
-    <MoonIcon class="hidden h-5 w-5 dark:block" />
+    <Sun class="dark:hidden h-5 w-5" />
+    <MoonStar class="hidden h-5 w-5 dark:block" />
   </button>
 
   {#if showMenu}
@@ -64,7 +62,7 @@
         <div
           class="rounded-md bg-white p-1 shadow ring-1 ring-slate-900/5 dark:bg-slate-700 dark:ring-inset dark:ring-white/5 text-slate-700 dark:text-slate-400 text-slate-900"
         >
-          <SunIcon />
+          <Sun />
         </div>
         <div class="ms-3">Light</div>
       </li>
@@ -79,7 +77,7 @@
         <div
           class="rounded-md bg-white p-1 shadow ring-1 ring-slate-900/5 dark:bg-slate-700 dark:ring-inset dark:ring-white/5 text-slate-700 dark:text-slate-400 text-slate-900"
         >
-          <MoonIcon />
+          <MoonStar />
         </div>
         <div class="ms-3">Dark</div>
       </li>
@@ -94,7 +92,7 @@
         <div
           class="rounded-md bg-white p-1 shadow ring-1 ring-slate-900/5 dark:bg-slate-700 dark:ring-inset dark:ring-white/5 text-slate-700 dark:text-slate-400 text-slate-900"
         >
-          <SystemIcon />
+          <MonitorCog />
         </div>
         <div class="ms-3">System</div>
       </li>

@@ -422,7 +422,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 			WHERE u.user_id = $1 AND u.abandoned = false
 		),
 		games AS (
-			SELECT id from user_games UNION ALL SELECT id FROM team_games
+			SELECT id from user_games UNION SELECT id FROM team_games
 		)
 		SELECT COUNT(*) FROM games;
 	`, UserID).Scan(
@@ -446,7 +446,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 			WHERE u.user_id = $1 AND u.abandoned = false
 		),
 		games AS (
-			SELECT id from user_games UNION ALL SELECT id FROM team_games
+			SELECT id from user_games UNION SELECT id FROM team_games
 		),
 		stories AS (
 			SELECT poker_id, points FROM thunderdome.poker_story WHERE poker_id IN (SELECT poker_id FROM games)

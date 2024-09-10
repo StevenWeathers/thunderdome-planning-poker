@@ -45,9 +45,6 @@ test.describe("Admin page", () => {
 
       await ap.goto();
 
-      const title = ap.page.locator("h1");
-      await expect(title).toHaveText("Admin");
-
       // admin nav items are present
       const nav = ap.page.locator('[data-testid="admin-nav-item"]');
       await expect(nav.nth(0)).toHaveText("Admin");

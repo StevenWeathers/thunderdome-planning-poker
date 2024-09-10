@@ -1,12 +1,10 @@
 <script lang="ts">
-  import UserIcon from '../icons/UserIcon.svelte';
   import { appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import UserAvatar from '../user/UserAvatar.svelte';
   import { onMount } from 'svelte';
-  import VoteIcon from '../icons/VoteIcon.svelte';
-  import LockIcon from '../icons/LockIcon.svelte';
+  import { Lock, LogOut, User, Vote } from 'lucide-svelte';
 
   export let currentPage;
   export let eventTag;
@@ -113,7 +111,7 @@
         data-testid="userprofile-link"
         on:click="{goToProfile}"
       >
-        <UserIcon class="h-4 w-4 me-3" />
+        <User class="h-6 w-6 me-3 inline-block" />
         <span>{$LL.profile()}</span>
       </button>
     </li>
@@ -124,7 +122,7 @@
           data-testid="create-account-link"
           on:click="{goToRegister}"
         >
-          <VoteIcon class="w-4 h-4 me-3 " />
+          <Vote class="w-6 h-6 me-3 inline-block" />
           <span>{$LL.createAccount()}</span>
         </button>
       </li>
@@ -134,7 +132,7 @@
           data-testid="login-link"
           on:click="{goToLogin}"
         >
-          <LockIcon class="w-4 h-4 me-3 " />
+          <Lock class="w-6 h-6 me-3 inline-block" />
           <span>{$LL.login()}</span>
         </button>
       </li>
@@ -145,20 +143,7 @@
           data-testid="logout-link"
           on:click="{logoutUser}"
         >
-          <svg
-            class="w-4 h-4 me-3"
-            aria-hidden="true"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-            ></path>
-          </svg>
+          <LogOut class="inline-block w-6 h-6 me-3" />
           <span>{$LL.logout()}</span>
         </button>
       </li>

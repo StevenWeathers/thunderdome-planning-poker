@@ -10,6 +10,8 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
   import ImportModal from './ImportModal.svelte';
+  import SelectWithSubtext from '../forms/SelectWithSubtext.svelte';
+  import { validateUserIsAdmin } from '../../validationUtils';
 
   export let notifications;
   export let eventTag;
@@ -29,6 +31,9 @@
   let leaderCode = '';
   let selectedTeam = '';
   let teams = [];
+  let publicEstimationScales = [];
+  let teamEstimationScales = [];
+  let organizationEstimationScales = [];
   let estimateScales = [];
   let hideVoterIdentity = false;
   let selectedEstimationScale = '';
@@ -76,6 +81,13 @@
   function createBattle(e) {
     e.preventDefault();
     let endpoint = `${apiPrefix}/users/${$user.id}/battles`;
+
+    if (selectedEstimationScale === '' || allowedPointValues.length === 0) {
+      notifications.danger(
+        'Must select an estimation scale and allowed point values.',
+      );
+      return;
+    }
 
     const pointValuesAllowed = allowedPointValues.filter(pv => {
       return points.includes(pv);
@@ -134,30 +146,92 @@
     xfetch(`/api/estimation-scales/public`)
       .then(res => res.json())
       .then(function (result) {
-        estimateScales = estimateScales.concat(result.data);
-        result.data.map(scale => {
-          console.log(scale);
-          if (scale.isPublic && scale.defaultScale) {
-            console.log('default scale', scale);
-            allowedPointValues = scale.values;
-            points = scale.values;
-            selectedEstimationScale = scale.id;
-          }
-        });
+        publicEstimationScales = result.data;
+        combineEstimationScales();
       })
       .catch(function () {
-        notifications.danger($LL.getTeamsError());
+        notifications.danger('Failed to get public estimation scales');
       });
   }
 
-  const updatePointValues = () => {
-    const scale = estimateScales.find(
-      scale => scale.id === selectedEstimationScale,
-    );
-    if (scale) {
-      allowedPointValues = scale.values;
-      points = scale.values;
+  function getPrivateEstimationScales() {
+    // don't get private scales if a team isn't selected
+    if (selectedTeam === '') {
+      teamEstimationScales = [];
+      organizationEstimationScales = [];
+      combineEstimationScales();
+      return;
     }
+    const team = teams.find(t => t.id === selectedTeam);
+    // if subscriptions are enabled and the team (or its parent org) isn't subscribed
+    // don't attempt to get private scales
+    if (
+      AppConfig.SubscriptionsEnabled &&
+      !validateUserIsAdmin($user) &&
+      !team.subscribed
+    ) {
+      teamEstimationScales = [];
+      organizationEstimationScales = [];
+      combineEstimationScales();
+      return;
+    }
+    const orgPrefix =
+      team.organization_id !== ''
+        ? `/api/organizations/${team.organization_id}`
+        : `/api`;
+    const teamPrefix =
+      team.department_id !== ''
+        ? `${orgPrefix}/departments/${team.department_id}`
+        : `/api`;
+
+    xfetch(`${teamPrefix}/teams/${team.id}/estimation-scales`)
+      .then(res => res.json())
+      .then(function (result) {
+        teamEstimationScales = result.data;
+        combineEstimationScales();
+      })
+      .catch(function () {
+        notifications.danger('Failed to get team estimation scales');
+      });
+
+    if (team.organization_id !== '') {
+      xfetch(`${orgPrefix}/estimation-scales`)
+        .then(res => res.json())
+        .then(function (result) {
+          organizationEstimationScales = result.data;
+          combineEstimationScales();
+        })
+        .catch(function () {
+          notifications.danger('Failed to get organization estimation scales');
+        });
+    }
+  }
+
+  const combineEstimationScales = () => {
+    // scales priority order (Team -> Organization -> Public)
+    let defaultFound = false;
+    estimateScales = [
+      ...teamEstimationScales,
+      ...organizationEstimationScales,
+      ...publicEstimationScales,
+    ];
+
+    estimateScales.map(scale => {
+      // Find default scale with priority order (Team -> Organization -> Public)
+      if (!defaultFound && scale.defaultScale) {
+        allowedPointValues = scale.values;
+        points = scale.values;
+        selectedEstimationScale = scale.id;
+        defaultFound = true;
+      }
+    });
+  };
+
+  const updatePointValues = event => {
+    const scale = event.detail;
+    selectedEstimationScale = scale.id;
+    allowedPointValues = scale.values;
+    points = scale.values;
   };
 
   let showImport = false;
@@ -209,6 +283,7 @@
       </label>
       <SelectInput
         bind:value="{selectedTeam}"
+        on:change="{getPrivateEstimationScales}"
         id="selectedTeam"
         name="selectedTeam"
       >
@@ -223,25 +298,18 @@
   {/if}
 
   <div class="mb-4">
-    <label
+    <div
       class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-      for="estimationScale"
     >
       Estimation Scale
-    </label>
-    <SelectInput
-      bind:value="{selectedEstimationScale}"
+    </div>
+    <SelectWithSubtext
       on:change="{updatePointValues}"
-      id="estimationScale"
-      name="estimationScale"
-    >
-      <option value="" disabled>Select an estimation scale</option>
-      {#each estimateScales as scale}
-        <option value="{scale.id}">
-          {scale.name}
-        </option>
-      {/each}
-    </SelectInput>
+      items="{estimateScales}"
+      label="Select an estimation scale..."
+      selectedItemId="{selectedEstimationScale}"
+      itemType="estimation_scale"
+    />
   </div>
 
   <div class="mb-4">

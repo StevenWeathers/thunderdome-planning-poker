@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import WarriorIcon from '../icons/UserIcon.svelte';
   import LL from '../../i18n/i18n-svelte';
+  import { User } from 'lucide-svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -65,7 +65,7 @@
         title="{$LL.showVoters()}"
         class="text-green-500 dark:text-lime-400 relative leading-none"
       >
-        <WarriorIcon class="h-5 w-5" />
+        <User class="h-5 w-5 inline-block" />
         <span
           class="text-right text-sm text-gray-900 font-normal w-48
                     absolute start-0 top-0 mt-0 ms-6 bg-white p-2 rounded

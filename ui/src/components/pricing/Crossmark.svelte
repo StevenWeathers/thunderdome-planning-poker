@@ -1,7 +1,7 @@
 <script lang="ts">
-  import CloseIcon from '../icons/CloseIcon.svelte';
+  import { X } from 'lucide-svelte';
 </script>
 
 <span class="text-gray-500 dark:text-gray-400">
-  <CloseIcon />
+  <X />
 </span>

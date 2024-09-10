@@ -1,11 +1,11 @@
 <script lang="ts">
   import Countries from '../components/user/Countries.svelte';
-  import CheckIcon from '../components/icons/CheckIcon.svelte';
   import LL from '../i18n/i18n-svelte';
 
   import { AppConfig, appRoutes } from '../config';
   import { user } from '../stores';
   import { validateUserIsRegistered } from '../validationUtils';
+  import { Check } from 'lucide-svelte';
 
   export let xfetch;
   export let eventTag;
@@ -116,20 +116,20 @@
 
         <ul class="text-lg dark:text-gray-300">
           <li class="mb-2">
-            <CheckIcon />
+            <Check class="inline-block" />
             Select allowed point values that fit your team's process
           </li>
           <li class="mb-2">
-            <CheckIcon />
+            <Check class="inline-block" />
             Automatically end voting once all participants have voted
           </li>
           <li class="mb-2">
-            <CheckIcon />
+            <Check class="inline-block" />
             Although every game has a secure unique ID optionally set a passcode
             to join
           </li>
           <li class="mb-2">
-            <CheckIcon />
+            <Check class="inline-block" />
             Leader code &amp; multiple facilitator features allow team members to
             continue in your absence
           </li>
@@ -170,11 +170,11 @@
 
         <ul class="text-lg dark:text-gray-300">
           <li class="mb-2">
-            <CheckIcon />
+            <Check class="inline-block" />
             Total votes, average points, and highest point metrics
           </li>
           <li class="mb-2">
-            <CheckIcon />
+            <Check class="inline-block" />
             Participant vote transparency helps drive team discussion and aid in
             decision making
           </li>

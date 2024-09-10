@@ -1,7 +1,7 @@
 <script lang="ts">
   import { appRoutes } from '../../config';
   import SolidButton from '../global/SolidButton.svelte';
-  import ClipboardIcon from '../icons/ClipboardIcon.svelte';
+  import { ClipboardCopy } from 'lucide-svelte';
 
   export let hostname = '';
   export let retroId = '';
@@ -32,7 +32,7 @@
       onClick="{copyRetrospectiveLink}"
       class="flex items-center leading-normal whitespace-no-wrap text-sm"
     >
-      <ClipboardIcon />
+      <ClipboardCopy />
     </SolidButton>
   </div>
 </div>

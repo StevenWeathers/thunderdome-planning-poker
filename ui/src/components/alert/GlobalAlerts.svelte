@@ -1,6 +1,6 @@
 <script lang="ts">
-  import CloseIcon from '../icons/CloseIcon.svelte';
   import { activeAlerts, dismissedAlerts } from '../../stores';
+  import { X } from 'lucide-svelte';
 
   export let registered = false;
 
@@ -169,7 +169,7 @@
                 on:click="{dismissAlert(alert.id)}"
                 class="-me-1 sm:-me-2 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white"
               >
-                <CloseIcon />
+                <X />
               </button>
             </div>
           {/if}

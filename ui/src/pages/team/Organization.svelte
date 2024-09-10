@@ -5,13 +5,13 @@
   import HollowButton from '../../components/global/HollowButton.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { appRoutes } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
   import RowCol from '../../components/table/RowCol.svelte';
   import TableRow from '../../components/table/TableRow.svelte';
   import HeadCol from '../../components/table/HeadCol.svelte';
   import Table from '../../components/table/Table.svelte';
-  import ChevronRight from '../../components/icons/ChevronRight.svelte';
+  import { ChevronRight } from 'lucide-svelte';
   import CreateDepartment from '../../components/team/CreateDepartment.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
@@ -20,6 +20,7 @@
   import TableNav from '../../components/table/TableNav.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
+  import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
 
   export let xfetch;
   export let router;
@@ -38,6 +39,7 @@
     name: '',
     createdDate: '',
     updateDate: '',
+    subscribed: false,
   };
   let role = 'MEMBER';
   let users = [];
@@ -78,7 +80,7 @@
   };
 
   function getOrganization() {
-    xfetch(`/api/organizations/${organizationId}`)
+    xfetch(orgPrefix)
       .then(res => res.json())
       .then(function (result) {
         organization = result.data.organization;
@@ -87,6 +89,7 @@
         getDepartments();
         getTeams();
         getUsers();
+        getEstimationScales();
       })
       .catch(function () {
         notifications.danger($LL.organizationGetError());
@@ -290,6 +293,33 @@
       });
   }
 
+  let estimationScales = [];
+
+  const scalesPageLimit = 20;
+  let scaleCount = 0;
+  let scalesPage = 1;
+
+  const changeScalesPage = evt => {
+    scalesPage = evt.detail;
+    getEstimationScales();
+  };
+
+  function getEstimationScales() {
+    const scalesOffset = (scalesPage - 1) * scalesPageLimit;
+    if (AppConfig.FeaturePoker) {
+      xfetch(
+        `${orgPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`,
+      )
+        .then(res => res.json())
+        .then(function (result) {
+          estimationScales = result.data;
+        })
+        .catch(function () {
+          notifications.danger('Failed to get estimation scales');
+        });
+    }
+  }
+
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
@@ -309,7 +339,7 @@
 <PageLayout>
   <h1 class="mb-4 text-3xl font-semibold font-rajdhani dark:text-white">
     <span class="uppercase">{$LL.organization()}</span>
-    <ChevronRight class="w-8 h-8" />
+    <ChevronRight class="w-8 h-8 inline-block" />
     {organization.name}
   </h1>
 
@@ -454,6 +484,41 @@
       invitesList.f('user-invited');
     }}"
   />
+
+  {#if AppConfig.FeaturePoker}
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <EstimationScalesList
+          xfetch="{xfetch}"
+          eventTag="{eventTag}"
+          notifications="{notifications}"
+          isEntityAdmin="{isAdmin}"
+          apiPrefix="{orgPrefix}"
+          organizationId="{organizationId}"
+          scales="{estimationScales}"
+          getScales="{getEstimationScales}"
+          scaleCount="{scaleCount}"
+          scalesPage="{scalesPage}"
+          scalesPageLimit="{scalesPageLimit}"
+          changePage="{changeScalesPage}"
+        />
+      {:else}
+        <h3
+          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+        >
+          Estimation Scales
+        </h3>
+        <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
+          <a
+            href="{appRoutes.subscriptionPricing}"
+            class="underline"
+            target="_blank">Subscribe Today</a
+          >
+          to create custom Poker Estimation Scales
+        </p>
+      {/if}
+    </div>
+  {/if}
 
   {#if isAdmin}
     <div class="w-full text-center mt-8">

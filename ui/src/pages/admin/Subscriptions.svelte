@@ -7,15 +7,15 @@
   import HeadCol from '../../components/table/HeadCol.svelte';
   import RowCol from '../../components/table/RowCol.svelte';
   import TableRow from '../../components/table/TableRow.svelte';
-  import CheckIcon from '../../components/icons/CheckIcon.svelte';
   import Table from '../../components/table/Table.svelte';
-  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import AdminPageLayout from '../../components/admin/AdminPageLayout.svelte';
   import SubscriptionForm from '../../components/subscription/SubscriptionForm.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
+  import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
   export let xfetch;
   export let router;
@@ -162,11 +162,7 @@
               {subscription.type}
             </RowCol>
             <RowCol>
-              {#if subscription.active}
-                <span class="text-green-600">
-                  <CheckIcon />
-                </span>
-              {/if}
+              <BooleanDisplay boolValue="{subscription.active}" />
             </RowCol>
             <RowCol>
               {new Date(subscription.expires).toLocaleString()}
