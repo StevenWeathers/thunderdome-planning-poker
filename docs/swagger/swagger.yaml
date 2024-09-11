@@ -816,6 +816,31 @@ definitions:
       updatedDate:
         type: string
     type: object
+  thunderdome.OrganizationMetrics:
+    properties:
+      department_count:
+        type: integer
+      estimation_scale_count:
+        type: integer
+      organization_id:
+        type: string
+      organization_name:
+        type: string
+      poker_count:
+        type: integer
+      retro_count:
+        type: integer
+      retro_template_count:
+        type: integer
+      storyboard_count:
+        type: integer
+      team_checkin_count:
+        type: integer
+      team_count:
+        type: integer
+      user_count:
+        type: integer
+    type: object
   thunderdome.OrganizationUserInvite:
     properties:
       created_date:
@@ -1346,6 +1371,35 @@ definitions:
         $ref: '#/definitions/thunderdome.TeamUser'
       yesterday:
         type: string
+    type: object
+  thunderdome.TeamMetrics:
+    properties:
+      department_id:
+        type: string
+      department_name:
+        type: string
+      estimation_scale_count:
+        type: integer
+      organization_id:
+        type: string
+      organization_name:
+        type: string
+      poker_count:
+        type: integer
+      retro_count:
+        type: integer
+      retro_template_count:
+        type: integer
+      storyboard_count:
+        type: integer
+      team_checkin_count:
+        type: integer
+      team_id:
+        type: string
+      team_name:
+        type: string
+      user_count:
+        type: integer
     type: object
   thunderdome.TeamUser:
     properties:
@@ -2278,6 +2332,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Teams
+      tags:
+      - admin
+  /admin/teams/{teamID}/metrics:
+    get:
+      description: Get metrics for a specific team such as user count, poker game
+        count, etc.
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.TeamMetrics'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Metrics
       tags:
       - admin
   /admin/users:
@@ -4212,6 +4305,45 @@ paths:
       summary: Delete Org User Invite
       tags:
       - organization
+  /organizations/{orgId}/metrics:
+    get:
+      description: Get metrics for a specific organization such as user count, team
+        count, etc.
+      parameters:
+      - description: Organization ID
+        in: path
+        name: organizationID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.OrganizationMetrics'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Metrics
+      tags:
+      - admin
   /organizations/{orgId}/teams:
     get:
       description: Get a list of organization teams

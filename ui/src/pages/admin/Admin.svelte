@@ -13,7 +13,6 @@
     CircleUser,
     Columns2,
     FileText,
-    Gamepad,
     Ghost,
     Key,
     LayoutDashboard,
@@ -26,6 +25,7 @@
     User,
     UserRound,
     Users,
+    Vote,
     Zap,
   } from 'lucide-svelte';
 
@@ -208,7 +208,7 @@
         {
           name: 'battles',
           count: appStats.battleCount,
-          icon: Gamepad,
+          icon: Vote,
           active: FeaturePoker,
         },
         {

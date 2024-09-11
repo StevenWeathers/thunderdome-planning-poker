@@ -840,6 +840,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/teams/{teamID}/metrics": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get metrics for a specific team such as user count, poker game count, etc.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get Team Metrics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.TeamMetrics"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/users": {
             "get": {
                 "security": [
@@ -3964,6 +4028,70 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organizations/{orgId}/metrics": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get metrics for a specific organization such as user count, team count, etc.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get Organization Metrics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "organizationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.OrganizationMetrics"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -10710,6 +10838,44 @@ const docTemplate = `{
                 }
             }
         },
+        "thunderdome.OrganizationMetrics": {
+            "type": "object",
+            "properties": {
+                "department_count": {
+                    "type": "integer"
+                },
+                "estimation_scale_count": {
+                    "type": "integer"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "poker_count": {
+                    "type": "integer"
+                },
+                "retro_count": {
+                    "type": "integer"
+                },
+                "retro_template_count": {
+                    "type": "integer"
+                },
+                "storyboard_count": {
+                    "type": "integer"
+                },
+                "team_checkin_count": {
+                    "type": "integer"
+                },
+                "team_count": {
+                    "type": "integer"
+                },
+                "user_count": {
+                    "type": "integer"
+                }
+            }
+        },
         "thunderdome.OrganizationUserInvite": {
             "type": "object",
             "properties": {
@@ -11516,6 +11682,50 @@ const docTemplate = `{
                 },
                 "yesterday": {
                     "type": "string"
+                }
+            }
+        },
+        "thunderdome.TeamMetrics": {
+            "type": "object",
+            "properties": {
+                "department_id": {
+                    "type": "string"
+                },
+                "department_name": {
+                    "type": "string"
+                },
+                "estimation_scale_count": {
+                    "type": "integer"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "poker_count": {
+                    "type": "integer"
+                },
+                "retro_count": {
+                    "type": "integer"
+                },
+                "retro_template_count": {
+                    "type": "integer"
+                },
+                "storyboard_count": {
+                    "type": "integer"
+                },
+                "team_checkin_count": {
+                    "type": "integer"
+                },
+                "team_id": {
+                    "type": "string"
+                },
+                "team_name": {
+                    "type": "string"
+                },
+                "user_count": {
+                    "type": "integer"
                 }
             }
         },

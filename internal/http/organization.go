@@ -711,3 +711,44 @@ func (s *Service) handleDeleteOrganizationUserInvite() http.HandlerFunc {
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
+
+// handleOrganizationMetrics gets the metrics for a specific organization
+// @Summary      Get Organization Metrics
+// @Description  Get metrics for a specific organization such as user count, team count, etc.
+// @Tags         admin
+// @Produce      json
+// @Param        organizationID   path      string  true  "Organization ID"
+// @Success      200  object  standardJsonResponse{data=thunderdome.OrganizationMetrics}
+// @Failure      400  object  standardJsonResponse{}
+// @Failure      404  object  standardJsonResponse{}
+// @Failure      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/metrics [get]
+func (s *Service) handleOrganizationMetrics() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		organizationID := vars["orgId"]
+
+		if organizationID == "" {
+			s.Failure(w, r, http.StatusBadRequest, errors.New("organization ID is required"))
+			return
+		}
+
+		metrics, err := s.OrganizationDataSvc.GetOrganizationMetrics(ctx, organizationID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationMetrics error", zap.Error(err),
+				zap.String("session_user_id", sessionUserID),
+				zap.String("organization_id", organizationID))
+			if err.Error() == "no organization found with ID "+organizationID {
+				s.Failure(w, r, http.StatusNotFound, err)
+			} else {
+				s.Failure(w, r, http.StatusInternalServerError, err)
+			}
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, metrics, nil)
+	}
+}

@@ -157,6 +157,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationByUser()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdate()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgAdminOnly(a.handleDeleteOrganization()))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/metrics", a.userOnly(a.orgUserOnly(a.handleOrganizationMetrics()))).Methods("GET")
 	// org departments(s)
 	orgRouter.HandleFunc("/{orgId}/departments", a.userOnly(a.orgUserOnly(a.handleGetOrganizationDepartments()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/departments", a.userOnly(a.orgAdminOnly(a.handleCreateDepartment()))).Methods("POST")
@@ -190,6 +191,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.departmentTeamUserOnly(a.handleCheckinComment(checkinSvc)))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.departmentTeamUserOnly(a.handleCheckinCommentEdit(checkinSvc)))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.departmentTeamUserOnly(a.handleCheckinCommentDelete(checkinSvc)))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/metrics", a.userOnly(a.departmentTeamUserOnly(a.handleTeamMetrics()))).Methods("GET")
 	// org teams
 	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgUserOnly(a.handleGetOrganizationTeams()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgAdminOnly(a.handleCreateOrganizationTeam()))).Methods("POST")
@@ -211,6 +213,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.orgTeamOnly(a.handleCheckinComment(checkinSvc)))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.orgTeamOnly(a.handleCheckinCommentEdit(checkinSvc)))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.orgTeamOnly(a.handleCheckinCommentDelete(checkinSvc)))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/metrics", a.userOnly(a.orgTeamOnly(a.handleTeamMetrics()))).Methods("GET")
 	// org users
 	orgRouter.HandleFunc("/{orgId}/users", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUsers()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdateUser()))).Methods("PUT")
@@ -237,6 +240,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.teamUserOnly(a.handleCheckinComment(checkinSvc)))).Methods("POST")
 	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinSvc)))).Methods("PUT")
 	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinSvc)))).Methods("DELETE")
+	teamRouter.HandleFunc("/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics()))).Methods("GET")
 	// admin
 	adminRouter.HandleFunc("/stats", a.userOnly(a.adminOnly(a.handleAppStats()))).Methods("GET")
 	adminRouter.HandleFunc("/users", a.userOnly(a.adminOnly(a.handleGetRegisteredUsers()))).Methods("GET")

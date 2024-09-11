@@ -39,6 +39,23 @@ type TeamUserInvite struct {
 	ExpireDate  time.Time `json:"expire_date"`
 }
 
+// TeamMetrics represents the metrics for a single team
+type TeamMetrics struct {
+	TeamID               string `json:"team_id"`
+	TeamName             string `json:"team_name"`
+	OrganizationID       string `json:"organization_id"`
+	OrganizationName     string `json:"organization_name"`
+	DepartmentID         string `json:"department_id"`
+	DepartmentName       string `json:"department_name"`
+	UserCount            int    `json:"user_count"`
+	PokerCount           int    `json:"poker_count"`
+	RetroCount           int    `json:"retro_count"`
+	StoryboardCount      int    `json:"storyboard_count"`
+	TeamCheckinCount     int    `json:"team_checkin_count"`
+	EstimationScaleCount int    `json:"estimation_scale_count"`
+	RetroTemplateCount   int    `json:"retro_template_count"`
+}
+
 type TeamDataSvc interface {
 	TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error)
 	TeamGet(ctx context.Context, TeamID string) (*Team, error)
@@ -65,4 +82,5 @@ type TeamDataSvc interface {
 	TeamRemoveStoryboard(ctx context.Context, TeamID string, StoryboardID string) error
 	TeamList(ctx context.Context, Limit int, Offset int) ([]*Team, int)
 	TeamIsSubscribed(ctx context.Context, TeamID string) (bool, error)
+	GetTeamMetrics(ctx context.Context, teamID string) (*TeamMetrics, error)
 }

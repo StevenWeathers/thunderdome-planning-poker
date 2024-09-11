@@ -11,7 +11,17 @@
   import TableRow from '../../components/table/TableRow.svelte';
   import HeadCol from '../../components/table/HeadCol.svelte';
   import Table from '../../components/table/Table.svelte';
-  import { ChevronRight } from 'lucide-svelte';
+  import {
+    BarChart2,
+    CheckSquare,
+    ChevronRight,
+    LayoutDashboard,
+    Network,
+    RefreshCcw,
+    User,
+    Users,
+    Vote,
+  } from 'lucide-svelte';
   import CreateDepartment from '../../components/team/CreateDepartment.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
@@ -21,6 +31,11 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
   import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
+  import MetricsDisplay from '../../components/global/MetricsDisplay.svelte';
+  import {
+    fetchAndUpdateMetrics,
+    MetricItem,
+  } from '../../components/team/metrics';
 
   export let xfetch;
   export let router;
@@ -95,6 +110,43 @@
         notifications.danger($LL.organizationGetError());
       });
   }
+
+  let organizationMetrics: MetricItem[] = [
+    {
+      key: 'department_count',
+      name: 'Departments',
+      value: 0,
+      icon: Network,
+    },
+    { key: 'team_count', name: 'Team Count', value: 0, icon: Users },
+    {
+      key: 'team_checkin_count',
+      name: 'Team Check-ins',
+      value: 0,
+      icon: CheckSquare,
+    },
+    { key: 'user_count', name: 'Users', value: 0, icon: User },
+    { key: 'poker_count', name: 'Poker Games', value: 0, icon: Vote },
+    { key: 'retro_count', name: 'Retros', value: 0, icon: RefreshCcw },
+    {
+      key: 'storyboard_count',
+      name: 'Storyboards',
+      value: 0,
+      icon: LayoutDashboard,
+    },
+    {
+      key: 'estimation_scale_count',
+      name: 'Custom Estimation Scales',
+      value: 0,
+      icon: BarChart2,
+    },
+    // {
+    //   key: 'retro_template_count',
+    //   name: 'Retro Templates',
+    //   value: 0,
+    //   icon: SquareDashedKanban,
+    // },
+  ];
 
   function getUsers() {
     const usersOffset = (usersPage - 1) * usersPageLimit;
@@ -320,13 +372,21 @@
     }
   }
 
-  onMount(() => {
+  onMount(async () => {
     if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
       return;
     }
 
     getOrganization();
+    try {
+      organizationMetrics = await fetchAndUpdateMetrics(
+        orgPrefix,
+        organizationMetrics,
+      );
+    } catch (e) {
+      notifications.danger('Failed to get organization metrics');
+    }
   });
 
   $: isAdmin = role === 'ADMIN';
@@ -342,6 +402,10 @@
     <ChevronRight class="w-8 h-8 inline-block" />
     {organization.name}
   </h1>
+
+  <div class="mb-8">
+    <MetricsDisplay metrics="{organizationMetrics}" />
+  </div>
 
   <div class="w-full mb-6 lg:mb-8">
     <TableContainer>
