@@ -17,8 +17,8 @@
   import GlobalAlerts from './components/alert/GlobalAlerts.svelte';
   import GlobalFooter from './components/global/GlobalFooter.svelte';
   import Landing from './pages/Landing.svelte';
-  import Battles from './pages/poker/PokerGames.svelte';
   import Battle from './pages/poker/PokerGame.svelte';
+  import Battles from './pages/poker/PokerGames.svelte';
   import Retros from './pages/retro/Retros.svelte';
   import Retro from './pages/retro/Retro.svelte';
   import Storyboards from './pages/storyboard/Storyboards.svelte';
@@ -61,6 +61,9 @@
   import Support from './pages/support/Support.svelte';
   import { loadLocale } from './i18n/i18n-util.sync';
   import Invite from './pages/team/Invite.svelte';
+  import RetroLanding from './pages/retro/RetroLanding.svelte';
+  import PokerLanding from './pages/poker/PokerLanding.svelte';
+  import StoryboardLanding from './pages/storyboard/StoryboardLanding.svelte';
 
   const {
     FeaturePoker,
@@ -415,7 +418,7 @@
     });
     router.on(appRoutes.games, () => {
       currentPage = {
-        route: Battles,
+        route: $user.id ? Battles : PokerLanding,
         params: {},
         name: 'battles',
       };
@@ -473,7 +476,7 @@
   if (FeatureRetro) {
     router.on(appRoutes.retros, () => {
       currentPage = {
-        route: Retros,
+        route: $user.id ? Retros : RetroLanding,
         params: {},
         name: 'retros',
       };
@@ -518,7 +521,7 @@
   if (FeatureStoryboard) {
     router.on(appRoutes.storyboards, () => {
       currentPage = {
-        route: Storyboards,
+        route: $user.id ? Storyboards : StoryboardLanding,
         params: {},
         name: 'storyboards',
       };
