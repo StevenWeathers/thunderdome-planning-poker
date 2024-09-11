@@ -720,3 +720,44 @@ func (s *Service) handleDeleteTeamUserInvite() http.HandlerFunc {
 		}
 	}
 }
+
+// handleTeamMetrics gets the metrics for a specific team
+// @Summary      Get Team Metrics
+// @Description  Get metrics for a specific team such as user count, poker game count, etc.
+// @Tags         admin
+// @Produce      json
+// @Param        teamID   path      string  true  "Team ID"
+// @Success      200  object  standardJsonResponse{data=thunderdome.TeamMetrics}
+// @Failure      400  object  standardJsonResponse{}
+// @Failure      404  object  standardJsonResponse{}
+// @Failure      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /admin/teams/{teamID}/metrics [get]
+func (s *Service) handleTeamMetrics() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		teamID := vars["teamID"]
+
+		if teamID == "" {
+			s.Failure(w, r, http.StatusBadRequest, errors.New("team ID is required"))
+			return
+		}
+
+		metrics, err := s.TeamDataSvc.GetTeamMetrics(ctx, teamID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamMetrics error", zap.Error(err),
+				zap.String("session_user_id", sessionUserID),
+				zap.String("team_id", teamID))
+			if err.Error() == "no team found with ID "+teamID {
+				s.Failure(w, r, http.StatusNotFound, err)
+			} else {
+				s.Failure(w, r, http.StatusInternalServerError, err)
+			}
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, metrics, nil)
+	}
+}

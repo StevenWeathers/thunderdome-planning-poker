@@ -70,6 +70,21 @@ type DepartmentUserInvite struct {
 	ExpireDate   time.Time `json:"expire_date"`
 }
 
+// OrganizationMetrics represents the metrics for a single organization
+type OrganizationMetrics struct {
+	OrganizationID       string `json:"organization_id"`
+	OrganizationName     string `json:"organization_name"`
+	DepartmentCount      int    `json:"department_count"`
+	TeamCount            int    `json:"team_count"`
+	RetroCount           int    `json:"retro_count"`
+	PokerCount           int    `json:"poker_count"`
+	StoryboardCount      int    `json:"storyboard_count"`
+	TeamCheckinCount     int    `json:"team_checkin_count"`
+	UserCount            int    `json:"user_count"`
+	EstimationScaleCount int    `json:"estimation_scale_count"`
+	RetroTemplateCount   int    `json:"retro_template_count"`
+}
+
 type OrganizationDataSvc interface {
 	OrganizationGet(ctx context.Context, OrgID string) (*Organization, error)
 	OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error)
@@ -91,6 +106,7 @@ type OrganizationDataSvc interface {
 	OrganizationDelete(ctx context.Context, OrgID string) error
 	OrganizationList(ctx context.Context, Limit int, Offset int) []*Organization
 	OrganizationIsSubscribed(ctx context.Context, OrgID string) (bool, error)
+	GetOrganizationMetrics(ctx context.Context, organizationID string) (*OrganizationMetrics, error)
 
 	DepartmentUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string) (string, string, error)
 	DepartmentGet(ctx context.Context, DepartmentID string) (*Department, error)
