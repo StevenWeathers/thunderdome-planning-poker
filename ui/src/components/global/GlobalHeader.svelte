@@ -207,31 +207,15 @@
               </a>
             </li>
           {/if}
-          {#if $user.name}
-            {#if $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
-              <li>
-                <a
-                  href="{appRoutes.teams}"
-                  class="{currentPage === 'teams'
-                    ? activePageClass
-                    : pageClass}"
-                >
-                  {$LL.teams()}
-                </a>
-              </li>
-            {/if}
-            {#if validateUserIsAdmin($user)}
-              <li>
-                <a
-                  href="{appRoutes.admin}"
-                  class="{currentPage === 'admin'
-                    ? activePageClass
-                    : pageClass}"
-                >
-                  {$LL.admin()}
-                </a>
-              </li>
-            {/if}
+          {#if $user.name && $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
+            <li>
+              <a
+                href="{appRoutes.teams}"
+                class="{currentPage === 'teams' ? activePageClass : pageClass}"
+              >
+                {$LL.teams()}
+              </a>
+            </li>
           {/if}
           {#if SubscriptionsEnabled && !$user.subscribed}
             <li>
@@ -242,6 +226,16 @@
                   : pageClass}"
               >
                 Pricing
+              </a>
+            </li>
+          {/if}
+          {#if $user.name && validateUserIsAdmin($user)}
+            <li>
+              <a
+                href="{appRoutes.admin}"
+                class="{currentPage === 'admin' ? activePageClass : pageClass}"
+              >
+                {$LL.admin()}
               </a>
             </li>
           {/if}

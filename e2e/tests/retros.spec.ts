@@ -6,12 +6,12 @@ const pageTitle = "My Retros";
 
 test.describe("Retros page", () => {
   test.describe("Unauthenticated user", () => {
-    test("redirects to login", async ({ page }) => {
+    test("displays retrospective landing page", async ({ page }) => {
       const retrosPage = new RetrosPage(page);
       await retrosPage.goto();
 
-      const loginForm = retrosPage.page.locator('form[name="login"]');
-      await expect(loginForm).toBeVisible();
+      const title = retrosPage.page.locator("h1");
+      await expect(title).toHaveText("Sprint Retrospectives with Thunderdome");
     });
   });
 

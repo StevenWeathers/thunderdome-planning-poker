@@ -8,28 +8,9 @@
 
 💵 [Premium Options Available](https://thunderdome.dev/subscriptions/pricing)
 
-## Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.
+## Remote team collaboration with agile poker planning, sprint retrospectives, user story mapping and async team stand-ups (checkins).
 
 ![image](docs/img/main_preview.png)
-
-## Streamline your team's agile stand-up with Team Checkins
-
-Instead of spending time discussing what you did yesterday and what you're going to do today, focus on Blockers and
-other more critical details.
-
-![image](https://user-images.githubusercontent.com/846933/146627094-1f31a277-a454-4fd1-b707-ecb95559e9ad.png)
-
-## Agile Sprint Retrospective
-
-Realtime agile sprint retrospectives with grouping, voting, and action items.
-
-![image](https://user-images.githubusercontent.com/846933/173260209-3ef3299f-f1b2-41e8-802f-17d40649c66d.png)
-
-## Agile Feature Story Mapping
-
-Realtime agile feature story mapping with goals, columns, stories and more!
-
-![image](https://user-images.githubusercontent.com/846933/173260211-304a973d-4ede-494f-bb7d-b7e5c86a4e6e.png)
 
 # Running in production
 

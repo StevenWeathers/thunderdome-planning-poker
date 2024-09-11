@@ -1,16 +1,21 @@
 <script>
   import { appRoutes } from '../../config';
+  import { onMount } from 'svelte';
+
+  onMount(() => window.scrollTo(0, 0));
 </script>
 
-<section class="relative bg-yellow-thunder text-gray-800 py-12">
-  <div class="relative mx-auto max-w-2xl px-6 text-center lg:max-w-7xl lg:px-8">
-    <h1 class="text-4xl font-bold tracking-tight sm:text-6xl">
-      <span class="block lg:inline">Story Mapping with Thunderdome</span>
-    </h1>
-    <p class="mt-4 text-xl text-gray-700">
-      Visualize your product backlog and create better user experiences with our
-      powerful story mapping tool
-    </p>
+<section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-3xl mx-auto text-center">
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+        Story Mapping with Thunderdome
+      </h1>
+      <p class="text-xl sm:text-2xl text-blue-100">
+        Visualize your product backlog and create better user experiences with
+        our powerful story mapping tool.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -67,7 +72,12 @@
         <img
           src="{appConfig.PathPrefix}/img/previews/storyboard.png"
           alt="Intuitive Visual Interface Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
+        />
+        <img
+          src="{appConfig.PathPrefix}/img/previews/storyboard_light.png"
+          alt="Intuitive Visual Interface Screenshot"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
         />
       </div>
     </section>
@@ -92,7 +102,12 @@
         <img
           src="{appConfig.PathPrefix}/img/previews/storyboard_users.png"
           alt="Collaborative Mapping Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
+        />
+        <img
+          src="{appConfig.PathPrefix}/img/previews/storyboard_users_light.png"
+          alt="Collaborative Mapping Screenshot"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
         />
       </div>
     </section>
@@ -116,7 +131,12 @@
         <img
           src="{appConfig.PathPrefix}/img/previews/storyboard_story.png"
           alt="Flexible Story Management Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
+        />
+        <img
+          src="{appConfig.PathPrefix}/img/previews/storyboard_story_light.png"
+          alt="Flexible Story Management Screenshot"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
         />
       </div>
     </section>

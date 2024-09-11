@@ -1,16 +1,21 @@
 <script>
   import { appRoutes } from '../../config';
+  import { onMount } from 'svelte';
+
+  onMount(() => window.scrollTo(0, 0));
 </script>
 
-<section class="relative bg-yellow-thunder text-gray-800 py-12">
-  <div class="relative mx-auto max-w-2xl px-6 text-center lg:max-w-7xl lg:px-8">
-    <h1 class="text-4xl font-bold tracking-tight sm:text-6xl">
-      <span class="block lg:inline">Agile Poker Planning with Thunderdome</span>
-    </h1>
-    <p class="mt-4 text-xl text-gray-700">
-      Streamline your sprint planning process with our intuitive and powerful
-      poker planning tool.
-    </p>
+<section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-3xl mx-auto text-center">
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+        Agile Poker Planning with Thunderdome
+      </h1>
+      <p class="text-xl sm:text-2xl text-blue-100">
+        Streamline your sprint planning process with our intuitive and powerful
+        poker planning tool.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -76,7 +81,12 @@
         <img
           src="{appConfig.PathPrefix}/img/previews/estimation_scales.png"
           alt="Custom Estimation Scales Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
+        />
+        <img
+          src="{appConfig.PathPrefix}/img/previews/estimation_scales_light.png"
+          alt="Custom Estimation Scales Screenshot"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
         />
       </div>
     </section>
@@ -104,7 +114,12 @@
         <img
           src="{appConfig.PathPrefix}/img/previews/voting_interactive.png"
           alt="Real-time Collaboration Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
+        />
+        <img
+          src="{appConfig.PathPrefix}/img/previews/voting_interactive_light.png"
+          alt="Real-time Collaboration Screenshot"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
         />
       </div>
     </section>
@@ -127,10 +142,6 @@
             Reveal all estimates simultaneously to encourage independent
             thinking
           </li>
-          <!--                    <li>-->
-          <!--                        Option to keep voting open or set time limits for each estimation-->
-          <!--                        round-->
-          <!--                    </li>-->
           <li>
             Easily identify outliers and facilitate discussions on estimate
             differences
@@ -141,7 +152,12 @@
         <img
           src="{appConfig.PathPrefix}/img/previews/voting_anon.png"
           alt="Voting Visibility Control Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
+        />
+        <img
+          src="{appConfig.PathPrefix}/img/previews/voting_anon_light.png"
+          alt="Voting Visibility Control Screenshot"
+          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
         />
       </div>
     </section>
@@ -174,39 +190,6 @@
     <!--                <img-->
     <!--                        src="/api/placeholder/800/600"-->
     <!--                        alt="Project Integration Screenshot"-->
-    <!--                        class="rounded-lg shadow-lg"-->
-    <!--                />-->
-    <!--            </div>-->
-    <!--        </section>-->
-
-    <!--        <section class="flex flex-col md:flex-row items-center">-->
-    <!--            <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">-->
-    <!--                <div class="mb-4">-->
-    <!--                    <div class="title-line bg-yellow-thunder"></div>-->
-    <!--                    <h3-->
-    <!--                            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"-->
-    <!--                    >-->
-    <!--                        Historical Data & Analytics-->
-    <!--                    </h3>-->
-    <!--                </div>-->
-    <!--                <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">-->
-    <!--                    <li>-->
-    <!--                        Track and analyze estimation trends over time to improve accuracy-->
-    <!--                    </li>-->
-    <!--                    <li>Generate reports on team velocity and estimation consistency</li>-->
-    <!--                    <li>-->
-    <!--                        Compare estimated vs. actual effort to refine future estimations-->
-    <!--                    </li>-->
-    <!--                    <li>-->
-    <!--                        Visualize data with interactive charts and graphs for easy-->
-    <!--                        interpretation-->
-    <!--                    </li>-->
-    <!--                </ul>-->
-    <!--            </div>-->
-    <!--            <div class="md:w-1/2">-->
-    <!--                <img-->
-    <!--                        src="/api/placeholder/800/600"-->
-    <!--                        alt="Historical Data & Analytics Screenshot"-->
     <!--                        class="rounded-lg shadow-lg"-->
     <!--                />-->
     <!--            </div>-->

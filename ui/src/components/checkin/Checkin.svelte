@@ -4,9 +4,10 @@
   import LL from '../../i18n/i18n-svelte';
   import Editor from '../forms/Editor.svelte';
   import Toggle from '../forms/Toggle.svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { AppConfig } from '../../config';
   import { user } from '../../stores';
   import { onMount } from 'svelte';
+  import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
   export let toggleCheckin = () => {};
   export let handleCheckin = () => {};
@@ -136,14 +137,9 @@
         </div>
       {/if}
     {:else}
-      <div class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
-        <a
-          href="{appRoutes.subscriptionPricing}"
-          class="underline"
-          target="_blank">Subscribe</a
-        >
-        to see your last checkin for convenience.
-      </div>
+      <FeatureSubscribeBanner
+        salesPitch="Build on yesterday's momentum - upgrade to view your last check-in and seamlessly continue your progress."
+      />
     {/if}
 
     <div class="w-full md:grid md:grid-cols-2 md:gap-4">

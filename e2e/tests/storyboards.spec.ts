@@ -6,12 +6,12 @@ const pageTitle = "My Storyboards";
 
 test.describe("Storyboards page", () => {
   test.describe("Unauthenticated user", () => {
-    test("redirects to login", async ({ page }) => {
+    test("displays storyboard landing page", async ({ page }) => {
       const storyboardsPage = new StoryboardsPage(page);
       await storyboardsPage.goto();
 
-      const loginForm = storyboardsPage.page.locator('form[name="login"]');
-      await expect(loginForm).toBeVisible();
+      const title = storyboardsPage.page.locator("h1");
+      await expect(title).toHaveText("Story Mapping with Thunderdome");
     });
   });
 
