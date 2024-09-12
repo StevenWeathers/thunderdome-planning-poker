@@ -106,6 +106,8 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 		&w.Picture,
 	)
 	if err != nil {
+		d.Logger.Ctx(ctx).Error("get_user query error", zap.Error(err),
+			zap.String("UserID", UserID))
 		return nil, fmt.Errorf("get user query error: %v", err)
 	}
 

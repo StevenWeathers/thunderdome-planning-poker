@@ -39,7 +39,8 @@ func (d *Service) GetStories(PokerID string, UserID string) []*thunderdome.Story
 				&p.Id, &p.Name, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Priority,
 				&p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v, &p.Position,
 			); err != nil {
-				d.Logger.Error("get poker stories query error", zap.Error(err))
+				d.Logger.Error("get poker stories query error", zap.Error(err),
+					zap.String("PokerID", PokerID), zap.String("UserID", UserID))
 			} else {
 				p.ReferenceId = ReferenceID.String
 				p.Link = Link.String
@@ -47,7 +48,8 @@ func (d *Service) GetStories(PokerID string, UserID string) []*thunderdome.Story
 				p.AcceptanceCriteria = AcceptanceCriteria.String
 				err = json.Unmarshal([]byte(v), &p.Votes)
 				if err != nil {
-					d.Logger.Error("get poker stories query scan error", zap.Error(err))
+					d.Logger.Error("get poker stories query scan error", zap.Error(err),
+						zap.String("PokerID", PokerID), zap.String("UserID", UserID))
 				}
 
 				// don't send others vote values to client, prevent sneaky devs from peaking at votes
@@ -84,7 +86,8 @@ func (d *Service) CreateStory(PokerID string, Name string, Type string, Referenc
     ));`,
 		PokerID, Name, Type, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority,
 	); err != nil {
-		d.Logger.Error("error creating poker story", zap.Error(err))
+		d.Logger.Error("error creating poker story", zap.Error(err),
+			zap.String("PokerID", PokerID), zap.String("Name", Name))
 	}
 
 	plans := d.GetStories(PokerID, "")
@@ -97,7 +100,8 @@ func (d *Service) ActivateStoryVoting(PokerID string, StoryID string) ([]*thunde
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_activate($1, $2);`, PokerID, StoryID,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.poker_story_activate error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.poker_story_activate error", zap.Error(err),
+			zap.String("PokerID", PokerID), zap.String("StoryID", StoryID))
 	}
 
 	plans := d.GetStories(PokerID, "")
@@ -122,7 +126,9 @@ func (d *Service) SetVote(PokerID string, UserID string, StoryID string, VoteVal
 		)
 		WHERE p1.id = $1;`,
 		StoryID, UserID, VoteValue); err != nil {
-		d.Logger.Error("CALL thunderdome.poker_user_vote_set error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.poker_user_vote_set error", zap.Error(err),
+			zap.String("PokerID", PokerID), zap.String("UserID", UserID),
+			zap.String("StoryID", StoryID), zap.String("VoteValue", VoteValue))
 	}
 
 	Plans := d.GetStories(PokerID, "")
@@ -165,6 +171,8 @@ func (d *Service) RetractVote(PokerID string, UserID string, StoryID string) ([]
 		)
 		WHERE p1.id = $1;
     `, StoryID, UserID); err != nil {
+		d.Logger.Error("poker retract vote query error", zap.Error(err),
+			zap.String("PokerID", PokerID), zap.String("UserID", UserID), zap.String("StoryID", StoryID))
 		return nil, fmt.Errorf("poker retract vote query error: %v", err)
 	}
 
@@ -177,7 +185,8 @@ func (d *Service) RetractVote(PokerID string, UserID string, StoryID string) ([]
 func (d *Service) EndStoryVoting(PokerID string, StoryID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_plan_voting_stop($1, $2);`, PokerID, StoryID); err != nil {
-		d.Logger.Error("CALL thunderdome.poker_plan_voting_stop error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.poker_plan_voting_stop error", zap.Error(err),
+			zap.String("PokerID", PokerID), zap.String("StoryID", StoryID))
 	}
 
 	plans := d.GetStories(PokerID, "")
@@ -189,7 +198,8 @@ func (d *Service) EndStoryVoting(PokerID string, StoryID string) ([]*thunderdome
 func (d *Service) SkipStory(PokerID string, StoryID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_vote_skip($1, $2);`, PokerID, StoryID); err != nil {
-		d.Logger.Error("CALL thunderdome.poker_vote_skip error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.poker_vote_skip error", zap.Error(err),
+			zap.String("PokerID", PokerID), zap.String("StoryID", StoryID))
 	}
 
 	plans := d.GetStories(PokerID, "")
@@ -219,7 +229,8 @@ func (d *Service) UpdateStory(PokerID string, StoryID string, Name string, Type 
         priority = $8
     WHERE id = $1;`,
 		StoryID, Name, Type, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority); err != nil {
-		d.Logger.Error("error getting poker story", zap.Error(err))
+		d.Logger.Error("error getting poker story", zap.Error(err),
+			zap.String("PokerID", PokerID), zap.String("StoryID", StoryID))
 	}
 
 	plans := d.GetStories(PokerID, "")
@@ -231,7 +242,8 @@ func (d *Service) UpdateStory(PokerID string, StoryID string, Name string, Type 
 func (d *Service) DeleteStory(PokerID string, StoryID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_delete($1, $2);`, PokerID, StoryID); err != nil {
-		d.Logger.Error("CALL thunderdome.poker_story_delete error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.poker_story_delete error", zap.Error(err),
+			zap.String("PokerID", PokerID), zap.String("StoryID", StoryID))
 	}
 
 	plans := d.GetStories(PokerID, "")
@@ -247,7 +259,8 @@ func (d *Service) ArrangeStory(PokerID string, StoryID string, BeforeStoryID str
 			WHERE id = $2;`,
 			PokerID, StoryID)
 		if err != nil {
-			d.Logger.Error("poker ArrangeStory get beforeStoryId error", zap.Error(err))
+			d.Logger.Error("poker ArrangeStory get beforeStoryId error", zap.Error(err),
+				zap.String("PokerID", PokerID), zap.String("StoryID", StoryID))
 		}
 	} else {
 		_, err := d.DB.Exec(
@@ -285,7 +298,9 @@ func (d *Service) ArrangeStory(PokerID string, StoryID string, BeforeStoryID str
 			) WHERE id = $2;`,
 			PokerID, StoryID, BeforeStoryID)
 		if err != nil {
-			d.Logger.Error("poker ArrangeStory error", zap.Error(err))
+			d.Logger.Error("poker ArrangeStory error", zap.Error(err),
+				zap.String("PokerID", PokerID), zap.String("StoryID", StoryID),
+				zap.String("BeforeStoryID", BeforeStoryID))
 		}
 	}
 
@@ -298,7 +313,10 @@ func (d *Service) ArrangeStory(PokerID string, StoryID string, BeforeStoryID str
 func (d *Service) FinalizeStory(PokerID string, StoryID string, Points string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_finalize($1, $2, $3);`, PokerID, StoryID, Points); err != nil {
-		d.Logger.Error("CALL thunderdome.poker_story_finalize error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.poker_story_finalize error", zap.Error(err),
+			zap.String("PokerID", PokerID),
+			zap.String("StoryID", StoryID),
+			zap.String("Points", Points))
 	}
 
 	plans := d.GetStories(PokerID, "")

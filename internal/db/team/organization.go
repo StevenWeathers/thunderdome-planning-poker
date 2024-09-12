@@ -267,11 +267,13 @@ func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context,
 	oui := thunderdome.OrganizationUserInvite{}
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT invite_id, organization_id, email, role, created_date, expire_date
- 				FROM thunderdome.organization_user_invite WHERE invite_id = $1;`,
+ 				FROM thunderdome.organization_user_invite WHERE invite_id = $1 AND expire_date > CURRENT_TIMESTAMP;`,
 		InviteID,
 	).Scan(&oui.InviteId, &oui.OrganizationId, &oui.Email, &oui.Role, &oui.CreatedDate, &oui.ExpireDate)
 
 	if err != nil {
+		d.Logger.Ctx(ctx).Error("OrganizationUserGetInviteByID query error	", zap.Error(err),
+			zap.String("invite_id", InviteID))
 		return oui, fmt.Errorf("organization get user invite query error: %v", err)
 	}
 
