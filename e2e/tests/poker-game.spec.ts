@@ -280,10 +280,10 @@ test.describe("Poker Game page", () => {
       bp.page.locator('[data-testid="voteresult-average"]'),
     ).not.toBeVisible();
     await expect(
-      bp.page.locator('[data-testid="voteresult-high"]'),
+      bp.page.locator('[data-testid="voteresult-consensus"]'),
     ).not.toBeVisible();
     await expect(
-      bp.page.locator('[data-testid="voteresult-highcount"]'),
+      bp.page.locator('[data-testid="voteresult-agreement"]'),
     ).not.toBeVisible();
 
     await bp.page.locator('[data-testid="voting-finish"]').click();
@@ -295,17 +295,17 @@ test.describe("Poker Game page", () => {
       bp.page.locator('[data-testid="voteresult-average"]'),
     ).toBeVisible();
     await expect(
-      bp.page.locator('[data-testid="voteresult-high"]'),
+      bp.page.locator('[data-testid="voteresult-consensus"]'),
     ).toBeVisible();
     await expect(
-      bp.page.locator('[data-testid="voteresult-highcount"]'),
+      bp.page.locator('[data-testid="voteresult-agreement"]'),
     ).toBeVisible();
     await expect(
       bp.page.locator('[data-testid="currentplan-name"]'),
     ).toContainText(lokiPlan.name);
     await expect(
-      bp.page.locator('[data-testid="pointCard"][data-locked="true"]'),
-    ).toHaveCount(8);
+      bp.page.locator('[data-testid="pointCard"]'),
+    ).not.toBeVisible();
   });
 
   test("should allow saving story voting final points", async ({
