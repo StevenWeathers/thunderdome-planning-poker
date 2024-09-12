@@ -5,7 +5,6 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import PointCard from '../../components/poker/PointCard.svelte';
   import PokerStories from '../../components/poker/PokerStories.svelte';
-  import VoteResults from '../../components/poker/VoteResults.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditPokerGame from '../../components/poker/EditPokerGame.svelte';
@@ -20,6 +19,7 @@
   import type { PokerGame, PokerStory } from '../../types/poker';
   import TextInput from '../../components/forms/TextInput.svelte';
   import { ExternalLink } from 'lucide-svelte';
+  import VotingMetrics from '../../components/poker/VotingMetrics.svelte';
 
   export let battleId: string;
   export let notifications;
@@ -539,15 +539,14 @@
     <div class="flex flex-wrap mb-4 -mx-4">
       <div class="w-full lg:w-3/4 px-4">
         {#if showVotingResults}
-          <VoteResults
-            warriors="{battle.users}"
-            plans="{battle.plans}"
-            activePlanId="{battle.activePlanId}"
-            points="{points}"
-            highestVote="{highestVoteCount}"
-            averageRounding="{battle.pointAverageRounding}"
-            hideVoterIdentity="{battle.hideVoterIdentity}"
-          />
+          <div class=" mb-2 md:mb-4">
+            <VotingMetrics
+              pointValues="{points}"
+              votes="{battle.plans.find(p => p.id === battle.activePlanId)
+                .votes}"
+              users="{battle.users}"
+            />
+          </div>
         {:else}
           <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
             {#each points as point}
