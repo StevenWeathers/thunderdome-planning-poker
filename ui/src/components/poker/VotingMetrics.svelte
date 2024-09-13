@@ -6,6 +6,7 @@
   export let votes = [];
   export let pointValues = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?'];
   export let users = [];
+  export let averageRounding = 'ceil';
   let chartData = [];
   let maxCount = 0;
   let consensusValue = '';
@@ -44,6 +45,22 @@
 
   const yScale = scaleLinear().domain([0, maxCount]).range([0, 100]);
 
+  function roundMiddleIndex(middleIndex) {
+    let average = 0;
+    switch (averageRounding) {
+      case 'round':
+        average = Math.round(middleIndex);
+        break;
+      case 'floor':
+        average = Math.floor(middleIndex);
+        break;
+      default:
+        average = Math.ceil(middleIndex);
+    }
+
+    return average;
+  }
+
   function getAverageOrMedian(votes, pointValues) {
     if (isNumeric) {
       const numericVotes = votes
@@ -60,13 +77,13 @@
       const sortedVotes = validVotes.sort(
         (a, b) => pointValues.indexOf(a) - pointValues.indexOf(b),
       );
-      const middleIndex = Math.floor(sortedVotes.length / 2);
+      const middleIndex = roundMiddleIndex(sortedVotes.length / 2);
 
       if (sortedVotes.length % 2 === 0) {
         // If even number of votes, take the middle two and find the value between them
         const lowerMiddle = pointValues.indexOf(sortedVotes[middleIndex - 1]);
         const upperMiddle = pointValues.indexOf(sortedVotes[middleIndex]);
-        const averageIndex = Math.round((lowerMiddle + upperMiddle) / 2);
+        const averageIndex = roundMiddleIndex((lowerMiddle + upperMiddle) / 2);
         return pointValues[averageIndex];
       } else {
         // If odd number of votes, return the middle value
@@ -81,7 +98,7 @@
     return count > 0 ? Math.max(scaledHeight, minHeight) : 0;
   }
 
-  $: averageOrMedian = getAverageOrMedian(votes, pointValues);
+  $: averageOrMedian = getAverageOrMedian(votes, pointValues) || 'N/A';
 </script>
 
 <div

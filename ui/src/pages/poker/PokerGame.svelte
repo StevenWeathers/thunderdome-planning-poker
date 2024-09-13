@@ -545,6 +545,7 @@
               votes="{battle.plans.find(p => p.id === battle.activePlanId)
                 .votes}"
               users="{battle.users}"
+              averageRounding="{battle.pointAverageRounding}"
             />
           </div>
         {:else}
