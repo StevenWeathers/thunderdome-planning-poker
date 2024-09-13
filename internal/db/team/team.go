@@ -153,6 +153,69 @@ OFFSET $3;`,
 	return teams
 }
 
+// TeamListByUserNonOrg gets a list of teams the user is on that are not part of an organization
+func (d *Service) TeamListByUserNonOrg(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserTeam {
+	var teams = make([]*thunderdome.UserTeam, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT 
+    t.id, 
+    t.name, 
+    t.created_date, 
+    t.updated_date, 
+    tu.role,
+    sub_check.is_subscribed
+FROM thunderdome.team_user tu
+LEFT JOIN thunderdome.team t ON tu.team_id = t.id
+LEFT JOIN LATERAL (
+    SELECT 
+    COALESCE(
+        (SELECT TRUE 
+        FROM (
+            -- Check for direct team subscription
+            SELECT TRUE
+            FROM thunderdome.subscription 
+            WHERE team_id = t.id
+                AND active = TRUE 
+                AND expires > CURRENT_TIMESTAMP
+        ) AS subscriptions
+        LIMIT 1),
+        FALSE
+    ) AS is_subscribed
+) AS sub_check ON TRUE
+WHERE tu.user_id = $1 AND t.department_id IS NULL AND t.organization_id IS NULL
+ORDER BY t.created_date
+LIMIT $2
+OFFSET $3;`,
+		UserID,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var team thunderdome.UserTeam
+
+			if err := rows.Scan(
+				&team.Id,
+				&team.Name,
+				&team.CreatedDate,
+				&team.UpdatedDate,
+				&team.Role,
+				&team.Subscribed,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("team_list_by_user_non_org query scan error", zap.Error(err))
+			} else {
+				teams = append(teams, &team)
+			}
+		}
+	} else {
+		d.Logger.Ctx(ctx).Error("team_list_by_user_non_org query error", zap.Error(err))
+	}
+
+	return teams
+}
+
 // TeamCreate creates a team with current user as an ADMIN
 func (d *Service) TeamCreate(ctx context.Context, UserID string, TeamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}

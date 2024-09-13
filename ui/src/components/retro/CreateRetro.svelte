@@ -28,6 +28,7 @@
   let phaseTimeLimitMin = 0;
   let templateId = '';
   let phaseAutoAdvance = true;
+  let allowCumulativeVoting = false;
   let publicTemplates = [];
 
   /** @type {TextInput} */
@@ -65,6 +66,7 @@
       brainstormVisibility,
       phaseTimeLimitMin: parseInt(`${phaseTimeLimitMin}`, 10),
       phaseAutoAdvance,
+      allowCumulativeVoting,
       templateId,
     };
 
@@ -244,6 +246,15 @@
         required
       />
     </div>
+  </div>
+
+  <div class="mb-4">
+    <Checkbox
+      bind:checked="{allowCumulativeVoting}"
+      id="allowCumulativeVoting"
+      name="allowCumulativeVoting"
+      label="{$LL.allowCumulativeVotingLabel()}"
+    />
   </div>
 
   <div class="mb-4">

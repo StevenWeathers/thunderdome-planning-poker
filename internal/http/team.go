@@ -81,6 +81,30 @@ func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 	}
 }
 
+// handleGetTeamsByUser gets a list of teams the user is a part of that are not associated with an organization
+// @Summary      Get User Teams Non Org
+// @Description  Get a list of teams the user is a part of that are not associated with an organization
+// @Tags         team
+// @Produce      json
+// @Param        userId  path    string  true  "the user ID"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.UserTeam}
+// @Success      403     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/teams-non-org [get]
+func (s *Service) handleGetTeamsByUserNonOrg() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+
+		Limit, Offset := getLimitOffsetFromRequest(r)
+
+		Teams := s.TeamDataSvc.TeamListByUserNonOrg(ctx, UserID, Limit, Offset)
+
+		s.Success(w, r, http.StatusOK, Teams, nil)
+	}
+}
+
 // handleGetTeamUsers gets a list of users associated to the team
 // @Summary      Get Team users
 // @Description  Get a list of users associated to the team

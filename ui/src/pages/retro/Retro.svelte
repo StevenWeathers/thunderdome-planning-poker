@@ -69,6 +69,7 @@
         columns: [],
       },
     },
+    allowCumulativeVoting: false,
   };
   let showDeleteRetro = false;
   let actionItem = '';
@@ -88,6 +89,7 @@
         name: g.name,
         items: [],
         votes: [],
+        voteCount: 0,
         userVoted: false,
       };
       return prev;
@@ -102,10 +104,12 @@
     });
 
     retro.votes.map(vote => {
-      ++voteCount;
-      groupMap[vote.groupId].votes.push(vote.userId);
+      voteCount = voteCount + vote.count;
+      groupMap[vote.groupId].voteCount =
+        groupMap[vote.groupId].voteCount + vote.count;
+      groupMap[vote.groupId].votes.push(vote);
       if (vote.userId === $user.id) {
-        ++userVoteCount;
+        userVoteCount = userVoteCount + vote.count;
         groupMap[vote.groupId].userVoted = true;
       }
     });
@@ -117,7 +121,7 @@
     result = Object.values(groupMap);
     if (retro.phase === 'action' || retro.phase === 'completed') {
       result.sort((a, b) => {
-        return b.votes.length - a.votes.length;
+        return b.voteCount - a.voteCount;
       });
     }
     if (retro.phase === 'vote') {
@@ -811,6 +815,7 @@
                 handleVoteSubtract="{handleVoteSubtract}"
                 voteLimitReached="{voteLimitReached}"
                 columns="{retro.template.format.columns}"
+                allowCumulativeVoting="{retro.allowCumulativeVoting}"
               />
             </div>
           </div>

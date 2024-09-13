@@ -79,7 +79,7 @@
   function getTeams() {
     const teamsOffset = (teamsPage - 1) * teamsPageLimit;
     xfetch(
-      `/api/users/${$user.id}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
+      `/api/users/${$user.id}/teams-non-org?limit=${teamsPageLimit}&offset=${teamsOffset}`,
     )
       .then(res => res.json())
       .then(function (result) {

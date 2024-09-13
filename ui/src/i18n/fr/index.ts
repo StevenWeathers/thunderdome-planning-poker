@@ -636,6 +636,8 @@ const fr: Translation = {
   publicEstimationScales: 'Public Estimation Scales',
   organizationEstimationScales: 'Organization Estimation Scales',
   teamEstimationScales: 'Team Estimation Scales',
+  allowCumulativeVotingLabel:
+    'Allow Cumulative Voting (more than 1 vote per item group)',
 };
 
 export default fr;

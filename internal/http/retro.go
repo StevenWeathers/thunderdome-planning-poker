@@ -15,14 +15,15 @@ import (
 )
 
 type retroCreateRequestBody struct {
-	RetroName            string  `json:"retroName" example:"sprint 10 retro" validate:"required"`
-	JoinCode             string  `json:"joinCode" example:"iammadmax"`
-	FacilitatorCode      string  `json:"facilitatorCode" example:"likeaboss"`
-	MaxVotes             int     `json:"maxVotes" validate:"required,min=1,max=9"`
-	BrainstormVisibility string  `json:"brainstormVisibility" validate:"required,oneof=visible concealed hidden"`
-	PhaseTimeLimitMin    int     `json:"phaseTimeLimitMin" validate:"min=0,max=59" example:"10"`
-	PhaseAutoAdvance     bool    `json:"phaseAutoAdvance"`
-	TemplateID           *string `json:"templateId"`
+	RetroName             string  `json:"retroName" example:"sprint 10 retro" validate:"required"`
+	JoinCode              string  `json:"joinCode" example:"iammadmax"`
+	FacilitatorCode       string  `json:"facilitatorCode" example:"likeaboss"`
+	MaxVotes              int     `json:"maxVotes" validate:"required,min=1,max=9"`
+	BrainstormVisibility  string  `json:"brainstormVisibility" validate:"required,oneof=visible concealed hidden"`
+	PhaseTimeLimitMin     int     `json:"phaseTimeLimitMin" validate:"min=0,max=59" example:"10"`
+	PhaseAutoAdvance      bool    `json:"phaseAutoAdvance"`
+	AllowCumulativeVoting bool    `json:"allowCumulativeVoting"`
+	TemplateID            *string `json:"templateId"`
 }
 
 // handleRetroCreate handles creating a retro
@@ -90,29 +91,21 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 		var newRetro *thunderdome.Retro
 		var err error
 
-		// if retro created with team association
-		if teamIdExists {
-			if isTeamUserOrAnAdmin(r) {
-				newRetro, err = s.RetroDataSvc.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility, nr.PhaseTimeLimitMin, nr.PhaseAutoAdvance, *nr.TemplateID)
-				if err != nil {
-					s.Logger.Ctx(ctx).Error("handleRetroCreate error", zap.Error(err), zap.String("entity_user_id", UserID),
-						zap.String("team_id", TeamID), zap.String("retro_name", nr.RetroName),
-						zap.String("session_user_id", SessionUserID))
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-			} else {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
-				return
-			}
-		} else {
-			newRetro, err = s.RetroDataSvc.RetroCreate(UserID, nr.RetroName, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility, nr.PhaseTimeLimitMin, nr.PhaseAutoAdvance, *nr.TemplateID)
-			if err != nil {
-				s.Logger.Ctx(ctx).Error("handleRetroCreate error", zap.Error(err), zap.String("entity_user_id", UserID),
-					zap.String("retro_name", nr.RetroName), zap.String("session_user_id", SessionUserID))
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
+		// if retro created with team association and user is not a team user or admin, return 403
+		if teamIdExists && !isTeamUserOrAnAdmin(r) {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			return
+		}
+
+		newRetro, err = s.RetroDataSvc.CreateRetro(ctx, UserID, TeamID, nr.RetroName, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility, nr.PhaseTimeLimitMin, nr.PhaseAutoAdvance, nr.AllowCumulativeVoting, *nr.TemplateID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroCreate error", zap.Error(err),
+				zap.String("entity_user_id", UserID),
+				zap.String("retro_name", nr.RetroName),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("team_id", TeamID))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, newRetro, nil)

@@ -24,29 +24,30 @@ type RetroUser struct {
 
 // Retro A story mapping board
 type Retro struct {
-	Id                   string         `json:"id" db:"id"`
-	OwnerID              string         `json:"ownerId" db:"owner_id"`
-	Name                 string         `json:"name" db:"name"`
-	TemplateID           string         `json:"template_id" db:"template_id"`
-	Users                []*RetroUser   `json:"users"`
-	Groups               []*RetroGroup  `json:"groups"`
-	Items                []*RetroItem   `json:"items"`
-	ActionItems          []*RetroAction `json:"actionItems"`
-	Votes                []*RetroVote   `json:"votes"`
-	ReadyUsers           []string       `json:"readyUsers"`
-	Facilitators         []string       `json:"facilitators"`
-	Phase                string         `json:"phase" db:"phase"`
-	PhaseTimeLimitMin    int            `json:"phase_time_limit_min" db:"phase_time_limit_min"`
-	PhaseTimeStart       time.Time      `json:"phase_time_start" db:"phase_time_start"`
-	PhaseAutoAdvance     bool           `json:"phase_auto_advance" db:"phase_auto_advance"`
-	JoinCode             string         `json:"joinCode" db:"join_code"`
-	FacilitatorCode      string         `json:"facilitatorCode" db:"facilitator_code"`
-	MaxVotes             int            `json:"maxVotes" db:"max_votes"`
-	BrainstormVisibility string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
-	Template             RetroTemplate  `json:"template"`
-	TeamName             string         `json:"teamName"`
-	CreatedDate          string         `json:"createdDate" db:"created_date"`
-	UpdatedDate          string         `json:"updatedDate" db:"updated_date"`
+	Id                    string         `json:"id" db:"id"`
+	OwnerID               string         `json:"ownerId" db:"owner_id"`
+	Name                  string         `json:"name" db:"name"`
+	TemplateID            string         `json:"template_id" db:"template_id"`
+	Users                 []*RetroUser   `json:"users"`
+	Groups                []*RetroGroup  `json:"groups"`
+	Items                 []*RetroItem   `json:"items"`
+	ActionItems           []*RetroAction `json:"actionItems"`
+	Votes                 []*RetroVote   `json:"votes"`
+	ReadyUsers            []string       `json:"readyUsers"`
+	Facilitators          []string       `json:"facilitators"`
+	Phase                 string         `json:"phase" db:"phase"`
+	PhaseTimeLimitMin     int            `json:"phase_time_limit_min" db:"phase_time_limit_min"`
+	PhaseTimeStart        time.Time      `json:"phase_time_start" db:"phase_time_start"`
+	PhaseAutoAdvance      bool           `json:"phase_auto_advance" db:"phase_auto_advance"`
+	JoinCode              string         `json:"joinCode" db:"join_code"`
+	FacilitatorCode       string         `json:"facilitatorCode" db:"facilitator_code"`
+	MaxVotes              int            `json:"maxVotes" db:"max_votes"`
+	BrainstormVisibility  string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
+	AllowCumulativeVoting bool           `json:"allowCumulativeVoting" db:"allow_cumulative_voting"`
+	Template              RetroTemplate  `json:"template"`
+	TeamName              string         `json:"teamName"`
+	CreatedDate           string         `json:"createdDate" db:"created_date"`
+	UpdatedDate           string         `json:"updatedDate" db:"updated_date"`
 }
 
 // RetroItem can be a pro (went well/worked), con (needs improvement), or a question
@@ -99,11 +100,11 @@ type RetroItemComment struct {
 type RetroVote struct {
 	UserID  string `json:"userId" db:"user_id"`
 	GroupID string `json:"groupId" db:"group_id"`
+	Count   int    `json:"count" db:"vote_count"`
 }
 
 type RetroDataSvc interface {
-	RetroCreate(OwnerID string, RetroName string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool, TemplateID string) (*Retro, error)
-	TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool, TemplateID string) (*Retro, error)
+	CreateRetro(ctx context.Context, OwnerID, TeamID string, RetroName, JoinCode, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool, AllowCumulativeVoting bool, TemplateID string) (*Retro, error)
 	EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
 	RetroGet(RetroID string, UserID string) (*Retro, error)
 	RetroGetByUser(UserID string, Limit int, Offset int) ([]*Retro, int, error)

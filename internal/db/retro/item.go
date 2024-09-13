@@ -2,7 +2,6 @@ package retro
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -150,88 +149,6 @@ func (d *Service) GroupNameChange(RetroID string, GroupId string, Name string) (
 	}
 
 	return rg, nil
-}
-
-// GetRetroVotes gets retro votes
-func (d *Service) GetRetroVotes(RetroID string) []*thunderdome.RetroVote {
-	var votes = make([]*thunderdome.RetroVote, 0)
-
-	itemRows, itemsErr := d.DB.Query(
-		`SELECT group_id, user_id FROM thunderdome.retro_group_vote WHERE retro_id = $1;`,
-		RetroID,
-	)
-	if itemsErr == nil {
-		defer itemRows.Close()
-		for itemRows.Next() {
-			var rv = &thunderdome.RetroVote{}
-			if err := itemRows.Scan(&rv.GroupID, &rv.UserID); err != nil {
-				d.Logger.Error("get retro votes query scan error", zap.Error(err))
-			} else {
-				votes = append(votes, rv)
-			}
-		}
-	} else {
-		d.Logger.Error("get retro votes query error", zap.Error(itemsErr))
-	}
-
-	return votes
-}
-
-// GroupUserVote inserts a user vote for the retro item group
-func (d *Service) GroupUserVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
-	var voteCount int
-	var maxVotes int
-	err := d.DB.QueryRow(
-		`SELECT r.max_votes
-				FROM thunderdome.retro r
-				WHERE r.id = $1;`,
-		RetroID,
-	).Scan(&maxVotes)
-	if err != nil {
-		d.Logger.Error("retro max votes query error", zap.Error(err))
-	}
-
-	err = d.DB.QueryRow(
-		`SELECT count(rgv.group_id)
-				FROM thunderdome.retro_group_vote rgv
-				WHERE rgv.retro_id = $1 AND rgv.user_id = $2;`,
-		RetroID, UserID,
-	).Scan(&voteCount)
-	if err != nil {
-		d.Logger.Error("retro group vote count query error", zap.Error(err))
-	}
-
-	if voteCount == maxVotes {
-		return nil, errors.New("VOTE_LIMIT_REACHED")
-	}
-
-	if _, err = d.DB.Exec(
-		`INSERT INTO thunderdome.retro_group_vote
-		(retro_id, group_id, user_id)
-		VALUES ($1, $2, $3);`,
-		RetroID, GroupID, UserID,
-	); err != nil {
-		d.Logger.Error("retro group vote query error", zap.Error(err))
-	}
-
-	votes := d.GetRetroVotes(RetroID)
-
-	return votes, nil
-}
-
-// GroupUserSubtractVote deletes a user vote for the retro item group
-func (d *Service) GroupUserSubtractVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.retro_group_vote
-		WHERE retro_id = $1 AND group_id = $2 AND user_id = $3;`,
-		RetroID, GroupID, UserID,
-	); err != nil {
-		d.Logger.Error("retro group subtract vote query error", zap.Error(err))
-	}
-
-	votes := d.GetRetroVotes(RetroID)
-
-	return votes, nil
 }
 
 // ItemCommentAdd adds a comment to a retro item

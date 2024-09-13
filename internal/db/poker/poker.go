@@ -67,6 +67,8 @@ func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name str
 		d.Logger.Error("create poker error", zap.Error(err))
 	}
 
+	defer tx.Rollback()
+
 	// Insert into poker table
 	err = tx.QueryRowContext(ctx, `
             INSERT INTO thunderdome.poker 
@@ -78,9 +80,6 @@ func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name str
 		PointAverageRounding, HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode,
 	).Scan(&b.Id)
 	if err != nil {
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
-		}
 		d.Logger.Error("create poker error", zap.Error(err))
 		return nil, fmt.Errorf("failed to insert into poker table: %v", err)
 	}
@@ -91,9 +90,6 @@ func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name str
             VALUES ($1, $2)
         `, &b.Id, FacilitatorID)
 	if err != nil {
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
-		}
 		d.Logger.Error("create poker error", zap.Error(err))
 		return nil, fmt.Errorf("failed to insert into poker_facilitator table: %v", err)
 	}
@@ -104,9 +100,6 @@ func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name str
             VALUES ($1, $2)
         `, &b.Id, FacilitatorID)
 	if err != nil {
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
-		}
 		d.Logger.Error("create poker error", zap.Error(err))
 		return nil, fmt.Errorf("failed to insert into poker_user table: %v", err)
 	}
