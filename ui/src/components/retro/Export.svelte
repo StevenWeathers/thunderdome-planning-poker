@@ -14,7 +14,7 @@
         <h2 class="text-3xl font-rajdhani">{column.label}</h2>
         <ul class="ps-12 text-lg">
           {#each retro.items as item (item.id)}
-            {#if item.column_id === column.id}
+            {#if item.type === column.name}
               <li>
                 &bull; {item.content}
               </li>
