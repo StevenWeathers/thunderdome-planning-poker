@@ -10,7 +10,6 @@
   import StoryForm from '../../components/storyboard/StoryForm.svelte';
   import ColorLegendForm from '../../components/storyboard/ColorLegendForm.svelte';
   import PersonasForm from '../../components/storyboard/PersonasForm.svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import DeleteStoryboard from '../../components/storyboard/DeleteStoryboard.svelte';
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
@@ -18,9 +17,7 @@
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
-  import PageLayout from '../../components/PageLayout.svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
-  import TextInput from '../../components/forms/TextInput.svelte';
   import {
     ChevronDown,
     ChevronUp,
@@ -29,6 +26,8 @@
     User,
     Users,
   } from 'lucide-svelte';
+  import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
+  import FullpageLoader from '../../components/global/FullpageLoader.svelte';
 
   export let storyboardId;
   export let notifications;
@@ -41,6 +40,7 @@
   const hostname = window.location.origin;
   const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
+  let isLoading = true;
   let JoinPassRequired = false;
   let socketError = false;
   let socketReconnecting = false;
@@ -62,10 +62,10 @@
   let activeStory = null;
   let showDeleteStoryboard = false;
   let showEditStoryboard = false;
-  let joinPasscode = '';
   let collapseGoals = [];
 
   const onSocketMessage = function (evt) {
+    isLoading = false;
     const parsedEvent = JSON.parse(evt.data);
 
     switch (parsedEvent.type) {
@@ -207,6 +207,7 @@
         }
       },
       onopen: () => {
+        isLoading = false;
         socketError = false;
         socketReconnecting = false;
         eventTag('socket_open', 'storyboard', '');
@@ -282,9 +283,7 @@
     }
   }
 
-  function authStoryboard(e) {
-    e.preventDefault();
-
+  function authStoryboard(joinPasscode) {
     sendSocketEvent('auth_storyboard', joinPasscode);
     eventTag('auth_storyboard', 'storyboard', '');
   }
@@ -635,553 +634,499 @@
   <title>{$LL.storyboard()} {storyboard.name} | {$LL.appName()}</title>
 </svelte:head>
 
-{#if storyboard.name && !socketReconnecting && !socketError}
-  <div class="w-full">
-    <div
-      class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
+<div class="w-full">
+  <div
+    class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
         flex-wrap"
-    >
-      <div class="w-1/3">
-        <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
-          {storyboard.name}
-        </h1>
-      </div>
-      <div class="w-2/3 text-right">
-        <div>
-          {#if isFacilitator}
-            <HollowButton
-              color="green"
-              onClick="{toggleAddGoal()}"
-              additionalClasses="me-2"
-              testid="goal-add"
-            >
-              {$LL.storyboardAddGoal()}
-            </HollowButton>
-            <HollowButton
-              color="blue"
-              onClick="{toggleEditStoryboard}"
-              testid="storyboard-edit"
-            >
-              {$LL.editStoryboard()}
-            </HollowButton>
-            <HollowButton
-              color="red"
-              onClick="{toggleDeleteStoryboard}"
-              additionalClasses="me-2"
-              testid="storyboard-delete"
-            >
-              {$LL.deleteStoryboard()}
-            </HollowButton>
-          {:else}
-            <HollowButton
-              color="blue"
-              onClick="{toggleBecomeFacilitator}"
-              testid="become-facilitator"
-            >
-              {$LL.becomeFacilitator()}
-            </HollowButton>
-            <HollowButton
-              color="red"
-              onClick="{abandonStoryboard}"
-              testid="storyboard-leave"
-            >
-              {$LL.leaveStoryboard()}
-            </HollowButton>
-          {/if}
-          <div class="inline-block relative">
-            <HollowButton
-              color="indigo"
-              additionalClasses="transition ease-in-out duration-150"
-              onClick="{togglePersonas}"
-              testid="personas-toggle"
-            >
-              {$LL.personas()}
-              <ChevronDown class="ms-1 inline-block" />
-            </HollowButton>
-            {#if showPersonas}
-              <div
-                class="origin-top-right absolute end-0 mt-1 w-64
+  >
+    <div class="w-1/3">
+      <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
+        {storyboard.name}
+      </h1>
+    </div>
+    <div class="w-2/3 text-right">
+      <div>
+        {#if isFacilitator}
+          <HollowButton
+            color="green"
+            onClick="{toggleAddGoal()}"
+            additionalClasses="me-2"
+            testid="goal-add"
+          >
+            {$LL.storyboardAddGoal()}
+          </HollowButton>
+          <HollowButton
+            color="blue"
+            onClick="{toggleEditStoryboard}"
+            testid="storyboard-edit"
+          >
+            {$LL.editStoryboard()}
+          </HollowButton>
+          <HollowButton
+            color="red"
+            onClick="{toggleDeleteStoryboard}"
+            additionalClasses="me-2"
+            testid="storyboard-delete"
+          >
+            {$LL.deleteStoryboard()}
+          </HollowButton>
+        {:else}
+          <HollowButton
+            color="blue"
+            onClick="{toggleBecomeFacilitator}"
+            testid="become-facilitator"
+          >
+            {$LL.becomeFacilitator()}
+          </HollowButton>
+          <HollowButton
+            color="red"
+            onClick="{abandonStoryboard}"
+            testid="storyboard-leave"
+          >
+            {$LL.leaveStoryboard()}
+          </HollowButton>
+        {/if}
+        <div class="inline-block relative">
+          <HollowButton
+            color="indigo"
+            additionalClasses="transition ease-in-out duration-150"
+            onClick="{togglePersonas}"
+            testid="personas-toggle"
+          >
+            {$LL.personas()}
+            <ChevronDown class="ms-1 inline-block" />
+          </HollowButton>
+          {#if showPersonas}
+            <div
+              class="origin-top-right absolute end-0 mt-1 w-64
                             rounded-md shadow-lg text-left z-10"
+            >
+              <div
+                class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
               >
-                <div
-                  class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
-                >
-                  <div class="p-2">
-                    {#each storyboard.personas as persona}
-                      <div class="mb-1 w-full">
-                        <div>
-                          <span class="font-bold">
-                            {persona.name}
-                          </span>
-                          {#if isFacilitator}
-                            &nbsp;|&nbsp;
-                            <button
-                              on:click="{toggleEditPersona(persona)}"
-                              class="text-orange-500
+                <div class="p-2">
+                  {#each storyboard.personas as persona}
+                    <div class="mb-1 w-full">
+                      <div>
+                        <span class="font-bold">
+                          {persona.name}
+                        </span>
+                        {#if isFacilitator}
+                          &nbsp;|&nbsp;
+                          <button
+                            on:click="{toggleEditPersona(persona)}"
+                            class="text-orange-500
                                                         hover:text-orange-800"
-                              data-testid="persona-edit"
-                            >
-                              {$LL.edit()}
-                            </button>
-                            &nbsp;|&nbsp;
-                            <button
-                              on:click="{handleDeletePersona(persona.id)}"
-                              class="text-red-500
+                            data-testid="persona-edit"
+                          >
+                            {$LL.edit()}
+                          </button>
+                          &nbsp;|&nbsp;
+                          <button
+                            on:click="{handleDeletePersona(persona.id)}"
+                            class="text-red-500
                                                         hover:text-red-800"
-                              data-testid="persona-delete"
-                            >
-                              {$LL.delete()}
-                            </button>
-                          {/if}
-                        </div>
-                        <span class="text-sm">
-                          {persona.role}
-                        </span>
+                            data-testid="persona-delete"
+                          >
+                            {$LL.delete()}
+                          </button>
+                        {/if}
                       </div>
-                    {/each}
-                  </div>
-
-                  {#if isFacilitator}
-                    <div class="p-2 text-right">
-                      <HollowButton
-                        color="green"
-                        onClick="{toggleEditPersona({
-                          id: '',
-                          name: '',
-                          role: '',
-                          description: '',
-                        })}"
-                        testid="persona-add"
-                      >
-                        {$LL.addPersona()}
-                      </HollowButton>
+                      <span class="text-sm">
+                        {persona.role}
+                      </span>
                     </div>
-                  {/if}
-                </div>
-              </div>
-            {/if}
-          </div>
-          <div class="inline-block relative">
-            <HollowButton
-              color="teal"
-              additionalClasses="transition ease-in-out duration-150"
-              onClick="{toggleColorLegend}"
-              testid="colorlegend-toggle"
-            >
-              {$LL.colorLegend()}
-              <ChevronDown class="ms-1 inline-block" />
-            </HollowButton>
-            {#if showColorLegend}
-              <div
-                class="origin-top-right absolute end-0 mt-1 w-64
-                            rounded-md shadow-lg text-left z-10"
-              >
-                <div
-                  class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
-                >
-                  <div class="p-2">
-                    {#each storyboard.color_legend as color}
-                      <div class="mb-1 flex w-full">
-                        <span
-                          class="p-4 me-2 inline-block
-                                                colorcard-{color.color}"></span>
-                        <span
-                          class="inline-block align-middle
-                                                {color.legend === ''
-                            ? 'text-gray-300 dark:text-gray-500'
-                            : 'text-gray-600 dark:text-gray-200'}"
-                        >
-                          {color.legend || $LL.colorLegendNotSpecified()}
-                        </span>
-                      </div>
-                    {/each}
-                  </div>
-
-                  {#if isFacilitator}
-                    <div class="p-2 text-right">
-                      <HollowButton
-                        color="orange"
-                        onClick="{toggleEditLegend}"
-                        testid="colorlegend-edit"
-                      >
-                        {$LL.editColorLegend()}
-                      </HollowButton>
-                    </div>
-                  {/if}
-                </div>
-              </div>
-            {/if}
-          </div>
-          <div class="inline-block relative">
-            <HollowButton
-              color="orange"
-              additionalClasses="transition ease-in-out duration-150"
-              onClick="{toggleUsersPanel}"
-              testid="users-toggle"
-            >
-              <Users class="me-1 inline-block" height="18" width="18" />
-              {$LL.users()}
-              <ChevronDown class="ms-1 inline-block" />
-            </HollowButton>
-            {#if showUsers}
-              <div
-                class="origin-top-right absolute end-0 mt-1 w-64
-                            rounded-md shadow-lg text-left z-10"
-              >
-                <div
-                  class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
-                >
-                  {#each storyboard.users as usr, index (usr.id)}
-                    {#if usr.active}
-                      <UserCard
-                        user="{usr}"
-                        sendSocketEvent="{sendSocketEvent}"
-                        showBorder="{index !== storyboard.users.length - 1}"
-                        facilitators="{storyboard.facilitators}"
-                        handleAddFacilitator="{handleAddFacilitator}"
-                        handleRemoveFacilitator="{handleRemoveFacilitator}"
-                      />
-                    {/if}
                   {/each}
+                </div>
 
-                  <div class="p-2">
-                    <InviteUser
-                      hostname="{hostname}"
-                      storyboardId="{storyboard.id}"
-                    />
+                {#if isFacilitator}
+                  <div class="p-2 text-right">
+                    <HollowButton
+                      color="green"
+                      onClick="{toggleEditPersona({
+                        id: '',
+                        name: '',
+                        role: '',
+                        description: '',
+                      })}"
+                      testid="persona-add"
+                    >
+                      {$LL.addPersona()}
+                    </HollowButton>
                   </div>
+                {/if}
+              </div>
+            </div>
+          {/if}
+        </div>
+        <div class="inline-block relative">
+          <HollowButton
+            color="teal"
+            additionalClasses="transition ease-in-out duration-150"
+            onClick="{toggleColorLegend}"
+            testid="colorlegend-toggle"
+          >
+            {$LL.colorLegend()}
+            <ChevronDown class="ms-1 inline-block" />
+          </HollowButton>
+          {#if showColorLegend}
+            <div
+              class="origin-top-right absolute end-0 mt-1 w-64
+                            rounded-md shadow-lg text-left z-10"
+            >
+              <div
+                class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
+              >
+                <div class="p-2">
+                  {#each storyboard.color_legend as color}
+                    <div class="mb-1 flex w-full">
+                      <span
+                        class="p-4 me-2 inline-block
+                                                colorcard-{color.color}"></span>
+                      <span
+                        class="inline-block align-middle
+                                                {color.legend === ''
+                          ? 'text-gray-300 dark:text-gray-500'
+                          : 'text-gray-600 dark:text-gray-200'}"
+                      >
+                        {color.legend || $LL.colorLegendNotSpecified()}
+                      </span>
+                    </div>
+                  {/each}
+                </div>
+
+                {#if isFacilitator}
+                  <div class="p-2 text-right">
+                    <HollowButton
+                      color="orange"
+                      onClick="{toggleEditLegend}"
+                      testid="colorlegend-edit"
+                    >
+                      {$LL.editColorLegend()}
+                    </HollowButton>
+                  </div>
+                {/if}
+              </div>
+            </div>
+          {/if}
+        </div>
+        <div class="inline-block relative">
+          <HollowButton
+            color="orange"
+            additionalClasses="transition ease-in-out duration-150"
+            onClick="{toggleUsersPanel}"
+            testid="users-toggle"
+          >
+            <Users class="me-1 inline-block" height="18" width="18" />
+            {$LL.users()}
+            <ChevronDown class="ms-1 inline-block" />
+          </HollowButton>
+          {#if showUsers}
+            <div
+              class="origin-top-right absolute end-0 mt-1 w-64
+                            rounded-md shadow-lg text-left z-10"
+            >
+              <div
+                class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
+              >
+                {#each storyboard.users as usr, index (usr.id)}
+                  {#if usr.active}
+                    <UserCard
+                      user="{usr}"
+                      sendSocketEvent="{sendSocketEvent}"
+                      showBorder="{index !== storyboard.users.length - 1}"
+                      facilitators="{storyboard.facilitators}"
+                      handleAddFacilitator="{handleAddFacilitator}"
+                      handleRemoveFacilitator="{handleRemoveFacilitator}"
+                    />
+                  {/if}
+                {/each}
+
+                <div class="p-2">
+                  <InviteUser
+                    hostname="{hostname}"
+                    storyboardId="{storyboard.id}"
+                  />
                 </div>
               </div>
-            {/if}
-          </div>
+            </div>
+          {/if}
         </div>
       </div>
     </div>
-    {#each storyboard.goals as goal, goalIndex (goal.id)}
-      <div data-goalid="{goal.id}">
-        <div
-          class="flex px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex >
-          0
-            ? 'border-t-2'
-            : ''}"
-        >
-          <div class="w-3/4 relative">
-            <div class="font-bold dark:text-gray-200 text-xl">
-              <h2 class="inline-block align-middle pt-1">
-                <button on:click="{toggleGoalCollapse(goal.id)}">
-                  {#if collapseGoals.includes(goal.id)}
-                    <ChevronDown class="me-1 inline-block" />
-                  {:else}
-                    <ChevronUp class="me-1 inline-block" />
-                  {/if}
-                </button>{goal.name}&nbsp;<GoalEstimate
-                  columns="{goal.columns}"
-                />
-              </h2>
-            </div>
-          </div>
-          <div class="w-1/4 text-right">
-            {#if isFacilitator}
-              <HollowButton
-                color="green"
-                onClick="{addStoryColumn(goal.id)}"
-                btnSize="small"
-                testid="column-add"
-              >
-                {$LL.storyboardAddColumn()}
-              </HollowButton>
-              <HollowButton
-                color="orange"
-                onClick="{toggleAddGoal(goal.id)}"
-                btnSize="small"
-                additionalClasses="ms-2"
-                testid="goal-edit"
-              >
-                {$LL.edit()}
-              </HollowButton>
-              <HollowButton
-                color="red"
-                onClick="{handleGoalDeletion(goal.id)}"
-                btnSize="small"
-                additionalClasses="ms-2"
-                testid="goal-delete"
-              >
-                {$LL.delete()}
-              </HollowButton>
-            {/if}
+  </div>
+  {#each storyboard.goals as goal, goalIndex (goal.id)}
+    <div data-goalid="{goal.id}">
+      <div
+        class="flex px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex >
+        0
+          ? 'border-t-2'
+          : ''}"
+      >
+        <div class="w-3/4 relative">
+          <div class="font-bold dark:text-gray-200 text-xl">
+            <h2 class="inline-block align-middle pt-1">
+              <button on:click="{toggleGoalCollapse(goal.id)}">
+                {#if collapseGoals.includes(goal.id)}
+                  <ChevronDown class="me-1 inline-block" />
+                {:else}
+                  <ChevronUp class="me-1 inline-block" />
+                {/if}
+              </button>{goal.name}&nbsp;<GoalEstimate
+                columns="{goal.columns}"
+              />
+            </h2>
           </div>
         </div>
-        {#if !collapseGoals.includes(goal.id)}
-          <section class="px-2" style="overflow-x: scroll">
-            <div class="flex">
-              {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-                <div class="flex-none mx-2 w-40">
-                  <div class="w-full mb-2">
-                    {#each goalColumn.personas as persona}
-                      <div class="mt-4 dark:text-gray-300 text-right">
-                        <div class="font-bold">
-                          <User class="inline-block h-4 w-4" />
-                          {persona.name}
-                        </div>
-                        <div class="text-sm">{persona.role}</div>
+        <div class="w-1/4 text-right">
+          {#if isFacilitator}
+            <HollowButton
+              color="green"
+              onClick="{addStoryColumn(goal.id)}"
+              btnSize="small"
+              testid="column-add"
+            >
+              {$LL.storyboardAddColumn()}
+            </HollowButton>
+            <HollowButton
+              color="orange"
+              onClick="{toggleAddGoal(goal.id)}"
+              btnSize="small"
+              additionalClasses="ms-2"
+              testid="goal-edit"
+            >
+              {$LL.edit()}
+            </HollowButton>
+            <HollowButton
+              color="red"
+              onClick="{handleGoalDeletion(goal.id)}"
+              btnSize="small"
+              additionalClasses="ms-2"
+              testid="goal-delete"
+            >
+              {$LL.delete()}
+            </HollowButton>
+          {/if}
+        </div>
+      </div>
+      {#if !collapseGoals.includes(goal.id)}
+        <section class="px-2" style="overflow-x: scroll">
+          <div class="flex">
+            {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+              <div class="flex-none mx-2 w-40">
+                <div class="w-full mb-2">
+                  {#each goalColumn.personas as persona}
+                    <div class="mt-4 dark:text-gray-300 text-right">
+                      <div class="font-bold">
+                        <User class="inline-block h-4 w-4" />
+                        {persona.name}
                       </div>
-                    {/each}
-                  </div>
+                      <div class="text-sm">{persona.role}</div>
+                    </div>
+                  {/each}
                 </div>
-              {/each}
-            </div>
-            <div class="flex">
-              {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-                <div class="flex-none my-4 mx-2 w-40">
-                  <div class="flex-none">
-                    <div class="w-full mb-2">
-                      <div class="flex">
-                        <span
-                          class="font-bold flex-grow truncate dark:text-gray-300"
-                          title="{goalColumn.name}"
-                          data-testid="column-name"
-                        >
-                          {goalColumn.name}
-                        </span>
-                        <button
-                          on:click="{toggleColumnEdit(goalColumn)}"
-                          class="flex-none font-bold text-xl
+              </div>
+            {/each}
+          </div>
+          <div class="flex">
+            {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+              <div class="flex-none my-4 mx-2 w-40">
+                <div class="flex-none">
+                  <div class="w-full mb-2">
+                    <div class="flex">
+                      <span
+                        class="font-bold flex-grow truncate dark:text-gray-300"
+                        title="{goalColumn.name}"
+                        data-testid="column-name"
+                      >
+                        {goalColumn.name}
+                      </span>
+                      <button
+                        on:click="{toggleColumnEdit(goalColumn)}"
+                        class="flex-none font-bold text-xl
                                         border-dashed border-2 border-gray-400 dark:border-gray-600
                                         hover:border-green-500 text-gray-600 dark:text-gray-400
                                         hover:text-green-500 py-1 px-2"
-                          title="{$LL.storyboardEditColumn()}"
-                          data-testid="column-edit"
-                        >
-                          <Pencil />
-                        </button>
-                      </div>
+                        title="{$LL.storyboardEditColumn()}"
+                        data-testid="column-edit"
+                      >
+                        <Pencil />
+                      </button>
                     </div>
-                    <div class="w-full">
-                      <div class="flex">
-                        <button
-                          on:click="{addStory(goal.id, goalColumn.id)}"
-                          class="flex-grow font-bold text-xl py-1
+                  </div>
+                  <div class="w-full">
+                    <div class="flex">
+                      <button
+                        on:click="{addStory(goal.id, goalColumn.id)}"
+                        class="flex-grow font-bold text-xl py-1
                                         px-2 border-dashed border-2
                                         border-gray-400 dark:border-gray-600 hover:border-green-500
                                         text-gray-600 dark:text-gray-400 hover:text-green-500"
-                          title="{$LL.storyboardAddStoryToColumn()}"
-                          data-testid="story-add"
-                        >
-                          +
-                        </button>
-                      </div>
+                        title="{$LL.storyboardAddStoryToColumn()}"
+                        data-testid="story-add"
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
-                  <div
-                    class="w-full relative"
-                    style="min-height: 160px;"
-                    data-goalid="{goal.id}"
-                    data-columnid="{goalColumn.id}"
-                    data-goalIndex="{goalIndex}"
-                    data-columnindex="{columnIndex}"
-                    use:dndzone="{{
-                      items: goalColumn.stories,
-                      type: 'story',
-                      dropTargetStyle: '',
-                      dropTargetClasses: [
-                        'outline',
-                        'outline-2',
-                        'outline-indigo-500',
-                        'dark:outline-yellow-400',
-                      ],
-                    }}"
-                    on:consider="{handleDndConsider}"
-                    on:finalize="{handleDndFinalize}"
-                  >
-                    {#each goalColumn.stories as story (story.id)}
-                      <div
-                        class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
+                </div>
+                <div
+                  class="w-full relative"
+                  style="min-height: 160px;"
+                  data-goalid="{goal.id}"
+                  data-columnid="{goalColumn.id}"
+                  data-goalIndex="{goalIndex}"
+                  data-columnindex="{columnIndex}"
+                  use:dndzone="{{
+                    items: goalColumn.stories,
+                    type: 'story',
+                    dropTargetStyle: '',
+                    dropTargetClasses: [
+                      'outline',
+                      'outline-2',
+                      'outline-indigo-500',
+                      'dark:outline-yellow-400',
+                    ],
+                  }}"
+                  on:consider="{handleDndConsider}"
+                  on:finalize="{handleDndFinalize}"
+                >
+                  {#each goalColumn.stories as story (story.id)}
+                    <div
+                      class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
                                     story-{story.color} border my-4
                                     cursor-pointer"
-                        style="list-style: none;"
-                        role="button"
-                        tabindex="0"
-                        data-goalid="{goal.id}"
-                        data-columnid="{goalColumn.id}"
-                        data-storyid="{story.id}"
-                        on:click="{toggleStoryForm(story)}"
-                        on:keypress="{toggleStoryForm(story)}"
-                      >
+                      style="list-style: none;"
+                      role="button"
+                      tabindex="0"
+                      data-goalid="{goal.id}"
+                      data-columnid="{goalColumn.id}"
+                      data-storyid="{story.id}"
+                      on:click="{toggleStoryForm(story)}"
+                      on:keypress="{toggleStoryForm(story)}"
+                    >
+                      <div>
                         <div>
-                          <div>
-                            <div
-                              class="h-20 p-1 text-sm
+                          <div
+                            class="h-20 p-1 text-sm
                                                 overflow-hidden {story.closed
-                                ? 'line-through'
-                                : ''}"
-                              title="{story.name}"
-                              data-testid="story-name"
-                            >
-                              {story.name}
-                            </div>
-                            <div class="h-8">
-                              <div
-                                class="flex content-center
+                              ? 'line-through'
+                              : ''}"
+                            title="{story.name}"
+                            data-testid="story-name"
+                          >
+                            {story.name}
+                          </div>
+                          <div class="h-8">
+                            <div
+                              class="flex content-center
                                                     p-1 text-sm"
-                              >
-                                <div
-                                  class="w-1/2
+                            >
+                              <div
+                                class="w-1/2
                                                         text-gray-600 dark:text-gray-300"
-                                >
-                                  {#if story.comments.length > 0}
-                                    <span
-                                      class="inline-block
+                              >
+                                {#if story.comments.length > 0}
+                                  <span
+                                    class="inline-block
                                                                 align-middle"
-                                    >
-                                      {story.comments.length}
-                                      <MessageSquareMore class="inline-block" />
-                                    </span>
-                                  {/if}
-                                </div>
-                                <div class="w-1/2 text-right">
-                                  {#if story.points > 0}
-                                    <span
-                                      class="px-2
+                                  >
+                                    {story.comments.length}
+                                    <MessageSquareMore class="inline-block" />
+                                  </span>
+                                {/if}
+                              </div>
+                              <div class="w-1/2 text-right">
+                                {#if story.points > 0}
+                                  <span
+                                    class="px-2
                                                                 bg-gray-300 dark:bg-gray-500
                                                                 inline-block
                                                                 align-middle"
-                                    >
-                                      {story.points}
-                                    </span>
-                                  {/if}
-                                </div>
+                                  >
+                                    {story.points}
+                                  </span>
+                                {/if}
                               </div>
                             </div>
                           </div>
                         </div>
-                        {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-                          <div
-                            class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
+                      </div>
+                      {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+                        <div
+                          class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
                                     story-{story.color} border
                                     cursor-pointer"
-                            style="list-style: none;"
-                            role="button"
-                            tabindex="0"
-                            data-goalid="{goal.id}"
-                            data-columnid="{goalColumn.id}"
-                            data-storyid="{story.id}"
-                            on:click="{toggleStoryForm(story)}"
-                            on:keypress="{toggleStoryForm(story)}"
-                          >
+                          style="list-style: none;"
+                          role="button"
+                          tabindex="0"
+                          data-goalid="{goal.id}"
+                          data-columnid="{goalColumn.id}"
+                          data-storyid="{story.id}"
+                          on:click="{toggleStoryForm(story)}"
+                          on:keypress="{toggleStoryForm(story)}"
+                        >
+                          <div>
                             <div>
-                              <div>
-                                <div
-                                  class="h-20 p-1 text-sm
+                              <div
+                                class="h-20 p-1 text-sm
                                                 overflow-hidden {story.closed
-                                    ? 'line-through'
-                                    : ''}"
-                                  title="{story.name}"
-                                >
-                                  {story.name}
-                                </div>
-                                <div class="h-8">
-                                  <div
-                                    class="flex content-center
+                                  ? 'line-through'
+                                  : ''}"
+                                title="{story.name}"
+                              >
+                                {story.name}
+                              </div>
+                              <div class="h-8">
+                                <div
+                                  class="flex content-center
                                                     p-1 text-sm"
-                                  >
-                                    <div
-                                      class="w-1/2
+                                >
+                                  <div
+                                    class="w-1/2
                                                         text-gray-600"
-                                    >
-                                      {#if story.comments.length > 0}
-                                        <span
-                                          class="inline-block
+                                  >
+                                    {#if story.comments.length > 0}
+                                      <span
+                                        class="inline-block
                                                                 align-middle"
-                                        >
-                                          {story.comments.length}
-                                          <MessageSquareMore
-                                            class="inline-block"
-                                          />
-                                        </span>
-                                      {/if}
-                                    </div>
-                                    <div class="w-1/2 text-right">
-                                      {#if story.points > 0}
-                                        <span
-                                          class="px-2
+                                      >
+                                        {story.comments.length}
+                                        <MessageSquareMore
+                                          class="inline-block"
+                                        />
+                                      </span>
+                                    {/if}
+                                  </div>
+                                  <div class="w-1/2 text-right">
+                                    {#if story.points > 0}
+                                      <span
+                                        class="px-2
                                                                 bg-gray-300
                                                                 inline-block
                                                                 align-middle"
-                                        >
-                                          {story.points}
-                                        </span>
-                                      {/if}
-                                    </div>
+                                      >
+                                        {story.points}
+                                      </span>
+                                    {/if}
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        {/if}
-                      </div>
-                    {/each}
-                  </div>
+                        </div>
+                      {/if}
+                    </div>
+                  {/each}
                 </div>
-              {/each}
-            </div>
-          </section>
-        {/if}
-      </div>
-    {/each}
-  </div>
-{:else}
-  <PageLayout>
-    <div class="flex items-center">
-      <div class="flex-1 text-center">
-        {#if JoinPassRequired}
-          <div class="flex justify-center">
-            <div class="w-full md:w-1/2 lg:w-1/3">
-              <form
-                on:submit="{authStoryboard}"
-                class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
-                name="authStoryboard"
-              >
-                <div class="mb-4">
-                  <label
-                    class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-                    for="storyboardJoinCode"
-                  >
-                    {$LL.passCodeRequired()}
-                  </label>
-                  <TextInput
-                    bind:value="{joinPasscode}"
-                    placeholder="{$LL.enterPasscode()}"
-                    id="storyboardJoinCode"
-                    name="storyboardJoinCode"
-                    type="password"
-                    required
-                  />
-                </div>
-
-                <div class="text-right">
-                  <SolidButton type="submit">{$LL.joinStoryboard()}</SolidButton
-                  >
-                </div>
-              </form>
-            </div>
+              </div>
+            {/each}
           </div>
-        {:else if socketReconnecting}
-          <h1 class="text-5xl text-orange-500 leading-tight font-bold">
-            {$LL.reloadingStoryboard()}
-          </h1>
-        {:else if socketError}
-          <h1 class="text-5xl text-red-500 leading-tight font-bold">
-            {$LL.joinStoryboardError()}
-          </h1>
-        {:else}
-          <h1 class="text-5xl text-green-500 leading-tight font-bold">
-            {$LL.loadingStoryboard()}
-          </h1>
-        {/if}
-      </div>
+        </section>
+      {/if}
     </div>
-  </PageLayout>
-{/if}
+  {/each}
+</div>
 
 {#if showAddGoal}
   <AddGoal
@@ -1255,5 +1200,24 @@
   <BecomeFacilitator
     handleBecomeFacilitator="{becomeFacilitator}"
     toggleBecomeFacilitator="{toggleBecomeFacilitator}"
+  />
+{/if}
+
+{#if socketReconnecting}
+  <FullpageLoader>
+    {$LL.reloadingStoryboard()}
+  </FullpageLoader>
+{:else if socketError}
+  <FullpageLoader>
+    {$LL.joinStoryboardError()}
+  </FullpageLoader>
+{:else if isLoading}
+  <FullpageLoader>
+    {$LL.loadingStoryboard()}
+  </FullpageLoader>
+{:else if JoinPassRequired}
+  <JoinCodeForm
+    handleSubmit="{authStoryboard}"
+    submitText="{$LL.joinStoryboard()}"
   />
 {/if}
