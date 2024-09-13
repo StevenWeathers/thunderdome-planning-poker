@@ -386,6 +386,8 @@ func (s *Service) handleOrganizationInviteUser() http.HandlerFunc {
 		if emailErr != nil {
 			s.Logger.Ctx(ctx).Error("handleOrganizationInviteUser error", zap.Error(emailErr),
 				zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, emailErr)
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
@@ -664,6 +666,7 @@ func (s *Service) handleGetOrganizationUserInvites() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleGetOrganizationUserInvites error", zap.Error(err), zap.String("organization_id", orgId),
 				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, invites, nil)

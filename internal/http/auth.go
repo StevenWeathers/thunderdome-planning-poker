@@ -386,6 +386,7 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 		AllowRegistration := s.Config.AllowRegistration
 		if !AllowRegistration {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
+			return
 		}
 
 		body, bodyErr := io.ReadAll(r.Body)
@@ -788,6 +789,7 @@ func (s *Service) handleGetTeamInvite() http.HandlerFunc {
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetTeamInvite error", zap.Error(err), zap.String("invite_id", InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, invite, nil)
@@ -812,6 +814,7 @@ func (s *Service) handleGetOrganizationInvite() http.HandlerFunc {
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetOrganizationInvite error", zap.Error(err), zap.String("invite_id", InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, invite, nil)

@@ -103,6 +103,7 @@ func (s *Service) handleGetTeamUsers() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleGetTeamUsers error", zap.Error(err), zap.String("team_id", TeamID),
 				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		Meta := &pagination{
@@ -154,6 +155,7 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 		inputErr := validate.Struct(team)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
 		}
 
 		NewTeam, err := s.TeamDataSvc.TeamCreate(ctx, UserID, team.Name)
@@ -203,6 +205,7 @@ func (s *Service) handleTeamUpdate() http.HandlerFunc {
 		inputErr := validate.Struct(team)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
 		}
 
 		NewTeam, err := s.TeamDataSvc.TeamUpdate(ctx, TeamID, team.Name)
@@ -263,6 +266,7 @@ func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
 		}
 
 		UserEmail := strings.ToLower(u.Email)
@@ -307,6 +311,7 @@ func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 		if emailErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(emailErr),
 				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
@@ -354,6 +359,7 @@ func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
 		}
 
 		_, err := s.TeamDataSvc.TeamUpdateUser(ctx, TeamID, UserID, u.Role)
@@ -680,6 +686,7 @@ func (s *Service) handleGetTeamUserInvites() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleGetTeamUserInvites error", zap.Error(err), zap.String("team_id", TeamID),
 				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, invites, nil)

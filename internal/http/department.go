@@ -658,6 +658,7 @@ func (s *Service) handleGetDepartmentUserInvites() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleGetDepartmentUserInvites error", zap.Error(err), zap.String("department_id", deptId),
 				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, invites, nil)
