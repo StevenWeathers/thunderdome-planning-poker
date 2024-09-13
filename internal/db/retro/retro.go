@@ -22,10 +22,23 @@ type Service struct {
 	AESHashKey string
 }
 
-// RetroCreate adds a new retro
-func (d *Service) RetroCreate(OwnerID string, RetroName string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool, TemplateID string) (*thunderdome.Retro, error) {
-	var encryptedJoinCode string
+func (d *Service) CreateRetro(ctx context.Context, OwnerID, TeamID string, RetroName, JoinCode, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool, AllowCumulativeVoting bool, TemplateID string) (*thunderdome.Retro, error) {
 	var encryptedFacilitatorCode string
+	var encryptedJoinCode string
+	var retro = &thunderdome.Retro{
+		OwnerID:               OwnerID,
+		Name:                  RetroName,
+		Phase:                 "intro",
+		PhaseTimeLimitMin:     PhaseTimeLimitMin,
+		PhaseAutoAdvance:      PhaseAutoAdvance,
+		Users:                 make([]*thunderdome.RetroUser, 0),
+		Items:                 make([]*thunderdome.RetroItem, 0),
+		ActionItems:           make([]*thunderdome.RetroAction, 0),
+		BrainstormVisibility:  BrainstormVisibility,
+		MaxVotes:              MaxVotes,
+		TemplateID:            TemplateID,
+		AllowCumulativeVoting: AllowCumulativeVoting,
+	}
 
 	if JoinCode != "" {
 		EncryptedCode, codeErr := db.Encrypt(JoinCode, d.AESHashKey)
@@ -43,92 +56,56 @@ func (d *Service) RetroCreate(OwnerID string, RetroName string, JoinCode string,
 		encryptedFacilitatorCode = EncryptedCode
 	}
 
-	var retro = &thunderdome.Retro{
-		OwnerID:              OwnerID,
-		Name:                 RetroName,
-		Phase:                "intro",
-		PhaseTimeLimitMin:    PhaseTimeLimitMin,
-		PhaseAutoAdvance:     PhaseAutoAdvance,
-		Users:                make([]*thunderdome.RetroUser, 0),
-		Items:                make([]*thunderdome.RetroItem, 0),
-		ActionItems:          make([]*thunderdome.RetroAction, 0),
-		BrainstormVisibility: BrainstormVisibility,
-		MaxVotes:             MaxVotes,
-		TemplateID:           TemplateID,
+	tx, err := d.DB.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		d.Logger.Error("create retro error", zap.Error(err))
+		return nil, fmt.Errorf("failed to start transaction: %v", err)
+	}
+	defer tx.Rollback()
+
+	err = tx.QueryRowContext(ctx, `
+		INSERT INTO thunderdome.retro (
+			owner_id, team_id, name, join_code, facilitator_code,
+			max_votes, brainstorm_visibility, phase_time_limit_min, phase_auto_advance,
+			allow_cumulative_voting, template_id
+		)
+		VALUES ($1, NULLIF($2::text, '')::uuid, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		RETURNING id
+	`, OwnerID, TeamID, RetroName, encryptedJoinCode, encryptedFacilitatorCode, MaxVotes, BrainstormVisibility,
+		PhaseTimeLimitMin, PhaseAutoAdvance, AllowCumulativeVoting, TemplateID).Scan(&retro.Id)
+
+	if err != nil {
+		d.Logger.Error("create retro error", zap.Error(err),
+			zap.String("owner_id", OwnerID), zap.String("name", RetroName))
+		return nil, fmt.Errorf("failed to insert into retro table: %v", err)
 	}
 
-	err := d.DB.QueryRow(
-		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7, $8, null, $9);`,
-		OwnerID,
-		RetroName,
-		encryptedJoinCode,
-		encryptedFacilitatorCode,
-		MaxVotes,
-		BrainstormVisibility,
-		PhaseTimeLimitMin,
-		PhaseAutoAdvance,
-		TemplateID,
-	).Scan(&retro.Id)
+	_, err = tx.ExecContext(ctx, `
+		INSERT INTO thunderdome.retro_facilitator (retro_id, user_id)
+		VALUES ($1, $2)
+	`, retro.Id, OwnerID)
+
 	if err != nil {
-		return nil, fmt.Errorf("create retro query error: %v", err)
+		d.Logger.Error("create retro error", zap.Error(err))
+		return nil, fmt.Errorf("failed to insert into retro_facilitator table: %v", err)
+	}
+
+	_, err = tx.ExecContext(ctx, `
+		INSERT INTO thunderdome.retro_user (retro_id, user_id)
+		VALUES ($1, $2)
+	`, retro.Id, OwnerID)
+
+	if err != nil {
+		d.Logger.Error("create retro error", zap.Error(err))
+		return nil, fmt.Errorf("failed to insert into retro_user table: %v", err)
+	}
+
+	if err = tx.Commit(); err != nil {
+		d.Logger.Error("create retro error", zap.Error(err))
+		return nil, fmt.Errorf("failed to commit transaction: %v", err)
 	}
 
 	return retro, nil
-}
-
-// TeamRetroCreate adds a new retro associated to a team
-func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool, TemplateID string) (*thunderdome.Retro, error) {
-	var encryptedJoinCode string
-	var encryptedFacilitatorCode string
-
-	if JoinCode != "" {
-		EncryptedCode, codeErr := db.Encrypt(JoinCode, d.AESHashKey)
-		if codeErr != nil {
-			return nil, fmt.Errorf("create team retro encrypt joincode error: %v", codeErr)
-		}
-		encryptedJoinCode = EncryptedCode
-	}
-
-	if FacilitatorCode != "" {
-		EncryptedCode, codeErr := db.Encrypt(FacilitatorCode, d.AESHashKey)
-		if codeErr != nil {
-			return nil, fmt.Errorf("create team retro encrypt facilitator code error: %v", codeErr)
-		}
-		encryptedFacilitatorCode = EncryptedCode
-	}
-
-	var b = &thunderdome.Retro{
-		OwnerID:              OwnerID,
-		Name:                 RetroName,
-		Phase:                "intro",
-		PhaseTimeLimitMin:    0,
-		PhaseAutoAdvance:     PhaseAutoAdvance,
-		Users:                make([]*thunderdome.RetroUser, 0),
-		Items:                make([]*thunderdome.RetroItem, 0),
-		ActionItems:          make([]*thunderdome.RetroAction, 0),
-		BrainstormVisibility: BrainstormVisibility,
-		MaxVotes:             MaxVotes,
-		TemplateID:           TemplateID,
-	}
-
-	err := d.DB.QueryRowContext(ctx,
-		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`,
-		OwnerID,
-		RetroName,
-		encryptedJoinCode,
-		encryptedFacilitatorCode,
-		MaxVotes,
-		BrainstormVisibility,
-		PhaseTimeLimitMin,
-		PhaseAutoAdvance,
-		TeamID,
-		TemplateID,
-	).Scan(&b.Id)
-	if err != nil {
-		return nil, fmt.Errorf("create team retro query error: %v", err)
-	}
-
-	return b, nil
 }
 
 // EditRetro updates the retro by ID
@@ -187,7 +164,7 @@ func (d *Service) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, e
 	err := d.DB.QueryRow(
 		`SELECT
 			r.id, r.name, r.owner_id, r.phase, r.phase_time_limit_min, r.phase_time_start, r.phase_auto_advance,
-			 COALESCE(r.join_code, ''), COALESCE(r.facilitator_code, ''),
+			 COALESCE(r.join_code, ''), COALESCE(r.facilitator_code, ''), r.allow_cumulative_voting,
 			r.max_votes, r.brainstorm_visibility, r.ready_users, r.created_date, r.updated_date, r.template_id,
 			CASE WHEN COUNT(rf) = 0 THEN '[]'::json ELSE array_to_json(array_agg(rf.user_id)) END AS facilitators,
 			(SELECT row_to_json(t.*) as template FROM thunderdome.retro_template t WHERE t.id = r.template_id) AS template
@@ -206,6 +183,7 @@ func (d *Service) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, e
 		&b.PhaseAutoAdvance,
 		&JoinCode,
 		&FacilitatorCode,
+		&b.AllowCumulativeVoting,
 		&b.MaxVotes,
 		&b.BrainstormVisibility,
 		&ReadyUsers,
@@ -307,7 +285,8 @@ func (d *Service) RetroGetByUser(UserID string, Limit int, Offset int) ([]*thund
 		retros AS (
 			SELECT id from user_retros UNION SELECT id FROM team_retros
 		)
-		SELECT r.id, r.name, r.owner_id, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.template_id, r.created_date, r.updated_date,
+		SELECT r.id, r.name, r.owner_id, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.template_id,
+		 r.allow_cumulative_voting, r.created_date, r.updated_date,
 		  MIN(COALESCE(t.name, '')) as teamName,
 		  (SELECT row_to_json(t.*) as template FROM thunderdome.retro_template t WHERE t.id = r.template_id) AS template
 		FROM thunderdome.retro r
@@ -334,6 +313,7 @@ func (d *Service) RetroGetByUser(UserID string, Limit int, Offset int) ([]*thund
 			&b.PhaseTimeLimitMin,
 			&b.PhaseAutoAdvance,
 			&b.TemplateID,
+			&b.AllowCumulativeVoting,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 			&b.TeamName,
@@ -591,8 +571,8 @@ func (d *Service) GetRetros(Limit int, Offset int) ([]*thunderdome.Retro, int, e
 	}
 
 	rows, retrosErr := d.DB.Query(`
-		SELECT r.id, r.name, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.created_date,
-		 r.updated_date, r.template_id,
+		SELECT r.id, r.name, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.allow_cumulative_voting,
+		 r.created_date, r.updated_date, r.template_id,
 		 (SELECT row_to_json(t.*) as template FROM thunderdome.retro_template t WHERE t.id = r.template_id) AS template
 		FROM thunderdome.retro r
 		GROUP BY r.id ORDER BY r.created_date DESC
@@ -614,6 +594,7 @@ func (d *Service) GetRetros(Limit int, Offset int) ([]*thunderdome.Retro, int, e
 			&b.Phase,
 			&b.PhaseTimeLimitMin,
 			&b.PhaseAutoAdvance,
+			&b.AllowCumulativeVoting,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 			&b.TemplateID,
@@ -649,7 +630,8 @@ func (d *Service) GetActiveRetros(Limit int, Offset int) ([]*thunderdome.Retro, 
 	}
 
 	rows, retrosErr := d.DB.Query(`
-		SELECT r.id, r.name, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.created_date, r.updated_date,
+		SELECT r.id, r.name, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.allow_cumulative_voting, 
+		r.created_date, r.updated_date,
 		r.template_id, (SELECT row_to_json(t.*) as template FROM thunderdome.retro_template t WHERE t.id = r.template_id) AS template
 		FROM thunderdome.retro_user ru
 		LEFT JOIN thunderdome.retro r ON r.id = ru.retro_id
@@ -672,6 +654,7 @@ func (d *Service) GetActiveRetros(Limit int, Offset int) ([]*thunderdome.Retro, 
 			&b.Phase,
 			&b.PhaseTimeLimitMin,
 			&b.PhaseAutoAdvance,
+			&b.AllowCumulativeVoting,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 			&b.TemplateID,

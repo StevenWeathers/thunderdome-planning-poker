@@ -7,11 +7,14 @@
   export let handleVoteSubtract = () => {};
   export let voteLimitReached = false;
   export let columns = [];
+  export let allowCumulativeVoting: boolean = false;
 
   const handleVoteAction = group => {
-    const alreadyVoted = group.votes.includes($user.id);
-
-    if (alreadyVoted) {
+    const userVoted = group.votes.find(v => v.userId === $user.id);
+    if (
+      (userVoted && !allowCumulativeVoting) ||
+      (allowCumulativeVoting && voteLimitReached)
+    ) {
       handleVoteSubtract(group.id);
     } else {
       handleVote(group.id);
@@ -54,7 +57,7 @@
             <ThumbsUp class="w-6 h-6 inline-block" />
           </button>
           <div class="inline-block align-middle text-2xl ms-2">
-            {group.votes.length}
+            {group.voteCount}
           </div>
         </div>
         {group.name ? group.name : 'Group'}

@@ -21,7 +21,7 @@
         <div class="flex content-center justify-center">
           <div class="inline-block align-middle text-2xl ms-2">
             <ThumbsUp class="w-6 h-6 inline-block" />
-            {group.votes.length}
+            {group.voteCount}
           </div>
         </div>
         {group.name ? group.name : 'Group'}

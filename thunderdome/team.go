@@ -60,6 +60,7 @@ type TeamDataSvc interface {
 	TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error)
 	TeamGet(ctx context.Context, TeamID string) (*Team, error)
 	TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*UserTeam
+	TeamListByUserNonOrg(ctx context.Context, UserID string, Limit int, Offset int) []*UserTeam
 	TeamCreate(ctx context.Context, UserID string, TeamName string) (*Team, error)
 	TeamUpdate(ctx context.Context, TeamId string, TeamName string) (*Team, error)
 	TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)

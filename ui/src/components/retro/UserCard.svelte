@@ -15,8 +15,19 @@
   export let handleUserReady = () => {};
   export let handleUserUnReady = () => {};
 
-  $: reachedMaxVotes =
-    votes && votes.filter(v => v.userId === user.id).length === maxVotes;
+  $: voteTally =
+    votes &&
+    votes.reduce(
+      (p, v) => {
+        if (v.userId === user.id) {
+          p.votesLeft -= v.count;
+          p.userVoteCount += v.count;
+        }
+
+        return p;
+      },
+      { userVoteCount: 0, votesLeft: maxVotes },
+    );
 
   $: userReady = readyUsers && readyUsers.includes(user.id);
 </script>
@@ -86,13 +97,13 @@
       {/if}
     {/if}
     {#if phase === 'vote'}
-      {#if reachedMaxVotes}
+      {#if voteTally.userVoteCount >= maxVotes}
         <div class="text-lime-500 dark:text-lime-400">
           {$LL.allVotesIn()}
         </div>
       {:else}
         <div class="text-blue-600 dark:text-blue-400">
-          {maxVotes - votes.filter(v => v.userId === user.id).length} votes left
+          {voteTally.votesLeft} votes left
         </div>
       {/if}
     {/if}

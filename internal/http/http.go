@@ -133,6 +133,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	userRouter.HandleFunc("/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleCreateOrganization()))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUser()))).Methods("GET")
 	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleCreateTeam()))).Methods("POST")
+	userRouter.HandleFunc("/{userId}/teams-non-org", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUserNonOrg()))).Methods("GET")
 	if a.Config.SubscriptionsEnabled {
 		userRouter.HandleFunc("/{userId}/subscriptions", a.userOnly(a.entityUserOnly(a.handleGetEntityUserActiveSubs()))).Methods("GET")
 		userRouter.HandleFunc("/{userId}/subscriptions/{subscriptionId}", a.userOnly(a.entityUserOnly(a.handleEntityUserUpdateSubscription()))).Methods("PATCH")

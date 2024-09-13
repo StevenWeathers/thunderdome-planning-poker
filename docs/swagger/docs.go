@@ -9137,6 +9137,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{userId}/teams-non-org": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a list of teams the user is a part of that are not associated with an organization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "team"
+                ],
+                "summary": "Get User Teams Non Org",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.UserTeam"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles": {
             "post": {
                 "security": [
@@ -10153,6 +10208,9 @@ const docTemplate = `{
                 "retroName"
             ],
             "properties": {
+                "allowCumulativeVoting": {
+                    "type": "boolean"
+                },
                 "brainstormVisibility": {
                     "type": "string",
                     "enum": [
@@ -11014,6 +11072,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/thunderdome.RetroAction"
                     }
                 },
+                "allowCumulativeVoting": {
+                    "type": "boolean"
+                },
                 "brainstormVisibility": {
                     "type": "string"
                 },
@@ -11301,6 +11362,9 @@ const docTemplate = `{
         "thunderdome.RetroVote": {
             "type": "object",
             "properties": {
+                "count": {
+                    "type": "integer"
+                },
                 "groupId": {
                     "type": "string"
                 },
