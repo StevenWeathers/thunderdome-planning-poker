@@ -77,6 +77,7 @@ jobs:
           DB_HOST: ${{ matrix.db-host }}
           APP_DOMAIN: ".127.0.0.1"
           COOKIE_SECURE: "false"
+          SMTP_ENABLED: "false"
 
       - name: Install Playwright dependencies
         working-directory: ./e2e
