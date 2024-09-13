@@ -6,7 +6,6 @@
   import PointCard from '../../components/poker/PointCard.svelte';
   import PokerStories from '../../components/poker/PokerStories.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
   import EditPokerGame from '../../components/poker/EditPokerGame.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
@@ -17,9 +16,10 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
-  import TextInput from '../../components/forms/TextInput.svelte';
   import { ExternalLink } from 'lucide-svelte';
   import VotingMetrics from '../../components/poker/VotingMetrics.svelte';
+  import FullpageLoader from '../../components/global/FullpageLoader.svelte';
+  import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
 
   export let battleId: string;
   export let notifications;
@@ -43,7 +43,7 @@
     skipped: false,
     voteEndTime: undefined,
     voteStartTime: undefined,
-    votes: undefined,
+    votes: [],
     name: '',
     type: '',
     referenceId: '',
@@ -53,10 +53,11 @@
     position: 0,
   };
 
+  let isLoading: boolean = true;
   let JoinPassRequired: boolean = false;
   let socketError: boolean = false;
   let socketReconnecting: boolean = false;
-  let points: Array<string> = [];
+  let points: Array<string> = ['1', '2', '3', '5', '8', '13', '?'];
   let vote: string = '';
   let battle: PokerGame = {
     leaders: [],
@@ -65,11 +66,11 @@
     hideVoterIdentity: false,
     id: '',
     name: '',
-    plans: undefined,
+    plans: [],
     pointAverageRounding: '',
-    pointValuesAllowed: undefined,
+    pointValuesAllowed: [],
     updatedDate: undefined,
-    users: undefined,
+    users: [],
     votingLocked: false,
     teamId: '',
   };
@@ -77,10 +78,10 @@
   let showEditBattle: boolean = false;
   let showDeleteBattle: boolean = false;
   let isSpectator: boolean = false;
-  let joinPasscode: string = '';
   let voteStartTime: Date = new Date();
 
   const onSocketMessage = function (evt) {
+    isLoading = false;
     const parsedEvent = JSON.parse(evt.data);
 
     switch (parsedEvent.type) {
@@ -313,6 +314,7 @@
       onopen: () => {
         socketError = false;
         socketReconnecting = false;
+        isLoading = false;
         eventTag('socket_open', 'battle', '');
       },
       onmaximum: () => {
@@ -462,9 +464,7 @@
     battle.leaderCode = revisedBattle.leaderCode;
   }
 
-  function authBattle(e) {
-    e.preventDefault();
-
+  function authBattle(joinPasscode) {
     sendSocketEvent('auth_battle', joinPasscode);
     eventTag('auth_battle', 'battle', '');
   }
@@ -485,244 +485,187 @@
 </svelte:head>
 
 <PageLayout>
-  {#if battle.name && !socketReconnecting && !socketError}
-    <div class="mb-6 flex flex-wrap">
-      <div class="w-full text-center md:w-2/3 md:text-left">
-        <h1
-          class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center"
-        >
-          {#if currentStory.link}
-            <a
-              href="{currentStory.link}"
-              target="_blank"
-              class="text-blue-800 dark:text-sky-400 inline-block"
-              data-testid="currentplan-link"
-            >
-              <ExternalLink class="w-8 h-8" />
-            </a>
-          {/if}
-          {#if currentStory.type}
-            &nbsp;<span
-              class="inline-block text-lg text-gray-500
-                            border-gray-300 border px-1 rounded dark:text-gray-300 dark:border-gray-500"
-              data-testid="currentplan-type"
-            >
-              {currentStory.type}
-            </span>
-          {/if}
-          {#if currentStory.referenceId}
-            &nbsp;<span data-testid="currentplan-refid"
-              >[{currentStory.referenceId}]</span
-            >
-          {/if}
-          <span data-testid="currentplan-name"
-            >{#if currentStory.name === ''}[{$LL.votingNotStarted()}]{:else}&nbsp;{currentStory.name}{/if}</span
+  <div class="mb-6 flex flex-wrap">
+    <div class="w-full text-center md:w-2/3 md:text-left">
+      <h1
+        class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center"
+      >
+        {#if currentStory.link}
+          <a
+            href="{currentStory.link}"
+            target="_blank"
+            class="text-blue-800 dark:text-sky-400 inline-block"
+            data-testid="currentplan-link"
           >
-        </h1>
-        <h2
-          class="text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
-          data-testid="battle-name"
-        >
-          {battle.name}
-        </h2>
-      </div>
-
-      <div class="w-full md:w-1/3 text-center md:text-right">
-        <VoteTimer
-          currentStoryId="{currentStory.id}"
-          votingLocked="{battle.votingLocked}"
-          voteStartTime="{voteStartTime}"
-        />
-      </div>
-    </div>
-
-    <div class="flex flex-wrap mb-4 -mx-4">
-      <div class="w-full lg:w-3/4 px-4">
-        {#if showVotingResults}
-          <div class=" mb-2 md:mb-4">
-            <VotingMetrics
-              pointValues="{points}"
-              votes="{battle.plans.find(p => p.id === battle.activePlanId)
-                .votes}"
-              users="{battle.users}"
-              averageRounding="{battle.pointAverageRounding}"
-            />
-          </div>
-        {:else}
-          <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
-            {#each points as point}
-              <div class="w-1/4 md:w-1/6 px-2 mb-4">
-                <PointCard
-                  point="{point}"
-                  active="{vote === point}"
-                  on:voted="{handleVote}"
-                  on:voteRetraction="{handleUnvote}"
-                  isLocked="{battle.votingLocked || isSpectator}"
-                />
-              </div>
-            {/each}
-          </div>
+            <ExternalLink class="w-8 h-8" />
+          </a>
         {/if}
-
-        <PokerStories
-          plans="{battle.plans}"
-          isLeader="{isLeader}"
-          sendSocketEvent="{sendSocketEvent}"
-          eventTag="{eventTag}"
-          notifications="{notifications}"
-          xfetch="{xfetch}"
-          gameId="{battle.id}"
-        />
-      </div>
-
-      <div class="w-full lg:w-1/4 px-4">
-        <div class="bg-white dark:bg-gray-800 shadow-lg mb-4 rounded-lg">
-          <div class="bg-blue-500 dark:bg-gray-700 p-4 rounded-t-lg">
-            <h3
-              class="text-3xl text-white leading-tight font-semibold font-rajdhani uppercase"
-            >
-              {$LL.warriors()}
-            </h3>
-          </div>
-
-          {#each battle.users as war (war.id)}
-            {#if war.active}
-              <UserCard
-                warrior="{war}"
-                leaders="{battle.leaders}"
-                isLeader="{isLeader}"
-                voted="{didVote(war.id)}"
-                points="{showVote(war.id)}"
-                autoFinishVoting="{battle.autoFinishVoting}"
-                sendSocketEvent="{sendSocketEvent}"
-                eventTag="{eventTag}"
-                notifications="{notifications}"
-              />
-            {/if}
-          {/each}
-
-          {#if isLeader}
-            <VotingControls
-              points="{points}"
-              planId="{battle.activePlanId}"
-              sendSocketEvent="{sendSocketEvent}"
-              votingLocked="{battle.votingLocked}"
-              highestVote="{highestVoteCount}"
-              eventTag="{eventTag}"
-            />
-          {/if}
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 shadow-lg p-4 mb-4 rounded-lg">
-          <InviteUser
-            hostname="{hostname}"
-            battleId="{battle.id}"
-            joinCode="{battle.joinCode}"
-            notifications="{notifications}"
-          />
-          {#if isLeader}
-            <div class="mt-4 text-right">
-              <HollowButton
-                color="blue"
-                onClick="{toggleEditBattle}"
-                testid="battle-edit"
-              >
-                {$LL.battleEdit()}
-              </HollowButton>
-              <HollowButton
-                color="red"
-                onClick="{toggleDeleteBattle}"
-                testid="battle-delete"
-              >
-                {$LL.battleDelete()}
-              </HollowButton>
-            </div>
-          {:else}
-            <div class="mt-4 text-right">
-              <HollowButton
-                color="red"
-                onClick="{abandonBattle}"
-                testid="battle-abandon"
-              >
-                {$LL.battleAbandon()}
-              </HollowButton>
-            </div>
-          {/if}
-        </div>
-      </div>
+        {#if currentStory.type}
+          &nbsp;<span
+            class="inline-block text-lg text-gray-500
+                            border-gray-300 border px-1 rounded dark:text-gray-300 dark:border-gray-500"
+            data-testid="currentplan-type"
+          >
+            {currentStory.type}
+          </span>
+        {/if}
+        {#if currentStory.referenceId}
+          &nbsp;<span data-testid="currentplan-refid"
+            >[{currentStory.referenceId}]</span
+          >
+        {/if}
+        <span data-testid="currentplan-name"
+          >{#if currentStory.name === ''}[{$LL.votingNotStarted()}]{:else}&nbsp;{currentStory.name}{/if}</span
+        >
+      </h1>
+      <h2
+        class="text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
+        data-testid="battle-name"
+      >
+        {battle.name}
+      </h2>
     </div>
-    {#if showEditBattle}
-      <EditPokerGame
-        battleName="{battle.name}"
-        points="{points}"
+
+    <div class="w-full md:w-1/3 text-center md:text-right">
+      <VoteTimer
+        currentStoryId="{currentStory.id}"
         votingLocked="{battle.votingLocked}"
-        autoFinishVoting="{battle.autoFinishVoting}"
-        pointAverageRounding="{battle.pointAverageRounding}"
-        hideVoterIdentity="{battle.hideVoterIdentity}"
-        handleBattleEdit="{handleBattleEdit}"
-        toggleEditBattle="{toggleEditBattle}"
-        joinCode="{battle.joinCode}"
-        leaderCode="{battle.leaderCode}"
-        teamId="{battle.teamId}"
+        voteStartTime="{voteStartTime}"
+      />
+    </div>
+  </div>
+
+  <div class="flex flex-wrap mb-4 -mx-4">
+    <div class="w-full lg:w-3/4 px-4">
+      {#if showVotingResults}
+        <div class=" mb-2 md:mb-4">
+          <VotingMetrics
+            pointValues="{points}"
+            votes="{battle.plans.find(p => p.id === battle.activePlanId).votes}"
+            users="{battle.users}"
+            averageRounding="{battle.pointAverageRounding}"
+          />
+        </div>
+      {:else}
+        <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
+          {#each points as point}
+            <div class="w-1/4 md:w-1/6 px-2 mb-4">
+              <PointCard
+                point="{point}"
+                active="{vote === point}"
+                on:voted="{handleVote}"
+                on:voteRetraction="{handleUnvote}"
+                isLocked="{battle.votingLocked || isSpectator}"
+              />
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+      <PokerStories
+        plans="{battle.plans}"
+        isLeader="{isLeader}"
+        sendSocketEvent="{sendSocketEvent}"
+        eventTag="{eventTag}"
         notifications="{notifications}"
         xfetch="{xfetch}"
+        gameId="{battle.id}"
       />
-    {/if}
-  {:else if JoinPassRequired}
-    <div class="flex justify-center">
-      <div class="w-full md:w-1/2 lg:w-1/3">
-        <form
-          on:submit="{authBattle}"
-          class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
-          name="authBattle"
-        >
-          <div class="mb-4">
-            <label
-              class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-              for="battleJoinCode"
-            >
-              {$LL.passCodeRequired()}
-            </label>
-            <TextInput
-              bind:value="{joinPasscode}"
-              placeholder="{$LL.enterPasscode()}"
-              id="battleJoinCode"
-              name="battleJoinCode"
-              type="password"
-              required
-            />
-          </div>
+    </div>
 
-          <div class="text-right">
-            <SolidButton type="submit">{$LL.battleJoin()}</SolidButton>
+    <div class="w-full lg:w-1/4 px-4">
+      <div class="bg-white dark:bg-gray-800 shadow-lg mb-4 rounded-lg">
+        <div class="bg-blue-500 dark:bg-gray-700 p-4 rounded-t-lg">
+          <h3
+            class="text-3xl text-white leading-tight font-semibold font-rajdhani uppercase"
+          >
+            {$LL.warriors()}
+          </h3>
+        </div>
+
+        {#each battle.users as war (war.id)}
+          {#if war.active}
+            <UserCard
+              warrior="{war}"
+              leaders="{battle.leaders}"
+              isLeader="{isLeader}"
+              voted="{didVote(war.id)}"
+              points="{showVote(war.id)}"
+              autoFinishVoting="{battle.autoFinishVoting}"
+              sendSocketEvent="{sendSocketEvent}"
+              eventTag="{eventTag}"
+              notifications="{notifications}"
+            />
+          {/if}
+        {/each}
+
+        {#if isLeader}
+          <VotingControls
+            points="{points}"
+            planId="{battle.activePlanId}"
+            sendSocketEvent="{sendSocketEvent}"
+            votingLocked="{battle.votingLocked}"
+            highestVote="{highestVoteCount}"
+            eventTag="{eventTag}"
+          />
+        {/if}
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 shadow-lg p-4 mb-4 rounded-lg">
+        <InviteUser
+          hostname="{hostname}"
+          battleId="{battle.id}"
+          joinCode="{battle.joinCode}"
+          notifications="{notifications}"
+        />
+        {#if isLeader}
+          <div class="mt-4 text-right">
+            <HollowButton
+              color="blue"
+              onClick="{toggleEditBattle}"
+              testid="battle-edit"
+            >
+              {$LL.battleEdit()}
+            </HollowButton>
+            <HollowButton
+              color="red"
+              onClick="{toggleDeleteBattle}"
+              testid="battle-delete"
+            >
+              {$LL.battleDelete()}
+            </HollowButton>
           </div>
-        </form>
+        {:else}
+          <div class="mt-4 text-right">
+            <HollowButton
+              color="red"
+              onClick="{abandonBattle}"
+              testid="battle-abandon"
+            >
+              {$LL.battleAbandon()}
+            </HollowButton>
+          </div>
+        {/if}
       </div>
     </div>
-  {:else if socketReconnecting}
-    <div class="flex items-center">
-      <div class="flex-1 text-center">
-        <h1 class="text-5xl text-teal-500 leading-tight font-bold">
-          {$LL.battleSocketReconnecting()}
-        </h1>
-      </div>
-    </div>
-  {:else if socketError}
-    <div class="flex items-center">
-      <div class="flex-1 text-center">
-        <h1 class="text-5xl text-red-500 leading-tight font-bold">
-          {$LL.battleSocketError()}
-        </h1>
-      </div>
-    </div>
-  {:else}
-    <div class="flex items-center">
-      <div class="flex-1 text-center">
-        <h1 class="text-5xl text-green-500 leading-tight font-bold">
-          {$LL.battleLoading()}
-        </h1>
-      </div>
-    </div>
+  </div>
+
+  {#if showEditBattle}
+    <EditPokerGame
+      battleName="{battle.name}"
+      points="{points}"
+      votingLocked="{battle.votingLocked}"
+      autoFinishVoting="{battle.autoFinishVoting}"
+      pointAverageRounding="{battle.pointAverageRounding}"
+      hideVoterIdentity="{battle.hideVoterIdentity}"
+      handleBattleEdit="{handleBattleEdit}"
+      toggleEditBattle="{toggleEditBattle}"
+      joinCode="{battle.joinCode}"
+      leaderCode="{battle.leaderCode}"
+      teamId="{battle.teamId}"
+      notifications="{notifications}"
+      xfetch="{xfetch}"
+    />
   {/if}
 
   {#if showDeleteBattle}
@@ -732,5 +675,21 @@
       confirmText="{$LL.deleteBattleConfirmText()}"
       confirmBtnText="{$LL.deleteBattle()}"
     />
+  {/if}
+
+  {#if socketReconnecting}
+    <FullpageLoader>
+      {$LL.battleSocketReconnecting()}
+    </FullpageLoader>
+  {:else if socketError}
+    <FullpageLoader>
+      {$LL.battleSocketError()}
+    </FullpageLoader>
+  {:else if isLoading}
+    <FullpageLoader>
+      {$LL.battleLoading()}
+    </FullpageLoader>
+  {:else if JoinPassRequired}
+    <JoinCodeForm handleSubmit="{authBattle}" submitText="{$LL.battleJoin()}" />
   {/if}
 </PageLayout>
