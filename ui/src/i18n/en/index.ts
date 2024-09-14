@@ -630,6 +630,7 @@ const en: BaseTranslation = {
   teamEstimationScales: 'Team Estimation Scales',
   allowCumulativeVotingLabel:
     'Allow Cumulative Voting (more than 1 vote per item group)',
+  activeSubscriptions: 'Active Subscriptions',
 };
 
 export default en;

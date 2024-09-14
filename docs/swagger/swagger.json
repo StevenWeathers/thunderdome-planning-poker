@@ -10642,6 +10642,9 @@
                 "estimationScaleCount": {
                     "type": "integer"
                 },
+                "orgSubscriptionActiveCount": {
+                    "type": "integer"
+                },
                 "organizationCount": {
                     "type": "integer"
                 },
@@ -10690,7 +10693,13 @@
                 "teamEstimationScaleCount": {
                     "type": "integer"
                 },
+                "teamSubscriptionActiveCount": {
+                    "type": "integer"
+                },
                 "unregisteredUserCount": {
+                    "type": "integer"
+                },
+                "userSubscriptionActiveCount": {
                     "type": "integer"
                 }
             }

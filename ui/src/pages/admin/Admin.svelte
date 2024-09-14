@@ -12,11 +12,13 @@
     Building,
     CircleUser,
     Columns2,
+    CreditCard,
     FileText,
     Ghost,
     Key,
     LayoutDashboard,
     LibraryBig,
+    MapPinCheckInside,
     MessageCircleQuestion,
     Network,
     RefreshCcw,
@@ -74,6 +76,9 @@
     publicEstimationScaleCount: 0,
     organizationEstimationScaleCount: 0,
     teamEstimationScaleCount: 0,
+    userSubscriptionActiveCount: 0,
+    teamSubscriptionActiveCount: 0,
+    orgSubscriptionActiveCount: 0,
   };
 
   function getAppStats() {
@@ -155,6 +160,7 @@
   $: statGroups = [
     {
       title: $LL.users(),
+      active: true,
       bgColor: 'bg-indigo-500',
       stats: [
         {
@@ -175,10 +181,17 @@
           icon: Key,
           active: ExternalAPIEnabled,
         },
+        {
+          name: 'activeSubscriptions',
+          count: appStats.userSubscriptionActiveCount,
+          icon: CreditCard,
+          active: AppConfig.SubscriptionsEnabled,
+        },
       ],
     },
     {
       title: $LL.organizations(),
+      active: OrganizationsEnabled,
       bgColor: 'bg-orange-500 dark:bg-orange-400',
       stats: [
         {
@@ -194,15 +207,41 @@
           active: OrganizationsEnabled,
         },
         {
+          name: 'activeSubscriptions',
+          count: appStats.orgSubscriptionActiveCount,
+          icon: CreditCard,
+          active: AppConfig.SubscriptionsEnabled,
+        },
+      ],
+    },
+    {
+      title: $LL.teams(),
+      active: true,
+      bgColor: 'bg-blue-500 dark:bg-sky-400',
+      stats: [
+        {
           name: 'teams',
           count: appStats.teamCount,
           icon: Users,
           active: true,
         },
+        {
+          name: 'teamCheckins',
+          count: appStats.teamCheckinsCount,
+          icon: MapPinCheckInside,
+          active: true,
+        },
+        {
+          name: 'activeSubscriptions',
+          count: appStats.teamSubscriptionActiveCount,
+          icon: CreditCard,
+          active: AppConfig.SubscriptionsEnabled,
+        },
       ],
     },
     {
       title: $LL.battles(),
+      active: FeaturePoker,
       bgColor: 'bg-red-500',
       stats: [
         {
@@ -233,6 +272,7 @@
     },
     {
       title: $LL.retros(),
+      active: FeatureRetro,
       bgColor: 'bg-green-500 dark:bg-lime-400',
       stats: [
         {
@@ -269,6 +309,7 @@
     },
     {
       title: $LL.storyboards(),
+      active: FeatureStoryboard,
       bgColor: 'bg-emerald-500 dark:bg-emerald-400',
       stats: [
         {
@@ -317,6 +358,7 @@
     },
     {
       title: $LL.estimationScales(),
+      active: FeaturePoker,
       bgColor: 'bg-yellow-500',
       stats: [
         {
@@ -353,18 +395,18 @@
 </svelte:head>
 
 <AdminPageLayout activePage="admin">
-  <div class="grid grid-cols-2 gap-4 mb-4">
-    {#each statGroups as group}
+  <div class="md:grid md:grid-cols-2 md:gap-2 mb-4">
+    {#each statGroups.filter(g => g.active) as group}
       {#if group.stats.some(stat => stat.active)}
         <div
-          class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg p-4"
+          class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg p-2"
         >
           <h2
-            class="text-2xl font-semibold mb-2 dark:text-white font-semibold font-rajdhani uppercase"
+            class="text-xl font-semibold mb-1 dark:text-white font-semibold font-rajdhani uppercase"
           >
             {group.title}
           </h2>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-2">
             {#if group.stats.filter(stat => stat.active).length > 0}
               {#each group.stats.filter(stat => stat.active) as stat}
                 <div
@@ -373,21 +415,21 @@
                   <div class="flex gap-2 content-center">
                     <div class="flex-none items-center content-center">
                       <div
-                        class="w-12 h-12 justify-center text-center content-center rounded-full {group.bgColor} text-white mr-2"
+                        class="w-10 h-10 justify-center text-center content-center rounded-full {group.bgColor} text-white"
                       >
                         <svelte:component
                           this="{stat.icon}"
-                          width="26"
-                          height="26"
+                          width="20"
+                          height="20"
                           class="mx-auto"
                         />
                       </div>
                     </div>
                     <div class="flex-grow">
-                      <h3 class="text-lg font-medium dark:text-gray-200 mb-2">
+                      <h3 class="font-medium dark:text-gray-200">
                         {$LL[stat.name]()}
                       </h3>
-                      <p class="text-3xl font-bold dark:text-white">
+                      <p class="text-2xl font-bold dark:text-white">
                         {stat.count}
                       </p>
                     </div>

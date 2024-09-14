@@ -10650,6 +10650,9 @@ const docTemplate = `{
                 "estimationScaleCount": {
                     "type": "integer"
                 },
+                "orgSubscriptionActiveCount": {
+                    "type": "integer"
+                },
                 "organizationCount": {
                     "type": "integer"
                 },
@@ -10698,7 +10701,13 @@ const docTemplate = `{
                 "teamEstimationScaleCount": {
                     "type": "integer"
                 },
+                "teamSubscriptionActiveCount": {
+                    "type": "integer"
+                },
                 "unregisteredUserCount": {
+                    "type": "integer"
+                },
+                "userSubscriptionActiveCount": {
                     "type": "integer"
                 }
             }

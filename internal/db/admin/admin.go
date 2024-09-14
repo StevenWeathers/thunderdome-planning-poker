@@ -47,7 +47,10 @@ func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStat
     (SELECT COUNT(*) FROM thunderdome.estimation_scale) AS estimation_scale_count,
     (SELECT COUNT(*) FROM thunderdome.estimation_scale WHERE estimation_scale.is_public IS TRUE) AS public_estimation_scale_count,
     (SELECT COUNT(*) FROM thunderdome.estimation_scale WHERE organization_id IS NOT NULL) AS organization_estimation_scale_count,
-    (SELECT COUNT(*) FROM thunderdome.estimation_scale WHERE team_id IS NOT NULL) AS team_estimation_scale_count;
+    (SELECT COUNT(*) FROM thunderdome.estimation_scale WHERE team_id IS NOT NULL) AS team_estimation_scale_count,
+    (SELECT COUNT(*) FROM thunderdome.subscription WHERE expires > CURRENT_TIMESTAMP AND active IS TRUE AND team_id IS NULL AND organization_id IS NULL) as user_sub_count,
+    (SELECT COUNT(*) FROM thunderdome.subscription WHERE expires > CURRENT_TIMESTAMP AND active IS TRUE AND team_id IS NOT NULL) as team_sub_count,
+    (SELECT COUNT(*) FROM thunderdome.subscription WHERE expires > CURRENT_TIMESTAMP AND active IS TRUE AND organization_id IS NOT NULL) as org_sub_count;
 		`,
 	).Scan(
 		&Appstats.UnregisteredCount,
@@ -77,6 +80,9 @@ func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStat
 		&Appstats.PublicEstimationScaleCount,
 		&Appstats.OrganizationEstimationScaleCount,
 		&Appstats.TeamEstimationScaleCount,
+		&Appstats.UserSubscriptionActiveCount,
+		&Appstats.TeamSubscriptionActiveCount,
+		&Appstats.OrgSubscriptionActiveCount,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get application stats: %v", err)

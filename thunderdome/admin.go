@@ -31,6 +31,9 @@ type ApplicationStats struct {
 	PublicEstimationScaleCount       int `json:"publicEstimationScaleCount"`
 	OrganizationEstimationScaleCount int `json:"organizationEstimationScaleCount"`
 	TeamEstimationScaleCount         int `json:"teamEstimationScaleCount"`
+	UserSubscriptionActiveCount      int `json:"userSubscriptionActiveCount"`
+	TeamSubscriptionActiveCount      int `json:"teamSubscriptionActiveCount"`
+	OrgSubscriptionActiveCount       int `json:"orgSubscriptionActiveCount"`
 }
 
 type AdminDataSvc interface {

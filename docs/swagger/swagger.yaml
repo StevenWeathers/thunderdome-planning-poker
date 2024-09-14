@@ -657,6 +657,8 @@ definitions:
         type: integer
       estimationScaleCount:
         type: integer
+      orgSubscriptionActiveCount:
+        type: integer
       organizationCount:
         type: integer
       organizationEstimationScaleCount:
@@ -689,7 +691,11 @@ definitions:
         type: integer
       teamEstimationScaleCount:
         type: integer
+      teamSubscriptionActiveCount:
+        type: integer
       unregisteredUserCount:
+        type: integer
+      userSubscriptionActiveCount:
         type: integer
     type: object
   thunderdome.CheckinComment:
