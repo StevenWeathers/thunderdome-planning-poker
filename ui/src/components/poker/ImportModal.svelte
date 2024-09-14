@@ -6,9 +6,10 @@
   import JQLImport from '../jira/JQLImport.svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import StoryFromGameImport from './StoryFromGameImport.svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { AppConfig } from '../../config';
   import { user } from '../../stores';
   import StoryFromStoryboardImport from './StoryFromStoryboardImport.svelte';
+  import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
   export let notifications;
   export let eventTag;
@@ -52,14 +53,9 @@
       <div class="mb-4 dark:text-gray-300">
         <h3 class="font-bold mb-2 text-xl">Internal Import</h3>
         {#if AppConfig.SubscriptionsEnabled && !$user.subscribed}
-          <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
-            Must be <a
-              href="{appRoutes.subscriptionPricing}"
-              class="underline"
-              target="_blank">subscribed</a
-            >
-            to import from other Games or Storyboards.
-          </p>
+          <FeatureSubscribeBanner
+            salesPitch="Import stories from other Poker Plannings or Storyboards."
+          />
         {:else if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && $user.subscribed)}
           {#if !showGameImport && !showStoryboardImport}
             <SolidButton color="indigo" onClick="{toggleGameImport}"

@@ -100,6 +100,11 @@
           Header: false,
         },
         {
+          Name: 'Review open action items from previous team retrospectives',
+          Included: false,
+          Header: false,
+        },
+        {
           Name: `Team Checkins show user's previous checkin during today's checkin`,
           Included: false,
           Header: false,
@@ -196,6 +201,11 @@
         {
           Name: 'Import Poker Stories from Storyboards',
           Included: true,
+          Header: false,
+        },
+        {
+          Name: 'Review open action items from previous team retrospectives',
+          Included: false,
           Header: false,
         },
         {
@@ -298,6 +308,11 @@
           Header: false,
         },
         {
+          Name: 'Review open action items from previous team retrospectives',
+          Included: true,
+          Header: false,
+        },
+        {
           Name: `Team Checkins show user's previous checkin during today's checkin`,
           Included: true,
           Header: false,
@@ -393,6 +408,11 @@
         },
         {
           Name: 'Import Poker Stories from Storyboards',
+          Included: true,
+          Header: false,
+        },
+        {
+          Name: 'Review open action items from previous team retrospectives',
           Included: true,
           Header: false,
         },

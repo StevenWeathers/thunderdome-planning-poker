@@ -28,11 +28,14 @@
   import BrainstormPhase from '../../components/retro/BrainstormPhase.svelte';
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
+  import RetroActionItemReview from '../../components/retro/RetroActionItemReview.svelte';
+  import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
 
   export let retroId;
   export let notifications;
   export let router;
   export let eventTag;
+  export let xfetch;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
@@ -46,6 +49,7 @@
   let retro = {
     name: '',
     ownerId: '',
+    teamId: '',
     phase: 'intro',
     phase_time_limit_min: 0,
     phase_time_start: new Date(),
@@ -81,6 +85,20 @@
   let showEditRetro = false;
   let phaseTimeStart = new Date();
   let phaseTimeLimitMin = 0;
+  let team = null;
+
+  function getAssociatedTeam() {
+    if (retro.teamId) {
+      xfetch(`/api/teams/${retro.teamId}`)
+        .then(r => r.json())
+        .then(res => {
+          team = res.data.team;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
+  }
 
   function organizeItemsByGroup() {
     const groupMap = retro.groups.reduce((prev, g) => {
@@ -153,6 +171,7 @@
         phaseTimeStart = new Date(retro.phase_time_start);
         phaseTimeLimitMin = retro.phase_time_limit_min;
         eventTag('join', 'retro', '');
+        getAssociatedTeam();
         break;
       case 'user_joined': {
         retro.users = JSON.parse(parsedEvent.value) || [];
@@ -578,6 +597,13 @@
     eventTag('toggle_become_facilitator', 'retro', '');
   }
 
+  let showOpenActionItems = false;
+
+  function toggleReviewActionItems() {
+    showOpenActionItems = !showOpenActionItems;
+    eventTag('open_action_items', 'retro', '');
+  }
+
   onMount(() => {
     if (!$user.id) {
       router.route(`${loginOrRegister}/retro/${retroId}`);
@@ -754,13 +780,43 @@
   {/if}
   {#if !showExport}
     <div class="w-full p-4 flex flex-col flex-grow">
-      <div class="grow flex">
-        {#if retro.phase === 'intro'}
-          <div
-            class="m-auto w-full md:w-3/4 lg:w-2/3 md:mt-14 lg:mt-20 dark:text-white"
-          >
+      {#if retro.phase === 'intro'}
+        {#if showOpenActionItems}
+          <RetroActionItemReview
+            team="{team}"
+            toggle="{toggleReviewActionItems}"
+            eventTag="{eventTag}"
+            xfetch="{xfetch}"
+            notifications="{notifications}"
+          />
+          <div class="w-full text-center pt-4 md:pt-6">
+            <HollowButton
+              color="purple"
+              onClick="{toggleReviewActionItems}"
+              testid="back-to-prime-directive"
+              additionalClasses="py-4 px-6 text-lg"
+              >Back to Prime Directive
+            </HollowButton>
+          </div>
+        {:else}
+          <div class="m-auto w-full md:w-3/4 lg:w-2/3 dark:text-white">
+            {#if team && (!AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && team.subscribed))}
+              <div class="text-center pt-10">
+                <HollowButton
+                  color="purple"
+                  onClick="{toggleReviewActionItems}"
+                  testid="review-action-items"
+                  additionalClasses="py-4 px-6 text-lg"
+                  >Review Open Action Items
+                </HollowButton>
+              </div>
+            {:else if team && AppConfig.SubscriptionsEnabled && !team.subscribed}
+              <FeatureSubscribeBanner
+                salesPitch="Review open action items from previous team retrospectives."
+              />
+            {/if}
             <h2
-              class="text-3xl md:text-4xl lg:text-5xl font-rajdhani mb-2 tracking-wide"
+              class="md:mt-14 lg:mt-20 text-3xl md:text-4xl lg:text-5xl font-rajdhani mb-2 tracking-wide"
             >
               The Prime Directive
             </h2>
@@ -785,6 +841,8 @@
             </p>
           </div>
         {/if}
+      {/if}
+      <div class="grow flex">
         {#if retro.phase === 'brainstorm'}
           <BrainstormPhase
             items="{retro.items}"

@@ -5,6 +5,7 @@
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { createEventDispatcher, onMount } from 'svelte';
+  import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -175,14 +176,9 @@
 </script>
 
 {#if AppConfig.SubscriptionsEnabled && !$user.subscribed}
-  <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
-    Must be <a
-      href="{appRoutes.subscriptionPricing}"
-      class="underline"
-      target="_blank">subscribed</a
-    >
-    to import from Jira Cloud.
-  </p>
+  <FeatureSubscribeBanner
+    salesPitch="Import your stories for Poker Planning from Jira Cloud."
+  />
 {:else if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && $user.subscribed)}
   {#if jiraInstances.length === 0}
     <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">

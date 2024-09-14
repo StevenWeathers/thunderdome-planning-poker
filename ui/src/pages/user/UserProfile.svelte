@@ -14,6 +14,7 @@
   import SolidButton from '../../components/global/SolidButton.svelte';
   import UserSubscriptionsList from '../../components/subscription/UserSubscriptionsList.svelte';
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
+  import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
 
   export let xfetch;
   export let router;
@@ -535,9 +536,9 @@
                 class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
               >
                 {#if SubscriptionsEnabled && !$user.subscribed}
-                  <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
-                    Must be subscribed to setup Jira integrations
-                  </p>
+                  <FeatureSubscribeBanner
+                    salesPitch="Setup Jira Cloud to import your stories in Poker Planning."
+                  />
                 {:else if !SubscriptionsEnabled && $user.rank === 'GUEST'}
                   <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
                     Must be logged in to setup Jira integrations
