@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
@@ -158,7 +157,7 @@ func (d *Service) GetStoryboard(StoryboardID string, UserID string) (*thunderdom
 	// get storyboard
 	e := d.DB.QueryRow(
 		`SELECT
-				s.id, s.name, s.owner_id, s.color_legend, COALESCE(s.join_code, ''), COALESCE(s.facilitator_code, ''),
+				s.id, s.name, s.owner_id, COALESCE(s.team_id::TEXT, ''), s.color_legend, COALESCE(s.join_code, ''), COALESCE(s.facilitator_code, ''),
 				 s.created_date, s.updated_date,
 				COALESCE(json_agg(sf.user_id) FILTER (WHERE sf.storyboard_id IS NOT NULL), '[]') AS facilitators
 				FROM thunderdome.storyboard s
@@ -170,6 +169,7 @@ func (d *Service) GetStoryboard(StoryboardID string, UserID string) (*thunderdom
 		&b.Id,
 		&b.Name,
 		&b.OwnerID,
+		&b.TeamID,
 		&cl,
 		&JoinCode,
 		&FacilitatorCode,
@@ -260,7 +260,7 @@ func (d *Service) GetStoryboardsByUser(UserID string, Limit int, Offset int) ([]
 		storyboards AS (
 			SELECT id from user_storyboards UNION SELECT id FROM team_storyboards
 		)
-		SELECT s.id, s.name, s.owner_id, s.created_date, s.updated_date,
+		SELECT s.id, s.name, s.owner_id, COALESCE(s.team_id::TEXT, ''), s.created_date, s.updated_date,
 		  min(COALESCE(t.name, '')) as team_name
 		FROM thunderdome.storyboard s
 		LEFT JOIN user_teams t ON t.id = s.team_id
@@ -283,6 +283,7 @@ func (d *Service) GetStoryboardsByUser(UserID string, Limit int, Offset int) ([]
 			&b.Id,
 			&b.Name,
 			&b.OwnerID,
+			&b.TeamID,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 			&b.TeamName,
@@ -294,159 +295,6 @@ func (d *Service) GetStoryboardsByUser(UserID string, Limit int, Offset int) ([]
 	}
 
 	return storyboards, Count, nil
-}
-
-// ConfirmStoryboardFacilitator confirms the user is a facilitator of the storyboard
-func (d *Service) ConfirmStoryboardFacilitator(StoryboardID string, UserID string) error {
-	var facilitatorId string
-	var role string
-	err := d.DB.QueryRow("SELECT type FROM thunderdome.users WHERE id = $1", UserID).Scan(&role)
-	if err != nil {
-		return fmt.Errorf("confirm storyboard facilitator user role query error:%v", err)
-	}
-
-	err = d.DB.QueryRow(
-		`SELECT user_id FROM thunderdome.storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
-		StoryboardID, UserID).Scan(&facilitatorId)
-	if err != nil && role != thunderdome.AdminUserType {
-		return fmt.Errorf("confirm storyboard facilitator query error:%v", err)
-	}
-
-	return nil
-}
-
-// GetStoryboardUsers retrieves the users for a given storyboard from db
-func (d *Service) GetStoryboardUsers(StoryboardID string) []*thunderdome.StoryboardUser {
-	var users = make([]*thunderdome.StoryboardUser, 0)
-	rows, err := d.DB.Query(
-		`SELECT
-			w.id, w.name, su.active, w.avatar, COALESCE(w.email, ''), COALESCE(w.picture, '')
-		FROM thunderdome.storyboard_user su
-		LEFT JOIN thunderdome.users w ON su.user_id = w.id
-		WHERE su.storyboard_id = $1
-		ORDER BY w.name;`,
-		StoryboardID,
-	)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var w thunderdome.StoryboardUser
-			if err := rows.Scan(&w.Id, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash, &w.PictureURL); err != nil {
-				d.Logger.Error("get_storyboard_users query scan error", zap.Error(err))
-			} else {
-				if w.GravatarHash != "" {
-					w.GravatarHash = db.CreateGravatarHash(w.GravatarHash)
-				} else {
-					w.GravatarHash = db.CreateGravatarHash(w.Id)
-				}
-				users = append(users, &w)
-			}
-		}
-	}
-
-	return users
-}
-
-// GetStoryboardPersonas retrieves the personas for a given storyboard from db
-func (d *Service) GetStoryboardPersonas(StoryboardID string) []*thunderdome.StoryboardPersona {
-	var personas = make([]*thunderdome.StoryboardPersona, 0)
-	rows, err := d.DB.Query(
-		`SELECT
-			p.id, p.name, p.role, p.description
-		FROM thunderdome.storyboard_persona p
-		WHERE p.storyboard_id = $1;`,
-		StoryboardID,
-	)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var p thunderdome.StoryboardPersona
-			if err := rows.Scan(&p.Id, &p.Name, &p.Role, &p.Description); err != nil {
-				d.Logger.Error("get_storyboard_personas query scan error", zap.Error(err))
-			} else {
-				personas = append(personas, &p)
-			}
-		}
-	}
-
-	return personas
-}
-
-// AddUserToStoryboard adds a user by ID to the storyboard by ID
-func (d *Service) AddUserToStoryboard(StoryboardID string, UserID string) ([]*thunderdome.StoryboardUser, error) {
-	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.storyboard_user (storyboard_id, user_id, active)
-		VALUES ($1, $2, true)
-		ON CONFLICT (storyboard_id, user_id) DO UPDATE SET active = true, abandoned = false`,
-		StoryboardID,
-		UserID,
-	); err != nil {
-		d.Logger.Error("insert storybaord user error", zap.Error(err))
-	}
-
-	users := d.GetStoryboardUsers(StoryboardID)
-
-	return users, nil
-}
-
-// RetreatStoryboardUser removes a user from the current storyboard by ID
-func (d *Service) RetreatStoryboardUser(StoryboardID string, UserID string) []*thunderdome.StoryboardUser {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_user SET active = false WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		d.Logger.Error("set storyboard user active false error", zap.Error(err))
-	}
-
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.Logger.Error("set user last active error", zap.Error(err))
-	}
-
-	users := d.GetStoryboardUsers(StoryboardID)
-
-	return users
-}
-
-// GetStoryboardUserActiveStatus checks storyboard active status of User for given storyboard
-func (d *Service) GetStoryboardUserActiveStatus(StoryboardID string, UserID string) error {
-	var active bool
-
-	err := d.DB.QueryRow(`
-		SELECT coalesce(active, FALSE)
-		FROM thunderdome.storyboard_user
-		WHERE user_id = $2 AND storyboard_id = $1;`,
-		StoryboardID,
-		UserID,
-	).Scan(
-		&active,
-	)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return fmt.Errorf("get storyboard user active status query error: %v", err)
-	} else if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return err
-	}
-
-	if active {
-		return errors.New("DUPLICATE_STORYBOARD_USER")
-	}
-
-	return nil
-}
-
-// AbandonStoryboard removes a user from the current storyboard by ID and sets abandoned true
-func (d *Service) AbandonStoryboard(StoryboardID string, UserID string) ([]*thunderdome.StoryboardUser, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_user SET active = false, abandoned = true WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		return nil, fmt.Errorf("set storyboard user active false error: %v", err)
-	}
-
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		return nil, fmt.Errorf("set user last active error: %v", err)
-	}
-
-	users := d.GetStoryboardUsers(StoryboardID)
-
-	return users, nil
 }
 
 // StoryboardReviseColorLegend revises the storyboard color legend by StoryboardID
@@ -477,54 +325,6 @@ func (d *Service) DeleteStoryboard(StoryboardID string, userID string) error {
 	return nil
 }
 
-// AddStoryboardPersona adds a persona to a storyboard
-func (d *Service) AddStoryboardPersona(StoryboardID string, UserID string, Name string, Role string, Description string) ([]*thunderdome.StoryboardPersona, error) {
-	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.storyboard_persona (storyboard_id, name, role, description) VALUES ($1, $2, $3, $4);`,
-		StoryboardID,
-		Name,
-		Role,
-		Description,
-	); err != nil {
-		d.Logger.Error("CALL thunderdome.persona_add error", zap.Error(err))
-	}
-
-	personas := d.GetStoryboardPersonas(StoryboardID)
-
-	return personas, nil
-}
-
-// UpdateStoryboardPersona updates a storyboard persona
-func (d *Service) UpdateStoryboardPersona(StoryboardID string, UserID string, PersonaID string, Name string, Role string, Description string) ([]*thunderdome.StoryboardPersona, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_persona SET name = $2, role = $3, description = $4, updated_date = NOW() WHERE id = $1;`,
-		PersonaID,
-		Name,
-		Role,
-		Description,
-	); err != nil {
-		d.Logger.Error("CALL thunderdome.persona_edit error", zap.Error(err))
-	}
-
-	personas := d.GetStoryboardPersonas(StoryboardID)
-
-	return personas, nil
-}
-
-// DeleteStoryboardPersona deletes a storyboard persona
-func (d *Service) DeleteStoryboardPersona(StoryboardID string, UserID string, PersonaID string) ([]*thunderdome.StoryboardPersona, error) {
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_persona WHERE id = $1;`,
-		PersonaID,
-	); err != nil {
-		d.Logger.Error("CALL thunderdome.persona_delete error", zap.Error(err))
-	}
-
-	personas := d.GetStoryboardPersonas(StoryboardID)
-
-	return personas, nil
-}
-
 // GetStoryboards gets a list of storyboards
 func (d *Service) GetStoryboards(Limit int, Offset int) ([]*thunderdome.Storyboard, int, error) {
 	var storyboards = make([]*thunderdome.Storyboard, 0)
@@ -540,7 +340,7 @@ func (d *Service) GetStoryboards(Limit int, Offset int) ([]*thunderdome.Storyboa
 	}
 
 	rows, storyboardErr := d.DB.Query(`
-		SELECT s.id, s.name, s.created_date, s.updated_date
+		SELECT s.id, s.name, COALESCE(s.team_id::TEXT, ''), s.created_date, s.updated_date
 		FROM thunderdome.storyboard s
 		GROUP BY s.id ORDER BY s.created_date DESC
 		LIMIT $1 OFFSET $2;
@@ -557,6 +357,7 @@ func (d *Service) GetStoryboards(Limit int, Offset int) ([]*thunderdome.Storyboa
 		if err := rows.Scan(
 			&b.Id,
 			&b.Name,
+			&b.TeamID,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
@@ -584,7 +385,7 @@ func (d *Service) GetActiveStoryboards(Limit int, Offset int) ([]*thunderdome.St
 	}
 
 	rows, err := d.DB.Query(`
-		SELECT s.id, s.name, s.created_date, s.updated_date
+		SELECT s.id, s.name, COALESCE(s.team_id::TEXT, ''), s.created_date, s.updated_date
 		FROM thunderdome.storyboard_user su
 		LEFT JOIN thunderdome.storyboard s ON s.id = su.storyboard_id
 		WHERE su.active IS TRUE GROUP BY s.id
@@ -602,6 +403,7 @@ func (d *Service) GetActiveStoryboards(Limit int, Offset int) ([]*thunderdome.St
 		if err := rows.Scan(
 			&b.Id,
 			&b.Name,
+			&b.TeamID,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
@@ -612,84 +414,4 @@ func (d *Service) GetActiveStoryboards(Limit int, Offset int) ([]*thunderdome.St
 	}
 
 	return storyboards, Count, nil
-}
-
-// StoryboardFacilitatorAdd adds a storyboard facilitator
-func (d *Service) StoryboardFacilitatorAdd(StoryboardId string, UserID string) (*thunderdome.Storyboard, error) {
-	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.storyboard_facilitator (storyboard_id, user_id) VALUES ($1, $2);`,
-		StoryboardId, UserID); err != nil {
-		return nil, fmt.Errorf("storyboard add faciliator query error: %v", err)
-	}
-
-	storyboard, err := d.GetStoryboard(StoryboardId, "")
-	if err != nil {
-		return nil, fmt.Errorf("storyboard add facilitator get storyboard error: %v", err)
-	}
-
-	return storyboard, nil
-}
-
-// StoryboardFacilitatorRemove removes a storyboard facilitator
-func (d *Service) StoryboardFacilitatorRemove(StoryboardId string, UserID string) (*thunderdome.Storyboard, error) {
-	facilitatorCount := 0
-	err := d.DB.QueryRow(
-		`SELECT count(user_id) FROM thunderdome.storyboard_facilitator WHERE storyboard_id = $1;`,
-		StoryboardId,
-	).Scan(&facilitatorCount)
-	if err != nil {
-		return nil, fmt.Errorf("storyboard remove facilitator query error: %v", err)
-	}
-
-	if facilitatorCount == 1 {
-		return nil, fmt.Errorf("ONLY_FACILITATOR")
-	}
-
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
-		StoryboardId, UserID); err != nil {
-		return nil, fmt.Errorf("storyboard remove facilitator query error: %v", err)
-	}
-
-	storyboard, err := d.GetStoryboard(StoryboardId, "")
-	if err != nil {
-		return nil, fmt.Errorf("storyboard remove facilitator get storyboard error: %v", err)
-	}
-
-	return storyboard, nil
-}
-
-// GetStoryboardFacilitatorCode retrieve the storyboard facilitator code
-func (d *Service) GetStoryboardFacilitatorCode(StoryboardID string) (string, error) {
-	var EncryptedCode string
-
-	if err := d.DB.QueryRow(`
-		SELECT COALESCE(facilitator_code, '') FROM thunderdome.storyboard
-		WHERE id = $1`,
-		StoryboardID,
-	).Scan(&EncryptedCode); err != nil {
-		return "", fmt.Errorf("get storyboard facilitator_code query error: %v", err)
-	}
-
-	if EncryptedCode == "" {
-		return "", fmt.Errorf("storyboard facilitator_code not set")
-	}
-	DecryptedCode, codeErr := db.Decrypt(EncryptedCode, d.AESHashKey)
-	if codeErr != nil {
-		return "", fmt.Errorf("get storyboard facilitator_code decrypt error: %v", codeErr)
-	}
-
-	return DecryptedCode, nil
-}
-
-// CleanStoryboards deletes storyboards older than {DaysOld} days
-func (d *Service) CleanStoryboards(ctx context.Context, DaysOld int) error {
-	if _, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.storyboard WHERE updated_date < (NOW() - $1 * interval '1 day');`,
-		DaysOld,
-	); err != nil {
-		return fmt.Errorf("clean storyboards query error: %v", err)
-	}
-
-	return nil
 }

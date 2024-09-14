@@ -11144,6 +11144,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "teamId": {
+                    "type": "string"
+                },
                 "teamName": {
                     "type": "string"
                 },
@@ -11502,6 +11505,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/thunderdome.StoryboardPersona"
                     }
+                },
+                "teamId": {
+                    "type": "string"
                 },
                 "teamName": {
                     "type": "string"

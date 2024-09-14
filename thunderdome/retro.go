@@ -45,6 +45,7 @@ type Retro struct {
 	BrainstormVisibility  string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
 	AllowCumulativeVoting bool           `json:"allowCumulativeVoting" db:"allow_cumulative_voting"`
 	Template              RetroTemplate  `json:"template"`
+	TeamID                string         `json:"teamId" db:"team_id"`
 	TeamName              string         `json:"teamName"`
 	CreatedDate           string         `json:"createdDate" db:"created_date"`
 	UpdatedDate           string         `json:"updatedDate" db:"updated_date"`

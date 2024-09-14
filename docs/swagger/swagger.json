@@ -11136,6 +11136,9 @@
                         "type": "string"
                     }
                 },
+                "teamId": {
+                    "type": "string"
+                },
                 "teamName": {
                     "type": "string"
                 },
@@ -11494,6 +11497,9 @@
                     "items": {
                         "$ref": "#/definitions/thunderdome.StoryboardPersona"
                     }
+                },
+                "teamId": {
+                    "type": "string"
                 },
                 "teamName": {
                     "type": "string"
