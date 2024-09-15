@@ -33,6 +33,7 @@ type Http struct {
 	WebsocketWriteWaitSec  int    `mapstructure:"websocket_write_wait_sec"`
 	WebsocketPingPeriodSec int    `mapstructure:"websocket_ping_period_sec"`
 	WebsocketPongWaitSec   int    `mapstructure:"websocket_pong_wait_sec"`
+	WebsocketSubdomain     string `mapstructure:"websocket_subdomain"`
 }
 
 type Analytics struct {

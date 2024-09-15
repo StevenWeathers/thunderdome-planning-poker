@@ -10,7 +10,7 @@
   import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import { AppConfig, appRoutes, PathPrefix } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
   import {
     formatDayForInput,
@@ -21,6 +21,7 @@
   import BlockedPing from '../../components/checkin/BlockedPing.svelte';
   import Picker from '../../components/timezone-picker/Picker.svelte';
   import Toggle from '../../components/forms/Toggle.svelte';
+  import { getWebsocketAddress } from '../../websocketUtil';
 
   export let xfetch;
   export let router;
@@ -29,9 +30,6 @@
   export let organizationId;
   export let departmentId;
   export let teamId;
-
-  const hostname = window.location.origin;
-  const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
   const { AllowRegistration, AllowGuests } = AppConfig;
 
@@ -312,7 +310,7 @@
   };
 
   const ws = new Sockette(
-    `${socketExtension}://${window.location.host}${PathPrefix}/api/teams/${teamId}/checkin`,
+    `${getWebsocketAddress()}/api/teams/${teamId}/checkin`,
     {
       timeout: 2e3,
       maxAttempts: 15,

@@ -29,6 +29,9 @@ type WebsocketConfig struct {
 
 	// Send pings to peer with this period. Must be less than pongWait.
 	PingPeriodSec int
+
+	// Websocket subdomain (allow websockets to be routed via a subdomain)
+	WebsocketSubdomain string
 }
 
 type AuthProvider struct {

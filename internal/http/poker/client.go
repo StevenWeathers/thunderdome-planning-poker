@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -178,12 +179,12 @@ func (b *Service) createWebsocketUpgrader() websocket.Upgrader {
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 		CheckOrigin: func(r *http.Request) bool {
-			return checkOrigin(r, b.config.AppDomain)
+			return checkOrigin(r, b.config.AppDomain, b.config.WebsocketSubdomain)
 		},
 	}
 }
 
-func checkOrigin(r *http.Request, appDomain string) bool {
+func checkOrigin(r *http.Request, appDomain string, subDomain string) bool {
 	origin := r.Header.Get("Origin")
 	if len(origin) == 0 {
 		return true
@@ -192,7 +193,11 @@ func checkOrigin(r *http.Request, appDomain string) bool {
 	if err != nil {
 		return false
 	}
-	return equalASCIIFold(originUrl.Host, appDomain) || equalASCIIFold(originUrl.Host, r.Host)
+	appDomainCheck := equalASCIIFold(originUrl.Host, appDomain)
+	subDomainCheck := equalASCIIFold(originUrl.Host, fmt.Sprintf("%s.%s", subDomain, appDomain))
+	hostCheck := equalASCIIFold(originUrl.Host, r.Host)
+
+	return appDomainCheck || subDomainCheck || hostCheck
 }
 
 // equalASCIIFold returns true if s is equal to t with ASCII case folding as
