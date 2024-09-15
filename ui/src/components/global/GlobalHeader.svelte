@@ -173,67 +173,49 @@
         <ul
           class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-1 lg:mt-0 pb-2 lg:pb-0 rtl:space-x-reverse"
         >
-          {#if $user.name}
-            {#if FeaturePoker}
-              <li>
-                <a
-                  href="{appRoutes.games}"
-                  class="{currentPage === 'battles'
-                    ? activePageClass
-                    : pageClass}"
-                >
-                  {$LL.battles()}
-                </a>
-              </li>
-            {/if}
-            {#if FeatureRetro}
-              <li>
-                <a
-                  href="{appRoutes.retros}"
-                  class="{currentPage === 'retros'
-                    ? activePageClass
-                    : pageClass}"
-                >
-                  {$LL.retros()}
-                </a>
-              </li>
-            {/if}
-            {#if FeatureStoryboard}
-              <li>
-                <a
-                  href="{appRoutes.storyboards}"
-                  class="{currentPage === 'storyboards'
-                    ? activePageClass
-                    : pageClass}"
-                >
-                  {$LL.storyboards()}
-                </a>
-              </li>
-            {/if}
-            {#if $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
-              <li>
-                <a
-                  href="{appRoutes.teams}"
-                  class="{currentPage === 'teams'
-                    ? activePageClass
-                    : pageClass}"
-                >
-                  {$LL.teams()}
-                </a>
-              </li>
-            {/if}
-            {#if validateUserIsAdmin($user)}
-              <li>
-                <a
-                  href="{appRoutes.admin}"
-                  class="{currentPage === 'admin'
-                    ? activePageClass
-                    : pageClass}"
-                >
-                  {$LL.admin()}
-                </a>
-              </li>
-            {/if}
+          {#if FeaturePoker}
+            <li>
+              <a
+                href="{appRoutes.games}"
+                class="{currentPage === 'battles'
+                  ? activePageClass
+                  : pageClass}"
+              >
+                {$LL.battles()}
+              </a>
+            </li>
+          {/if}
+          {#if FeatureRetro}
+            <li>
+              <a
+                href="{appRoutes.retros}"
+                class="{currentPage === 'retros' ? activePageClass : pageClass}"
+              >
+                {$LL.retros()}
+              </a>
+            </li>
+          {/if}
+          {#if FeatureStoryboard}
+            <li>
+              <a
+                href="{appRoutes.storyboards}"
+                class="{currentPage === 'storyboards'
+                  ? activePageClass
+                  : pageClass}"
+              >
+                {$LL.storyboards()}
+              </a>
+            </li>
+          {/if}
+          {#if $user.name && $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
+            <li>
+              <a
+                href="{appRoutes.teams}"
+                class="{currentPage === 'teams' ? activePageClass : pageClass}"
+              >
+                {$LL.teams()}
+              </a>
+            </li>
           {/if}
           {#if SubscriptionsEnabled && !$user.subscribed}
             <li>
@@ -244,6 +226,16 @@
                   : pageClass}"
               >
                 Pricing
+              </a>
+            </li>
+          {/if}
+          {#if $user.name && validateUserIsAdmin($user)}
+            <li>
+              <a
+                href="{appRoutes.admin}"
+                class="{currentPage === 'admin' ? activePageClass : pageClass}"
+              >
+                {$LL.admin()}
               </a>
             </li>
           {/if}

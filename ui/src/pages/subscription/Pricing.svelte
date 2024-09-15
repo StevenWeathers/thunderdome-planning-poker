@@ -6,6 +6,7 @@
   import { AppConfig, appRoutes } from '../../config.ts';
   import { ArrowRight, ShieldCheck } from 'lucide-svelte';
   import PayPeriodToggle from '../../components/pricing/PayPeriodToggle.svelte';
+  import { onMount } from 'svelte';
 
   const { RepoURL } = AppConfig;
 
@@ -434,6 +435,8 @@
       ],
     },
   ];
+
+  onMount(() => window.scrollTo(0, 0));
 </script>
 
 <section class="relative bg-indigo-600 py-12">
@@ -600,8 +603,8 @@
 
         <div class="mt-6">
           <a
-            class="inline-block font-semibold py-3 px-4 border border-transparent bg-blue-500 dark:bg-sky-400 rounded
-                        hover:bg-transparent dark:hover:bg-transparent text-gray-800 hover:text-blue-500 dark:hover:text-sky-400
+            class="inline-block font-semibold py-3 px-4 border border-transparent text-white bg-blue-500 dark:bg-sky-400 rounded
+                        hover:bg-transparent dark:hover:bg-transparent dark:text-gray-800 hover:text-blue-500 dark:hover:text-sky-400
                         hover:border-blue-500 dark:hover:border-sky-400"
             href="{RepoURL}#running-in-production"
             target="_blank"

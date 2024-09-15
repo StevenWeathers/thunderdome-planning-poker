@@ -20,9 +20,7 @@ test.describe("Admin page", () => {
       await adminPage.goto();
 
       const title = adminPage.page.locator("h1");
-      await expect(title).toHaveText(
-        "Thunderdome is an Agile Planning Poker app",
-      );
+      await expect(title).toHaveText("Thunderdome: Empower Your Agile Teams");
     });
   });
 
@@ -33,9 +31,7 @@ test.describe("Admin page", () => {
       await adminPage.goto();
 
       const title = adminPage.page.locator("h1");
-      await expect(title).toHaveText(
-        "Thunderdome is an Agile Planning Poker app",
-      );
+      await expect(title).toHaveText("Thunderdome: Empower Your Agile Teams");
     });
   });
 

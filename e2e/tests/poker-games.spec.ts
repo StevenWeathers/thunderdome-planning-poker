@@ -6,12 +6,12 @@ const pageTitle = "My Games";
 
 test.describe("Poker Games page", () => {
   test.describe("Unauthenticated user", () => {
-    test("redirects to login", async ({ page }) => {
+    test("displays poker landing page", async ({ page }) => {
       const battlesPage = new PokerGamesPage(page);
       await battlesPage.goto();
 
-      const loginForm = battlesPage.page.locator('form[name="login"]');
-      await expect(loginForm).toBeVisible();
+      const title = battlesPage.page.locator("h1");
+      await expect(title).toHaveText("Agile Poker Planning with Thunderdome");
     });
   });
 
