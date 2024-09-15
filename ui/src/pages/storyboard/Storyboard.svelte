@@ -13,7 +13,7 @@
   import HollowButton from '../../components/global/HollowButton.svelte';
   import DeleteStoryboard from '../../components/storyboard/DeleteStoryboard.svelte';
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
-  import { AppConfig, appRoutes, PathPrefix } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
@@ -28,6 +28,7 @@
   } from 'lucide-svelte';
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
+  import { getWebsocketAddress } from '../../websocketUtil';
 
   export let storyboardId;
   export let notifications;
@@ -38,7 +39,6 @@
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
-  const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
   let isLoading = true;
   let JoinPassRequired = false;
@@ -173,7 +173,7 @@
   };
 
   const ws = new Sockette(
-    `${socketExtension}://${window.location.host}${PathPrefix}/api/storyboard/${storyboardId}`,
+    `${getWebsocketAddress()}/api/storyboard/${storyboardId}`,
     {
       timeout: 2e3,
       maxAttempts: 15,

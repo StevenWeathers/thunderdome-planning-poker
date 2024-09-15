@@ -52,29 +52,33 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	a.Router.Use(otelmux.Middleware("thunderdome"))
 
 	pokerSvc := poker.New(poker.Config{
-		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
-		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
-		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
-		AppDomain:     a.Config.AppDomain,
+		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
+		PongWaitSec:        a.Config.WebsocketConfig.PongWaitSec,
+		PingPeriodSec:      a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:          a.Config.AppDomain,
+		WebsocketSubdomain: a.Config.WebsocketConfig.WebsocketSubdomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.PokerDataSvc)
 	retroSvc := retro.New(retro.Config{
-		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
-		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
-		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
-		AppDomain:     a.Config.AppDomain,
+		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
+		PongWaitSec:        a.Config.WebsocketConfig.PongWaitSec,
+		PingPeriodSec:      a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:          a.Config.AppDomain,
+		WebsocketSubdomain: a.Config.WebsocketConfig.WebsocketSubdomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc,
 		a.RetroDataSvc, a.RetroTemplateDataSvc, a.Email)
 	storyboardSvc := storyboard.New(storyboard.Config{
-		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
-		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
-		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
-		AppDomain:     a.Config.AppDomain,
+		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
+		PongWaitSec:        a.Config.WebsocketConfig.PongWaitSec,
+		PingPeriodSec:      a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:          a.Config.AppDomain,
+		WebsocketSubdomain: a.Config.WebsocketConfig.WebsocketSubdomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.StoryboardDataSvc)
 	checkinSvc := checkin.New(checkin.Config{
-		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
-		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
-		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
-		AppDomain:     a.Config.AppDomain,
+		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
+		PongWaitSec:        a.Config.WebsocketConfig.PongWaitSec,
+		PingPeriodSec:      a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:          a.Config.AppDomain,
+		WebsocketSubdomain: a.Config.WebsocketConfig.WebsocketSubdomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.CheckinDataSvc, a.TeamDataSvc)
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
@@ -90,6 +94,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter := apiRouter.PathPrefix("/organizations").Subrouter()
 	teamRouter := apiRouter.PathPrefix("/teams").Subrouter()
 	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
+
+	apiRouter.HandleFunc("/", a.handleApiIndex()).Methods("GET")
 
 	// user authentication, profile
 	if a.Config.LdapEnabled {
@@ -475,5 +481,14 @@ func (s *Service) handleIndex(FSS fs.FS, uiConfig thunderdome.UIConfig) http.Han
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
+	}
+}
+
+// handleApiIndex returns a handler for the API index route
+func (s *Service) handleApiIndex() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status": "ok"}`))
 	}
 }

@@ -21,6 +21,9 @@ type Config struct {
 
 	// App Domain (for Websocket origin check)
 	AppDomain string
+
+	// Websocket Subdomain (for Websocket origin check)
+	WebsocketSubdomain string
 }
 
 func (c *Config) WriteWait() time.Duration {

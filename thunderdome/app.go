@@ -50,6 +50,7 @@ type AppConfig struct {
 	SubscriptionsEnabled      bool
 	Subscription              SubscriptionConfig
 	RetroDefaultTemplateID    string
+	WebsocketSubdomain        string
 }
 
 type UIConfig struct {

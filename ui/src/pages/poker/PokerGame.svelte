@@ -10,7 +10,7 @@
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes, PathPrefix } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
   import UserCard from '../../components/poker/UserCard.svelte';
   import VotingControls from '../../components/poker/VotingControls.svelte';
   import InviteUser from '../../components/poker/InviteUser.svelte';
@@ -20,6 +20,7 @@
   import VotingMetrics from '../../components/poker/VotingMetrics.svelte';
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
+  import { getWebsocketAddress } from '../../websocketUtil';
 
   export let battleId: string;
   export let notifications;
@@ -33,8 +34,7 @@
     : appRoutes.login;
 
   const hostname: string = window.location.origin;
-  const socketExtension: string =
-    window.location.protocol === 'https:' ? 'wss' : 'ws';
+
   const defaultStory: PokerStory = {
     id: '',
     active: false,
@@ -277,52 +277,49 @@
     }
   };
 
-  const ws = new Sockette(
-    `${socketExtension}://${window.location.host}${PathPrefix}/api/arena/${battleId}`,
-    {
-      timeout: 2e3,
-      maxAttempts: 15,
-      onmessage: onSocketMessage,
-      onerror: err => {
-        socketError = true;
-        eventTag('socket_error', 'battle', '');
-      },
-      onclose: e => {
-        if (e.code === 4004) {
-          eventTag('not_found', 'battle', '', () => {
-            router.route(appRoutes.games);
-          });
-        } else if (e.code === 4001) {
-          eventTag('socket_unauthorized', 'battle', '', () => {
-            user.delete();
-            router.route(`${loginOrRegister}/battle/${battleId}`);
-          });
-        } else if (e.code === 4003) {
-          eventTag('socket_duplicate', 'battle', '', () => {
-            notifications.danger($LL.sessionDuplicate());
-            router.route(`${appRoutes.games}`);
-          });
-        } else if (e.code === 4002) {
-          eventTag('battle_warrior_abandoned', 'battle', '', () => {
-            router.route(appRoutes.games);
-          });
-        } else {
-          socketReconnecting = true;
-          eventTag('socket_close', 'battle', '');
-        }
-      },
-      onopen: () => {
-        socketError = false;
-        socketReconnecting = false;
-        isLoading = false;
-        eventTag('socket_open', 'battle', '');
-      },
-      onmaximum: () => {
-        socketReconnecting = false;
-        eventTag('socket_error', 'battle', 'Socket Reconnect Max Reached');
-      },
+  const ws = new Sockette(`${getWebsocketAddress()}/api/arena/${battleId}`, {
+    timeout: 2e3,
+    maxAttempts: 15,
+    onmessage: onSocketMessage,
+    onerror: err => {
+      socketError = true;
+      eventTag('socket_error', 'battle', '');
     },
-  );
+    onclose: e => {
+      if (e.code === 4004) {
+        eventTag('not_found', 'battle', '', () => {
+          router.route(appRoutes.games);
+        });
+      } else if (e.code === 4001) {
+        eventTag('socket_unauthorized', 'battle', '', () => {
+          user.delete();
+          router.route(`${loginOrRegister}/battle/${battleId}`);
+        });
+      } else if (e.code === 4003) {
+        eventTag('socket_duplicate', 'battle', '', () => {
+          notifications.danger($LL.sessionDuplicate());
+          router.route(`${appRoutes.games}`);
+        });
+      } else if (e.code === 4002) {
+        eventTag('battle_warrior_abandoned', 'battle', '', () => {
+          router.route(appRoutes.games);
+        });
+      } else {
+        socketReconnecting = true;
+        eventTag('socket_close', 'battle', '');
+      }
+    },
+    onopen: () => {
+      socketError = false;
+      socketReconnecting = false;
+      isLoading = false;
+      eventTag('socket_open', 'battle', '');
+    },
+    onmaximum: () => {
+      socketReconnecting = false;
+      eventTag('socket_error', 'battle', 'Socket Reconnect Max Reached');
+    },
+  });
 
   onDestroy(() => {
     eventTag('leave', 'battle', '', () => {

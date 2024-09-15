@@ -195,9 +195,10 @@ func main() {
 				},
 			},
 			WebsocketConfig: http.WebsocketConfig{
-				WriteWaitSec:  c.Http.WebsocketWriteWaitSec,
-				PingPeriodSec: c.Http.WebsocketPingPeriodSec,
-				PongWaitSec:   c.Http.WebsocketPongWaitSec,
+				WriteWaitSec:       c.Http.WebsocketWriteWaitSec,
+				PingPeriodSec:      c.Http.WebsocketPingPeriodSec,
+				PongWaitSec:        c.Http.WebsocketPongWaitSec,
+				WebsocketSubdomain: c.Http.WebsocketSubdomain,
 			},
 		},
 		Email:                emailSvc,
@@ -254,6 +255,7 @@ func main() {
 				Subscription:              c.Subscription,
 				RepoURL:                   repoURL,
 				RetroDefaultTemplateID:    c.Config.RetroDefaultTemplateID,
+				WebsocketSubdomain:        c.Http.WebsocketSubdomain,
 			},
 		},
 	}, FSS, HFS)

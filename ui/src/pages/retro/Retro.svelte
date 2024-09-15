@@ -13,7 +13,7 @@
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditRetro from '../../components/retro/EditRetro.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
-  import { AppConfig, appRoutes, PathPrefix } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
   import LL from '../../i18n/i18n-svelte';
@@ -30,6 +30,7 @@
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
   import RetroActionItemReview from '../../components/retro/RetroActionItemReview.svelte';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
+  import { getWebsocketAddress } from '../../websocketUtil';
 
   export let retroId;
   export let notifications;
@@ -41,7 +42,6 @@
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
-  const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
   let isLoading = true;
   let socketError = false;
@@ -292,52 +292,49 @@
     }
   };
 
-  const ws = new Sockette(
-    `${socketExtension}://${window.location.host}${PathPrefix}/api/retro/${retroId}`,
-    {
-      timeout: 2e3,
-      maxAttempts: 15,
-      onmessage: onSocketMessage,
-      onerror: () => {
-        socketError = true;
-        eventTag('socket_error', 'retro', '');
-      },
-      onclose: e => {
-        if (e.code === 4004) {
-          eventTag('not_found', 'retro', '', () => {
-            router.route(appRoutes.retros);
-          });
-        } else if (e.code === 4001) {
-          eventTag('socket_unauthorized', 'retro', '', () => {
-            user.delete();
-            router.route(`${loginOrRegister}/retro/${retroId}`);
-          });
-        } else if (e.code === 4003) {
-          eventTag('socket_duplicate', 'retro', '', () => {
-            notifications.danger($LL.duplicateRetroSession());
-            router.route(`${appRoutes.retros}`);
-          });
-        } else if (e.code === 4002) {
-          eventTag('retro_user_abandoned', 'retro', '', () => {
-            router.route(appRoutes.retros);
-          });
-        } else {
-          socketReconnecting = true;
-          eventTag('socket_close', 'retro', '');
-        }
-      },
-      onopen: () => {
-        isLoading = false;
-        socketError = false;
-        socketReconnecting = false;
-        eventTag('socket_open', 'retro', '');
-      },
-      onmaximum: () => {
-        socketReconnecting = false;
-        eventTag('socket_error', 'retro', 'Socket Reconnect Max Reached');
-      },
+  const ws = new Sockette(`${getWebsocketAddress()}/api/retro/${retroId}`, {
+    timeout: 2e3,
+    maxAttempts: 15,
+    onmessage: onSocketMessage,
+    onerror: () => {
+      socketError = true;
+      eventTag('socket_error', 'retro', '');
     },
-  );
+    onclose: e => {
+      if (e.code === 4004) {
+        eventTag('not_found', 'retro', '', () => {
+          router.route(appRoutes.retros);
+        });
+      } else if (e.code === 4001) {
+        eventTag('socket_unauthorized', 'retro', '', () => {
+          user.delete();
+          router.route(`${loginOrRegister}/retro/${retroId}`);
+        });
+      } else if (e.code === 4003) {
+        eventTag('socket_duplicate', 'retro', '', () => {
+          notifications.danger($LL.duplicateRetroSession());
+          router.route(`${appRoutes.retros}`);
+        });
+      } else if (e.code === 4002) {
+        eventTag('retro_user_abandoned', 'retro', '', () => {
+          router.route(appRoutes.retros);
+        });
+      } else {
+        socketReconnecting = true;
+        eventTag('socket_close', 'retro', '');
+      }
+    },
+    onopen: () => {
+      isLoading = false;
+      socketError = false;
+      socketReconnecting = false;
+      eventTag('socket_open', 'retro', '');
+    },
+    onmaximum: () => {
+      socketReconnecting = false;
+      eventTag('socket_error', 'retro', 'Socket Reconnect Max Reached');
+    },
+  });
 
   onDestroy(() => {
     eventTag('leave', 'retro', '', () => {
