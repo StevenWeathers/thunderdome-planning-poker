@@ -213,7 +213,9 @@
 
   <section class="bg-indigo-600 text-white py-20">
     <div class="container mx-auto px-4 text-center">
-      <h2 class="text-4xl font-bold mb-6">Why Choose Thunderdome?</h2>
+      <h2 class="text-4xl font-bold mb-6 font-rajdhani uppercase">
+        Why Choose Thunderdome?
+      </h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div
           class="bg-white dark:bg-gray-800 rounded-lg p-6 text-gray-800 dark:text-white"
