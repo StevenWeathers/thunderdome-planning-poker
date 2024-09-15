@@ -1,5 +1,4 @@
 <script lang="ts">
-  import LL from '../../i18n/i18n-svelte';
   import CountryFlag from './CountryFlag.svelte';
 
   export let xfetch;
@@ -17,21 +16,19 @@
     });
 </script>
 
-<div class="text-center mb-6">
+<div class="text-center">
   <div class="mx-auto title-line bg-yellow-thunder"></div>
   <h2
-    class="text-5xl font-semibold mb-12 font-rajdhani uppercase dark:text-white"
+    class="text-4xl font-semibold mb-4 font-rajdhani uppercase dark:text-white"
   >
-    {$LL.landingCountries({
-      count: activeCountries.length,
-    })}
+    Transforming teamwork in {activeCountries.length} countries and counting
   </h2>
-</div>
 
-<ul class="grid grid-cols-8 lg:grid-cols-12 gap-x-4 gap-y-8">
-  {#each activeCountries as country}
-    <li>
-      <CountryFlag country="{country}" additionalClass="mx-auto" />
-    </li>
-  {/each}
-</ul>
+  <ul class="flex flex-wrap gap-3">
+    {#each activeCountries as country}
+      <li class="flex-none w-12">
+        <CountryFlag country="{country}" additionalClass="mx-auto" />
+      </li>
+    {/each}
+  </ul>
+</div>

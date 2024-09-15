@@ -4,8 +4,8 @@
 
   export let country = '';
   export let additionalClass = '';
-  export let width = '64';
-  export let height = '48';
+  export let width = '48';
+  export let height = '36';
 </script>
 
 <img
