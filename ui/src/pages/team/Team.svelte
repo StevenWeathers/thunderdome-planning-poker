@@ -31,6 +31,7 @@
   import InvitesList from '../../components/team/InvitesList.svelte';
   import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
+  import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
 
   export let xfetch;
   export let router;
@@ -760,19 +761,9 @@
           changePage="{changeScalesPage}"
         />
       {:else}
-        <h3
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          Estimation Scales
-        </h3>
-        <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
-          <a
-            href="{appRoutes.subscriptionPricing}"
-            class="underline"
-            target="_blank">Subscribe Today</a
-          >
-          to create custom Poker Estimation Scales
-        </p>
+        <FeatureSubscribeBanner
+          salesPitch="Create custom poker point scales to match your team's estimation style."
+        />
       {/if}
     </div>
   {/if}

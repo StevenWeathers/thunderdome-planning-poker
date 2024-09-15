@@ -451,7 +451,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 		  p.point_average_rounding, p.created_date, p.updated_date,
 		  CASE WHEN COUNT(s) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(s))) END AS stories,
 		  CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators,
-		  min(COALESCE(t.name, '')) as team_name, p.estimation_scale_id,
+		  min(COALESCE(t.name, '')) as team_name, COALESCE(p.team_id::TEXT, ''), p.estimation_scale_id,
 		  COALESCE(
 			json_build_object(
 				'id', es.id,
@@ -512,6 +512,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 			&stories,
 			&facilitators,
 			&b.TeamName,
+			&b.TeamID,
 			&b.EstimationScaleID,
 			&estimationScale,
 		); err != nil {
@@ -554,11 +555,12 @@ func (d *Service) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, int, er
 	}
 
 	rows, gamesErr := d.DB.Query(`
-		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed,
+		 b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date, COALESCE(b.team_id::TEXT, ''),
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM thunderdome.poker b
 		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
-		GROUP BY b.id ORDER BY b.created_date DESC
+		GROUP BY b.id, b.created_date ORDER BY b.created_date DESC
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
 	if gamesErr != nil {
@@ -589,6 +591,7 @@ func (d *Service) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, int, er
 			&b.PointAverageRounding,
 			&b.CreatedDate,
 			&b.UpdatedDate,
+			&b.TeamID,
 			&facilitators,
 		); err != nil {
 			d.Logger.Error("get poker games query error", zap.Error(err))
@@ -618,7 +621,8 @@ func (d *Service) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Poker, i
 	}
 
 	rows, gamesErr := d.DB.Query(`
-		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting,
+		 b.point_average_rounding, b.created_date, b.updated_date, COALESCE(b.team_id::TEXT, ''),
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM thunderdome.poker_user bu
 		LEFT JOIN thunderdome.poker b ON b.id = bu.poker_id
@@ -654,6 +658,7 @@ func (d *Service) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Poker, i
 			&b.PointAverageRounding,
 			&b.CreatedDate,
 			&b.UpdatedDate,
+			&b.TeamID,
 			&facilitators,
 		); err != nil {
 			d.Logger.Error("get active poker games query error", zap.Error(err))
@@ -666,16 +671,4 @@ func (d *Service) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Poker, i
 	}
 
 	return games, Count, nil
-}
-
-// PurgeOldGames deletes games older than {DaysOld} days
-func (d *Service) PurgeOldGames(ctx context.Context, DaysOld int) error {
-	if _, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.poker WHERE last_active < (NOW() - $1 * interval '1 day');`,
-		DaysOld,
-	); err != nil {
-		return fmt.Errorf("clean poker games query error: %v", err)
-	}
-
-	return nil
 }

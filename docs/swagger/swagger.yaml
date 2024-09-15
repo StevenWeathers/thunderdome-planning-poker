@@ -982,6 +982,8 @@ definitions:
         items:
           type: string
         type: array
+      teamId:
+        type: string
       teamName:
         type: string
       template:
@@ -1217,6 +1219,8 @@ definitions:
         items:
           $ref: '#/definitions/thunderdome.StoryboardPersona'
         type: array
+      teamId:
+        type: string
       teamName:
         type: string
       updatedDate:
