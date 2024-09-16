@@ -86,6 +86,7 @@
   let phaseTimeStart = new Date();
   let phaseTimeLimitMin = 0;
   let team = null;
+  let columnColors = {};
 
   function getAssociatedTeam() {
     if (retro.teamId) {
@@ -165,6 +166,10 @@
       case 'init':
         JoinPassRequired = false;
         retro = JSON.parse(parsedEvent.value);
+        columnColors = retro.template.format.columns.reduce((p, c) => {
+          p[c.name] = c.color;
+          return p;
+        }, {});
         if (retro.phase != 'brainstorm') {
           groupedItems = organizeItemsByGroup();
         }
@@ -849,15 +854,20 @@
             template="{retro.template}"
             users="{retro.users}"
             brainstormVisibility="{retro.brainstormVisibility}"
+            columnColors="{columnColors}"
           />
         {/if}
         {#if retro.phase === 'group'}
           <div class="w-full grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             <GroupPhase
+              phase="{retro.phase}"
               groups="{groupedItems}"
               handleItemChange="{handleItemGroupChange}"
               handleGroupNameChange="{handleGroupNameChange}"
-              columns="{retro.template.format.columns}"
+              users="{retro.users}"
+              sendSocketEvent="{sendSocketEvent}"
+              isFacilitator="{isFacilitator}"
+              columnColors="{columnColors}"
             />
           </div>
         {/if}
@@ -865,12 +875,16 @@
           <div class="w-full">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
               <VotePhase
+                phase="{retro.phase}"
                 groups="{groupedItems}"
                 handleVote="{handleVote}"
                 handleVoteSubtract="{handleVoteSubtract}"
                 voteLimitReached="{voteLimitReached}"
-                columns="{retro.template.format.columns}"
                 allowCumulativeVoting="{retro.allowCumulativeVoting}"
+                users="{retro.users}"
+                sendSocketEvent="{sendSocketEvent}"
+                isFacilitator="{isFacilitator}"
+                columnColors="{columnColors}"
               />
             </div>
           </div>
@@ -879,8 +893,12 @@
           <div class="w-full md:w-2/3">
             <div class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
               <GroupedItems
+                phase="{retro.phase}"
                 groups="{groupedItems}"
-                columns="{retro.template.format.columns}"
+                users="{retro.users}"
+                sendSocketEvent="{sendSocketEvent}"
+                isFacilitator="{isFacilitator}"
+                columnColors="{columnColors}"
               />
             </div>
           </div>

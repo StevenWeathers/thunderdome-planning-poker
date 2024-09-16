@@ -12,6 +12,7 @@
   };
   export let users: any = [];
   export let brainstormVisibility: boolean = false;
+  export let columnColors: any = {};
 
   $: numCols = template.format.columns.length;
 </script>
@@ -34,6 +35,7 @@
       feedbackVisibility="{brainstormVisibility}"
       color="{column.color}"
       icon="{column.icon}"
+      columnColors="{columnColors}"
     />
   {/each}
 </div>
