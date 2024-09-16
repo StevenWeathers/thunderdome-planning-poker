@@ -6,8 +6,10 @@
   import { User } from 'lucide-svelte';
 
   export let toggleComments = () => {};
-  export let items = [];
-  export let selectedItemId = '';
+  export let item: any = {
+    id: '',
+    comments: [],
+  };
   export let users = [];
   export let isFacilitator = false;
   export let sendSocketEvent = (event: string, value: any) => {};
@@ -58,11 +60,6 @@
     );
     toggleCommentEdit(null)();
   };
-
-  $: item =
-    items && selectedItemId
-      ? items.find(i => i.id === selectedItemId)
-      : { id: '', comments: [] };
 </script>
 
 <Modal closeModal="{toggleComments}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">

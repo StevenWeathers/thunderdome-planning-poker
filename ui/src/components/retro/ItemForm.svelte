@@ -1,15 +1,6 @@
 <script lang="ts">
-  import { user } from '../../stores';
-  import LL from '../../i18n/i18n-svelte';
-  import ItemComments from './ItemComments.svelte';
-  import {
-    Angry,
-    CircleHelp,
-    Frown,
-    MessageSquareMore,
-    Smile,
-    Trash2,
-  } from 'lucide-svelte';
+  import { Angry, CircleHelp, Frown, Smile } from 'lucide-svelte';
+  import RetroFeedbackItem from './RetroFeedbackItem.svelte';
 
   export let sendSocketEvent = (event: string, value: any) => {};
   export let itemType = '';
@@ -22,25 +13,7 @@
   export let feedbackVisibility = 'visible';
   export let icon = '';
   export let color = 'blue';
-
-  let showComments = false;
-  let selectedItemId = null;
-
-  const toggleComments = itemId => () => {
-    showComments = !showComments;
-    selectedItemId = itemId;
-  };
-
-  const handleDelete = (type, id) => () => {
-    sendSocketEvent(
-      `delete_item`,
-      JSON.stringify({
-        id,
-        type,
-        phase,
-      }),
-    );
-  };
+  export let columnColors: any = {};
 
   const handleFormSubmit = evt => {
     evt.preventDefault();
@@ -57,7 +30,9 @@
   };
 </script>
 
-<div class="">
+<div
+  class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex flex-col flex-wrap text-gray-800 dark:text-white"
+>
   <div class="flex items-center mb-4">
     {#if icon !== ''}
       <div
@@ -99,7 +74,6 @@
           name="new{itemType}"
           type="text"
           required
-          disabled="{phase !== 'brainstorm' && !isFacilitator}"
         />
         <button type="submit" class="hidden"></button>
       </form>
@@ -107,83 +81,15 @@
   </div>
   <div>
     {#each items.filter(i => i.type === itemType) as item}
-      <div
-        class="p-2 mb-2 bg-white dark:bg-gray-800 shadow item-list-item border-s-4"
-        class:border-green-400="{color === 'green'}"
-        class:dark:border-lime-400="{color === 'green'}"
-        class:border-red-500="{color === 'red'}"
-        class:border-blue-400="{color === 'blue'}"
-        class:dark:border-sky-400="{color === 'blue'}"
-        class:border-yellow-500="{color === 'yellow'}"
-        class:dark:border-yellow-400="{color === 'yellow'}"
-        class:border-orange-500="{color === 'orange'}"
-        class:dark:border-orange-400="{color === 'orange'}"
-        class:border-teal-500="{color === 'teal'}"
-        class:dark:border-teal-400="{color === 'teal'}"
-        class:border-indigo-500="{color === 'purple'}"
-        class:dark:border-indigo-400="{color === 'purple'}"
-        data-itemType="{itemType}"
-        data-itemId="{item.id}"
-      >
-        <div class="flex items-center">
-          <div class="flex-grow">
-            <div class="flex items-center">
-              <div class="flex-grow dark:text-gray-200">
-                {#if feedbackVisibility === 'hidden' && item.userId !== $user.id}
-                  <span class="italic">{$LL.retroFeedbackHidden()}</span>
-                {:else if feedbackVisibility === 'concealed' && item.userId !== $user.id}
-                  <span class="italic"
-                    >{$LL.retroFeedbackConcealed()}&nbsp;&nbsp;</span
-                  ><span class="text-white dark:text-gray-800"
-                    >{item.content}</span
-                  >
-                {:else}
-                  {item.content}
-                {/if}
-              </div>
-            </div>
-          </div>
-          <div class="flex-none flex gap-x-2 ps-2">
-            <div>
-              <button
-                class="inline-block align-middle text-blue-400 dark:text-sky-400"
-                on:click="{toggleComments(item.id)}"
-              >
-                {item.comments.length}&nbsp;
-                <MessageSquareMore
-                  width="14"
-                  height="14"
-                  class="inline-block"
-                />
-              </button>
-            </div>
-            {#if phase === 'brainstorm'}
-              <div>
-                <button
-                  on:click="{handleDelete(itemType, item.id)}"
-                  class="inline-block align-middle {item.userId !== $user.id
-                    ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-red-500'}"
-                  disabled="{item.userId !== $user.id}"
-                >
-                  <Trash2 />
-                </button>
-              </div>
-            {/if}
-          </div>
-        </div>
-      </div>
+      <RetroFeedbackItem
+        item="{item}"
+        phase="{phase}"
+        users="{users}"
+        isFacilitator="{isFacilitator}"
+        sendSocketEvent="{sendSocketEvent}"
+        columnColors="{columnColors}"
+        feedbackVisibility="{feedbackVisibility}"
+      />
     {/each}
   </div>
-
-  {#if showComments}
-    <ItemComments
-      toggleComments="{toggleComments()}"
-      selectedItemId="{selectedItemId}"
-      items="{items}"
-      users="{users}"
-      isFacilitator="{isFacilitator}"
-      sendSocketEvent="{sendSocketEvent}"
-    />
-  {/if}
 </div>
