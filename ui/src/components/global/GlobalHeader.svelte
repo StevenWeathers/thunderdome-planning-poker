@@ -35,9 +35,9 @@
   } = AppConfig;
 
   const activePageClass =
-    'block lg:pt-6 lg:pb-4 px-4 border-b lg:border-b-4 lg:dark:bg-gray-800 text-indigo-600 border-indigo-600 dark:text-yellow-400 dark:border-yellow-400 transition duration-300';
+    'block lg:pt-6 lg:pb-4 px-4 border-b lg:border-b-4 lg:dark:bg-gray-800 text-indigo-600 border-indigo-600 dark:text-yellow-thunder dark:border-yellow-thunder transition duration-300';
   const pageClass =
-    'block lg:pt-6 lg:pb-4 px-4 border-b border-gray-200 lg:border-white dark:border-gray-600 lg:dark:border-gray-800 lg:border-b-4 text-gray-700 hover:border-indigo-600 dark:hover:border-yellow-400 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-yellow-400 transition duration-300';
+    'block lg:pt-6 lg:pb-4 px-4 border-b border-gray-200 lg:border-white dark:border-gray-600 lg:dark:border-gray-800 lg:border-b-4 text-gray-700 hover:border-indigo-600 dark:hover:border-yellow-thunder hover:text-indigo-700 dark:text-gray-300 dark:hover:text-yellow-thunder transition duration-300';
 
   let showMobileMenu = false;
 

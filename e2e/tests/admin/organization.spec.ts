@@ -20,7 +20,7 @@ test.describe("The Admin Organization Page", () => {
       await adminPage.goto("bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa");
 
       const title = adminPage.page.locator("h1");
-      await expect(title).toHaveText("Thunderdome: Empower Your Agile Teams");
+      await expect(title).toHaveText("Thunderdome Empower Your Agile Teams");
     });
   });
 
@@ -31,7 +31,7 @@ test.describe("The Admin Organization Page", () => {
       await adminPage.goto("bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa");
 
       const title = adminPage.page.locator("h1");
-      await expect(title).toHaveText("Thunderdome: Empower Your Agile Teams");
+      await expect(title).toHaveText("Thunderdome Empower Your Agile Teams");
     });
   });
 

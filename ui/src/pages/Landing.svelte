@@ -31,11 +31,15 @@
 <main class="bg-gray-100 dark:bg-gray-900">
   <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
     <div class="container mx-auto px-4 py-16">
-      <div class="max-w-3xl mx-auto text-center">
+      <div class="max-w-4xl mx-auto text-center">
         <h1
           class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
         >
-          Thunderdome: Empower Your Agile Teams
+          <span
+            class="block bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500"
+          >
+            Thunderdome
+          </span> Empower Your Agile Teams
         </h1>
         <p class="text-xl sm:text-2xl text-blue-100">
           Elevate your agile practices, foster seamless collaboration, and

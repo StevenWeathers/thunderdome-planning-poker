@@ -7,9 +7,13 @@
 
 <section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
   <div class="container mx-auto px-4 py-12">
-    <div class="max-w-3xl mx-auto text-center">
+    <div class="max-w-4xl mx-auto text-center">
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-        Story Mapping with Thunderdome
+        Story Mapping with <span
+          class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500"
+        >
+          Thunderdome
+        </span>
       </h1>
       <p class="text-xl sm:text-2xl text-blue-100">
         Visualize your product backlog and create better user experiences with

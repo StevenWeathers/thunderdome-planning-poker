@@ -6,5 +6,5 @@ test.beforeEach(async ({ page }) => {
 
 test("Landing Page", async ({ page }) => {
   const title = page.locator("h1");
-  await expect(title).toHaveText("Thunderdome: Empower Your Agile Teams");
+  await expect(title).toHaveText("Thunderdome Empower Your Agile Teams");
 });
