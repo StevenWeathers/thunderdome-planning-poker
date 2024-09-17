@@ -78,7 +78,7 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 
 		if nr.TemplateID == nil {
 			// get default template
-			template, err := s.RetroTemplateDataSvc.GetTemplateById(ctx, s.Config.RetroDefaultTemplateID)
+			template, err := s.RetroTemplateDataSvc.GetDefaultPublicTemplate(ctx)
 			if err != nil {
 				s.Logger.Ctx(ctx).Error("handleRetroCreate get default template by id error", zap.Error(err),
 					zap.String("session_user_id", SessionUserID))

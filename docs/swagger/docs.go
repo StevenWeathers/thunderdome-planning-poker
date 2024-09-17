@@ -2670,6 +2670,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/organization/{organizationId}/retro-templates/{templateId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a Organization Retro Template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Update Organization Retro Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "retro template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.privateRetroTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/organizations/{orgId}": {
             "get": {
                 "security": [
@@ -4564,6 +4631,110 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates an Organization retro template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Create Organization Retro Template",
+                "parameters": [
+                    {
+                        "description": "new retro template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.privateRetroTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organizations/{organizationId}/retro-templates/{templateId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes an Organization Retro Template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Delete Organization Retro Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     },
                     "400": {
@@ -6859,6 +7030,175 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a Team retro template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Create Team Retro Template",
+                "parameters": [
+                    {
+                        "description": "new retro template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.privateRetroTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/teams/{teamId}/retro-templates/{templateId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a Team Retro Template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Update Team Retro Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "retro template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.privateRetroTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.RetroTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a Team Retro Template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retroTemplate"
+                ],
+                "summary": "Delete Team Retro Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     },
                     "400": {
@@ -10235,6 +10575,27 @@ const docTemplate = `{
                 }
             }
         },
+        "http.privateRetroTemplateRequestBody": {
+            "type": "object",
+            "required": [
+                "format",
+                "name"
+            ],
+            "properties": {
+                "defaultTemplate": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "format": {
+                    "$ref": "#/definitions/thunderdome.RetroTemplateFormat"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "http.resetPasswordRequestBody": {
             "type": "object",
             "required": [
@@ -10315,6 +10676,9 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
+                "defaultTemplate": {
+                    "type": "boolean"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -11374,6 +11738,9 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "type": "string"
+                },
+                "defaultTemplate": {
+                    "type": "boolean"
                 },
                 "description": {
                     "type": "string"

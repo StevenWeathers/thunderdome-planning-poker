@@ -12,12 +12,13 @@ import (
 )
 
 type retroTemplateRequestBody struct {
-	Name           string                           `json:"name" validate:"required"`
-	Description    string                           `json:"description"`
-	Format         *thunderdome.RetroTemplateFormat `json:"format" validate:"required"`
-	IsPublic       bool                             `json:"isPublic"`
-	OrganizationId *string                          `json:"organizationId"`
-	TeamId         *string                          `json:"teamId"`
+	Name            string                           `json:"name" validate:"required"`
+	Description     string                           `json:"description"`
+	Format          *thunderdome.RetroTemplateFormat `json:"format" validate:"required"`
+	IsPublic        bool                             `json:"isPublic"`
+	DefaultTemplate bool                             `json:"defaultTemplate"`
+	OrganizationId  *string                          `json:"organizationId"`
+	TeamId          *string                          `json:"teamId"`
 }
 
 // handleGetRetroTemplates gets a list of retro templates
@@ -90,13 +91,14 @@ func (s *Service) handleRetroTemplateCreate() http.HandlerFunc {
 		}
 
 		newTemplate := &thunderdome.RetroTemplate{
-			Name:           template.Name,
-			Description:    template.Description,
-			Format:         template.Format,
-			IsPublic:       template.IsPublic,
-			CreatedBy:      SessionUserID,
-			OrganizationId: template.OrganizationId,
-			TeamId:         template.TeamId,
+			Name:            template.Name,
+			Description:     template.Description,
+			Format:          template.Format,
+			IsPublic:        template.IsPublic,
+			DefaultTemplate: template.DefaultTemplate,
+			CreatedBy:       SessionUserID,
+			OrganizationId:  template.OrganizationId,
+			TeamId:          template.TeamId,
 		}
 
 		err := s.RetroTemplateDataSvc.CreateTemplate(ctx, newTemplate)
@@ -156,13 +158,14 @@ func (s *Service) handleRetroTemplateUpdate() http.HandlerFunc {
 		}
 
 		updatedTemplate := &thunderdome.RetroTemplate{
-			Id:             ID,
-			Name:           template.Name,
-			Description:    template.Description,
-			Format:         template.Format,
-			IsPublic:       template.IsPublic,
-			OrganizationId: template.OrganizationId,
-			TeamId:         template.TeamId,
+			Id:              ID,
+			Name:            template.Name,
+			Description:     template.Description,
+			Format:          template.Format,
+			IsPublic:        template.IsPublic,
+			DefaultTemplate: template.DefaultTemplate,
+			OrganizationId:  template.OrganizationId,
+			TeamId:          template.TeamId,
 		}
 
 		err := s.RetroTemplateDataSvc.UpdateTemplate(ctx, updatedTemplate)
@@ -277,6 +280,13 @@ func (s *Service) handleGetPublicRetroTemplates() http.HandlerFunc {
 	}
 }
 
+type privateRetroTemplateRequestBody struct {
+	Name            string                           `json:"name" validate:"required"`
+	Description     string                           `json:"description"`
+	Format          *thunderdome.RetroTemplateFormat `json:"format" validate:"required"`
+	DefaultTemplate bool                             `json:"defaultTemplate"`
+}
+
 // handleGetOrganizationRetroTemplates gets a list of retro templates for an organization
 // @Summary      Get Organization Retro Templates
 // @Description  get list of retro templates for an organization
@@ -294,6 +304,11 @@ func (s *Service) handleGetOrganizationRetroTemplates() http.HandlerFunc {
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		organizationID := vars["organizationId"]
+		orgIdErr := validate.Var(organizationID, "required,uuid")
+		if orgIdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+			return
+		}
 
 		// Validate organizationID
 		if err := validate.Var(organizationID, "required,uuid"); err != nil {
@@ -331,6 +346,11 @@ func (s *Service) handleGetTeamRetroTemplates() http.HandlerFunc {
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		teamID := vars["teamId"]
+		teamIdErr := validate.Var(teamID, "required,uuid")
+		if teamIdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+			return
+		}
 
 		// Validate teamID
 		if err := validate.Var(teamID, "required,uuid"); err != nil {
@@ -348,5 +368,360 @@ func (s *Service) handleGetTeamRetroTemplates() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, templates, nil)
+	}
+}
+
+// handleTeamRetroTemplateCreate creates a new team retro template
+// @Summary      Create Team Retro Template
+// @Description  Creates a Team retro template
+// @Tags         retroTemplate
+// @Produce      json
+// @Param        template  body    privateRetroTemplateRequestBody                                true  "new retro template object"
+// @Success      200       object  standardJsonResponse{data=thunderdome.RetroTemplate}
+// @Failure      400       object  standardJsonResponse{}
+// @Failure      500       object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/retro-templates [post]
+func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		teamID := vars["teamId"]
+		teamIdErr := validate.Var(teamID, "required,uuid")
+		if teamIdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+			return
+		}
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		var template = retroTemplateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &template)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(template)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		newTemplate := &thunderdome.RetroTemplate{
+			Name:            template.Name,
+			Description:     template.Description,
+			Format:          template.Format,
+			IsPublic:        false,
+			DefaultTemplate: template.DefaultTemplate,
+			CreatedBy:       SessionUserID,
+			TeamId:          &teamID,
+		}
+
+		err := s.RetroTemplateDataSvc.CreateTemplate(ctx, newTemplate)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamRetroTemplateCreate error", zap.Error(err),
+				zap.String("template_name", template.Name),
+				zap.String("team_id", teamID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, newTemplate, nil)
+	}
+}
+
+// handleOrganizationRetroTemplateCreate creates a new organization retro template
+// @Summary      Create Organization Retro Template
+// @Description  Creates an Organization retro template
+// @Tags         retroTemplate
+// @Produce      json
+// @Param        template  body    privateRetroTemplateRequestBody                                true  "new retro template object"
+// @Success      200       object  standardJsonResponse{data=thunderdome.RetroTemplate}
+// @Failure      400       object  standardJsonResponse{}
+// @Failure      500       object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{organizationId}/retro-templates [post]
+func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		orgID := vars["organizationId"]
+		orgIdErr := validate.Var(orgID, "required,uuid")
+		if orgIdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+			return
+		}
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		var template = retroTemplateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &template)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(template)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		newTemplate := &thunderdome.RetroTemplate{
+			Name:            template.Name,
+			Description:     template.Description,
+			Format:          template.Format,
+			IsPublic:        false,
+			DefaultTemplate: template.DefaultTemplate,
+			CreatedBy:       SessionUserID,
+			OrganizationId:  &orgID,
+		}
+
+		err := s.RetroTemplateDataSvc.CreateTemplate(ctx, newTemplate)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationRetroTemplateCreate error", zap.Error(err),
+				zap.String("template_name", template.Name),
+				zap.String("organization_id", orgID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, newTemplate, nil)
+	}
+}
+
+// handleTeamRetroTemplateUpdate updates a team retro template
+// @Summary      Update Team Retro Template
+// @Description  Updates a Team Retro Template
+// @Tags         retroTemplate
+// @Produce      json
+// @Param        templateId  path    string                                                true  "the retro template ID to update"
+// @Param        template    body    privateRetroTemplateRequestBody                              true  "retro template object to update"
+// @Success      200         object  standardJsonResponse{data=thunderdome.RetroTemplate}
+// @Failure      400         object  standardJsonResponse{}
+// @Failure      500         object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/retro-templates/{templateId} [put]
+func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		ID := vars["templateId"]
+		idErr := validate.Var(ID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		TeamID := vars["teamId"]
+		teamIdErr := validate.Var(TeamID, "required,uuid")
+		if teamIdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+			return
+		}
+
+		var template = retroTemplateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &template)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(template)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		updatedTemplate := &thunderdome.RetroTemplate{
+			Id:              ID,
+			Name:            template.Name,
+			Description:     template.Description,
+			Format:          template.Format,
+			DefaultTemplate: template.DefaultTemplate,
+			TeamId:          &TeamID,
+		}
+
+		err := s.RetroTemplateDataSvc.UpdateTeamTemplate(ctx, updatedTemplate)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamRetroTemplateUpdate error", zap.Error(err),
+				zap.String("template_id", ID),
+				zap.String("team_id", TeamID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, updatedTemplate, nil)
+	}
+}
+
+// handleOrganizationRetroTemplateUpdate updates an organization retro template
+// @Summary      Update Organization Retro Template
+// @Description  Updates a Organization Retro Template
+// @Tags         retroTemplate
+// @Produce      json
+// @Param        templateId  path    string                                                true  "the retro template ID to update"
+// @Param        template    body    privateRetroTemplateRequestBody                              true  "retro template object to update"
+// @Success      200         object  standardJsonResponse{data=thunderdome.RetroTemplate}
+// @Failure      400         object  standardJsonResponse{}
+// @Failure      500         object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organization/{organizationId}/retro-templates/{templateId} [put]
+func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		ID := vars["templateId"]
+		idErr := validate.Var(ID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		OrgID := vars["organizationId"]
+		orgIdErr := validate.Var(OrgID, "required,uuid")
+		if orgIdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+			return
+		}
+
+		var template = retroTemplateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &template)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(template)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		updatedTemplate := &thunderdome.RetroTemplate{
+			Id:              ID,
+			Name:            template.Name,
+			Description:     template.Description,
+			Format:          template.Format,
+			DefaultTemplate: template.DefaultTemplate,
+			TeamId:          &OrgID,
+		}
+
+		err := s.RetroTemplateDataSvc.UpdateTeamTemplate(ctx, updatedTemplate)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationRetroTemplateUpdate error", zap.Error(err),
+				zap.String("template_id", ID),
+				zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, updatedTemplate, nil)
+	}
+}
+
+// handleOrganizationRetroTemplateDelete handles deleting an organization retro template
+// @Summary      Delete Organization Retro Template
+// @Description  Deletes an Organization Retro Template
+// @Tags         retroTemplate
+// @Produce      json
+// @Param        templateId  path    string                          true  "the retro template ID to delete"
+// @Success      200         object  standardJsonResponse{}
+// @Failure      400         object  standardJsonResponse{}
+// @Failure      500         object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{organizationId}/retro-templates/{templateId} [delete]
+func (s *Service) handleOrganizationRetroTemplateDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		TemplateID := vars["templateId"]
+		OrganizationID := vars["organizationId"]
+		idErr := validate.Var(TemplateID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		err := s.RetroTemplateDataSvc.DeleteOrganizationTemplate(ctx, OrganizationID, TemplateID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationRetroTemplateDelete error", zap.Error(err),
+				zap.String("template_id", TemplateID),
+				zap.String("organization_id", OrganizationID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleTeamRetroTemplateDelete handles deleting a team retro template
+// @Summary      Delete Team Retro Template
+// @Description  Deletes a Team Retro Template
+// @Tags         retroTemplate
+// @Produce      json
+// @Param        templateId  path    string                          true  "the retro template ID to delete"
+// @Success      200         object  standardJsonResponse{}
+// @Failure      400         object  standardJsonResponse{}
+// @Failure      500         object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/retro-templates/{templateId} [delete]
+func (s *Service) handleTeamRetroTemplateDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		TemplateID := vars["templateId"]
+		idErr := validate.Var(TemplateID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		TeamID := vars["teamId"]
+		teamIdErr := validate.Var(TeamID, "required,uuid")
+		if teamIdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+			return
+		}
+
+		err := s.RetroTemplateDataSvc.DeleteTeamTemplate(ctx, TeamID, TemplateID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamRetroTemplateDelete error", zap.Error(err),
+				zap.String("template_id", TemplateID),
+				zap.String("team_id", TeamID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
