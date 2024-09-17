@@ -1,6 +1,12 @@
 <script lang="ts">
   export let selectedPaymentPeriod = 'month';
   export let togglePaymentPeriod = () => {};
+
+  $: yearPayPeriod = selectedPaymentPeriod === 'year';
+
+  function handleChange() {
+    togglePaymentPeriod();
+  }
 </script>
 
 <style>
@@ -42,19 +48,25 @@
   }
 </style>
 
-<div class="flex rounded-lg bg-indigo-700 p-0.5">
-  <button
-    on:click="{togglePaymentPeriod}"
-    type="button"
-    class="toggle {selectedPaymentPeriod === 'month' ? 'active' : ''}"
+<div class="flex justify-center items-center space-x-4 mb-12">
+  <span class="text-lg font-semibold text-gray-600 dark:text-gray-300"
+    >Monthly</span
   >
-    Monthly billing
-  </button>
-  <button
-    on:click="{togglePaymentPeriod}"
-    type="button"
-    class="toggle ms-0.5 {selectedPaymentPeriod === 'year' ? 'active' : ''}"
+  <label class="relative inline-flex items-center cursor-pointer">
+    <input
+      type="checkbox"
+      id="billingToggle"
+      class="sr-only peer"
+      bind:checked="{yearPayPeriod}"
+      on:change="{handleChange}"
+    />
+    <div
+      class="w-14 h-7 bg-gray-300 dark:bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-purple-600"
+    ></div>
+  </label>
+  <span class="text-lg font-semibold text-gray-600 dark:text-gray-300"
+    >Yearly <span class="text-purple-600 dark:text-purple-400"
+      >(2 Months Free!)</span
+    ></span
   >
-    Yearly billing
-  </button>
 </div>

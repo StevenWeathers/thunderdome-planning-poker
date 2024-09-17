@@ -1,12 +1,13 @@
 <script lang="ts">
-  import Checkmark from '../../components/pricing/Checkmark.svelte';
   import SubscribeButton from '../../components/pricing/SubscribeButton.svelte';
-  import Crossmark from '../../components/pricing/Crossmark.svelte';
-  import { user } from '../../stores.ts';
-  import { AppConfig, appRoutes } from '../../config.ts';
-  import { ArrowRight, ShieldCheck } from 'lucide-svelte';
+  import { AppConfig } from '../../config.ts';
+  import { Check, ShieldCheck } from 'lucide-svelte';
   import PayPeriodToggle from '../../components/pricing/PayPeriodToggle.svelte';
   import { onMount } from 'svelte';
+  import { user } from '../../stores';
+  import { appRoutes } from '../../config';
+  import PlanBoxRecommended from '../../components/pricing/PlanBoxRecommended.svelte';
+  import PlanBox from '../../components/pricing/PlanBox.svelte';
 
   const { RepoURL } = AppConfig;
 
@@ -17,604 +18,237 @@
       selectedPaymentPeriod === 'month' ? 'year' : 'month';
   }
 
-  const Plans = [
-    {
-      Name: 'Starter',
-      Enabled: true,
-      Popular: false,
-      Price: {
-        Free: true,
-        Month: 'Free',
-        Year: 'Free',
-        Subtext: 'All the primary features at no cost forever.',
-      },
-      Subscribe: {
-        MonthLink: '',
-        YearLink: '',
-      },
-      Features: [
-        {
-          Name: 'Primary Features',
-          Included: true,
-          Header: true,
-          ColorClass: 'text-blue-600 dark:text-sky-400',
-        },
-        {
-          Name: 'Poker Planning',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import stories from Jira XML or CSV files',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Sprint Retrospective',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Story Mapping (Storyboards)',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Async Daily Stand-up (Team Checkins)',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Organize by Organization, Departments & Teams',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'No user limits',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Premium Features',
-          Included: true,
-          Header: true,
-          ColorClass: 'text-green-600 dark:text-lime-400',
-        },
-        {
-          Name: 'Custom Poker Estimation Scales',
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from Jira',
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from existing Games',
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from Storyboards',
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: 'Review open action items from previous team retrospectives',
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: `Team Checkins show user's previous checkin during today's checkin`,
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: 'Future premium features',
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: 'Compensating development efforts',
-          Included: false,
-          Header: false,
-        },
-      ],
-    },
-    {
-      Name: 'Individual',
-      Enabled: AppConfig.Subscription.Individual.Enabled,
-      Popular: false,
-      Price: {
-        Free: false,
-        Month: AppConfig.Subscription.Individual.MonthPrice,
-        Year: AppConfig.Subscription.Individual.YearPrice,
-        Subtext: 'Premium Features for your account only.',
-      },
-      Subscribe: {
-        MonthLink: AppConfig.Subscription.Individual.MonthCheckoutLink,
-        YearLink: AppConfig.Subscription.Individual.YearCheckoutLink,
-      },
-      Features: [
-        {
-          Name: 'Primary Features',
-          Included: true,
-          Header: true,
-          ColorClass: 'text-blue-600 dark:text-sky-400',
-        },
-        {
-          Name: 'Poker Planning',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import stories from Jira XML or CSV files',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Sprint Retrospective',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Story Mapping (Storyboards)',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Async Daily Stand-up (Team Checkins)',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Organize by Organization, Departments & Teams',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'No user limits',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Premium Features',
-          Included: true,
-          Header: true,
-          ColorClass: 'text-green-600 dark:text-lime-400',
-        },
-        {
-          Name: 'Custom Poker Estimation Scales',
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from Jira',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from existing Games',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from Storyboards',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Review open action items from previous team retrospectives',
-          Included: false,
-          Header: false,
-        },
-        {
-          Name: `Team Checkins show user's previous checkin during today's checkin`,
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Future premium features',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Compensating development efforts',
-          Included: true,
-          Header: false,
-        },
-      ],
-    },
-    {
-      Name: 'Team',
-      Enabled: AppConfig.Subscription.Team.Enabled,
-      Popular: false,
-      Price: {
-        Free: false,
-        Month: AppConfig.Subscription.Team.MonthPrice,
-        Year: AppConfig.Subscription.Team.YearPrice,
-        Subtext: 'Premium Features for all Team members.',
-      },
-      Subscribe: {
-        MonthLink: AppConfig.Subscription.Team.MonthCheckoutLink,
-        YearLink: AppConfig.Subscription.Team.YearCheckoutLink,
-      },
-      Features: [
-        {
-          Name: 'Primary Features',
-          Included: true,
-          Header: true,
-          ColorClass: 'text-blue-600 dark:text-sky-400',
-        },
-        {
-          Name: 'Poker Planning',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import stories from Jira XML or CSV files',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Sprint Retrospective',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Story Mapping (Storyboards)',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Async Daily Stand-up (Team Checkins)',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Organize by Organization, Departments & Teams',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'No user limits',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Premium Features',
-          Included: true,
-          Header: true,
-          ColorClass: 'text-green-600 dark:text-lime-400',
-        },
-        {
-          Name: 'Custom Poker Estimation Scales',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from Jira',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from existing Games',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from Storyboards',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Review open action items from previous team retrospectives',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: `Team Checkins show user's previous checkin during today's checkin`,
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Future premium features',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Compensating development efforts',
-          Included: true,
-          Header: false,
-        },
-      ],
-    },
-    {
-      Name: 'Organization',
-      Enabled: AppConfig.Subscription.Organization.Enabled,
-      Popular: false,
-      Price: {
-        Free: false,
-        Month: AppConfig.Subscription.Organization.MonthPrice,
-        Year: AppConfig.Subscription.Organization.YearPrice,
-        Subtext: 'Premium Features for all Organization members.',
-      },
-      Subscribe: {
-        MonthLink: AppConfig.Subscription.Organization.MonthCheckoutLink,
-        YearLink: AppConfig.Subscription.Organization.YearCheckoutLink,
-      },
-      Features: [
-        {
-          Name: 'Primary Features',
-          Included: true,
-          Header: true,
-          ColorClass: 'text-blue-600 dark:text-sky-400',
-        },
-        {
-          Name: 'Poker Planning',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import stories from Jira XML or CSV files',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Sprint Retrospective',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Story Mapping (Storyboards)',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Async Daily Stand-up (Team Checkins)',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Organize by Organization, Departments & Teams',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'No user limits',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Premium Features',
-          Included: true,
-          Header: true,
-          ColorClass: 'text-green-600 dark:text-lime-400',
-        },
-        {
-          Name: 'Custom Poker Estimation Scales',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from Jira',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from existing Games',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Import Poker Stories from Storyboards',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Review open action items from previous team retrospectives',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: `Team Checkins show user's previous checkin during today's checkin`,
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Future premium features',
-          Included: true,
-          Header: false,
-        },
-        {
-          Name: 'Compensating development efforts',
-          Included: true,
-          Header: false,
-        },
-      ],
-    },
-  ];
-
   onMount(() => window.scrollTo(0, 0));
 </script>
 
-<section class="relative bg-indigo-600 py-12">
-  <div class="relative mx-auto max-w-2xl px-6 text-center lg:max-w-7xl lg:px-8">
-    <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-      <span class="block lg:inline">Simple pricing,</span>
-      <span class="block lg:inline">no commitment.</span>
+<div
+  class="bg-gradient-to-br from-white to-slate-200 dark:from-gray-900 dark:to-gray-800 min-h-screen text-gray-900 dark:text-white font-sans transition-colors duration-300"
+>
+  <div class="container mx-auto px-4 py-16">
+    <h1
+      class="text-5xl sm:text-6xl font-extrabold text-center mb-4 leading-tight"
+    >
+      <span
+        class="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600"
+      >
+        Elevate Your Agile Workflow
+      </span>
     </h1>
-    <p class="mt-4 text-xl text-indigo-100">
-      Everything you need, nothing you don't. Pick a plan that best suits your
-      needs.
+    <p class="text-xl text-center mb-12 text-gray-600 dark:text-gray-300">
+      Choose the plan that fits your team's ambitions. Unlock premium features
+      to streamline your agile process.
     </p>
-  </div>
 
-  <h2 class="sr-only">Plans</h2>
-
-  <div class="relative flex justify-center mt-8">
     <PayPeriodToggle
       selectedPaymentPeriod="{selectedPaymentPeriod}"
       togglePaymentPeriod="{togglePaymentPeriod}"
     />
-  </div>
-</section>
 
-<section class="bg-white dark:bg-transparent text-gray-700 dark:text-gray-300">
-  <div class="container px-5 pb-24 pt-12 mx-auto flex flex-wrap">
-    <div class="lg:w-1/4 mt-48 hidden lg:block">
-      <div
-        class="mt-px border-t border-gray-300 dark:border-gray-700 border-b border-l rounded-tl-lg rounded-bl-lg overflow-hidden"
-      >
-        {#each Plans[0].Features as feature, idx}
-          <p
-            class="{idx % 2
-              ? 'text-gray-900 dark:text-gray-300'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-300'} h-12 px-4 flex items-center justify-start"
-          >
-            {#if feature.Header}
-              <span class="text-lg font-semibold {feature.ColorClass}"
-                >{feature.Name}</span
-              >
-            {:else}
-              {feature.Name}
-            {/if}
-          </p>
-        {/each}
-      </div>
-    </div>
-    <div
-      class="flex lg:w-3/4 w-full flex-wrap lg:border border-gray-300 dark:border-gray-700 rounded-lg"
-    >
-      {#each Plans as plan, pidx}
-        <div
-          class="lg:w-1/4 lg:mt-px w-full mb-10 lg:mb-0 border-2 rounded-lg relative {pidx %
-          2
-            ? 'border-gray-300 dark:border-gray-700 lg:border-transparent dark:lg:border-transparent lg:rounded-none'
-            : 'border-gray-300 dark:border-gray-700'} {plan.Popular
-            ? 'border-indigo-500'
-            : ''}"
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- Starter Plan -->
+      <PlanBox>
+        <h2
+          class="text-2xl font-bold mb-4 text-purple-600 dark:text-purple-300"
         >
-          {#if plan.Popular}
-            <span
-              class="bg-indigo-500 text-white px-3 py-1 tracking-widest text-xs absolute right-0 top-0 rounded-bl uppercase"
-              >Popular</span
-            >
-          {/if}
-          <div
-            class="px-2 text-center h-48 flex flex-col items-center justify-center"
+          STARTER
+        </h2>
+        <p class="text-5xl font-bold mb-4">Free</p>
+        <p class="mb-6 text-gray-600 dark:text-gray-400">
+          Perfect for small teams just getting started
+        </p>
+        {#if $user.rank && $user.rank !== 'GUEST'}
+          <p
+            class="w-full py-3 px-6 mb-8 text-green-600 dark:text-lime-400 text-center font-bold"
           >
-            <h3 class="tracking-widest uppercase">{plan.Name}</h3>
-            <h2
-              class="text-5xl text-gray-600 dark:text-gray-100 font-medium leading-none mb-4 mt-2"
-            >
-              {#if plan.Price.Free}
-                Free
-              {:else}
-                {#if selectedPaymentPeriod === 'month'}${plan.Price
-                    .Month}{:else}
-                  ${plan.Price.Year}{/if}
-                <span class="text-gray-600 dark:text-gray-300 text-base ms-1"
-                  >{#if selectedPaymentPeriod === 'month'}/mo{:else}/yr{/if}</span
-                >
-              {/if}
-            </h2>
-            <span class="text-sm text-gray-600 dark:text-gray-300"
-              >{plan.Price.Subtext}</span
-            >
-          </div>
-          <div>
-            {#each plan.Features as feature, idx}
-              <p
-                class="{idx % 2
-                  ? 'text-gray-600 dark:text-gray-300'
-                  : 'bg-gray-100 dark:bg-gray-800'} h-12 px-2 flex items-center justify-start text-center justify-center {idx ===
-                0
-                  ? '-mt-px border-t border-gray-300 dark:border-gray-700'
-                  : ''}"
-              >
-                {#if feature.Header}
-                  <span
-                    class="text-lg font-semibold {feature.ColorClass} lg:hidden"
-                    >{feature.Name}</span
-                  >
-                {:else}
-                  {#if feature.Included}
-                    <Checkmark />
-                  {:else}
-                    <Crossmark />
-                  {/if}
-                  <span class="lg:hidden ms-2">{feature.Name}</span>
-                {/if}
-              </p>
-            {/each}
-          </div>
-          <div
-            class="border-t border-gray-300 dark:border-gray-700 p-6 text-center rounded-bl-lg"
-          >
-            {#if plan.Price.Free}
-              {#if $user.rank && $user.rank !== 'GUEST'}
-                <p class="text-green-600 dark:text-lime-400 p-2 font-bold">
-                  Already registered.
-                </p>
-              {:else}
-                <a
-                  href="{appRoutes.register}/subscription"
-                  class="flex items-center mt-auto text-white bg-indigo-500 border-0 py-2 px-4 w-full focus:outline-none hover:bg-indigo-600 rounded"
-                  >Register
-                  <ArrowRight class="h-4 w-4" />
-                </a>
-              {/if}
-            {:else}
-              <SubscribeButton
-                planEnabled="{plan.Enabled}"
-                subscribeLink="{selectedPaymentPeriod === 'month'
-                  ? plan.Subscribe.MonthLink
-                  : plan.Subscribe.YearLink}"
-              />
-            {/if}
-          </div>
-        </div>
-      {/each}
-    </div>
-  </div>
-</section>
-
-<section
-  class="bg-gray-300 dark:bg-gray-800 text-gray-800 dark:text-gray-300 py-12"
->
-  <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-    <div class="grid grid-cols-2 gap-8">
-      <div>
-        <div>
-          <h3
-            class="inline-flex items-center text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight"
-          >
-            <ShieldCheck class="w-8 h-8" />
-            <span class="ps-2">Self-hosted Thunderdome</span>
-          </h3>
-        </div>
-        <div class="mt-4 text-xl text-gray-700 dark:text-gray-400">
-          Deploy Thunderdome on your own infrastructure in less than 10 minutes.<br
-          />
-          Start planning for sprints fast and securely to move your projects forward.
-        </div>
-
-        <div class="mt-6">
+            Already registered.
+          </p>
+        {:else}
           <a
-            class="inline-block font-semibold py-3 px-4 border border-transparent text-white bg-blue-500 dark:bg-sky-400 rounded
-                        hover:bg-transparent dark:hover:bg-transparent dark:text-gray-800 hover:text-blue-500 dark:hover:text-sky-400
-                        hover:border-blue-500 dark:hover:border-sky-400"
-            href="{RepoURL}#running-in-production"
-            target="_blank"
-          >
-            Get started
-            <ArrowRight class="h-4 w-4 inline" />
+            href="{appRoutes.register}/subscription"
+            class="w-full inline-block text-center bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-bold py-3 px-6 rounded-full mb-8 hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300"
+            >Register
           </a>
+        {/if}
+        <ul class="space-y-3">
+          <li class="flex items-center">🚀 Poker Planning</li>
+          <li class="flex items-center">🔄 Sprint Retrospectives</li>
+          <li class="flex items-center">🗺️ Story Mapping</li>
+          <li class="flex items-center">📅 Async Daily Stand-ups</li>
+          <li class="flex items-center">👥 No User Limits</li>
+        </ul>
+      </PlanBox>
+
+      <!-- Individual Plan -->
+      {#if AppConfig.Subscription.Individual.Enabled}
+        <PlanBox>
+          <h2 class="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-300">
+            Individual
+          </h2>
+          <p class="text-5xl font-bold mb-4">
+            ${AppConfig.Subscription.Individual[
+              `${
+                selectedPaymentPeriod === 'month' ? 'MonthPrice' : 'YearPrice'
+              }`
+            ]}
+            &nbsp;<span class="text-2xl"
+              >/{selectedPaymentPeriod === 'month' ? 'mo' : 'yr'}</span
+            >
+          </p>
+          <p class="mb-6 text-gray-600 dark:text-gray-400">
+            Ideal for growing teams and professionals
+          </p>
+          <SubscribeButton>
+            <a
+              class="w-full inline-block text-center bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-full mb-8 hover:from-blue-600 hover:to-purple-700 transition duration-300"
+              href="{selectedPaymentPeriod === 'month'
+                ? AppConfig.Subscription.Individual.MonthCheckoutLink
+                : AppConfig.Subscription.Individual.YearCheckoutLink}"
+              target="_blank"
+            >
+              Subscribe Now
+            </a>
+          </SubscribeButton>
+          <ul class="space-y-3">
+            <li class="flex items-center">✨ All Starter Features</li>
+            <li class="flex items-center">🔗 Import stories from Jira Cloud</li>
+            <li class="flex items-center">
+              🔗 Import stories from other sessions or even Storyboards
+            </li>
+            <li class="flex items-center">
+              ✅ See previous check-in during today's stand-up
+            </li>
+          </ul>
+        </PlanBox>
+      {/if}
+
+      <!-- Team Plan -->
+      {#if AppConfig.Subscription.Team.Enabled}
+        <PlanBoxRecommended>
+          <h2
+            class="text-2xl font-bold mb-4 text-purple-600 dark:text-purple-300"
+          >
+            TEAM
+          </h2>
+          <p class="text-5xl font-bold mb-4">
+            ${AppConfig.Subscription.Team[
+              `${
+                selectedPaymentPeriod === 'month' ? 'MonthPrice' : 'YearPrice'
+              }`
+            ]}
+            &nbsp;<span class="text-2xl"
+              >/{selectedPaymentPeriod === 'month' ? 'mo' : 'yr'}</span
+            >
+          </p>
+          <p class="mb-6 text-gray-700 dark:text-gray-300">
+            Empower your entire team with premium features
+          </p>
+          <SubscribeButton>
+            <a
+              class="w-full inline-block text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-full mb-8 hover:from-purple-600 hover:to-pink-600 transition duration-300 transform hover:-translate-y-1"
+              href="{selectedPaymentPeriod === 'month'
+                ? AppConfig.Subscription.Team.MonthCheckoutLink
+                : AppConfig.Subscription.Team.YearCheckoutLink}"
+              target="_blank"
+            >
+              Subscribe Now
+            </a>
+          </SubscribeButton>
+          <ul class="space-y-3">
+            <li class="flex items-center">🌟 All Individual Features</li>
+            <li class="flex items-center">📊 Custom Poker Estimation Scales</li>
+            <li class="flex items-center">
+              🔄 Review open action items from previous retrospectives
+            </li>
+          </ul>
+        </PlanBoxRecommended>
+      {/if}
+
+      <!-- Organization Plan -->
+      {#if AppConfig.Subscription.Organization.Enabled}
+        <PlanBox>
+          <h2
+            class="text-2xl font-bold mb-4 text-green-600 dark:text-green-300"
+          >
+            Organization
+          </h2>
+          <p class="text-5xl font-bold mb-4">
+            ${AppConfig.Subscription.Organization[
+              `${
+                selectedPaymentPeriod === 'month' ? 'MonthPrice' : 'YearPrice'
+              }`
+            ]}
+            &nbsp;<span class="text-2xl"
+              >/{selectedPaymentPeriod === 'month' ? 'mo' : 'yr'}</span
+            >
+          </p>
+          <p class="mb-6 text-gray-600 dark:text-gray-400">
+            Cost savings for companies with multiple teams
+          </p>
+          <SubscribeButton>
+            <a
+              class="w-full inline-block text-center bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-3 px-6 rounded-full mb-8 hover:from-green-600 hover:to-blue-600 transition duration-300"
+              href="{selectedPaymentPeriod === 'month'
+                ? AppConfig.Subscription.Organization.MonthCheckoutLink
+                : AppConfig.Subscription.Organization.YearCheckoutLink}"
+              target="_blank"
+            >
+              Subscribe Now
+            </a>
+          </SubscribeButton>
+          <ul class="space-y-3">
+            <li class="flex items-center">💼 All Team Features</li>
+          </ul>
+        </PlanBox>
+      {/if}
+    </div>
+
+    <div class="mt-24 mb-16">
+      <div
+        class="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-700 dark:to-purple-800 rounded-3xl overflow-hidden shadow-2xl"
+      >
+        <div class="md:flex">
+          <div class="md:w-1/2 p-12">
+            <h2 class="text-4xl font-bold text-white mb-6">
+              <ShieldCheck class="w-8 h-8 inline" />
+              Self-Hosted Thunderdome
+            </h2>
+            <p class="text-xl text-indigo-100 mb-8">
+              Deploy Thunderdome on your own infrastructure. Perfect for teams
+              that require complete control over their data and customization.
+            </p>
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-center text-white">
+                <Check class="inline" />
+                Full Control Over Your Data
+              </li>
+              <li class="flex items-center text-white">
+                <Check class="inline" />
+                Customizable to Your Needs
+              </li>
+            </ul>
+            <div class="flex space-x-4">
+              <a
+                href="{RepoURL}#running-in-production"
+                target="_blank"
+                class="bg-white text-indigo-600 hover:bg-indigo-100 font-bold py-3 px-6 rounded-full transition duration-300"
+                >Get Started</a
+              >
+            </div>
+          </div>
+          <div class="md:w-1/2 p-12 flex items-center justify-center">
+            <div class="relative w-full h-full">
+              <div
+                class="absolute inset-0 bg-white opacity-10 rounded-full transform rotate-12 scale-110"
+              ></div>
+              <!--              <img-->
+              <!--                      src="/api/placeholder/600/400"-->
+              <!--                      alt="Self-hosted Thunderdome"-->
+              <!--                      class="relative z-10 w-full h-auto rounded-lg shadow-lg"-->
+              <!--              />-->
+            </div>
+          </div>
         </div>
       </div>
-      <div></div>
     </div>
   </div>
-</section>
+</div>
