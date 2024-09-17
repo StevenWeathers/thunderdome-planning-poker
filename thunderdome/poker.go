@@ -172,4 +172,8 @@ type PokerDataSvc interface {
 	DeleteOrganizationEstimationScale(ctx context.Context, orgID string, scaleID string) error
 	// DeleteTeamEstimationScale deletes a team's estimation scale by its ID
 	DeleteTeamEstimationScale(ctx context.Context, teamID string, scaleID string) error
+	// UpdateOrganizationEstimationScale updates an existing organization estimation scale
+	UpdateOrganizationEstimationScale(ctx context.Context, scale *EstimationScale) (*EstimationScale, error)
+	// UpdateTeamEstimationScale updates an existing team estimation scale
+	UpdateTeamEstimationScale(ctx context.Context, scale *EstimationScale) (*EstimationScale, error)
 }

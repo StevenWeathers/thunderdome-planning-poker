@@ -602,7 +602,7 @@ func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
 			IsPublic:     false,
 		}
 
-		updatedScale, err := s.PokerDataSvc.UpdateEstimationScale(ctx, &es)
+		updatedScale, err := s.PokerDataSvc.UpdateTeamEstimationScale(ctx, &es)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleEstimationScaleUpdate error", zap.Error(err),
 				zap.String("scale_id", ID),
@@ -669,7 +669,7 @@ func (s *Service) handleOrganizationEstimationScaleUpdate() http.HandlerFunc {
 			IsPublic:       false,
 		}
 
-		updatedScale, err := s.PokerDataSvc.UpdateEstimationScale(ctx, &es)
+		updatedScale, err := s.PokerDataSvc.UpdateOrganizationEstimationScale(ctx, &es)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleEstimationScaleUpdate error", zap.Error(err),
 				zap.String("scale_id", ID),

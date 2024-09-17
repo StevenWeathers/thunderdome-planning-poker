@@ -184,6 +184,60 @@ func (d *Service) UpdateEstimationScale(ctx context.Context, scale *thunderdome.
 	return scale, nil
 }
 
+// UpdateTeamEstimationScale updates an existing team estimation scale
+func (d *Service) UpdateTeamEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error) {
+	query := `
+		UPDATE thunderdome.estimation_scale
+		SET name = $2, description = $3, scale_type = $4, values = $5, is_public = $6, 
+			default_scale = $8, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $1 AND team_id = $7
+		RETURNING updated_at;
+	`
+	err := d.DB.QueryRowContext(ctx, query,
+		scale.ID,
+		scale.Name,
+		scale.Description,
+		scale.ScaleType,
+		scale.Values,
+		scale.IsPublic,
+		scale.TeamID,
+		scale.DefaultScale,
+	).Scan(&scale.UpdatedAt)
+
+	if err != nil {
+		return nil, fmt.Errorf("error updating estimation scale: %v", err)
+	}
+
+	return scale, nil
+}
+
+// UpdateOrganizationEstimationScale updates an existing organization estimation scale
+func (d *Service) UpdateOrganizationEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error) {
+	query := `
+		UPDATE thunderdome.estimation_scale
+		SET name = $2, description = $3, scale_type = $4, values = $5, is_public = $6, 
+			default_scale = $8, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $1 AND organization_id = $7
+		RETURNING updated_at;
+	`
+	err := d.DB.QueryRowContext(ctx, query,
+		scale.ID,
+		scale.Name,
+		scale.Description,
+		scale.ScaleType,
+		scale.Values,
+		scale.IsPublic,
+		scale.OrganizationID,
+		scale.DefaultScale,
+	).Scan(&scale.UpdatedAt)
+
+	if err != nil {
+		return nil, fmt.Errorf("error updating estimation scale: %v", err)
+	}
+
+	return scale, nil
+}
+
 // DeleteEstimationScale deletes an estimation scale
 func (d *Service) DeleteEstimationScale(ctx context.Context, scaleID string) error {
 	query := `DELETE FROM thunderdome.estimation_scale WHERE id = $1;`
