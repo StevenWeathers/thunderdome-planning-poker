@@ -118,23 +118,68 @@ func (d *Service) UserResetPassword(ctx context.Context, ResetID string, UserPas
 		return "", "", hashErr
 	}
 
-	UserErr := d.DB.QueryRowContext(ctx, `
-		SELECT
-			w.name, w.email
-		FROM thunderdome.user_reset wr
-		LEFT JOIN thunderdome.users w ON w.id = wr.user_id
-		WHERE wr.reset_id = $1;
-		`,
-		ResetID,
-	).Scan(&name, &email)
-	if UserErr != nil {
-		return "", "", fmt.Errorf("get user for password reset confirmation email error: %v", UserErr)
+	// Start a transaction
+	tx, err := d.DB.Begin()
+	if err != nil {
+		return "", "", fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback() // Rollback if not committed
+
+	// Get the matched user ID
+	var matchedUserID string
+	err = tx.QueryRow(`
+        SELECT w.id, w.name, w.email
+        FROM thunderdome.user_reset wr
+        LEFT JOIN thunderdome.users w ON w.id = wr.user_id
+        WHERE wr.reset_id = $1 AND NOW() < wr.expire_date
+    `, ResetID).Scan(&matchedUserID, &name, &email)
+
+	if err == sql.ErrNoRows {
+		// Attempt to delete in case reset record expired
+		_, delErr := tx.Exec(`DELETE FROM thunderdome.user_reset WHERE reset_id = $1`, ResetID)
+		if delErr != nil {
+			d.Logger.Ctx(ctx).Error("failed to delete expired reset record: %w", zap.Error(delErr))
+		}
+		return "", "", fmt.Errorf("valid Reset ID not found")
+	} else if err != nil {
+		return "", "", fmt.Errorf("failed to query for matched user: %w", err)
 	}
 
-	if _, err := d.DB.ExecContext(ctx,
-		`CALL thunderdome.user_password_reset($1, $2)`,
-		ResetID, hashedPassword); err != nil {
-		return "", "", fmt.Errorf("user password reset query error: %v", err)
+	// Update auth_credential
+	_, err = tx.Exec(`
+        UPDATE thunderdome.auth_credential 
+        SET password = $1, updated_date = NOW() 
+        WHERE user_id = $2
+    `, hashedPassword, matchedUserID)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to update auth_credential: %w", err)
+	}
+
+	// Update users
+	_, err = tx.Exec(`
+        UPDATE thunderdome.users 
+        SET last_active = NOW(), updated_date = NOW() 
+        WHERE id = $1
+    `, matchedUserID)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to update users: %w", err)
+	}
+
+	// Delete from user_reset
+	_, err = tx.Exec(`DELETE FROM thunderdome.user_reset WHERE reset_id = $1`, ResetID)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to delete from user_reset: %w", err)
+	}
+
+	// Delete any user sessions to log the user out since password was reset
+	_, err = tx.Exec(`DELETE FROM thunderdome.user_session WHERE user_id = $1`, matchedUserID)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to delete from user_session: %w", err)
+	}
+
+	// Commit the transaction
+	if err = tx.Commit(); err != nil {
+		return "", "", fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return name.String, email.String, nil
