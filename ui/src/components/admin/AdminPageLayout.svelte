@@ -12,6 +12,7 @@
     LayoutDashboard,
     RefreshCcw,
     Settings,
+    SquareDashedKanban,
     User,
     Users,
   } from 'lucide-svelte';
@@ -104,6 +105,13 @@
       path: appRoutes.adminEstimationScales,
       icon: BarChart2,
       enabled: FeaturePoker,
+    },
+    {
+      name: 'Retro Templates',
+      label: $LL.retroTemplates(),
+      path: appRoutes.adminRetroTemplates,
+      icon: SquareDashedKanban,
+      enabled: FeatureRetro,
     },
   ];
 </script>

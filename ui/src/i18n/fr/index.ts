@@ -639,6 +639,25 @@ const fr: Translation = {
   allowCumulativeVotingLabel:
     'Allow Cumulative Voting (more than 1 vote per item group)',
   activeSubscriptions: 'Active Subscriptions',
+  retroTemplates: 'Retro Templates',
+  publicRetroTemplates: 'Public Retro Templates',
+  organizationRetroTemplates: 'Organization Retro Templates',
+  teamRetroTemplates: 'Team Retro Templates',
+  retroTemplateNamePlaceholder: 'Enter template name',
+  retroTemplateDescriptionPlaceholder: 'Enter template description',
+  format: 'Format',
+  retroTemplateIsPublic: 'Make this template public',
+  retroTemplateSave: 'Save Template',
+  retroTemplateCreate: 'Create Retrospective Template',
+  retroTemplateCreateSuccess: 'Retrospective template successfully created',
+  retroTemplateCreateError: 'Error creating retrospective template',
+  retroTemplateUpdateSuccess: 'Retrospective template successfully updated',
+  retroTemplateUpdateError: 'Error updating retrospective template',
+  retroTemplateRemoveSuccess: 'Retrospective template successfully removed',
+  retroTemplateRemoveError: 'Error removing retrospective template',
+  removeRetroTemplateConfirmText:
+    'Are you sure you want to remove this retrospective template?',
+  removeRetroTemplate: 'Remove Retrospective Template',
 };
 
 export default fr;
