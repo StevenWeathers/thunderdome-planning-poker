@@ -393,7 +393,7 @@ func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 			return
 		}
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		var template = retroTemplateRequestBody{}
+		var template = privateRetroTemplateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -458,7 +458,7 @@ func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 			return
 		}
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		var template = retroTemplateRequestBody{}
+		var template = privateRetroTemplateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -531,7 +531,7 @@ func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
 			return
 		}
 
-		var template = retroTemplateRequestBody{}
+		var template = privateRetroTemplateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -603,7 +603,7 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 			return
 		}
 
-		var template = retroTemplateRequestBody{}
+		var template = privateRetroTemplateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
