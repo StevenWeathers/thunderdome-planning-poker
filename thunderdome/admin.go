@@ -34,6 +34,10 @@ type ApplicationStats struct {
 	UserSubscriptionActiveCount      int `json:"userSubscriptionActiveCount"`
 	TeamSubscriptionActiveCount      int `json:"teamSubscriptionActiveCount"`
 	OrgSubscriptionActiveCount       int `json:"orgSubscriptionActiveCount"`
+	RetroTemplateCount               int `json:"retroTemplateCount"`
+	OrganizationRetroTemplateCount   int `json:"organizationRetroTemplateCount"`
+	TeamRetroTemplateCount           int `json:"teamRetroTemplateCount"`
+	PublicRetroTemplateCount         int `json:"publicRetroTemplateCount"`
 }
 
 type AdminDataSvc interface {

@@ -11081,10 +11081,16 @@ const docTemplate = `{
                 "organizationEstimationScaleCount": {
                     "type": "integer"
                 },
+                "organizationRetroTemplateCount": {
+                    "type": "integer"
+                },
                 "planCount": {
                     "type": "integer"
                 },
                 "publicEstimationScaleCount": {
+                    "type": "integer"
+                },
+                "publicRetroTemplateCount": {
                     "type": "integer"
                 },
                 "registeredUserCount": {
@@ -11097,6 +11103,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "retroItemCount": {
+                    "type": "integer"
+                },
+                "retroTemplateCount": {
                     "type": "integer"
                 },
                 "storyboardColumnCount": {
@@ -11121,6 +11130,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "teamEstimationScaleCount": {
+                    "type": "integer"
+                },
+                "teamRetroTemplateCount": {
                     "type": "integer"
                 },
                 "teamSubscriptionActiveCount": {

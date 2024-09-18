@@ -679,9 +679,13 @@ definitions:
         type: integer
       organizationEstimationScaleCount:
         type: integer
+      organizationRetroTemplateCount:
+        type: integer
       planCount:
         type: integer
       publicEstimationScaleCount:
+        type: integer
+      publicRetroTemplateCount:
         type: integer
       registeredUserCount:
         type: integer
@@ -690,6 +694,8 @@ definitions:
       retroCount:
         type: integer
       retroItemCount:
+        type: integer
+      retroTemplateCount:
         type: integer
       storyboardColumnCount:
         type: integer
@@ -706,6 +712,8 @@ definitions:
       teamCount:
         type: integer
       teamEstimationScaleCount:
+        type: integer
+      teamRetroTemplateCount:
         type: integer
       teamSubscriptionActiveCount:
         type: integer
