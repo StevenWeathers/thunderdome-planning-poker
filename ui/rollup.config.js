@@ -56,7 +56,7 @@ module.exports = {
 
     html({
       title: 'Thunderdome - Open Source Agile Planning Poker app',
-      publicPath: '{{.AppConfig.PathPrefix}}/static/',
+      publicPath: '{{.UIConfig.AppConfig.PathPrefix}}/static/',
       template
     }),
 

@@ -9,18 +9,18 @@
     <meta name="description"
           content="Thunderdome is an open source agile planning poker app that helps teams estimate story points."/>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="{{.AppConfig.PathPrefix}}/img/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{.AppConfig.PathPrefix}}/img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{.AppConfig.PathPrefix}}/img/favicon-16x16.png">
-    <link rel="manifest" href="{{.AppConfig.PathPrefix}}/img/site.webmanifest">
-    <link rel="mask-icon" href="{{.AppConfig.PathPrefix}}/img/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{.UIConfig.AppConfig.PathPrefix}}/img/apple-touch-icon.png" nonce="{{.Nonce}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{.UIConfig.AppConfig.PathPrefix}}/img/favicon-32x32.png" nonce="{{.Nonce}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{.UIConfig.AppConfig.PathPrefix}}/img/favicon-16x16.png" nonce="{{.Nonce}}">
+    <link rel="manifest" href="{{.UIConfig.AppConfig.PathPrefix}}/img/site.webmanifest" nonce="{{.Nonce}}">
+    <link rel="mask-icon" href="{{.UIConfig.AppConfig.PathPrefix}}/img/safari-pinned-tab.svg" color="#5bbad5" nonce="{{.Nonce}}">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&display=swap" rel="stylesheet">
-    <script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" nonce="{{.Nonce}}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin nonce="{{.Nonce}}">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&display=swap" rel="stylesheet" nonce="{{.Nonce}}">
+    <script nonce="{{.Nonce}}">
       function setTheme() {
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -41,22 +41,22 @@
         Please enable it to continue.
     </strong>
 </noscript>
-{{if .AnalyticsEnabled}}
+{{if .UIConfig.AnalyticsEnabled}}
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{.AnalyticsID}}"></script>
-<script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{.UIConfig.AnalyticsID}}" nonce="{{.Nonce}}"></script>
+<script nonce="{{.Nonce}}">
   window.dataLayer = window.dataLayer || []
 
   function gtag () {dataLayer.push(arguments)}
 
   gtag('js', new Date())
 
-  gtag('config', '{{.AnalyticsID}}')
+  gtag('config', '{{.UIConfig.AnalyticsID}}')
 </script>
 {{end}}
-<script>
-  appConfig = {{.AppConfig}}
-  ActiveAlerts = {{.ActiveAlerts}}
+<script nonce="{{.Nonce}}">
+  appConfig = {{.UIConfig.AppConfig}}
+  ActiveAlerts = {{.UIConfig.ActiveAlerts}}
 </script>
 ${scripts}
 </body>

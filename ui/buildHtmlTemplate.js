@@ -21,14 +21,14 @@ module.exports = async ({
   const scripts = (files.js || [])
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script)
-      return `<script src="${publicPath}${fileName}"${attrs}></script>`
+      return `<script src="${publicPath}${fileName}"${attrs} nonce="{{.Nonce}}"></script>`
     })
     .join('\n')
 
   const links = (files.css || [])
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.link)
-      return `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs}>`
+      return `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs} nonce="{{.Nonce}}">`
     })
     .join('\n')
 

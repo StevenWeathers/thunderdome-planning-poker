@@ -328,3 +328,16 @@ func (s *Service) getIndexTemplate(FSS fs.FS) *template.Template {
 
 	return tmpl
 }
+
+func getWebsocketConnectSrc(SecureProtocol bool, WebsocketSubdomain string, AppDomain string) string {
+	wcs := "wss://"
+	if !SecureProtocol {
+		wcs = "ws://"
+	}
+	sub := WebsocketSubdomain
+	if sub != "" {
+		sub = fmt.Sprintf("%s.", sub)
+	}
+
+	return fmt.Sprintf("%s%s%s", wcs, sub, AppDomain)
+}

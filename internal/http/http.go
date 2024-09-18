@@ -9,6 +9,9 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/unrolled/secure"
+	"github.com/unrolled/secure/cspbuilder"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/oauth"
 
 	"github.com/gorilla/mux"
@@ -40,10 +43,44 @@ import (
 // @name                        X-API-Key
 func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
+
 	var a = &apiService
 	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
+	// Content Security Policy
+	cspBuilder := cspbuilder.Builder{
+		Directives: map[string][]string{
+			cspbuilder.DefaultSrc: {"self", fmt.Sprintf("*.%s", a.Config.AppDomain)},
+			// @TODO - remove inline styles in svelte components to improve security by using nonce
+			cspbuilder.StyleSrc:  {"'self'", "'unsafe-inline'", "https://fonts.googleapis.com"},
+			cspbuilder.ScriptSrc: {"$NONCE"},
+			cspbuilder.FontSrc:   {"'self'", "https://fonts.gstatic.com"},
+			cspbuilder.ImgSrc:    {"data:", "*"},
+			cspbuilder.ConnectSrc: {"'self'",
+				getWebsocketConnectSrc(a.Config.SecureProtocol, a.Config.WebsocketSubdomain, a.Config.AppDomain),
+				"https://*.google-analytics.com",
+				"https://*.analytics.google.com",
+				"https://*.googletagmanager.com",
+				"https://*.google.com",
+			},
+			cspbuilder.ManifestSrc: {"'self'"},
+		},
+	}
+
+	secureMiddleware := secure.New(secure.Options{
+		STSSeconds:            31536000,
+		STSIncludeSubdomains:  true,
+		STSPreload:            true,
+		ForceSTSHeader:        true,
+		FrameDeny:             true,
+		ContentTypeNosniff:    true,
+		BrowserXssFilter:      true,
+		ContentSecurityPolicy: cspBuilder.MustBuild(),
+		ReferrerPolicy:        "strict-origin-when-cross-origin",
+	})
+
 	a.Router = mux.NewRouter()
 	a.Router.Use(a.panicRecovery)
+	a.Router.Use(secureMiddleware.Handler)
 
 	if apiService.Config.PathPrefix != "" {
 		a.Router = a.Router.PathPrefix(apiService.Config.PathPrefix).Subrouter()
@@ -471,12 +508,22 @@ func (s *Service) handleIndex(FSS fs.FS, uiConfig thunderdome.UIConfig) http.Han
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		uiConfig.ActiveAlerts = ActiveAlerts // get the latest alerts from memory
+		nonce := secure.CSPNonce(r.Context())
 
 		if s.Config.EmbedUseOS {
 			tmpl = s.getIndexTemplate(FSS)
 		}
 
-		err := tmpl.Execute(w, uiConfig)
+		type templateData struct {
+			UIConfig thunderdome.UIConfig
+			Nonce    string
+		}
+		td := templateData{
+			UIConfig: uiConfig,
+			Nonce:    nonce,
+		}
+
+		err := tmpl.Execute(w, td)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
