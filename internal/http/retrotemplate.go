@@ -11,14 +11,23 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
+type retroTemplateFormatRequestBody struct {
+	Columns []struct {
+		Name  string `json:"name" validate:"required"`
+		Label string `json:"label" validate:"required"`
+		Color string `json:"color" validate:"omitempty,oneof=red green blue yellow purple orange teal"`
+		Icon  string `json:"icon" validate:"omitempty,oneof=smiley frown angry question"`
+	} `json:"columns" validate:"required,min=2,max=5,dive,required"`
+}
+
 type retroTemplateRequestBody struct {
-	Name            string                           `json:"name" validate:"required"`
-	Description     string                           `json:"description"`
-	Format          *thunderdome.RetroTemplateFormat `json:"format" validate:"required"`
-	IsPublic        bool                             `json:"isPublic"`
-	DefaultTemplate bool                             `json:"defaultTemplate"`
-	OrganizationId  *string                          `json:"organizationId"`
-	TeamId          *string                          `json:"teamId"`
+	Name            string                         `json:"name" validate:"required"`
+	Description     string                         `json:"description"`
+	Format          retroTemplateFormatRequestBody `json:"format" validate:"required"`
+	IsPublic        bool                           `json:"isPublic"`
+	DefaultTemplate bool                           `json:"defaultTemplate"`
+	OrganizationId  *string                        `json:"organizationId"`
+	TeamId          *string                        `json:"teamId"`
 }
 
 // handleGetRetroTemplates gets a list of retro templates
@@ -93,7 +102,7 @@ func (s *Service) handleRetroTemplateCreate() http.HandlerFunc {
 		newTemplate := &thunderdome.RetroTemplate{
 			Name:            template.Name,
 			Description:     template.Description,
-			Format:          template.Format,
+			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			IsPublic:        template.IsPublic,
 			DefaultTemplate: template.DefaultTemplate,
 			CreatedBy:       SessionUserID,
@@ -161,7 +170,7 @@ func (s *Service) handleRetroTemplateUpdate() http.HandlerFunc {
 			Id:              ID,
 			Name:            template.Name,
 			Description:     template.Description,
-			Format:          template.Format,
+			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			IsPublic:        template.IsPublic,
 			DefaultTemplate: template.DefaultTemplate,
 			OrganizationId:  template.OrganizationId,
@@ -281,10 +290,10 @@ func (s *Service) handleGetPublicRetroTemplates() http.HandlerFunc {
 }
 
 type privateRetroTemplateRequestBody struct {
-	Name            string                           `json:"name" validate:"required"`
-	Description     string                           `json:"description"`
-	Format          *thunderdome.RetroTemplateFormat `json:"format" validate:"required"`
-	DefaultTemplate bool                             `json:"defaultTemplate"`
+	Name            string                         `json:"name" validate:"required"`
+	Description     string                         `json:"description"`
+	Format          retroTemplateFormatRequestBody `json:"format" validate:"required"`
+	DefaultTemplate bool                           `json:"defaultTemplate"`
 }
 
 // handleGetOrganizationRetroTemplates gets a list of retro templates for an organization
@@ -415,7 +424,7 @@ func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 		newTemplate := &thunderdome.RetroTemplate{
 			Name:            template.Name,
 			Description:     template.Description,
-			Format:          template.Format,
+			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			IsPublic:        false,
 			DefaultTemplate: template.DefaultTemplate,
 			CreatedBy:       SessionUserID,
@@ -480,7 +489,7 @@ func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 		newTemplate := &thunderdome.RetroTemplate{
 			Name:            template.Name,
 			Description:     template.Description,
-			Format:          template.Format,
+			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			IsPublic:        false,
 			DefaultTemplate: template.DefaultTemplate,
 			CreatedBy:       SessionUserID,
@@ -554,7 +563,7 @@ func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
 			Id:              ID,
 			Name:            template.Name,
 			Description:     template.Description,
-			Format:          template.Format,
+			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			DefaultTemplate: template.DefaultTemplate,
 			TeamId:          &TeamID,
 		}
@@ -626,7 +635,7 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 			Id:              ID,
 			Name:            template.Name,
 			Description:     template.Description,
-			Format:          template.Format,
+			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			DefaultTemplate: template.DefaultTemplate,
 			TeamId:          &OrgID,
 		}

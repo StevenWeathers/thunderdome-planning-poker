@@ -194,8 +194,9 @@ func (d *Service) GetTemplateById(ctx context.Context, templateId string) (*thun
 // CreateTemplate creates a new retro template
 func (d *Service) CreateTemplate(ctx context.Context, template *thunderdome.RetroTemplate) error {
 	_, err := d.DB.ExecContext(ctx,
-		`INSERT INTO thunderdome.retro_template (name, description, format, is_public, default_template, created_by, organization_id, team_id)
-		VALUES ($1, $2, $3, $4, $5, NULLIF($6, '')::uuid, NULLIF($7, '')::uuid);`,
+		`INSERT INTO thunderdome.retro_template (
+			name, description, format, is_public, default_template, created_by, organization_id, team_id)
+		VALUES ($1, $2, $3, $4, $5, $6, NULLIF($7, '')::uuid, NULLIF($8, '')::uuid);`,
 		template.Name,
 		template.Description,
 		template.Format,

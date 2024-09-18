@@ -1,6 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 
+ALTER TABLE thunderdome.retro_template DROP COLUMN code;
+
 -- Add the default_template column
 ALTER TABLE thunderdome.retro_template
 ADD COLUMN default_template BOOLEAN NOT NULL DEFAULT FALSE;
@@ -57,5 +59,7 @@ DROP FUNCTION IF EXISTS enforce_single_default_template();
 -- Remove the default_template column
 ALTER TABLE thunderdome.retro_template
 DROP COLUMN IF EXISTS default_template;
+
+ALTER TABLE thunderdome.retro_template ADD COLUMN code VARCHAR(32) NOT NULL DEFAULT 'code';
 
 -- +goose StatementEnd

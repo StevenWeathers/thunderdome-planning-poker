@@ -338,7 +338,7 @@ definitions:
       description:
         type: string
       format:
-        $ref: '#/definitions/thunderdome.RetroTemplateFormat'
+        $ref: '#/definitions/http.retroTemplateFormatRequestBody'
       name:
         type: string
     required:
@@ -399,6 +399,42 @@ definitions:
     - maxVotes
     - retroName
     type: object
+  http.retroTemplateFormatRequestBody:
+    properties:
+      columns:
+        items:
+          properties:
+            color:
+              enum:
+              - red
+              - green
+              - blue
+              - yellow
+              - purple
+              - orange
+              - teal
+              type: string
+            icon:
+              enum:
+              - smiley
+              - frown
+              - angry
+              - question
+              type: string
+            label:
+              type: string
+            name:
+              type: string
+          required:
+          - label
+          - name
+          type: object
+        maxItems: 5
+        minItems: 2
+        type: array
+    required:
+    - columns
+    type: object
   http.retroTemplateRequestBody:
     properties:
       defaultTemplate:
@@ -406,7 +442,7 @@ definitions:
       description:
         type: string
       format:
-        $ref: '#/definitions/thunderdome.RetroTemplateFormat'
+        $ref: '#/definitions/http.retroTemplateFormatRequestBody'
       isPublic:
         type: boolean
       name:
@@ -1142,17 +1178,19 @@ definitions:
     properties:
       columns:
         items:
-          properties:
-            color:
-              type: string
-            icon:
-              type: string
-            label:
-              type: string
-            name:
-              type: string
-          type: object
+          $ref: '#/definitions/thunderdome.RetroTemplateFormatColumn'
         type: array
+    type: object
+  thunderdome.RetroTemplateFormatColumn:
+    properties:
+      color:
+        type: string
+      icon:
+        type: string
+      label:
+        type: string
+      name:
+        type: string
     type: object
   thunderdome.RetroUser:
     properties:

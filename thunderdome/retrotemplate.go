@@ -20,14 +20,16 @@ type RetroTemplate struct {
 	UpdatedAt       time.Time            `json:"updatedAt" db:"updated_at"`
 }
 
+type RetroTemplateFormatColumn struct {
+	Name  string `json:"name"`
+	Label string `json:"label"`
+	Color string `json:"color"`
+	Icon  string `json:"icon"`
+}
+
 // RetroTemplateFormat is the format of a retro template
 type RetroTemplateFormat struct {
-	Columns []struct {
-		Name  string `json:"name"`
-		Label string `json:"label"`
-		Color string `json:"color"`
-		Icon  string `json:"icon"`
-	} `json:"columns"`
+	Columns []RetroTemplateFormatColumn `json:"columns"`
 }
 
 type RetroTemplateDataSvc interface {

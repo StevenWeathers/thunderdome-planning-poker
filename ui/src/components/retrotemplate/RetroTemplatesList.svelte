@@ -110,7 +110,7 @@
         {#if isAdmin && !teamId && !organizationId}
           <HeadCol>{$LL.isPublic()}</HeadCol>
         {/if}
-        <HeadCol>{$LL.defaultTemplate()}</HeadCol>
+        <HeadCol>{$LL.default()}</HeadCol>
         <HeadCol type="action">
           <span class="sr-only">{$LL.actions()}</span>
         </HeadCol>

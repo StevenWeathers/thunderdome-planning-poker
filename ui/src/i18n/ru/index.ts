@@ -623,7 +623,7 @@ const ru: Translation = {
   yes: 'Yes',
   no: 'No',
   isPublic: 'Public',
-  defaultScale: 'Default',
+  default: 'Default',
   publicEstimationScales: 'Public Estimation Scales',
   organizationEstimationScales: 'Organization Estimation Scales',
   teamEstimationScales: 'Team Estimation Scales',
@@ -649,6 +649,7 @@ const ru: Translation = {
   removeRetroTemplateConfirmText:
     'Are you sure you want to remove this retrospective template?',
   removeRetroTemplate: 'Remove Retrospective Template',
+  retroTemplateDefault: 'Set as default template',
 };
 
 export default ru;

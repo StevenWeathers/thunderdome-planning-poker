@@ -96,7 +96,7 @@
       />
     </div>
 
-    <ColumnForm format="{format}" />
+    <ColumnForm bind:format="{format}" />
 
     {#if isAdmin && !organizationId && !teamId}
       <div class="mb-4">

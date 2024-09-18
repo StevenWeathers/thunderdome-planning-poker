@@ -10589,7 +10589,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "format": {
-                    "$ref": "#/definitions/thunderdome.RetroTemplateFormat"
+                    "$ref": "#/definitions/http.retroTemplateFormatRequestBody"
                 },
                 "name": {
                     "type": "string"
@@ -10669,6 +10669,55 @@ const docTemplate = `{
                 }
             }
         },
+        "http.retroTemplateFormatRequestBody": {
+            "type": "object",
+            "required": [
+                "columns"
+            ],
+            "properties": {
+                "columns": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "minItems": 2,
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "label",
+                            "name"
+                        ],
+                        "properties": {
+                            "color": {
+                                "type": "string",
+                                "enum": [
+                                    "red",
+                                    "green",
+                                    "blue",
+                                    "yellow",
+                                    "purple",
+                                    "orange",
+                                    "teal"
+                                ]
+                            },
+                            "icon": {
+                                "type": "string",
+                                "enum": [
+                                    "smiley",
+                                    "frown",
+                                    "angry",
+                                    "question"
+                                ]
+                            },
+                            "label": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "http.retroTemplateRequestBody": {
             "type": "object",
             "required": [
@@ -10683,7 +10732,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "format": {
-                    "$ref": "#/definitions/thunderdome.RetroTemplateFormat"
+                    "$ref": "#/definitions/http.retroTemplateFormatRequestBody"
                 },
                 "isPublic": {
                     "type": "boolean"
@@ -11786,22 +11835,25 @@ const docTemplate = `{
                 "columns": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "color": {
-                                "type": "string"
-                            },
-                            "icon": {
-                                "type": "string"
-                            },
-                            "label": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/definitions/thunderdome.RetroTemplateFormatColumn"
                     }
+                }
+            }
+        },
+        "thunderdome.RetroTemplateFormatColumn": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
