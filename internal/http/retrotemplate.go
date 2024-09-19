@@ -13,7 +13,7 @@ import (
 
 type retroTemplateFormatRequestBody struct {
 	Columns []struct {
-		Name  string `json:"name" validate:"required"`
+		Name  string `json:"name" validate:"required,alpha,lowercase,min=1,max=16"`
 		Label string `json:"label" validate:"required"`
 		Color string `json:"color" validate:"omitempty,oneof=red green blue yellow purple orange teal"`
 		Icon  string `json:"icon" validate:"omitempty,oneof=smiley frown angry question"`

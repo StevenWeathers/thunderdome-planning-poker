@@ -10711,7 +10711,9 @@ const docTemplate = `{
                                 "type": "string"
                             },
                             "name": {
-                                "type": "string"
+                                "type": "string",
+                                "maxLength": 16,
+                                "minLength": 1
                             }
                         }
                     }

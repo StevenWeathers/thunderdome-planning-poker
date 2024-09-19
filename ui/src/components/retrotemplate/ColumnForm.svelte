@@ -36,9 +36,17 @@
   $: canAddColumn = format && format.columns.length < MAX_COLUMNS;
   $: canRemoveColumn = format && format.columns.length > MIN_COLUMNS;
 
+  function validateColumnName(name: string): string {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z]/g, '')
+      .slice(0, 16);
+  }
+
   function addColumn(event: Event) {
     event.preventDefault();
     if (newColumn.name && newColumn.label && canAddColumn) {
+      newColumn.name = validateColumnName(newColumn.name);
       format.columns = [...format.columns, { ...newColumn }];
       dispatch('update', format);
       resetNewColumn();
@@ -50,6 +58,9 @@
     field: keyof RetroTemplateColumn,
     value: string,
   ) {
+    if (field === 'name') {
+      value = validateColumnName(value);
+    }
     format.columns[index][field] = value;
     format.columns = [...format.columns];
     dispatch('update', format);
@@ -83,7 +94,7 @@
 
   <p class="text-sm text-gray-600 dark:text-gray-400">
     You must have at least {MIN_COLUMNS} columns and can have up to {MAX_COLUMNS}
-    columns.
+    columns. Column names are limited to 16 lowercase alphabetic characters.
   </p>
 
   {#each format.columns as column, index}
@@ -92,6 +103,8 @@
         bind:value="{column.name}"
         on:input="{() => updateColumn(index, 'name', column.name)}"
         placeholder="Column name"
+        maxlength="16"
+        pattern="[a-z]+"
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       />
       <input
@@ -148,6 +161,8 @@
       <input
         bind:value="{newColumn.name}"
         placeholder="Column name"
+        maxlength="16"
+        pattern="[a-z]+"
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       />
       <input

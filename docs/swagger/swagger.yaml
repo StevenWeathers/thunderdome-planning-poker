@@ -424,6 +424,8 @@ definitions:
             label:
               type: string
             name:
+              maxLength: 16
+              minLength: 1
               type: string
           required:
           - label
