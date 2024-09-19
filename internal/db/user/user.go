@@ -550,7 +550,7 @@ func (d *Service) GetUserCredential(ctx context.Context, UserID string) (*thunde
 		&c.Verified,
 		&c.MFAEnabled,
 	)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil && err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
 		return nil, fmt.Errorf("get user credential query error: %v", err)
