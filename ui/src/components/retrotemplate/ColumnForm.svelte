@@ -36,7 +36,8 @@
   $: canAddColumn = format && format.columns.length < MAX_COLUMNS;
   $: canRemoveColumn = format && format.columns.length > MIN_COLUMNS;
 
-  function addColumn() {
+  function addColumn(event: Event) {
+    event.preventDefault();
     if (newColumn.name && newColumn.label && canAddColumn) {
       format.columns = [...format.columns, { ...newColumn }];
       dispatch('update', format);

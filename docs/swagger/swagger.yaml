@@ -3557,7 +3557,7 @@ paths:
       summary: Delete Organization Estimation Scale
       tags:
       - estimation-scale
-  /organization/{organizationId}/retro-templates/{templateId}:
+  /organization/{orgId}/retro-templates/{templateId}:
     put:
       description: Updates a Organization Retro Template
       parameters:
@@ -4479,6 +4479,105 @@ paths:
       summary: Get Organization Metrics
       tags:
       - admin
+  /organizations/{orgId}/retro-templates:
+    get:
+      description: get list of retro templates for an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Retro Templates
+      tags:
+      - retroTemplate
+    post:
+      description: Creates an Organization retro template
+      parameters:
+      - description: new retro template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.privateRetroTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Retro Template
+      tags:
+      - retroTemplate
+  /organizations/{orgId}/retro-templates/{templateId}:
+    delete:
+      description: Deletes an Organization Retro Template
+      parameters:
+      - description: the retro template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Organization Retro Template
+      tags:
+      - retroTemplate
   /organizations/{orgId}/teams:
     get:
       description: Get a list of organization teams
@@ -4735,105 +4834,6 @@ paths:
       summary: Update Org User
       tags:
       - organization
-  /organizations/{organizationId}/retro-templates:
-    get:
-      description: get list of retro templates for an organization
-      parameters:
-      - description: Organization ID
-        in: path
-        name: organizationId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/thunderdome.RetroTemplate'
-                  type: array
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Get Organization Retro Templates
-      tags:
-      - retroTemplate
-    post:
-      description: Creates an Organization retro template
-      parameters:
-      - description: new retro template object
-        in: body
-        name: template
-        required: true
-        schema:
-          $ref: '#/definitions/http.privateRetroTemplateRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/thunderdome.RetroTemplate'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Create Organization Retro Template
-      tags:
-      - retroTemplate
-  /organizations/{organizationId}/retro-templates/{templateId}:
-    delete:
-      description: Deletes an Organization Retro Template
-      parameters:
-      - description: the retro template ID to delete
-        in: path
-        name: templateId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Delete Organization Retro Template
-      tags:
-      - retroTemplate
   /retro-templates/public:
     get:
       description: get list of public retro templates

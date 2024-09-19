@@ -66,13 +66,14 @@ func (d *Service) GetTemplatesByOrganization(ctx context.Context, organizationId
 	templates := make([]*thunderdome.RetroTemplate, 0)
 
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, description, format, is_public, default_template, COALESCE(created_by::text, ''), organization_id, created_at, updated_at
+		`SELECT id, name, description, format, default_template, COALESCE(created_by::text, ''), organization_id, created_at, updated_at
 		FROM thunderdome.retro_template
 		WHERE organization_id = $1;`,
 		organizationId,
 	)
 
 	if err != nil {
+		d.Logger.Ctx(ctx).Error("GetTemplatesByOrganization query error", zap.Error(err))
 		return nil, fmt.Errorf("error querying templates for organization: %v", err)
 	}
 	defer rows.Close()
@@ -85,7 +86,6 @@ func (d *Service) GetTemplatesByOrganization(ctx context.Context, organizationId
 			&t.Name,
 			&t.Description,
 			&format,
-			&t.IsPublic,
 			&t.DefaultTemplate,
 			&t.CreatedBy,
 			&t.OrganizationId,

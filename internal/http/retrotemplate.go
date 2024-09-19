@@ -301,18 +301,18 @@ type privateRetroTemplateRequestBody struct {
 // @Description  get list of retro templates for an organization
 // @Tags         retroTemplate
 // @Produce      json
-// @Param        organizationId  path  string  true  "Organization ID"
+// @Param        orgId  path  string  true  "Organization ID"
 // @Success      200  {object}  standardJsonResponse{data=[]thunderdome.RetroTemplate}
 // @Failure      400  {object}  standardJsonResponse{}
 // @Failure      500  {object}  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /organizations/{organizationId}/retro-templates [get]
+// @Router       /organizations/{orgId}/retro-templates [get]
 func (s *Service) handleGetOrganizationRetroTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
-		organizationID := vars["organizationId"]
+		organizationID := vars["orgId"]
 		orgIdErr := validate.Var(organizationID, "required,uuid")
 		if orgIdErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
@@ -455,12 +455,12 @@ func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 // @Failure      400       object  standardJsonResponse{}
 // @Failure      500       object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /organizations/{organizationId}/retro-templates [post]
+// @Router       /organizations/{orgId}/retro-templates [post]
 func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		orgID := vars["organizationId"]
+		orgID := vars["orgId"]
 		orgIdErr := validate.Var(orgID, "required,uuid")
 		if orgIdErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
@@ -593,7 +593,7 @@ func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
 // @Failure      400         object  standardJsonResponse{}
 // @Failure      500         object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /organization/{organizationId}/retro-templates/{templateId} [put]
+// @Router       /organization/{orgId}/retro-templates/{templateId} [put]
 func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -605,7 +605,7 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		OrgID := vars["organizationId"]
+		OrgID := vars["orgId"]
 		orgIdErr := validate.Var(OrgID, "required,uuid")
 		if orgIdErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
@@ -637,10 +637,10 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 			Description:     template.Description,
 			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			DefaultTemplate: template.DefaultTemplate,
-			TeamId:          &OrgID,
+			OrganizationId:  &OrgID,
 		}
 
-		err := s.RetroTemplateDataSvc.UpdateTeamTemplate(ctx, updatedTemplate)
+		err := s.RetroTemplateDataSvc.UpdateOrganizationTemplate(ctx, updatedTemplate)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleOrganizationRetroTemplateUpdate error", zap.Error(err),
 				zap.String("template_id", ID),
@@ -664,14 +664,14 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 // @Failure      400         object  standardJsonResponse{}
 // @Failure      500         object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /organizations/{organizationId}/retro-templates/{templateId} [delete]
+// @Router       /organizations/{orgId}/retro-templates/{templateId} [delete]
 func (s *Service) handleOrganizationRetroTemplateDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TemplateID := vars["templateId"]
-		OrganizationID := vars["organizationId"]
+		OrganizationID := vars["orgId"]
 		idErr := validate.Var(TemplateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
