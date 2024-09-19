@@ -68,9 +68,13 @@
           </ul>
           <a
             href="{appRoutes.games}"
-            class="inline-block bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-teal-300 font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+            class="group relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
-            {$user.id ? $LL.battleCreate() : 'Learn More'}
+            <span
+              class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+            >
+              {$user.id ? $LL.battleCreate() : 'Learn More'}
+            </span>
           </a>
         </div>
         <div class="md:w-1/2">
@@ -112,9 +116,13 @@
           </ul>
           <a
             href="{appRoutes.retros}"
-            class="inline-block bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-teal-300 font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+            class="group relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
-            {$user.id ? 'Create Retro' : 'Learn More'}
+            <span
+              class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+            >
+              {$user.id ? 'Create Retro' : 'Learn More'}
+            </span>
           </a>
         </div>
         <div class="md:w-1/2">
@@ -158,9 +166,13 @@
           </ul>
           <a
             href="{appRoutes.storyboards}"
-            class="inline-block bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-teal-300 font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+            class="group relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
-            {$user.id ? 'Create Storyboard' : 'Learn More'}
+            <span
+              class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+            >
+              {$user.id ? 'Create Storyboard' : 'Learn More'}
+            </span>
           </a>
         </div>
         <div class="md:w-1/2">
