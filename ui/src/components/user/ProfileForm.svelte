@@ -34,9 +34,9 @@
     avatar: '',
     gravatarHash: '',
     verified: false,
-    mfaEnabled: false,
     theme: 'auto',
   };
+  export let credential;
   export let handleUpdate = () => {};
   export let toggleUpdatePassword;
   export let eventTag;
@@ -88,7 +88,7 @@
   }
 
   function handleMfaSetupCompletion() {
-    profile.mfaEnabled = true;
+    credential.mfa_enabled = true;
     toggleMfaSetup();
   }
 
@@ -101,7 +101,7 @@
   function handleMfaRemove() {
     xfetch('/api/auth/mfa', { method: 'DELETE' })
       .then(() => {
-        profile.mfaEnabled = false;
+        credential.mfa_enabled = false;
         toggleMfaRemove();
         notifications.success($LL.mfa2faRemoveSuccess());
       })
@@ -188,12 +188,12 @@
     />
   </div>
 
-  {#if profile.rank !== 'GUEST'}
+  {#if profile.rank !== 'GUEST' && credential}
     <div class="mb-4">
       <p class="block text-gray-700 dark:text-gray-400 font-bold mb-2">
         {$LL.mfa2faLabel()}
       </p>
-      {#if !profile.mfaEnabled}
+      {#if !credential.mfa_enabled}
         <HollowButton color="teal" onClick="{toggleMfaSetup}"
           >{$LL.mfa2faSetup()}
         </HollowButton>

@@ -623,3 +623,34 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 		s.Success(w, r, http.StatusOK, result, nil)
 	}
 }
+
+// handleUserCredential returns the users credential if they have one
+// @Summary      Get User Credential
+// @Description  Gets a users credential
+// @Tags         user
+// @Produce      json
+// @Param        userId  path    string  true  "the user ID"
+// @Success      200     object  standardJsonResponse{data=thunderdome.Credential}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/credential [get]
+func (s *Service) handleUserCredential() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+
+		credential, UserErr := s.UserDataSvc.GetUserCredential(ctx, UserID)
+		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserCredential error", zap.Error(UserErr),
+				zap.String("entity_user_id", UserID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, UserErr)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, credential, nil)
+	}
+}

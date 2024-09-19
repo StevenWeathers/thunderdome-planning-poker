@@ -62,4 +62,5 @@ type UserDataSvc interface {
 	DeleteUser(ctx context.Context, UserID string) error
 	CleanGuests(ctx context.Context, DaysOld int) error
 	GetActiveCountries(ctx context.Context) ([]string, error)
+	GetUserCredential(ctx context.Context, UserID string) (*Credential, error)
 }

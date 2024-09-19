@@ -720,6 +720,21 @@ definitions:
       legend:
         type: string
     type: object
+  thunderdome.Credential:
+    properties:
+      created_date:
+        type: string
+      email:
+        type: string
+      mfa_enabled:
+        type: boolean
+      updated_date:
+        type: string
+      user_id:
+        type: string
+      verified:
+        type: boolean
+    type: object
   thunderdome.Department:
     properties:
       createdDate:
@@ -6767,6 +6782,40 @@ paths:
       summary: Create Poker Game
       tags:
       - poker
+  /users/{userId}/credential:
+    get:
+      description: Gets a users credential
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Credential'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User Credential
+      tags:
+      - user
   /users/{userId}/invite/department/{inviteId}:
     post:
       description: Processes an department invite for the user

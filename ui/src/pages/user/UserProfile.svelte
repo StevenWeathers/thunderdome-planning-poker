@@ -22,6 +22,7 @@
   export let eventTag;
 
   let userProfile = {};
+  let userCredential = {};
   let apiKeys = [];
   let jiraInstances = [];
   let showApiKeyCreate = false;
@@ -55,6 +56,18 @@
       .catch(function () {
         notifications.danger($LL.profileErrorRetrieving());
         eventTag('fetch_profile', 'engagement', 'failure');
+      });
+  }
+
+  function getCredential() {
+    xfetch(`/api/users/${$user.id}/credential`)
+      .then(res => res.json())
+      .then(function (result) {
+        userCredential = result.data;
+      })
+      .catch(function () {
+        notifications.danger("Error retrieving user's credential");
+        eventTag('fetch_credential', 'engagement', 'failure');
       });
   }
 
@@ -267,6 +280,7 @@
     }
 
     getProfile();
+    getCredential();
     if (ExternalAPIEnabled) {
       getApiKeys();
     }
@@ -298,6 +312,7 @@
           class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
         >
           <ProfileForm
+            credential="{userCredential}"
             profile="{userProfile}"
             handleUpdate="{updateUserProfile}"
             toggleUpdatePassword="{toggleUpdatePassword}"

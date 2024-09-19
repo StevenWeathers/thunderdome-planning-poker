@@ -168,6 +168,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfile()))).Methods("GET")
 	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfileUpdate()))).Methods("PUT")
 	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserDelete()))).Methods("DELETE")
+	userRouter.HandleFunc("/{userId}/credential", a.userOnly(a.entityUserOnly(a.handleUserCredential()))).Methods("GET")
 	userRouter.HandleFunc("/{userId}/request-verify", a.userOnly(a.entityUserOnly(a.handleVerifyRequest()))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/invite/team/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserTeamInvite()))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/invite/organization/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserOrganizationInvite()))).Methods("POST")

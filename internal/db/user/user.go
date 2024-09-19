@@ -534,3 +534,27 @@ func (d *Service) GetActiveCountries(ctx context.Context) ([]string, error) {
 
 	return countries, nil
 }
+
+// GetUserCredential gets the user credential if they have one
+func (d *Service) GetUserCredential(ctx context.Context, UserID string) (*thunderdome.Credential, error) {
+	var c thunderdome.Credential
+
+	err := d.DB.QueryRowContext(ctx,
+		`SELECT user_id, email, verified, mfa_enabled
+			FROM thunderdome.auth_credential
+			WHERE user_id = $1`,
+		UserID,
+	).Scan(
+		&c.UserID,
+		&c.Email,
+		&c.Verified,
+		&c.MFAEnabled,
+	)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("get user credential query error: %v", err)
+	}
+
+	return &c, nil
+}
