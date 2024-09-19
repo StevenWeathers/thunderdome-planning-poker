@@ -156,6 +156,7 @@
           <ul class="space-y-3">
             <li class="flex items-center">🌟 All Individual Features</li>
             <li class="flex items-center">📊 Custom Poker Estimation Scales</li>
+            <li class="flex items-center">🔄 Custom Retrospective Templates</li>
             <li class="flex items-center">
               🔄 Review open action items from previous retrospectives
             </li>

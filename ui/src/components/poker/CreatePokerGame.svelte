@@ -155,11 +155,12 @@
   }
 
   function getPrivateEstimationScales() {
+    teamEstimationScales = [];
+    organizationEstimationScales = [];
+    combineEstimationScales();
+
     // don't get private scales if a team isn't selected
     if (selectedTeam === '') {
-      teamEstimationScales = [];
-      organizationEstimationScales = [];
-      combineEstimationScales();
       return;
     }
     const team = teams.find(t => t.id === selectedTeam);
@@ -170,9 +171,6 @@
       !validateUserIsAdmin($user) &&
       !team.subscribed
     ) {
-      teamEstimationScales = [];
-      organizationEstimationScales = [];
-      combineEstimationScales();
       return;
     }
     const orgPrefix =

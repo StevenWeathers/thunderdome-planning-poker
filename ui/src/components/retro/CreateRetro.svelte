@@ -9,6 +9,7 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
   import SelectWithSubtext from '../forms/SelectWithSubtext.svelte';
+  import { validateUserIsAdmin } from '../../validationUtils';
 
   export let xfetch;
   export let notifications;
@@ -29,7 +30,10 @@
   let templateId = '';
   let phaseAutoAdvance = true;
   let allowCumulativeVoting = false;
+  let retroTemplates = [];
   let publicTemplates = [];
+  let teamRetroTemplates = [];
+  let organizationRetroTemplates = [];
 
   /** @type {TextInput} */
   let retroNameTextInput;
@@ -52,6 +56,11 @@
   function createRetro(e) {
     e.preventDefault();
     let endpoint = `${apiPrefix}/users/${$user.id}/retros`;
+
+    if (templateId === '') {
+      notifications.danger('Must select a retrospective template.');
+      return;
+    }
 
     if (phaseTimeLimitMin > maxPhaseTimeLimitMin || phaseTimeLimitMin < 0) {
       notifications.danger('Phase Time Limit minutes must be between 0-59');
@@ -111,12 +120,81 @@
       .then(res => res.json())
       .then(function (result) {
         publicTemplates = result.data;
-        templateId = AppConfig.RetroDefaultTemplateID;
+        combineRetroTemplates();
       })
       .catch(function () {
         notifications.danger('error getting public templates');
       });
   }
+
+  function getPrivateRetroTemplates() {
+    teamRetroTemplates = [];
+    organizationRetroTemplates = [];
+    combineRetroTemplates();
+
+    // don't get private templates if a team isn't selected
+    if (selectedTeam === '') {
+      return;
+    }
+    const team = teams.find(t => t.id === selectedTeam);
+    // if subscriptions are enabled and the team (or its parent org) isn't subscribed
+    // don't attempt to get private templates
+    if (
+      AppConfig.SubscriptionsEnabled &&
+      !validateUserIsAdmin($user) &&
+      !team.subscribed
+    ) {
+      return;
+    }
+    const orgPrefix =
+      team.organization_id !== ''
+        ? `/api/organizations/${team.organization_id}`
+        : `/api`;
+    const teamPrefix =
+      team.department_id !== ''
+        ? `${orgPrefix}/departments/${team.department_id}`
+        : `/api`;
+
+    xfetch(`${teamPrefix}/teams/${team.id}/retro-templates`)
+      .then(res => res.json())
+      .then(function (result) {
+        teamRetroTemplates = result.data;
+        combineRetroTemplates();
+      })
+      .catch(function () {
+        notifications.danger('Failed to get team retro templates');
+      });
+
+    if (team.organization_id !== '') {
+      xfetch(`${orgPrefix}/retro-templates`)
+        .then(res => res.json())
+        .then(function (result) {
+          organizationRetroTemplates = result.data;
+          combineRetroTemplates();
+        })
+        .catch(function () {
+          notifications.danger('Failed to get organization retro templates');
+        });
+    }
+  }
+
+  const combineRetroTemplates = () => {
+    let defaultFound = false;
+    // templates priority order (Team -> Organization -> Public)
+    retroTemplates = [
+      ...teamRetroTemplates,
+      ...organizationRetroTemplates,
+      ...publicTemplates,
+    ];
+
+    retroTemplates.map(temp => {
+      // Find default template with priority order (Team -> Organization -> Public)
+      if (!defaultFound && temp.defaultTemplate) {
+        templateId = temp.id;
+        defaultFound = true;
+      }
+    });
+  };
 
   const updateSelectedTemplate = event => {
     templateId = event.detail.id;
@@ -166,6 +244,7 @@
       </label>
       <SelectInput
         bind:value="{selectedTeam}"
+        on:change="{getPrivateRetroTemplates}"
         id="selectedTeam"
         name="selectedTeam"
       >
@@ -187,8 +266,8 @@
     </div>
     <SelectWithSubtext
       on:change="{updateSelectedTemplate}"
-      items="{publicTemplates}"
-      label="Select an estimation scale..."
+      items="{retroTemplates}"
+      label="Select a retro template..."
       selectedItemId="{templateId}"
       itemType="retro_template"
     />
