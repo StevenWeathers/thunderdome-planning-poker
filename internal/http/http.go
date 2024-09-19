@@ -403,9 +403,9 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgTeamAdminOnly(a.handleTeamRetroTemplateDelete())))).Methods("DELETE")
 		// Team templates
 		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates())))).Methods("GET")
-		teamRouter.HandleFunc("/teams/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate())))).Methods("POST")
-		teamRouter.HandleFunc("/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate())))).Methods("PUT")
-		teamRouter.HandleFunc("/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete())))).Methods("DELETE")
+		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate())))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate())))).Methods("PUT")
+		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete())))).Methods("DELETE")
 		// General template operations
 		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleGetRetroTemplates()))).Methods("GET")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleGetRetroTemplateById()))).Methods("GET")

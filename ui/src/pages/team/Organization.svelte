@@ -361,7 +361,11 @@
 
   function getEstimationScales() {
     const scalesOffset = (scalesPage - 1) * scalesPageLimit;
-    if (AppConfig.FeaturePoker) {
+    if (
+      AppConfig.FeaturePoker &&
+      (!AppConfig.SubscriptionsEnabled ||
+        (AppConfig.SubscriptionsEnabled && organization.subscribed))
+    ) {
       xfetch(
         `${orgPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`,
       )
@@ -387,7 +391,11 @@
 
   function getRetroTemplates() {
     const offset = (retroTemplatesPage - 1) * retroTemplatePageLimit;
-    if (AppConfig.FeaturePoker) {
+    if (
+      AppConfig.FeatureRetro &&
+      (!AppConfig.SubscriptionsEnabled ||
+        (AppConfig.SubscriptionsEnabled && organization.subscribed))
+    ) {
       xfetch(
         `${orgPrefix}/retro-templates?limit=${retroTemplatePageLimit}&offset=${offset}`,
       )
