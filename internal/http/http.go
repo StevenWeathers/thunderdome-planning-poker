@@ -389,21 +389,30 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		// Retro Templates
 		apiRouter.HandleFunc("/retro-templates/public", a.userOnly(a.handleGetPublicRetroTemplates())).Methods("GET")
 		// Organization templates
-		orgRouter.HandleFunc("/{organizationId}/retro-templates", a.userOnly(a.orgUserOnly(a.handleGetOrganizationRetroTemplates()))).Methods("GET")
-		//orgRouter.HandleFunc("/{organizationId}/retro-templates", a.userOnly(a.orgAdminOnly(a.handleCreateOrganizationRetroTemplate()))).Methods("POST")
-		//orgRouter.HandleFunc("/{organizationId}/retro-templates/{templateId}", a.userOnly(a.handleUpdateOrganizationRetroTemplate())).Methods("PUT")
-		//orgRouter.HandleFunc("/organizations/{organizationId}/retro-templates/{templateId}", a.userOnly(a.handleDeleteOrganizationRetroTemplate())).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationRetroTemplates())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateCreate())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateUpdate())))).Methods("PUT")
+		orgRouter.HandleFunc("/{orgId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateDelete())))).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetTeamRetroTemplates())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.departmentTeamAdminOnly(a.handleTeamRetroTemplateCreate())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.departmentTeamAdminOnly(a.handleTeamRetroTemplateUpdate())))).Methods("PUT")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.departmentTeamAdminOnly(a.handleTeamRetroTemplateDelete())))).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.orgTeamOnly(a.handleGetTeamRetroTemplates())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.orgTeamAdminOnly(a.handleTeamRetroTemplateCreate())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgTeamAdminOnly(a.handleTeamRetroTemplateUpdate())))).Methods("PUT")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgTeamAdminOnly(a.handleTeamRetroTemplateDelete())))).Methods("DELETE")
 		// Team templates
-		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates()))).Methods("GET")
-		//teamRouter.HandleFunc("/teams/{teamId}/retro-templates", a.userOnly(a.handleCreateTeamRetroTemplate())).Methods("POST")
-		//teamRouter.HandleFunc("/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.handleUpdateTeamRetroTemplate())).Methods("PUT")
-		//teamRouter.HandleFunc("/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.handleDeleteTeamRetroTemplate())).Methods("DELETE")
+		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates())))).Methods("GET")
+		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate())))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate())))).Methods("PUT")
+		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete())))).Methods("DELETE")
 		// General template operations
 		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleGetRetroTemplates()))).Methods("GET")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleGetRetroTemplateById()))).Methods("GET")
 		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleRetroTemplateCreate()))).Methods("POST")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateUpdate()))).Methods("PUT")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateDelete()))).Methods("DELETE")
+		// Retro websocket
 		apiRouter.HandleFunc("/retro/{retroId}", retroSvc.ServeWs())
 	}
 	// storyboard(s)

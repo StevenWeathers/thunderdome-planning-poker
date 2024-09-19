@@ -341,3 +341,20 @@ func getWebsocketConnectSrc(SecureProtocol bool, WebsocketSubdomain string, AppD
 
 	return fmt.Sprintf("%s%s%s", wcs, sub, AppDomain)
 }
+
+func retroTemplateBuildFormatFromRequest(requestFormat retroTemplateFormatRequestBody) *thunderdome.RetroTemplateFormat {
+	tf := &thunderdome.RetroTemplateFormat{
+		Columns: make([]thunderdome.RetroTemplateFormatColumn, 0),
+	}
+
+	for _, col := range requestFormat.Columns {
+		tf.Columns = append(tf.Columns, thunderdome.RetroTemplateFormatColumn{
+			Name:  col.Name,
+			Label: col.Label,
+			Color: col.Color,
+			Icon:  col.Icon,
+		})
+	}
+
+	return tf
+}

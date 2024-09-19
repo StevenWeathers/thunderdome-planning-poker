@@ -32,6 +32,7 @@
   import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
+  import RetroTemplatesList from '../../components/retrotemplate/RetroTemplatesList.svelte';
 
   export let xfetch;
   export let router;
@@ -152,7 +153,12 @@
 
   function getEstimationScales() {
     const scalesOffset = (scalesPage - 1) * scalesPageLimit;
-    if (FeaturePoker) {
+    if (
+      FeaturePoker &&
+      (!AppConfig.SubscriptionsEnabled ||
+        (AppConfig.SubscriptionsEnabled &&
+          (team.subscribed || organization.subscribed)))
+    ) {
       xfetch(
         `${teamPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`,
       )
@@ -163,6 +169,37 @@
         })
         .catch(function () {
           notifications.danger('Failed to get estimation scales');
+        });
+    }
+  }
+
+  const retroTemplatePageLimit = 20;
+  let retroTemplates = [];
+  let retroTemplateCount = 0;
+  let retroTemplatesPage = 1;
+
+  const changeRetroTemplatesPage = evt => {
+    retroTemplatesPage = evt.detail;
+    getRetroTemplates();
+  };
+
+  function getRetroTemplates() {
+    const offset = (retroTemplatesPage - 1) * retroTemplatePageLimit;
+    if (
+      AppConfig.FeatureRetro &&
+      (!AppConfig.SubscriptionsEnabled ||
+        (AppConfig.SubscriptionsEnabled &&
+          (team.subscribed || organization.subscribed)))
+    ) {
+      xfetch(
+        `${teamPrefix}/retro-templates?limit=${retroTemplatePageLimit}&offset=${offset}`,
+      )
+        .then(res => res.json())
+        .then(function (result) {
+          retroTemplates = result.data;
+        })
+        .catch(function () {
+          notifications.danger('Failed to get retro templates');
         });
     }
   }
@@ -205,6 +242,7 @@
         getStoryboards();
         getUsers();
         getEstimationScales();
+        getRetroTemplates();
       })
       .catch(function () {
         notifications.danger($LL.teamGetError());
@@ -763,6 +801,33 @@
       {:else}
         <FeatureSubscribeBanner
           salesPitch="Create custom poker point scales to match your team's estimation style."
+        />
+      {/if}
+    </div>
+  {/if}
+
+  {#if AppConfig.FeatureRetro}
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
+        <RetroTemplatesList
+          xfetch="{xfetch}"
+          eventTag="{eventTag}"
+          notifications="{notifications}"
+          isEntityAdmin="{isAdmin}"
+          apiPrefix="{teamPrefix}"
+          organizationId="{organizationId}"
+          departmentId="{departmentId}"
+          teamId="{teamId}"
+          templates="{retroTemplates}"
+          getTemplates="{getRetroTemplates}"
+          templateCount="{retroTemplateCount}"
+          templatesPage="{retroTemplatesPage}"
+          templatesPageLimit="{retroTemplatePageLimit}"
+          changePage="{changeRetroTemplatesPage}"
+        />
+      {:else}
+        <FeatureSubscribeBanner
+          salesPitch="Tailor your Team's reflection process with custom retrospective templates."
         />
       {/if}
     </div>

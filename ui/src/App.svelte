@@ -64,6 +64,7 @@
   import RetroLanding from './pages/retro/RetroLanding.svelte';
   import PokerLanding from './pages/poker/PokerLanding.svelte';
   import StoryboardLanding from './pages/storyboard/StoryboardLanding.svelte';
+  import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
 
   const {
     FeaturePoker,
@@ -500,6 +501,13 @@
         route: AdminRetro,
         params: params,
         name: 'admin-retro',
+      };
+    });
+    router.on(`${appRoutes.adminRetroTemplates}`, () => {
+      currentPage = {
+        route: RetroTemplates,
+        params: {},
+        name: 'admin-retro-templates',
       };
     });
     router.on(`${appRoutes.register}/retro/:retroId`, params => {

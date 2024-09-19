@@ -18,6 +18,7 @@
     LayoutDashboard,
     Network,
     RefreshCcw,
+    SquareDashedKanban,
     User,
     Users,
     Vote,
@@ -37,6 +38,7 @@
     MetricItem,
   } from '../../components/team/metrics';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
+  import RetroTemplatesList from '../../components/retrotemplate/RetroTemplatesList.svelte';
 
   export let xfetch;
   export let router;
@@ -106,6 +108,7 @@
         getTeams();
         getUsers();
         getEstimationScales();
+        getRetroTemplates();
       })
       .catch(function () {
         notifications.danger($LL.organizationGetError());
@@ -141,12 +144,12 @@
       value: 0,
       icon: BarChart2,
     },
-    // {
-    //   key: 'retro_template_count',
-    //   name: 'Retro Templates',
-    //   value: 0,
-    //   icon: SquareDashedKanban,
-    // },
+    {
+      key: 'retro_template_count',
+      name: 'Retro Templates',
+      value: 0,
+      icon: SquareDashedKanban,
+    },
   ];
 
   function getUsers() {
@@ -346,9 +349,8 @@
       });
   }
 
-  let estimationScales = [];
-
   const scalesPageLimit = 20;
+  let estimationScales = [];
   let scaleCount = 0;
   let scalesPage = 1;
 
@@ -359,7 +361,11 @@
 
   function getEstimationScales() {
     const scalesOffset = (scalesPage - 1) * scalesPageLimit;
-    if (AppConfig.FeaturePoker) {
+    if (
+      AppConfig.FeaturePoker &&
+      (!AppConfig.SubscriptionsEnabled ||
+        (AppConfig.SubscriptionsEnabled && organization.subscribed))
+    ) {
       xfetch(
         `${orgPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`,
       )
@@ -369,6 +375,36 @@
         })
         .catch(function () {
           notifications.danger('Failed to get estimation scales');
+        });
+    }
+  }
+
+  const retroTemplatePageLimit = 20;
+  let retroTemplates = [];
+  let retroTemplateCount = 0;
+  let retroTemplatesPage = 1;
+
+  const changeRetroTemplatesPage = evt => {
+    retroTemplatesPage = evt.detail;
+    getRetroTemplates();
+  };
+
+  function getRetroTemplates() {
+    const offset = (retroTemplatesPage - 1) * retroTemplatePageLimit;
+    if (
+      AppConfig.FeatureRetro &&
+      (!AppConfig.SubscriptionsEnabled ||
+        (AppConfig.SubscriptionsEnabled && organization.subscribed))
+    ) {
+      xfetch(
+        `${orgPrefix}/retro-templates?limit=${retroTemplatePageLimit}&offset=${offset}`,
+      )
+        .then(res => res.json())
+        .then(function (result) {
+          retroTemplates = result.data;
+        })
+        .catch(function () {
+          notifications.danger('Failed to get retro templates');
         });
     }
   }
@@ -570,6 +606,31 @@
       {:else}
         <FeatureSubscribeBanner
           salesPitch="Create custom poker point scales to match your Organization's estimation style."
+        />
+      {/if}
+    </div>
+  {/if}
+
+  {#if AppConfig.FeatureRetro}
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <RetroTemplatesList
+          xfetch="{xfetch}"
+          eventTag="{eventTag}"
+          notifications="{notifications}"
+          isEntityAdmin="{isAdmin}"
+          apiPrefix="{orgPrefix}"
+          organizationId="{organizationId}"
+          templates="{retroTemplates}"
+          getTemplates="{getRetroTemplates}"
+          templateCount="{retroTemplateCount}"
+          templatesPage="{retroTemplatesPage}"
+          templatesPageLimit="{retroTemplatePageLimit}"
+          changePage="{changeRetroTemplatesPage}"
+        />
+      {:else}
+        <FeatureSubscribeBanner
+          salesPitch="Tailor your Organization's reflection process with custom retrospective templates."
         />
       {/if}
     </div>

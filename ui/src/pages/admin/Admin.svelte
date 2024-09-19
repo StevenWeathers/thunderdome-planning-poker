@@ -24,6 +24,7 @@
     RefreshCcw,
     Smile,
     SquareCheckBig,
+    SquareDashedKanban,
     User,
     UserRound,
     Users,
@@ -79,6 +80,10 @@
     userSubscriptionActiveCount: 0,
     teamSubscriptionActiveCount: 0,
     orgSubscriptionActiveCount: 0,
+    publicRetroTemplateCount: 0,
+    retroTemplateCount: 0,
+    organizationRetroTemplateCount: 0,
+    teamRetroTemplateCount: 0,
   };
 
   function getAppStats() {
@@ -383,6 +388,37 @@
           name: 'teamEstimationScales',
           count: appStats.teamEstimationScaleCount,
           icon: BarChart2,
+          active: FeaturePoker,
+        },
+      ],
+    },
+    {
+      title: $LL.retroTemplates(),
+      active: FeatureRetro,
+      bgColor: 'bg-pink-500',
+      stats: [
+        {
+          name: 'retroTemplates',
+          count: appStats.retroTemplateCount,
+          icon: SquareDashedKanban,
+          active: FeaturePoker,
+        },
+        {
+          name: 'publicRetroTemplates',
+          count: appStats.publicRetroTemplateCount,
+          icon: SquareDashedKanban,
+          active: FeaturePoker,
+        },
+        {
+          name: 'organizationRetroTemplates',
+          count: appStats.organizationRetroTemplateCount,
+          icon: SquareDashedKanban,
+          active: FeaturePoker,
+        },
+        {
+          name: 'teamRetroTemplates',
+          count: appStats.teamRetroTemplateCount,
+          icon: SquareDashedKanban,
           active: FeaturePoker,
         },
       ],
