@@ -157,25 +157,27 @@
       for="yourEmail"
     >
       {$LL.email()}
-      {#if profile.verified}
-        <span
-          class="inline-block font-bold text-green-600
+      {#if profile.rank && profile.rank !== 'GUEST'}
+        {#if profile.verified}
+          <span
+            class="inline-block font-bold text-green-600
                                     border-green-500 border py-1 px-2 rounded
                                     ms-1"
-          data-testid="user-verified"
-        >
-          {$LL.verified()}
-          <BadgeCheck class="inline h-4 w-4" />
-        </span>
-      {:else if profile.rank !== 'GUEST'}
-        <button
-          class="float-right inline-block align-baseline font-bold text-sm text-blue-500
+            data-testid="user-verified"
+          >
+            {$LL.verified()}
+            <BadgeCheck class="inline h-4 w-4" />
+          </span>
+        {:else}
+          <button
+            class="float-right inline-block align-baseline font-bold text-sm text-blue-500
                                         hover:text-blue-800"
-          on:click="{requestVerifyEmail}"
-          data-testid="request-verify"
-          type="button"
-          >{$LL.requestVerifyEmail()}
-        </button>
+            on:click="{requestVerifyEmail}"
+            data-testid="request-verify"
+            type="button"
+            >{$LL.requestVerifyEmail()}
+          </button>
+        {/if}
       {/if}
     </label>
     <TextInput
@@ -334,16 +336,18 @@
 
   <div>
     <div class="text-right">
-      {#if !ldapEnabled && !headerAuthEnabled && profile.rank !== 'GUEST' && toggleUpdatePassword}
-        <button
-          type="button"
-          class="inline-block align-baseline font-bold
+      {#if profile.rank && profile.rank !== 'GUEST'}
+        {#if !ldapEnabled && !headerAuthEnabled && toggleUpdatePassword}
+          <button
+            type="button"
+            class="inline-block align-baseline font-bold
                                     text-sm text-blue-500 hover:text-blue-800 me-4"
-          on:click="{toggleUpdatePassword}"
-          data-testid="toggle-updatepassword"
-        >
-          {$LL.updatePassword()}
-        </button>
+            on:click="{toggleUpdatePassword}"
+            data-testid="toggle-updatepassword"
+          >
+            {$LL.updatePassword()}
+          </button>
+        {/if}
       {/if}
       <SolidButton type="submit" disabled="{updateDisabled}">
         {$LL.updateProfile()}

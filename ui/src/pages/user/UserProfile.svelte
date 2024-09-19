@@ -22,7 +22,7 @@
   export let eventTag;
 
   let userProfile = {};
-  let userCredential = {};
+  let userCredential = null;
   let apiKeys = [];
   let jiraInstances = [];
   let showApiKeyCreate = false;
@@ -280,10 +280,15 @@
     }
 
     getProfile();
-    getCredential();
-    if (ExternalAPIEnabled) {
-      getApiKeys();
+
+    if ($user.rank !== 'GUEST') {
+      getCredential();
+
+      if (ExternalAPIEnabled) {
+        getApiKeys();
+      }
     }
+
     if (
       (SubscriptionsEnabled && $user.subscribed) ||
       (!SubscriptionsEnabled && $user.rank !== 'GUEST')
