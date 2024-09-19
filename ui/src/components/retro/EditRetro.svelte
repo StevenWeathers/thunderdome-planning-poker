@@ -5,6 +5,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
+  import { Crown, Lock } from 'lucide-svelte';
 
   export let toggleEditRetro = () => {};
   export let handleRetroEdit = () => {};
@@ -79,6 +80,7 @@
           bind:value="{joinCode}"
           placeholder="{$LL.optionalPasscodePlaceholder()}"
           id="joinCode"
+          icon="{Lock}"
         />
       </div>
     </div>
@@ -96,6 +98,7 @@
           bind:value="{facilitatorCode}"
           placeholder="{$LL.facilitatorCodePlaceholder()}"
           id="facilitatorCode"
+          icon="{Crown}"
         />
       </div>
     </div>

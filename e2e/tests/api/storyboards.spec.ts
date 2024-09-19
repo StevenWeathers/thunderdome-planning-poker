@@ -38,81 +38,85 @@ test.afterAll(async ({}) => {
   await apiContext.dispose();
 });
 
-test.describe("registered user", () => {
-  test(`GET /users/{userId}/storyboards should return empty array when no storyboards associated to user`, async () => {
-    const b = await adminApiContext.get(`users/${adminUser.id}/storyboards`);
-    expect(b.ok()).toBeTruthy();
+test.describe(
+  "registered user",
+  { tag: ["@api", "@registered", "@storyboard"] },
+  () => {
+    test(`GET /users/{userId}/storyboards should return empty array when no storyboards associated to user`, async () => {
+      const b = await adminApiContext.get(`users/${adminUser.id}/storyboards`);
+      expect(b.ok()).toBeTruthy();
 
-    const storyboards = await b.json();
-    expect(storyboards.data).toMatchObject([]);
-  });
-
-  test(`POST /users/{userId}/storyboards should create storyboard`, async () => {
-    const storyboardName = "Test API Create Storyboard";
-
-    const b = await apiContext.post(`users/${user.id}/storyboards`, {
-      data: {
-        storyboardName,
-      },
+      const storyboards = await b.json();
+      expect(storyboards.data).toMatchObject([]);
     });
-    expect(b.ok()).toBeTruthy();
-    const storyboard = await b.json();
-    expect(storyboard.data).toMatchObject({
-      name: storyboardName,
-    });
-  });
 
-  test(`GET /users/{userId}/storyboards should return object in array when storyboards associated to user`, async () => {
-    const storyboardName = "Test API Storyboards";
+    test(`POST /users/{userId}/storyboards should create storyboard`, async () => {
+      const storyboardName = "Test API Create Storyboard";
 
-    const b = await apiContext.post(`users/${user.id}/storyboards`, {
-      data: {
-        storyboardName,
-      },
-    });
-    expect(b.ok()).toBeTruthy();
-
-    const bs = await apiContext.get(`users/${user.id}/storyboards`);
-    expect(bs.ok()).toBeTruthy();
-    const storyboards = await bs.json();
-    expect(storyboards.data).toContainEqual(
-      expect.objectContaining({
-        name: storyboardName,
-      }),
-    );
-  });
-
-  test(`POST /teams/{teamId}/users/{userId}/storyboards should create storyboard`, async () => {
-    const storyboardName = "Test API Create Team Storyboard";
-
-    const t = await apiContext.post(`users/${user.id}/teams`, {
-      data: {
-        name: "test team create retro",
-      },
-    });
-    const { data: team } = await t.json();
-
-    const b = await apiContext.post(
-      `teams/${team.id}/users/${user.id}/storyboards`,
-      {
+      const b = await apiContext.post(`users/${user.id}/storyboards`, {
         data: {
           storyboardName,
         },
-      },
-    );
-    expect(b.ok()).toBeTruthy();
-    const storyboard = await b.json();
-    expect(storyboard.data).toMatchObject({
-      name: storyboardName,
+      });
+      expect(b.ok()).toBeTruthy();
+      const storyboard = await b.json();
+      expect(storyboard.data).toMatchObject({
+        name: storyboardName,
+      });
     });
 
-    const bs = await apiContext.get(`teams/${team.id}/storyboards`);
-    expect(bs.ok()).toBeTruthy();
-    const storyboards = await bs.json();
-    expect(storyboards.data).toContainEqual(
-      expect.objectContaining({
+    test(`GET /users/{userId}/storyboards should return object in array when storyboards associated to user`, async () => {
+      const storyboardName = "Test API Storyboards";
+
+      const b = await apiContext.post(`users/${user.id}/storyboards`, {
+        data: {
+          storyboardName,
+        },
+      });
+      expect(b.ok()).toBeTruthy();
+
+      const bs = await apiContext.get(`users/${user.id}/storyboards`);
+      expect(bs.ok()).toBeTruthy();
+      const storyboards = await bs.json();
+      expect(storyboards.data).toContainEqual(
+        expect.objectContaining({
+          name: storyboardName,
+        }),
+      );
+    });
+
+    test(`POST /teams/{teamId}/users/{userId}/storyboards should create storyboard`, async () => {
+      const storyboardName = "Test API Create Team Storyboard";
+
+      const t = await apiContext.post(`users/${user.id}/teams`, {
+        data: {
+          name: "test team create retro",
+        },
+      });
+      const { data: team } = await t.json();
+
+      const b = await apiContext.post(
+        `teams/${team.id}/users/${user.id}/storyboards`,
+        {
+          data: {
+            storyboardName,
+          },
+        },
+      );
+      expect(b.ok()).toBeTruthy();
+      const storyboard = await b.json();
+      expect(storyboard.data).toMatchObject({
         name: storyboardName,
-      }),
-    );
-  });
-});
+      });
+
+      const bs = await apiContext.get(`teams/${team.id}/storyboards`);
+      expect(bs.ok()).toBeTruthy();
+      const storyboards = await bs.json();
+      expect(storyboards.data).toContainEqual(
+        expect.objectContaining({
+          name: storyboardName,
+        }),
+      );
+    });
+  },
+);

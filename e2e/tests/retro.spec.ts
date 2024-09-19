@@ -1,7 +1,7 @@
 import { expect, test } from "../fixtures/user-sessions";
 import { RetroPage } from "../fixtures/retro-page";
 
-test.describe("Retro page", () => {
+test.describe("Retro page", { tag: ["@retro"] }, () => {
   let retro = { id: "", name: "e2e retro page tests" };
   let retroLeave = { id: "" };
   let retroCancelDelete = { id: "" };
@@ -42,27 +42,39 @@ test.describe("Retro page", () => {
     });
   });
 
-  test("unauthenticated user redirects to register", async ({ page }) => {
-    const bp = new RetroPage(page);
-    await bp.goto(retro.id);
+  test(
+    "unauthenticated user redirects to register",
+    { tag: ["@unauthenticated"] },
+    async ({ page }) => {
+      const bp = new RetroPage(page);
+      await bp.goto(retro.id);
 
-    const title = bp.page.locator("h1");
-    await expect(title).toHaveText("Register");
-  });
+      const title = bp.page.locator("h1");
+      await expect(title).toHaveText("Register");
+    },
+  );
 
-  test("guest user successfully loads", async ({ guestPage }) => {
-    const bp = new RetroPage(guestPage.page);
-    await bp.goto(retro.id);
+  test(
+    "guest user successfully loads",
+    { tag: ["@guest"] },
+    async ({ guestPage }) => {
+      const bp = new RetroPage(guestPage.page);
+      await bp.goto(retro.id);
 
-    await expect(bp.retroTitle).toHaveText(retro.name);
-  });
+      await expect(bp.retroTitle).toHaveText(retro.name);
+    },
+  );
 
-  test("registered user successfully loads", async ({ registeredPage }) => {
-    const bp = new RetroPage(registeredPage.page);
-    await bp.goto(retro.id);
+  test(
+    "registered user successfully loads",
+    { tag: ["@registered"] },
+    async ({ registeredPage }) => {
+      const bp = new RetroPage(registeredPage.page);
+      await bp.goto(retro.id);
 
-    await expect(bp.retroTitle).toHaveText(retro.name);
-  });
+      await expect(bp.retroTitle).toHaveText(retro.name);
+    },
+  );
 
   test("user can leave retro", async ({ registeredPage }) => {
     const bp = new RetroPage(registeredPage.page);

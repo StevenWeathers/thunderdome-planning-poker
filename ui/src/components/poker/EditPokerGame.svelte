@@ -8,7 +8,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
-  import { ChevronDown } from 'lucide-svelte';
+  import { ChevronDown, Crown, Lock } from 'lucide-svelte';
 
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
@@ -188,6 +188,7 @@
           bind:value="{joinCode}"
           placeholder="{$LL.optionalPasscodePlaceholder()}"
           id="joinCode"
+          icon="{Lock}"
         />
       </div>
     </div>
@@ -205,6 +206,7 @@
           bind:value="{leaderCode}"
           placeholder="{$LL.optionalLeadercodePlaceholder()}"
           id="leaderCode"
+          icon="{Crown}"
         />
       </div>
     </div>

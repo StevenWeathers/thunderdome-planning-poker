@@ -63,24 +63,22 @@
   <title>{$LL.login()} | {$LL.appName()}</title>
 </svelte:head>
 
-<div class="flex min-h-[80vh] flex-col justify-center py-12 sm:px-6 lg:px-8">
-  <div class="text-center sm:mx-auto sm:w-full sm:max-w-md">
-    <h1 class="sr-only">
-      {$LL.login()}
-    </h1>
-  </div>
-  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div
-      class="bg-white dark:bg-gray-700 px-4 pb-4 pt-8 sm:rounded-lg sm:px-10 sm:pb-6 sm:shadow"
-    >
-      <LoginForm
-        xfetch="{xfetch}"
-        notifications="{notifications}"
-        eventTag="{eventTag}"
-        router="{router}"
-        registerLink="{registerLink}"
-        targetPage="{targetPage}"
-      />
-    </div>
+<h1 class="sr-only">
+  {$LL.login()}
+</h1>
+<div
+  class="space-y-8 flex items-center justify-center min-h-[80vh] bg-gradient-to-br from-blue-200 via-purple-200 to-indigo-300 dark:from-blue-800 dark:via-purple-800 dark:to-indigo-800"
+>
+  <div
+    class="p-8 rounded-2xl shadow-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-800/50"
+  >
+    <LoginForm
+      xfetch="{xfetch}"
+      notifications="{notifications}"
+      eventTag="{eventTag}"
+      router="{router}"
+      registerLink="{registerLink}"
+      targetPage="{targetPage}"
+    />
   </div>
 </div>

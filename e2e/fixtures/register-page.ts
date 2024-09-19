@@ -2,19 +2,19 @@ import { Locator, Page } from "@playwright/test";
 
 export class RegisterPage {
   readonly page: Page;
-  readonly guestUserNameField: Locator;
-  readonly registeredUserNameField: Locator;
-  readonly registeredUserEmailField: Locator;
-  readonly registeredUserPassword1Field: Locator;
-  readonly registeredUserPassword2Field: Locator;
+  readonly userNameField: Locator;
+  readonly createFullAccountCheckbox: Locator;
+  readonly userEmailField: Locator;
+  readonly userPassword1Field: Locator;
+  readonly userPassword2Field: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.guestUserNameField = page.locator('[name="yourName1"]');
-    this.registeredUserNameField = page.locator('[name="yourName2"]');
-    this.registeredUserEmailField = page.locator('[name="yourEmail"]');
-    this.registeredUserPassword1Field = page.locator('[name="yourPassword1"]');
-    this.registeredUserPassword2Field = page.locator('[name="yourPassword2"]');
+    this.userNameField = page.locator('[name="yourName"]');
+    this.userEmailField = page.locator('[name="yourEmail"]');
+    this.userPassword1Field = page.locator('[name="yourPassword1"]');
+    this.userPassword2Field = page.locator('[name="yourPassword2"]');
+    this.createFullAccountCheckbox = page.locator('[for="createFullAccount"]');
   }
 
   async goto() {
@@ -22,15 +22,23 @@ export class RegisterPage {
   }
 
   async createGuestUser(name) {
-    await this.guestUserNameField.fill(name);
-    await this.guestUserNameField.press("Enter");
+    await this.userNameField.fill(name);
+    await this.userNameField.press("Enter");
   }
 
   async createRegisteredUser(name, email, password1, password2) {
-    await this.registeredUserNameField.fill(name);
-    await this.registeredUserEmailField.fill(email);
-    await this.registeredUserPassword1Field.fill(password1);
-    await this.registeredUserPassword2Field.fill(password2);
-    await this.registeredUserPassword2Field.press("Enter");
+    await this.userNameField.fill(name);
+    await this.createFullAccountCheckbox.click();
+    await this.userEmailField.fill(email);
+    await this.userPassword1Field.fill(password1);
+    await this.userPassword2Field.fill(password2);
+    await this.userPassword2Field.press("Enter");
+  }
+
+  async createRegisteredUserFromGuest(email, password1, password2) {
+    await this.userEmailField.fill(email);
+    await this.userPassword1Field.fill(password1);
+    await this.userPassword2Field.fill(password2);
+    await this.userPassword2Field.press("Enter");
   }
 }

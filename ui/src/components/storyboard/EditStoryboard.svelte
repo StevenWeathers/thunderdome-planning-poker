@@ -3,6 +3,7 @@
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
+  import { Crown, Lock } from 'lucide-svelte';
 
   export let toggleEditStoryboard = () => {};
   export let handleStoryboardEdit = () => {};
@@ -59,6 +60,7 @@
           bind:value="{joinCode}"
           placeholder="{$LL.optionalPasscodePlaceholder()}"
           id="joinCode"
+          icon="{Lock}"
         />
       </div>
     </div>
@@ -76,6 +78,7 @@
           bind:value="{facilitatorCode}"
           placeholder="{$LL.facilitatorCodePlaceholder()}"
           id="facilitatorCode"
+          icon="{Crown}"
         />
       </div>
     </div>

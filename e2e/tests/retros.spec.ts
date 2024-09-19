@@ -4,8 +4,8 @@ import { RetrosPage } from "../fixtures/retros-page";
 
 const pageTitle = "My Retros";
 
-test.describe("Retros page", () => {
-  test.describe("Unauthenticated user", () => {
+test.describe("Retros page", { tag: ["@retro"] }, () => {
+  test.describe("Unauthenticated user", { tag: ["@unauthenticated"] }, () => {
     test("displays retrospective landing page", async ({ page }) => {
       const retrosPage = new RetrosPage(page);
       await retrosPage.goto();
@@ -15,7 +15,7 @@ test.describe("Retros page", () => {
     });
   });
 
-  test.describe("Guest user", () => {
+  test.describe("Guest user", { tag: ["@guest"] }, () => {
     test("should load page", async ({ guestPage }) => {
       const retrosPage = new RetrosPage(guestPage.page);
       await retrosPage.goto();
@@ -54,7 +54,7 @@ test.describe("Retros page", () => {
     });
   });
 
-  test.describe("Registered user", () => {
+  test.describe("Registered user", { tag: ["@registered"] }, () => {
     test("should load page", async ({ registeredPage }) => {
       const retrosPage = new RetrosPage(registeredPage.page);
       await retrosPage.goto();

@@ -20,7 +20,7 @@
   import TableNav from '../../../components/table/TableNav.svelte';
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import CrudActions from '../../../components/table/CrudActions.svelte';
-  import { BadgeCheck } from 'lucide-svelte';
+  import { BadgeCheck, ToggleLeft, ToggleRight } from 'lucide-svelte';
 
   export let xfetch;
   export let router;
@@ -248,6 +248,7 @@
         <HeadCol>
           {$LL.type()}
         </HeadCol>
+        <HeadCol>Enabled</HeadCol>
         <HeadCol type="action">
           <span class="sr-only">{$LL.actions()}</span>
         </HeadCol>
@@ -306,6 +307,22 @@
             <RowCol>
               <span class="text-gray-500 dark:text-gray-300">{user.rank}</span>
             </RowCol>
+            <RowCol>
+              <button
+                on:click="{!user.disabled
+                  ? disableUser(user.id)
+                  : enableUser(user.id)}"
+                class:text-red-500="{user.disabled}"
+                class:text-green-500="{!user.disabled}"
+                title="{!user.disabled ? 'enabled' : 'disabled'}"
+              >
+                {#if user.disabled}
+                  <ToggleLeft class="h-10 w-10" />
+                {:else}
+                  <ToggleRight class="h-10 w-10" />
+                {/if}
+              </button>
+            </RowCol>
             <RowCol type="action">
               <CrudActions
                 editBtnClickHandler="{toggleUserEdit(user)}"
@@ -318,15 +335,6 @@
                 {:else}
                   <HollowButton onClick="{demoteUser(user.id)}" color="blue">
                     {$LL.demote()}
-                  </HollowButton>
-                {/if}
-                {#if !user.disabled}
-                  <HollowButton onClick="{disableUser(user.id)}" color="orange">
-                    Disable
-                  </HollowButton>
-                {:else}
-                  <HollowButton onClick="{enableUser(user.id)}" color="teal">
-                    Enable
                   </HollowButton>
                 {/if}
               </CrudActions>

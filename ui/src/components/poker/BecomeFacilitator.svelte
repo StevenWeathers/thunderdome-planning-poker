@@ -3,6 +3,7 @@
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
+  import { Lock } from 'lucide-svelte';
 
   export let toggleBecomeLeader = () => {};
   export let handleBecomeLeader = () => {};
@@ -33,6 +34,7 @@
           name="leaderCode"
           bind:value="{leaderCode}"
           id="leaderCode"
+          icon="{Lock}"
         />
       </div>
     </div>

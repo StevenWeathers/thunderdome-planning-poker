@@ -78,8 +78,7 @@ test.describe("Register page", () => {
         const title = page.locator("h1");
         await expect(title).toHaveText(registerPageTitle);
 
-        await registerPage.createRegisteredUser(
-          userName,
+        await registerPage.createRegisteredUserFromGuest(
           userEmail,
           userPass,
           userPass,

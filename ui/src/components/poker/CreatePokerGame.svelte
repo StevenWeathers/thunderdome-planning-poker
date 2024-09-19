@@ -12,6 +12,7 @@
   import ImportModal from './ImportModal.svelte';
   import SelectWithSubtext from '../forms/SelectWithSubtext.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
+  import { Crown, Lock } from 'lucide-svelte';
 
   export let notifications;
   export let eventTag;
@@ -427,6 +428,7 @@
         bind:value="{joinCode}"
         placeholder="{$LL.optionalPasscodePlaceholder()}"
         id="joinCode"
+        icon="{Lock}"
       />
     </div>
   </div>
@@ -444,6 +446,7 @@
         bind:value="{leaderCode}"
         placeholder="{$LL.optionalLeadercodePlaceholder()}"
         id="leaderCode"
+        icon="{Crown}"
       />
     </div>
   </div>

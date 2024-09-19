@@ -7,7 +7,7 @@
 
   const { AppVersion, RepoURL, PathPrefix, SubscriptionsEnabled } = AppConfig;
   const footerLinkClasses =
-    'no-underline text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600';
+    'no-underline text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-all duration-300';
 </script>
 
 <footer

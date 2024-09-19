@@ -1,8 +1,8 @@
 import { expect, test } from "../fixtures/user-sessions";
 import { TeamCheckinPage } from "../fixtures/checkin-page";
 
-test.describe("Team Checkin page", () => {
-  test.describe("Unauthenticated user", () => {
+test.describe("Team Checkin page", { tag: "@checkin" }, () => {
+  test.describe("Unauthenticated user", { tag: "@unauthenticated" }, () => {
     test("redirects to login", async ({ page }) => {
       const teamPage = new TeamCheckinPage(page);
       await teamPage.goto("bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa");
@@ -12,7 +12,7 @@ test.describe("Team Checkin page", () => {
     });
   });
 
-  test.describe("Registered user", () => {
+  test.describe("Registered user", { tag: "@registered" }, () => {
     const sharedTestTeamName = "E2E SHARED TEST TEAM";
     let sharedTeam = { id: "" };
     test.beforeAll(async ({ registeredPage }) => {

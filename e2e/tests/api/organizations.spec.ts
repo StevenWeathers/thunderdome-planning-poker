@@ -38,47 +38,53 @@ test.afterAll(async ({}) => {
   await apiContext.dispose();
 });
 
-test.describe("registered user", () => {
-  test(`GET /users/{userId}/organizations should return empty array when no organizations associated to user`, async () => {
-    const b = await adminApiContext.get(`users/${adminUser.id}/organizations`);
-    expect(b.ok()).toBeTruthy();
+test.describe(
+  "registered user",
+  { tag: ["@api", "@organization", "@registered"] },
+  () => {
+    test(`GET /users/{userId}/organizations should return empty array when no organizations associated to user`, async () => {
+      const b = await adminApiContext.get(
+        `users/${adminUser.id}/organizations`,
+      );
+      expect(b.ok()).toBeTruthy();
 
-    const organizations = await b.json();
-    expect(organizations.data).toMatchObject([]);
-  });
-
-  test(`POST /users/{userId}/organizations should create organization`, async () => {
-    const organizationName = "Test API Create Organization";
-
-    const b = await apiContext.post(`users/${user.id}/organizations`, {
-      data: {
-        name: organizationName,
-      },
+      const organizations = await b.json();
+      expect(organizations.data).toMatchObject([]);
     });
-    expect(b.ok()).toBeTruthy();
-    const organization = await b.json();
-    expect(organization.data).toMatchObject({
-      name: organizationName,
-    });
-  });
 
-  test(`GET /users/{userId}/organizations should return object in array when organizations associated to user`, async () => {
-    const organizationName = "Test API Organizations";
+    test(`POST /users/{userId}/organizations should create organization`, async () => {
+      const organizationName = "Test API Create Organization";
 
-    const b = await apiContext.post(`users/${user.id}/organizations`, {
-      data: {
+      const b = await apiContext.post(`users/${user.id}/organizations`, {
+        data: {
+          name: organizationName,
+        },
+      });
+      expect(b.ok()).toBeTruthy();
+      const organization = await b.json();
+      expect(organization.data).toMatchObject({
         name: organizationName,
-      },
+      });
     });
-    expect(b.ok()).toBeTruthy();
 
-    const bs = await apiContext.get(`users/${user.id}/organizations`);
-    expect(bs.ok()).toBeTruthy();
-    const organizations = await bs.json();
-    expect(organizations.data).toContainEqual(
-      expect.objectContaining({
-        name: organizationName,
-      }),
-    );
-  });
-});
+    test(`GET /users/{userId}/organizations should return object in array when organizations associated to user`, async () => {
+      const organizationName = "Test API Organizations";
+
+      const b = await apiContext.post(`users/${user.id}/organizations`, {
+        data: {
+          name: organizationName,
+        },
+      });
+      expect(b.ok()).toBeTruthy();
+
+      const bs = await apiContext.get(`users/${user.id}/organizations`);
+      expect(bs.ok()).toBeTruthy();
+      const organizations = await bs.json();
+      expect(organizations.data).toContainEqual(
+        expect.objectContaining({
+          name: organizationName,
+        }),
+      );
+    });
+  },
+);

@@ -2,8 +2,8 @@ import { test } from "../fixtures/user-sessions";
 import { expect } from "@playwright/test";
 import { TeamsPage } from "../fixtures/teams-page";
 
-test.describe("Teams page", () => {
-  test.describe("Unauthenticated user", () => {
+test.describe("Teams page", { tag: ["@team"] }, () => {
+  test.describe("Unauthenticated user", { tag: ["@unauthenticated"] }, () => {
     test("redirects to login", async ({ page }) => {
       const teamsPage = new TeamsPage(page);
       await teamsPage.goto();
@@ -13,7 +13,7 @@ test.describe("Teams page", () => {
     });
   });
 
-  test.describe("Registered user", () => {
+  test.describe("Registered user", { tag: ["@registered"] }, () => {
     test("successfully loads page", async ({ registeredPage }) => {
       const teamsPage = new TeamsPage(registeredPage.page);
       await teamsPage.goto();
@@ -30,7 +30,7 @@ test.describe("Teams page", () => {
       ).toBeVisible();
     });
 
-    test.describe("Create Organization", () => {
+    test.describe("Create Organization", { tag: ["@organization"] }, () => {
       test("should successfully submit and navigate to new organization page", async ({
         registeredPage,
       }) => {
