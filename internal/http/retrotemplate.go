@@ -385,6 +385,7 @@ func (s *Service) handleGetTeamRetroTemplates() http.HandlerFunc {
 // @Description  Creates a Team retro template
 // @Tags         retroTemplate
 // @Produce      json
+// @Param 	  teamId      path    string                          true  "the team ID"
 // @Param        template  body    privateRetroTemplateRequestBody                                true  "new retro template object"
 // @Success      200       object  standardJsonResponse{data=thunderdome.RetroTemplate}
 // @Failure      400       object  standardJsonResponse{}
@@ -450,6 +451,7 @@ func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 // @Description  Creates an Organization retro template
 // @Tags         retroTemplate
 // @Produce      json
+// @Param 	  orgId      path    string                          true  "the organization ID"
 // @Param        template  body    privateRetroTemplateRequestBody                                true  "new retro template object"
 // @Success      200       object  standardJsonResponse{data=thunderdome.RetroTemplate}
 // @Failure      400       object  standardJsonResponse{}
@@ -515,6 +517,7 @@ func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 // @Description  Updates a Team Retro Template
 // @Tags         retroTemplate
 // @Produce      json
+// @Param 	  teamId      path    string                          true  "the team ID"
 // @Param        templateId  path    string                                                true  "the retro template ID to update"
 // @Param        template    body    privateRetroTemplateRequestBody                              true  "retro template object to update"
 // @Success      200         object  standardJsonResponse{data=thunderdome.RetroTemplate}
@@ -584,9 +587,10 @@ func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
 
 // handleOrganizationRetroTemplateUpdate updates an organization retro template
 // @Summary      Update Organization Retro Template
-// @Description  Updates a Organization Retro Template
+// @Description  Updates an Organization Retro Template
 // @Tags         retroTemplate
 // @Produce      json
+// @Param 	  orgId      path    string                          true  "the organization ID"
 // @Param        templateId  path    string                                                true  "the retro template ID to update"
 // @Param        template    body    privateRetroTemplateRequestBody                              true  "retro template object to update"
 // @Success      200         object  standardJsonResponse{data=thunderdome.RetroTemplate}
@@ -659,6 +663,7 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 // @Description  Deletes an Organization Retro Template
 // @Tags         retroTemplate
 // @Produce      json
+// @Param 	  orgId      path    string                          true  "the Organization ID"
 // @Param        templateId  path    string                          true  "the retro template ID to delete"
 // @Success      200         object  standardJsonResponse{}
 // @Failure      400         object  standardJsonResponse{}
@@ -671,10 +676,15 @@ func (s *Service) handleOrganizationRetroTemplateDelete() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TemplateID := vars["templateId"]
-		OrganizationID := vars["orgId"]
 		idErr := validate.Var(TemplateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		OrganizationID := vars["orgId"]
+		oidErr := validate.Var(OrganizationID, "required,uuid")
+		if oidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
 
@@ -697,6 +707,7 @@ func (s *Service) handleOrganizationRetroTemplateDelete() http.HandlerFunc {
 // @Description  Deletes a Team Retro Template
 // @Tags         retroTemplate
 // @Produce      json
+// @Param 	  teamId      path    string                          true  "the team ID"
 // @Param        templateId  path    string                          true  "the retro template ID to delete"
 // @Success      200         object  standardJsonResponse{}
 // @Failure      400         object  standardJsonResponse{}

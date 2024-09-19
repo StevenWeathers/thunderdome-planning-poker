@@ -53,6 +53,11 @@ func (s *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 		}
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
@@ -84,6 +89,11 @@ func (s *Service) handleGetOrganizationByUser() http.HandlerFunc {
 		OrgRole := ctx.Value(contextKeyOrgRole).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
 		if err != nil {
@@ -125,6 +135,11 @@ func (s *Service) handleCreateOrganization() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var team = teamCreateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -174,6 +189,11 @@ func (s *Service) handleOrganizationUpdate() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var team = teamCreateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -222,6 +242,11 @@ func (s *Service) handleGetOrganizationTeams() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Teams := s.OrganizationDataSvc.OrganizationTeamList(ctx, OrgID, Limit, Offset)
@@ -249,6 +274,11 @@ func (s *Service) handleGetOrganizationUsers() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Teams := s.OrganizationDataSvc.OrganizationUserList(ctx, OrgID, Limit, Offset)
@@ -279,6 +309,11 @@ func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var team = teamCreateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -328,6 +363,11 @@ func (s *Service) handleOrganizationInviteUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var u = teamInviteUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -417,7 +457,17 @@ func (s *Service) handleOrganizationUpdateUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserID := vars["userId"]
+		idErr = validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var u = teamUpdateUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -468,8 +518,13 @@ func (s *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		idErr = validate.Var(UserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -513,7 +568,17 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID := vars["teamId"]
+		idErr = validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
 		if err != nil {
@@ -570,7 +635,17 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID := vars["teamId"]
+		idErr = validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var u = addUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -660,6 +735,11 @@ func (s *Service) handleGetOrganizationUserInvites() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		orgId := vars["orgId"]
+		idErr := validate.Var(orgId, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		invites, err := s.OrganizationDataSvc.OrganizationGetUserInvites(ctx, orgId)
 		if err != nil {
@@ -695,8 +775,13 @@ func (s *Service) handleDeleteOrganizationUserInvite() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		InviteID := vars["inviteId"]
-		idErr := validate.Var(InviteID, "required,uuid")
+		idErr = validate.Var(InviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -733,8 +818,8 @@ func (s *Service) handleOrganizationMetrics() http.HandlerFunc {
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		organizationID := vars["orgId"]
-
-		if organizationID == "" {
+		idErr := validate.Var(organizationID, "required,uuid")
+		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, errors.New("organization ID is required"))
 			return
 		}

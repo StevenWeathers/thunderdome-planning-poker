@@ -37,6 +37,11 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 
 		Team, err := s.TeamDataSvc.TeamGet(ctx, TeamID)
@@ -72,6 +77,11 @@ func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
@@ -96,6 +106,11 @@ func (s *Service) handleGetTeamsByUserNonOrg() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
@@ -120,6 +135,11 @@ func (s *Service) handleGetTeamUsers() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Users, UserCount, err := s.TeamDataSvc.TeamUserList(ctx, TeamID, Limit, Offset)
@@ -162,6 +182,11 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var team = teamCreateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -212,6 +237,11 @@ func (s *Service) handleTeamUpdate() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var team = teamCreateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -273,6 +303,11 @@ func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var u = teamInviteUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -365,7 +400,17 @@ func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		tidErr := validate.Var(TeamID, "required,uuid")
+		if tidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tidErr.Error()))
+			return
+		}
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var u = teamUpdateUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -417,6 +462,11 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		tidErr := validate.Var(TeamID, "required,uuid")
+		if tidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tidErr.Error()))
+			return
+		}
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
@@ -450,6 +500,11 @@ func (s *Service) handleGetTeamBattles() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
@@ -477,8 +532,13 @@ func (s *Service) handleTeamRemoveBattle() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		BattleID := vars["battleId"]
-		idErr := validate.Var(BattleID, "required,uuid")
+		idErr = validate.Var(BattleID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -545,6 +605,11 @@ func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Retrospectives := s.TeamDataSvc.TeamRetroList(ctx, TeamID, Limit, Offset)
@@ -571,8 +636,13 @@ func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		RetrospectiveID := vars["retroId"]
-		idErr := validate.Var(RetrospectiveID, "required,uuid")
+		idErr = validate.Var(RetrospectiveID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -602,6 +672,11 @@ func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Storyboards := s.TeamDataSvc.TeamStoryboardList(ctx, TeamID, Limit, Offset)
@@ -628,8 +703,13 @@ func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		StoryboardID := vars["storyboardId"]
-		idErr := validate.Var(StoryboardID, "required,uuid")
+		idErr = validate.Var(StoryboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -663,6 +743,11 @@ func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		var err error
 		var Count int
@@ -704,6 +789,11 @@ func (s *Service) handleGetTeamUserInvites() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		invites, err := s.TeamDataSvc.TeamGetUserInvites(ctx, TeamID)
 		if err != nil {
@@ -735,8 +825,13 @@ func (s *Service) handleDeleteTeamUserInvite() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		inviteId := vars["inviteId"]
-		idErr := validate.Var(inviteId, "required,uuid")
+		idErr = validate.Var(inviteId, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -770,6 +865,11 @@ func (s *Service) handleTeamMetrics() http.HandlerFunc {
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		teamID := vars["teamID"]
+		idErr := validate.Var(teamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		if teamID == "" {
 			s.Failure(w, r, http.StatusBadRequest, errors.New("team ID is required"))

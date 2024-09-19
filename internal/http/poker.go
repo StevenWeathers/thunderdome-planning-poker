@@ -33,6 +33,11 @@ func (s *Service) handleGetUserGames() http.HandlerFunc {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		battles, Count, err := s.PokerDataSvc.GetGamesByUser(UserID, Limit, Offset)
 		if err != nil {
@@ -87,6 +92,11 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID, teamIdExists := vars["teamId"]
 
 		if !teamIdExists && s.Config.RequireTeams {

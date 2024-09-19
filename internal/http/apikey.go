@@ -146,6 +146,11 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 		APK := vars["keyID"]
+		apkErr := validate.Var(APK, "required,uuid")
+		if apkErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, apkErr.Error()))
+			return
+		}
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -203,6 +208,11 @@ func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 			return
 		}
 		APK := vars["keyID"]
+		apkErr := validate.Var(APK, "required,uuid")
+		if apkErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, apkErr.Error()))
+			return
+		}
 
 		APIKeys, keysErr := s.ApiKeyDataSvc.DeleteUserApiKey(ctx, UserID, APK)
 		if keysErr != nil {

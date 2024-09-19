@@ -50,6 +50,11 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID, teamIdExists := vars["teamId"]
 
 		if !teamIdExists && s.Config.RequireTeams {
@@ -127,6 +132,11 @@ func (s *Service) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		re, err := s.RetroDataSvc.RetroGet(RetroID, SessionUserID)
@@ -158,6 +168,11 @@ func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		retros, Count, err := s.RetroDataSvc.RetroGetByUser(UserID, Limit, Offset)
 		if err != nil {
@@ -254,6 +269,11 @@ func (s *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 			return
 		}
 		ActionID := vars["actionId"]
+		idErr = validate.Var(ActionID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
@@ -366,6 +386,11 @@ func (s *Service) handleRetroActionAssigneeAdd(rs *retro.Service) http.HandlerFu
 			return
 		}
 		ActionID := vars["actionId"]
+		idErr = validate.Var(ActionID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
@@ -430,6 +455,11 @@ func (s *Service) handleRetroActionAssigneeRemove(rs *retro.Service) http.Handle
 			return
 		}
 		ActionID := vars["actionId"]
+		idErr = validate.Var(ActionID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)

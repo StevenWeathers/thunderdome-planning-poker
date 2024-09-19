@@ -43,7 +43,17 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID, teamIdExists := vars["teamId"]
+		idErr = validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		if !teamIdExists && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "STORYBOARD_CREATION_REQUIRES_TEAM"))
@@ -164,6 +174,11 @@ func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		storyboards, Count, err := s.StoryboardDataSvc.GetStoryboardsByUser(UserID, Limit, Offset)
 		if err != nil {

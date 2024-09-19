@@ -3561,8 +3561,13 @@ paths:
       - estimation-scale
   /organization/{orgId}/retro-templates/{templateId}:
     put:
-      description: Updates a Organization Retro Template
+      description: Updates an Organization Retro Template
       parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
       - description: the retro template ID to update
         in: path
         name: templateId
@@ -4520,6 +4525,11 @@ paths:
     post:
       description: Creates an Organization retro template
       parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
       - description: new retro template object
         in: body
         name: template
@@ -4555,6 +4565,11 @@ paths:
     delete:
       description: Deletes an Organization Retro Template
       parameters:
+      - description: the Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
       - description: the retro template ID to delete
         in: path
         name: templateId
@@ -5376,7 +5391,7 @@ paths:
       tags:
       - subscription
     post:
-      description: Creates an subscription
+      description: Creates a subscription
       parameters:
       - description: new subscription object
         in: body
@@ -5517,6 +5532,47 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete Team Estimation Scale
+      tags:
+      - estimation-scale
+  /teams/{orgId}/estimation-scales/{scaleId}:
+    put:
+      description: Updates an Organization Estimation Scale
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the estimation scale ID to update
+        in: path
+        name: scaleId
+        required: true
+        type: string
+      - description: estimation scale object to update
+        in: body
+        name: scale
+        required: true
+        schema:
+          $ref: '#/definitions/http.privateEstimationScaleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated estimation scale
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.EstimationScale'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Estimation Scale
       tags:
       - estimation-scale
   /teams/{teamId}:
@@ -5861,45 +5917,6 @@ paths:
       summary: Create Team Checkin Comment
       tags:
       - team
-    put:
-      description: Edits a team user checkin comment
-      parameters:
-      - description: the team ID
-        in: path
-        name: teamId
-        required: true
-        type: string
-      - description: the checkin ID
-        in: path
-        name: checkinId
-        required: true
-        type: string
-      - description: comment object
-        in: body
-        name: comment
-        required: true
-        schema:
-          $ref: '#/definitions/http.checkinCommentRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Edit Team Checkin Comment
-      tags:
-      - team
   /teams/{teamId}/checkins/{checkinId}/comments/{commentId}:
     delete:
       description: Deletes a team user checkin comment
@@ -5937,6 +5954,50 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete Team Checkin Comment
+      tags:
+      - team
+    put:
+      description: Edits a team user checkin comment
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the checkin ID
+        in: path
+        name: checkinId
+        required: true
+        type: string
+      - description: the comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      - description: comment object
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/http.checkinCommentRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Edit Team Checkin Comment
       tags:
       - team
   /teams/{teamId}/checkins/users/{userId}/last:
@@ -6047,8 +6108,13 @@ paths:
       - estimation-scale
   /teams/{teamId}/estimation-scales/{scaleId}:
     put:
-      description: Updates an Organization Estimation Scale
+      description: Updates a Team Estimation Scale
       parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
       - description: the estimation scale ID to update
         in: path
         name: scaleId
@@ -6078,7 +6144,7 @@ paths:
             $ref: '#/definitions/http.standardJsonResponse'
       security:
       - ApiKeyAuth: []
-      summary: Update Organization Estimation Scale
+      summary: Update Team Estimation Scale
       tags:
       - estimation-scale
   /teams/{teamId}/invites:
@@ -6256,6 +6322,11 @@ paths:
     post:
       description: Creates a Team retro template
       parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
       - description: new retro template object
         in: body
         name: template
@@ -6291,6 +6362,11 @@ paths:
     delete:
       description: Deletes a Team Retro Template
       parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
       - description: the retro template ID to delete
         in: path
         name: templateId
@@ -6319,6 +6395,11 @@ paths:
     put:
       description: Updates a Team Retro Template
       parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
       - description: the retro template ID to update
         in: path
         name: templateId

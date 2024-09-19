@@ -39,6 +39,11 @@ func (s *Service) handleSubscriptionGet() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		id := vars["subscriptionId"]
+		idErr := validate.Var(id, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		sub, err := s.SubscriptionDataSvc.GetSubscriptionByID(ctx, id)
 		if err != nil {
@@ -90,7 +95,7 @@ func (s *Service) handleGetSubscriptions() http.HandlerFunc {
 
 // handleSubscriptionCreate creates a new subscription
 // @Summary      Create Subscription
-// @Description  Creates an subscription
+// @Description  Creates a subscription
 // @Tags         subscription
 // @Produce      json
 // @Param        subscription  body    subscriptionRequestBody  true  "new subscription object"
@@ -261,6 +266,11 @@ func (s *Service) handleGetEntityUserActiveSubs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		EntityUserID := vars["userId"]
+		idErr := validate.Var(EntityUserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Subscriptions, err := s.SubscriptionDataSvc.GetActiveSubscriptionsByUserID(ctx, EntityUserID)
 		if err != nil {
@@ -298,7 +308,17 @@ func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
 		vars := mux.Vars(r)
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		EntityUserID := vars["userId"]
+		idErr := validate.Var(EntityUserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		SubscriptionID := vars["subscriptionId"]
+		sidErr := validate.Var(SubscriptionID, "required,uuid")
+		if sidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, sidErr.Error()))
+			return
+		}
 
 		var sar = subscriptionAssociateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)

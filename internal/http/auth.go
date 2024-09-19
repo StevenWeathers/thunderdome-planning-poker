@@ -784,6 +784,11 @@ func (s *Service) handleGetTeamInvite() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		InviteID := vars["inviteId"]
+		ivdErr := validate.Var(InviteID, "required,uuid")
+		if ivdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, ivdErr.Error()))
+			return
+		}
 
 		invite, err := s.TeamDataSvc.TeamUserGetInviteByID(ctx, InviteID)
 		if err != nil {
@@ -809,6 +814,11 @@ func (s *Service) handleGetOrganizationInvite() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		InviteID := vars["inviteId"]
+		ivdErr := validate.Var(InviteID, "required,uuid")
+		if ivdErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, ivdErr.Error()))
+			return
+		}
 
 		invite, err := s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, InviteID)
 		if err != nil {

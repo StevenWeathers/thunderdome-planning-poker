@@ -2677,7 +2677,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Updates a Organization Retro Template",
+                "description": "Updates an Organization Retro Template",
                 "produces": [
                     "application/json"
                 ],
@@ -2686,6 +2686,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Organization Retro Template",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "the retro template ID to update",
@@ -4248,6 +4255,13 @@ const docTemplate = `{
                 "summary": "Create Organization Retro Template",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "new retro template object",
                         "name": "template",
                         "in": "body",
@@ -4307,6 +4321,13 @@ const docTemplate = `{
                 ],
                 "summary": "Delete Organization Retro Template",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "the retro template ID to delete",
@@ -5618,7 +5639,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Creates an subscription",
+                "description": "Creates a subscription",
                 "produces": [
                     "application/json"
                 ],
@@ -5843,6 +5864,74 @@ const docTemplate = `{
                         "description": "returns success message",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/teams/{orgId}/estimation-scales/{scaleId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates an Organization Estimation Scale",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "estimation-scale"
+                ],
+                "summary": "Update Organization Estimation Scale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the estimation scale ID to update",
+                        "name": "scaleId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "estimation scale object to update",
+                        "name": "scale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.privateEstimationScaleRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns updated estimation scale",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.EstimationScale"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -6397,66 +6486,6 @@ const docTemplate = `{
             }
         },
         "/teams/{teamId}/checkins/{checkinId}/comments": {
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Edits a team user checkin comment",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "team"
-                ],
-                "summary": "Edit Team Checkin Comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the team ID",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "the checkin ID",
-                        "name": "checkinId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "comment object",
-                        "name": "comment",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.checkinCommentRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -6519,6 +6548,73 @@ const docTemplate = `{
             }
         },
         "/teams/{teamId}/checkins/{checkinId}/comments/{commentId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Edits a team user checkin comment",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "team"
+                ],
+                "summary": "Edit Team Checkin Comment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the checkin ID",
+                        "name": "checkinId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the comment ID",
+                        "name": "commentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "comment object",
+                        "name": "comment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.checkinCommentRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -6711,15 +6807,22 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Updates an Organization Estimation Scale",
+                "description": "Updates a Team Estimation Scale",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "estimation-scale"
                 ],
-                "summary": "Update Organization Estimation Scale",
+                "summary": "Update Team Estimation Scale",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "the estimation scale ID to update",
@@ -7062,6 +7165,13 @@ const docTemplate = `{
                 "summary": "Create Team Retro Template",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "new retro template object",
                         "name": "template",
                         "in": "body",
@@ -7121,6 +7231,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Team Retro Template",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "the retro template ID to update",
@@ -7186,6 +7303,13 @@ const docTemplate = `{
                 ],
                 "summary": "Delete Team Retro Template",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "the retro template ID to delete",

@@ -82,6 +82,11 @@ func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
 			return
 		}
 		UserID := vars["userId"]
+		uidErr := validate.Var(UserID, "required,uuid")
+		if uidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, uidErr.Error()))
+			return
+		}
 
 		Checkin, err := s.CheckinDataSvc.CheckinLastByUser(ctx, TeamID, UserID)
 		if err != nil && err.Error() != "NO_LAST_CHECKIN" {
@@ -384,6 +389,7 @@ func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 // @Description  Edits a team user checkin comment
 // @Param        teamId     path  string                     true  "the team ID"
 // @Param        checkinId  path  string                     true  "the checkin ID"
+// @Param        commentId  path  string  true  "the comment ID"
 // @Param        comment    body  checkinCommentRequestBody  true  "comment object"
 // @Tags         team
 // @Produce      json
@@ -391,7 +397,7 @@ func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 // @Success      403  object  standardJsonResponse{}
 // @Success      500  object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins/{checkinId}/comments [put]
+// @Router       /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [put]
 func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

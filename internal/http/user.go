@@ -64,6 +64,11 @@ func (s *Service) handleUserProfile() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		User, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
 		if UserErr != nil {
@@ -108,6 +113,11 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 		SessionUserType := ctx.Value(contextKeyUserType).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var profile = userprofileUpdateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -187,6 +197,11 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 
@@ -235,6 +250,11 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		User, VerifyId, err := s.AuthDataSvc.UserVerifyRequest(ctx, UserID)
 		if err != nil {
@@ -284,6 +304,11 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 
 		Width, _ := strconv.Atoi(vars["width"])
 		UserID := vars["id"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		AvatarGender := govatar.MALE
 		userGender, ok := vars["avatar"]
 		if ok {
@@ -343,7 +368,17 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		InviteID := vars["inviteId"]
+		idErr = validate.Var(InviteID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		user, err := s.UserDataSvc.GetUser(ctx, UserID)
 		if err != nil {
@@ -416,7 +451,17 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		InviteID := vars["inviteId"]
+		idErr = validate.Var(InviteID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		user, err := s.UserDataSvc.GetUser(ctx, UserID)
 		if err != nil {
@@ -510,7 +555,17 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		InviteID := vars["inviteId"]
+		idErr = validate.Var(InviteID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		user, err := s.UserDataSvc.GetUser(ctx, UserID)
 		if err != nil {
@@ -641,6 +696,11 @@ func (s *Service) handleUserCredential() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		credential, UserErr := s.UserDataSvc.GetUserCredential(ctx, UserID)
 		if UserErr != nil {

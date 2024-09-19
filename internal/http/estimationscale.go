@@ -588,6 +588,7 @@ func (s *Service) handleTeamEstimationScaleDelete() http.HandlerFunc {
 // @Description  Updates a Team Estimation Scale
 // @Tags         estimation-scale
 // @Produce      json
+// @Param        teamId   path    string  true   "Team ID"
 // @Param        scaleId  path    string                                                 true  "the estimation scale ID to update"
 // @Param        scale    body    privateEstimationScaleRequestBody                             true  "estimation scale object to update"
 // @Success      200      object  standardJsonResponse{data=thunderdome.EstimationScale} "returns updated estimation scale"
@@ -660,12 +661,13 @@ func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
 // @Description  Updates an Organization Estimation Scale
 // @Tags         estimation-scale
 // @Produce      json
+// @Param        orgId   path    string  true   "Organization ID"
 // @Param        scaleId  path    string                                                 true  "the estimation scale ID to update"
 // @Param        scale    body    privateEstimationScaleRequestBody                             true  "estimation scale object to update"
 // @Success      200      object  standardJsonResponse{data=thunderdome.EstimationScale} "returns updated estimation scale"
 // @Failure      500      object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/estimation-scales/{scaleId} [put]
+// @Router       /teams/{orgId}/estimation-scales/{scaleId} [put]
 func (s *Service) handleOrganizationEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

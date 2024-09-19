@@ -28,6 +28,11 @@ func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		userId := vars["userId"]
+		idErr := validate.Var(userId, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		instances, err := s.JiraDataSvc.FindInstancesByUserId(ctx, userId)
 		if err != nil {
@@ -65,6 +70,11 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		userId := vars["userId"]
+		idErr := validate.Var(userId, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var req = jiraInstanceRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -116,7 +126,17 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		userId := vars["userId"]
+		idErr := validate.Var(userId, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		instanceId := vars["instanceId"]
+		iidErr := validate.Var(instanceId, "required,uuid")
+		if iidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
+			return
+		}
 
 		var req = jiraInstanceRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -167,7 +187,17 @@ func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		instanceId := vars["instanceId"]
+		iidErr := validate.Var(instanceId, "required,uuid")
+		if iidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
+			return
+		}
 		userId := vars["userId"]
+		idErr := validate.Var(userId, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := s.JiraDataSvc.DeleteInstance(ctx, instanceId)
 		if err != nil {
@@ -206,7 +236,17 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		userId := vars["userId"]
+		idErr := validate.Var(userId, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		instanceId := vars["instanceId"]
+		iidErr := validate.Var(instanceId, "required,uuid")
+		if iidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
+			return
+		}
 
 		var req = jiraStoryJQLSearchRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
