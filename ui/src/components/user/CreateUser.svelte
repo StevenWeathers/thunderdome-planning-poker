@@ -1,6 +1,6 @@
 <script lang="ts">
   import Modal from '../global/Modal.svelte';
-  import WarriorRegisterForm from './UserRegisterForm.svelte';
+  import UserRegisterForm from './UserRegisterForm.svelte';
 
   export let notifications;
   export let toggleCreate = () => {};
@@ -8,8 +8,11 @@
 </script>
 
 <Modal closeModal="{toggleCreate}">
-  <WarriorRegisterForm
-    handleSubmit="{handleCreate}"
-    notifications="{notifications}"
-  />
+  <div class="pt-10">
+    <UserRegisterForm
+      handleFullAccountRegistration="{handleCreate}"
+      notifications="{notifications}"
+      fullOnly="{true}"
+    />
+  </div>
 </Modal>

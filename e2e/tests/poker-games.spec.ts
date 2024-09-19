@@ -4,8 +4,8 @@ import { PokerGamesPage } from "../fixtures/poker-games-page";
 
 const pageTitle = "My Games";
 
-test.describe("Poker Games page", () => {
-  test.describe("Unauthenticated user", () => {
+test.describe("Poker Games page", { tag: "@poker" }, () => {
+  test.describe("Unauthenticated user", { tag: "@unauthenticated" }, () => {
     test("displays poker landing page", async ({ page }) => {
       const battlesPage = new PokerGamesPage(page);
       await battlesPage.goto();
@@ -15,7 +15,7 @@ test.describe("Poker Games page", () => {
     });
   });
 
-  test.describe("Guest user", () => {
+  test.describe("Guest user", { tag: "@guest" }, () => {
     test("should load page", async ({ guestPage }) => {
       const battlesPage = new PokerGamesPage(guestPage.page);
       await battlesPage.goto();
@@ -54,7 +54,7 @@ test.describe("Poker Games page", () => {
     });
   });
 
-  test.describe("Registered user", () => {
+  test.describe("Registered user", { tag: "@registered" }, () => {
     test("should load page", async ({ registeredPage }) => {
       const battlesPage = new PokerGamesPage(registeredPage.page);
       await battlesPage.goto();

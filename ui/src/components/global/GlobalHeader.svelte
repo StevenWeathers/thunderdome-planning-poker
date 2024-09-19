@@ -118,16 +118,16 @@
             {#if HeaderAuthEnabled}
               <button
                 on:click="{headerLogin}"
-                class="text-sm md:text-base block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-102 flex items-center space-x-2 shadow-md hover:shadow-lg"
                 >{$LL.login()}
-                <ArrowRight class="h-4 w-4 ms-2 inline-block" />
+                <ArrowRight class="h-4 w-4 ms-1 inline-block" />
               </button>
             {:else}
               <a
                 href="{appRoutes.login}"
-                class="text-sm md:text-base block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-102 flex items-center space-x-2 shadow-md hover:shadow-lg"
                 >{$LL.login()}
-                <ArrowRight class="h-4 w-4 ms-2 inline-block" />
+                <ArrowRight class="h-4 w-4 ms-1 inline-block" />
               </a>
             {/if}
           </li>

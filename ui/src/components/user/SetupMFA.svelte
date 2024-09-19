@@ -4,6 +4,7 @@
 
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
+  import { Shield } from 'lucide-svelte';
 
   export let toggleSetup = () => {};
   export let handleComplete = () => {};
@@ -77,6 +78,7 @@
           name="mfaPasscode"
           type="password"
           required
+          icon="{Shield}"
         />
       </div>
 

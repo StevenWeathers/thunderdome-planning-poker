@@ -7,7 +7,7 @@ const lokiPlan = { name: "Defeat Loki", type: "Story" };
 const thanosPlan = { name: "Defeat Thanos", type: "Epic" };
 const scarletPlan = { name: "Defeat Scarlet Witch", type: "Epic" };
 
-test.describe("Poker Game page", () => {
+test.describe("Poker Game page", { tag: ["@poker"] }, () => {
   let poker = { id: "", name: "e2e poker page tests" };
   let pokerWithStory = { id: "" };
   let pokerAddStory = { id: "" };
@@ -81,27 +81,39 @@ test.describe("Poker Game page", () => {
     pokerDelete = await registeredPage.createPokerGame({ ...commonBattle });
   });
 
-  test("unauthenticated user redirects to register", async ({ page }) => {
-    const bp = new PokerGamePage(page);
-    await bp.goto(poker.id);
+  test(
+    "unauthenticated user redirects to register",
+    { tag: "@unauthenticated" },
+    async ({ page }) => {
+      const bp = new PokerGamePage(page);
+      await bp.goto(poker.id);
 
-    const title = bp.page.locator("h1");
-    await expect(title).toHaveText("Register");
-  });
+      const title = bp.page.locator("h1");
+      await expect(title).toHaveText("Register");
+    },
+  );
 
-  test("guest user successfully loads", async ({ guestPage }) => {
-    const bp = new PokerGamePage(guestPage.page);
-    await bp.goto(poker.id);
+  test(
+    "guest user successfully loads",
+    { tag: "@guest" },
+    async ({ guestPage }) => {
+      const bp = new PokerGamePage(guestPage.page);
+      await bp.goto(poker.id);
 
-    await expect(bp.pageTitle).toHaveText(poker.name);
-  });
+      await expect(bp.pageTitle).toHaveText(poker.name);
+    },
+  );
 
-  test("registered user successfully loads", async ({ registeredPage }) => {
-    const bp = new PokerGamePage(registeredPage.page);
-    await bp.goto(poker.id);
+  test(
+    "registered user successfully loads",
+    { tag: "@registered" },
+    async ({ registeredPage }) => {
+      const bp = new PokerGamePage(registeredPage.page);
+      await bp.goto(poker.id);
 
-    await expect(bp.pageTitle).toHaveText(poker.name);
-  });
+      await expect(bp.pageTitle).toHaveText(poker.name);
+    },
+  );
 
   test("user cannot become spectator when autoFinishVoting is false", async ({
     registeredPage,

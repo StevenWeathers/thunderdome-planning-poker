@@ -1,8 +1,8 @@
 import { expect, test } from "../fixtures/user-sessions";
 import { DepartmentPage } from "../fixtures/department-page";
 
-test.describe("Department page", () => {
-  test.describe("Unauthenticated user", () => {
+test.describe("Department page", { tag: "@department" }, () => {
+  test.describe("Unauthenticated user", { tag: "@unauthenticated" }, () => {
     test("redirects to login", async ({ page }) => {
       const departmentPage = new DepartmentPage(page);
       await departmentPage.goto(
@@ -15,7 +15,7 @@ test.describe("Department page", () => {
     });
   });
 
-  test.describe("Registered user", () => {
+  test.describe("Registered user", { tag: "@registered" }, () => {
     test("loads page successfully", async ({ registeredPage }) => {
       const testOrgName = "E2E TEST ORGANIZATION";
       const testDepartmentName = "E2E TEST DEPARTMENT";

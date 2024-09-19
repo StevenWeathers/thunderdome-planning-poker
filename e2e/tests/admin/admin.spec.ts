@@ -1,8 +1,8 @@
 import { expect, test } from "../../fixtures/user-sessions";
 import { AdminPage } from "../../fixtures/admin/admin-page";
 
-test.describe("Admin page", () => {
-  test.describe("Unauthenticated user", () => {
+test.describe("Admin page", { tag: ["@administration"] }, () => {
+  test.describe("Unauthenticated user", { tag: ["@unauthenticated"] }, () => {
     test("redirects to login", async ({ page }) => {
       const adminPage = new AdminPage(page);
 
@@ -13,7 +13,7 @@ test.describe("Admin page", () => {
     });
   });
 
-  test.describe("Guest user", () => {
+  test.describe("Guest user", { tag: ["@guest"] }, () => {
     test("redirects to landing", async ({ guestPage }) => {
       const adminPage = new AdminPage(guestPage.page);
 
@@ -24,7 +24,7 @@ test.describe("Admin page", () => {
     });
   });
 
-  test.describe("Non Admin Registered User", () => {
+  test.describe("Non Admin Registered User", { tag: ["@registered"] }, () => {
     test("redirects to landing", async ({ registeredPage }) => {
       const adminPage = new AdminPage(registeredPage.page);
 
@@ -35,7 +35,7 @@ test.describe("Admin page", () => {
     });
   });
 
-  test.describe("Admin User", () => {
+  test.describe("Admin User", { tag: ["@admin"] }, () => {
     test("loads admin page", async ({ adminPage }) => {
       const ap = new AdminPage(adminPage.page);
 

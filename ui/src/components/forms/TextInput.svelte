@@ -1,10 +1,12 @@
 <script lang="ts">
   export let type: string = 'text';
   export let value: any;
+  export let icon: any;
   let klass: string = '';
   export { klass as class };
 
   let inputElement;
+
   export function focus() {
     inputElement.focus();
   }
@@ -13,14 +15,22 @@
   const typeWorkaround = node => (node.type = type);
 </script>
 
-<input
-  use:typeWorkaround
-  bind:this="{inputElement}"
-  bind:value="{value}"
-  on:change
-  on:input
-  class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 {klass}"
-  {...$$restProps}
-/>
+<div class="relative">
+  <input
+    use:typeWorkaround
+    bind:this="{inputElement}"
+    bind:value="{value}"
+    on:change
+    on:input
+    class="block w-full px-5 py-3 text-lg rounded-lg outline-none transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 disabled:cursor-not-allowed {klass}"
+    {...$$restProps}
+  />
+  {#if icon}
+    <svelte:component
+      this="{icon}"
+      class="absolute top-3 right-3 text-gray-500 dark:text-gray-400"
+      size="{24}"
+      tabindex="-1"
+    />
+  {/if}
+</div>

@@ -38,18 +38,22 @@ test.afterAll(async ({}) => {
   await apiContext.dispose();
 });
 
-test.describe("registered user", () => {
-  test(`GET ${userProfileEndpoint} should return session user profile`, async () => {
-    const u = await apiContext.get(userProfileEndpoint);
-    expect(u.ok()).toBeTruthy();
+test.describe(
+  "registered user",
+  { tag: ["@api", "@user", "@registered"] },
+  () => {
+    test(`GET ${userProfileEndpoint} should return session user profile`, async () => {
+      const u = await apiContext.get(userProfileEndpoint);
+      expect(u.ok()).toBeTruthy();
 
-    const pu = await u.json();
-    expect(pu.data).toMatchObject({
-      name: "E2E API User",
-      email: "e2eapi@thunderdome.dev",
-      rank: "REGISTERED",
-      verified: true,
-      disabled: false,
+      const pu = await u.json();
+      expect(pu.data).toMatchObject({
+        name: "E2E API User",
+        email: "e2eapi@thunderdome.dev",
+        rank: "REGISTERED",
+        verified: true,
+        disabled: false,
+      });
     });
-  });
-});
+  },
+);

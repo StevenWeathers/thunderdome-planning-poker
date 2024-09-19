@@ -6,6 +6,7 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import { AppConfig } from '../../config';
   import { onMount } from 'svelte';
+  import { Mail } from 'lucide-svelte';
 
   export let toggleAdd = () => {};
   export let handleAdd = () => {};
@@ -173,8 +174,10 @@
         placeholder="{$LL.userEmailPlaceholder()}"
         id="userEmail"
         name="userEmail"
+        type="email"
         required="{selectedUser === ''}"
         disabled="{selectedUser !== ''}"
+        icon="{Mail}"
       />
     </div>
 

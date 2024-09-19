@@ -1,12 +1,8 @@
 <script lang="ts">
-  import PageLayout from '../../components/PageLayout.svelte';
   import { user } from '../../stores';
-  import { validateName } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes } from '../../config';
-  import SolidButton from '../../components/global/SolidButton.svelte';
+  import { appRoutes } from '../../config';
   import UserRegisterForm from '../../components/user/UserRegisterForm.svelte';
-  import TextInput from '../../components/forms/TextInput.svelte';
   import { onMount } from 'svelte';
 
   export let router;
@@ -20,17 +16,11 @@
   export let teamInviteId;
   export let subscription = false;
 
-  const guestsAllowed = AppConfig.AllowGuests;
-  const registrationAllowed = AppConfig.AllowRegistration;
-
-  let warriorName = $user.name || '';
+  let userName = $user.name || '';
   let wasInvited = false;
   let inviteDetails = {
     email: '',
   };
-
-  /** @type {TextInput} */
-  let warriorNameTextInput;
 
   function targetPage() {
     let tp = appRoutes.games;
@@ -60,54 +50,38 @@
     return tp;
   }
 
-  function createUserGuest(e) {
-    e.preventDefault();
+  function createUserGuest(name) {
     const body = {
-      name: warriorName,
+      name,
     };
-    const validName = validateName(warriorName);
 
-    let noFormErrors = true;
-
-    if (!validName.valid) {
-      noFormErrors = false;
-      notifications.danger(validName.error, 1500);
-    }
-
-    if (noFormErrors) {
-      xfetch('/api/auth/guest', { body })
-        .then(res => res.json())
-        .then(function (result) {
-          const newWarrior = result.data;
-          user.create({
-            id: newWarrior.id,
-            name: newWarrior.name,
-            rank: newWarrior.rank,
-            notificationsEnabled: newWarrior.notificationsEnabled,
-          });
-
-          eventTag('register_guest', 'engagement', 'success', () => {
-            router.route(targetPage(), true);
-          });
-        })
-        .catch(function () {
-          notifications.danger($LL.guestRegisterError());
-          eventTag('register_guest', 'engagement', 'failure');
+    xfetch('/api/auth/guest', { body })
+      .then(res => res.json())
+      .then(function (result) {
+        const newWarrior = result.data;
+        user.create({
+          id: newWarrior.id,
+          name: newWarrior.name,
+          rank: newWarrior.rank,
+          notificationsEnabled: newWarrior.notificationsEnabled,
         });
-    }
+
+        eventTag('register_guest', 'engagement', 'success', () => {
+          router.route(targetPage(), true);
+        });
+      })
+      .catch(function () {
+        notifications.danger($LL.guestRegisterError());
+        eventTag('register_guest', 'engagement', 'failure');
+      });
   }
 
-  function createUserRegistered(
-    warriorName,
-    warriorEmail,
-    warriorPassword1,
-    warriorPassword2,
-  ) {
+  function createUserRegistered(name, email, password1, password2) {
     const body = {
-      name: warriorName,
-      email: warriorEmail,
-      password1: warriorPassword1,
-      password2: warriorPassword2,
+      name,
+      email,
+      password1,
+      password2,
     };
 
     xfetch('/api/auth/register', { body })
@@ -147,17 +121,18 @@
       });
   }
 
-  $: registerDisabled =
-    warriorName === '' || (wasInvited && inviteDetails.email === '');
+  $: registerDisabled = wasInvited && inviteDetails.email === '';
+
+  const loginLinkContextClasses =
+    'font-rajdhani uppercase text-lg md:text-xl lg:text-2xl md:leading-tight';
+  const loginLinkClasses =
+    'font-bold underline text-blue-600 dark:text-cyan-300 hover:text-purple-700 dark:hover:text-yellow-thunder transition-colors duration-300';
 
   onMount(() => {
     if (orgInviteId || teamInviteId) {
       wasInvited = true;
       getInviteDetails();
     }
-
-    // Focus the warrior name input field if it exists
-    warriorNameTextInput?.focus();
   });
 </script>
 
@@ -165,138 +140,59 @@
   <title>{$LL.register()} | {$LL.appName()}</title>
 </svelte:head>
 
-<PageLayout>
-  <div class="text-center px-2 mb-4">
+<div
+  class="min-h-[80vh] py-10 space-y-8 bg-gradient-to-br from-blue-200 via-purple-200 to-indigo-300 dark:from-blue-800 dark:via-purple-800 dark:to-indigo-800"
+>
+  <div class="w-full text-center text-gray-700 dark:text-white">
     <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
+      class="font-rajdhani leading-tight uppercase text-4xl md:text-5xl font-semibold dark:drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]"
     >
       {$LL.register()}
     </h1>
     {#if teamInviteId != null}
-      <div
-        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6 md:leading-tight
-                dark:text-white"
-      >
-        to join your Team
-      </div>
+      <div class="{loginLinkContextClasses}">to join your Team</div>
     {/if}
     {#if orgInviteId != null}
-      <div
-        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6 md:leading-tight
-                dark:text-white"
-      >
-        to join your Organization
-      </div>
+      <div class="{loginLinkContextClasses}">to join your Organization</div>
     {/if}
     {#if battleId}
-      <div
-        class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
-                dark:text-white"
-      >
+      <div class="{loginLinkContextClasses}">
         {@html $LL.loginForBattle({
-          loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+          loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="${loginLinkClasses}">`,
           loginClose: `</a>`,
         })}
       </div>
     {/if}
     {#if retroId}
-      <div
-        class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
-                dark:text-white"
-      >
+      <div class="{loginLinkContextClasses}">
         {@html $LL.loginForRetro({
-          loginOpen: `<a href="${appRoutes.login}/retro/${retroId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+          loginOpen: `<a href="${appRoutes.login}/retro/${retroId}" class="${loginLinkClasses}">`,
           loginClose: `</a>`,
         })}
       </div>
     {/if}
     {#if storyboardId}
-      <div
-        class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
-                dark:text-white"
-      >
+      <div class="{loginLinkContextClasses}">
         {@html $LL.loginForStoryboard({
-          loginOpen: `<a href="${appRoutes.login}/storyboard/${storyboardId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+          loginOpen: `<a href="${appRoutes.login}/storyboard/${storyboardId}" class="${loginLinkClasses}">`,
           loginClose: `</a>`,
         })}
       </div>
     {/if}
   </div>
-  <div class="flex flex-wrap justify-center">
-    {#if guestsAllowed && !$user.id && !wasInvited}
-      <div class="w-full md:w-1/2 px-4">
-        <form
-          on:submit="{createUserGuest}"
-          class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
-          name="registerGuest"
-        >
-          <h2
-            class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl b-4 mb-2 md:mb-6
-                        md:leading-tight text-center dark:text-white"
-          >
-            {$LL.registerAsGuest()}
-          </h2>
 
-          <div class="mb-6">
-            <label
-              class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-              for="yourName1"
-            >
-              {$LL.name()}
-            </label>
-            <TextInput
-              bind:this="{warriorNameTextInput}"
-              bind:value="{warriorName}"
-              placeholder="{$LL.yourNamePlaceholder()}"
-              id="yourName1"
-              name="yourName1"
-              required
-            />
-          </div>
-          <div>
-            <div class="text-right">
-              <SolidButton type="submit" disabled="{registerDisabled}">
-                {$LL.register()}
-              </SolidButton>
-            </div>
-          </div>
-        </form>
-      </div>
-    {/if}
-
-    {#if registrationAllowed}
-      <div class="w-full md:w-1/2 px-4">
-        <div
-          class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
-        >
-          <h2
-            class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
-                        md:leading-tight text-center dark:text-white"
-          >
-            {@html $LL.createAccountFormTitle({
-              optionalOpen: `<span class="text-gray-500">`,
-              optionalClose: `</span>`,
-            })}
-          </h2>
-
-          <UserRegisterForm
-            guestWarriorsName="{warriorName}"
-            handleSubmit="{createUserRegistered}"
-            notifications="{notifications}"
-            email="{wasInvited ? inviteDetails.email : ''}"
-            wasInvited="{wasInvited}"
-          />
-        </div>
-      </div>
-    {:else}
-      <div class="w-full md:w-1/2 px-4">
-        <h2
-          class="font-bold text-2xl md:text-3xl md:leading-tight
-        text-center dark:text-white"
-        >
-          {$LL.registrationDisabled()}
-        </h2>
-      </div>
-    {/if}
+  <div class="w-full flex flex-wrap justify-center">
+    <div
+      class="w-full md:max-w-lg p-8 space-y-8 rounded-2xl shadow-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-800/50"
+    >
+      <UserRegisterForm
+        userName="{userName}"
+        handleFullAccountRegistration="{createUserRegistered}"
+        handleGuestRegistration="{createUserGuest}"
+        notifications="{notifications}"
+        email="{wasInvited ? inviteDetails.email : ''}"
+        wasInvited="{wasInvited}"
+      />
+    </div>
   </div>
-</PageLayout>
+</div>

@@ -38,94 +38,98 @@ test.afterAll(async ({}) => {
   await apiContext.dispose();
 });
 
-test.describe("registered user", () => {
-  test(`GET /users/{userId}/retros should return empty array when no retros associated to user`, async () => {
-    const b = await adminApiContext.get(`users/${adminUser.id}/retros`);
-    expect(b.ok()).toBeTruthy();
+test.describe(
+  "registered user",
+  { tag: ["@api", "@registered", "@retro"] },
+  () => {
+    test(`GET /users/{userId}/retros should return empty array when no retros associated to user`, async () => {
+      const b = await adminApiContext.get(`users/${adminUser.id}/retros`);
+      expect(b.ok()).toBeTruthy();
 
-    const retros = await b.json();
-    expect(retros.data).toMatchObject([]);
-  });
-
-  test(`POST /users/{userId}/retros should create retro`, async () => {
-    const retroName = "Test API Create Retro";
-    const brainstormVisibility = "visible";
-    const maxVotes = 3;
-
-    const b = await apiContext.post(`users/${user.id}/retros`, {
-      data: {
-        retroName,
-        brainstormVisibility,
-        maxVotes,
-      },
+      const retros = await b.json();
+      expect(retros.data).toMatchObject([]);
     });
-    expect(b.ok()).toBeTruthy();
-    const retro = await b.json();
-    expect(retro.data).toMatchObject({
-      name: retroName,
-      brainstormVisibility,
-    });
-  });
 
-  test(`GET /users/{userId}/retros should return object in array when retros associated to user`, async () => {
-    const retroName = "Test API Retros";
-    const brainstormVisibility = "hidden";
-    const maxVotes = 3;
+    test(`POST /users/{userId}/retros should create retro`, async () => {
+      const retroName = "Test API Create Retro";
+      const brainstormVisibility = "visible";
+      const maxVotes = 3;
 
-    const b = await apiContext.post(`users/${user.id}/retros`, {
-      data: {
-        retroName,
-        brainstormVisibility,
-        maxVotes,
-      },
-    });
-    expect(b.ok()).toBeTruthy();
-
-    const bs = await apiContext.get(`users/${user.id}/retros`);
-    expect(bs.ok()).toBeTruthy();
-    const retros = await bs.json();
-    expect(retros.data).toContainEqual(
-      expect.objectContaining({
-        name: retroName,
-      }),
-    );
-  });
-
-  test(`POST /teams/{teamId}/users/{userId}/retros should create retro`, async () => {
-    const retroName = "Test API Create Team Retro";
-    const brainstormVisibility = "hidden";
-    const maxVotes = 3;
-
-    const t = await apiContext.post(`users/${user.id}/teams`, {
-      data: {
-        name: "test team create retro",
-      },
-    });
-    const { data: team } = await t.json();
-
-    const b = await apiContext.post(
-      `teams/${team.id}/users/${user.id}/retros`,
-      {
+      const b = await apiContext.post(`users/${user.id}/retros`, {
         data: {
           retroName,
           brainstormVisibility,
           maxVotes,
         },
-      },
-    );
-    expect(b.ok()).toBeTruthy();
-    const retro = await b.json();
-    expect(retro.data).toMatchObject({
-      name: retroName,
+      });
+      expect(b.ok()).toBeTruthy();
+      const retro = await b.json();
+      expect(retro.data).toMatchObject({
+        name: retroName,
+        brainstormVisibility,
+      });
     });
 
-    const bs = await apiContext.get(`teams/${team.id}/retros`);
-    expect(bs.ok()).toBeTruthy();
-    const retros = await bs.json();
-    expect(retros.data).toContainEqual(
-      expect.objectContaining({
+    test(`GET /users/{userId}/retros should return object in array when retros associated to user`, async () => {
+      const retroName = "Test API Retros";
+      const brainstormVisibility = "hidden";
+      const maxVotes = 3;
+
+      const b = await apiContext.post(`users/${user.id}/retros`, {
+        data: {
+          retroName,
+          brainstormVisibility,
+          maxVotes,
+        },
+      });
+      expect(b.ok()).toBeTruthy();
+
+      const bs = await apiContext.get(`users/${user.id}/retros`);
+      expect(bs.ok()).toBeTruthy();
+      const retros = await bs.json();
+      expect(retros.data).toContainEqual(
+        expect.objectContaining({
+          name: retroName,
+        }),
+      );
+    });
+
+    test(`POST /teams/{teamId}/users/{userId}/retros should create retro`, async () => {
+      const retroName = "Test API Create Team Retro";
+      const brainstormVisibility = "hidden";
+      const maxVotes = 3;
+
+      const t = await apiContext.post(`users/${user.id}/teams`, {
+        data: {
+          name: "test team create retro",
+        },
+      });
+      const { data: team } = await t.json();
+
+      const b = await apiContext.post(
+        `teams/${team.id}/users/${user.id}/retros`,
+        {
+          data: {
+            retroName,
+            brainstormVisibility,
+            maxVotes,
+          },
+        },
+      );
+      expect(b.ok()).toBeTruthy();
+      const retro = await b.json();
+      expect(retro.data).toMatchObject({
         name: retroName,
-      }),
-    );
-  });
-});
+      });
+
+      const bs = await apiContext.get(`teams/${team.id}/retros`);
+      expect(bs.ok()).toBeTruthy();
+      const retros = await bs.json();
+      expect(retros.data).toContainEqual(
+        expect.objectContaining({
+          name: retroName,
+        }),
+      );
+    });
+  },
+);

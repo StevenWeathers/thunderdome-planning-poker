@@ -3,7 +3,7 @@
   import { AppConfig } from '../../config';
   import { validatePasswords } from '../../validationUtils';
   import SolidButton from '../global/SolidButton.svelte';
-  import TextInput from '../forms/TextInput.svelte';
+  import PasswordInput from '../forms/PasswordInput.svelte';
 
   export let handleUpdate = () => {};
   export let toggleForm = () => {};
@@ -11,16 +11,13 @@
 
   const { LdapEnabled, HeaderAuthEnabled } = AppConfig;
 
-  let warriorPassword1 = '';
-  let warriorPassword2 = '';
+  let password1 = '';
+  let password2 = '';
 
-  function updateWarriorPassword(e) {
+  function updatePassword(e) {
     e.preventDefault();
 
-    const validPasswords = validatePasswords(
-      warriorPassword1,
-      warriorPassword2,
-    );
+    const validPasswords = validatePasswords(password1, password2);
 
     let noFormErrors = true;
 
@@ -30,18 +27,15 @@
     }
 
     if (noFormErrors) {
-      handleUpdate(warriorPassword1, warriorPassword2);
+      handleUpdate(password1, password2);
     }
   }
 
   $: updatePasswordDisabled =
-    warriorPassword1 === '' ||
-    warriorPassword2 === '' ||
-    LdapEnabled ||
-    HeaderAuthEnabled;
+    password1 === '' || password2 === '' || LdapEnabled || HeaderAuthEnabled;
 </script>
 
-<form on:submit="{updateWarriorPassword}" name="updateWarriorPassword">
+<form on:submit="{updatePassword}" name="updatePassword">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -49,12 +43,11 @@
     >
       {$LL.password()}
     </label>
-    <TextInput
-      bind:value="{warriorPassword1}"
+    <PasswordInput
+      bind:value="{password1}"
       placeholder="{$LL.passwordPlaceholder()}"
       id="yourPassword1"
       name="yourPassword1"
-      type="password"
       required
     />
   </div>
@@ -66,12 +59,11 @@
     >
       {$LL.confirmPassword()}
     </label>
-    <TextInput
-      bind:value="{warriorPassword2}"
+    <PasswordInput
+      bind:value="{password2}"
       placeholder="{$LL.confirmPasswordPlaceholder()}"
       id="yourPassword2"
       name="yourPassword2"
-      type="password"
       required
     />
   </div>

@@ -15,7 +15,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
-  import { BadgeCheck } from 'lucide-svelte';
+  import { BadgeCheck, Building, Mail } from 'lucide-svelte';
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
@@ -136,16 +136,11 @@
     >
       {$LL.name()}
     </label>
-    <input
+    <TextInput
       bind:value="{profile.name}"
       placeholder="{$LL.yourNamePlaceholder()}"
-      class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-            focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
-            dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
       id="yourName"
       name="yourName"
-      type="text"
       disabled="{ldapEnabled || headerAuthEnabled}"
       required
     />
@@ -182,11 +177,11 @@
     </label>
     <TextInput
       bind:value="{profile.email}"
-      additionalClasses="{!userIsAdmin ? 'cursor-not-allowed' : ''}"
       id="yourEmail"
       name="yourEmail"
       type="email"
       disabled="{!userIsAdmin}"
+      icon="{Mail}"
     />
   </div>
 
@@ -253,6 +248,7 @@
       placeholder="{$LL.companyPlaceholder()}"
       id="yourCompany"
       name="yourCompany"
+      icon="{Building}"
     />
   </div>
 

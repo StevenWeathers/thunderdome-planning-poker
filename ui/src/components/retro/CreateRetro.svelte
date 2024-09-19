@@ -10,6 +10,7 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import SelectWithSubtext from '../forms/SelectWithSubtext.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
+  import { Crown, Lock } from 'lucide-svelte';
 
   export let xfetch;
   export let notifications;
@@ -286,6 +287,7 @@
         bind:value="{joinCode}"
         placeholder="{$LL.joinCodePlaceholder()}"
         id="joinCode"
+        icon="{Lock}"
       />
     </div>
   </div>
@@ -303,6 +305,7 @@
         bind:value="{facilitatorCode}"
         placeholder="{$LL.facilitatorCodePlaceholder()}"
         id="facilitatorCode"
+        icon="{Crown}"
       />
     </div>
   </div>

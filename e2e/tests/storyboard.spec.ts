@@ -1,7 +1,7 @@
 import { expect, test } from "../fixtures/user-sessions";
 import { StoryboardPage } from "../fixtures/storyboard-page";
 
-test.describe("Storyboard page", () => {
+test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
   let storyboard = { id: "", name: "e2e storyboard page tests" };
   let storyboardLeave = { id: "" };
   let storyboardCancelDelete = { id: "" };
@@ -26,27 +26,39 @@ test.describe("Storyboard page", () => {
     });
   });
 
-  test("unauthenticated user redirects to register", async ({ page }) => {
-    const bp = new StoryboardPage(page);
-    await bp.goto(storyboard.id);
+  test(
+    "unauthenticated user redirects to register",
+    { tag: ["@unauthenticated"] },
+    async ({ page }) => {
+      const bp = new StoryboardPage(page);
+      await bp.goto(storyboard.id);
 
-    const title = bp.page.locator("h1");
-    await expect(title).toHaveText("Register");
-  });
+      const title = bp.page.locator("h1");
+      await expect(title).toHaveText("Register");
+    },
+  );
 
-  test("guest user successfully loads", async ({ guestPage }) => {
-    const bp = new StoryboardPage(guestPage.page);
-    await bp.goto(storyboard.id);
+  test(
+    "guest user successfully loads",
+    { tag: ["@guest"] },
+    async ({ guestPage }) => {
+      const bp = new StoryboardPage(guestPage.page);
+      await bp.goto(storyboard.id);
 
-    await expect(bp.storyboardTitle).toHaveText(storyboard.name);
-  });
+      await expect(bp.storyboardTitle).toHaveText(storyboard.name);
+    },
+  );
 
-  test("registered user successfully loads", async ({ registeredPage }) => {
-    const bp = new StoryboardPage(registeredPage.page);
-    await bp.goto(storyboard.id);
+  test(
+    "registered user successfully loads",
+    { tag: ["@registered"] },
+    async ({ registeredPage }) => {
+      const bp = new StoryboardPage(registeredPage.page);
+      await bp.goto(storyboard.id);
 
-    await expect(bp.storyboardTitle).toHaveText(storyboard.name);
-  });
+      await expect(bp.storyboardTitle).toHaveText(storyboard.name);
+    },
+  );
 
   test("user can leave storyboard", async ({ registeredPage }) => {
     const bp = new StoryboardPage(registeredPage.page);

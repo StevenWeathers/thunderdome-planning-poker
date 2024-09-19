@@ -4,8 +4,8 @@ import { StoryboardsPage } from "../fixtures/storyboards-page";
 
 const pageTitle = "My Storyboards";
 
-test.describe("Storyboards page", () => {
-  test.describe("Unauthenticated user", () => {
+test.describe("Storyboards page", { tag: ["@storyboard"] }, () => {
+  test.describe("Unauthenticated user", { tag: ["@unauthenticated"] }, () => {
     test("displays storyboard landing page", async ({ page }) => {
       const storyboardsPage = new StoryboardsPage(page);
       await storyboardsPage.goto();
@@ -15,7 +15,7 @@ test.describe("Storyboards page", () => {
     });
   });
 
-  test.describe("Guest user", () => {
+  test.describe("Guest user", { tag: ["@guest"] }, () => {
     test("should load page", async ({ guestPage }) => {
       const storyboardsPage = new StoryboardsPage(guestPage.page);
       await storyboardsPage.goto();
@@ -54,7 +54,7 @@ test.describe("Storyboards page", () => {
     });
   });
 
-  test.describe("Registered user", () => {
+  test.describe("Registered user", { tag: ["@registered"] }, () => {
     test("should load page", async ({ registeredPage }) => {
       const storyboardsPage = new StoryboardsPage(registeredPage.page);
       await storyboardsPage.goto();

@@ -7,6 +7,7 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
+  import { Crown, Lock } from 'lucide-svelte';
 
   export let xfetch;
   export let notifications;
@@ -137,6 +138,7 @@
         bind:value="{joinCode}"
         placeholder="{$LL.optionalPasscodePlaceholder()}"
         id="joinCode"
+        icon="{Lock}"
       />
     </div>
   </div>
@@ -154,6 +156,7 @@
         bind:value="{facilitatorCode}"
         placeholder="{$LL.facilitatorCodePlaceholder()}"
         id="facilitatorCode"
+        icon="{Crown}"
       />
     </div>
   </div>
