@@ -29,7 +29,7 @@ func (d *Service) TeamUserRole(ctx context.Context, UserID string, TeamID string
 	return teamRole, nil
 }
 
-// TeamUserRoles gets a user's set of roles in relation to the team, and if application the department and organization
+// TeamUserRoles gets a user's set of roles in relation to the team if any, and if application the department and organization
 func (d *Service) TeamUserRoles(ctx context.Context, UserID string, TeamID string) (*thunderdome.UserTeamRoleInfo, error) {
 	tr := thunderdome.UserTeamRoleInfo{}
 

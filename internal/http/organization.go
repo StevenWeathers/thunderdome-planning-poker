@@ -563,8 +563,16 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			return
 		}
 		ctx := r.Context()
-		OrgRole := ctx.Value(contextKeyOrgRole).(string)
-		TeamRole := ctx.Value(contextKeyTeamRole).(string)
+		TeamUserRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
+		var emptyRole = ""
+		OrgRole := TeamUserRoles.OrganizationRole
+		if OrgRole == nil {
+			OrgRole = &emptyRole
+		}
+		TeamRole := TeamUserRoles.TeamRole
+		if TeamRole == nil {
+			TeamRole = &emptyRole
+		}
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
@@ -584,8 +592,8 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetOrganizationTeamByUser error", zap.Error(err), zap.String("organization_id", OrgID),
-				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole),
-				zap.String("team_role", TeamRole), zap.String("team_id", TeamID))
+				zap.String("session_user_id", SessionUserID), zap.String("organization_role", *OrgRole),
+				zap.String("team_role", *TeamRole), zap.String("team_id", TeamID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -594,8 +602,8 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetOrganizationTeamByUser error", zap.Error(err), zap.String("organization_id", OrgID),
-				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole),
-				zap.String("team_role", TeamRole), zap.String("team_id", TeamID))
+				zap.String("session_user_id", SessionUserID), zap.String("organization_role", *OrgRole),
+				zap.String("team_role", *TeamRole), zap.String("team_id", TeamID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -603,8 +611,8 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		result := &orgTeamResponse{
 			Organization:     Organization,
 			Team:             Team,
-			OrganizationRole: OrgRole,
-			TeamRole:         TeamRole,
+			OrganizationRole: *OrgRole,
+			TeamRole:         *TeamRole,
 		}
 
 		s.Success(w, r, http.StatusOK, result, nil)

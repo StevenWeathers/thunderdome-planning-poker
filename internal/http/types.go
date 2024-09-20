@@ -16,7 +16,6 @@ const (
 	contextKeyUserTeamRoles  contextKey = "userTeamRoles"
 	contextKeyOrgRole        contextKey = "orgRole"
 	contextKeyDepartmentRole contextKey = "departmentRole"
-	contextKeyTeamRole       contextKey = "teamRole"
 )
 
 var validate *validator.Validate
