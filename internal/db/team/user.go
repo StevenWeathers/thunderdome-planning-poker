@@ -2,6 +2,8 @@ package team
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
@@ -90,7 +92,9 @@ FROM
 		&tr.OrganizationRole,
 		&tr.AssociationLevel,
 	)
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf("TEAM_NOT_FOUND")
+	} else if err != nil {
 		return nil, fmt.Errorf("error getting team users roles: %v", err)
 	}
 

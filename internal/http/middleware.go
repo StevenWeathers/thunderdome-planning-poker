@@ -242,6 +242,15 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		_, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
+		if err != nil && err.Error() == "ORGANIZATION_NOT_FOUND" {
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "ORGANIZATION_NOT_FOUND"))
+			return
+		} else if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINTERNAL, err.Error()))
+			return
+		}
+
 		var Role string
 		if UserType != thunderdome.AdminUserType {
 			var UserErr error
@@ -322,6 +331,11 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			var UserErr error
 			OrgRole, DepartmentRole, UserErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
+				s.Logger.Ctx(ctx).Warn("middleware departmentUserOnly REQUIRES_DEPARTMENT_USER",
+					zap.Error(UserErr),
+					zap.String("user_id", UserID),
+					zap.String("org_id", OrgID),
+					zap.String("department_id", DepartmentID))
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
 			}
@@ -398,7 +412,13 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		Roles, err := s.TeamDataSvc.TeamUserRoles(ctx, UserID, TeamID)
-		if err != nil || (UserType != thunderdome.AdminUserType &&
+		if err != nil && err.Error() == "TEAM_NOT_FOUND" {
+			s.Logger.Ctx(ctx).Warn("middleware teamUserOnly TEAM_NOT_FOUND",
+				zap.Any("team_user_roles", Roles),
+				zap.String("user_type", UserType))
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "TEAM_NOT_FOUND"))
+			return
+		} else if err != nil || (UserType != thunderdome.AdminUserType &&
 			Roles.AssociationLevel != "TEAM" &&
 			(Roles.DepartmentRole == nil || (Roles.DepartmentRole != nil && *Roles.DepartmentRole != thunderdome.AdminUserType)) &&
 			(Roles.OrganizationRole == nil || (Roles.OrganizationRole != nil && *Roles.OrganizationRole != thunderdome.AdminUserType))) {

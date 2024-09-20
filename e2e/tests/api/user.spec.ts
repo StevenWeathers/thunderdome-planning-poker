@@ -1,59 +1,57 @@
-import { expect, test } from "@playwright/test";
-import { adminAPIUser } from "../../fixtures/db/adminapi-user";
-import { apiUser } from "../../fixtures/db/api-user";
-import { baseUrl } from "../../playwright.config";
-
-const baseURL = `${baseUrl}/api/`;
-const userProfileEndpoint = `auth/user`;
-
-// Request context is reused by all tests in the file.
-let apiContext;
-let adminApiContext;
-let adminUser;
-let user;
-
-test.beforeAll(async ({ playwright }) => {
-  apiContext = await playwright.request.newContext({
-    baseURL,
-    extraHTTPHeaders: {
-      "X-API-Key": apiUser.apikey,
-    },
-  });
-  adminApiContext = await playwright.request.newContext({
-    baseURL,
-    extraHTTPHeaders: {
-      "X-API-Key": adminAPIUser.apikey,
-    },
-  });
-  const au = await adminApiContext.get(userProfileEndpoint);
-  const auj = await au.json();
-  adminUser = auj.data;
-  const u = await apiContext.get(userProfileEndpoint);
-  const uj = await u.json();
-  user = uj.data;
-});
-
-test.afterAll(async ({}) => {
-  // Dispose all responses.
-  await apiContext.dispose();
-});
+import { expect, test } from "@fixtures/test-setup";
 
 test.describe(
-  "registered user",
+  "User Profile API",
   { tag: ["@api", "@user", "@registered"] },
   () => {
-    test(`GET ${userProfileEndpoint} should return session user profile`, async () => {
-      const u = await apiContext.get(userProfileEndpoint);
-      expect(u.ok()).toBeTruthy();
+    const userProfileEndpoint = `auth/user`;
 
-      const pu = await u.json();
-      expect(pu.data).toMatchObject({
-        name: "E2E API User",
+    test("GET /auth/user returns session user profile for registered user", async ({
+      request,
+      registeredApiUser,
+    }) => {
+      const response = await registeredApiUser.context.get(userProfileEndpoint);
+      expect(response.ok()).toBeTruthy();
+      expect(response.status()).toBe(200);
+
+      const userProfile = await response.json();
+      expect(userProfile.data).toMatchObject({
+        id: registeredApiUser.user.id,
+        name: "E2EAPIUser",
         email: "e2eapi@thunderdome.dev",
         rank: "REGISTERED",
         verified: true,
         disabled: false,
       });
+    });
+
+    test("GET /auth/user returns session user profile for admin user", async ({
+      request,
+      adminApiUser,
+    }) => {
+      const response = await adminApiUser.context.get(userProfileEndpoint);
+      expect(response.ok()).toBeTruthy();
+      expect(response.status()).toBe(200);
+
+      const userProfile = await response.json();
+      expect(userProfile.data).toMatchObject({
+        id: adminApiUser.user.id,
+        rank: "ADMIN",
+        verified: true,
+        disabled: false,
+      });
+    });
+
+    test("GET /auth/user returns 401 for unauthenticated request", async ({
+      request,
+    }) => {
+      const response = await request.get(`api/${userProfileEndpoint}`, {
+        headers: {
+          "X-API-Key": "invalid_api_key",
+        },
+      });
+      expect(response.ok()).toBeFalsy();
+      expect(response.status()).toBe(401);
     });
   },
 );
