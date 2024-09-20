@@ -49,12 +49,6 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 			return
 		}
 		TeamID, teamIdExists := vars["teamId"]
-		idErr = validate.Var(TeamID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-
 		if !teamIdExists && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "STORYBOARD_CREATION_REQUIRES_TEAM"))
 			return

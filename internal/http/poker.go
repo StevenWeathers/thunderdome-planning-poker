@@ -97,8 +97,8 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		TeamID, teamIdExists := vars["teamId"]
 
+		TeamID, teamIdExists := vars["teamId"]
 		if !teamIdExists && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "BATTLE_CREATION_REQUIRES_TEAM"))
 			return

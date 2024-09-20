@@ -56,7 +56,6 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 		TeamID, teamIdExists := vars["teamId"]
-
 		if !teamIdExists && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "RETRO_CREATION_REQUIRES_TEAM"))
 			return
