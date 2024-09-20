@@ -111,6 +111,7 @@
           required
           disabled="{wasInvited}"
           icon="{Mail}"
+          autocomplete="email"
         />
       </div>
 

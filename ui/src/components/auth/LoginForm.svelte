@@ -160,6 +160,7 @@
       required
       bind:value="{email}"
       icon="{Mail}"
+      autocomplete="email"
     />
 
     <PasswordInput
@@ -317,9 +318,11 @@
         placeholder="Enter code"
         id="mfaToken"
         name="mfaToken"
-        pattern="[0-9]{6}"
         required
         icon="{Shield}"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        autocomplete="one-time-code"
       />
     </div>
 
