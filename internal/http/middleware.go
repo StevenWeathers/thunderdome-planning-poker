@@ -574,6 +574,7 @@ func (s *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // teamUserOnly validates that the request was made by a valid user of the team
+// with bypass for global admins, and if associated to team department and/or organization admins
 func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -587,19 +588,16 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		var Role string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			Role, UserErr = s.TeamDataSvc.TeamUserRole(ctx, UserID, TeamID)
-			if UserType != thunderdome.AdminUserType && UserErr != nil {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
-				return
-			}
-		} else {
-			Role = thunderdome.AdminUserType
+		Roles, err := s.TeamDataSvc.TeamUserRoles(ctx, UserID, TeamID)
+		if err != nil || (UserType != thunderdome.AdminUserType &&
+			Roles.AssociationLevel != "TEAM" &&
+			(Roles.DepartmentRole != nil && *Roles.DepartmentRole != thunderdome.AdminUserType) &&
+			(Roles.OrganizationRole != nil && *Roles.OrganizationRole != thunderdome.AdminUserType)) {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			return
 		}
 
-		ctx = context.WithValue(ctx, contextKeyTeamRole, Role)
+		ctx = context.WithValue(ctx, contextKeyUserTeamRoles, Roles)
 
 		h(w, r.WithContext(ctx))
 	}
