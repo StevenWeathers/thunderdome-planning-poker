@@ -56,6 +56,18 @@ type TeamMetrics struct {
 	RetroTemplateCount   int    `json:"retro_template_count"`
 }
 
+// UserTeamRoleInfo represents a team's structure and a user's roles (if any) for that team.
+type UserTeamRoleInfo struct {
+	UserID           string  `db:"user_id" json:"userId"`
+	TeamID           string  `db:"team_id" json:"teamId"`
+	TeamRole         *string `db:"team_role" json:"teamRole"`
+	DepartmentID     *string `db:"department_id" json:"departmentId"`
+	DepartmentRole   *string `db:"department_role" json:"departmentRole"`
+	OrganizationID   *string `db:"organization_id" json:"organizationId"`
+	OrganizationRole *string `db:"organization_role" json:"organizationRole"`
+	AssociationLevel string  `db:"association_level" json:"associationLevel"`
+}
+
 type TeamDataSvc interface {
 	TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error)
 	TeamGet(ctx context.Context, TeamID string) (*Team, error)
@@ -84,4 +96,5 @@ type TeamDataSvc interface {
 	TeamList(ctx context.Context, Limit int, Offset int) ([]*Team, int)
 	TeamIsSubscribed(ctx context.Context, TeamID string) (bool, error)
 	GetTeamMetrics(ctx context.Context, teamID string) (*TeamMetrics, error)
+	TeamUserRoles(ctx context.Context, UserID string, TeamID string) (*UserTeamRoleInfo, error)
 }

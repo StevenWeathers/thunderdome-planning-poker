@@ -29,6 +29,74 @@ func (d *Service) TeamUserRole(ctx context.Context, UserID string, TeamID string
 	return teamRole, nil
 }
 
+// TeamUserRoles gets a user's set of roles in relation to the team, and if application the department and organization
+func (d *Service) TeamUserRoles(ctx context.Context, UserID string, TeamID string) (*thunderdome.UserTeamRoleInfo, error) {
+	tr := thunderdome.UserTeamRoleInfo{}
+
+	err := d.DB.QueryRowContext(ctx,
+		`WITH team_info AS (
+    SELECT 
+        t.id AS team_id,
+        t.department_id,
+        COALESCE(t.organization_id, od.organization_id) AS organization_id
+    FROM 
+        thunderdome.team t
+    LEFT JOIN 
+        thunderdome.organization_department od ON t.department_id = od.id
+    WHERE 
+        t.id = $2
+),
+user_roles AS (
+    SELECT 
+        ti.*,
+        $1 AS user_id,
+        tu.role AS team_role,
+        du.role AS department_role,
+        ou.role AS organization_role
+    FROM 
+        team_info ti
+    LEFT JOIN 
+        thunderdome.team_user tu ON ti.team_id = tu.team_id AND tu.user_id = $1
+    LEFT JOIN 
+        thunderdome.department_user du ON ti.department_id = du.department_id AND du.user_id = $1
+    LEFT JOIN 
+        thunderdome.organization_user ou ON ti.organization_id = ou.organization_id AND ou.user_id = $1
+)
+SELECT 
+    user_id,
+    team_id,
+    team_role,
+    department_id,
+    department_role,
+    organization_id,
+    organization_role,
+    CASE 
+        WHEN team_role IS NOT NULL THEN 'TEAM'
+        WHEN department_role IS NOT NULL THEN 'DEPARTMENT'
+        WHEN organization_role IS NOT NULL THEN 'ORGANIZATION'
+        ELSE 'NONE'
+    END AS association_level
+FROM 
+    user_roles;`,
+		UserID,
+		TeamID,
+	).Scan(
+		&tr.UserID,
+		&tr.TeamID,
+		&tr.TeamRole,
+		&tr.DepartmentID,
+		&tr.DepartmentRole,
+		&tr.OrganizationID,
+		&tr.OrganizationRole,
+		&tr.AssociationLevel,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error getting team users roles: %v", err)
+	}
+
+	return &tr, nil
+}
+
 // TeamUserList gets a list of team users
 func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.TeamUser, int, error) {
 	var users = make([]*thunderdome.TeamUser, 0)

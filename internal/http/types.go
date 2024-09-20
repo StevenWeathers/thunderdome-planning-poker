@@ -13,6 +13,7 @@ const (
 	contextKeyUserID         contextKey = "userId"
 	contextKeyUserType       contextKey = "userType"
 	apiKeyHeaderName         string     = "X-API-Key"
+	contextKeyUserTeamRoles  contextKey = "userTeamRoles"
 	contextKeyOrgRole        contextKey = "orgRole"
 	contextKeyDepartmentRole contextKey = "departmentRole"
 	contextKeyTeamRole       contextKey = "teamRole"
