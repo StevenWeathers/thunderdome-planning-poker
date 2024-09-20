@@ -62,7 +62,7 @@
         handleCreate();
       })
       .catch(() => {
-        notifications.error($LL.estimationScaleCreateError());
+        notifications.danger($LL.estimationScaleCreateError());
       });
   }
 
@@ -86,7 +86,7 @@
     } else {
       // If the input is not valid, don't update the values array
       // Optionally, you could provide feedback to the user here
-      notifications.error(
+      notifications.danger(
         'Invalid input. Please use only letters, numbers, and commas.',
       );
     }

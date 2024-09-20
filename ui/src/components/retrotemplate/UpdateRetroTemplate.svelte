@@ -53,7 +53,7 @@
         handleUpdate();
       })
       .catch(() => {
-        notifications.error($LL.retroTemplateUpdateError());
+        notifications.danger($LL.retroTemplateUpdateError());
       });
   }
 

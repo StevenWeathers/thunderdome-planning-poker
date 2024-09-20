@@ -54,7 +54,7 @@
         handleCreate();
       })
       .catch(() => {
-        notifications.error($LL.retroTemplateCreateError());
+        notifications.danger($LL.retroTemplateCreateError());
       });
   }
 

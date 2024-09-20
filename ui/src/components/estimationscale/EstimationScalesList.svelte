@@ -87,7 +87,7 @@
   <TableContainer>
     <TableNav
       title="{$LL.estimationScales()}"
-      createBtnEnabled="{isAdmin}"
+      createBtnEnabled="{isAdmin || isEntityAdmin}"
       createBtnText="{$LL.estimationScaleCreate()}"
       createButtonHandler="{toggleCreateScale}"
       createBtnTestId="scale-create"

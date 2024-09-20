@@ -97,7 +97,7 @@
   <TableContainer>
     <TableNav
       title="{$LL.retroTemplates()}"
-      createBtnEnabled="{isAdmin}"
+      createBtnEnabled="{isAdmin || isEntityAdmin}"
       createBtnText="{$LL.retroTemplateCreate()}"
       createButtonHandler="{toggleCreateTemplate}"
       createBtnTestId="template-create"

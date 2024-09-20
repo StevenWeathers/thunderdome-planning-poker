@@ -65,7 +65,7 @@
       })
       .catch(err => {
         console.error(err);
-        notifications.error("Failed to fetch team's action items");
+        notifications.danger("Failed to fetch team's action items");
       });
   }
 
