@@ -2,11 +2,12 @@ package oauth
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"golang.org/x/oauth2"
-	"net/http"
 )
 
 type Config struct {

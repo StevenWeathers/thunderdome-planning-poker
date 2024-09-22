@@ -2,12 +2,13 @@ package http
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
-	"net/http"
 )
 
 const (

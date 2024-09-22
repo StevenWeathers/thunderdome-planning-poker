@@ -3,11 +3,12 @@ package http
 import (
 	"context"
 	"fmt"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
