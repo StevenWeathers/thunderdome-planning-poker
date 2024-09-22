@@ -7,13 +7,13 @@ import (
 )
 
 // CreateAuthStateCookie creates the oauth2 state validation cookie
-func (s *Cookie) CreateAuthStateCookie(w http.ResponseWriter, state string) error {
+func (s *CookieService) CreateAuthStateCookie(w http.ResponseWriter, state string) error {
 	return s.CreateCookie(w, s.config.AuthStateCookieName, state, int(time.Minute.Seconds()*10))
 }
 
 // ValidateAuthStateCookie retrieves the authstate cookie and validates its value against the state from
 // auth provider and deletes the authstate cookie
-func (s *Cookie) ValidateAuthStateCookie(w http.ResponseWriter, r *http.Request, state string) error {
+func (s *CookieService) ValidateAuthStateCookie(w http.ResponseWriter, r *http.Request, state string) error {
 	cookieVal, err := s.GetCookie(w, r, s.config.AuthStateCookieName)
 	if err != nil {
 		return err
@@ -29,6 +29,6 @@ func (s *Cookie) ValidateAuthStateCookie(w http.ResponseWriter, r *http.Request,
 }
 
 // DeleteAuthStateCookie deletes the oauth2 state validation cookie
-func (s *Cookie) DeleteAuthStateCookie(w http.ResponseWriter) error {
+func (s *CookieService) DeleteAuthStateCookie(w http.ResponseWriter) error {
 	return s.CreateCookie(w, s.config.AuthStateCookieName, "", -1)
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
-func New(config Config) *Cookie {
-	c := Cookie{
+func New(config Config) *CookieService {
+	c := CookieService{
 		config: config,
 	}
 
@@ -18,7 +18,7 @@ func New(config Config) *Cookie {
 }
 
 // CreateCookie creates a secure cookie with given cookieName
-func (s *Cookie) CreateCookie(w http.ResponseWriter, cookieName string, value string, maxAge int) error {
+func (s *CookieService) CreateCookie(w http.ResponseWriter, cookieName string, value string, maxAge int) error {
 	encoded, err := s.sc.Encode(cookieName, value)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func (s *Cookie) CreateCookie(w http.ResponseWriter, cookieName string, value st
 }
 
 // GetCookie returns the value from the cookie or errors if failure getting it
-func (s *Cookie) GetCookie(w http.ResponseWriter, r *http.Request, cookieName string) (string, error) {
+func (s *CookieService) GetCookie(w http.ResponseWriter, r *http.Request, cookieName string) (string, error) {
 	var value string
 
 	if cookie, err := r.Cookie(cookieName); err == nil {
@@ -57,7 +57,7 @@ func (s *Cookie) GetCookie(w http.ResponseWriter, r *http.Request, cookieName st
 }
 
 // DeleteCookie deletes the cookie
-func (s *Cookie) DeleteCookie(w http.ResponseWriter, cookieName string) {
+func (s *CookieService) DeleteCookie(w http.ResponseWriter, cookieName string) {
 	cookie := &http.Cookie{
 		Name:     cookieName,
 		Value:    "",

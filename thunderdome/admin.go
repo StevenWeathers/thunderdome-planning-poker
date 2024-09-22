@@ -1,7 +1,5 @@
 package thunderdome
 
-import "context"
-
 // ApplicationStats includes counts of different data points of the application
 type ApplicationStats struct {
 	UnregisteredCount                int `json:"unregisteredUserCount"`
@@ -38,8 +36,4 @@ type ApplicationStats struct {
 	OrganizationRetroTemplateCount   int `json:"organizationRetroTemplateCount"`
 	TeamRetroTemplateCount           int `json:"teamRetroTemplateCount"`
 	PublicRetroTemplateCount         int `json:"publicRetroTemplateCount"`
-}
-
-type AdminDataSvc interface {
-	GetAppStats(ctx context.Context) (*ApplicationStats, error)
 }

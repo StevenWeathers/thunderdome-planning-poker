@@ -35,18 +35,18 @@ func createJsonCookieValue(value any) (string, error) {
 	return s, nil
 }
 
-// CreateUserCookie creates the users Cookie
-func (s *Cookie) CreateUserCookie(w http.ResponseWriter, UserID string) error {
+// CreateUserCookie creates the users CookieService
+func (s *CookieService) CreateUserCookie(w http.ResponseWriter, UserID string) error {
 	return s.CreateCookie(w, s.config.SecureCookieName, UserID, int(time.Hour.Seconds()*24*365))
 }
 
-// CreateSessionCookie creates the user's session Cookie
-func (s *Cookie) CreateSessionCookie(w http.ResponseWriter, SessionID string) error {
+// CreateSessionCookie creates the user's session CookieService
+func (s *CookieService) CreateSessionCookie(w http.ResponseWriter, SessionID string) error {
 	return s.CreateCookie(w, s.config.SessionCookieName, SessionID, int(time.Hour.Seconds()*24*30))
 }
 
 // CreateUserUICookie creates the user's frontend UI cookie
-func (s *Cookie) CreateUserUICookie(w http.ResponseWriter, userUiCookie thunderdome.UserUICookie) error {
+func (s *CookieService) CreateUserUICookie(w http.ResponseWriter, userUiCookie thunderdome.UserUICookie) error {
 	encodedValue, err := createJsonCookieValue(userUiCookie)
 	if err != nil {
 		return fmt.Errorf("error creating encoded json for cookie: %w", err)
@@ -66,8 +66,8 @@ func (s *Cookie) CreateUserUICookie(w http.ResponseWriter, userUiCookie thunderd
 }
 
 // ClearUserCookies wipes the frontend and backend cookies
-// used in the event of bad Cookie reads
-func (s *Cookie) ClearUserCookies(w http.ResponseWriter) {
+// used in the event of bad CookieService reads
+func (s *CookieService) ClearUserCookies(w http.ResponseWriter) {
 	s.DeleteCookie(w, s.config.SecureCookieName)
 	s.DeleteCookie(w, s.config.SessionCookieName)
 
@@ -81,11 +81,11 @@ func (s *Cookie) ClearUserCookies(w http.ResponseWriter) {
 }
 
 // ValidateUserCookie returns the UserID from secure cookies or errors if failures getting it
-func (s *Cookie) ValidateUserCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+func (s *CookieService) ValidateUserCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	return s.GetCookie(w, r, s.config.SecureCookieName)
 }
 
 // ValidateSessionCookie returns the SessionID from secure cookies or errors if failures getting it
-func (s *Cookie) ValidateSessionCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+func (s *CookieService) ValidateSessionCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	return s.GetCookie(w, r, s.config.SessionCookieName)
 }

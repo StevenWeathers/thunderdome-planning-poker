@@ -8,8 +8,6 @@ import (
 
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/internal/cookie"
-
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -18,9 +16,9 @@ import (
 
 func New(
 	config Config,
-	cookie *cookie.Cookie,
+	cookie CookieManager,
 	logger *otelzap.Logger,
-	authDataSvc thunderdome.AuthDataSvc,
+	authDataSvc AuthDataSvc,
 	subscriptionDataSvc thunderdome.SubscriptionDataSvc,
 	ctx context.Context,
 ) (*Service, error) {
