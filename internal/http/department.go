@@ -648,9 +648,20 @@ func (s *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		OrgRole := ctx.Value(contextKeyOrgRole).(string)
-		DepartmentRole := ctx.Value(contextKeyDepartmentRole).(string)
-		TeamRole := ctx.Value(contextKeyTeamRole).(string)
+		TeamUserRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
+		var emptyRole = ""
+		OrgRole := TeamUserRoles.OrganizationRole
+		if OrgRole == nil {
+			OrgRole = &emptyRole
+		}
+		DepartmentRole := TeamUserRoles.DepartmentRole
+		if DepartmentRole == nil {
+			DepartmentRole = &emptyRole
+		}
+		TeamRole := TeamUserRoles.TeamRole
+		if TeamRole == nil {
+			TeamRole = &emptyRole
+		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		oidErr := validate.Var(OrgID, "required,uuid")
@@ -705,9 +716,9 @@ func (s *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 			Organization:     Organization,
 			Department:       Department,
 			Team:             Team,
-			OrganizationRole: OrgRole,
-			DepartmentRole:   DepartmentRole,
-			TeamRole:         TeamRole,
+			OrganizationRole: *OrgRole,
+			DepartmentRole:   *DepartmentRole,
+			TeamRole:         *TeamRole,
 		}
 
 		s.Success(w, r, http.StatusOK, result, nil)

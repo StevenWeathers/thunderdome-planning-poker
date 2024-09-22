@@ -2,7 +2,7 @@ package cookie
 
 import "github.com/gorilla/securecookie"
 
-type Cookie struct {
+type CookieService struct {
 	config Config
 	sc     *securecookie.SecureCookie
 }

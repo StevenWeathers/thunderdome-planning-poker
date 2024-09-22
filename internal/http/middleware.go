@@ -242,6 +242,15 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		_, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
+		if err != nil && err.Error() == "ORGANIZATION_NOT_FOUND" {
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "ORGANIZATION_NOT_FOUND"))
+			return
+		} else if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINTERNAL, err.Error()))
+			return
+		}
+
 		var Role string
 		if UserType != thunderdome.AdminUserType {
 			var UserErr error
@@ -296,92 +305,6 @@ func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// orgTeamOnly validates that the request was made by an user of the organization team (or organization)
-func (s *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-		TeamID := vars["teamId"]
-		idErr = validate.Var(TeamID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-
-		var OrgRole string
-		var TeamRole string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			OrgRole, TeamRole, UserErr = s.OrganizationDataSvc.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
-			if UserErr != nil {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
-				return
-			}
-		} else {
-			OrgRole = thunderdome.AdminUserType
-			TeamRole = thunderdome.AdminUserType
-		}
-
-		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
-		ctx = context.WithValue(ctx, contextKeyTeamRole, TeamRole)
-
-		h(w, r.WithContext(ctx))
-	}
-}
-
-// orgTeamAdminOnly validates that the request was made by an ADMIN of the organization team (or organization)
-func (s *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-		TeamID := vars["teamId"]
-		idErr = validate.Var(TeamID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-
-		var OrgRole string
-		var TeamRole string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			OrgRole, TeamRole, UserErr := s.OrganizationDataSvc.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
-			if UserErr != nil {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
-				return
-			}
-			if TeamRole != thunderdome.AdminUserType && OrgRole != thunderdome.AdminUserType {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_ORGANIZATION_ADMIN"))
-				return
-			}
-		} else {
-			OrgRole = thunderdome.AdminUserType
-			TeamRole = thunderdome.AdminUserType
-		}
-
-		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
-		ctx = context.WithValue(ctx, contextKeyTeamRole, TeamRole)
-
-		h(w, r.WithContext(ctx))
-	}
-}
-
 // departmentUserOnly validates that the request was made by a valid user of the organization (with department role)
 func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -408,6 +331,11 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			var UserErr error
 			OrgRole, DepartmentRole, UserErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
+				s.Logger.Ctx(ctx).Warn("middleware departmentUserOnly REQUIRES_DEPARTMENT_USER",
+					zap.Error(UserErr),
+					zap.String("user_id", UserID),
+					zap.String("org_id", OrgID),
+					zap.String("department_id", DepartmentID))
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
 			}
@@ -468,112 +396,8 @@ func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// departmentTeamUserOnly validates that the request was made by an user of the department team (or organization)
-func (s *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-		DepartmentID := vars["departmentId"]
-		idErr = validate.Var(DepartmentID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-		TeamID := vars["teamId"]
-		idErr = validate.Var(TeamID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-
-		var OrgRole string
-		var DepartmentRole string
-		var TeamRole string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationDataSvc.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
-			if UserErr != nil {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
-				return
-			}
-		} else {
-			OrgRole = thunderdome.AdminUserType
-			DepartmentRole = thunderdome.AdminUserType
-			TeamRole = thunderdome.AdminUserType
-		}
-
-		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
-		ctx = context.WithValue(ctx, contextKeyDepartmentRole, DepartmentRole)
-		ctx = context.WithValue(ctx, contextKeyTeamRole, TeamRole)
-
-		h(w, r.WithContext(ctx))
-	}
-}
-
-// departmentTeamAdminOnly validates that the request was made by an ADMIN of the department team (or organization)
-func (s *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-		DepartmentID := vars["departmentId"]
-		idErr = validate.Var(DepartmentID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-		TeamID := vars["teamId"]
-		idErr = validate.Var(TeamID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-
-		var OrgRole string
-		var DepartmentRole string
-		var TeamRole string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationDataSvc.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
-			if UserErr != nil {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
-				return
-			}
-
-			if TeamRole != thunderdome.AdminUserType && DepartmentRole != thunderdome.AdminUserType && OrgRole != thunderdome.AdminUserType {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
-				return
-			}
-		} else {
-			OrgRole = thunderdome.AdminUserType
-			DepartmentRole = thunderdome.AdminUserType
-			TeamRole = thunderdome.AdminUserType
-		}
-
-		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
-		ctx = context.WithValue(ctx, contextKeyDepartmentRole, DepartmentRole)
-		ctx = context.WithValue(ctx, contextKeyTeamRole, TeamRole)
-
-		h(w, r.WithContext(ctx))
-	}
-}
-
 // teamUserOnly validates that the request was made by a valid user of the team
+// with bypass for global admins, and if associated to team department and/or organization admins
 func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -587,55 +411,48 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		var Role string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			Role, UserErr = s.TeamDataSvc.TeamUserRole(ctx, UserID, TeamID)
-			if UserType != thunderdome.AdminUserType && UserErr != nil {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
-				return
-			}
-		} else {
-			Role = thunderdome.AdminUserType
+		Roles, err := s.TeamDataSvc.TeamUserRoles(ctx, UserID, TeamID)
+		if err != nil && err.Error() == "TEAM_NOT_FOUND" {
+			s.Logger.Ctx(ctx).Warn("middleware teamUserOnly TEAM_NOT_FOUND",
+				zap.Any("team_user_roles", Roles),
+				zap.String("user_type", UserType))
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "TEAM_NOT_FOUND"))
+			return
+		} else if err != nil || (UserType != thunderdome.AdminUserType &&
+			Roles.AssociationLevel != "TEAM" &&
+			(Roles.DepartmentRole == nil || (Roles.DepartmentRole != nil && *Roles.DepartmentRole != thunderdome.AdminUserType)) &&
+			(Roles.OrganizationRole == nil || (Roles.OrganizationRole != nil && *Roles.OrganizationRole != thunderdome.AdminUserType))) {
+			s.Logger.Ctx(ctx).Warn("middleware teamUserOnly REQUIRES_TEAM_USER",
+				zap.Any("team_user_roles", Roles),
+				zap.String("user_type", UserType))
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			return
 		}
 
-		ctx = context.WithValue(ctx, contextKeyTeamRole, Role)
+		ctx = context.WithValue(ctx, contextKeyUserTeamRoles, Roles)
 
 		h(w, r.WithContext(ctx))
 	}
 }
 
 // teamAdminOnly validates that the request was made by an ADMIN of the team
+// or an ADMIN of the team's parent entities if associated (department or organization)
 func (s *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
 		UserType := ctx.Value(contextKeyUserType).(string)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+		TeamUserRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
+
+		if UserType != thunderdome.AdminUserType &&
+			(TeamUserRoles.TeamRole == nil || *TeamUserRoles.TeamRole != thunderdome.AdminUserType) &&
+			(TeamUserRoles.DepartmentRole == nil || *TeamUserRoles.DepartmentRole != thunderdome.AdminUserType) &&
+			(TeamUserRoles.OrganizationRole == nil || *TeamUserRoles.OrganizationRole != thunderdome.AdminUserType) {
+			s.Logger.Ctx(ctx).Warn("middleware teamAdminOnly REQUIRES_TEAM_ADMIN",
+				zap.Any("team_user_roles", TeamUserRoles),
+				zap.String("user_type", UserType))
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_ADMIN"))
 			return
 		}
-
-		var Role string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			Role, UserErr = s.TeamDataSvc.TeamUserRole(ctx, UserID, TeamID)
-			if UserErr != nil {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
-				return
-			}
-			if Role != thunderdome.AdminUserType {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_ADMIN"))
-				return
-			}
-		} else {
-			Role = thunderdome.AdminUserType
-		}
-
-		ctx = context.WithValue(ctx, contextKeyTeamRole, Role)
 
 		h(w, r.WithContext(ctx))
 	}

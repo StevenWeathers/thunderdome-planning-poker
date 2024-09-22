@@ -1,5 +1,5 @@
 import { expect, test } from "../fixtures/user-sessions";
-import { LoginPage } from "../fixtures/login-page";
+import { LoginPage } from "../fixtures/pages/login-page";
 import { registeredUser } from "../fixtures/db/registered-user";
 
 test.describe("The Login Page", { tag: "@login" }, () => {
@@ -8,7 +8,7 @@ test.describe("The Login Page", { tag: "@login" }, () => {
   }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login(registeredUser.email, registeredUser.password);
+    await loginPage.login(registeredUser.email, "kentRules!");
     await expect(loginPage.page.locator("h1")).toHaveText("My Games");
 
     // UI should reflect this user being logged in

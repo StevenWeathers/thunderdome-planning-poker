@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@fixtures/*": [
+        "fixtures/*"
+      ]
+    },
+    "types": [
+      "node",
+      "@playwright/test"
+    ],
+    "esModuleInterop": true,
+    "strict": true,
+    "include": [
+      "tests/**/*.ts",
+      "playwright.config.ts"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

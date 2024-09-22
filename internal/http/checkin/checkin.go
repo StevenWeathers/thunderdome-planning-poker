@@ -38,6 +38,26 @@ func (c *Config) PongWait() time.Duration {
 	return time.Duration(c.PongWaitSec) * time.Second
 }
 
+type CheckinDataSvc interface {
+	CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*thunderdome.TeamCheckin, error)
+	CheckinCreate(ctx context.Context, TeamId string, UserId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
+	CheckinUpdate(ctx context.Context, CheckinId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
+	CheckinDelete(ctx context.Context, CheckinId string) error
+	CheckinComment(ctx context.Context, TeamId string, CheckinId string, UserId string, Comment string) error
+	CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error
+	CheckinCommentDelete(ctx context.Context, CommentId string) error
+	CheckinLastByUser(ctx context.Context, TeamId string, UserId string) (*thunderdome.TeamCheckin, error)
+}
+
+type AuthDataSvc interface {
+	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
+}
+
+type TeamDataSvc interface {
+	TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error)
+	TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team, error)
+}
+
 // Service provides retro service
 type Service struct {
 	config                Config
@@ -46,9 +66,9 @@ type Service struct {
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           thunderdome.UserDataSvc
-	AuthService           thunderdome.AuthDataSvc
-	CheckinService        thunderdome.CheckinDataSvc
-	TeamService           thunderdome.TeamDataSvc
+	AuthService           AuthDataSvc
+	CheckinService        CheckinDataSvc
+	TeamService           TeamDataSvc
 }
 
 // New returns a new retro with websocket hub/client and event handlers
@@ -57,8 +77,8 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserDataSvc, authService thunderdome.AuthDataSvc,
-	checkinService thunderdome.CheckinDataSvc, teamService thunderdome.TeamDataSvc,
+	userService thunderdome.UserDataSvc, authService AuthDataSvc,
+	checkinService CheckinDataSvc, teamService TeamDataSvc,
 ) *Service {
 	c := &Service{
 		config:                config,

@@ -1,30 +1,25 @@
+import { ThunderdomeSeeder } from "./seeder";
+
 export const apiUser = {
-  name: "E2E API User",
+  name: "E2EAPIUser",
   email: "e2eapi@thunderdome.dev",
-  password: "kentRules!",
-  hashedPass: "$2a$10$3CvuzyoGIme3dJ4v9BnvyOIKFxEaYyjV2Lfunykv0VokGf/twxi9m",
-  rank: "REGISTERED",
+  type: "REGISTERED",
   apikey: "8MenPkY8.Vqvkh030vv7$rSyYs1gt++L0v7wKuVgR",
 };
 
 const seed = async (pool) => {
-  const newUser = await pool.query(
-    `SELECT userid, verifyid FROM thunderdome.user_register($1, $2, $3, $4);`,
-    [apiUser.name, apiUser.email, apiUser.hashedPass, apiUser.rank],
+  const seeder = new ThunderdomeSeeder(pool);
+  const { id } = await seeder.createUser(
+    apiUser.name,
+    apiUser.email,
+    apiUser.type,
+    true,
   );
-  const id = newUser.rows[0].userid;
 
-  await pool.query("call thunderdome.user_account_verify($1);", [
-    newUser.rows[0].verifyid,
-  ]);
-
-  await pool.query(
-    `INSERT INTO thunderdome.api_key (id, user_id, name, active) VALUES ($1, $2, $3, TRUE);`,
-    [
-      "8MenPkY8.cd737cbc4bdca1838bdcf1685b00a9a778261255c10193714d9ba1630b55b63c",
-      id,
-      "test apikey",
-    ],
+  await seeder.addUserAPIKey(
+    id,
+    "8MenPkY8.cd737cbc4bdca1838bdcf1685b00a9a778261255c10193714d9ba1630b55b63c",
+    "test apikey",
   );
 
   return {
@@ -34,16 +29,8 @@ const seed = async (pool) => {
 };
 
 const teardown = async (pool) => {
-  const oldUser = await pool.query(
-    `SELECT id FROM thunderdome.users WHERE email = $1;`,
-    [apiUser.email],
-  );
-
-  if (oldUser.rows.length) {
-    await pool.query("DELETE FROM thunderdome.users WHERE id = $1;", [
-      oldUser.rows[0].id,
-    ]);
-  }
+  const seeder = new ThunderdomeSeeder(pool);
+  await seeder.deleteUserByEmail(apiUser.email);
 
   return {};
 };

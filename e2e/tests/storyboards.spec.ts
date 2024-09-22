@@ -1,6 +1,6 @@
 import { test } from "../fixtures/user-sessions";
 import { expect } from "@playwright/test";
-import { StoryboardsPage } from "../fixtures/storyboards-page";
+import { StoryboardsPage } from "../fixtures/pages/storyboards-page";
 
 const pageTitle = "My Storyboards";
 

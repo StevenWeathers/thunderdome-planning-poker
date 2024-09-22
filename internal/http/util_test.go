@@ -8,6 +8,7 @@ import (
 
 func TestMain(m *testing.M) {
 	validate = validator.New()
+	m.Run()
 }
 
 // TestValidUserAccount calls validateUserAccountWithPasswords with valid user inputs for name, email, password1, and password2

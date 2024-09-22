@@ -38,8 +38,10 @@ func (d *OrganizationService) OrganizationGet(ctx context.Context, OrgID string)
 		&org.UpdatedDate,
 		&org.Subscribed,
 	)
-	if err != nil {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, fmt.Errorf("error getting organization: %v", err)
+	} else if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf("ORGANIZATION_NOT_FOUND")
 	}
 
 	return org, nil
@@ -58,8 +60,10 @@ func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID s
 	).Scan(
 		&role,
 	)
-	if err != nil {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return "", fmt.Errorf("error getting organization users role: %v", err)
+	} else if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return "", fmt.Errorf("USER_ROLE_NOT_FOUND")
 	}
 
 	return role, nil

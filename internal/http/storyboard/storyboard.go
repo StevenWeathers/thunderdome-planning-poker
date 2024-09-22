@@ -38,6 +38,10 @@ func (c *Config) PongWait() time.Duration {
 	return time.Duration(c.PongWaitSec) * time.Second
 }
 
+type AuthDataSvc interface {
+	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
+}
+
 // Service provides storyboard service
 type Service struct {
 	config                Config
@@ -46,7 +50,7 @@ type Service struct {
 	ValidateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	EventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           thunderdome.UserDataSvc
-	AuthService           thunderdome.AuthDataSvc
+	AuthService           AuthDataSvc
 	StoryboardService     thunderdome.StoryboardDataSvc
 }
 
@@ -56,7 +60,7 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserDataSvc, authService thunderdome.AuthDataSvc,
+	userService thunderdome.UserDataSvc, authService AuthDataSvc,
 	storyboardService thunderdome.StoryboardDataSvc,
 ) *Service {
 	sb := &Service{

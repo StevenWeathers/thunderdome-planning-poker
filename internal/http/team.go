@@ -21,7 +21,7 @@ type teamResponse struct {
 	TeamRole string            `json:"teamRole"`
 }
 
-// handleGetTeamByUser gets an team with user role
+// handleGetTeamByUser gets a team with user role
 // @Summary      Get Team
 // @Description  Get a team with user role
 // @Tags         team
@@ -35,6 +35,7 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		UserTeamRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		idErr := validate.Var(TeamID, "required,uuid")
@@ -42,20 +43,27 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+		// Workaround until v5 refactor to replace meta's with consistency
+		TeamRole := UserTeamRoles.TeamRole
+		if TeamRole == nil {
+			var adminStr string
+			TeamRole = &adminStr
+		}
 
 		Team, err := s.TeamDataSvc.TeamGet(ctx, TeamID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleGetTeamByUser error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("session_user_id", SessionUserID), zap.String("team_role", TeamRole))
+				"handleGetTeamByUser error", zap.Error(err),
+				zap.String("team_id", TeamID),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("team_role", *TeamRole))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		result := &teamResponse{
 			Team:     Team,
-			TeamRole: TeamRole,
+			TeamRole: *TeamRole,
 		}
 
 		s.Success(w, r, http.StatusOK, result, nil)

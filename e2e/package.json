@@ -7,7 +7,9 @@
     "test": "npx playwright test",
     "prettier": "prettier --check '**/*.ts'",
     "prettier:fix": "prettier --write '**/*.ts'",
-    "format": "npm run prettier:fix"
+    "format": "npm run prettier:fix",
+    "test:api": "npx playwright test --grep \"@api\"",
+    "test:ui": "npx playwright test --grep-invert \"@api\""
   },
   "author": "Steven Weathers",
   "license": "Apache-2.0",
@@ -15,6 +17,7 @@
     "@estruyf/github-actions-reporter": "^1.6.0",
     "@playwright/test": "^1.47.1",
     "pg": "^8.11.0",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "ts-node": "^10.9.2"
   }
 }

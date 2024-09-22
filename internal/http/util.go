@@ -290,19 +290,32 @@ func (s *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 // isTeamUserOrAnAdmin determines if the request user is a team user
 // or team admin, or department admin (if applicable), or organization admin (if applicable), or application admin
 func isTeamUserOrAnAdmin(r *http.Request) bool {
-	UserType := r.Context().Value(contextKeyUserType).(string)
-	OrgRole := r.Context().Value(contextKeyOrgRole)
-	DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
-	TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+	ctx := r.Context()
+	TeamUserRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
+	var emptyRole = ""
+	OrgRole := TeamUserRoles.OrganizationRole
+	if OrgRole == nil {
+		OrgRole = &emptyRole
+	}
+	DepartmentRole := TeamUserRoles.DepartmentRole
+	if DepartmentRole == nil {
+		DepartmentRole = &emptyRole
+	}
+	TeamRole := TeamUserRoles.TeamRole
+	if TeamRole == nil {
+		TeamRole = &emptyRole
+	}
+
+	UserType := ctx.Value(contextKeyUserType).(string)
 	var isAdmin = UserType == thunderdome.AdminUserType
-	if DepartmentRole != nil && DepartmentRole.(string) == thunderdome.AdminUserType {
+	if DepartmentRole != nil && *DepartmentRole == thunderdome.AdminUserType {
 		isAdmin = true
 	}
-	if OrgRole != nil && OrgRole.(string) == thunderdome.AdminUserType {
+	if OrgRole != nil && *OrgRole == thunderdome.AdminUserType {
 		isAdmin = true
 	}
 
-	return isAdmin || TeamRole != ""
+	return isAdmin || *TeamRole != ""
 }
 
 // get the index template from embedded filesystem

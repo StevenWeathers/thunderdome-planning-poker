@@ -39,6 +39,10 @@ func (c *Config) PongWait() time.Duration {
 	return time.Duration(c.PongWaitSec) * time.Second
 }
 
+type AuthDataSvc interface {
+	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
+}
+
 // Service provides battle service
 type Service struct {
 	config                Config
@@ -47,7 +51,7 @@ type Service struct {
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           thunderdome.UserDataSvc
-	AuthService           thunderdome.AuthDataSvc
+	AuthService           AuthDataSvc
 	BattleService         thunderdome.PokerDataSvc
 }
 
@@ -56,7 +60,7 @@ func New(
 	config Config, logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserDataSvc, authService thunderdome.AuthDataSvc,
+	userService thunderdome.UserDataSvc, authService AuthDataSvc,
 	battleService thunderdome.PokerDataSvc,
 ) *Service {
 	b := &Service{

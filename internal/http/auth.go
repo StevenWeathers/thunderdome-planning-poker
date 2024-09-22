@@ -273,7 +273,7 @@ func (s *Service) handleMFALogin() http.HandlerFunc {
 	}
 }
 
-// handleLogout clears the user Cookie(s) ending session
+// handleLogout clears the user CookieManager(s) ending session
 // @Summary      Logout
 // @Description  Logs the user out by deleting session cookies
 // @Tags         auth
