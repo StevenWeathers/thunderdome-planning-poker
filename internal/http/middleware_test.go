@@ -16,6 +16,10 @@ import (
 	"go.uber.org/zap"
 )
 
+func ptr[T any](v T) *T {
+	return &v
+}
+
 // MockTeamDataSvc is a mock implementation of the TeamDataSvc
 type MockTeamDataSvc struct {
 	mock.Mock
@@ -318,6 +322,108 @@ func TestTeamUserOnly(t *testing.T) {
 
 			mockTeamDataSvc.AssertExpectations(t)
 			mockLogger.AssertExpectations(t)
+		})
+	}
+}
+
+func TestTeamAdminOnly(t *testing.T) {
+	tests := []struct {
+		name             string
+		userType         string
+		teamRole         *string
+		departmentRole   *string
+		organizationRole *string
+		setupMocks       func(*MockLogger)
+		expectedStatus   int
+	}{
+		{
+			name:             "Global Admin",
+			userType:         thunderdome.AdminUserType,
+			teamRole:         nil,
+			departmentRole:   nil,
+			organizationRole: nil,
+			expectedStatus:   http.StatusOK,
+		},
+		{
+			name:             "Team Admin",
+			userType:         thunderdome.RegisteredUserType,
+			teamRole:         ptr(thunderdome.AdminUserType),
+			departmentRole:   nil,
+			organizationRole: nil,
+			expectedStatus:   http.StatusOK,
+		},
+		{
+			name:             "Department Admin",
+			userType:         thunderdome.RegisteredUserType,
+			teamRole:         nil,
+			departmentRole:   ptr(thunderdome.AdminUserType),
+			organizationRole: nil,
+			expectedStatus:   http.StatusOK,
+		},
+		{
+			name:             "Organization Admin",
+			userType:         thunderdome.RegisteredUserType,
+			teamRole:         nil,
+			departmentRole:   nil,
+			organizationRole: ptr(thunderdome.AdminUserType),
+			expectedStatus:   http.StatusOK,
+		},
+		{
+			name:             "Non-Admin User",
+			userType:         thunderdome.RegisteredUserType,
+			teamRole:         ptr("MEMBER"),
+			departmentRole:   nil,
+			organizationRole: nil,
+			expectedStatus:   http.StatusForbidden,
+		},
+		{
+			name:             "No Roles",
+			userType:         thunderdome.RegisteredUserType,
+			teamRole:         nil,
+			departmentRole:   nil,
+			organizationRole: nil,
+			expectedStatus:   http.StatusForbidden,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockLogger := new(MockLogger)
+
+			mockLogger.On("Ctx", mock.Anything).Return(zap.NewNop())
+
+			// Create a test service
+			s := &Service{
+				Logger: otelzap.New(mockLogger.Ctx(context.Background())),
+			}
+
+			// Mock handler
+			mockHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/test", nil)
+			assert.NoError(t, err)
+
+			// Set up the context with user type and roles
+			ctx := context.WithValue(req.Context(), contextKeyUserType, tt.userType)
+			ctx = context.WithValue(ctx, contextKeyUserTeamRoles, &thunderdome.UserTeamRoleInfo{
+				TeamRole:         tt.teamRole,
+				DepartmentRole:   tt.departmentRole,
+				OrganizationRole: tt.organizationRole,
+			})
+			req = req.WithContext(ctx)
+
+			// Create a response recorder
+			rr := httptest.NewRecorder()
+
+			// Call the middleware
+			handler := s.teamAdminOnly(mockHandler)
+			handler.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
 		})
 	}
 }
