@@ -498,14 +498,14 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 			return
 		}
 
-		_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.Id, UserID, "MEMBER")
+		_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.Id, UserID, thunderdome.EntityMemberUserType)
 		if orgAddErr != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleUserDepartmentInvite upsert organization user error", zap.Error(orgAddErr),
 				zap.String("session_user_id", *SessionUserID),
 				zap.String("organization_id", org.Id),
 				zap.String("department_id", dept.Id),
-				zap.String("user_id", UserID), zap.String("user_role", "MEMBER"))
+				zap.String("user_id", UserID), zap.String("user_role", thunderdome.EntityMemberUserType))
 			s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
 			return
 		}
@@ -593,13 +593,13 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 
 		// team is associated to organization, upsert user to organization
 		if team.OrganizationId != "" {
-			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, team.OrganizationId, UserID, "MEMBER")
+			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, team.OrganizationId, UserID, thunderdome.EntityMemberUserType)
 			if orgAddErr != nil {
 				s.Logger.Ctx(ctx).Error(
 					"handleTeamInviteUser upsert organization user error", zap.Error(orgAddErr),
 					zap.String("session_user_id", *SessionUserID),
 					zap.String("organization_id", team.OrganizationId),
-					zap.String("user_id", UserID), zap.String("user_role", "MEMBER"))
+					zap.String("user_id", UserID), zap.String("user_role", thunderdome.EntityMemberUserType))
 				s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
 				return
 			}
@@ -628,25 +628,25 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 
 			team.OrganizationId = org.Id
 
-			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.Id, UserID, "MEMBER")
+			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.Id, UserID, thunderdome.EntityMemberUserType)
 			if orgAddErr != nil {
 				s.Logger.Ctx(ctx).Error(
 					"handleTeamInviteUser upsert organization user error", zap.Error(orgAddErr),
 					zap.String("session_user_id", *SessionUserID),
 					zap.String("organization_id", org.Id),
 					zap.String("department_id", dept.Id),
-					zap.String("user_id", UserID), zap.String("user_role", "MEMBER"))
+					zap.String("user_id", UserID), zap.String("user_role", thunderdome.EntityMemberUserType))
 				s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
 				return
 			}
 
-			_, deptAddErr := s.OrganizationDataSvc.DepartmentUpsertUser(ctx, team.DepartmentId, UserID, "MEMBER")
+			_, deptAddErr := s.OrganizationDataSvc.DepartmentUpsertUser(ctx, team.DepartmentId, UserID, thunderdome.EntityMemberUserType)
 			if deptAddErr != nil {
 				s.Logger.Ctx(ctx).Error(
 					"handleTeamInviteUser upsert department user error", zap.Error(deptAddErr),
 					zap.String("session_user_id", *SessionUserID),
 					zap.String("department_id", team.DepartmentId),
-					zap.String("user_id", UserID), zap.String("user_role", "MEMBER"))
+					zap.String("user_id", UserID), zap.String("user_role", thunderdome.EntityMemberUserType))
 				s.Failure(w, r, http.StatusInternalServerError, deptAddErr)
 				return
 			}

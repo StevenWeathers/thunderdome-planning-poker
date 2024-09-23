@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -189,7 +190,7 @@ func TestTeamUserOnly(t *testing.T) {
 		{
 			name:     "Valid team user",
 			userID:   "2d6176c8-50d6-4963-8172-2c20ca5022a3",
-			userType: "REGISTERED",
+			userType: thunderdome.RegisteredUserType,
 			teamID:   "128ee064-62ca-43b2-9fca-9c1089c89bd2",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				mtds.On(
@@ -221,7 +222,7 @@ func TestTeamUserOnly(t *testing.T) {
 		{
 			name:     "Department admin",
 			userID:   "6a12ef8c-1140-4faa-a505-22910a7593f9",
-			userType: "REGISTERED",
+			userType: thunderdome.RegisteredUserType,
 			teamID:   "7d4d0a17-cb20-4499-bc7f-ecaf2e77c15a",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				deptRole := thunderdome.AdminUserType
@@ -238,7 +239,7 @@ func TestTeamUserOnly(t *testing.T) {
 		{
 			name:     "Organization admin",
 			userID:   "31c8521e-2e68-4898-b3cf-e919cf80dbe2",
-			userType: "REGISTERED",
+			userType: thunderdome.RegisteredUserType,
 			teamID:   "0ea230df-b5fe-47ae-a473-5153004eebdd",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				orgRole := thunderdome.AdminUserType
@@ -255,7 +256,7 @@ func TestTeamUserOnly(t *testing.T) {
 		{
 			name:     "Invalid team ID",
 			userID:   "1353a056-d239-41e1-ad1a-b3f0777e6c3a",
-			userType: "REGISTERED",
+			userType: thunderdome.RegisteredUserType,
 			teamID:   "invalid-team-id",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				ml.On("Ctx", mock.Anything).Return(zap.NewNop())
@@ -265,7 +266,7 @@ func TestTeamUserOnly(t *testing.T) {
 		{
 			name:     "Team not found",
 			userID:   "1b853ef6-2c28-4c8e-ac29-a9d4827774fe",
-			userType: "REGISTERED",
+			userType: thunderdome.RegisteredUserType,
 			teamID:   "e52b9251-4722-4b4d-8f97-204ce7e51eec",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				mtds.On(
@@ -281,7 +282,7 @@ func TestTeamUserOnly(t *testing.T) {
 		{
 			name:     "Unauthorized user",
 			userID:   "a805def1-e1fa-42a9-b5f6-ee338799fa77",
-			userType: "REGISTERED",
+			userType: thunderdome.RegisteredUserType,
 			teamID:   "a805def1-e1fa-42a9-b5f6-ee338799fa77",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				mtds.On("TeamUserRoles",
@@ -372,7 +373,7 @@ func TestTeamAdminOnly(t *testing.T) {
 		{
 			name:             "Non-Admin User",
 			userType:         thunderdome.RegisteredUserType,
-			teamRole:         ptr("MEMBER"),
+			teamRole:         ptr(thunderdome.EntityMemberUserType),
 			departmentRole:   nil,
 			organizationRole: nil,
 			expectedStatus:   http.StatusForbidden,
@@ -447,7 +448,7 @@ func TestSubscribedTeamOnly(t *testing.T) {
 		},
 		{
 			name:                 "Subscribed team allowed",
-			userType:             "MEMBER",
+			userType:             thunderdome.EntityMemberUserType,
 			teamID:               "2d6176c8-50d6-4963-8172-2c20ca5022a3",
 			subscriptionsEnabled: true,
 			expectedStatusCode:   http.StatusOK,
@@ -461,7 +462,7 @@ func TestSubscribedTeamOnly(t *testing.T) {
 		},
 		{
 			name:                 "Unsubscribed team forbidden",
-			userType:             "MEMBER",
+			userType:             thunderdome.EntityMemberUserType,
 			teamID:               "128ee064-62ca-43b2-9fca-9c1089c89bd2",
 			subscriptionsEnabled: true,
 			expectedStatusCode:   http.StatusForbidden,
@@ -475,13 +476,13 @@ func TestSubscribedTeamOnly(t *testing.T) {
 		},
 		{
 			name:               "Invalid teamID",
-			userType:           "MEMBER",
+			userType:           thunderdome.EntityMemberUserType,
 			teamID:             "invalid-uuid",
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			name:                 "Subscriptions disabled",
-			userType:             "MEMBER",
+			userType:             thunderdome.EntityMemberUserType,
 			teamID:               "31c8521e-2e68-4898-b3cf-e919cf80dbe2",
 			subscriptionsEnabled: false,
 			expectedStatusCode:   http.StatusOK,
@@ -744,7 +745,7 @@ func TestSubscribedOrgOnly(t *testing.T) {
 		},
 		{
 			name:                 "Subscribed organization allowed",
-			userType:             "MEMBER",
+			userType:             thunderdome.EntityMemberUserType,
 			orgID:                "2d6176c8-50d6-4963-8172-2c20ca5022a3",
 			subscriptionsEnabled: true,
 			isSubscribed:         true,
@@ -759,7 +760,7 @@ func TestSubscribedOrgOnly(t *testing.T) {
 		},
 		{
 			name:                 "Unsubscribed organization forbidden",
-			userType:             "MEMBER",
+			userType:             thunderdome.EntityMemberUserType,
 			orgID:                "128ee064-62ca-43b2-9fca-9c1089c89bd2",
 			subscriptionsEnabled: true,
 			isSubscribed:         false,
@@ -774,13 +775,13 @@ func TestSubscribedOrgOnly(t *testing.T) {
 		},
 		{
 			name:               "Invalid orgID",
-			userType:           "MEMBER",
+			userType:           thunderdome.EntityMemberUserType,
 			orgID:              "invalid-uuid",
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			name:                 "Subscriptions disabled",
-			userType:             "MEMBER",
+			userType:             thunderdome.EntityMemberUserType,
 			orgID:                "31c8521e-2e68-4898-b3cf-e919cf80dbe2",
 			subscriptionsEnabled: false,
 			isSubscribed:         false,
@@ -850,7 +851,7 @@ func TestDepartmentAdminOnly(t *testing.T) {
 			orgID:              "00241406-94cb-4fe1-9b4a-e979f5761f10",
 			departmentID:       "0024d5f8-42b1-46c7-b5a7-da97d59d6b36",
 			expectedStatusCode: http.StatusOK,
-			expectedOrgRole:    "MEMBER",
+			expectedOrgRole:    thunderdome.EntityMemberUserType,
 			expectedDeptRole:   thunderdome.AdminUserType,
 			setupMocks: func(mockOrgDataSvc *MockOrganizationDataService) {
 				mockOrgDataSvc.On(
@@ -859,7 +860,7 @@ func TestDepartmentAdminOnly(t *testing.T) {
 					"0023f0d5-19d0-403f-a30d-d5b7616c72bd",
 					"00241406-94cb-4fe1-9b4a-e979f5761f10",
 					"0024d5f8-42b1-46c7-b5a7-da97d59d6b36",
-				).Return("MEMBER", thunderdome.AdminUserType, nil).Once()
+				).Return(thunderdome.EntityMemberUserType, thunderdome.AdminUserType, nil).Once()
 			},
 		},
 		{
@@ -895,7 +896,7 @@ func TestDepartmentAdminOnly(t *testing.T) {
 					"3f3d4ca5-6eae-4372-81ba-de8bbaa2dac2",
 					"2d6176c8-50d6-4963-8172-2c20ca5022a3",
 					"002738c2-fcf2-438e-a755-2bf9c4233b74",
-				).Return("MEMBER", "MEMBER", nil).Once()
+				).Return(thunderdome.EntityMemberUserType, thunderdome.EntityMemberUserType, nil).Once()
 			},
 		},
 		{
@@ -1000,8 +1001,8 @@ func TestDepartmentUserOnly(t *testing.T) {
 			orgID:              "128ee064-62ca-43b2-9fca-9c1089c89bd2",
 			departmentID:       "31c8521e-2e68-4898-b3cf-e919cf80dbe2",
 			expectedStatusCode: http.StatusOK,
-			expectedOrgRole:    "MEMBER",
-			expectedDeptRole:   "MEMBER",
+			expectedOrgRole:    thunderdome.EntityMemberUserType,
+			expectedDeptRole:   thunderdome.EntityMemberUserType,
 			setupMocks: func(mockOrgDataSvc *MockOrganizationDataService, mockLogger *MockLogger) {
 				mockOrgDataSvc.On(
 					"DepartmentUserRole",
@@ -1009,7 +1010,7 @@ func TestDepartmentUserOnly(t *testing.T) {
 					"ea840339-2e16-4c10-8744-33ee1b636596",
 					"128ee064-62ca-43b2-9fca-9c1089c89bd2",
 					"31c8521e-2e68-4898-b3cf-e919cf80dbe2",
-				).Return("MEMBER", "MEMBER", nil).Once()
+				).Return(thunderdome.EntityMemberUserType, thunderdome.EntityMemberUserType, nil).Once()
 			},
 		},
 		{
@@ -1019,7 +1020,7 @@ func TestDepartmentUserOnly(t *testing.T) {
 			orgID:              "2d6176c8-50d6-4963-8172-2c20ca5022a3",
 			departmentID:       "002738c2-fcf2-438e-a755-2bf9c4233b74",
 			expectedStatusCode: http.StatusOK,
-			expectedOrgRole:    "MEMBER",
+			expectedOrgRole:    thunderdome.EntityMemberUserType,
 			expectedDeptRole:   thunderdome.AdminUserType,
 			setupMocks: func(mockOrgDataSvc *MockOrganizationDataService, mockLogger *MockLogger) {
 				mockOrgDataSvc.On(
@@ -1028,7 +1029,7 @@ func TestDepartmentUserOnly(t *testing.T) {
 					"3f3d4ca5-6eae-4372-81ba-de8bbaa2dac2",
 					"2d6176c8-50d6-4963-8172-2c20ca5022a3",
 					"002738c2-fcf2-438e-a755-2bf9c4233b74",
-				).Return("MEMBER", thunderdome.AdminUserType, nil).Once()
+				).Return(thunderdome.EntityMemberUserType, thunderdome.AdminUserType, nil).Once()
 			},
 		},
 		{
@@ -1045,7 +1046,7 @@ func TestDepartmentUserOnly(t *testing.T) {
 					"0014c2dc-3e89-4369-857d-b420f5786eff",
 					"0019f42b-de8f-41ee-904e-3cb6c9ddc8f4",
 					"001a6acb-c174-43f0-9930-0b1242931123",
-				).Return("MEMBER", "", nil).Once()
+				).Return(thunderdome.EntityMemberUserType, "", nil).Once()
 			},
 		},
 		{
@@ -1164,18 +1165,18 @@ func TestOrgAdminOnly(t *testing.T) {
 		{
 			name:            "Non-Admin User",
 			userID:          "323e4567-e89b-12d3-a456-426614174000",
-			userType:        "REGULAR",
+			userType:        thunderdome.RegisteredUserType,
 			orgID:           "323e4567-e89b-12d3-a456-426614174001",
-			expectedOrgRole: "MEMBER",
+			expectedOrgRole: thunderdome.EntityMemberUserType,
 			expectedStatus:  http.StatusForbidden,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
-				mockOrgDataSvc.On("OrganizationUserRole", mock.Anything, "323e4567-e89b-12d3-a456-426614174000", "323e4567-e89b-12d3-a456-426614174001").Return("MEMBER", nil)
+				mockOrgDataSvc.On("OrganizationUserRole", mock.Anything, "323e4567-e89b-12d3-a456-426614174000", "323e4567-e89b-12d3-a456-426614174001").Return(thunderdome.EntityMemberUserType, nil)
 			},
 		},
 		{
 			name:           "User Not in Organization",
 			userID:         "423e4567-e89b-12d3-a456-426614174000",
-			userType:       "REGULAR",
+			userType:       thunderdome.RegisteredUserType,
 			orgID:          "423e4567-e89b-12d3-a456-426614174001",
 			expectedStatus: http.StatusForbidden,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
@@ -1190,7 +1191,7 @@ func TestOrgAdminOnly(t *testing.T) {
 		{
 			name:           "Invalid OrgID",
 			userID:         "523e4567-e89b-12d3-a456-426614174000",
-			userType:       "REGULAR",
+			userType:       thunderdome.RegisteredUserType,
 			orgID:          "invalid-org-id",
 			expectedStatus: http.StatusBadRequest,
 			mockSetup:      func(mockOrgDataSvc *MockOrganizationDataService) {},
@@ -1278,9 +1279,9 @@ func TestOrgUserOnly(t *testing.T) {
 		{
 			name:            "Valid Org User",
 			userID:          "223e4567-e89b-12d3-a456-426614174000",
-			userType:        "REGULAR",
+			userType:        thunderdome.RegisteredUserType,
 			orgID:           "223e4567-e89b-12d3-a456-426614174001",
-			expectedOrgRole: "MEMBER",
+			expectedOrgRole: thunderdome.EntityMemberUserType,
 			expectedStatus:  http.StatusOK,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
 				mockOrgDataSvc.On(
@@ -1292,13 +1293,13 @@ func TestOrgUserOnly(t *testing.T) {
 					mock.Anything,
 					"223e4567-e89b-12d3-a456-426614174000",
 					"223e4567-e89b-12d3-a456-426614174001",
-				).Return("MEMBER", nil)
+				).Return(thunderdome.EntityMemberUserType, nil)
 			},
 		},
 		{
 			name:           "User Not in Organization",
 			userID:         "323e4567-e89b-12d3-a456-426614174000",
-			userType:       "REGULAR",
+			userType:       thunderdome.RegisteredUserType,
 			orgID:          "323e4567-e89b-12d3-a456-426614174001",
 			expectedStatus: http.StatusForbidden,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
@@ -1318,7 +1319,7 @@ func TestOrgUserOnly(t *testing.T) {
 		{
 			name:           "Invalid OrgID",
 			userID:         "423e4567-e89b-12d3-a456-426614174000",
-			userType:       "REGULAR",
+			userType:       thunderdome.RegisteredUserType,
 			orgID:          "invalid-org-id",
 			expectedStatus: http.StatusBadRequest,
 			mockSetup:      func(mockOrgDataSvc *MockOrganizationDataService) {},
@@ -1326,7 +1327,7 @@ func TestOrgUserOnly(t *testing.T) {
 		{
 			name:           "Organization Not Found",
 			userID:         "523e4567-e89b-12d3-a456-426614174000",
-			userType:       "REGULAR",
+			userType:       thunderdome.RegisteredUserType,
 			orgID:          "523e4567-e89b-12d3-a456-426614174001",
 			expectedStatus: http.StatusNotFound,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
@@ -1340,7 +1341,7 @@ func TestOrgUserOnly(t *testing.T) {
 		{
 			name:           "Internal Server Error",
 			userID:         "623e4567-e89b-12d3-a456-426614174000",
-			userType:       "REGULAR",
+			userType:       thunderdome.RegisteredUserType,
 			orgID:          "623e4567-e89b-12d3-a456-426614174001",
 			expectedStatus: http.StatusInternalServerError,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
@@ -1418,7 +1419,7 @@ func TestSubscribedUserOnly(t *testing.T) {
 		{
 			name:                 "Subscriptions Disabled",
 			userID:               "123e4567-e89b-12d3-a456-426614174000",
-			userType:             "REGULAR",
+			userType:             thunderdome.RegisteredUserType,
 			subscriptionsEnabled: false,
 			expectedStatus:       http.StatusOK,
 			mockSetup:            func(mockSubDataSvc *MockSubscriptionDataService) {},
@@ -1434,7 +1435,7 @@ func TestSubscribedUserOnly(t *testing.T) {
 		{
 			name:                 "Subscribed Regular User",
 			userID:               "323e4567-e89b-12d3-a456-426614174000",
-			userType:             "REGULAR",
+			userType:             thunderdome.RegisteredUserType,
 			subscriptionsEnabled: true,
 			expectedStatus:       http.StatusOK,
 			mockSetup: func(mockSubDataSvc *MockSubscriptionDataService) {
@@ -1444,7 +1445,7 @@ func TestSubscribedUserOnly(t *testing.T) {
 		{
 			name:                 "Unsubscribed Regular User",
 			userID:               "423e4567-e89b-12d3-a456-426614174000",
-			userType:             "REGULAR",
+			userType:             thunderdome.RegisteredUserType,
 			subscriptionsEnabled: true,
 			expectedStatus:       http.StatusForbidden,
 			mockSetup: func(mockSubDataSvc *MockSubscriptionDataService) {
@@ -1521,7 +1522,7 @@ func TestSubscribedEntityUserOnly(t *testing.T) {
 		{
 			name:                 "Matching User ID",
 			userID:               "323e4567-e89b-12d3-a456-426614174000",
-			userType:             "REGULAR",
+			userType:             thunderdome.RegisteredUserType,
 			entityUserID:         "323e4567-e89b-12d3-a456-426614174000",
 			subscriptionsEnabled: true,
 			expectedStatus:       http.StatusOK,
@@ -1532,7 +1533,7 @@ func TestSubscribedEntityUserOnly(t *testing.T) {
 		{
 			name:                 "Non-Matching User ID",
 			userID:               "423e4567-e89b-12d3-a456-426614174000",
-			userType:             "REGULAR",
+			userType:             thunderdome.RegisteredUserType,
 			entityUserID:         "523e4567-e89b-12d3-a456-426614174000",
 			subscriptionsEnabled: true,
 			expectedStatus:       http.StatusForbidden,
@@ -1541,7 +1542,7 @@ func TestSubscribedEntityUserOnly(t *testing.T) {
 		{
 			name:                 "Subscriptions Disabled",
 			userID:               "623e4567-e89b-12d3-a456-426614174000",
-			userType:             "REGULAR",
+			userType:             thunderdome.RegisteredUserType,
 			entityUserID:         "623e4567-e89b-12d3-a456-426614174000",
 			subscriptionsEnabled: false,
 			expectedStatus:       http.StatusOK,
@@ -1550,7 +1551,7 @@ func TestSubscribedEntityUserOnly(t *testing.T) {
 		{
 			name:                 "Unsubscribed User",
 			userID:               "723e4567-e89b-12d3-a456-426614174000",
-			userType:             "REGULAR",
+			userType:             thunderdome.RegisteredUserType,
 			entityUserID:         "723e4567-e89b-12d3-a456-426614174000",
 			subscriptionsEnabled: true,
 			expectedStatus:       http.StatusForbidden,
@@ -1561,7 +1562,7 @@ func TestSubscribedEntityUserOnly(t *testing.T) {
 		{
 			name:                 "Invalid Entity User ID",
 			userID:               "823e4567-e89b-12d3-a456-426614174000",
-			userType:             "REGULAR",
+			userType:             thunderdome.RegisteredUserType,
 			entityUserID:         "invalid-user-id",
 			subscriptionsEnabled: true,
 			expectedStatus:       http.StatusBadRequest,
@@ -1661,4 +1662,497 @@ func (m *MockSubscriptionDataService) DeleteSubscription(ctx context.Context, id
 func (m *MockSubscriptionDataService) CheckActiveSubscriber(ctx context.Context, userID string) error {
 	args := m.Called(ctx, userID)
 	return args.Error(0)
+}
+
+func TestVerifiedUserOnly(t *testing.T) {
+	tests := []struct {
+		name                      string
+		sessionUserID             string
+		userType                  string
+		entityUserID              string
+		externalAPIVerifyRequired bool
+		userVerified              bool
+		expectedStatus            int
+		mockSetup                 func(mockUserDataSvc *MockUserDataService)
+	}{
+		{
+			name:                      "Admin User (Entity User is Verified)",
+			sessionUserID:             "123e4567-e89b-12d3-a456-426614174000",
+			userType:                  thunderdome.AdminUserType,
+			entityUserID:              "223e4567-e89b-12d3-a456-426614174000",
+			externalAPIVerifyRequired: true,
+			userVerified:              true,
+			expectedStatus:            http.StatusOK,
+			mockSetup: func(mockUserDataSvc *MockUserDataService) {
+				mockUserDataSvc.On(
+					"GetUser",
+					mock.Anything,
+					"223e4567-e89b-12d3-a456-426614174000",
+				).Return(&thunderdome.User{Verified: true}, nil)
+			},
+		},
+		{
+			name:                      "Admin User (Entity User is Not Verified)",
+			sessionUserID:             "123e4567-e89b-12d3-a456-426614174001",
+			userType:                  thunderdome.AdminUserType,
+			entityUserID:              "223e4567-e89b-12d3-a456-426614174001",
+			externalAPIVerifyRequired: true,
+			userVerified:              false,
+			expectedStatus:            http.StatusForbidden,
+			mockSetup: func(mockUserDataSvc *MockUserDataService) {
+				mockUserDataSvc.On(
+					"GetUser",
+					mock.Anything,
+					"223e4567-e89b-12d3-a456-426614174001",
+				).Return(&thunderdome.User{Verified: false}, nil)
+			},
+		},
+		{
+			name:                      "Matching Verified User",
+			sessionUserID:             "323e4567-e89b-12d3-a456-426614174000",
+			userType:                  thunderdome.RegisteredUserType,
+			entityUserID:              "323e4567-e89b-12d3-a456-426614174000",
+			externalAPIVerifyRequired: true,
+			userVerified:              true,
+			expectedStatus:            http.StatusOK,
+			mockSetup: func(mockUserDataSvc *MockUserDataService) {
+				mockUserDataSvc.On("GetUser", mock.Anything, "323e4567-e89b-12d3-a456-426614174000").Return(&thunderdome.User{Verified: true}, nil)
+			},
+		},
+		{
+			name:                      "Matching Unverified User",
+			sessionUserID:             "423e4567-e89b-12d3-a456-426614174000",
+			userType:                  thunderdome.RegisteredUserType,
+			entityUserID:              "423e4567-e89b-12d3-a456-426614174000",
+			externalAPIVerifyRequired: true,
+			userVerified:              false,
+			expectedStatus:            http.StatusForbidden,
+			mockSetup: func(mockUserDataSvc *MockUserDataService) {
+				mockUserDataSvc.On("GetUser", mock.Anything, "423e4567-e89b-12d3-a456-426614174000").Return(&thunderdome.User{Verified: false}, nil)
+			},
+		},
+		{
+			name:                      "Non-Matching User ID",
+			sessionUserID:             "523e4567-e89b-12d3-a456-426614174000",
+			userType:                  thunderdome.RegisteredUserType,
+			entityUserID:              "623e4567-e89b-12d3-a456-426614174000",
+			externalAPIVerifyRequired: true,
+			userVerified:              true,
+			expectedStatus:            http.StatusForbidden,
+			mockSetup:                 func(mockUserDataSvc *MockUserDataService) {},
+		},
+		{
+			name:                      "Verification Not Required",
+			sessionUserID:             "723e4567-e89b-12d3-a456-426614174000",
+			userType:                  thunderdome.RegisteredUserType,
+			entityUserID:              "723e4567-e89b-12d3-a456-426614174000",
+			externalAPIVerifyRequired: false,
+			userVerified:              false,
+			expectedStatus:            http.StatusOK,
+			mockSetup: func(mockUserDataSvc *MockUserDataService) {
+				mockUserDataSvc.On(
+					"GetUser",
+					mock.Anything, "723e4567-e89b-12d3-a456-426614174000",
+				).Return(&thunderdome.User{Verified: false}, nil)
+			},
+		},
+		{
+			name:                      "Invalid Entity User ID",
+			sessionUserID:             "823e4567-e89b-12d3-a456-426614174000",
+			userType:                  thunderdome.RegisteredUserType,
+			entityUserID:              "invalid-user-id",
+			externalAPIVerifyRequired: true,
+			userVerified:              true,
+			expectedStatus:            http.StatusBadRequest,
+			mockSetup:                 func(mockUserDataSvc *MockUserDataService) {},
+		},
+		{
+			name:                      "User Not Found",
+			sessionUserID:             "923e4567-e89b-12d3-a456-426614174000",
+			userType:                  thunderdome.RegisteredUserType,
+			entityUserID:              "923e4567-e89b-12d3-a456-426614174000",
+			externalAPIVerifyRequired: true,
+			userVerified:              true,
+			expectedStatus:            http.StatusInternalServerError,
+			mockSetup: func(mockUserDataSvc *MockUserDataService) {
+				mockUserDataSvc.On("GetUser", mock.Anything, "923e4567-e89b-12d3-a456-426614174000").Return(nil, errors.New("user not found"))
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Mock UserDataService
+			mockUserDataSvc := new(MockUserDataService)
+
+			// Create a new service with the mock and config
+			s := &Service{
+				UserDataSvc: mockUserDataSvc,
+				Config: &Config{
+					ExternalAPIVerifyRequired: tt.externalAPIVerifyRequired,
+				},
+				Logger: otelzap.New(zap.NewNop()),
+			}
+
+			// Define a dummy handler for testing
+			dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Setup mock expectations
+			tt.mockSetup(mockUserDataSvc)
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/users/"+tt.entityUserID, nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Set up the context with user information
+			ctx := context.WithValue(req.Context(), contextKeyUserID, tt.sessionUserID)
+			ctx = context.WithValue(ctx, contextKeyUserType, tt.userType)
+			req = req.WithContext(ctx)
+
+			// Set up router with vars
+			router := mux.NewRouter()
+			router.HandleFunc("/users/{userId}", s.verifiedUserOnly(dummyHandler))
+
+			// Serve the request
+			router.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// Clear mock expectations for the next test
+			mockUserDataSvc.AssertExpectations(t)
+		})
+	}
+}
+
+// MockUserDataService is a mock of UserDataService
+type MockUserDataService struct {
+	mock.Mock
+}
+
+func (m *MockUserDataService) GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) GetUserByEmail(ctx context.Context, UserEmail string) (*thunderdome.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*thunderdome.User, int, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) SearchRegisteredUsersByEmail(ctx context.Context, Email string, Limit int, Offset int) ([]*thunderdome.User, int, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) CreateUserGuest(ctx context.Context, UserName string) (*thunderdome.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) PromoteUser(ctx context.Context, UserID string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) DemoteUser(ctx context.Context, UserID string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) DisableUser(ctx context.Context, UserID string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) EnableUser(ctx context.Context, UserID string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) DeleteUser(ctx context.Context, UserID string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) CleanGuests(ctx context.Context, DaysOld int) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) GetActiveCountries(ctx context.Context) ([]string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) GetUserCredential(ctx context.Context, UserID string) (*thunderdome.Credential, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) GetUser(ctx context.Context, userID string) (*thunderdome.User, error) {
+	args := m.Called(ctx, userID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*thunderdome.User), args.Error(1)
+}
+
+func TestAdminOnly(t *testing.T) {
+	tests := []struct {
+		name           string
+		userType       string
+		expectedStatus int
+	}{
+		{
+			name:           "Admin User",
+			userType:       thunderdome.AdminUserType,
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Regular User",
+			userType:       thunderdome.RegisteredUserType,
+			expectedStatus: http.StatusForbidden,
+		},
+		{
+			name:           "Guest User",
+			userType:       "GUEST",
+			expectedStatus: http.StatusForbidden,
+		},
+		{
+			name:           "Empty User Type",
+			userType:       "",
+			expectedStatus: http.StatusForbidden,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create a new service
+			s := &Service{
+				// Add any necessary service configuration here
+			}
+
+			// Define a dummy handler for testing
+			dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/admin-only", nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Set up the context with user type
+			ctx := context.WithValue(req.Context(), contextKeyUserType, tt.userType)
+			req = req.WithContext(ctx)
+
+			// Call the middleware
+			handler := s.adminOnly(dummyHandler)
+			handler.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// If the status is Forbidden, check for the correct error message
+			if tt.expectedStatus == http.StatusForbidden {
+				var responseBody map[string]interface{}
+				err = json.NewDecoder(rr.Body).Decode(&responseBody)
+				assert.NoError(t, err)
+				assert.Equal(t, "REQUIRES_ADMIN", responseBody["error"])
+			}
+		})
+	}
+}
+
+func TestRegisteredUserOnly(t *testing.T) {
+	tests := []struct {
+		name           string
+		userType       string
+		expectedStatus int
+	}{
+		{
+			name:           "Admin User",
+			userType:       thunderdome.AdminUserType,
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Regular User",
+			userType:       thunderdome.RegisteredUserType,
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Guest User",
+			userType:       thunderdome.GuestUserType,
+			expectedStatus: http.StatusForbidden,
+		},
+		{
+			name:           "Empty User Type",
+			userType:       "",
+			expectedStatus: http.StatusOK,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create a new service
+			s := &Service{
+				// Add any necessary service configuration here
+			}
+
+			// Define a dummy handler for testing
+			dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/registered-only", nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Set up the context with user type
+			ctx := context.WithValue(req.Context(), contextKeyUserType, tt.userType)
+			req = req.WithContext(ctx)
+
+			// Call the middleware
+			handler := s.registeredUserOnly(dummyHandler)
+			handler.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// If the status is Forbidden, check for the correct error message
+			if tt.expectedStatus == http.StatusForbidden {
+				var responseBody map[string]interface{}
+				err = json.NewDecoder(rr.Body).Decode(&responseBody)
+				assert.NoError(t, err)
+				assert.Equal(t, "REGISTERED_USER_ONLY", responseBody["error"])
+			}
+		})
+	}
+}
+
+func TestEntityUserOnly(t *testing.T) {
+	tests := []struct {
+		name           string
+		userID         string
+		userType       string
+		entityUserID   string
+		expectedStatus int
+	}{
+		{
+			name:           "Matching User ID",
+			userID:         "123e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			entityUserID:   "123e4567-e89b-12d3-a456-426614174000",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Admin User with Different Entity ID",
+			userID:         "223e4567-e89b-12d3-a456-426614174000",
+			userType:       thunderdome.AdminUserType,
+			entityUserID:   "323e4567-e89b-12d3-a456-426614174000",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Non-Matching User ID",
+			userID:         "423e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			entityUserID:   "523e4567-e89b-12d3-a456-426614174000",
+			expectedStatus: http.StatusForbidden,
+		},
+		{
+			name:           "Invalid Entity User ID",
+			userID:         "623e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			entityUserID:   "invalid-user-id",
+			expectedStatus: http.StatusBadRequest,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create a new service
+			s := &Service{
+				// Add any necessary service configuration here
+			}
+
+			// Define a dummy handler for testing
+			dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/users/"+tt.entityUserID, nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Set up the context with user information
+			ctx := context.WithValue(req.Context(), contextKeyUserID, tt.userID)
+			ctx = context.WithValue(ctx, contextKeyUserType, tt.userType)
+			req = req.WithContext(ctx)
+
+			// Set up router with vars
+			router := mux.NewRouter()
+			router.HandleFunc("/users/{userId}", s.entityUserOnly(dummyHandler))
+
+			// Serve the request
+			router.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// If the status is not OK, check for the correct error message
+			if tt.expectedStatus != http.StatusOK {
+				var responseBody map[string]interface{}
+				err = json.NewDecoder(rr.Body).Decode(&responseBody)
+				assert.NoError(t, err)
+
+				if tt.expectedStatus == http.StatusForbidden {
+					assert.Equal(t, "INVALID_USER", responseBody["error"])
+				}
+			}
+		})
+	}
 }

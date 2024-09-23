@@ -43,6 +43,10 @@ type AuthDataSvc interface {
 	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
 }
 
+type UserDataSvc interface {
+	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+}
+
 // Service provides battle service
 type Service struct {
 	config                Config
@@ -50,7 +54,7 @@ type Service struct {
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
-	UserService           thunderdome.UserDataSvc
+	UserService           UserDataSvc
 	AuthService           AuthDataSvc
 	BattleService         thunderdome.PokerDataSvc
 }
@@ -60,7 +64,7 @@ func New(
 	config Config, logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserDataSvc, authService AuthDataSvc,
+	userService UserDataSvc, authService AuthDataSvc,
 	battleService thunderdome.PokerDataSvc,
 ) *Service {
 	b := &Service{

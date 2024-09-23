@@ -109,7 +109,7 @@ type Service struct {
 	Router               *mux.Router
 	Email                thunderdome.EmailService
 	Logger               *otelzap.Logger
-	UserDataSvc          thunderdome.UserDataSvc
+	UserDataSvc          UserDataSvc
 	ApiKeyDataSvc        APIKeyDataSvc
 	AlertDataSvc         AlertDataSvc
 	AuthDataSvc          AuthDataSvc
@@ -301,4 +301,26 @@ type SubscriptionDataSvc interface {
 	UpdateSubscription(ctx context.Context, id string, sub thunderdome.Subscription) (thunderdome.Subscription, error)
 	GetSubscriptions(ctx context.Context, Limit int, Offset int) ([]thunderdome.Subscription, int, error)
 	DeleteSubscription(ctx context.Context, id string) error
+}
+
+type UserDataSvc interface {
+	GetUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+	GetUserByEmail(ctx context.Context, UserEmail string) (*thunderdome.User, error)
+	GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*thunderdome.User, int, error)
+	SearchRegisteredUsersByEmail(ctx context.Context, Email string, Limit int, Offset int) ([]*thunderdome.User, int, error)
+	CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error)
+	CreateUserGuest(ctx context.Context, UserName string) (*thunderdome.User, error)
+	CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error)
+	UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
+	UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
+	UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
+	PromoteUser(ctx context.Context, UserID string) error
+	DemoteUser(ctx context.Context, UserID string) error
+	DisableUser(ctx context.Context, UserID string) error
+	EnableUser(ctx context.Context, UserID string) error
+	DeleteUser(ctx context.Context, UserID string) error
+	CleanGuests(ctx context.Context, DaysOld int) error
+	GetActiveCountries(ctx context.Context) ([]string, error)
+	GetUserCredential(ctx context.Context, UserID string) (*thunderdome.Credential, error)
 }

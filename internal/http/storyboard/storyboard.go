@@ -42,6 +42,10 @@ type AuthDataSvc interface {
 	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
 }
 
+type UserDataSvc interface {
+	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+}
+
 // Service provides storyboard service
 type Service struct {
 	config                Config
@@ -49,7 +53,7 @@ type Service struct {
 	ValidateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	ValidateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	EventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
-	UserService           thunderdome.UserDataSvc
+	UserService           UserDataSvc
 	AuthService           AuthDataSvc
 	StoryboardService     thunderdome.StoryboardDataSvc
 }
@@ -60,7 +64,7 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserDataSvc, authService AuthDataSvc,
+	userService UserDataSvc, authService AuthDataSvc,
 	storyboardService thunderdome.StoryboardDataSvc,
 ) *Service {
 	sb := &Service{

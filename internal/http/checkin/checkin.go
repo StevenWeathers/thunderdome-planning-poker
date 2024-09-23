@@ -58,6 +58,10 @@ type TeamDataSvc interface {
 	TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team, error)
 }
 
+type UserDataSvc interface {
+	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+}
+
 // Service provides retro service
 type Service struct {
 	config                Config
@@ -65,7 +69,7 @@ type Service struct {
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
-	UserService           thunderdome.UserDataSvc
+	UserService           UserDataSvc
 	AuthService           AuthDataSvc
 	CheckinService        CheckinDataSvc
 	TeamService           TeamDataSvc
@@ -77,7 +81,7 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserDataSvc, authService AuthDataSvc,
+	userService UserDataSvc, authService AuthDataSvc,
 	checkinService CheckinDataSvc, teamService TeamDataSvc,
 ) *Service {
 	c := &Service{
