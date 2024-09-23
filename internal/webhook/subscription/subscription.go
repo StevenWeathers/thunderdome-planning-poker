@@ -26,10 +26,16 @@ type Config struct {
 	WebhookSecret string
 }
 
+type DataSvc interface {
+	GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionId string) (thunderdome.Subscription, error)
+	CreateSubscription(ctx context.Context, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
+	UpdateSubscription(ctx context.Context, id string, sub thunderdome.Subscription) (thunderdome.Subscription, error)
+}
+
 type Service struct {
 	config      Config
 	logger      *otelzap.Logger
-	dataSvc     thunderdome.SubscriptionDataSvc
+	dataSvc     DataSvc
 	emailSvc    thunderdome.EmailService
 	userDataSvc thunderdome.UserDataSvc
 }
@@ -37,7 +43,7 @@ type Service struct {
 func New(
 	config Config,
 	logger *otelzap.Logger,
-	dataSvc thunderdome.SubscriptionDataSvc,
+	dataSvc DataSvc,
 	emailSvc thunderdome.EmailService,
 	userDataSvc thunderdome.UserDataSvc,
 ) *Service {

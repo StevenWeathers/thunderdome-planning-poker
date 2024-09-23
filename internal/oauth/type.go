@@ -37,6 +37,10 @@ type AuthDataSvc interface {
 	OauthAuthUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error)
 }
 
+type SubscriptionDataSvc interface {
+	CheckActiveSubscriber(ctx context.Context, userId string) error
+}
+
 type Service struct {
 	config              Config
 	cookie              CookieManager
@@ -44,5 +48,5 @@ type Service struct {
 	logger              *otelzap.Logger
 	verifier            *oidc.IDTokenVerifier
 	authDataSvc         AuthDataSvc
-	subscriptionDataSvc thunderdome.SubscriptionDataSvc
+	subscriptionDataSvc SubscriptionDataSvc
 }

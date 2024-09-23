@@ -1405,3 +1405,260 @@ func TestOrgUserOnly(t *testing.T) {
 		})
 	}
 }
+
+func TestSubscribedUserOnly(t *testing.T) {
+	tests := []struct {
+		name                 string
+		userID               string
+		userType             string
+		subscriptionsEnabled bool
+		expectedStatus       int
+		mockSetup            func(mockSubDataSvc *MockSubscriptionDataService)
+	}{
+		{
+			name:                 "Subscriptions Disabled",
+			userID:               "123e4567-e89b-12d3-a456-426614174000",
+			userType:             "REGULAR",
+			subscriptionsEnabled: false,
+			expectedStatus:       http.StatusOK,
+			mockSetup:            func(mockSubDataSvc *MockSubscriptionDataService) {},
+		},
+		{
+			name:                 "Admin User",
+			userID:               "223e4567-e89b-12d3-a456-426614174000",
+			userType:             thunderdome.AdminUserType,
+			subscriptionsEnabled: true,
+			expectedStatus:       http.StatusOK,
+			mockSetup:            func(mockSubDataSvc *MockSubscriptionDataService) {},
+		},
+		{
+			name:                 "Subscribed Regular User",
+			userID:               "323e4567-e89b-12d3-a456-426614174000",
+			userType:             "REGULAR",
+			subscriptionsEnabled: true,
+			expectedStatus:       http.StatusOK,
+			mockSetup: func(mockSubDataSvc *MockSubscriptionDataService) {
+				mockSubDataSvc.On("CheckActiveSubscriber", mock.Anything, "323e4567-e89b-12d3-a456-426614174000").Return(nil)
+			},
+		},
+		{
+			name:                 "Unsubscribed Regular User",
+			userID:               "423e4567-e89b-12d3-a456-426614174000",
+			userType:             "REGULAR",
+			subscriptionsEnabled: true,
+			expectedStatus:       http.StatusForbidden,
+			mockSetup: func(mockSubDataSvc *MockSubscriptionDataService) {
+				mockSubDataSvc.On("CheckActiveSubscriber", mock.Anything, "423e4567-e89b-12d3-a456-426614174000").Return(errors.New("not subscribed"))
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Mock SubscriptionDataService
+			mockSubDataSvc := new(MockSubscriptionDataService)
+
+			// Create a new service with the mock and config
+			s := &Service{
+				SubscriptionDataSvc: mockSubDataSvc,
+				Config: &Config{
+					SubscriptionsEnabled: tt.subscriptionsEnabled,
+				},
+			}
+
+			// Define a dummy handler for testing
+			dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Setup mock expectations
+			tt.mockSetup(mockSubDataSvc)
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/test", nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Set up the context with user information
+			ctx := context.WithValue(req.Context(), contextKeyUserID, tt.userID)
+			ctx = context.WithValue(ctx, contextKeyUserType, tt.userType)
+			req = req.WithContext(ctx)
+
+			// Call the middleware
+			handler := s.subscribedUserOnly(dummyHandler)
+			handler.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// Clear mock expectations for the next test
+			mockSubDataSvc.AssertExpectations(t)
+		})
+	}
+}
+
+func TestSubscribedEntityUserOnly(t *testing.T) {
+	tests := []struct {
+		name                 string
+		userID               string
+		userType             string
+		entityUserID         string
+		subscriptionsEnabled bool
+		expectedStatus       int
+		mockSetup            func(mockSubDataSvc *MockSubscriptionDataService)
+	}{
+		{
+			name:                 "Admin User",
+			userID:               "123e4567-e89b-12d3-a456-426614174000",
+			userType:             thunderdome.AdminUserType,
+			entityUserID:         "223e4567-e89b-12d3-a456-426614174000",
+			subscriptionsEnabled: true,
+			expectedStatus:       http.StatusOK,
+			mockSetup:            func(mockSubDataSvc *MockSubscriptionDataService) {},
+		},
+		{
+			name:                 "Matching User ID",
+			userID:               "323e4567-e89b-12d3-a456-426614174000",
+			userType:             "REGULAR",
+			entityUserID:         "323e4567-e89b-12d3-a456-426614174000",
+			subscriptionsEnabled: true,
+			expectedStatus:       http.StatusOK,
+			mockSetup: func(mockSubDataSvc *MockSubscriptionDataService) {
+				mockSubDataSvc.On("CheckActiveSubscriber", mock.Anything, "323e4567-e89b-12d3-a456-426614174000").Return(nil)
+			},
+		},
+		{
+			name:                 "Non-Matching User ID",
+			userID:               "423e4567-e89b-12d3-a456-426614174000",
+			userType:             "REGULAR",
+			entityUserID:         "523e4567-e89b-12d3-a456-426614174000",
+			subscriptionsEnabled: true,
+			expectedStatus:       http.StatusForbidden,
+			mockSetup:            func(mockSubDataSvc *MockSubscriptionDataService) {},
+		},
+		{
+			name:                 "Subscriptions Disabled",
+			userID:               "623e4567-e89b-12d3-a456-426614174000",
+			userType:             "REGULAR",
+			entityUserID:         "623e4567-e89b-12d3-a456-426614174000",
+			subscriptionsEnabled: false,
+			expectedStatus:       http.StatusOK,
+			mockSetup:            func(mockSubDataSvc *MockSubscriptionDataService) {},
+		},
+		{
+			name:                 "Unsubscribed User",
+			userID:               "723e4567-e89b-12d3-a456-426614174000",
+			userType:             "REGULAR",
+			entityUserID:         "723e4567-e89b-12d3-a456-426614174000",
+			subscriptionsEnabled: true,
+			expectedStatus:       http.StatusForbidden,
+			mockSetup: func(mockSubDataSvc *MockSubscriptionDataService) {
+				mockSubDataSvc.On("CheckActiveSubscriber", mock.Anything, "723e4567-e89b-12d3-a456-426614174000").Return(errors.New("not subscribed"))
+			},
+		},
+		{
+			name:                 "Invalid Entity User ID",
+			userID:               "823e4567-e89b-12d3-a456-426614174000",
+			userType:             "REGULAR",
+			entityUserID:         "invalid-user-id",
+			subscriptionsEnabled: true,
+			expectedStatus:       http.StatusBadRequest,
+			mockSetup:            func(mockSubDataSvc *MockSubscriptionDataService) {},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Mock SubscriptionDataService
+			mockSubDataSvc := new(MockSubscriptionDataService)
+
+			// Create a new service with the mock and config
+			s := &Service{
+				SubscriptionDataSvc: mockSubDataSvc,
+				Config: &Config{
+					SubscriptionsEnabled: tt.subscriptionsEnabled,
+				},
+			}
+
+			// Define a dummy handler for testing
+			dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Setup mock expectations
+			tt.mockSetup(mockSubDataSvc)
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/users/"+tt.entityUserID, nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Set up the context with user information
+			ctx := context.WithValue(req.Context(), contextKeyUserID, tt.userID)
+			ctx = context.WithValue(ctx, contextKeyUserType, tt.userType)
+			req = req.WithContext(ctx)
+
+			// Set up router with vars
+			router := mux.NewRouter()
+			router.HandleFunc("/users/{userId}", s.subscribedEntityUserOnly(dummyHandler))
+
+			// Serve the request
+			router.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// Clear mock expectations for the next test
+			mockSubDataSvc.AssertExpectations(t)
+		})
+	}
+}
+
+// MockSubscriptionDataService is a mock of SubscriptionDataService
+type MockSubscriptionDataService struct {
+	mock.Mock
+}
+
+func (m *MockSubscriptionDataService) GetSubscriptionByID(ctx context.Context, id string) (thunderdome.Subscription, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockSubscriptionDataService) GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionId string) (thunderdome.Subscription, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockSubscriptionDataService) GetActiveSubscriptionsByUserID(ctx context.Context, userId string) ([]thunderdome.Subscription, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockSubscriptionDataService) CreateSubscription(ctx context.Context, subscription thunderdome.Subscription) (thunderdome.Subscription, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockSubscriptionDataService) UpdateSubscription(ctx context.Context, id string, sub thunderdome.Subscription) (thunderdome.Subscription, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockSubscriptionDataService) GetSubscriptions(ctx context.Context, Limit int, Offset int) ([]thunderdome.Subscription, int, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockSubscriptionDataService) DeleteSubscription(ctx context.Context, id string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockSubscriptionDataService) CheckActiveSubscriber(ctx context.Context, userID string) error {
+	args := m.Called(ctx, userID)
+	return args.Error(0)
+}

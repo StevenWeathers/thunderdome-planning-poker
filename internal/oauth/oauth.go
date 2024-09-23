@@ -19,7 +19,7 @@ func New(
 	cookie CookieManager,
 	logger *otelzap.Logger,
 	authDataSvc AuthDataSvc,
-	subscriptionDataSvc thunderdome.SubscriptionDataSvc,
+	subscriptionDataSvc SubscriptionDataSvc,
 	ctx context.Context,
 ) (*Service, error) {
 	s := Service{

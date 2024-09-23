@@ -121,7 +121,7 @@ type Service struct {
 	OrganizationDataSvc  OrganizationDataSvc
 	AdminDataSvc         AdminDataSvc
 	JiraDataSvc          JiraDataSvc
-	SubscriptionDataSvc  thunderdome.SubscriptionDataSvc
+	SubscriptionDataSvc  SubscriptionDataSvc
 	RetroTemplateDataSvc thunderdome.RetroTemplateDataSvc
 	SubscriptionSvc      *subscription.Service
 }
@@ -290,4 +290,15 @@ type TeamDataSvc interface {
 	TeamIsSubscribed(ctx context.Context, TeamID string) (bool, error)
 	GetTeamMetrics(ctx context.Context, teamID string) (*thunderdome.TeamMetrics, error)
 	TeamUserRoles(ctx context.Context, UserID string, TeamID string) (*thunderdome.UserTeamRoleInfo, error)
+}
+
+type SubscriptionDataSvc interface {
+	CheckActiveSubscriber(ctx context.Context, userId string) error
+	GetSubscriptionByID(ctx context.Context, id string) (thunderdome.Subscription, error)
+	GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionId string) (thunderdome.Subscription, error)
+	GetActiveSubscriptionsByUserID(ctx context.Context, userId string) ([]thunderdome.Subscription, error)
+	CreateSubscription(ctx context.Context, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
+	UpdateSubscription(ctx context.Context, id string, sub thunderdome.Subscription) (thunderdome.Subscription, error)
+	GetSubscriptions(ctx context.Context, Limit int, Offset int) ([]thunderdome.Subscription, int, error)
+	DeleteSubscription(ctx context.Context, id string) error
 }
