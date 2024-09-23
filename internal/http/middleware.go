@@ -286,7 +286,7 @@ func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != thunderdome.AdminUserType {
 			var UserErr error
-			Role, UserErr := s.OrganizationDataSvc.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr = s.OrganizationDataSvc.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return

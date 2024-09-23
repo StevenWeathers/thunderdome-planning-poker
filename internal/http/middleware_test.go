@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -525,13 +526,17 @@ type MockOrganizationDataService struct {
 }
 
 func (m *MockOrganizationDataService) OrganizationGet(ctx context.Context, OrgID string) (*thunderdome.Organization, error) {
-	//TODO implement me
-	panic("implement me")
+	args := m.Called(ctx, OrgID)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	to := args.Get(0).(thunderdome.Organization)
+	return &to, nil
 }
 
-func (m *MockOrganizationDataService) OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error) {
-	//TODO implement me
-	panic("implement me")
+func (m *MockOrganizationDataService) OrganizationUserRole(ctx context.Context, userID, orgID string) (string, error) {
+	args := m.Called(ctx, userID, orgID)
+	return args.String(0), args.Error(1)
 }
 
 func (m *MockOrganizationDataService) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserOrganization {
@@ -1116,6 +1121,286 @@ func TestDepartmentUserOnly(t *testing.T) {
 				assert.Equal(t, tt.expectedDeptRole, capturedDeptRole)
 			}
 
+			mockOrgDataSvc.AssertExpectations(t)
+		})
+	}
+}
+
+func TestOrgAdminOnly(t *testing.T) {
+	tests := []struct {
+		name            string
+		userID          string
+		userType        string
+		orgID           string
+		expectedOrgRole string
+		expectedStatus  int
+		mockSetup       func(mockOrgDataSvc *MockOrganizationDataService)
+	}{
+		{
+			name:            "Valid Admin User",
+			userID:          "123e4567-e89b-12d3-a456-426614174000",
+			userType:        thunderdome.AdminUserType,
+			orgID:           "123e4567-e89b-12d3-a456-426614174001",
+			expectedOrgRole: thunderdome.AdminUserType,
+			expectedStatus:  http.StatusOK,
+			mockSetup:       func(mockOrgDataSvc *MockOrganizationDataService) {},
+		},
+		{
+			name:            "Valid Org Admin",
+			userID:          "223e4567-e89b-12d3-a456-426614174000",
+			userType:        "REGULAR",
+			orgID:           "223e4567-e89b-12d3-a456-426614174001",
+			expectedOrgRole: thunderdome.AdminUserType,
+			expectedStatus:  http.StatusOK,
+			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
+				mockOrgDataSvc.On(
+					"OrganizationUserRole",
+					mock.Anything,
+					"223e4567-e89b-12d3-a456-426614174000",
+					"223e4567-e89b-12d3-a456-426614174001",
+				).Return(thunderdome.AdminUserType, nil)
+			},
+		},
+		{
+			name:            "Non-Admin User",
+			userID:          "323e4567-e89b-12d3-a456-426614174000",
+			userType:        "REGULAR",
+			orgID:           "323e4567-e89b-12d3-a456-426614174001",
+			expectedOrgRole: "MEMBER",
+			expectedStatus:  http.StatusForbidden,
+			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
+				mockOrgDataSvc.On("OrganizationUserRole", mock.Anything, "323e4567-e89b-12d3-a456-426614174000", "323e4567-e89b-12d3-a456-426614174001").Return("MEMBER", nil)
+			},
+		},
+		{
+			name:           "User Not in Organization",
+			userID:         "423e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			orgID:          "423e4567-e89b-12d3-a456-426614174001",
+			expectedStatus: http.StatusForbidden,
+			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
+				mockOrgDataSvc.On(
+					"OrganizationUserRole",
+					mock.Anything,
+					"423e4567-e89b-12d3-a456-426614174000",
+					"423e4567-e89b-12d3-a456-426614174001",
+				).Return("", errors.New("user not found"))
+			},
+		},
+		{
+			name:           "Invalid OrgID",
+			userID:         "523e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			orgID:          "invalid-org-id",
+			expectedStatus: http.StatusBadRequest,
+			mockSetup:      func(mockOrgDataSvc *MockOrganizationDataService) {},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Mock OrganizationDataSvc
+			mockOrgDataSvc := new(MockOrganizationDataService)
+
+			// Create a new service with the mock
+			s := &Service{
+				OrganizationDataSvc: mockOrgDataSvc,
+			}
+
+			// Define a dummy handler for testing
+			var capturedOrgRole string
+			dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				capturedOrgRole = r.Context().Value(contextKeyOrgRole).(string)
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Setup mock expectations
+			tt.mockSetup(mockOrgDataSvc)
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/organizations/"+tt.orgID, nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Set up the context with user information
+			ctx := context.WithValue(req.Context(), contextKeyUserID, tt.userID)
+			ctx = context.WithValue(ctx, contextKeyUserType, tt.userType)
+			req = req.WithContext(ctx)
+
+			// Set up router with vars
+			router := mux.NewRouter()
+			router.HandleFunc("/organizations/{orgId}", s.orgAdminOnly(dummyHandler))
+
+			// Serve the request
+			router.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// If the request was successful, check that the context was updated
+			if tt.expectedStatus == http.StatusOK {
+				assert.Equal(t, tt.expectedOrgRole, capturedOrgRole)
+			}
+
+			// Clear mock expectations for the next test
+			mockOrgDataSvc.AssertExpectations(t)
+		})
+	}
+}
+
+func TestOrgUserOnly(t *testing.T) {
+	tests := []struct {
+		name            string
+		userID          string
+		userType        string
+		orgID           string
+		expectedOrgRole string
+		expectedStatus  int
+		mockSetup       func(mockOrgDataSvc *MockOrganizationDataService)
+	}{
+		{
+			name:            "Valid Admin User",
+			userID:          "123e4567-e89b-12d3-a456-426614174000",
+			userType:        thunderdome.AdminUserType,
+			orgID:           "123e4567-e89b-12d3-a456-426614174001",
+			expectedOrgRole: thunderdome.AdminUserType,
+			expectedStatus:  http.StatusOK,
+			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
+				mockOrgDataSvc.On(
+					"OrganizationGet",
+					mock.Anything,
+					"123e4567-e89b-12d3-a456-426614174001",
+				).Return(thunderdome.Organization{}, nil)
+			},
+		},
+		{
+			name:            "Valid Org User",
+			userID:          "223e4567-e89b-12d3-a456-426614174000",
+			userType:        "REGULAR",
+			orgID:           "223e4567-e89b-12d3-a456-426614174001",
+			expectedOrgRole: "MEMBER",
+			expectedStatus:  http.StatusOK,
+			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
+				mockOrgDataSvc.On(
+					"OrganizationGet",
+					mock.Anything, "223e4567-e89b-12d3-a456-426614174001",
+				).Return(thunderdome.Organization{}, nil)
+				mockOrgDataSvc.On(
+					"OrganizationUserRole",
+					mock.Anything,
+					"223e4567-e89b-12d3-a456-426614174000",
+					"223e4567-e89b-12d3-a456-426614174001",
+				).Return("MEMBER", nil)
+			},
+		},
+		{
+			name:           "User Not in Organization",
+			userID:         "323e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			orgID:          "323e4567-e89b-12d3-a456-426614174001",
+			expectedStatus: http.StatusForbidden,
+			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
+				mockOrgDataSvc.On(
+					"OrganizationGet",
+					mock.Anything,
+					"323e4567-e89b-12d3-a456-426614174001",
+				).Return(thunderdome.Organization{}, nil)
+				mockOrgDataSvc.On(
+					"OrganizationUserRole",
+					mock.Anything,
+					"323e4567-e89b-12d3-a456-426614174000",
+					"323e4567-e89b-12d3-a456-426614174001",
+				).Return("", errors.New("ORGANIZATION_USER_REQUIRED"))
+			},
+		},
+		{
+			name:           "Invalid OrgID",
+			userID:         "423e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			orgID:          "invalid-org-id",
+			expectedStatus: http.StatusBadRequest,
+			mockSetup:      func(mockOrgDataSvc *MockOrganizationDataService) {},
+		},
+		{
+			name:           "Organization Not Found",
+			userID:         "523e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			orgID:          "523e4567-e89b-12d3-a456-426614174001",
+			expectedStatus: http.StatusNotFound,
+			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
+				mockOrgDataSvc.On(
+					"OrganizationGet",
+					mock.Anything,
+					"523e4567-e89b-12d3-a456-426614174001",
+				).Return(nil, errors.New("ORGANIZATION_NOT_FOUND"))
+			},
+		},
+		{
+			name:           "Internal Server Error",
+			userID:         "623e4567-e89b-12d3-a456-426614174000",
+			userType:       "REGULAR",
+			orgID:          "623e4567-e89b-12d3-a456-426614174001",
+			expectedStatus: http.StatusInternalServerError,
+			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
+				mockOrgDataSvc.On(
+					"OrganizationGet",
+					mock.Anything,
+					"623e4567-e89b-12d3-a456-426614174001",
+				).Return(nil, errors.New("unexpected error"))
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Mock OrganizationDataSvc
+			mockOrgDataSvc := new(MockOrganizationDataService)
+
+			// Create a new service with the mock
+			s := &Service{
+				OrganizationDataSvc: mockOrgDataSvc,
+			}
+
+			// Define a dummy handler for testing
+			var capturedOrgRole string
+			dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				capturedOrgRole = r.Context().Value(contextKeyOrgRole).(string)
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Setup mock expectations
+			tt.mockSetup(mockOrgDataSvc)
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/organizations/"+tt.orgID, nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Set up the context with user information
+			ctx := context.WithValue(req.Context(), contextKeyUserID, tt.userID)
+			ctx = context.WithValue(ctx, contextKeyUserType, tt.userType)
+			req = req.WithContext(ctx)
+
+			// Set up router with vars
+			router := mux.NewRouter()
+			router.HandleFunc("/organizations/{orgId}", s.orgUserOnly(dummyHandler))
+
+			// Serve the request
+			router.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// If the request was successful, check that the context was updated
+			if tt.expectedStatus == http.StatusOK {
+				assert.Equal(t, tt.expectedOrgRole, capturedOrgRole)
+			}
+
+			// Clear mock expectations for the next test
 			mockOrgDataSvc.AssertExpectations(t)
 		})
 	}
