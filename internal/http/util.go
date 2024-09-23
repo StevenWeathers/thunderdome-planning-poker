@@ -124,13 +124,14 @@ func getLimitOffsetFromRequest(r *http.Request) (limit int, offset int) {
 	defaultLimit := 20
 	defaultOffset := 0
 	query := r.URL.Query()
+
 	Limit, limitErr := strconv.Atoi(query.Get("limit"))
-	if limitErr != nil || Limit == 0 {
+	if limitErr != nil || Limit <= 0 {
 		Limit = defaultLimit
 	}
 
 	Offset, offsetErr := strconv.Atoi(query.Get("offset"))
-	if offsetErr != nil {
+	if offsetErr != nil || Offset < 0 {
 		Offset = defaultOffset
 	}
 

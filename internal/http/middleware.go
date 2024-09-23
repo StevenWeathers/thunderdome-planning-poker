@@ -330,7 +330,7 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			OrgRole, DepartmentRole, UserErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
-			if UserErr != nil {
+			if UserErr != nil || (DepartmentRole == "" && OrgRole != thunderdome.AdminUserType) {
 				s.Logger.Ctx(ctx).Warn("middleware departmentUserOnly REQUIRES_DEPARTMENT_USER",
 					zap.Error(UserErr),
 					zap.String("user_id", UserID),
@@ -375,7 +375,7 @@ func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != thunderdome.AdminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr := s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
