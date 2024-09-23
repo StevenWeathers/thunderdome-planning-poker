@@ -3,7 +3,8 @@ package storyboard
 import (
 	"context"
 	"net/http"
-	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
@@ -26,18 +27,6 @@ type Config struct {
 	WebsocketSubdomain string
 }
 
-func (c *Config) WriteWait() time.Duration {
-	return time.Duration(c.WriteWaitSec) * time.Second
-}
-
-func (c *Config) PingPeriod() time.Duration {
-	return time.Duration(c.PingPeriodSec) * time.Second
-}
-
-func (c *Config) PongWait() time.Duration {
-	return time.Duration(c.PongWaitSec) * time.Second
-}
-
 type AuthDataSvc interface {
 	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
 }
@@ -49,13 +38,13 @@ type UserDataSvc interface {
 // Service provides storyboard service
 type Service struct {
 	config                Config
-	Logger                *otelzap.Logger
-	ValidateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
-	ValidateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
-	EventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
+	logger                *otelzap.Logger
+	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
+	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	UserService           UserDataSvc
 	AuthService           AuthDataSvc
 	StoryboardService     thunderdome.StoryboardDataSvc
+	hub                   *wshub.Hub
 }
 
 // New returns a new storyboard with websocket hub/client and event handlers
@@ -69,15 +58,21 @@ func New(
 ) *Service {
 	sb := &Service{
 		config:                config,
-		Logger:                logger,
-		ValidateSessionCookie: validateSessionCookie,
-		ValidateUserCookie:    validateUserCookie,
+		logger:                logger,
+		validateSessionCookie: validateSessionCookie,
+		validateUserCookie:    validateUserCookie,
 		UserService:           userService,
 		AuthService:           authService,
 		StoryboardService:     storyboardService,
 	}
 
-	sb.EventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	sb.hub = wshub.NewHub(logger, wshub.Config{
+		AppDomain:          config.AppDomain,
+		WebsocketSubdomain: config.WebsocketSubdomain,
+		WriteWaitSec:       config.WriteWaitSec,
+		PongWaitSec:        config.PongWaitSec,
+		PingPeriodSec:      config.PingPeriodSec,
+	}, map[string]func(context.Context, string, string, string) ([]byte, error, bool){
 		"add_goal":              sb.AddGoal,
 		"revise_goal":           sb.ReviseGoal,
 		"delete_goal":           sb.DeleteGoal,
@@ -108,9 +103,18 @@ func New(
 		"edit_storyboard":       sb.EditStoryboard,
 		"concede_storyboard":    sb.Delete,
 		"abandon_storyboard":    sb.Abandon,
-	}
+	},
+		map[string]struct{}{
+			"facilitator_add":    {},
+			"facilitator_remove": {},
+			"edit_storyboard":    {},
+			"concede_storyboard": {},
+		},
+		sb.StoryboardService.ConfirmStoryboardFacilitator,
+		sb.RetreatUser,
+	)
 
-	go h.run()
+	go sb.hub.Run()
 
 	return sb
 }

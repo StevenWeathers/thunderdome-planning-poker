@@ -59,7 +59,7 @@
   let socketReconnecting: boolean = false;
   let points: Array<string> = ['1', '2', '3', '5', '8', '13', '?'];
   let vote: string = '';
-  let battle: PokerGame = {
+  let pokerGame: PokerGame = {
     leaders: [],
     autoFinishVoting: false,
     createdDate: undefined,
@@ -75,8 +75,8 @@
     teamId: '',
   };
   let currentStory = { ...defaultStory };
-  let showEditBattle: boolean = false;
-  let showDeleteBattle: boolean = false;
+  let showEditGame: boolean = false;
+  let showDeleteGame: boolean = false;
   let isSpectator: boolean = false;
   let voteStartTime: Date = new Date();
 
@@ -93,15 +93,15 @@
         break;
       case 'init': {
         JoinPassRequired = false;
-        battle = JSON.parse(parsedEvent.value);
-        points = battle.pointValuesAllowed;
+        pokerGame = JSON.parse(parsedEvent.value);
+        points = pokerGame.pointValuesAllowed;
         const { spectator = false } =
-          battle.users.find(w => w.id === $user.id) || {};
+          pokerGame.users.find(w => w.id === $user.id) || {};
         isSpectator = spectator;
 
-        if (battle.activePlanId !== '') {
-          const activePlan = battle.plans.find(
-            p => p.id === battle.activePlanId,
+        if (pokerGame.activePlanId !== '') {
+          const activePlan = pokerGame.plans.find(
+            p => p.id === pokerGame.activePlanId,
           );
           const warriorVote = activePlan.votes.find(
             v => v.warriorId === $user.id,
@@ -116,10 +116,10 @@
         eventTag('join', 'battle', '');
         break;
       }
-      case 'warrior_joined': {
-        battle.users = JSON.parse(parsedEvent.value);
-        const joinedWarrior = battle.users.find(
-          w => w.id === parsedEvent.warriorId,
+      case 'user_joined': {
+        pokerGame.users = JSON.parse(parsedEvent.value);
+        const joinedWarrior = pokerGame.users.find(
+          w => w.id === parsedEvent.userId,
         );
         if (joinedWarrior.id === $user.id) {
           isSpectator = joinedWarrior.spectator;
@@ -134,11 +134,11 @@
         }
         break;
       }
-      case 'warrior_retreated':
-        const leftWarrior = battle.users.find(
-          w => w.id === parsedEvent.warriorId,
+      case 'user_left':
+        const leftWarrior = pokerGame.users.find(
+          w => w.id === parsedEvent.userId,
         );
-        battle.users = JSON.parse(parsedEvent.value);
+        pokerGame.users = JSON.parse(parsedEvent.value);
 
         if ($user.notificationsEnabled) {
           notifications.danger(
@@ -150,15 +150,15 @@
         }
         break;
       case 'users_updated':
-        battle.users = JSON.parse(parsedEvent.value);
-        const updatedWarrior = battle.users.find(w => w.id === $user.id);
+        pokerGame.users = JSON.parse(parsedEvent.value);
+        const updatedWarrior = pokerGame.users.find(w => w.id === $user.id);
         isSpectator = updatedWarrior.spectator;
         break;
       case 'plan_added':
-        battle.plans = JSON.parse(parsedEvent.value);
+        pokerGame.plans = JSON.parse(parsedEvent.value);
         break;
       case 'story_arranged':
-        battle.plans = JSON.parse(parsedEvent.value);
+        pokerGame.plans = JSON.parse(parsedEvent.value);
         break;
       case 'plan_activated':
         const updatedPlans = JSON.parse(parsedEvent.value);
@@ -166,25 +166,25 @@
         currentStory = activePlan;
         voteStartTime = new Date(activePlan.voteStartTime);
 
-        battle.plans = updatedPlans;
-        battle.activePlanId = activePlan.id;
-        battle.votingLocked = false;
+        pokerGame.plans = updatedPlans;
+        pokerGame.activePlanId = activePlan.id;
+        pokerGame.votingLocked = false;
         vote = '';
         break;
       case 'plan_skipped':
         const updatedPlans2 = JSON.parse(parsedEvent.value);
         currentStory = { ...defaultStory };
-        battle.plans = updatedPlans2;
-        battle.activePlanId = '';
-        battle.votingLocked = true;
+        pokerGame.plans = updatedPlans2;
+        pokerGame.activePlanId = '';
+        pokerGame.votingLocked = true;
         vote = '';
         if ($user.notificationsEnabled) {
           notifications.warning($LL.planSkipped());
         }
         break;
       case 'vote_activity':
-        const votedWarrior = battle.users.find(
-          w => w.id === parsedEvent.warriorId,
+        const votedWarrior = pokerGame.users.find(
+          w => w.id === parsedEvent.userId,
         );
         if ($user.notificationsEnabled) {
           notifications.success(
@@ -195,11 +195,11 @@
           );
         }
 
-        battle.plans = JSON.parse(parsedEvent.value);
+        pokerGame.plans = JSON.parse(parsedEvent.value);
         break;
       case 'vote_retracted':
-        const devotedWarrior = battle.users.find(
-          w => w.id === parsedEvent.warriorId,
+        const devotedWarrior = pokerGame.users.find(
+          w => w.id === parsedEvent.userId,
         );
         if ($user.notificationsEnabled) {
           notifications.warning(
@@ -210,23 +210,23 @@
           );
         }
 
-        battle.plans = JSON.parse(parsedEvent.value);
+        pokerGame.plans = JSON.parse(parsedEvent.value);
         break;
       case 'voting_ended':
-        battle.plans = JSON.parse(parsedEvent.value);
-        battle.votingLocked = true;
+        pokerGame.plans = JSON.parse(parsedEvent.value);
+        pokerGame.votingLocked = true;
         break;
       case 'plan_finalized':
-        battle.plans = JSON.parse(parsedEvent.value);
-        battle.activePlanId = '';
+        pokerGame.plans = JSON.parse(parsedEvent.value);
+        pokerGame.activePlanId = '';
         currentStory = { ...defaultStory };
         vote = '';
         break;
       case 'plan_revised':
-        battle.plans = JSON.parse(parsedEvent.value);
-        if (battle.activePlanId !== '') {
-          const activePlan = battle.plans.find(
-            p => p.id === battle.activePlanId,
+        pokerGame.plans = JSON.parse(parsedEvent.value);
+        if (pokerGame.activePlanId !== '') {
+          const activePlan = pokerGame.plans.find(
+            p => p.id === pokerGame.activePlanId,
           );
           currentStory = activePlan;
         }
@@ -235,28 +235,29 @@
         const postBurnPlans = JSON.parse(parsedEvent.value);
 
         if (
-          battle.activePlanId !== '' &&
-          postBurnPlans.filter(p => p.id === battle.activePlanId).length === 0
+          pokerGame.activePlanId !== '' &&
+          postBurnPlans.filter(p => p.id === pokerGame.activePlanId).length ===
+            0
         ) {
-          battle.activePlanId = '';
+          pokerGame.activePlanId = '';
           currentStory = { ...defaultStory };
         }
 
-        battle.plans = postBurnPlans;
+        pokerGame.plans = postBurnPlans;
 
         break;
       case 'leaders_updated':
-        battle.leaders = parsedEvent.value;
+        pokerGame.leaders = parsedEvent.value;
         break;
       case 'battle_revised':
         const revisedBattle = JSON.parse(parsedEvent.value);
-        battle.name = revisedBattle.battleName;
+        pokerGame.name = revisedBattle.battleName;
         points = revisedBattle.pointValuesAllowed;
-        battle.autoFinishVoting = revisedBattle.autoFinishVoting;
-        battle.pointAverageRounding = revisedBattle.pointAverageRounding;
-        battle.joinCode = revisedBattle.joinCode;
-        battle.hideVoterIdentity = revisedBattle.hideVoterIdentity;
-        battle.teamId = revisedBattle.teamId;
+        pokerGame.autoFinishVoting = revisedBattle.autoFinishVoting;
+        pokerGame.pointAverageRounding = revisedBattle.pointAverageRounding;
+        pokerGame.joinCode = revisedBattle.joinCode;
+        pokerGame.hideVoterIdentity = revisedBattle.hideVoterIdentity;
+        pokerGame.teamId = revisedBattle.teamId;
         break;
       case 'battle_conceded':
         // poker over, goodbye.
@@ -264,7 +265,9 @@
         router.route(appRoutes.games);
         break;
       case 'jab_warrior':
-        const userToNudge = battle.users.find(w => w.id === parsedEvent.value);
+        const userToNudge = pokerGame.users.find(
+          w => w.id === parsedEvent.value,
+        );
         notifications.info(
           `${$LL.warriorNudgeMessage({
             name: userToNudge.name,
@@ -339,9 +342,9 @@
   const handleVote = event => {
     vote = event.detail.point;
     const voteValue = {
-      planId: battle.activePlanId,
+      planId: pokerGame.activePlanId,
       voteValue: vote,
-      autoFinishVoting: battle.autoFinishVoting,
+      autoFinishVoting: pokerGame.autoFinishVoting,
     };
 
     sendSocketEvent('vote', JSON.stringify(voteValue));
@@ -351,19 +354,19 @@
   const handleUnvote = () => {
     vote = '';
 
-    sendSocketEvent('retract_vote', battle.activePlanId);
+    sendSocketEvent('retract_vote', pokerGame.activePlanId);
     eventTag('retract_vote', 'battle', vote);
   };
 
   // Determine if the warrior has voted on active Plan yet
   function didVote(warriorId) {
     if (
-      battle.activePlanId === '' ||
-      (battle.votingLocked && battle.hideVoterIdentity)
+      pokerGame.activePlanId === '' ||
+      (pokerGame.votingLocked && pokerGame.hideVoterIdentity)
     ) {
       return false;
     }
-    const plan = battle.plans.find(p => p.id === battle.activePlanId);
+    const plan = pokerGame.plans.find(p => p.id === pokerGame.activePlanId);
     const voted = plan.votes.find(w => w.warriorId === warriorId);
 
     return voted !== undefined;
@@ -372,13 +375,13 @@
   // Determine if we are showing users vote
   function showVote(warriorId) {
     if (
-      battle.hideVoterIdentity ||
-      battle.activePlanId === '' ||
-      battle.votingLocked === false
+      pokerGame.hideVoterIdentity ||
+      pokerGame.activePlanId === '' ||
+      pokerGame.votingLocked === false
     ) {
       return '';
     }
-    const story = battle.plans.find(p => p.id === battle.activePlanId);
+    const story = pokerGame.plans.find(p => p.id === pokerGame.activePlanId);
     const voted = story.votes.find(w => w.warriorId === warriorId);
 
     return voted !== undefined ? voted.vote : '';
@@ -394,7 +397,9 @@
       vote: '',
       count: 0,
     };
-    const activePlan = battle.plans.find(p => p.id === battle.activePlanId);
+    const activePlan = pokerGame.plans.find(
+      p => p.id === pokerGame.activePlanId,
+    );
 
     if (activePlan.votes.length > 0) {
       const reversedPoints = [...points]
@@ -405,7 +410,8 @@
 
       // build a count of each vote
       activePlan.votes.forEach(v => {
-        const voteWarrior = battle.users.find(w => w.id === v.warriorId) || {};
+        const voteWarrior =
+          pokerGame.users.find(w => w.id === v.warriorId) || {};
         const { spectator = false } = voteWarrior;
 
         if (typeof voteCounts[v.vote] !== 'undefined' && !spectator) {
@@ -426,15 +432,15 @@
   }
 
   $: highestVoteCount =
-    battle.activePlanId !== '' && battle.votingLocked === true
+    pokerGame.activePlanId !== '' && pokerGame.votingLocked === true
       ? getHighestVote()
       : '';
   $: showVotingResults =
-    battle.activePlanId !== '' && battle.votingLocked === true;
+    pokerGame.activePlanId !== '' && pokerGame.votingLocked === true;
 
-  $: isLeader = battle.leaders.includes($user.id);
+  $: isLeader = pokerGame.leaders.includes($user.id);
 
-  function concedeBattle() {
+  function concedeGame() {
     eventTag('concede_battle', 'battle', '', () => {
       sendSocketEvent('concede_battle', '');
     });
@@ -446,23 +452,23 @@
     });
   }
 
-  function toggleEditBattle() {
-    showEditBattle = !showEditBattle;
+  function toggleEditGame() {
+    showEditGame = !showEditGame;
   }
 
-  const toggleDeleteBattle = () => {
-    showDeleteBattle = !showDeleteBattle;
+  const toggleDeleteGame = () => {
+    showDeleteGame = !showDeleteGame;
   };
 
-  function handleBattleEdit(revisedBattle) {
+  function handleGameEdit(revisedBattle) {
     sendSocketEvent('revise_battle', JSON.stringify(revisedBattle));
     eventTag('revise_battle', 'battle', '');
-    toggleEditBattle();
-    battle.leaderCode = revisedBattle.leaderCode;
+    toggleEditGame();
+    pokerGame.leaderCode = revisedBattle.leaderCode;
   }
 
   function authBattle(joinPasscode) {
-    sendSocketEvent('auth_battle', joinPasscode);
+    sendSocketEvent('auth_game', joinPasscode);
     eventTag('auth_battle', 'battle', '');
   }
 
@@ -477,7 +483,7 @@
 <svelte:head>
   <title
     >{$LL.battle()}
-    {battle.name} | {$LL.appName()}</title
+    {pokerGame.name} | {$LL.appName()}</title
   >
 </svelte:head>
 
@@ -519,14 +525,14 @@
         class="text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
         data-testid="battle-name"
       >
-        {battle.name}
+        {pokerGame.name}
       </h2>
     </div>
 
     <div class="w-full md:w-1/3 text-center md:text-right">
       <VoteTimer
         currentStoryId="{currentStory.id}"
-        votingLocked="{battle.votingLocked}"
+        votingLocked="{pokerGame.votingLocked}"
         voteStartTime="{voteStartTime}"
       />
     </div>
@@ -538,9 +544,10 @@
         <div class=" mb-2 md:mb-4">
           <VotingMetrics
             pointValues="{points}"
-            votes="{battle.plans.find(p => p.id === battle.activePlanId).votes}"
-            users="{battle.users}"
-            averageRounding="{battle.pointAverageRounding}"
+            votes="{pokerGame.plans.find(p => p.id === pokerGame.activePlanId)
+              .votes}"
+            users="{pokerGame.users}"
+            averageRounding="{pokerGame.pointAverageRounding}"
           />
         </div>
       {:else}
@@ -552,7 +559,7 @@
                 active="{vote === point}"
                 on:voted="{handleVote}"
                 on:voteRetraction="{handleUnvote}"
-                isLocked="{battle.votingLocked || isSpectator}"
+                isLocked="{pokerGame.votingLocked || isSpectator}"
               />
             </div>
           {/each}
@@ -560,13 +567,13 @@
       {/if}
 
       <PokerStories
-        plans="{battle.plans}"
+        plans="{pokerGame.plans}"
         isLeader="{isLeader}"
         sendSocketEvent="{sendSocketEvent}"
         eventTag="{eventTag}"
         notifications="{notifications}"
         xfetch="{xfetch}"
-        gameId="{battle.id}"
+        gameId="{pokerGame.id}"
       />
     </div>
 
@@ -580,15 +587,15 @@
           </h3>
         </div>
 
-        {#each battle.users as war (war.id)}
+        {#each pokerGame.users as war (war.id)}
           {#if war.active}
             <UserCard
               warrior="{war}"
-              leaders="{battle.leaders}"
+              leaders="{pokerGame.leaders}"
               isLeader="{isLeader}"
               voted="{didVote(war.id)}"
               points="{showVote(war.id)}"
-              autoFinishVoting="{battle.autoFinishVoting}"
+              autoFinishVoting="{pokerGame.autoFinishVoting}"
               sendSocketEvent="{sendSocketEvent}"
               eventTag="{eventTag}"
               notifications="{notifications}"
@@ -599,9 +606,9 @@
         {#if isLeader}
           <VotingControls
             points="{points}"
-            planId="{battle.activePlanId}"
+            planId="{pokerGame.activePlanId}"
             sendSocketEvent="{sendSocketEvent}"
-            votingLocked="{battle.votingLocked}"
+            votingLocked="{pokerGame.votingLocked}"
             highestVote="{highestVoteCount}"
             eventTag="{eventTag}"
           />
@@ -611,22 +618,22 @@
       <div class="bg-white dark:bg-gray-800 shadow-lg p-4 mb-4 rounded-lg">
         <InviteUser
           hostname="{hostname}"
-          battleId="{battle.id}"
-          joinCode="{battle.joinCode}"
+          battleId="{pokerGame.id}"
+          joinCode="{pokerGame.joinCode}"
           notifications="{notifications}"
         />
         {#if isLeader}
           <div class="mt-4 text-right">
             <HollowButton
               color="blue"
-              onClick="{toggleEditBattle}"
+              onClick="{toggleEditGame}"
               testid="battle-edit"
             >
               {$LL.battleEdit()}
             </HollowButton>
             <HollowButton
               color="red"
-              onClick="{toggleDeleteBattle}"
+              onClick="{toggleDeleteGame}"
               testid="battle-delete"
             >
               {$LL.battleDelete()}
@@ -647,28 +654,28 @@
     </div>
   </div>
 
-  {#if showEditBattle}
+  {#if showEditGame}
     <EditPokerGame
-      battleName="{battle.name}"
+      battleName="{pokerGame.name}"
       points="{points}"
-      votingLocked="{battle.votingLocked}"
-      autoFinishVoting="{battle.autoFinishVoting}"
-      pointAverageRounding="{battle.pointAverageRounding}"
-      hideVoterIdentity="{battle.hideVoterIdentity}"
-      handleBattleEdit="{handleBattleEdit}"
-      toggleEditBattle="{toggleEditBattle}"
-      joinCode="{battle.joinCode}"
-      leaderCode="{battle.leaderCode}"
-      teamId="{battle.teamId}"
+      votingLocked="{pokerGame.votingLocked}"
+      autoFinishVoting="{pokerGame.autoFinishVoting}"
+      pointAverageRounding="{pokerGame.pointAverageRounding}"
+      hideVoterIdentity="{pokerGame.hideVoterIdentity}"
+      handleBattleEdit="{handleGameEdit}"
+      toggleEditBattle="{toggleEditGame}"
+      joinCode="{pokerGame.joinCode}"
+      leaderCode="{pokerGame.leaderCode}"
+      teamId="{pokerGame.teamId}"
       notifications="{notifications}"
       xfetch="{xfetch}"
     />
   {/if}
 
-  {#if showDeleteBattle}
+  {#if showDeleteGame}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteBattle}"
-      handleDelete="{concedeBattle}"
+      toggleDelete="{toggleDeleteGame}"
+      handleDelete="{concedeGame}"
       confirmText="{$LL.deleteBattleConfirmText()}"
       confirmBtnText="{$LL.deleteBattle()}"
     />
