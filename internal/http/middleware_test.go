@@ -9,6 +9,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap/zaptest/observer"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
@@ -2152,6 +2155,68 @@ func TestEntityUserOnly(t *testing.T) {
 				if tt.expectedStatus == http.StatusForbidden {
 					assert.Equal(t, "INVALID_USER", responseBody["error"])
 				}
+			}
+		})
+	}
+}
+
+func TestPanicRecovery(t *testing.T) {
+	tests := []struct {
+		name           string
+		handler        http.HandlerFunc
+		expectedStatus int
+		expectPanic    bool
+	}{
+		{
+			name: "No Panic",
+			handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			}),
+			expectedStatus: http.StatusOK,
+			expectPanic:    false,
+		},
+		{
+			name: "Panic Occurs",
+			handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				panic("test panic")
+			}),
+			expectedStatus: http.StatusInternalServerError,
+			expectPanic:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			observedZapCore, observedLogs := observer.New(zap.InfoLevel)
+			observedLogger := zap.New(observedZapCore)
+
+			s := &Service{
+				Logger: otelzap.New(observedLogger),
+			}
+
+			// Create a new request
+			req, err := http.NewRequest("GET", "/test", nil)
+			assert.NoError(t, err)
+
+			// Create a new response recorder
+			rr := httptest.NewRecorder()
+
+			// Apply the panicRecovery middleware to the test handler
+			handler := s.panicRecovery(tt.handler)
+
+			// Serve the request
+			handler.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			if tt.expectPanic {
+				require.Equal(t, 1, observedLogs.Len())
+				allLogs := observedLogs.All()
+				assert.Equal(t, zap.ErrorLevel, allLogs[0].Level)
+				assert.Equal(t, "http handler recovering from panic error: test panic", allLogs[0].Message)
+			} else {
+				require.Equal(t, 0, observedLogs.Len())
 			}
 		})
 	}
