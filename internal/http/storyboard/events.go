@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
 )
 
 // AddGoal handles adding a goal to storyboard
@@ -13,7 +15,7 @@ func (b *Service) AddGoal(ctx context.Context, StoryboardID string, UserID strin
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("goal_added", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("goal_added", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -33,7 +35,7 @@ func (b *Service) ReviseGoal(ctx context.Context, StoryboardID string, UserID st
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("goal_revised", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("goal_revised", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -45,7 +47,7 @@ func (b *Service) DeleteGoal(ctx context.Context, StoryboardID string, UserID st
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("goal_deleted", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("goal_deleted", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -64,7 +66,7 @@ func (b *Service) AddColumn(ctx context.Context, StoryboardID string, UserID str
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("column_added", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("column_added", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -85,7 +87,7 @@ func (b *Service) ReviseColumn(ctx context.Context, StoryboardID string, UserID 
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("column_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("column_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -97,7 +99,7 @@ func (b *Service) DeleteColumn(ctx context.Context, StoryboardID string, UserID 
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_deleted", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_deleted", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -118,7 +120,7 @@ func (b *Service) ColumnPersonaAdd(ctx context.Context, StoryboardID string, Use
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("column_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("column_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -139,7 +141,7 @@ func (b *Service) ColumnPersonaRemove(ctx context.Context, StoryboardID string, 
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("column_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("column_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -159,7 +161,7 @@ func (b *Service) AddStory(ctx context.Context, StoryboardID string, UserID stri
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_added", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_added", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -179,7 +181,7 @@ func (b *Service) UpdateStoryName(ctx context.Context, StoryboardID string, User
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -199,7 +201,7 @@ func (b *Service) UpdateStoryContent(ctx context.Context, StoryboardID string, U
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -219,7 +221,7 @@ func (b *Service) UpdateStoryColor(ctx context.Context, StoryboardID string, Use
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -240,7 +242,7 @@ func (b *Service) UpdateStoryPoints(ctx context.Context, StoryboardID string, Us
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -261,7 +263,7 @@ func (b *Service) UpdateStoryClosed(ctx context.Context, StoryboardID string, Us
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -281,7 +283,7 @@ func (b *Service) UpdateStoryLink(ctx context.Context, StoryboardID string, User
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -303,7 +305,7 @@ func (b *Service) MoveStory(ctx context.Context, StoryboardID string, UserID str
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_moved", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_moved", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -315,7 +317,7 @@ func (b *Service) DeleteStory(ctx context.Context, StoryboardID string, UserID s
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_deleted", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_deleted", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -336,7 +338,7 @@ func (b *Service) AddStoryComment(ctx context.Context, StoryboardID string, User
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -357,7 +359,7 @@ func (b *Service) EditStoryComment(ctx context.Context, StoryboardID string, Use
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -377,7 +379,7 @@ func (b *Service) DeleteStoryComment(ctx context.Context, StoryboardID string, U
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("story_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -399,7 +401,7 @@ func (b *Service) AddPersona(ctx context.Context, StoryboardID string, UserID st
 		return nil, err, false
 	}
 	updatedPersonas, _ := json.Marshal(personas)
-	msg := createSocketEvent("personas_updated", string(updatedPersonas), "")
+	msg := wshub.CreateSocketEvent("personas_updated", string(updatedPersonas), "")
 
 	return msg, nil, false
 }
@@ -422,7 +424,7 @@ func (b *Service) UpdatePersona(ctx context.Context, StoryboardID string, UserID
 		return nil, err, false
 	}
 	updatedPersonas, _ := json.Marshal(personas)
-	msg := createSocketEvent("personas_updated", string(updatedPersonas), "")
+	msg := wshub.CreateSocketEvent("personas_updated", string(updatedPersonas), "")
 
 	return msg, nil, false
 }
@@ -434,7 +436,7 @@ func (b *Service) DeletePersona(ctx context.Context, StoryboardID string, UserID
 		return nil, err, false
 	}
 	updatedGoals, _ := json.Marshal(goals)
-	msg := createSocketEvent("personas_updated", string(updatedGoals), "")
+	msg := wshub.CreateSocketEvent("personas_updated", string(updatedGoals), "")
 
 	return msg, nil, false
 }
@@ -454,7 +456,7 @@ func (b *Service) FacilitatorAdd(ctx context.Context, StoryboardID string, UserI
 		return nil, err, false
 	}
 	updatedStoryboard, _ := json.Marshal(storyboard)
-	msg := createSocketEvent("storyboard_updated", string(updatedStoryboard), "")
+	msg := wshub.CreateSocketEvent("storyboard_updated", string(updatedStoryboard), "")
 
 	return msg, nil, false
 }
@@ -474,7 +476,7 @@ func (b *Service) FacilitatorRemove(ctx context.Context, StoryboardID string, Us
 		return nil, err, false
 	}
 	updatedStoryboard, _ := json.Marshal(storyboard)
-	msg := createSocketEvent("storyboard_updated", string(updatedStoryboard), "")
+	msg := wshub.CreateSocketEvent("storyboard_updated", string(updatedStoryboard), "")
 
 	return msg, nil, false
 }
@@ -493,7 +495,7 @@ func (b *Service) FacilitatorSelf(ctx context.Context, StoryboardID string, User
 		}
 		updatedStoryboard, _ := json.Marshal(storyboard)
 
-		msg := createSocketEvent("storyboard_updated", string(updatedStoryboard), "")
+		msg := wshub.CreateSocketEvent("storyboard_updated", string(updatedStoryboard), "")
 
 		return msg, nil, false
 	} else {
@@ -508,7 +510,7 @@ func (b *Service) ReviseColorLegend(ctx context.Context, StoryboardID string, Us
 		return nil, err, false
 	}
 	updatedStoryboard, _ := json.Marshal(storyboard)
-	msg := createSocketEvent("storyboard_updated", string(updatedStoryboard), "")
+	msg := wshub.CreateSocketEvent("storyboard_updated", string(updatedStoryboard), "")
 
 	return msg, nil, false
 }
@@ -536,7 +538,7 @@ func (b *Service) EditStoryboard(ctx context.Context, StoryboardID string, UserI
 	}
 
 	updatedStoryboard, _ := json.Marshal(rb)
-	msg := createSocketEvent("storyboard_edited", string(updatedStoryboard), "")
+	msg := wshub.CreateSocketEvent("storyboard_edited", string(updatedStoryboard), "")
 
 	return msg, nil, false
 }
@@ -547,7 +549,7 @@ func (b *Service) Delete(ctx context.Context, StoryboardID string, UserID string
 	if err != nil {
 		return nil, err, false
 	}
-	msg := createSocketEvent("storyboard_conceded", "", "")
+	msg := wshub.CreateSocketEvent("storyboard_conceded", "", "")
 
 	return msg, nil, false
 }
@@ -560,23 +562,4 @@ func (b *Service) Abandon(ctx context.Context, StoryboardID string, UserID strin
 	}
 
 	return nil, errors.New("ABANDONED_STORYBOARD"), true
-}
-
-// socketEvent is the event structure used for socket messages
-type socketEvent struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
-	User  string `json:"userId"`
-}
-
-func createSocketEvent(Type string, Value string, User string) []byte {
-	newEvent := &socketEvent{
-		Type:  Type,
-		Value: Value,
-		User:  User,
-	}
-
-	event, _ := json.Marshal(newEvent)
-
-	return event
 }

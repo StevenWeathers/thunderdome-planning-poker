@@ -3,8 +3,8 @@ package retro
 import (
 	"context"
 	"net/http"
-	"time"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
@@ -26,18 +26,6 @@ type Config struct {
 	WebsocketSubdomain string
 }
 
-func (c *Config) WriteWait() time.Duration {
-	return time.Duration(c.WriteWaitSec) * time.Second
-}
-
-func (c *Config) PingPeriod() time.Duration {
-	return time.Duration(c.PingPeriodSec) * time.Second
-}
-
-func (c *Config) PongWait() time.Duration {
-	return time.Duration(c.PongWaitSec) * time.Second
-}
-
 type AuthDataSvc interface {
 	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
 }
@@ -52,12 +40,12 @@ type Service struct {
 	logger                *otelzap.Logger
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
-	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           UserDataSvc
 	AuthService           AuthDataSvc
 	RetroService          thunderdome.RetroDataSvc
 	TemplateService       thunderdome.RetroTemplateDataSvc
 	EmailService          thunderdome.EmailService
+	hub                   *wshub.Hub
 }
 
 // New returns a new retro with websocket hub/client and event handlers
@@ -82,7 +70,13 @@ func New(
 		EmailService:          emailService,
 	}
 
-	rs.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	rs.hub = wshub.NewHub(logger, wshub.Config{
+		AppDomain:          config.AppDomain,
+		WebsocketSubdomain: config.WebsocketSubdomain,
+		WriteWaitSec:       config.WriteWaitSec,
+		PongWaitSec:        config.PongWaitSec,
+		PingPeriodSec:      config.PingPeriodSec,
+	}, map[string]func(context.Context, string, string, string) ([]byte, error, bool){
 		"create_item":            rs.CreateItem,
 		"user_ready":             rs.UserMarkReady,
 		"user_unready":           rs.UserUnMarkReady,
@@ -108,9 +102,21 @@ func New(
 		"edit_retro":             rs.EditRetro,
 		"concede_retro":          rs.Delete,
 		"abandon_retro":          rs.Abandon,
-	}
+	},
+		map[string]struct{}{
+			"advance_phase":      {},
+			"add_facilitator":    {},
+			"remove_facilitator": {},
+			"edit_retro":         {},
+			"concede_retro":      {},
+			"phase_time_ran_out": {},
+			"phase_all_ready":    {},
+		},
+		rs.RetroService.RetroConfirmFacilitator,
+		rs.RetreatUser,
+	)
 
-	go h.run()
+	go rs.hub.Run()
 
 	return rs
 }

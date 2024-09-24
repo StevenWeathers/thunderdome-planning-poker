@@ -3,8 +3,8 @@ package checkin
 import (
 	"context"
 	"net/http"
-	"time"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
@@ -24,18 +24,6 @@ type Config struct {
 
 	// Websocket Subdomain (for Websocket origin check)
 	WebsocketSubdomain string
-}
-
-func (c *Config) WriteWait() time.Duration {
-	return time.Duration(c.WriteWaitSec) * time.Second
-}
-
-func (c *Config) PingPeriod() time.Duration {
-	return time.Duration(c.PingPeriodSec) * time.Second
-}
-
-func (c *Config) PongWait() time.Duration {
-	return time.Duration(c.PongWaitSec) * time.Second
 }
 
 type CheckinDataSvc interface {
@@ -68,11 +56,11 @@ type Service struct {
 	logger                *otelzap.Logger
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
-	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           UserDataSvc
 	AuthService           AuthDataSvc
 	CheckinService        CheckinDataSvc
 	TeamService           TeamDataSvc
+	hub                   *wshub.Hub
 }
 
 // New returns a new retro with websocket hub/client and event handlers
@@ -95,16 +83,26 @@ func New(
 		TeamService:           teamService,
 	}
 
-	c.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	c.hub = wshub.NewHub(logger, wshub.Config{
+		AppDomain:          config.AppDomain,
+		WebsocketSubdomain: config.WebsocketSubdomain,
+		WriteWaitSec:       config.WriteWaitSec,
+		PongWaitSec:        config.PongWaitSec,
+		PingPeriodSec:      config.PingPeriodSec,
+	}, map[string]func(context.Context, string, string, string) ([]byte, error, bool){
 		"checkin_create": c.CheckinCreate,
 		"checkin_update": c.CheckinUpdate,
 		"checkin_delete": c.CheckinDelete,
 		"comment_create": c.CommentCreate,
 		"comment_update": c.CommentUpdate,
 		"comment_delete": c.CommentDelete,
-	}
+	},
+		map[string]struct{}{},
+		nil,
+		nil,
+	)
 
-	go h.run()
+	go c.hub.Run()
 
 	return c
 }

@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
 )
@@ -27,7 +29,7 @@ func (b *Service) CreateItem(ctx context.Context, RetroID string, UserID string,
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("items_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -49,7 +51,7 @@ func (b *Service) ItemCommentAdd(ctx context.Context, RetroID string, UserID str
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("items_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -71,7 +73,7 @@ func (b *Service) ItemCommentEdit(ctx context.Context, RetroID string, UserID st
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("items_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -92,7 +94,7 @@ func (b *Service) ItemCommentDelete(ctx context.Context, RetroID string, UserID 
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("items_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -105,7 +107,7 @@ func (b *Service) UserMarkReady(ctx context.Context, RetroID string, UserID stri
 	}
 
 	updatedReadyUsers, _ := json.Marshal(readyUsers)
-	msg := createSocketEvent("user_marked_ready", string(updatedReadyUsers), UserID)
+	msg := wshub.CreateSocketEvent("user_marked_ready", string(updatedReadyUsers), UserID)
 
 	return msg, nil, false
 }
@@ -118,7 +120,7 @@ func (b *Service) UserUnMarkReady(ctx context.Context, RetroID string, UserID st
 	}
 
 	updatedReadyUsers, _ := json.Marshal(readyUsers)
-	msg := createSocketEvent("user_marked_unready", string(updatedReadyUsers), UserID)
+	msg := wshub.CreateSocketEvent("user_marked_unready", string(updatedReadyUsers), UserID)
 
 	return msg, nil, false
 }
@@ -140,7 +142,7 @@ func (b *Service) GroupItem(ctx context.Context, RetroID string, UserID string, 
 	}
 
 	updatedItem, _ := json.Marshal(item)
-	msg := createSocketEvent("item_moved", string(updatedItem), "")
+	msg := wshub.CreateSocketEvent("item_moved", string(updatedItem), "")
 
 	return msg, nil, false
 }
@@ -163,7 +165,7 @@ func (b *Service) DeleteItem(ctx context.Context, RetroID string, UserID string,
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("items_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -185,7 +187,7 @@ func (b *Service) GroupNameChange(ctx context.Context, RetroID string, UserID st
 	}
 
 	updatedGroup, _ := json.Marshal(group)
-	msg := createSocketEvent("group_name_updated", string(updatedGroup), "")
+	msg := wshub.CreateSocketEvent("group_name_updated", string(updatedGroup), "")
 
 	return msg, nil, false
 }
@@ -206,7 +208,7 @@ func (b *Service) GroupUserVote(ctx context.Context, RetroID string, UserID stri
 	}
 
 	updatedVotes, _ := json.Marshal(votes)
-	msg := createSocketEvent("votes_updated", string(updatedVotes), "")
+	msg := wshub.CreateSocketEvent("votes_updated", string(updatedVotes), "")
 
 	return msg, nil, false
 }
@@ -227,7 +229,7 @@ func (b *Service) GroupUserSubtractVote(ctx context.Context, RetroID string, Use
 	}
 
 	updatedVotes, _ := json.Marshal(votes)
-	msg := createSocketEvent("votes_updated", string(updatedVotes), "")
+	msg := wshub.CreateSocketEvent("votes_updated", string(updatedVotes), "")
 
 	return msg, nil, false
 }
@@ -248,7 +250,7 @@ func (b *Service) CreateAction(ctx context.Context, RetroID string, UserID strin
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("action_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("action_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -271,7 +273,7 @@ func (b *Service) UpdateAction(ctx context.Context, RetroID string, UserID strin
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("action_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("action_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -293,7 +295,7 @@ func (b *Service) ActionAddAssignee(ctx context.Context, RetroID string, UserID 
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("action_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("action_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -315,7 +317,7 @@ func (b *Service) ActionRemoveAssignee(ctx context.Context, RetroID string, User
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("action_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("action_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -336,7 +338,7 @@ func (b *Service) DeleteAction(ctx context.Context, RetroID string, UserID strin
 	}
 
 	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("action_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("action_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -357,7 +359,7 @@ func (b *Service) AdvancePhase(ctx context.Context, RetroID string, UserID strin
 	}
 
 	updatedItems, _ := json.Marshal(retro)
-	msg := createSocketEvent("phase_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("phase_updated", string(updatedItems), "")
 
 	// if retro is completed send retro email to attendees
 	if rs.Phase == "completed" {
@@ -383,7 +385,7 @@ func (b *Service) PhaseTimeout(ctx context.Context, RetroID string, UserID strin
 	}
 
 	updatedItems, _ := json.Marshal(retro)
-	msg := createSocketEvent("phase_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("phase_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -404,7 +406,7 @@ func (b *Service) PhaseAllReady(ctx context.Context, RetroID string, UserID stri
 	}
 
 	updatedItems, _ := json.Marshal(retro)
-	msg := createSocketEvent("phase_updated", string(updatedItems), "")
+	msg := wshub.CreateSocketEvent("phase_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -425,7 +427,7 @@ func (b *Service) FacilitatorAdd(ctx context.Context, RetroID string, UserID str
 	}
 	updatedFacilitators, _ := json.Marshal(facilitators)
 
-	msg := createSocketEvent("facilitators_updated", string(updatedFacilitators), "")
+	msg := wshub.CreateSocketEvent("facilitators_updated", string(updatedFacilitators), "")
 
 	return msg, nil, false
 }
@@ -446,7 +448,7 @@ func (b *Service) FacilitatorRemove(ctx context.Context, RetroID string, UserID 
 	}
 	updatedFacilitators, _ := json.Marshal(facilitators)
 
-	msg := createSocketEvent("facilitators_updated", string(updatedFacilitators), "")
+	msg := wshub.CreateSocketEvent("facilitators_updated", string(updatedFacilitators), "")
 
 	return msg, nil, false
 }
@@ -465,7 +467,7 @@ func (b *Service) FacilitatorSelf(ctx context.Context, RetroID string, UserID st
 		}
 		updatedFacilitators, _ := json.Marshal(facilitators)
 
-		msg := createSocketEvent("facilitators_updated", string(updatedFacilitators), "")
+		msg := wshub.CreateSocketEvent("facilitators_updated", string(updatedFacilitators), "")
 
 		return msg, nil, false
 	} else {
@@ -502,7 +504,7 @@ func (b *Service) EditRetro(ctx context.Context, RetroID string, UserID string, 
 	}
 
 	updatedRetro, _ := json.Marshal(rb)
-	msg := createSocketEvent("retro_edited", string(updatedRetro), "")
+	msg := wshub.CreateSocketEvent("retro_edited", string(updatedRetro), "")
 
 	return msg, nil, false
 }
@@ -513,7 +515,7 @@ func (b *Service) Delete(ctx context.Context, RetroID string, UserID string, Eve
 	if err != nil {
 		return nil, err, false
 	}
-	msg := createSocketEvent("conceded", "", "")
+	msg := wshub.CreateSocketEvent("conceded", "", "")
 
 	return msg, nil, false
 }
@@ -546,23 +548,4 @@ func (b *Service) SendCompletedEmails(retro *thunderdome.Retro) {
 			}
 		}
 	}
-}
-
-// socketEvent is the event structure used for socket messages
-type socketEvent struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
-	User  string `json:"userId"`
-}
-
-func createSocketEvent(Type string, Value string, User string) []byte {
-	newEvent := &socketEvent{
-		Type:  Type,
-		Value: Value,
-		User:  User,
-	}
-
-	event, _ := json.Marshal(newEvent)
-
-	return event
 }

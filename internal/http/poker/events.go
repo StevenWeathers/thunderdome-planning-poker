@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
 )
 
 // UserNudge handles notifying user that they need to vote
 func (b *Service) UserNudge(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	msg := createSocketEvent("jab_warrior", EventValue, UserID)
+	msg := wshub.CreateSocketEvent("jab_warrior", EventValue, UserID)
 
 	return msg, nil, false
 }
@@ -30,7 +32,7 @@ func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, 
 	Storys, AllVoted := b.BattleService.SetVote(BattleID, UserID, wv.StoryID, wv.VoteValue)
 
 	updatedStorys, _ := json.Marshal(Storys)
-	msg = createSocketEvent("vote_activity", string(updatedStorys), UserID)
+	msg = wshub.CreateSocketEvent("vote_activity", string(updatedStorys), UserID)
 
 	if AllVoted && wv.AutoFinishVoting {
 		plans, err := b.BattleService.EndStoryVoting(BattleID, wv.StoryID)
@@ -38,7 +40,7 @@ func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, 
 			return nil, err, false
 		}
 		updatedStorys, _ := json.Marshal(plans)
-		msg = createSocketEvent("voting_ended", string(updatedStorys), "")
+		msg = wshub.CreateSocketEvent("voting_ended", string(updatedStorys), "")
 	}
 
 	return msg, nil, false
@@ -54,7 +56,7 @@ func (b *Service) UserVoteRetract(ctx context.Context, BattleID string, UserID s
 	}
 
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("vote_retracted", string(updatedStorys), UserID)
+	msg := wshub.CreateSocketEvent("vote_retracted", string(updatedStorys), UserID)
 
 	return msg, nil, false
 }
@@ -67,7 +69,7 @@ func (b *Service) UserPromote(ctx context.Context, BattleID string, UserID strin
 	}
 	leadersJson, _ := json.Marshal(leaders)
 
-	msg := createSocketEvent("leaders_updated", string(leadersJson), "")
+	msg := wshub.CreateSocketEvent("leaders_updated", string(leadersJson), "")
 
 	return msg, nil, false
 }
@@ -80,7 +82,7 @@ func (b *Service) UserDemote(ctx context.Context, BattleID string, UserID string
 	}
 	leadersJson, _ := json.Marshal(leaders)
 
-	msg := createSocketEvent("leaders_updated", string(leadersJson), "")
+	msg := wshub.CreateSocketEvent("leaders_updated", string(leadersJson), "")
 
 	return msg, nil, false
 }
@@ -99,7 +101,7 @@ func (b *Service) UserPromoteSelf(ctx context.Context, BattleID string, UserID s
 		}
 		leadersJson, _ := json.Marshal(leaders)
 
-		msg := createSocketEvent("leaders_updated", string(leadersJson), "")
+		msg := wshub.CreateSocketEvent("leaders_updated", string(leadersJson), "")
 
 		return msg, nil, false
 	} else {
@@ -122,7 +124,7 @@ func (b *Service) UserSpectatorToggle(ctx context.Context, BattleID string, User
 	}
 	usersJson, _ := json.Marshal(users)
 
-	msg := createSocketEvent("users_updated", string(usersJson), "")
+	msg := wshub.CreateSocketEvent("users_updated", string(usersJson), "")
 
 	return msg, nil, false
 }
@@ -134,7 +136,7 @@ func (b *Service) StoryVoteEnd(ctx context.Context, BattleID string, UserID stri
 		return nil, err, false
 	}
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("voting_ended", string(updatedStorys), "")
+	msg := wshub.CreateSocketEvent("voting_ended", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -174,7 +176,7 @@ func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, Ev
 	rb.LeaderCode = ""
 
 	updatedBattle, _ := json.Marshal(rb)
-	msg := createSocketEvent("battle_revised", string(updatedBattle), "")
+	msg := wshub.CreateSocketEvent("battle_revised", string(updatedBattle), "")
 
 	return msg, nil, false
 }
@@ -185,7 +187,7 @@ func (b *Service) Delete(ctx context.Context, BattleID string, UserID string, Ev
 	if err != nil {
 		return nil, err, false
 	}
-	msg := createSocketEvent("battle_conceded", "", "")
+	msg := wshub.CreateSocketEvent("battle_conceded", "", "")
 
 	return msg, nil, false
 }
@@ -211,7 +213,7 @@ func (b *Service) StoryAdd(ctx context.Context, BattleID string, UserID string, 
 		return nil, err, false
 	}
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_added", string(updatedStorys), "")
+	msg := wshub.CreateSocketEvent("plan_added", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -238,7 +240,7 @@ func (b *Service) StoryRevise(ctx context.Context, BattleID string, UserID strin
 		return nil, err, false
 	}
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_revised", string(updatedStorys), "")
+	msg := wshub.CreateSocketEvent("plan_revised", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -250,7 +252,7 @@ func (b *Service) StoryDelete(ctx context.Context, BattleID string, UserID strin
 		return nil, err, false
 	}
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_burned", string(updatedStorys), "")
+	msg := wshub.CreateSocketEvent("plan_burned", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -271,7 +273,7 @@ func (b *Service) StoryArrange(ctx context.Context, BattleID string, UserID stri
 		return nil, err, false
 	}
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("story_arranged", string(updatedStorys), "")
+	msg := wshub.CreateSocketEvent("story_arranged", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -283,7 +285,7 @@ func (b *Service) StoryActivate(ctx context.Context, BattleID string, UserID str
 		return nil, err, false
 	}
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_activated", string(updatedStorys), "")
+	msg := wshub.CreateSocketEvent("plan_activated", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -295,7 +297,7 @@ func (b *Service) StorySkip(ctx context.Context, BattleID string, UserID string,
 		return nil, err, false
 	}
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_skipped", string(updatedStorys), "")
+	msg := wshub.CreateSocketEvent("plan_skipped", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -316,7 +318,7 @@ func (b *Service) StoryFinalize(ctx context.Context, BattleID string, UserID str
 		return nil, err, false
 	}
 	updatedStorys, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_finalized", string(updatedStorys), "")
+	msg := wshub.CreateSocketEvent("plan_finalized", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -329,23 +331,4 @@ func (b *Service) Abandon(ctx context.Context, BattleID string, UserID string, E
 	}
 
 	return nil, errors.New("ABANDONED_BATTLE"), true
-}
-
-// socketEvent is the event structure used for socket messages
-type socketEvent struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
-	User  string `json:"warriorId"`
-}
-
-func createSocketEvent(Type string, Value string, User string) []byte {
-	newEvent := &socketEvent{
-		Type:  Type,
-		Value: Value,
-		User:  User,
-	}
-
-	event, _ := json.Marshal(newEvent)
-
-	return event
 }

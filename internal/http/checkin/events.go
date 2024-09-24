@@ -3,6 +3,8 @@ package checkin
 import (
 	"context"
 	"encoding/json"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
 )
 
 // CheckinCreate creates a checkin
@@ -25,7 +27,7 @@ func (b *Service) CheckinCreate(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	msg := createSocketEvent("checkin_added", "", "")
+	msg := wshub.CreateSocketEvent("checkin_added", "", "")
 
 	return msg, nil, false
 }
@@ -50,7 +52,7 @@ func (b *Service) CheckinUpdate(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	msg := createSocketEvent("checkin_updated", "", "")
+	msg := wshub.CreateSocketEvent("checkin_updated", "", "")
 
 	return msg, nil, false
 }
@@ -70,7 +72,7 @@ func (b *Service) CheckinDelete(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	msg := createSocketEvent("checkin_deleted", "", "")
+	msg := wshub.CreateSocketEvent("checkin_deleted", "", "")
 
 	return msg, nil, false
 }
@@ -92,7 +94,7 @@ func (b *Service) CommentCreate(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	msg := createSocketEvent("comment_added", "", "")
+	msg := wshub.CreateSocketEvent("comment_added", "", "")
 
 	return msg, nil, false
 }
@@ -114,7 +116,7 @@ func (b *Service) CommentUpdate(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	msg := createSocketEvent("comment_updated", "", "")
+	msg := wshub.CreateSocketEvent("comment_updated", "", "")
 
 	return msg, nil, false
 }
@@ -134,26 +136,7 @@ func (b *Service) CommentDelete(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	msg := createSocketEvent("comment_deleted", "", "")
+	msg := wshub.CreateSocketEvent("comment_deleted", "", "")
 
 	return msg, nil, false
-}
-
-// socketEvent is the event structure used for socket messages
-type socketEvent struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
-	User  string `json:"userId"`
-}
-
-func createSocketEvent(Type string, Value string, User string) []byte {
-	newEvent := &socketEvent{
-		Type:  Type,
-		Value: Value,
-		User:  User,
-	}
-
-	event, _ := json.Marshal(newEvent)
-
-	return event
 }
