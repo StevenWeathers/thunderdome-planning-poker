@@ -1322,7 +1322,7 @@ definitions:
           $ref: '#/definitions/thunderdome.StoryboardPersona'
         type: array
       sort_order:
-        type: integer
+        type: string
       stories:
         items:
           $ref: '#/definitions/thunderdome.StoryboardStory'
@@ -1343,7 +1343,7 @@ definitions:
           $ref: '#/definitions/thunderdome.StoryboardPersona'
         type: array
       sort_order:
-        type: integer
+        type: string
     type: object
   thunderdome.StoryboardPersona:
     properties:
@@ -1381,7 +1381,7 @@ definitions:
       points:
         type: integer
       sort_order:
-        type: integer
+        type: string
     type: object
   thunderdome.StoryboardUser:
     properties:

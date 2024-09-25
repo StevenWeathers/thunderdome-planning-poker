@@ -12169,7 +12169,7 @@
                     }
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "stories": {
                     "type": "array",
@@ -12201,7 +12201,7 @@
                     }
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },
@@ -12259,7 +12259,7 @@
                     "type": "integer"
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },

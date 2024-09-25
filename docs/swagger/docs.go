@@ -12177,7 +12177,7 @@ const docTemplate = `{
                     }
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "stories": {
                     "type": "array",
@@ -12209,7 +12209,7 @@ const docTemplate = `{
                     }
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },
@@ -12267,7 +12267,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },

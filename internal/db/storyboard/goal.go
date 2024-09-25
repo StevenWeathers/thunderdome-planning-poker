@@ -1,7 +1,12 @@
 package storyboard
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracindex"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -10,14 +15,70 @@ import (
 
 // CreateStoryboardGoal adds a new goal to a Storyboard
 func (d *Service) CreateStoryboardGoal(StoryboardID string, userID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
-	if _, err := d.DB.Exec(
+	var betweenAkey *string
+	var logger = d.Logger.With(
+		zap.String("user_id", userID),
+		zap.String("storyboard_id", StoryboardID),
+		zap.String("goal_name", GoalName),
+	)
+
+	tx, err := d.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		logger.Error("begin transaction error", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	if err := tx.QueryRow(
+		`
+		SELECT 
+    COALESCE(
+        (SELECT MAX(display_order)
+         FROM thunderdome.storyboard_goal
+         WHERE storyboard_id = $1),
+        'a0'
+    ) AS last_display_order;`,
+		StoryboardID,
+	).Scan(&betweenAkey); err != nil {
+		logger.Error("get display_order between query error",
+			zap.Error(err),
+		)
+		return nil, err
+	}
+
+	displayOrder, err := fracindex.KeyBetween(betweenAkey, nil)
+	if err != nil {
+		logger.Error("get display_order between error",
+			zap.Error(err),
+			zap.Stringp("display_order_a", betweenAkey),
+		)
+		return nil, err
+	}
+
+	if displayOrder == nil {
+		logger.Error("get display_order returned nil",
+			zap.Stringp("display_order_a", betweenAkey),
+		)
+		return nil, errors.New("display order is nil")
+	}
+
+	if _, err := tx.Exec(
 		`INSERT INTO
         thunderdome.storyboard_goal
-        (storyboard_id, sort_order, name)
-        VALUES ($1, ((SELECT coalesce(MAX(sort_order), 0) FROM thunderdome.storyboard_goal WHERE storyboard_id = $1) + 1), $2);`,
-		StoryboardID, GoalName,
+        (storyboard_id, name, display_order)
+        VALUES ($1, $2, $3);`,
+		StoryboardID, GoalName, displayOrder,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.create_storyboard_goal error", zap.Error(err))
+		logger.Error("create storyboard goal error",
+			zap.Error(err),
+			zap.Stringp("display_order", displayOrder),
+		)
+		return nil, err
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		logger.Error("update drivers: unable to commit", zap.Error(commitErr))
+		return nil, fmt.Errorf("failed to update storyboard story display_order: %v", commitErr)
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -32,7 +93,7 @@ func (d *Service) ReviseGoalName(StoryboardID string, userID string, GoalID stri
 		GoalID,
 		GoalName,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.update_storyboard_goal error", zap.Error(err))
+		d.Logger.Error("update storyboard goal error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -43,8 +104,8 @@ func (d *Service) ReviseGoalName(StoryboardID string, userID string, GoalID stri
 // DeleteStoryboardGoal removes a goal from the current board by ID
 func (d *Service) DeleteStoryboardGoal(StoryboardID string, userID string, GoalID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`CALL thunderdome.sb_goal_delete($1);`, GoalID); err != nil {
-		d.Logger.Error("CALL thunderdome.sb_goal_delete error", zap.Error(err))
+		`DELETE FROM thunderdome.storyboard_goal WHERE id = $1;`, GoalID); err != nil {
+		d.Logger.Error("storyboard goal delete error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -59,9 +120,9 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
 	goalRows, goalsErr := d.DB.Query(
 		`SELECT
             sg.id,
-            sg.sort_order,
+            sg.display_order,
             sg.name,
-            COALESCE(json_agg(to_jsonb(t) - 'goal_id' ORDER BY t.sort_order) FILTER (WHERE t.id IS NOT NULL), '[]') AS columns,
+            COALESCE(json_agg(to_jsonb(t) - 'goal_id' ORDER BY t.display_order) FILTER (WHERE t.id IS NOT NULL), '[]') AS columns,
             (SELECT COALESCE(json_agg(to_jsonb(sp)) FILTER (WHERE gp.goal_id IS NOT NULL), '[]') AS personas
             FROM thunderdome.storyboard_goal_persona gp
             LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = gp.persona_id) as personas
@@ -70,7 +131,7 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
             SELECT
                 sc.*,
                 COALESCE(
-                    json_agg(stss ORDER BY stss.sort_order) FILTER (WHERE stss.id IS NOT NULL), '[]'
+                    json_agg(stss ORDER BY stss.display_order) FILTER (WHERE stss.id IS NOT NULL), '[]'
                 ) AS stories,
                 (SELECT COALESCE(
                     json_agg(sp) FILTER (WHERE cp.column_id IS NOT NULL), '[]'
@@ -92,8 +153,8 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
             GROUP BY sc.id
         ) t ON t.goal_id = sg.id
         WHERE sg.storyboard_id = $1
-        GROUP BY sg.id, sg.sort_order
-        ORDER BY sg.sort_order;`,
+        GROUP BY sg.id, sg.display_order
+        ORDER BY sg.display_order;`,
 		StoryboardID,
 	)
 	if goalsErr == nil {
@@ -104,7 +165,7 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
 			var sg = &thunderdome.StoryboardGoal{
 				Id:        "",
 				Name:      "",
-				SortOrder: 0,
+				SortOrder: "",
 				Columns:   make([]*thunderdome.StoryboardColumn, 0),
 			}
 			if err := goalRows.Scan(&sg.Id, &sg.SortOrder, &sg.Name, &columns, &personas); err != nil {

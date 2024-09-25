@@ -1,18 +1,81 @@
 package storyboard
 
 import (
+	"context"
+	"errors"
+	"fmt"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracindex"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
 )
 
 // CreateStoryboardStory adds a new story to a Storyboard
 func (d *Service) CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
+	var betweenAkey *string
+	var logger = d.Logger.With(
+		zap.String("user_id", userID),
+		zap.String("storyboard_id", StoryboardID),
+		zap.String("column_id", ColumnID),
+		zap.String("goal_id", GoalID),
+	)
+
+	tx, err := d.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		logger.Error("begin transaction error", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	if err := tx.QueryRow(
+		`
+		SELECT 
+    COALESCE(
+        (SELECT MAX(display_order)
+         FROM thunderdome.storyboard_story
+         WHERE column_id = $1 AND goal_id = $2 AND storyboard_id = $3),
+        'a0'
+    ) AS last_display_order;`,
+		ColumnID, GoalID, StoryboardID,
+	).Scan(&betweenAkey); err != nil {
+		logger.Error("get display_order between query error",
+			zap.Error(err),
+		)
+		return nil, err
+	}
+
+	displayOrder, err := fracindex.KeyBetween(betweenAkey, nil)
+	if err != nil {
+		logger.Error("get display_order between error",
+			zap.Error(err),
+			zap.Stringp("display_order_a", betweenAkey),
+		)
+		return nil, err
+	}
+
+	if displayOrder == nil {
+		logger.Error("get display_order returned nil",
+			zap.Stringp("display_order_a", betweenAkey),
+		)
+		return nil, errors.New("display order is nil")
+	}
+
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.storyboard_story (storyboard_id, goal_id, column_id, sort_order) 
-		VALUES ($1, $2, $3, ((SELECT coalesce(MAX(sort_order), 0) FROM thunderdome.storyboard_story WHERE column_id = $3) + 1));`,
-		StoryboardID, GoalID, ColumnID,
+		`INSERT INTO thunderdome.storyboard_story (storyboard_id, goal_id, column_id, display_order) 
+		VALUES ($1, $2, $3, $4);`,
+		StoryboardID, GoalID, ColumnID, displayOrder,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.create_storyboard_story error", zap.Error(err))
+		logger.Error(
+			"create story error",
+			zap.Error(err),
+			zap.Stringp("display_order_a", betweenAkey),
+		)
+		return nil, err
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		logger.Error("update drivers: unable to commit", zap.Error(commitErr))
+		return nil, fmt.Errorf("failed to update storyboard story display_order: %v", commitErr)
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -112,14 +175,107 @@ func (d *Service) ReviseStoryLink(StoryboardID string, userID string, StoryID st
 
 // MoveStoryboardStory moves the story by ID to Goal/Column by ID
 func (d *Service) MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*thunderdome.StoryboardGoal, error) {
-	if _, err := d.DB.Exec(
-		`CALL thunderdome.sb_story_move($1, $2, $3, $4);`,
-		StoryID,
-		GoalID,
-		ColumnID,
-		PlaceBefore,
+	var betweenAkey *string
+	var betweenBkey *string
+	var logger = d.Logger.With(
+		zap.String("user_id", userID),
+		zap.String("storyboard_id", StoryboardID),
+		zap.String("story_id", StoryID),
+		zap.String("place_before", PlaceBefore),
+		zap.String("column_id", ColumnID),
+		zap.String("goal_id", GoalID),
+	)
+
+	tx, err := d.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		logger.Error("begin transaction error", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	if PlaceBefore == "" {
+		if err := tx.QueryRow(
+			`
+		SELECT 
+        (SELECT MAX(display_order)
+         FROM thunderdome.storyboard_story
+         WHERE column_id = $1 AND goal_id = $2 AND storyboard_id = $3)
+          AS last_display_order;`,
+			ColumnID, GoalID, StoryboardID,
+		).Scan(&betweenAkey); err != nil {
+			logger.Error("get display_order between query error",
+				zap.Error(err),
+			)
+			return nil, err
+		}
+	} else {
+		if err := tx.QueryRow(
+			`
+		WITH current_story AS (
+			SELECT id, column_id, display_order
+			FROM thunderdome.storyboard_story
+			WHERE id = $1 AND column_id = $2 AND goal_id = $3
+		),
+		preceding_story AS (
+			SELECT id, display_order
+			FROM thunderdome.storyboard_story
+			WHERE column_id = (SELECT column_id FROM current_story)
+			AND goal_id = (SELECT goal_id FROM current_story)
+			AND display_order < (SELECT display_order FROM current_story)
+			ORDER BY display_order DESC
+			LIMIT 1
+		)
+		SELECT 
+			cs.display_order AS current_display_order,
+			ps.display_order AS preceding_display_order
+		FROM current_story cs
+		LEFT JOIN preceding_story ps ON true;
+		`,
+			PlaceBefore, ColumnID, GoalID,
+		).Scan(&betweenBkey, &betweenAkey); err != nil {
+			logger.Error("get display_order between query error",
+				zap.Error(err),
+			)
+			return nil, err
+		}
+	}
+
+	displayOrder, err := fracindex.KeyBetween(betweenAkey, betweenBkey)
+	if err != nil {
+		logger.Error("get display_order between error",
+			zap.Error(err),
+			zap.Stringp("display_order_a", betweenAkey),
+			zap.Stringp("display_order_b", betweenBkey),
+		)
+		return nil, err
+	}
+
+	if displayOrder == nil {
+		logger.Error("get display_order returned nil",
+			zap.Stringp("display_order_a", betweenAkey),
+			zap.Stringp("display_order_b", betweenBkey),
+		)
+		return nil, errors.New("display order is nil")
+	}
+
+	if _, err := tx.Exec(
+		`UPDATE thunderdome.storyboard_story 
+		SET display_order = $1, column_id = $2, goal_id = $3, updated_date = NOW() WHERE id = $4;`,
+		displayOrder, ColumnID, GoalID, StoryID,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.sb_story_move error", zap.Error(err))
+		logger.Error(
+			"update story display_order",
+			zap.Error(err),
+			zap.Stringp("display_order_a", betweenAkey),
+			zap.Stringp("display_order_b", betweenBkey),
+			zap.Stringp("display_order", displayOrder),
+		)
+		return nil, err
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		logger.Error("update drivers: unable to commit", zap.Error(commitErr))
+		return nil, fmt.Errorf("failed to update storyboard story display_order: %v", commitErr)
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -130,8 +286,8 @@ func (d *Service) MoveStoryboardStory(StoryboardID string, userID string, StoryI
 // DeleteStoryboardStory removes a story from the current board by ID
 func (d *Service) DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`CALL thunderdome.sb_story_delete($1);`, StoryID); err != nil {
-		d.Logger.Error("CALL thunderdome.sb_story_delete error", zap.Error(err))
+		`DELETE FROM thunderdome.storyboard_story WHERE id = $1`, StoryID); err != nil {
+		d.Logger.Error("storyboard story delete error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
