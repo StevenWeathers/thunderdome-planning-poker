@@ -80,13 +80,22 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 
 	a.Router = mux.NewRouter()
 	a.Router.Use(a.panicRecovery)
-	a.Router.Use(secureMiddleware.Handler)
 
 	if apiService.Config.PathPrefix != "" {
 		a.Router = a.Router.PathPrefix(apiService.Config.PathPrefix).Subrouter()
 	}
 
-	a.Router.Use(otelmux.Middleware("thunderdome"))
+	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
+	swagger.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
+	// swagger docs for external API when enabled
+	// has to come before csp policy as there is currently no way to configure csp nonce for swagger ui
+	if a.Config.ExternalAPIEnabled {
+		a.Router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
+	}
+
+	router := a.Router.PathPrefix("/").Subrouter()
+	router.Use(secureMiddleware.Handler)
+	router.Use(otelmux.Middleware("thunderdome"))
 
 	pokerSvc := poker.New(poker.Config{
 		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
@@ -117,16 +126,10 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		AppDomain:          a.Config.AppDomain,
 		WebsocketSubdomain: a.Config.WebsocketConfig.WebsocketSubdomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.CheckinDataSvc, a.TeamDataSvc)
-	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
+
 	validate = validator.New()
 
-	swagger.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
-	// swagger docs for external API when enabled
-	if a.Config.ExternalAPIEnabled {
-		a.Router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
-	}
-
-	apiRouter := a.Router.PathPrefix("/api").Subrouter()
+	apiRouter := router.PathPrefix("/api").Subrouter()
 	userRouter := apiRouter.PathPrefix("/users").Subrouter()
 	orgRouter := apiRouter.PathPrefix("/organizations").Subrouter()
 	teamRouter := apiRouter.PathPrefix("/teams").Subrouter()
@@ -437,8 +440,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 
 	// user avatar generation
 	if a.Config.AvatarService == "goadorable" || a.Config.AvatarService == "govatar" {
-		a.Router.PathPrefix("/avatar/{width}/{id}/{avatar}").Handler(a.handleUserAvatar()).Methods("GET")
-		a.Router.PathPrefix("/avatar/{width}/{id}").Handler(a.handleUserAvatar()).Methods("GET")
+		router.PathPrefix("/avatar/{width}/{id}/{avatar}").Handler(a.handleUserAvatar()).Methods("GET")
+		router.PathPrefix("/avatar/{width}/{id}").Handler(a.handleUserAvatar()).Methods("GET")
 	}
 
 	if a.Config.SubscriptionsEnabled {
@@ -447,17 +450,17 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionDelete()))).Methods("DELETE")
 		apiRouter.PathPrefix("/subscriptions").Handler(a.userOnly(a.adminOnly(a.handleGetSubscriptions()))).Methods("GET")
 		apiRouter.PathPrefix("/subscriptions").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionCreate()))).Methods("POST")
-		a.Router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
+		router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
 	}
 
 	a.registerOauthProviderEndpoints(authProviderConfigs)
 
 	// static assets
-	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
-	a.Router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 
 	// handle index.html
-	a.Router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
+	router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
 
 	return a
 }
