@@ -233,6 +233,234 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
           ]),
         }),
       );
+
+      storyboard = storyboardWithStory.data;
+    });
+
+    test("PUT /storyboards/{storyboardId}/stories/{storyId}/move moves storyboard story", async ({
+      request,
+      registeredApiUser,
+    }) => {
+      await test.step("Create 2 more stories", async () => {
+        const story2resp = await registeredApiUser.context.post(
+          `storyboards/${storyboard.id}/stories`,
+          {
+            data: {
+              goalId: storyboard.goals[0].id,
+              columnId: storyboard.goals[0].columns[0].id,
+            },
+          },
+        );
+        expect(story2resp.ok()).toBeTruthy();
+
+        const story3resp = await registeredApiUser.context.post(
+          `storyboards/${storyboard.id}/stories`,
+          {
+            data: {
+              goalId: storyboard.goals[0].id,
+              columnId: storyboard.goals[0].columns[0].id,
+            },
+          },
+        );
+        expect(story3resp.ok()).toBeTruthy();
+
+        const updatedStoryboard = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard.ok()).toBeTruthy();
+        const storyboardWithStory = await updatedStoryboard.json();
+        storyboard = storyboardWithStory.data;
+      });
+
+      await test.step("Move story to begining of column", async () => {
+        const storyToMoveID = storyboard.goals[0].columns[0].stories[2].id;
+        const storyPlaceBeforeID = storyboard.goals[0].columns[0].stories[0].id;
+        const storyMresp = await registeredApiUser.context.put(
+          `storyboards/${storyboard.id}/stories/${storyToMoveID}/move`,
+          {
+            data: {
+              goalId: storyboard.goals[0].id,
+              columnId: storyboard.goals[0].columns[0].id,
+              placeBefore: storyPlaceBeforeID,
+            },
+          },
+        );
+        expect(storyMresp.ok()).toBeTruthy();
+
+        const updatedStoryboard2 = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard2.ok()).toBeTruthy();
+        const storyboardWithMovedStory = await updatedStoryboard2.json();
+        expect(
+          storyboardWithMovedStory.data.goals[0].columns[0].stories[0].id,
+        ).toEqual(storyToMoveID);
+        expect(
+          storyboardWithMovedStory.data.goals[0].columns[0].stories[1].id,
+        ).toEqual(storyPlaceBeforeID);
+        storyboard = storyboardWithMovedStory.data;
+      });
+
+      await test.step("Move story to between 2 stories", async () => {
+        const storyToMoveID = storyboard.goals[0].columns[0].stories[2].id;
+        const storyPlaceBeforeID = storyboard.goals[0].columns[0].stories[1].id;
+        const storyMresp = await registeredApiUser.context.put(
+          `storyboards/${storyboard.id}/stories/${storyToMoveID}/move`,
+          {
+            data: {
+              goalId: storyboard.goals[0].id,
+              columnId: storyboard.goals[0].columns[0].id,
+              placeBefore: storyPlaceBeforeID,
+            },
+          },
+        );
+        expect(storyMresp.ok()).toBeTruthy();
+
+        const updatedStoryboard2 = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard2.ok()).toBeTruthy();
+        const storyboardWithMovedStory = await updatedStoryboard2.json();
+        expect(
+          storyboardWithMovedStory.data.goals[0].columns[0].stories[1].id,
+        ).toEqual(storyToMoveID);
+        expect(
+          storyboardWithMovedStory.data.goals[0].columns[0].stories[2].id,
+        ).toEqual(storyPlaceBeforeID);
+        storyboard = storyboardWithMovedStory.data;
+      });
+
+      await test.step("Move story to end of column", async () => {
+        const storyToMoveID = storyboard.goals[0].columns[0].stories[0].id;
+        const storyPlaceBeforeID = "";
+        const storyMresp = await registeredApiUser.context.put(
+          `storyboards/${storyboard.id}/stories/${storyToMoveID}/move`,
+          {
+            data: {
+              goalId: storyboard.goals[0].id,
+              columnId: storyboard.goals[0].columns[0].id,
+              placeBefore: storyPlaceBeforeID,
+            },
+          },
+        );
+        expect(storyMresp.ok()).toBeTruthy();
+
+        const updatedStoryboard2 = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard2.ok()).toBeTruthy();
+        const storyboardWithMovedStory = await updatedStoryboard2.json();
+        expect(
+          storyboardWithMovedStory.data.goals[0].columns[0].stories[2].id,
+        ).toEqual(storyToMoveID);
+        storyboard = storyboardWithMovedStory.data;
+      });
+
+      await test.step("Create another column", async () => {
+        const columnResp = await registeredApiUser.context.post(
+          `storyboards/${storyboard.id}/columns`,
+          {
+            data: {
+              goalId: storyboard.goals[0].id,
+            },
+          },
+        );
+        expect(columnResp.ok()).toBeTruthy();
+        const updatedStoryboard = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard.ok()).toBeTruthy();
+        const storyboardWithAnotherColumn = await updatedStoryboard.json();
+        storyboard = storyboardWithAnotherColumn.data;
+      });
+
+      await test.step("Move story to another column", async () => {
+        const storyToMoveID = storyboard.goals[0].columns[0].stories[0].id;
+        const storyPlaceBeforeID = "";
+        const storyMresp = await registeredApiUser.context.put(
+          `storyboards/${storyboard.id}/stories/${storyToMoveID}/move`,
+          {
+            data: {
+              goalId: storyboard.goals[0].id,
+              columnId: storyboard.goals[0].columns[1].id,
+              placeBefore: storyPlaceBeforeID,
+            },
+          },
+        );
+        expect(storyMresp.ok()).toBeTruthy();
+
+        const updatedStoryboard2 = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard2.ok()).toBeTruthy();
+        const storyboardWithMovedStory = await updatedStoryboard2.json();
+        expect(
+          storyboardWithMovedStory.data.goals[0].columns[1].stories[0].id,
+        ).toEqual(storyToMoveID);
+        storyboard = storyboardWithMovedStory.data;
+      });
+
+      await test.step("Create another goal", async () => {
+        const columnResp = await registeredApiUser.context.post(
+          `storyboards/${storyboard.id}/goals`,
+          {
+            data: {
+              name: "second goal to move story to",
+            },
+          },
+        );
+        expect(columnResp.ok()).toBeTruthy();
+        const updatedStoryboard = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard.ok()).toBeTruthy();
+        const storyboardWithAnotherGoal = await updatedStoryboard.json();
+        storyboard = storyboardWithAnotherGoal.data;
+      });
+
+      await test.step("Create column in second goal", async () => {
+        const columnResp = await registeredApiUser.context.post(
+          `storyboards/${storyboard.id}/columns`,
+          {
+            data: {
+              goalId: storyboard.goals[1].id,
+            },
+          },
+        );
+        expect(columnResp.ok()).toBeTruthy();
+        const updatedStoryboard = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard.ok()).toBeTruthy();
+        const storyboardWithAnotherColumn = await updatedStoryboard.json();
+        storyboard = storyboardWithAnotherColumn.data;
+      });
+
+      await test.step("Move story to another goals column", async () => {
+        const storyToMoveID = storyboard.goals[0].columns[0].stories[0].id;
+        const storyPlaceBeforeID = "";
+        const storyMresp = await registeredApiUser.context.put(
+          `storyboards/${storyboard.id}/stories/${storyToMoveID}/move`,
+          {
+            data: {
+              goalId: storyboard.goals[1].id,
+              columnId: storyboard.goals[1].columns[0].id,
+              placeBefore: storyPlaceBeforeID,
+            },
+          },
+        );
+        expect(storyMresp.ok()).toBeTruthy();
+
+        const updatedStoryboard2 = await registeredApiUser.context.get(
+          `storyboards/${storyboard.id}`,
+        );
+        expect(updatedStoryboard2.ok()).toBeTruthy();
+        const storyboardWithMovedStory = await updatedStoryboard2.json();
+        expect(
+          storyboardWithMovedStory.data.goals[1].columns[0].stories[0].id,
+        ).toEqual(storyToMoveID);
+        storyboard = storyboardWithMovedStory.data;
+      });
     });
   });
 });
