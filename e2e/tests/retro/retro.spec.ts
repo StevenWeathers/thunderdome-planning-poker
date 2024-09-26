@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures/user-sessions";
-import { RetroPage } from "../fixtures/pages/retro-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { RetroPage } from "@fixtures/pages/retro-page";
 
 test.describe("Retro page", { tag: ["@retro"] }, () => {
   let retro = { id: "", name: "e2e retro page tests" };

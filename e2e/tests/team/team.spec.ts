@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures/user-sessions";
-import { TeamPage } from "../fixtures/pages/team-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { TeamPage } from "@fixtures/pages/team-page";
 
 test.describe("Team page", { tag: ["@team"] }, () => {
   test(

@@ -1,6 +1,6 @@
-import { test } from "../fixtures/user-sessions";
+import { test } from "@fixtures/user-sessions";
 import { expect } from "@playwright/test";
-import { TeamsPage } from "../fixtures/pages/teams-page";
+import { TeamsPage } from "@fixtures/pages/teams-page";
 
 test.describe("Teams page", { tag: ["@team"] }, () => {
   test.describe("Unauthenticated user", { tag: ["@unauthenticated"] }, () => {

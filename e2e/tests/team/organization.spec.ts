@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures/user-sessions";
-import { OrganizationPage } from "../fixtures/pages/organization-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { OrganizationPage } from "@fixtures/pages/organization-page";
 
 test.describe("Organization Page", { tag: "@organization" }, () => {
   test(

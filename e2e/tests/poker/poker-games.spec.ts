@@ -1,6 +1,6 @@
-import { test } from "../fixtures/user-sessions";
+import { test } from "@fixtures/user-sessions";
 import { expect } from "@playwright/test";
-import { PokerGamesPage } from "../fixtures/pages/poker-games-page";
+import { PokerGamesPage } from "@fixtures/pages/poker-games-page";
 
 const pageTitle = "My Games";
 

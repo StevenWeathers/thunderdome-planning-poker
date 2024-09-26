@@ -1,5 +1,5 @@
-import { expect, test } from "../../fixtures/user-sessions";
-import { AdminUsersPage } from "../../fixtures/admin/users-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { AdminUsersPage } from "@fixtures/admin/users-page";
 
 test.describe(
   "The Admin Users Page",

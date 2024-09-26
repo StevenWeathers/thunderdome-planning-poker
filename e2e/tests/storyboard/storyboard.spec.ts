@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures/user-sessions";
-import { StoryboardPage } from "../fixtures/pages/storyboard-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { StoryboardPage } from "@fixtures/pages/storyboard-page";
 
 test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
   let storyboard = { id: "", name: "e2e storyboard page tests" };
