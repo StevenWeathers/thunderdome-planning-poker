@@ -468,6 +468,13 @@ definitions:
       success:
         type: boolean
     type: object
+  http.storyboardColumnAddRequestBody:
+    properties:
+      goalId:
+        type: string
+    required:
+    - goalId
+    type: object
   http.storyboardCreateRequestBody:
     properties:
       facilitatorCode:
@@ -478,6 +485,36 @@ definitions:
         type: string
     required:
     - storyboardName
+    type: object
+  http.storyboardGoalAddRequestBody:
+    properties:
+      name:
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  http.storyboardStoryAddRequestBody:
+    properties:
+      columnId:
+        type: string
+      goalId:
+        type: string
+    required:
+    - columnId
+    - goalId
+    type: object
+  http.storyboardStoryMoveRequestBody:
+    properties:
+      columnId:
+        type: string
+      goalId:
+        type: string
+      placeBefore:
+        type: string
+    required:
+    - columnId
+    - goalId
     type: object
   http.subscriptionAssociateRequestBody:
     properties:
@@ -5352,6 +5389,147 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Storyboard
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/columns:
+    post:
+      description: Add a column to a storyboard goal
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: request body for adding a column
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardColumnAddRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Column Add
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/goals:
+    post:
+      description: Add a goal to a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the goal to add
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardGoalAddRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Goal Add
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories:
+    post:
+      description: Add a story to a storyboard goal column
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: request body for adding a story
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardStoryAddRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story Add
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories/{storyId}/move:
+    put:
+      description: Move a story in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: storyId
+        required: true
+        type: string
+      - description: target goal column and place before story
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardStoryMoveRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story Move
       tags:
       - storyboard
   /subscriptions:

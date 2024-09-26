@@ -5574,6 +5574,229 @@ const docTemplate = `{
                 }
             }
         },
+        "/storyboards/{storyboardId}/columns": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Add a column to a storyboard goal",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Column Add",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "request body for adding a column",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardColumnAddRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/goals": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Add a goal to a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Goal Add",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "the goal to add",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardGoalAddRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/stories": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Add a story to a storyboard goal column",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story Add",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "request body for adding a story",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardStoryAddRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/move": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Move a story in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story Move",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "target goal column and place before story",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardStoryMoveRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/subscriptions": {
             "get": {
                 "security": [
@@ -10891,6 +11114,17 @@ const docTemplate = `{
                 }
             }
         },
+        "http.storyboardColumnAddRequestBody": {
+            "type": "object",
+            "required": [
+                "goalId"
+            ],
+            "properties": {
+                "goalId": {
+                    "type": "string"
+                }
+            }
+        },
         "http.storyboardCreateRequestBody": {
             "type": "object",
             "required": [
@@ -10904,6 +11138,51 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "storyboardName": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.storyboardGoalAddRequestBody": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "http.storyboardStoryAddRequestBody": {
+            "type": "object",
+            "required": [
+                "columnId",
+                "goalId"
+            ],
+            "properties": {
+                "columnId": {
+                    "type": "string"
+                },
+                "goalId": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.storyboardStoryMoveRequestBody": {
+            "type": "object",
+            "required": [
+                "columnId",
+                "goalId"
+            ],
+            "properties": {
+                "columnId": {
+                    "type": "string"
+                },
+                "goalId": {
+                    "type": "string"
+                },
+                "placeBefore": {
                     "type": "string"
                 }
             }
