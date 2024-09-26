@@ -104,111 +104,135 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
     },
   );
 
-  test("POST /storyboards/{storyboardId}/goals creates storyboard goal", async ({
-    request,
-    registeredApiUser,
-  }) => {
-    const storyboardName = "Test API Create Storyboard Goal Test";
-    const goalName = "Test API Create Goal";
+  test.describe.serial("board actions", () => {
+    const storyboardName = "Test API Storyboard actions";
+    let storyboard;
 
-    const response = await registeredApiUser.context.post(
-      `users/${registeredApiUser.user.id}/storyboards`,
-      {
-        data: {
-          storyboardName,
+    test.beforeAll(async ({ registeredApiUser }) => {
+      const response = await registeredApiUser.context.post(
+        `users/${registeredApiUser.user.id}/storyboards`,
+        {
+          data: {
+            storyboardName,
+          },
         },
-      },
-    );
-    expect(response.ok()).toBeTruthy();
-    const { data: storyboard } = await response.json();
-    expect(storyboard).toMatchObject({
-      name: storyboardName,
+      );
+      expect(response.ok()).toBeTruthy();
+      const res = await response.json();
+      storyboard = res.data;
     });
 
-    const goalResp = await registeredApiUser.context.post(
-      `storyboards/${storyboard.id}/goals`,
-      {
-        data: {
-          name: goalName,
-        },
-      },
-    );
-    expect(goalResp.ok()).toBeTruthy();
+    test("POST /storyboards/{storyboardId}/goals creates storyboard goal", async ({
+      request,
+      registeredApiUser,
+    }) => {
+      const goalName = "Test API Create Goal";
 
-    const updatedStoryboard = await registeredApiUser.context.get(
-      `storyboards/${storyboard.id}`,
-    );
-    expect(updatedStoryboard.ok()).toBeTruthy();
-    const storyboardWithGoal = await updatedStoryboard.json();
-    expect(storyboardWithGoal.data).toMatchObject(
-      expect.objectContaining({
-        goals: expect.arrayContaining([
-          expect.objectContaining({
+      const goalResp = await registeredApiUser.context.post(
+        `storyboards/${storyboard.id}/goals`,
+        {
+          data: {
             name: goalName,
-          }),
-        ]),
-      }),
-    );
-  });
+          },
+        },
+      );
+      expect(goalResp.ok()).toBeTruthy();
 
-  test("POST /storyboards/{storyboardId}/columns creates storyboard column", async ({
-    request,
-    registeredApiUser,
-  }) => {
-    const storyboardName = "Test API Create Storyboard Column Test";
-    const goalName = "Test API Create Column Goal";
-
-    const response = await registeredApiUser.context.post(
-      `users/${registeredApiUser.user.id}/storyboards`,
-      { data: { storyboardName } },
-    );
-    expect(response.ok()).toBeTruthy();
-    const { data: storyboard } = await response.json();
-    expect(storyboard).toMatchObject({
-      name: storyboardName,
+      const updatedStoryboard = await registeredApiUser.context.get(
+        `storyboards/${storyboard.id}`,
+      );
+      expect(updatedStoryboard.ok()).toBeTruthy();
+      const storyboardWithGoal = await updatedStoryboard.json();
+      expect(storyboardWithGoal.data).toMatchObject(
+        expect.objectContaining({
+          goals: expect.arrayContaining([
+            expect.objectContaining({
+              name: goalName,
+            }),
+          ]),
+        }),
+      );
+      storyboard = storyboardWithGoal.data;
     });
 
-    const goalResp = await registeredApiUser.context.post(
-      `storyboards/${storyboard.id}/goals`,
-      { data: { name: goalName } },
-    );
-    expect(goalResp.ok()).toBeTruthy();
-
-    let updatedStoryboard = await registeredApiUser.context.get(
-      `storyboards/${storyboard.id}`,
-    );
-    expect(updatedStoryboard.ok()).toBeTruthy();
-    const storyboardWithGoal = await updatedStoryboard.json();
-
-    const columnResp = await registeredApiUser.context.post(
-      `storyboards/${storyboard.id}/columns`,
-      {
-        data: {
-          goalId: storyboardWithGoal.data?.goals[0].id,
+    test("POST /storyboards/{storyboardId}/columns creates storyboard column", async ({
+      request,
+      registeredApiUser,
+    }) => {
+      const columnResp = await registeredApiUser.context.post(
+        `storyboards/${storyboard.id}/columns`,
+        {
+          data: {
+            goalId: storyboard.goals[0].id,
+          },
         },
-      },
-    );
-    expect(columnResp.ok()).toBeTruthy();
+      );
+      expect(columnResp.ok()).toBeTruthy();
 
-    updatedStoryboard = await registeredApiUser.context.get(
-      `storyboards/${storyboard.id}`,
-    );
-    expect(updatedStoryboard.ok()).toBeTruthy();
-    const storyboardWithCol = await updatedStoryboard.json();
-    expect(storyboardWithCol.data).toMatchObject(
-      expect.objectContaining({
-        goals: expect.arrayContaining([
-          expect.objectContaining({
-            name: goalName,
-            columns: expect.arrayContaining([
-              expect.objectContaining({
-                name: "",
-                id: expect.any(String),
-              }),
-            ]),
-          }),
-        ]),
-      }),
-    );
+      const updatedStoryboard = await registeredApiUser.context.get(
+        `storyboards/${storyboard.id}`,
+      );
+      expect(updatedStoryboard.ok()).toBeTruthy();
+      const storyboardWithCol = await updatedStoryboard.json();
+      expect(storyboardWithCol.data).toMatchObject(
+        expect.objectContaining({
+          goals: expect.arrayContaining([
+            expect.objectContaining({
+              name: storyboard.goals[0].name,
+              columns: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "",
+                  id: expect.any(String),
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      );
+
+      storyboard = storyboardWithCol.data;
+    });
+
+    test("POST /storyboards/{storyboardId}/stories creates storyboard story", async ({
+      request,
+      registeredApiUser,
+    }) => {
+      const resp = await registeredApiUser.context.post(
+        `storyboards/${storyboard.id}/stories`,
+        {
+          data: {
+            goalId: storyboard.goals[0].id,
+            columnId: storyboard.goals[0].columns[0].id,
+          },
+        },
+      );
+      expect(resp.ok()).toBeTruthy();
+
+      const updatedStoryboard = await registeredApiUser.context.get(
+        `storyboards/${storyboard.id}`,
+      );
+      expect(updatedStoryboard.ok()).toBeTruthy();
+      const storyboardWithStory = await updatedStoryboard.json();
+      expect(storyboardWithStory.data).toMatchObject(
+        expect.objectContaining({
+          goals: expect.arrayContaining([
+            expect.objectContaining({
+              name: storyboard.goals[0].name,
+              columns: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "",
+                  id: storyboard.goals[0].columns[0].id,
+                  stories: expect.arrayContaining([
+                    expect.objectContaining({
+                      id: expect.any(String),
+                    }),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      );
+    });
   });
 });
