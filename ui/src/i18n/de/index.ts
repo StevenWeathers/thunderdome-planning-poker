@@ -590,7 +590,8 @@ const de: Translation = {
   enableBattleNotifications: 'Partiemeldungen aktivieren',
   avatar: 'Avatar',
   userInviteSent: 'Benutzereinladung versendet',
-  inviteUserFieldNote: 'Eine Einladung zur Teilnahme an der {pageType} wird gesendet werden.',
+  inviteUserFieldNote:
+    'Eine Einladung zur Teilnahme an der {pageType} wird gesendet werden.',
   updateProfile: 'Profil aktualisieren',
   guestUsers: 'Gastbenutzer',
   maintenance: 'Wartung',
@@ -626,10 +627,11 @@ const de: Translation = {
   storyboardNamePlaceholder: 'Geben Sie einen Storyboard-Namen ein',
   retroPhaseTimeLimitMinLabel: 'Brainstorm Phase Zeitlimite in Minuten',
   phaseAutoAdvanceLabel: 'Phasen automatisch weiterschalten',
-  removeOnlyFacilitatorError: "Letzter Moderator kann nicht entfernt werden",
+  removeOnlyFacilitatorError: 'Letzter Moderator kann nicht entfernt werden',
   noGamesFound: 'Keine Games gefunden, versuchen Sie eines zu erstellen.',
   noRetrosFound: 'Keine Retros gefunden, versuchen Sie eines zu erstellen.',
-  noStoryboardsFound: 'Keine Storyboards gefunden, versuchen Sie eines zu erstellen.',
+  noStoryboardsFound:
+    'Keine Storyboards gefunden, versuchen Sie eines zu erstellen.',
   retroDescription:
     'Eine Sprint Retrospektive (Retro) ist ein Rückblick nach dem Sprint, welcher in der Agilen Methodik eine wichtige Rolle spielt. Ein Retro hat zum Ziel hervorzubringen was gut lief, wo es Probleme gab, und in welchen Bereichen Verbesserungen möglich sind.',
   pokerDescription:
@@ -656,8 +658,7 @@ const de: Translation = {
   estimationScaleUpdateError: 'Fehler beim Ändern der Skala',
   estimationScaleRemoveSuccess: 'Skala erfolgreich gelöscht',
   estimationScaleRemoveError: 'Fehler beim Löschen der Skala',
-  removeEstimationScaleConfirmText:
-    'Wollen Sie diese Skala wirklich löschen?',
+  removeEstimationScaleConfirmText: 'Wollen Sie diese Skala wirklich löschen?',
   removeEstimationScale: 'Skala löschen',
   yes: 'Ja',
   no: 'Nein',
