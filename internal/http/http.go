@@ -435,6 +435,10 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/storyboards", a.userOnly(a.adminOnly(a.handleGetStoryboards()))).Methods("GET")
 		apiRouter.HandleFunc("/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardGet())).Methods("GET")
 		apiRouter.HandleFunc("/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardDelete(storyboardSvc))).Methods("DELETE")
+		apiRouter.HandleFunc("/storyboards/{storyboardId}/goals", a.userOnly(a.handleStoryboardGoalAdd(storyboardSvc))).Methods("POST")
+		apiRouter.HandleFunc("/storyboards/{storyboardId}/columns", a.userOnly(a.handleStoryboardColumnAdd(storyboardSvc))).Methods("POST")
+		apiRouter.HandleFunc("/storyboards/{storyboardId}/stories", a.userOnly(a.handleStoryboardStoryAdd(storyboardSvc))).Methods("POST")
+		apiRouter.HandleFunc("/storyboards/{storyboardId}/stories/{storyId}/move", a.userOnly(a.handleStoryboardStoryMove(storyboardSvc))).Methods("PUT")
 		apiRouter.HandleFunc("/storyboard/{storyboardId}", storyboardSvc.ServeWs())
 	}
 

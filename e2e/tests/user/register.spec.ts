@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { RegisterPage } from "../fixtures/pages/register-page";
+import { RegisterPage } from "@fixtures/pages/register-page";
 
 const registerPageTitle = "Register";
 const battlesPageTitle = "My Games";

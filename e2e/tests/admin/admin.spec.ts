@@ -1,5 +1,5 @@
-import { expect, test } from "../../fixtures/user-sessions";
-import { AdminPage } from "../../fixtures/admin/admin-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { AdminPage } from "@fixtures/admin/admin-page";
 
 test.describe("Admin page", { tag: ["@administration"] }, () => {
   test.describe("Unauthenticated user", { tag: ["@unauthenticated"] }, () => {

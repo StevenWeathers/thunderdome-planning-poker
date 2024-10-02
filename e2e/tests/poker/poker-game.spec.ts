@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures/user-sessions";
-import { PokerGamePage } from "../fixtures/pages/poker-game-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { PokerGamePage } from "@fixtures/pages/poker-game-page";
 
 const allowedPointValues = ["0", "1", "2", "3", "5", "8", "13", "?"];
 const pointAverageRounding = "ceil";

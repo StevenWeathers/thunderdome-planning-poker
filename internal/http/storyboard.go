@@ -274,3 +274,288 @@ func (s *Service) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFun
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
+
+type storyboardGoalAddRequestBody struct {
+	Name string `json:"name" validate:"required,min=1"`
+}
+
+// handleStoryboardGoalAdd handles adding a goal to a storyboard
+// @Summary      Storyboard Goal Add
+// @Description  Add a goal to a storyboard
+// @Param        storyboardId  path  string  true  "the storyboard ID"
+// @Param        storyboard    body    storyboardGoalAddRequestBody  false  "the goal to add"
+// @Tags         storyboard
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /storyboards/{storyboardId}/goals [post]
+func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		Id := vars["storyboardId"]
+		idErr := validate.Var(Id, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+
+		body, bodyErr := io.ReadAll(r.Body) // check for errors
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var sbm = storyboardGoalAddRequestBody{}
+		jsonErr := json.Unmarshal(body, &sbm)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(sbm)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		err := sb.APIEvent(ctx, Id, SessionUserID, "add_goal", sbm.Name)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handle storyboard goal add error",
+				zap.Error(err),
+				zap.String("storyboard_id", Id),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+type storyboardColumnAddRequestBody struct {
+	GoalID string `json:"goalId" validate:"required,uuid"`
+}
+
+// handleStoryboardColumnAdd handles adding a column to a storyboard goal
+// @Summary      Storyboard Column Add
+// @Description  Add a column to a storyboard goal
+// @Param        storyboardId  path  string  true  "the storyboard ID"
+// @Param        storyboard    body    storyboardColumnAddRequestBody  false "request body for adding a column"
+// @Tags         storyboard
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /storyboards/{storyboardId}/columns [post]
+func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		Id := vars["storyboardId"]
+		idErr := validate.Var(Id, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+
+		body, bodyErr := io.ReadAll(r.Body) // check for errors
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var sbm = storyboardColumnAddRequestBody{}
+		jsonErr := json.Unmarshal(body, &sbm)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(sbm)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		eventValue, err := json.Marshal(sbm)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		err = sb.APIEvent(ctx, Id, SessionUserID, "add_column", string(eventValue))
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handle storyboard column add error",
+				zap.Error(err),
+				zap.String("storyboard_id", Id),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+type storyboardStoryAddRequestBody struct {
+	GoalID   string `json:"goalId" validate:"required,uuid"`
+	ColumnID string `json:"columnId" validate:"required,uuid"`
+}
+
+// handleStoryboardStoryAdd handles adding a story to a storyboard goal column
+// @Summary      Storyboard Story Add
+// @Description  Add a story to a storyboard goal column
+// @Param        storyboardId  path  string  true  "the storyboard ID"
+// @Param        storyboard    body    storyboardStoryAddRequestBody  false "request body for adding a story"
+// @Tags         storyboard
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /storyboards/{storyboardId}/stories [post]
+func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		Id := vars["storyboardId"]
+		idErr := validate.Var(Id, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+
+		body, bodyErr := io.ReadAll(r.Body) // check for errors
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var sbm = storyboardStoryAddRequestBody{}
+		jsonErr := json.Unmarshal(body, &sbm)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(sbm)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		eventValue, err := json.Marshal(sbm)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		err = sb.APIEvent(ctx, Id, SessionUserID, "add_story", string(eventValue))
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handle storyboard story add error",
+				zap.Error(err),
+				zap.String("storyboard_id", Id),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+type storyboardStoryMoveRequestBody struct {
+	PlaceBefore string `json:"placeBefore" validate:"omitempty,uuid"`
+	GoalID      string `json:"goalId" validate:"required,uuid"`
+	ColumnID    string `json:"columnId" validate:"required,uuid"`
+}
+
+// handleStoryboardStoryMove handles moving a story in a storyboard
+// @Summary      Storyboard Story Move
+// @Description  Move a story in a storyboard
+// @Param        storyboardId  path  string  true  "the storyboard ID"
+// @Param        storyId  path  string  true  "the story ID"
+// @Param        storyboard    body    storyboardStoryMoveRequestBody  false  "target goal column and place before story"
+// @Tags         storyboard
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /storyboards/{storyboardId}/stories/{storyId}/move [put]
+func (s *Service) handleStoryboardStoryMove(sb *storyboard.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		Id := vars["storyboardId"]
+		idErr := validate.Var(Id, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		StoryId := vars["storyId"]
+		idErr = validate.Var(Id, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+
+		body, bodyErr := io.ReadAll(r.Body) // check for errors
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var sbm = storyboardStoryMoveRequestBody{}
+		jsonErr := json.Unmarshal(body, &sbm)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(sbm)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		type moveEvent struct {
+			StoryID     string `json:"storyId"`
+			PlaceBefore string `json:"placeBefore"`
+			GoalID      string `json:"goalId"`
+			ColumnID    string `json:"columnId"`
+		}
+		sbme := moveEvent{
+			StoryID:     StoryId,
+			PlaceBefore: sbm.PlaceBefore,
+			GoalID:      sbm.GoalID,
+			ColumnID:    sbm.ColumnID,
+		}
+		moveEventJSON, moveEventErr := json.Marshal(sbme)
+		if moveEventErr != nil {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, moveEventErr.Error()))
+			return
+		}
+
+		err := sb.APIEvent(ctx, Id, SessionUserID, "move_story", string(moveEventJSON))
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handle storyboard story move error",
+				zap.Error(err),
+				zap.String("storyboard_id", Id),
+				zap.String("story_id", StoryId),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}

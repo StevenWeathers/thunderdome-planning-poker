@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures/user-sessions";
-import { DepartmentPage } from "../fixtures/pages/department-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { DepartmentPage } from "@fixtures/pages/department-page";
 
 test.describe("Department page", { tag: "@department" }, () => {
   test.describe("Unauthenticated user", { tag: "@unauthenticated" }, () => {

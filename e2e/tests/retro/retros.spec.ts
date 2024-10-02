@@ -1,6 +1,6 @@
-import { test } from "../fixtures/user-sessions";
+import { test } from "@fixtures/user-sessions";
 import { expect } from "@playwright/test";
-import { RetrosPage } from "../fixtures/pages/retros-page";
+import { RetrosPage } from "@fixtures/pages/retros-page";
 
 const pageTitle = "My Retros";
 

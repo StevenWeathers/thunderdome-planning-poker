@@ -856,7 +856,7 @@
     </div>
   </div>
   {#each storyboard.goals as goal, goalIndex (goal.id)}
-    <div data-goalid="{goal.id}">
+    <div data-goalid="{goal.id}" data-testid="storyboard-goal">
       <div
         class="flex px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex >
         0
@@ -866,7 +866,11 @@
         <div class="w-3/4 relative">
           <div class="font-bold dark:text-gray-200 text-xl">
             <h2 class="inline-block align-middle pt-1">
-              <button on:click="{toggleGoalCollapse(goal.id)}">
+              <button
+                on:click="{toggleGoalCollapse(goal.id)}"
+                data-testid="goal-expand"
+                data-collapsed="{collapseGoals.includes(goal.id)}"
+              >
                 {#if collapseGoals.includes(goal.id)}
                   <ChevronDown class="me-1 inline-block" />
                 {:else}
@@ -913,15 +917,20 @@
         <section class="px-2" style="overflow-x: scroll">
           <div class="flex">
             {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-              <div class="flex-none mx-2 w-40">
+              <div class="flex-none mx-2 w-40" data-testid="goal-personas">
                 <div class="w-full mb-2">
                   {#each goalColumn.personas as persona}
-                    <div class="mt-4 dark:text-gray-300 text-right">
-                      <div class="font-bold">
+                    <div
+                      class="mt-4 dark:text-gray-300 text-right"
+                      data-testid="goal-persona"
+                    >
+                      <div class="font-bold" data-testid="persona-name">
                         <User class="inline-block h-4 w-4" />
                         {persona.name}
                       </div>
-                      <div class="text-sm">{persona.role}</div>
+                      <div class="text-sm" data-testid="persona-role">
+                        {persona.role}
+                      </div>
                     </div>
                   {/each}
                 </div>
@@ -930,7 +939,7 @@
           </div>
           <div class="flex">
             {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-              <div class="flex-none my-4 mx-2 w-40">
+              <div class="flex-none my-4 mx-2 w-40" data-testid="goal-column">
                 <div class="flex-none">
                   <div class="w-full mb-2">
                     <div class="flex">
@@ -972,6 +981,7 @@
                 </div>
                 <div
                   class="w-full relative"
+                  data-testid="column-dropzone"
                   style="min-height: 160px;"
                   data-goalid="{goal.id}"
                   data-columnid="{goalColumn.id}"
@@ -1002,6 +1012,7 @@
                       data-goalid="{goal.id}"
                       data-columnid="{goalColumn.id}"
                       data-storyid="{story.id}"
+                      data-testid="column-story"
                       on:click="{toggleStoryForm(story)}"
                       on:keypress="{toggleStoryForm(story)}"
                     >
@@ -1030,6 +1041,7 @@
                                   <span
                                     class="inline-block
                                                                 align-middle"
+                                    data-testid="story-comments"
                                   >
                                     {story.comments.length}
                                     <MessageSquareMore class="inline-block" />
@@ -1043,6 +1055,7 @@
                                                                 bg-gray-300 dark:bg-gray-500
                                                                 inline-block
                                                                 align-middle"
+                                    data-testid="story-points"
                                   >
                                     {story.points}
                                   </span>
@@ -1063,6 +1076,7 @@
                           data-goalid="{goal.id}"
                           data-columnid="{goalColumn.id}"
                           data-storyid="{story.id}"
+                          data-testid="column-story-shadowitem"
                           on:click="{toggleStoryForm(story)}"
                           on:keypress="{toggleStoryForm(story)}"
                         >
@@ -1074,6 +1088,7 @@
                                   ? 'line-through'
                                   : ''}"
                                 title="{story.name}"
+                                data-testid="shadow-story-name"
                               >
                                 {story.name}
                               </div>
@@ -1090,6 +1105,7 @@
                                       <span
                                         class="inline-block
                                                                 align-middle"
+                                        data-testid="shadow-story-comments"
                                       >
                                         {story.comments.length}
                                         <MessageSquareMore
@@ -1105,6 +1121,7 @@
                                                                 bg-gray-300
                                                                 inline-block
                                                                 align-middle"
+                                        data-testid="shadow-story-points"
                                       >
                                         {story.points}
                                       </span>

@@ -37,7 +37,7 @@ type StoryboardGoal struct {
 	Name      string               `json:"name"`
 	Personas  []*StoryboardPersona `json:"personas"`
 	Columns   []*StoryboardColumn  `json:"columns"`
-	SortOrder int                  `json:"sort_order"`
+	SortOrder string               `json:"sort_order"`
 }
 
 // StoryboardColumn A column in a storyboard goal
@@ -46,7 +46,7 @@ type StoryboardColumn struct {
 	Name      string               `json:"name"`
 	Personas  []*StoryboardPersona `json:"personas"`
 	Stories   []*StoryboardStory   `json:"stories"`
-	SortOrder int                  `json:"sort_order"`
+	SortOrder string               `json:"sort_order"`
 }
 
 // StoryboardStory A story in a storyboard goal column
@@ -59,7 +59,7 @@ type StoryboardStory struct {
 	Closed      bool            `json:"closed"`
 	Link        string          `json:"link"`
 	Annotations []string        `json:"annotations"`
-	SortOrder   int             `json:"sort_order"`
+	SortOrder   string          `json:"sort_order"`
 	Comments    []*StoryComment `json:"comments"`
 }
 

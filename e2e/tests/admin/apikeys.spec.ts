@@ -1,5 +1,5 @@
-import { expect, test } from "../../fixtures/user-sessions";
-import { APIKeysPage } from "../../fixtures/admin/apikeys-page";
+import { expect, test } from "@fixtures/user-sessions";
+import { APIKeysPage } from "@fixtures/admin/apikeys-page";
 
 test.describe(
   "The Admin API Keys Page",
