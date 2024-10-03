@@ -1,7 +1,6 @@
 package thunderdome
 
 import (
-	"net/http"
 	"time"
 )
 
@@ -30,9 +29,4 @@ type Identity struct {
 	Verified    bool      `json:"verified"`
 	CreatedDate time.Time `json:"created_date"`
 	UpdatedDate time.Time `json:"updated_date"`
-}
-
-type AuthProviderSvc interface {
-	HandleOAuth2Redirect(w http.ResponseWriter, r *http.Request)
-	HandleOAuth2Callback(w http.ResponseWriter, r *http.Request)
 }
