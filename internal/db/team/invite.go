@@ -27,7 +27,7 @@ func (d *Service) TeamInviteUser(ctx context.Context, teamID string, email strin
 	return inviteID, nil
 }
 
-// TeamUserGetInviteByID gets a team user invite
+// TeamUserGetInviteByID gets a team user invite by ID
 func (d *Service) TeamUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.TeamUserInvite, error) {
 	tui := thunderdome.TeamUserInvite{}
 	err := d.DB.QueryRowContext(ctx,

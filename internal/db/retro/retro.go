@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Service represents a PostgreSQL implementation of thunderdome.RetroDataSvc.
+// Service represents the database service for retros
 type Service struct {
 	DB         *sql.DB
 	Logger     *otelzap.Logger
@@ -142,8 +142,8 @@ func (d *Service) EditRetro(retroID string, retroName string, joinCode string, f
 	return nil
 }
 
-// RetroGet gets a retro by ID
-func (d *Service) RetroGet(retroID string, userID string) (*thunderdome.Retro, error) {
+// RetroGetByID gets a retro by ID
+func (d *Service) RetroGetByID(retroID string, userID string) (*thunderdome.Retro, error) {
 	var b = &thunderdome.Retro{
 		ID:           retroID,
 		Users:        make([]*thunderdome.RetroUser, 0),

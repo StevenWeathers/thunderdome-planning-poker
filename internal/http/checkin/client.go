@@ -29,7 +29,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if sessionID != "" {
 			var userErr error
-			user, userErr = b.AuthService.GetSessionUser(ctx, sessionID)
+			user, userErr = b.AuthService.GetSessionUserByID(ctx, sessionID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -48,7 +48,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			user, userErr = b.UserService.GetGuestUser(ctx, userID)
+			user, userErr = b.UserService.GetGuestUserByID(ctx, userID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -59,7 +59,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure team is legit
-		_, retroErr := b.TeamService.TeamGet(context.Background(), roomID)
+		_, retroErr := b.TeamService.TeamGetByID(context.Background(), roomID)
 		if retroErr != nil {
 			authErr := wshub.AuthError{
 				Code:    4004,
@@ -69,7 +69,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure user is a team user
-		_, UserErr := b.TeamService.TeamUserRole(ctx, user.ID, roomID)
+		_, UserErr := b.TeamService.TeamUserRoleByUserID(ctx, user.ID, roomID)
 		if UserErr != nil {
 			b.logger.Ctx(ctx).Error("REQUIRES_TEAM_USER", zap.Error(UserErr),
 				zap.String("team_id", roomID), zap.String("session_user_id", user.ID))

@@ -9,7 +9,7 @@ import (
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
-// Service represents a PostgreSQL implementation of thunderdome.AdminDataSvc.
+// Service represents the admin database service
 type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger

@@ -34,7 +34,7 @@ func (d *Service) StoryboardFacilitatorAdd(storyboardID string, userID string) (
 		return nil, fmt.Errorf("storyboard add faciliator query error: %v", err)
 	}
 
-	storyboard, err := d.GetStoryboard(storyboardID, "")
+	storyboard, err := d.GetStoryboardByID(storyboardID, "")
 	if err != nil {
 		return nil, fmt.Errorf("storyboard add facilitator get storyboard error: %v", err)
 	}
@@ -63,7 +63,7 @@ func (d *Service) StoryboardFacilitatorRemove(storyboardID string, userID string
 		return nil, fmt.Errorf("storyboard remove facilitator query error: %v", err)
 	}
 
-	storyboard, err := d.GetStoryboard(storyboardID, "")
+	storyboard, err := d.GetStoryboardByID(storyboardID, "")
 	if err != nil {
 		return nil, fmt.Errorf("storyboard remove facilitator get storyboard error: %v", err)
 	}

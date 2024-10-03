@@ -151,8 +151,8 @@ func (d *Service) GetTemplatesByTeam(ctx context.Context, teamID string) ([]*thu
 	return templates, nil
 }
 
-// GetTemplateById retrieves a specific template by its ID
-func (d *Service) GetTemplateById(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error) {
+// GetTemplateByID retrieves a specific template by its ID
+func (d *Service) GetTemplateByID(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error) {
 	var t thunderdome.RetroTemplate
 	var format string
 

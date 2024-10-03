@@ -29,8 +29,8 @@ type PokerDataSvc interface {
 	UpdateGame(pokerID string, name string, pointValuesAllowed []string, autoFinishVoting bool, pointAverageRounding string, hideVoterIdentity bool, joinCode string, facilitatorCode string, teamID string) error
 	// GetFacilitatorCode retrieves the facilitator code for a poker game
 	GetFacilitatorCode(pokerID string) (string, error)
-	// GetGame retrieves a poker game by its ID
-	GetGame(pokerID string, userID string) (*thunderdome.Poker, error)
+	// GetGameByID retrieves a poker game by its ID
+	GetGameByID(pokerID string, userID string) (*thunderdome.Poker, error)
 	// ConfirmFacilitator confirms a user as a facilitator for a poker game
 	ConfirmFacilitator(pokerID string, userID string) error
 	// GetUserActiveStatus retrieves the active status of a user in a poker game
@@ -72,11 +72,11 @@ type PokerDataSvc interface {
 }
 
 type AuthDataSvc interface {
-	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
+	GetSessionUserByID(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
 
 type UserDataSvc interface {
-	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
+	GetGuestUserByID(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
 // Service provides battle service

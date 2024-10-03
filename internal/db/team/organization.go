@@ -14,14 +14,14 @@ import (
 	"go.uber.org/zap"
 )
 
-// OrganizationService represents a PostgreSQL implementation of thunderdome.OrganizationDataSvc.
+// OrganizationService represents the database service for organizations
 type OrganizationService struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
 }
 
-// OrganizationGet gets an organization
-func (d *OrganizationService) OrganizationGet(ctx context.Context, orgID string) (*thunderdome.Organization, error) {
+// OrganizationGetByID gets an organization by ID
+func (d *OrganizationService) OrganizationGetByID(ctx context.Context, orgID string) (*thunderdome.Organization, error) {
 	var org = &thunderdome.Organization{}
 
 	err := d.DB.QueryRowContext(ctx,
@@ -464,6 +464,7 @@ func (d *OrganizationService) OrganizationList(ctx context.Context, limit int, o
 	return organizations
 }
 
+// OrganizationIsSubscribed checks if an organization is subscribed
 func (d *OrganizationService) OrganizationIsSubscribed(ctx context.Context, orgID string) (bool, error) {
 	var subscribed bool
 

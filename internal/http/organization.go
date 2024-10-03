@@ -95,7 +95,7 @@ func (s *Service) handleGetOrganizationByUser() http.HandlerFunc {
 			return
 		}
 
-		organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, orgID)
+		organization, err := s.OrganizationDataSvc.OrganizationGetByID(ctx, orgID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetOrganizationByUser error", zap.Error(err), zap.String("organization_id", orgID),
@@ -414,7 +414,7 @@ func (s *Service) handleOrganizationInviteUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusInternalServerError, inviteErr)
 			return
 		}
-		org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, orgID)
+		org, orgErr := s.OrganizationDataSvc.OrganizationGetByID(ctx, orgID)
 		if orgErr != nil {
 			s.Logger.Ctx(ctx).Error("handleOrganizationInviteUser error", zap.Error(orgErr),
 				zap.String("organization_id", orgID), zap.String("session_user_id", sessionUserID))
@@ -588,7 +588,7 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			return
 		}
 
-		organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, orgID)
+		organization, err := s.OrganizationDataSvc.OrganizationGetByID(ctx, orgID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetOrganizationTeamByUser error", zap.Error(err), zap.String("organization_id", orgID),
@@ -598,7 +598,7 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			return
 		}
 
-		team, err := s.TeamDataSvc.TeamGet(ctx, teamID)
+		team, err := s.TeamDataSvc.TeamGetByID(ctx, teamID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetOrganizationTeamByUser error", zap.Error(err), zap.String("organization_id", orgID),

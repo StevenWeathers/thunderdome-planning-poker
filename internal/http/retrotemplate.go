@@ -247,7 +247,7 @@ func (s *Service) handleGetRetroTemplateById() http.HandlerFunc {
 			return
 		}
 
-		template, err := s.RetroTemplateDataSvc.GetTemplateById(ctx, templateID)
+		template, err := s.RetroTemplateDataSvc.GetTemplateByID(ctx, templateID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetRetroTemplateById error", zap.Error(err), zap.String("template_id", templateID),
 				zap.Stringp("session_user_id", sessionUserID))

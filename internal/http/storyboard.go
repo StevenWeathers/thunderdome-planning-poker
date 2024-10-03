@@ -129,7 +129,7 @@ func (s *Service) handleStoryboardGet() http.HandlerFunc {
 		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 		userType := r.Context().Value(contextKeyUserType).(string)
 
-		sb, err := s.StoryboardDataSvc.GetStoryboard(storyboardID, sessionUserID)
+		sb, err := s.StoryboardDataSvc.GetStoryboardByID(storyboardID, sessionUserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARD_NOT_FOUND"))
 			return

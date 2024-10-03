@@ -28,16 +28,16 @@ type Config struct {
 }
 
 type AuthDataSvc interface {
-	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
+	GetSessionUserByID(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
 
 type UserDataSvc interface {
-	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
+	GetGuestUserByID(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
 type StoryboardDataSvc interface {
 	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string) error
-	GetStoryboard(storyboardID string, userID string) (*thunderdome.Storyboard, error)
+	GetStoryboardByID(storyboardID string, userID string) (*thunderdome.Storyboard, error)
 	ConfirmStoryboardFacilitator(storyboardID string, userID string) error
 	AddUserToStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
 	RetreatStoryboardUser(storyboardID string, userID string) []*thunderdome.StoryboardUser

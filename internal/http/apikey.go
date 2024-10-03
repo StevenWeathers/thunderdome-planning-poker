@@ -33,7 +33,7 @@ func (s *Service) handleUserAPIKeys() http.HandlerFunc {
 			return
 		}
 
-		apiKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, userID)
+		apiKeys, keysErr := s.ApiKeyDataSvc.GetUserAPIKeys(ctx, userID)
 		if keysErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserAPIKeys error", zap.Error(keysErr),
 				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
@@ -92,7 +92,7 @@ func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		apiKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, userID)
+		apiKeys, keysErr := s.ApiKeyDataSvc.GetUserAPIKeys(ctx, userID)
 		if keysErr != nil {
 			s.Logger.Ctx(ctx).Error("handleAPIKeyGenerate error", zap.Error(keysErr),
 				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
@@ -105,7 +105,7 @@ func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		apiKey, keyErr := s.ApiKeyDataSvc.GenerateApiKey(ctx, userID, k.Name)
+		apiKey, keyErr := s.ApiKeyDataSvc.GenerateAPIKey(ctx, userID, k.Name)
 		if keyErr != nil {
 			s.Logger.Ctx(ctx).Error("handleAPIKeyGenerate error", zap.Error(keyErr),
 				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
@@ -171,7 +171,7 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 
-		keys, keysErr := s.ApiKeyDataSvc.UpdateUserApiKey(ctx, userID, keyID, k.Active)
+		keys, keysErr := s.ApiKeyDataSvc.UpdateUserAPIKey(ctx, userID, keyID, k.Active)
 		if keysErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserAPIKeyUpdate error", zap.Error(keysErr),
 				zap.String("entity_user_id", userID), zap.String("apikey_id", keyID),
@@ -214,7 +214,7 @@ func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 			return
 		}
 
-		keys, keysErr := s.ApiKeyDataSvc.DeleteUserApiKey(ctx, userID, keyID)
+		keys, keysErr := s.ApiKeyDataSvc.DeleteUserAPIKey(ctx, userID, keyID)
 		if keysErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserAPIKeyDelete error", zap.Error(keysErr),
 				zap.String("entity_user_id", userID), zap.String("apikey_id", keyID),

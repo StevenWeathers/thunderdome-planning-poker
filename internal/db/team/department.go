@@ -37,8 +37,8 @@ func (d *OrganizationService) DepartmentUserRole(ctx context.Context, userID str
 	return orgRole, departmentRole, nil
 }
 
-// DepartmentGet gets a department
-func (d *OrganizationService) DepartmentGet(ctx context.Context, departmentID string) (*thunderdome.Department, error) {
+// DepartmentGetByID gets a department by ID
+func (d *OrganizationService) DepartmentGetByID(ctx context.Context, departmentID string) (*thunderdome.Department, error) {
 	var org = &thunderdome.Department{}
 
 	err := d.DB.QueryRowContext(ctx,

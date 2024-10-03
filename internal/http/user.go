@@ -35,7 +35,7 @@ func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		user, userErr := s.UserDataSvc.GetUser(ctx, sessionUserID)
+		user, userErr := s.UserDataSvc.GetUserByID(ctx, sessionUserID)
 		if userErr != nil {
 			s.Logger.Ctx(ctx).Error("handleSessionUserProfile error", zap.Error(userErr),
 				zap.String("session_user_id", sessionUserID))
@@ -70,7 +70,7 @@ func (s *Service) handleUserProfile() http.HandlerFunc {
 			return
 		}
 
-		user, userErr := s.UserDataSvc.GetUser(ctx, userID)
+		user, userErr := s.UserDataSvc.GetUserByID(ctx, userID)
 		if userErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserProfile error", zap.Error(userErr),
 				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
@@ -170,7 +170,7 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 			}
 		}
 
-		user, userErr := s.UserDataSvc.GetUser(ctx, userID)
+		user, userErr := s.UserDataSvc.GetUserByID(ctx, userID)
 		if userErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserProfileUpdate error", zap.Error(userErr),
 				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
@@ -205,7 +205,7 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		user, userErr := s.UserDataSvc.GetUser(ctx, userID)
+		user, userErr := s.UserDataSvc.GetUserByID(ctx, userID)
 		if userErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDelete error", zap.Error(userErr),
 				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
@@ -380,7 +380,7 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 			return
 		}
 
-		user, err := s.UserDataSvc.GetUser(ctx, userID)
+		user, err := s.UserDataSvc.GetUserByID(ctx, userID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -416,7 +416,7 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 			return
 		}
 
-		organization, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, orgID)
+		organization, orgErr := s.OrganizationDataSvc.OrganizationGetByID(ctx, orgID)
 		if orgErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error getting organization",
 				zap.Error(delInviteErr),
@@ -463,7 +463,7 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 			return
 		}
 
-		user, err := s.UserDataSvc.GetUser(ctx, userID)
+		user, err := s.UserDataSvc.GetUserByID(ctx, userID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -479,7 +479,7 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 			return
 		}
 
-		dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, deptInvite.DepartmentID)
+		dept, deptErr := s.OrganizationDataSvc.DepartmentGetByID(ctx, deptInvite.DepartmentID)
 		if deptErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite get department error", zap.Error(deptErr),
 				zap.String("department_id", dept.ID),
@@ -488,7 +488,7 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 			return
 		}
 
-		org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, dept.OrganizationID)
+		org, orgErr := s.OrganizationDataSvc.OrganizationGetByID(ctx, dept.OrganizationID)
 		if orgErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite get organization error", zap.Error(orgErr),
 				zap.String("organization_id", org.ID),
@@ -567,7 +567,7 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 			return
 		}
 
-		user, err := s.UserDataSvc.GetUser(ctx, userID)
+		user, err := s.UserDataSvc.GetUserByID(ctx, userID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -583,7 +583,7 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 			return
 		}
 
-		team, teamErr := s.TeamDataSvc.TeamGet(ctx, teamInvite.TeamID)
+		team, teamErr := s.TeamDataSvc.TeamGetByID(ctx, teamInvite.TeamID)
 		if teamErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(teamErr),
 				zap.String("team_id", teamInvite.TeamID), zap.String("session_user_id", *sessionUserID))
@@ -607,7 +607,7 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 
 		// team is associated to department, upsert user to department and organization
 		if team.DepartmentID != "" {
-			dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, team.DepartmentID)
+			dept, deptErr := s.OrganizationDataSvc.DepartmentGetByID(ctx, team.DepartmentID)
 			if deptErr != nil {
 				s.Logger.Ctx(ctx).Error("handleTeamInviteUser get department error", zap.Error(deptErr),
 					zap.String("department_id", dept.ID),
@@ -616,7 +616,7 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 				return
 			}
 
-			org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, dept.OrganizationID)
+			org, orgErr := s.OrganizationDataSvc.OrganizationGetByID(ctx, dept.OrganizationID)
 			if orgErr != nil {
 				s.Logger.Ctx(ctx).Error("handleTeamInviteUser get organization error", zap.Error(orgErr),
 					zap.String("organization_id", org.ID),
@@ -702,7 +702,7 @@ func (s *Service) handleUserCredential() http.HandlerFunc {
 			return
 		}
 
-		credential, userErr := s.UserDataSvc.GetUserCredential(ctx, userID)
+		credential, userErr := s.UserDataSvc.GetUserCredentialByUserID(ctx, userID)
 		if userErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserCredential error", zap.Error(userErr),
 				zap.String("entity_user_id", userID),

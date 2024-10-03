@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Service represents a PostgreSQL implementation of thunderdome.UserDataSvc.
+// Service represents the user database service
 type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
@@ -76,8 +76,8 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, limit int, offset int)
 	return users, count, nil
 }
 
-// GetUser gets a user by ID
-func (d *Service) GetUser(ctx context.Context, userID string) (*thunderdome.User, error) {
+// GetUserByID gets a user by ID
+func (d *Service) GetUserByID(ctx context.Context, userID string) (*thunderdome.User, error) {
 	var user thunderdome.User
 
 	err := d.DB.QueryRowContext(ctx,
@@ -120,8 +120,8 @@ func (d *Service) GetUser(ctx context.Context, userID string) (*thunderdome.User
 	return &user, nil
 }
 
-// GetGuestUser gets a guest user by ID
-func (d *Service) GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error) {
+// GetGuestUserByID gets a guest user by ID
+func (d *Service) GetGuestUserByID(ctx context.Context, userID string) (*thunderdome.User, error) {
 	var user thunderdome.User
 
 	err := d.DB.QueryRowContext(ctx, `
@@ -535,8 +535,8 @@ func (d *Service) GetActiveCountries(ctx context.Context) ([]string, error) {
 	return countries, nil
 }
 
-// GetUserCredential gets the user credential if they have one
-func (d *Service) GetUserCredential(ctx context.Context, userID string) (*thunderdome.Credential, error) {
+// GetUserCredentialByUserID gets the user credential by user ID if they have one
+func (d *Service) GetUserCredentialByUserID(ctx context.Context, userID string) (*thunderdome.Credential, error) {
 	var c thunderdome.Credential
 
 	err := d.DB.QueryRowContext(ctx,

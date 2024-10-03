@@ -17,7 +17,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Service represents a PostgreSQL implementation of thunderdome.PokerDataSvc.
+// Service represents the poker database service
 type Service struct {
 	DB                  *sql.DB
 	Logger              *otelzap.Logger
@@ -291,8 +291,8 @@ func (d *Service) UpdateGame(pokerID string, name string, pointValuesAllowed []s
 	return nil
 }
 
-// GetGame gets a game by ID
-func (d *Service) GetGame(pokerID string, userID string) (*thunderdome.Poker, error) {
+// GetGameByID gets a game by ID
+func (d *Service) GetGameByID(pokerID string, userID string) (*thunderdome.Poker, error) {
 	var b = &thunderdome.Poker{
 		ID:           pokerID,
 		Users:        make([]*thunderdome.PokerUser, 0),

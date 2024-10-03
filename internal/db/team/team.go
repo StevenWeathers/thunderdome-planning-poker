@@ -11,14 +11,14 @@ import (
 	"go.uber.org/zap"
 )
 
-// Service represents a PostgreSQL implementation of thunderdome.TeamDataSvc.
+// Service represents the team database service
 type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
 }
 
-// TeamGet gets a team
-func (d *Service) TeamGet(ctx context.Context, teamID string) (*thunderdome.Team, error) {
+// TeamGetByID gets a team by ID
+func (d *Service) TeamGetByID(ctx context.Context, teamID string) (*thunderdome.Team, error) {
 	var team = &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx,

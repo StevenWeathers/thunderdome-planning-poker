@@ -138,7 +138,7 @@ func (s *Service) handleRetroGet() http.HandlerFunc {
 		}
 		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
-		re, err := s.RetroDataSvc.RetroGet(retroID, sessionUserID)
+		re, err := s.RetroDataSvc.RetroGetByID(retroID, sessionUserID)
 
 		if err != nil {
 			http.NotFound(w, r)

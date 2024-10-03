@@ -33,7 +33,7 @@ type DataSvc interface {
 }
 
 type UserDataSvc interface {
-	GetUser(ctx context.Context, userID string) (*thunderdome.User, error)
+	GetUserByID(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
 type EmailService interface {
@@ -185,7 +185,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 			}
 
 			go func(ctx context.Context) {
-				user, userErr := s.userDataSvc.GetUser(ctx, sub.UserID)
+				user, userErr := s.userDataSvc.GetUserByID(ctx, sub.UserID)
 				if userErr != nil {
 					logger.Error(fmt.Sprintf("error getting user to send subscription active email: %v", userErr),
 						zap.String("eventId", event.ID))
@@ -231,7 +231,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 			if subscriptionStatusChanged {
 				if !subscription.Active {
 					go func(ctx context.Context) {
-						user, userErr := s.userDataSvc.GetUser(ctx, subscription.UserID)
+						user, userErr := s.userDataSvc.GetUserByID(ctx, subscription.UserID)
 						if userErr != nil {
 							logger.Error(fmt.Sprintf("error getting user to send subscription deactivated email: %v", userErr),
 								zap.String("eventId", event.ID))
@@ -245,7 +245,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 					}(context.WithoutCancel(ctx))
 				} else {
 					go func(ctx context.Context) {
-						user, userErr := s.userDataSvc.GetUser(ctx, subscription.UserID)
+						user, userErr := s.userDataSvc.GetUserByID(ctx, subscription.UserID)
 						if userErr != nil {
 							logger.Error(fmt.Sprintf("error getting user to send subscription active email: %v", userErr),
 								zap.String("eventId", event.ID))

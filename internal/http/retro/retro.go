@@ -27,16 +27,16 @@ type Config struct {
 }
 
 type AuthDataSvc interface {
-	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
+	GetSessionUserByID(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
 
 type UserDataSvc interface {
-	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+	GetGuestUserByID(ctx context.Context, UserID string) (*thunderdome.User, error)
 }
 
 type RetroDataSvc interface {
 	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
-	RetroGet(retroID string, userID string) (*thunderdome.Retro, error)
+	RetroGetByID(retroID string, userID string) (*thunderdome.Retro, error)
 	RetroConfirmFacilitator(retroID string, userID string) error
 	RetroGetUsers(retroID string) []*thunderdome.RetroUser
 	RetroAddUser(retroID string, userID string) ([]*thunderdome.RetroUser, error)
@@ -69,8 +69,8 @@ type RetroDataSvc interface {
 }
 
 type RetroTemplateDataSvc interface {
-	// GetTemplateById retrieves a specific template by its ID
-	GetTemplateById(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error)
+	// GetTemplateByID retrieves a specific template by its ID
+	GetTemplateByID(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error)
 }
 
 type EmailService interface {

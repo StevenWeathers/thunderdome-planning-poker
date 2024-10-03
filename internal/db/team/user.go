@@ -11,8 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// TeamUserRole gets a user's role in team
-func (d *Service) TeamUserRole(ctx context.Context, userID string, teamID string) (string, error) {
+// TeamUserRoleByUserID gets a user's role in team
+func (d *Service) TeamUserRoleByUserID(ctx context.Context, userID string, teamID string) (string, error) {
 	var teamRole string
 
 	err := d.DB.QueryRowContext(ctx,
@@ -31,8 +31,8 @@ func (d *Service) TeamUserRole(ctx context.Context, userID string, teamID string
 	return teamRole, nil
 }
 
-// TeamUserRoles gets a user's set of roles in relation to the team if any, and if application the department and organization
-func (d *Service) TeamUserRoles(ctx context.Context, userID string, teamID string) (*thunderdome.UserTeamRoleInfo, error) {
+// TeamUserRolesByUserID gets a user's set of roles in relation to the team if any, and if application the department and organization
+func (d *Service) TeamUserRolesByUserID(ctx context.Context, userID string, teamID string) (*thunderdome.UserTeamRoleInfo, error) {
 	tr := thunderdome.UserTeamRoleInfo{}
 
 	err := d.DB.QueryRowContext(ctx,

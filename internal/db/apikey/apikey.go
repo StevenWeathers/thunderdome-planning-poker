@@ -15,14 +15,14 @@ import (
 	"go.uber.org/zap"
 )
 
-// Service represents a PostgreSQL implementation of thunderdome.APIKeyDataSvc.
+// Service represents the User API key database service
 type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
 }
 
-// GenerateApiKey generates a new API key for a User
-func (d *Service) GenerateApiKey(ctx context.Context, userID string, keyName string) (*thunderdome.APIKey, error) {
+// GenerateAPIKey generates a new API key for a User
+func (d *Service) GenerateAPIKey(ctx context.Context, userID string, keyName string) (*thunderdome.APIKey, error) {
 	apiPrefix, prefixErr := db.RandomString(8)
 	if prefixErr != nil {
 		return nil, fmt.Errorf("error generating api prefix: %v", prefixErr)
@@ -60,8 +60,8 @@ func (d *Service) GenerateApiKey(ctx context.Context, userID string, keyName str
 	return apiKey, nil
 }
 
-// GetUserApiKeys gets a list of api keys for a user
-func (d *Service) GetUserApiKeys(ctx context.Context, userID string) ([]*thunderdome.APIKey, error) {
+// GetUserAPIKeys gets a list of api keys for a user
+func (d *Service) GetUserAPIKeys(ctx context.Context, userID string) ([]*thunderdome.APIKey, error) {
 	var keys = make([]*thunderdome.APIKey, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		"SELECT id, name, user_id, active, created_date, updated_date FROM thunderdome.api_key WHERE user_id = $1 ORDER BY created_date",
@@ -81,7 +81,7 @@ func (d *Service) GetUserApiKeys(ctx context.Context, userID string) ([]*thunder
 				&ak.CreatedDate,
 				&ak.UpdatedDate,
 			); err != nil {
-				d.Logger.Ctx(ctx).Error("GetUserApiKeys scan error", zap.Error(err))
+				d.Logger.Ctx(ctx).Error("GetUserAPIKeys scan error", zap.Error(err))
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
@@ -94,15 +94,15 @@ func (d *Service) GetUserApiKeys(ctx context.Context, userID string) ([]*thunder
 	return keys, err
 }
 
-// UpdateUserApiKey updates a user api key (active column only)
-func (d *Service) UpdateUserApiKey(ctx context.Context, userID string, keyID string, active bool) ([]*thunderdome.APIKey, error) {
+// UpdateUserAPIKey updates a user api key (active column only)
+func (d *Service) UpdateUserAPIKey(ctx context.Context, userID string, keyID string, active bool) ([]*thunderdome.APIKey, error) {
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.api_key SET active = $3, updated_date = NOW() WHERE id = $1 AND user_id = $2;`,
 		keyID, userID, active); err != nil {
 		return nil, fmt.Errorf("error updating api key: %v", err)
 	}
 
-	keys, keysErr := d.GetUserApiKeys(ctx, userID)
+	keys, keysErr := d.GetUserAPIKeys(ctx, userID)
 	if keysErr != nil {
 		return nil, fmt.Errorf("error getting users api keys: %v", keysErr)
 	}
@@ -110,15 +110,15 @@ func (d *Service) UpdateUserApiKey(ctx context.Context, userID string, keyID str
 	return keys, nil
 }
 
-// DeleteUserApiKey removes a users api key
-func (d *Service) DeleteUserApiKey(ctx context.Context, userID string, keyID string) ([]*thunderdome.APIKey, error) {
+// DeleteUserAPIKey removes a users api key
+func (d *Service) DeleteUserAPIKey(ctx context.Context, userID string, keyID string) ([]*thunderdome.APIKey, error) {
 	if _, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.api_key WHERE id = $1 AND user_id = $2;`,
 		keyID, userID); err != nil {
 		return nil, fmt.Errorf("error deleting api key: %v", err)
 	}
 
-	keys, keysErr := d.GetUserApiKeys(ctx, userID)
+	keys, keysErr := d.GetUserAPIKeys(ctx, userID)
 	if keysErr != nil {
 		return nil, fmt.Errorf("error getting users api keys: %v", keysErr)
 	}
@@ -126,8 +126,8 @@ func (d *Service) DeleteUserApiKey(ctx context.Context, userID string, keyID str
 	return keys, nil
 }
 
-// GetApiKeyUser checks to see if the API key exists and returns the User
-func (d *Service) GetApiKeyUser(ctx context.Context, apiKey string) (*thunderdome.User, error) {
+// GetAPIKeyUser checks to see if the API key exists and returns the User
+func (d *Service) GetAPIKeyUser(ctx context.Context, apiKey string) (*thunderdome.User, error) {
 	user := &thunderdome.User{}
 
 	splitKey := strings.Split(apiKey, ".")

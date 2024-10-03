@@ -32,7 +32,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if sessionID != "" {
 			var userErr error
-			user, userErr = b.AuthService.GetSessionUser(ctx, sessionID)
+			user, userErr = b.AuthService.GetSessionUserByID(ctx, sessionID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -51,7 +51,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			user, userErr = b.UserService.GetGuestUser(ctx, userID)
+			user, userErr = b.UserService.GetGuestUserByID(ctx, userID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -62,7 +62,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure retro is legit
-		retro, retroErr := b.RetroService.RetroGet(roomID, user.ID)
+		retro, retroErr := b.RetroService.RetroGetByID(roomID, user.ID)
 		if retroErr != nil {
 			authErr := wshub.AuthError{
 				Code:    4004,

@@ -171,12 +171,12 @@ type AlertDataSvc interface {
 }
 
 type APIKeyDataSvc interface {
-	GenerateApiKey(ctx context.Context, userID string, keyName string) (*thunderdome.APIKey, error)
-	GetUserApiKeys(ctx context.Context, userID string) ([]*thunderdome.APIKey, error)
-	GetApiKeyUser(ctx context.Context, apiKey string) (*thunderdome.User, error)
+	GenerateAPIKey(ctx context.Context, userID string, keyName string) (*thunderdome.APIKey, error)
+	GetUserAPIKeys(ctx context.Context, userID string) ([]*thunderdome.APIKey, error)
+	GetAPIKeyUser(ctx context.Context, apiKey string) (*thunderdome.User, error)
 	GetAPIKeys(ctx context.Context, limit int, offset int) []*thunderdome.UserAPIKey
-	UpdateUserApiKey(ctx context.Context, userID string, keyID string, active bool) ([]*thunderdome.APIKey, error)
-	DeleteUserApiKey(ctx context.Context, userID string, keyID string) ([]*thunderdome.APIKey, error)
+	UpdateUserAPIKey(ctx context.Context, userID string, keyID string, active bool) ([]*thunderdome.APIKey, error)
+	DeleteUserAPIKey(ctx context.Context, userID string, keyID string) ([]*thunderdome.APIKey, error)
 }
 
 type AuthDataSvc interface {
@@ -195,7 +195,7 @@ type AuthDataSvc interface {
 	MFATokenValidate(ctx context.Context, sessionId string, passcode string) error
 	CreateSession(ctx context.Context, userId string, enabled bool) (string, error)
 	EnableSession(ctx context.Context, sessionId string) error
-	GetSessionUser(ctx context.Context, sessionId string) (*thunderdome.User, error)
+	GetSessionUserByID(ctx context.Context, sessionId string) (*thunderdome.User, error)
 	DeleteSession(ctx context.Context, sessionId string) error
 }
 
@@ -211,15 +211,15 @@ type CheckinDataSvc interface {
 }
 
 type JiraDataSvc interface {
-	FindInstancesByUserId(ctx context.Context, userId string) ([]thunderdome.JiraInstance, error)
-	GetInstanceById(ctx context.Context, instanceId string) (thunderdome.JiraInstance, error)
+	FindInstancesByUserID(ctx context.Context, userId string) ([]thunderdome.JiraInstance, error)
+	GetInstanceByID(ctx context.Context, instanceId string) (thunderdome.JiraInstance, error)
 	CreateInstance(ctx context.Context, userId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error)
 	UpdateInstance(ctx context.Context, instanceId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error)
 	DeleteInstance(ctx context.Context, instanceId string) error
 }
 
 type OrganizationDataSvc interface {
-	OrganizationGet(ctx context.Context, orgID string) (*thunderdome.Organization, error)
+	OrganizationGetByID(ctx context.Context, orgID string) (*thunderdome.Organization, error)
 	OrganizationUserRole(ctx context.Context, userID string, orgID string) (string, error)
 	OrganizationListByUser(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserOrganization
 	OrganizationCreate(ctx context.Context, userID string, orgName string) (*thunderdome.Organization, error)
@@ -242,7 +242,7 @@ type OrganizationDataSvc interface {
 	GetOrganizationMetrics(ctx context.Context, organizationID string) (*thunderdome.OrganizationMetrics, error)
 
 	DepartmentUserRole(ctx context.Context, userID string, orgID string, departmentID string) (string, string, error)
-	DepartmentGet(ctx context.Context, departmentID string) (*thunderdome.Department, error)
+	DepartmentGetByID(ctx context.Context, departmentID string) (*thunderdome.Department, error)
 	OrganizationDepartmentList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.Department
 	DepartmentCreate(ctx context.Context, orgID string, orgName string) (*thunderdome.Department, error)
 	DepartmentUpdate(ctx context.Context, deptID string, deptName string) (*thunderdome.Department, error)
@@ -262,8 +262,8 @@ type OrganizationDataSvc interface {
 }
 
 type TeamDataSvc interface {
-	TeamUserRole(ctx context.Context, userID string, teamID string) (string, error)
-	TeamGet(ctx context.Context, teamID string) (*thunderdome.Team, error)
+	TeamUserRoleByUserID(ctx context.Context, userID string, teamID string) (string, error)
+	TeamGetByID(ctx context.Context, teamID string) (*thunderdome.Team, error)
 	TeamListByUser(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserTeam
 	TeamListByUserNonOrg(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserTeam
 	TeamCreate(ctx context.Context, userID string, teamName string) (*thunderdome.Team, error)
@@ -289,7 +289,7 @@ type TeamDataSvc interface {
 	TeamList(ctx context.Context, limit int, offset int) ([]*thunderdome.Team, int)
 	TeamIsSubscribed(ctx context.Context, teamID string) (bool, error)
 	GetTeamMetrics(ctx context.Context, teamID string) (*thunderdome.TeamMetrics, error)
-	TeamUserRoles(ctx context.Context, userID string, teamID string) (*thunderdome.UserTeamRoleInfo, error)
+	TeamUserRolesByUserID(ctx context.Context, userID string, teamID string) (*thunderdome.UserTeamRoleInfo, error)
 }
 
 type SubscriptionDataSvc interface {
@@ -304,8 +304,8 @@ type SubscriptionDataSvc interface {
 }
 
 type UserDataSvc interface {
-	GetUser(ctx context.Context, userID string) (*thunderdome.User, error)
-	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
+	GetUserByID(ctx context.Context, userID string) (*thunderdome.User, error)
+	GetGuestUserByID(ctx context.Context, userID string) (*thunderdome.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*thunderdome.User, error)
 	GetRegisteredUsers(ctx context.Context, limit int, offset int) ([]*thunderdome.User, int, error)
 	SearchRegisteredUsersByEmail(ctx context.Context, email string, limit int, offset int) ([]*thunderdome.User, int, error)
@@ -322,7 +322,7 @@ type UserDataSvc interface {
 	DeleteUser(ctx context.Context, userID string) error
 	CleanGuests(ctx context.Context, daysOld int) error
 	GetActiveCountries(ctx context.Context) ([]string, error)
-	GetUserCredential(ctx context.Context, userID string) (*thunderdome.Credential, error)
+	GetUserCredentialByUserID(ctx context.Context, userID string) (*thunderdome.Credential, error)
 }
 
 type PokerDataSvc interface {
@@ -334,8 +334,8 @@ type PokerDataSvc interface {
 	UpdateGame(pokerID string, name string, pointValuesAllowed []string, autoFinishVoting bool, pointAverageRounding string, hideVoterIdentity bool, joinCode string, facilitatorCode string, teamID string) error
 	// GetFacilitatorCode retrieves the facilitator code for a poker game
 	GetFacilitatorCode(pokerID string) (string, error)
-	// GetGame retrieves a poker game by its ID
-	GetGame(pokerID string, userID string) (*thunderdome.Poker, error)
+	// GetGameByID retrieves a poker game by its ID
+	GetGameByID(pokerID string, userID string) (*thunderdome.Poker, error)
 	// GetGamesByUser retrieves a list of poker games for a user
 	GetGamesByUser(userID string, limit int, offset int) ([]*thunderdome.Poker, int, error)
 	// ConfirmFacilitator confirms a user as a facilitator for a poker game
@@ -425,7 +425,7 @@ type PokerDataSvc interface {
 type RetroDataSvc interface {
 	CreateRetro(ctx context.Context, ownerID, teamID string, retroName, joinCode, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int, phaseAutoAdvance bool, allowCumulativeVoting bool, templateID string) (*thunderdome.Retro, error)
 	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
-	RetroGet(retroID string, userID string) (*thunderdome.Retro, error)
+	RetroGetByID(retroID string, userID string) (*thunderdome.Retro, error)
 	RetroGetByUser(userID string, limit int, offset int) ([]*thunderdome.Retro, int, error)
 	RetroConfirmFacilitator(retroID string, userID string) error
 	RetroGetUsers(retroID string) []*thunderdome.RetroUser
@@ -477,8 +477,8 @@ type RetroTemplateDataSvc interface {
 	GetTemplatesByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.RetroTemplate, error)
 	// GetTemplatesByTeam retrieves all templates for a specific team
 	GetTemplatesByTeam(ctx context.Context, teamID string) ([]*thunderdome.RetroTemplate, error)
-	// GetTemplateById retrieves a specific template by its ID
-	GetTemplateById(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error)
+	// GetTemplateByID retrieves a specific template by its ID
+	GetTemplateByID(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error)
 	// CreateTemplate creates a new retro template
 	CreateTemplate(ctx context.Context, template *thunderdome.RetroTemplate) error
 	// UpdateTemplate updates an existing retro template
@@ -507,7 +507,7 @@ type StoryboardDataSvc interface {
 	CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string) (*thunderdome.Storyboard, error)
 	TeamCreateStoryboard(ctx context.Context, TeamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string) (*thunderdome.Storyboard, error)
 	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string) error
-	GetStoryboard(storyboardID string, userID string) (*thunderdome.Storyboard, error)
+	GetStoryboardByID(storyboardID string, userID string) (*thunderdome.Storyboard, error)
 	GetStoryboardsByUser(userID string, limit int, offset int) ([]*thunderdome.Storyboard, int, error)
 	ConfirmStoryboardFacilitator(storyboardID string, userID string) error
 	GetStoryboardUsers(storyboardID string) []*thunderdome.StoryboardUser

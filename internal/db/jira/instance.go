@@ -9,7 +9,8 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
-func (s *Service) FindInstancesByUserId(ctx context.Context, userID string) ([]thunderdome.JiraInstance, error) {
+// FindInstancesByUserID returns all JiraInstances for a given user ID.
+func (s *Service) FindInstancesByUserID(ctx context.Context, userID string) ([]thunderdome.JiraInstance, error) {
 	instances := make([]thunderdome.JiraInstance, 0)
 
 	rows, err := s.DB.QueryContext(ctx,
@@ -40,7 +41,8 @@ func (s *Service) FindInstancesByUserId(ctx context.Context, userID string) ([]t
 	return instances, nil
 }
 
-func (s *Service) GetInstanceById(ctx context.Context, instanceID string) (thunderdome.JiraInstance, error) {
+// GetInstanceByID returns a JiraInstance for a given instance ID.
+func (s *Service) GetInstanceByID(ctx context.Context, instanceID string) (thunderdome.JiraInstance, error) {
 	instance := thunderdome.JiraInstance{}
 
 	err := s.DB.QueryRowContext(ctx,
@@ -62,6 +64,7 @@ func (s *Service) GetInstanceById(ctx context.Context, instanceID string) (thund
 	return instance, nil
 }
 
+// CreateInstance creates a new JiraInstance.
 func (s *Service) CreateInstance(ctx context.Context, userID string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error) {
 	instance := thunderdome.JiraInstance{}
 	at, err := db.Encrypt(accessToken, s.AESHashKey)
@@ -86,6 +89,7 @@ func (s *Service) CreateInstance(ctx context.Context, userID string, host string
 	return instance, nil
 }
 
+// UpdateInstance updates an existing JiraInstance.
 func (s *Service) UpdateInstance(ctx context.Context, instanceID string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error) {
 	instance := thunderdome.JiraInstance{}
 	at, err := db.Encrypt(accessToken, s.AESHashKey)
@@ -110,6 +114,7 @@ func (s *Service) UpdateInstance(ctx context.Context, instanceID string, host st
 	return instance, nil
 }
 
+// DeleteInstance deletes an existing JiraInstance.
 func (s *Service) DeleteInstance(ctx context.Context, instanceID string) error {
 	result, err := s.DB.ExecContext(ctx, `DELETE FROM thunderdome.jira_instance WHERE id = $1;`, instanceID)
 	if err != nil {

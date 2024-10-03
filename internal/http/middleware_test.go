@@ -30,12 +30,12 @@ type MockTeamDataSvc struct {
 	mock.Mock
 }
 
-func (m *MockTeamDataSvc) TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error) {
+func (m *MockTeamDataSvc) TeamUserRoleByUserID(ctx context.Context, UserID string, TeamID string) (string, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team, error) {
+func (m *MockTeamDataSvc) TeamGetByID(ctx context.Context, TeamID string) (*thunderdome.Team, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -165,7 +165,7 @@ func (m *MockTeamDataSvc) GetTeamMetrics(ctx context.Context, teamID string) (*t
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamUserRoles(ctx context.Context, userID, teamID string) (*thunderdome.UserTeamRoleInfo, error) {
+func (m *MockTeamDataSvc) TeamUserRolesByUserID(ctx context.Context, userID, teamID string) (*thunderdome.UserTeamRoleInfo, error) {
 	args := m.Called(ctx, userID, teamID)
 	utr := args.Get(0).(thunderdome.UserTeamRoleInfo)
 	return &utr, args.Error(1)
@@ -197,7 +197,7 @@ func TestTeamUserOnly(t *testing.T) {
 			teamID:   "128ee064-62ca-43b2-9fca-9c1089c89bd2",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				mtds.On(
-					"TeamUserRoles",
+					"TeamUserRolesByUserID",
 					mock.Anything,
 					"2d6176c8-50d6-4963-8172-2c20ca5022a3",
 					"128ee064-62ca-43b2-9fca-9c1089c89bd2",
@@ -213,7 +213,7 @@ func TestTeamUserOnly(t *testing.T) {
 			teamID:   "67cdc2f5-b4b0-444b-af0b-ae686e4cf9c8",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				mtds.On(
-					"TeamUserRoles",
+					"TeamUserRolesByUserID",
 					mock.Anything,
 					"306cf097-d75d-4ec0-8960-a5c2914b28b9",
 					"67cdc2f5-b4b0-444b-af0b-ae686e4cf9c8",
@@ -230,7 +230,7 @@ func TestTeamUserOnly(t *testing.T) {
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				deptRole := thunderdome.AdminUserType
 				mtds.On(
-					"TeamUserRoles",
+					"TeamUserRolesByUserID",
 					mock.Anything,
 					"6a12ef8c-1140-4faa-a505-22910a7593f9",
 					"7d4d0a17-cb20-4499-bc7f-ecaf2e77c15a",
@@ -247,7 +247,7 @@ func TestTeamUserOnly(t *testing.T) {
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				orgRole := thunderdome.AdminUserType
 				mtds.On(
-					"TeamUserRoles",
+					"TeamUserRolesByUserID",
 					mock.Anything,
 					"31c8521e-2e68-4898-b3cf-e919cf80dbe2",
 					"0ea230df-b5fe-47ae-a473-5153004eebdd",
@@ -273,7 +273,7 @@ func TestTeamUserOnly(t *testing.T) {
 			teamID:   "e52b9251-4722-4b4d-8f97-204ce7e51eec",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
 				mtds.On(
-					"TeamUserRoles",
+					"TeamUserRolesByUserID",
 					mock.Anything,
 					"1b853ef6-2c28-4c8e-ac29-a9d4827774fe",
 					"e52b9251-4722-4b4d-8f97-204ce7e51eec",
@@ -288,7 +288,7 @@ func TestTeamUserOnly(t *testing.T) {
 			userType: thunderdome.RegisteredUserType,
 			teamID:   "a805def1-e1fa-42a9-b5f6-ee338799fa77",
 			setupMocks: func(mtds *MockTeamDataSvc, ml *MockLogger) {
-				mtds.On("TeamUserRoles",
+				mtds.On("TeamUserRolesByUserID",
 					mock.Anything,
 					"a805def1-e1fa-42a9-b5f6-ee338799fa77",
 					"a805def1-e1fa-42a9-b5f6-ee338799fa77",
@@ -529,7 +529,7 @@ type MockOrganizationDataService struct {
 	mock.Mock
 }
 
-func (m *MockOrganizationDataService) OrganizationGet(ctx context.Context, OrgID string) (*thunderdome.Organization, error) {
+func (m *MockOrganizationDataService) OrganizationGetByID(ctx context.Context, OrgID string) (*thunderdome.Organization, error) {
 	args := m.Called(ctx, OrgID)
 	if args.Error(1) != nil {
 		return nil, args.Error(1)
@@ -638,7 +638,7 @@ func (m *MockOrganizationDataService) DepartmentUserRole(ctx context.Context, us
 	return args.String(0), args.String(1), args.Error(2)
 }
 
-func (m *MockOrganizationDataService) DepartmentGet(ctx context.Context, DepartmentID string) (*thunderdome.Department, error) {
+func (m *MockOrganizationDataService) DepartmentGetByID(ctx context.Context, DepartmentID string) (*thunderdome.Department, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -1273,7 +1273,7 @@ func TestOrgUserOnly(t *testing.T) {
 			expectedStatus:  http.StatusOK,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
 				mockOrgDataSvc.On(
-					"OrganizationGet",
+					"OrganizationGetByID",
 					mock.Anything,
 					"123e4567-e89b-12d3-a456-426614174001",
 				).Return(thunderdome.Organization{}, nil)
@@ -1288,7 +1288,7 @@ func TestOrgUserOnly(t *testing.T) {
 			expectedStatus:  http.StatusOK,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
 				mockOrgDataSvc.On(
-					"OrganizationGet",
+					"OrganizationGetByID",
 					mock.Anything, "223e4567-e89b-12d3-a456-426614174001",
 				).Return(thunderdome.Organization{}, nil)
 				mockOrgDataSvc.On(
@@ -1307,7 +1307,7 @@ func TestOrgUserOnly(t *testing.T) {
 			expectedStatus: http.StatusForbidden,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
 				mockOrgDataSvc.On(
-					"OrganizationGet",
+					"OrganizationGetByID",
 					mock.Anything,
 					"323e4567-e89b-12d3-a456-426614174001",
 				).Return(thunderdome.Organization{}, nil)
@@ -1335,7 +1335,7 @@ func TestOrgUserOnly(t *testing.T) {
 			expectedStatus: http.StatusNotFound,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
 				mockOrgDataSvc.On(
-					"OrganizationGet",
+					"OrganizationGetByID",
 					mock.Anything,
 					"523e4567-e89b-12d3-a456-426614174001",
 				).Return(nil, errors.New("ORGANIZATION_NOT_FOUND"))
@@ -1349,7 +1349,7 @@ func TestOrgUserOnly(t *testing.T) {
 			expectedStatus: http.StatusInternalServerError,
 			mockSetup: func(mockOrgDataSvc *MockOrganizationDataService) {
 				mockOrgDataSvc.On(
-					"OrganizationGet",
+					"OrganizationGetByID",
 					mock.Anything,
 					"623e4567-e89b-12d3-a456-426614174001",
 				).Return(nil, errors.New("unexpected error"))
@@ -1688,7 +1688,7 @@ func TestVerifiedUserOnly(t *testing.T) {
 			expectedStatus:            http.StatusOK,
 			mockSetup: func(mockUserDataSvc *MockUserDataService) {
 				mockUserDataSvc.On(
-					"GetUser",
+					"GetUserByID",
 					mock.Anything,
 					"223e4567-e89b-12d3-a456-426614174000",
 				).Return(&thunderdome.User{Verified: true}, nil)
@@ -1704,7 +1704,7 @@ func TestVerifiedUserOnly(t *testing.T) {
 			expectedStatus:            http.StatusForbidden,
 			mockSetup: func(mockUserDataSvc *MockUserDataService) {
 				mockUserDataSvc.On(
-					"GetUser",
+					"GetUserByID",
 					mock.Anything,
 					"223e4567-e89b-12d3-a456-426614174001",
 				).Return(&thunderdome.User{Verified: false}, nil)
@@ -1719,7 +1719,7 @@ func TestVerifiedUserOnly(t *testing.T) {
 			userVerified:              true,
 			expectedStatus:            http.StatusOK,
 			mockSetup: func(mockUserDataSvc *MockUserDataService) {
-				mockUserDataSvc.On("GetUser", mock.Anything, "323e4567-e89b-12d3-a456-426614174000").Return(&thunderdome.User{Verified: true}, nil)
+				mockUserDataSvc.On("GetUserByID", mock.Anything, "323e4567-e89b-12d3-a456-426614174000").Return(&thunderdome.User{Verified: true}, nil)
 			},
 		},
 		{
@@ -1731,7 +1731,7 @@ func TestVerifiedUserOnly(t *testing.T) {
 			userVerified:              false,
 			expectedStatus:            http.StatusForbidden,
 			mockSetup: func(mockUserDataSvc *MockUserDataService) {
-				mockUserDataSvc.On("GetUser", mock.Anything, "423e4567-e89b-12d3-a456-426614174000").Return(&thunderdome.User{Verified: false}, nil)
+				mockUserDataSvc.On("GetUserByID", mock.Anything, "423e4567-e89b-12d3-a456-426614174000").Return(&thunderdome.User{Verified: false}, nil)
 			},
 		},
 		{
@@ -1754,7 +1754,7 @@ func TestVerifiedUserOnly(t *testing.T) {
 			expectedStatus:            http.StatusOK,
 			mockSetup: func(mockUserDataSvc *MockUserDataService) {
 				mockUserDataSvc.On(
-					"GetUser",
+					"GetUserByID",
 					mock.Anything, "723e4567-e89b-12d3-a456-426614174000",
 				).Return(&thunderdome.User{Verified: false}, nil)
 			},
@@ -1778,7 +1778,7 @@ func TestVerifiedUserOnly(t *testing.T) {
 			userVerified:              true,
 			expectedStatus:            http.StatusInternalServerError,
 			mockSetup: func(mockUserDataSvc *MockUserDataService) {
-				mockUserDataSvc.On("GetUser", mock.Anything, "923e4567-e89b-12d3-a456-426614174000").Return(nil, errors.New("user not found"))
+				mockUserDataSvc.On("GetUserByID", mock.Anything, "923e4567-e89b-12d3-a456-426614174000").Return(nil, errors.New("user not found"))
 			},
 		},
 	}
@@ -1838,7 +1838,7 @@ type MockUserDataService struct {
 	mock.Mock
 }
 
-func (m *MockUserDataService) GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
+func (m *MockUserDataService) GetGuestUserByID(ctx context.Context, UserID string) (*thunderdome.User, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -1923,12 +1923,12 @@ func (m *MockUserDataService) GetActiveCountries(ctx context.Context) ([]string,
 	panic("implement me")
 }
 
-func (m *MockUserDataService) GetUserCredential(ctx context.Context, UserID string) (*thunderdome.Credential, error) {
+func (m *MockUserDataService) GetUserCredentialByUserID(ctx context.Context, UserID string) (*thunderdome.Credential, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (m *MockUserDataService) GetUser(ctx context.Context, userID string) (*thunderdome.User, error) {
+func (m *MockUserDataService) GetUserByID(ctx context.Context, userID string) (*thunderdome.User, error) {
 	args := m.Called(ctx, userID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)

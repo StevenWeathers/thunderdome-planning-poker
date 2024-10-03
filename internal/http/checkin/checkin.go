@@ -38,16 +38,16 @@ type CheckinDataSvc interface {
 }
 
 type AuthDataSvc interface {
-	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
+	GetSessionUserByID(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
 
 type TeamDataSvc interface {
-	TeamUserRole(ctx context.Context, userID string, teamID string) (string, error)
-	TeamGet(ctx context.Context, teamID string) (*thunderdome.Team, error)
+	TeamUserRoleByUserID(ctx context.Context, userID string, teamID string) (string, error)
+	TeamGetByID(ctx context.Context, teamID string) (*thunderdome.Team, error)
 }
 
 type UserDataSvc interface {
-	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
+	GetGuestUserByID(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
 // Service provides retro service

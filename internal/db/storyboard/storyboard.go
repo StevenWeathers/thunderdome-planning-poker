@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Service represents a PostgreSQL implementation of thunderdome.StoryboardDataSvc.
+// Service represents the storyboard database service
 type Service struct {
 	DB         *sql.DB
 	Logger     *otelzap.Logger
@@ -138,8 +138,8 @@ func (d *Service) EditStoryboard(storyboardID string, storyboardName string, joi
 	return nil
 }
 
-// GetStoryboard gets a storyboard by ID
-func (d *Service) GetStoryboard(storyboardID string, userID string) (*thunderdome.Storyboard, error) {
+// GetStoryboardByID gets a storyboard by ID
+func (d *Service) GetStoryboardByID(storyboardID string, userID string) (*thunderdome.Storyboard, error) {
 	var cl string
 	var joinCode string
 	var facilitators string
@@ -307,7 +307,7 @@ func (d *Service) StoryboardReviseColorLegend(storyboardID string, userID string
 		return nil, fmt.Errorf("storyboard revise color legend query error: %v", err)
 	}
 
-	storyboard, err := d.GetStoryboard(storyboardID, "")
+	storyboard, err := d.GetStoryboardByID(storyboardID, "")
 	if err != nil {
 		return nil, fmt.Errorf("storyboard revise color legend get storyboards query error: %v", err)
 	}

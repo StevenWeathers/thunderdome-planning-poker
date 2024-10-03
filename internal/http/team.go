@@ -50,7 +50,7 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 			teamRole = &adminStr
 		}
 
-		team, err := s.TeamDataSvc.TeamGet(ctx, teamID)
+		team, err := s.TeamDataSvc.TeamGetByID(ctx, teamID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetTeamByUser error", zap.Error(err),
@@ -366,7 +366,7 @@ func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusInternalServerError, inviteErr)
 			return
 		}
-		team, teamErr := s.TeamDataSvc.TeamGet(ctx, teamID)
+		team, teamErr := s.TeamDataSvc.TeamGetByID(ctx, teamID)
 		if teamErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(teamErr),
 				zap.String("team_id", teamID), zap.String("session_user_id", sessionUserID))

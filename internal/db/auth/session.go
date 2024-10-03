@@ -42,8 +42,8 @@ func (d *Service) EnableSession(ctx context.Context, sessionID string) error {
 	return nil
 }
 
-// GetSessionUser gets a user session by sessionId
-func (d *Service) GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error) {
+// GetSessionUserByID gets a user session by sessionID
+func (d *Service) GetSessionUserByID(ctx context.Context, sessionID string) (*thunderdome.User, error) {
 	user := &thunderdome.User{}
 
 	err := d.DB.QueryRowContext(ctx, `

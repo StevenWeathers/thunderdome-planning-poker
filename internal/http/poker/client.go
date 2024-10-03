@@ -33,7 +33,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 
 		if sessionID != "" {
 			var userErr error
-			user, userErr = b.AuthService.GetSessionUser(ctx, sessionID)
+			user, userErr = b.AuthService.GetSessionUserByID(ctx, sessionID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -52,7 +52,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			user, userErr = b.UserService.GetGuestUser(ctx, userID)
+			user, userErr = b.UserService.GetGuestUserByID(ctx, userID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -63,7 +63,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		}
 
 		// make sure battle is legit
-		battle, battleErr := b.PokerService.GetGame(roomID, user.ID)
+		battle, battleErr := b.PokerService.GetGameByID(roomID, user.ID)
 		if battleErr != nil {
 			authErr := wshub.AuthError{
 				Code:    4004,

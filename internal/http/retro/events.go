@@ -537,7 +537,7 @@ func (b *Service) SendCompletedEmails(retro *thunderdome.Retro) {
 	for _, user := range users {
 		// don't send emails to guest's as they have no email
 		if user.Email != "" {
-			template, err := b.TemplateService.GetTemplateById(context.Background(), retro.TemplateID)
+			template, err := b.TemplateService.GetTemplateByID(context.Background(), retro.TemplateID)
 			if err != nil {
 				b.logger.Error("Error getting template", zap.Error(err))
 			} else {

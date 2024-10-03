@@ -35,7 +35,7 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		if apiKey != "" && s.Config.ExternalAPIEnabled {
 			var apiKeyErr error
-			user, apiKeyErr = s.ApiKeyDataSvc.GetApiKeyUser(ctx, apiKey)
+			user, apiKeyErr = s.ApiKeyDataSvc.GetAPIKeyUser(ctx, apiKey)
 			if apiKeyErr != nil {
 				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
@@ -49,7 +49,7 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 			if sessionID != "" {
 				var userErr error
-				user, userErr = s.AuthDataSvc.GetSessionUser(ctx, sessionID)
+				user, userErr = s.AuthDataSvc.GetSessionUserByID(ctx, sessionID)
 				if userErr != nil {
 					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -62,7 +62,7 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 				}
 
 				var userErr error
-				user, userErr = s.UserDataSvc.GetGuestUser(ctx, userID)
+				user, userErr = s.UserDataSvc.GetGuestUserByID(ctx, userID)
 				if userErr != nil {
 					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -147,7 +147,7 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		entityUser, entityUserErr := s.UserDataSvc.GetUser(ctx, entityUserID)
+		entityUser, entityUserErr := s.UserDataSvc.GetUserByID(ctx, entityUserID)
 		if entityUserErr != nil {
 			s.Logger.Ctx(ctx).Error(
 				"verifiedUserOnly error", zap.Error(entityUserErr), zap.String("entity_user_id", entityUserID),
@@ -241,7 +241,7 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		_, err := s.OrganizationDataSvc.OrganizationGet(ctx, orgID)
+		_, err := s.OrganizationDataSvc.OrganizationGetByID(ctx, orgID)
 		if err != nil && err.Error() == "ORGANIZATION_NOT_FOUND" {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "ORGANIZATION_NOT_FOUND"))
 			return
@@ -410,7 +410,7 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		roles, err := s.TeamDataSvc.TeamUserRoles(ctx, userID, teamID)
+		roles, err := s.TeamDataSvc.TeamUserRolesByUserID(ctx, userID, teamID)
 		if err != nil && err.Error() == "TEAM_NOT_FOUND" {
 			s.Logger.Ctx(ctx).Warn("middleware teamUserOnly TEAM_NOT_FOUND",
 				zap.Any("team_user_roles", roles),

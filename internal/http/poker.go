@@ -264,7 +264,7 @@ func (s *Service) handleGetPokerGame() http.HandlerFunc {
 		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 		userType := r.Context().Value(contextKeyUserType).(string)
 
-		game, err := s.PokerDataSvc.GetGame(gameID, sessionUserID)
+		game, err := s.PokerDataSvc.GetGameByID(gameID, sessionUserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return

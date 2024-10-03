@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// PurgeOldGames deletes games older than {DaysOld} days
+// PurgeOldGames deletes games older than {daysOld} days
 func (d *Service) PurgeOldGames(ctx context.Context, daysOld int) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.poker WHERE last_active < (NOW() - $1 * interval '1 day');`,

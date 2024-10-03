@@ -667,7 +667,7 @@ func (s *Service) handleMFASetupGenerate() http.HandlerFunc {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		u, err := s.UserDataSvc.GetUser(ctx, sessionUserID)
+		u, err := s.UserDataSvc.GetUserByID(ctx, sessionUserID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleMFASetupGenerate error", zap.Error(err),
 				zap.String("session_user_id", sessionUserID))

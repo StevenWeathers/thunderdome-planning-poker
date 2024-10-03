@@ -34,7 +34,7 @@ func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 			return
 		}
 
-		instances, err := s.JiraDataSvc.FindInstancesByUserId(ctx, userID)
+		instances, err := s.JiraDataSvc.FindInstancesByUserID(ctx, userID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetUserJiraInstances error", zap.Error(err), zap.String("entity_user_id", userID),
@@ -268,7 +268,7 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 		}
 		fields := []string{"key", "summary", "priority", "issuetype", "description"}
 
-		instance, err := s.JiraDataSvc.GetInstanceById(ctx, instanceID)
+		instance, err := s.JiraDataSvc.GetInstanceByID(ctx, instanceID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userID),
