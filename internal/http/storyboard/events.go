@@ -444,14 +444,14 @@ func (b *Service) DeletePersona(ctx context.Context, storyboardID string, userID
 // FacilitatorAdd handles adding a storyboard facilitator
 func (b *Service) FacilitatorAdd(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
-		userID string `json:"userId"`
+		UserID string `json:"userId"`
 	}
 	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	storyboard, err := b.StoryboardService.StoryboardFacilitatorAdd(storyboardID, rs.userID)
+	storyboard, err := b.StoryboardService.StoryboardFacilitatorAdd(storyboardID, rs.UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -464,14 +464,14 @@ func (b *Service) FacilitatorAdd(ctx context.Context, storyboardID string, userI
 // FacilitatorRemove handles removing a storyboard facilitator
 func (b *Service) FacilitatorRemove(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
-		userID string `json:"userId"`
+		UserID string `json:"userId"`
 	}
 	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	storyboard, err := b.StoryboardService.StoryboardFacilitatorRemove(storyboardID, rs.userID)
+	storyboard, err := b.StoryboardService.StoryboardFacilitatorRemove(storyboardID, rs.UserID)
 	if err != nil {
 		return nil, err, false
 	}
