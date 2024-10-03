@@ -23,7 +23,7 @@ type subscriptionRequestBody struct {
 	Expires        time.Time `json:"expires"`
 }
 
-// handleSubscriptionGet gets a subscription
+// handleSubscriptionGetByID gets a subscription
 // @Summary      Get Subscription
 // @Description  Get a subscription
 // @Tags         subscription
@@ -33,7 +33,7 @@ type subscriptionRequestBody struct {
 // @Success      500     object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /subscriptions/{subscriptionId} [get]
-func (s *Service) handleSubscriptionGet() http.HandlerFunc {
+func (s *Service) handleSubscriptionGetByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)

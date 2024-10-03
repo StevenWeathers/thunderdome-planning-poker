@@ -767,7 +767,7 @@ func (s *Service) handleMFARemove() http.HandlerFunc {
 	}
 }
 
-// handleGetTeamInvite gets a team user invite details
+// handleGetTeamInviteByID gets a team user invite details
 // @Summary      Get Team Invite
 // @Description  Get a team user invite details
 // @Tags         auth
@@ -775,7 +775,7 @@ func (s *Service) handleMFARemove() http.HandlerFunc {
 // @Param        inviteId  path    string  true  "the invite ID"
 // @Success      200     object  standardJsonResponse{data=[]thunderdome.TeamUserInvite}
 // @Router       /auth/invite/team/{inviteId} [get]
-func (s *Service) handleGetTeamInvite() http.HandlerFunc {
+func (s *Service) handleGetTeamInviteByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -788,7 +788,7 @@ func (s *Service) handleGetTeamInvite() http.HandlerFunc {
 
 		invite, err := s.TeamDataSvc.TeamUserGetInviteByID(ctx, inviteID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetTeamInvite error", zap.Error(err), zap.String("invite_id", inviteID))
+			s.Logger.Ctx(ctx).Error("handleGetTeamInviteByID error", zap.Error(err), zap.String("invite_id", inviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -797,7 +797,7 @@ func (s *Service) handleGetTeamInvite() http.HandlerFunc {
 	}
 }
 
-// handleGetOrganizationInvite gets a organization user invite details
+// handleGetOrganizationInviteByID gets a organization user invite details
 // @Summary      Get Organization Invite
 // @Description  Get a organization user invite details
 // @Tags         auth
@@ -805,7 +805,7 @@ func (s *Service) handleGetTeamInvite() http.HandlerFunc {
 // @Param        inviteId  path    string  true  "the invite ID"
 // @Success      200     object  standardJsonResponse{data=[]thunderdome.OrganizationUserInvite}
 // @Router       /auth/invite/organization/{inviteId} [get]
-func (s *Service) handleGetOrganizationInvite() http.HandlerFunc {
+func (s *Service) handleGetOrganizationInviteByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -818,7 +818,7 @@ func (s *Service) handleGetOrganizationInvite() http.HandlerFunc {
 
 		invite, err := s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, inviteID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetOrganizationInvite error", zap.Error(err), zap.String("invite_id", inviteID))
+			s.Logger.Ctx(ctx).Error("handleGetOrganizationInviteByID error", zap.Error(err), zap.String("invite_id", inviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

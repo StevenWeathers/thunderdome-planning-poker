@@ -224,7 +224,7 @@ func (s *Service) handleRetroTemplateDelete() http.HandlerFunc {
 	}
 }
 
-// handleGetRetroTemplateById gets a specific retro template by ID
+// handleGetRetroTemplateByID gets a specific retro template by ID
 // @Summary      Get Retro Template by ID
 // @Description  get a specific retro template by its ID
 // @Tags         retroTemplate
@@ -235,7 +235,7 @@ func (s *Service) handleRetroTemplateDelete() http.HandlerFunc {
 // @Failure      500         object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /admin/retro-templates/{templateId} [get]
-func (s *Service) handleGetRetroTemplateById() http.HandlerFunc {
+func (s *Service) handleGetRetroTemplateByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
@@ -249,7 +249,7 @@ func (s *Service) handleGetRetroTemplateById() http.HandlerFunc {
 
 		template, err := s.RetroTemplateDataSvc.GetTemplateByID(ctx, templateID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetRetroTemplateById error", zap.Error(err), zap.String("template_id", templateID),
+			s.Logger.Ctx(ctx).Error("handleGetRetroTemplateByID error", zap.Error(err), zap.String("template_id", templateID),
 				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return

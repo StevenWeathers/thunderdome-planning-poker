@@ -157,8 +157,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/auth/update-password", a.userOnly(a.handleUpdatePassword())).Methods("PATCH")
 		apiRouter.HandleFunc("/auth/verify", a.handleAccountVerification()).Methods("PATCH")
 		apiRouter.HandleFunc("/auth/register", a.handleUserRegistration()).Methods("POST")
-		apiRouter.HandleFunc("/auth/invite/team/{inviteId}", a.handleGetTeamInvite()).Methods("GET")
-		apiRouter.HandleFunc("/auth/invite/organization/{inviteId}", a.handleGetOrganizationInvite()).Methods("GET")
+		apiRouter.HandleFunc("/auth/invite/team/{inviteId}", a.handleGetTeamInviteByID()).Methods("GET")
+		apiRouter.HandleFunc("/auth/invite/organization/{inviteId}", a.handleGetOrganizationInviteByID()).Methods("GET")
 	}
 	apiRouter.HandleFunc("/auth/mfa", a.handleMFALogin()).Methods("POST")
 	apiRouter.HandleFunc("/auth/mfa", a.userOnly(a.registeredUserOnly(a.handleMFARemove()))).Methods("DELETE")
@@ -411,7 +411,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete()))))).Methods("DELETE")
 		// General template operations
 		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleGetRetroTemplates()))).Methods("GET")
-		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleGetRetroTemplateById()))).Methods("GET")
+		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleGetRetroTemplateByID()))).Methods("GET")
 		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleRetroTemplateCreate()))).Methods("POST")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateUpdate()))).Methods("PUT")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateDelete()))).Methods("DELETE")
@@ -449,7 +449,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	}
 
 	if a.Config.SubscriptionsEnabled {
-		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionGet()))).Methods("GET")
+		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionGetByID()))).Methods("GET")
 		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionUpdate()))).Methods("PUT")
 		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionDelete()))).Methods("DELETE")
 		apiRouter.PathPrefix("/subscriptions").Handler(a.userOnly(a.adminOnly(a.handleGetSubscriptions()))).Methods("GET")
