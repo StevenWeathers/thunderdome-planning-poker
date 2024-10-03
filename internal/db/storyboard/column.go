@@ -11,12 +11,12 @@ import (
 )
 
 // CreateStoryboardColumn adds a new column to a Storyboard
-func (d *Service) CreateStoryboardColumn(StoryboardID string, GoalID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
 	var betweenAkey *string
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
-		zap.String("storyboard_id", StoryboardID),
-		zap.String("goal_id", GoalID),
+		zap.String("storyboard_id", storyboardID),
+		zap.String("goal_id", goalID),
 	)
 
 	tx, err := d.DB.BeginTx(context.Background(), nil)
@@ -28,14 +28,14 @@ func (d *Service) CreateStoryboardColumn(StoryboardID string, GoalID string, use
 
 	if err := tx.QueryRow(
 		`
-		SELECT 
+		SELECT
     COALESCE(
         (SELECT MAX(display_order)
          FROM thunderdome.storyboard_column
          WHERE storyboard_id = $1 AND goal_id = $2),
         'a0'
     ) AS last_display_order;`,
-		StoryboardID, GoalID,
+		storyboardID, goalID,
 	).Scan(&betweenAkey); err != nil {
 		logger.Error("get display_order between query error",
 			zap.Error(err),
@@ -60,9 +60,9 @@ func (d *Service) CreateStoryboardColumn(StoryboardID string, GoalID string, use
 	}
 
 	if _, err := tx.Exec(
-		`INSERT INTO thunderdome.storyboard_column (storyboard_id, goal_id, display_order) 
+		`INSERT INTO thunderdome.storyboard_column (storyboard_id, goal_id, display_order)
 		VALUES ($1, $2, $3);`,
-		StoryboardID, GoalID, displayOrder,
+		storyboardID, goalID, displayOrder,
 	); err != nil {
 		logger.Error("CreateStoryboardColumn error",
 			zap.Error(err),
@@ -76,63 +76,63 @@ func (d *Service) CreateStoryboardColumn(StoryboardID string, GoalID string, use
 		return nil, fmt.Errorf("failed to update storyboard story display_order: %v", commitErr)
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ReviseStoryboardColumn revises a storyboard column
-func (d *Service) ReviseStoryboardColumn(StoryboardID string, UserID string, ColumnID string, ColumnName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryboardColumn(storyboardID string, userID string, columnID string, columnName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_column SET name = $2, updated_date = NOW() WHERE id = $1;`,
-		ColumnID,
-		ColumnName,
+		columnID,
+		columnName,
 	); err != nil {
 		d.Logger.Error("revise storyboard column error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // DeleteStoryboardColumn removes a column from the current board by ID
-func (d *Service) DeleteStoryboardColumn(StoryboardID string, userID string, ColumnID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) DeleteStoryboardColumn(storyboardID string, userID string, columnID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_column WHERE id = $1;`, ColumnID); err != nil {
+		`DELETE FROM thunderdome.storyboard_column WHERE id = $1;`, columnID); err != nil {
 		d.Logger.Error("delete storyboard column error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ColumnPersonaAdd adds a persona column to a Storyboard column
-func (d *Service) ColumnPersonaAdd(StoryboardID string, ColumnID string, PersonaID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ColumnPersonaAdd(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.storyboard_column_persona (column_id, persona_id, created_date) 
+		`INSERT INTO thunderdome.storyboard_column_persona (column_id, persona_id, created_date)
 		VALUES ($1, $2, NOW());`,
-		ColumnID, PersonaID,
+		columnID, personaID,
 	); err != nil {
 		d.Logger.Error("ColumnPersonaAdd error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ColumnPersonaRemove removes a persona column from a Storyboard column
-func (d *Service) ColumnPersonaRemove(StoryboardID string, ColumnID string, PersonaID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ColumnPersonaRemove(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.storyboard_column_persona WHERE column_id = $1 AND persona_id = $2;`,
-		ColumnID, PersonaID,
+		columnID, personaID,
 	); err != nil {
 		d.Logger.Error("ColumnPersonaRemove error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }

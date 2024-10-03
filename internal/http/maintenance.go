@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// handleCleanBattles handles cleaning up old battles (ADMIN Manually Triggered)
+// handleCleanPokerGames handles cleaning up old battles (ADMIN Manually Triggered)
 // @Summary      Clean Old Battles
 // @Description  Deletes battles older than {config.cleanup_battles_days_old} based on last activity date
 // @Tags         maintenance
@@ -15,16 +15,16 @@ import (
 // @Failure      500  object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /maintenance/clean-battles [delete]
-func (s *Service) handleCleanBattles() http.HandlerFunc {
+func (s *Service) handleCleanPokerGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		DaysOld := s.Config.CleanupBattlesDaysOld
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		daysOld := s.Config.CleanupBattlesDaysOld
 
-		err := s.PokerDataSvc.PurgeOldGames(ctx, DaysOld)
+		err := s.PokerDataSvc.PurgeOldGames(ctx, daysOld)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleCleanBattles error", zap.Error(err), zap.String("session_user_id", SessionUserID))
+				"handle clean poker games error", zap.Error(err), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -45,13 +45,13 @@ func (s *Service) handleCleanBattles() http.HandlerFunc {
 func (s *Service) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		DaysOld := s.Config.CleanupRetrosDaysOld
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		daysOld := s.Config.CleanupRetrosDaysOld
 
-		err := s.RetroDataSvc.CleanRetros(r.Context(), DaysOld)
+		err := s.RetroDataSvc.CleanRetros(r.Context(), daysOld)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleCleanRetros error", zap.Error(err), zap.String("session_user_id", SessionUserID))
+				"handleCleanRetros error", zap.Error(err), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -72,13 +72,13 @@ func (s *Service) handleCleanRetros() http.HandlerFunc {
 func (s *Service) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		DaysOld := s.Config.CleanupStoryboardsDaysOld
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		daysOld := s.Config.CleanupStoryboardsDaysOld
 
-		err := s.StoryboardDataSvc.CleanStoryboards(r.Context(), DaysOld)
+		err := s.StoryboardDataSvc.CleanStoryboards(r.Context(), daysOld)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleCleanStoryboards error", zap.Error(err), zap.String("session_user_id", SessionUserID))
+				"handleCleanStoryboards error", zap.Error(err), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -99,13 +99,13 @@ func (s *Service) handleCleanStoryboards() http.HandlerFunc {
 func (s *Service) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		DaysOld := s.Config.CleanupGuestsDaysOld
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		daysOld := s.Config.CleanupGuestsDaysOld
 
-		err := s.UserDataSvc.CleanGuests(r.Context(), DaysOld)
+		err := s.UserDataSvc.CleanGuests(r.Context(), daysOld)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleCleanGuests error", zap.Error(err), zap.String("session_user_id", SessionUserID))
+				"handleCleanGuests error", zap.Error(err), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

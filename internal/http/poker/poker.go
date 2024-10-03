@@ -25,11 +25,11 @@ type Config struct {
 }
 
 type AuthDataSvc interface {
-	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
+	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
 
 type UserDataSvc interface {
-	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
 // Service provides battle service
@@ -40,7 +40,7 @@ type Service struct {
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	UserService           UserDataSvc
 	AuthService           AuthDataSvc
-	BattleService         thunderdome.PokerDataSvc
+	PokerService          thunderdome.PokerDataSvc
 	hub                   *wshub.Hub
 }
 
@@ -59,7 +59,7 @@ func New(
 		validateUserCookie:    validateUserCookie,
 		UserService:           userService,
 		AuthService:           authService,
-		BattleService:         battleService,
+		PokerService:          battleService,
 	}
 
 	b.hub = wshub.NewHub(logger, wshub.Config{
@@ -102,7 +102,7 @@ func New(
 			"revise_battle":  {},
 			"concede_battle": {},
 		},
-		b.BattleService.ConfirmFacilitator,
+		b.PokerService.ConfirmFacilitator,
 		b.RetreatUser,
 	)
 

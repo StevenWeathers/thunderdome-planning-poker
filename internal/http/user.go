@@ -33,17 +33,17 @@ import (
 func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := s.UserDataSvc.GetUser(ctx, SessionUserID)
-		if UserErr != nil {
-			s.Logger.Ctx(ctx).Error("handleSessionUserProfile error", zap.Error(UserErr),
-				zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, UserErr)
+		user, userErr := s.UserDataSvc.GetUser(ctx, sessionUserID)
+		if userErr != nil {
+			s.Logger.Ctx(ctx).Error("handleSessionUserProfile error", zap.Error(userErr),
+				zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, User, nil)
+		s.Success(w, r, http.StatusOK, user, nil)
 	}
 }
 
@@ -61,24 +61,24 @@ func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 func (s *Service) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		User, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
-		if UserErr != nil {
-			s.Logger.Ctx(ctx).Error("handleUserProfile error", zap.Error(UserErr),
-				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, UserErr)
+		user, userErr := s.UserDataSvc.GetUser(ctx, userID)
+		if userErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserProfile error", zap.Error(userErr),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, User, nil)
+		s.Success(w, r, http.StatusOK, user, nil)
 	}
 }
 
@@ -109,11 +109,11 @@ type userprofileUpdateRequestBody struct {
 func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		SessionUserType := ctx.Value(contextKeyUserType).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserType := ctx.Value(contextKeyUserType).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -138,16 +138,16 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		if SessionUserType == thunderdome.AdminUserType {
+		if sessionUserType == thunderdome.AdminUserType {
 			_, _, vErr := validateUserAccount(profile.Name, profile.Email)
 			if vErr != nil {
 				s.Failure(w, r, http.StatusBadRequest, vErr)
 				return
 			}
-			updateErr := s.UserDataSvc.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
+			updateErr := s.UserDataSvc.UpdateUserAccount(ctx, userID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
 			if updateErr != nil {
 				s.Logger.Ctx(ctx).Error("handleUserProfileUpdate error", zap.Error(updateErr),
-					zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
+					zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
@@ -158,23 +158,23 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 					s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
 				}
-				updateErr = s.UserDataSvc.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
+				updateErr = s.UserDataSvc.UpdateUserProfile(ctx, userID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
 			} else {
-				updateErr = s.UserDataSvc.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
+				updateErr = s.UserDataSvc.UpdateUserProfileLdap(ctx, userID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
 			}
 			if updateErr != nil {
 				s.Logger.Ctx(ctx).Error("handleUserProfileUpdate error", zap.Error(updateErr),
-					zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
+					zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
 		}
 
-		user, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
-		if UserErr != nil {
-			s.Logger.Ctx(ctx).Error("handleUserProfileUpdate error", zap.Error(UserErr),
-				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, UserErr)
+		user, userErr := s.UserDataSvc.GetUser(ctx, userID)
+		if userErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserProfileUpdate error", zap.Error(userErr),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
 			return
 		}
 
@@ -196,38 +196,38 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 func (s *Service) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
-		if UserErr != nil {
-			s.Logger.Ctx(ctx).Error("handleUserDelete error", zap.Error(UserErr),
-				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, UserErr)
+		user, userErr := s.UserDataSvc.GetUser(ctx, userID)
+		if userErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDelete error", zap.Error(userErr),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
 			return
 		}
 
-		updateErr := s.UserDataSvc.DeleteUser(ctx, UserID)
+		updateErr := s.UserDataSvc.DeleteUser(ctx, userID)
 		if updateErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDelete error", zap.Error(updateErr),
-				zap.String("user_id", UserID), zap.String("session_user_id", SessionUserID))
+				zap.String("user_id", userID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
 		// don't attempt to send email to guest users
-		if User.Email != "" {
-			_ = s.Email.SendDeleteConfirmation(User.Name, User.Email)
+		if user.Email != "" {
+			_ = s.Email.SendDeleteConfirmation(user.Name, user.Email)
 		}
 
 		// don't clear admins user cookies when deleting other users
-		if UserID == SessionUserID {
+		if userID == sessionUserID {
 			s.Cookie.ClearUserCookies(w)
 		}
 
@@ -247,24 +247,24 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 func (s *Service) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		User, VerifyId, err := s.AuthDataSvc.UserVerifyRequest(ctx, UserID)
+		user, verifyID, err := s.AuthDataSvc.UserVerifyRequest(ctx, userID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleVerifyRequest error", zap.Error(err),
-				zap.String("entity_user_id", UserID), zap.Stringp("session_user_id", SessionUserID))
+				zap.String("entity_user_id", userID), zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		_ = s.Email.SendEmailVerification(User.Name, User.Email, VerifyId)
+		_ = s.Email.SendEmailVerification(user.Name, user.Email, verifyID)
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -280,12 +280,12 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 func (s *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		countries, err := s.UserDataSvc.GetActiveCountries(ctx)
 
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetActiveCountries error", zap.Error(err),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -300,29 +300,29 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 
-		Width, _ := strconv.Atoi(vars["width"])
-		UserID := vars["id"]
-		idErr := validate.Var(UserID, "required,uuid")
+		width, _ := strconv.Atoi(vars["width"])
+		userID := vars["id"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		AvatarGender := govatar.MALE
+		avatarGender := govatar.MALE
 		userGender, ok := vars["avatar"]
 		if ok {
 			if userGender == "female" {
-				AvatarGender = govatar.FEMALE
+				avatarGender = govatar.FEMALE
 			}
 		}
 
 		var avatar image.Image
 		if s.Config.AvatarService == "govatar" {
-			avatar, _ = govatar.GenerateForUsername(AvatarGender, UserID)
+			avatar, _ = govatar.GenerateForUsername(avatarGender, userID)
 		} else { // must be goadorable
 			var err error
-			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(UserID))))
+			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(userID))))
 			if err != nil {
 				s.Logger.Ctx(ctx).Error(err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
@@ -330,12 +330,12 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 			}
 		}
 
-		img := transform.Resize(avatar, Width, Width, transform.Linear)
+		img := transform.Resize(avatar, width, width, transform.Linear)
 		buffer := new(bytes.Buffer)
 
 		if err := png.Encode(buffer, img); err != nil {
-			s.Logger.Ctx(ctx).Error("handleUserAvatar error", zap.Error(err), zap.String("entity_user_id", UserID),
-				zap.Stringp("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleUserAvatar error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.Stringp("session_user_id", sessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -344,8 +344,8 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
 
 		if _, err := w.Write(buffer.Bytes()); err != nil {
-			s.Logger.Ctx(ctx).Error("handleUserAvatar error", zap.Error(err), zap.String("entity_user_id", UserID),
-				zap.Stringp("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleUserAvatar error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.Stringp("session_user_id", sessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -365,28 +365,28 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		InviteID := vars["inviteId"]
-		idErr = validate.Var(InviteID, "required,uuid")
+		inviteID := vars["inviteId"]
+		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		user, err := s.UserDataSvc.GetUser(ctx, UserID)
+		user, err := s.UserDataSvc.GetUser(ctx, userID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		orgInvite, err := s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, InviteID)
+		orgInvite, err := s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, inviteID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -396,32 +396,32 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 			return
 		}
 
-		orgId, inviteErr := s.OrganizationDataSvc.OrganizationAddUser(ctx, orgInvite.OrganizationId, UserID, orgInvite.Role)
+		orgID, inviteErr := s.OrganizationDataSvc.OrganizationAddUser(ctx, orgInvite.OrganizationID, userID, orgInvite.Role)
 		if inviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error adding invited user to organization",
 				zap.Error(inviteErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("invite_id", orgInvite.InviteId))
+				zap.String("session_user_id", *sessionUserID),
+				zap.String("invite_id", orgInvite.InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgInvite.InviteId)
+		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgInvite.InviteID)
 		if delInviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error deleting user invite to organization",
 				zap.Error(delInviteErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("invite_id", orgInvite.InviteId))
+				zap.String("session_user_id", *sessionUserID),
+				zap.String("invite_id", orgInvite.InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		organization, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, orgId)
+		organization, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, orgID)
 		if orgErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error getting organization",
 				zap.Error(delInviteErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("invite_id", orgInvite.InviteId))
+				zap.String("session_user_id", *sessionUserID),
+				zap.String("invite_id", orgInvite.InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -448,28 +448,28 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		InviteID := vars["inviteId"]
-		idErr = validate.Var(InviteID, "required,uuid")
+		inviteID := vars["inviteId"]
+		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		user, err := s.UserDataSvc.GetUser(ctx, UserID)
+		user, err := s.UserDataSvc.GetUser(ctx, userID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		deptInvite, err := s.OrganizationDataSvc.DepartmentUserGetInviteByID(ctx, InviteID)
+		deptInvite, err := s.OrganizationDataSvc.DepartmentUserGetInviteByID(ctx, inviteID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -479,53 +479,53 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 			return
 		}
 
-		dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, deptInvite.DepartmentId)
+		dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, deptInvite.DepartmentID)
 		if deptErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite get department error", zap.Error(deptErr),
-				zap.String("department_id", dept.Id),
-				zap.String("session_user_id", *SessionUserID))
+				zap.String("department_id", dept.ID),
+				zap.String("session_user_id", *sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, deptErr)
 			return
 		}
 
-		org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, dept.OrganizationId)
+		org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, dept.OrganizationID)
 		if orgErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite get organization error", zap.Error(orgErr),
-				zap.String("organization_id", org.Id),
-				zap.String("department_id", dept.Id),
-				zap.String("session_user_id", *SessionUserID))
+				zap.String("organization_id", org.ID),
+				zap.String("department_id", dept.ID),
+				zap.String("session_user_id", *sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, orgErr)
 			return
 		}
 
-		_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.Id, UserID, thunderdome.EntityMemberUserType)
+		_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.ID, userID, thunderdome.EntityMemberUserType)
 		if orgAddErr != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleUserDepartmentInvite upsert organization user error", zap.Error(orgAddErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("organization_id", org.Id),
-				zap.String("department_id", dept.Id),
-				zap.String("user_id", UserID), zap.String("user_role", thunderdome.EntityMemberUserType))
+				zap.String("session_user_id", *sessionUserID),
+				zap.String("organization_id", org.ID),
+				zap.String("department_id", dept.ID),
+				zap.String("user_id", userID), zap.String("user_role", thunderdome.EntityMemberUserType))
 			s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
 			return
 		}
 
-		_, inviteErr := s.OrganizationDataSvc.DepartmentAddUser(ctx, deptInvite.DepartmentId, UserID, deptInvite.Role)
+		_, inviteErr := s.OrganizationDataSvc.DepartmentAddUser(ctx, deptInvite.DepartmentID, userID, deptInvite.Role)
 		if inviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite error adding invited user to organization",
 				zap.Error(inviteErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("invite_id", deptInvite.InviteId))
+				zap.String("session_user_id", *sessionUserID),
+				zap.String("invite_id", deptInvite.InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, deptInvite.InviteId)
+		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, deptInvite.InviteID)
 		if delInviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite error deleting user invite to organization",
 				zap.Error(delInviteErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("invite_id", deptInvite.InviteId))
+				zap.String("session_user_id", *sessionUserID),
+				zap.String("invite_id", deptInvite.InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -552,28 +552,28 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		InviteID := vars["inviteId"]
-		idErr = validate.Var(InviteID, "required,uuid")
+		inviteID := vars["inviteId"]
+		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		user, err := s.UserDataSvc.GetUser(ctx, UserID)
+		user, err := s.UserDataSvc.GetUser(ctx, userID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		teamInvite, err := s.TeamDataSvc.TeamUserGetInviteByID(ctx, InviteID)
+		teamInvite, err := s.TeamDataSvc.TeamUserGetInviteByID(ctx, inviteID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -583,89 +583,89 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 			return
 		}
 
-		team, teamErr := s.TeamDataSvc.TeamGet(ctx, teamInvite.TeamId)
+		team, teamErr := s.TeamDataSvc.TeamGet(ctx, teamInvite.TeamID)
 		if teamErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(teamErr),
-				zap.String("team_id", teamInvite.TeamId), zap.String("session_user_id", *SessionUserID))
+				zap.String("team_id", teamInvite.TeamID), zap.String("session_user_id", *sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, teamErr)
 			return
 		}
 
 		// team is associated to organization, upsert user to organization
-		if team.OrganizationId != "" {
-			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, team.OrganizationId, UserID, thunderdome.EntityMemberUserType)
+		if team.OrganizationID != "" {
+			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, team.OrganizationID, userID, thunderdome.EntityMemberUserType)
 			if orgAddErr != nil {
 				s.Logger.Ctx(ctx).Error(
 					"handleTeamInviteUser upsert organization user error", zap.Error(orgAddErr),
-					zap.String("session_user_id", *SessionUserID),
-					zap.String("organization_id", team.OrganizationId),
-					zap.String("user_id", UserID), zap.String("user_role", thunderdome.EntityMemberUserType))
+					zap.String("session_user_id", *sessionUserID),
+					zap.String("organization_id", team.OrganizationID),
+					zap.String("user_id", userID), zap.String("user_role", thunderdome.EntityMemberUserType))
 				s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
 				return
 			}
 		}
 
 		// team is associated to department, upsert user to department and organization
-		if team.DepartmentId != "" {
-			dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, team.DepartmentId)
+		if team.DepartmentID != "" {
+			dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, team.DepartmentID)
 			if deptErr != nil {
 				s.Logger.Ctx(ctx).Error("handleTeamInviteUser get department error", zap.Error(deptErr),
-					zap.String("department_id", dept.Id),
-					zap.String("session_user_id", *SessionUserID))
+					zap.String("department_id", dept.ID),
+					zap.String("session_user_id", *sessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, deptErr)
 				return
 			}
 
-			org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, dept.OrganizationId)
+			org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, dept.OrganizationID)
 			if orgErr != nil {
 				s.Logger.Ctx(ctx).Error("handleTeamInviteUser get organization error", zap.Error(orgErr),
-					zap.String("organization_id", org.Id),
-					zap.String("department_id", dept.Id),
-					zap.String("session_user_id", *SessionUserID))
+					zap.String("organization_id", org.ID),
+					zap.String("department_id", dept.ID),
+					zap.String("session_user_id", *sessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, orgErr)
 				return
 			}
 
-			team.OrganizationId = org.Id
+			team.OrganizationID = org.ID
 
-			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.Id, UserID, thunderdome.EntityMemberUserType)
+			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.ID, userID, thunderdome.EntityMemberUserType)
 			if orgAddErr != nil {
 				s.Logger.Ctx(ctx).Error(
 					"handleTeamInviteUser upsert organization user error", zap.Error(orgAddErr),
-					zap.String("session_user_id", *SessionUserID),
-					zap.String("organization_id", org.Id),
-					zap.String("department_id", dept.Id),
-					zap.String("user_id", UserID), zap.String("user_role", thunderdome.EntityMemberUserType))
+					zap.String("session_user_id", *sessionUserID),
+					zap.String("organization_id", org.ID),
+					zap.String("department_id", dept.ID),
+					zap.String("user_id", userID), zap.String("user_role", thunderdome.EntityMemberUserType))
 				s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
 				return
 			}
 
-			_, deptAddErr := s.OrganizationDataSvc.DepartmentUpsertUser(ctx, team.DepartmentId, UserID, thunderdome.EntityMemberUserType)
+			_, deptAddErr := s.OrganizationDataSvc.DepartmentUpsertUser(ctx, team.DepartmentID, userID, thunderdome.EntityMemberUserType)
 			if deptAddErr != nil {
 				s.Logger.Ctx(ctx).Error(
 					"handleTeamInviteUser upsert department user error", zap.Error(deptAddErr),
-					zap.String("session_user_id", *SessionUserID),
-					zap.String("department_id", team.DepartmentId),
-					zap.String("user_id", UserID), zap.String("user_role", thunderdome.EntityMemberUserType))
+					zap.String("session_user_id", *sessionUserID),
+					zap.String("department_id", team.DepartmentID),
+					zap.String("user_id", userID), zap.String("user_role", thunderdome.EntityMemberUserType))
 				s.Failure(w, r, http.StatusInternalServerError, deptAddErr)
 				return
 			}
 		}
 
-		_, inviteErr := s.TeamDataSvc.TeamAddUser(ctx, teamInvite.TeamId, UserID, teamInvite.Role)
+		_, inviteErr := s.TeamDataSvc.TeamAddUser(ctx, teamInvite.TeamID, userID, teamInvite.Role)
 		if inviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to team", zap.Error(inviteErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("invite_id", teamInvite.InviteId))
+				zap.String("session_user_id", *sessionUserID),
+				zap.String("invite_id", teamInvite.InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.InviteId)
+		delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.InviteID)
 		if delInviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to team", zap.Error(delInviteErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("invite_id", teamInvite.InviteId))
+				zap.String("session_user_id", *sessionUserID),
+				zap.String("invite_id", teamInvite.InviteID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -693,21 +693,21 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 func (s *Service) handleUserCredential() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		credential, UserErr := s.UserDataSvc.GetUserCredential(ctx, UserID)
-		if UserErr != nil {
-			s.Logger.Ctx(ctx).Error("handleUserCredential error", zap.Error(UserErr),
-				zap.String("entity_user_id", UserID),
-				zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, UserErr)
+		credential, userErr := s.UserDataSvc.GetUserCredential(ctx, userID)
+		if userErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserCredential error", zap.Error(userErr),
+				zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
 			return
 		}
 

@@ -34,14 +34,14 @@ func (e *VotePhaseNotActiveError) Error() string {
 }
 
 // Helper function to check if a user is authorized for a retro
-func isUserAuthorizedForRetro(tx *sql.Tx, RetroID, UserID string) (bool, error) {
+func isUserAuthorizedForRetro(tx *sql.Tx, retroID, userID string) (bool, error) {
 	var active bool
 	err := tx.QueryRow(`
 		SELECT COALESCE((SELECT coalesce(active, FALSE)
 		FROM thunderdome.retro_user
 		WHERE user_id = $2 AND retro_id = $1), FALSE);`,
-		RetroID,
-		UserID,
+		retroID,
+		userID,
 	).Scan(
 		&active,
 	)
@@ -53,7 +53,7 @@ func isUserAuthorizedForRetro(tx *sql.Tx, RetroID, UserID string) (bool, error) 
 }
 
 // GroupUserVote inserts a user vote for the retro item group
-func (d *Service) GroupUserVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
+func (d *Service) GroupUserVote(retroID string, groupID string, userID string) ([]*thunderdome.RetroVote, error) {
 	var allowCumulativeVoting bool
 	var phase string
 	var maxVotes int
@@ -76,7 +76,7 @@ func (d *Service) GroupUserVote(RetroID string, GroupID string, UserID string) (
 	defer tx.Rollback() // Rollback if not committed
 
 	// First, check if the user is authorized to vote in this retro
-	authorized, err := isUserAuthorizedForRetro(tx, RetroID, UserID)
+	authorized, err := isUserAuthorizedForRetro(tx, retroID, userID)
 	if err != nil {
 		d.Logger.Error("error checking user authorization", zap.Error(err))
 		return nil, fmt.Errorf("error checking user authorization: %w", err)
@@ -92,7 +92,7 @@ func (d *Service) GroupUserVote(RetroID string, GroupID string, UserID string) (
 				WHERE rgv.retro_id = $1 AND rgv.user_id = $2 LIMIT 1), '[]'::jsonb) as votes
 				FROM thunderdome.retro r
 				WHERE r.id = $1;`,
-		RetroID, UserID,
+		retroID, userID,
 	).Scan(&maxVotes, &allowCumulativeVoting, &phase, &votesString)
 	if err != nil {
 		d.Logger.Error("retro vote query error", zap.Error(err))
@@ -111,7 +111,7 @@ func (d *Service) GroupUserVote(RetroID string, GroupID string, UserID string) (
 
 	for _, vg := range voteGroups {
 		totalVoteCount += vg.VoteCount
-		if vg.GroupID == GroupID {
+		if vg.GroupID == groupID {
 			groupVoteCount = vg.VoteCount
 		}
 	}
@@ -137,7 +137,7 @@ func (d *Service) GroupUserVote(RetroID string, GroupID string, UserID string) (
 					FROM thunderdome.retro
 					WHERE id = $1 AND allow_cumulative_voting = true
   			);`,
-		RetroID, GroupID, UserID,
+		retroID, groupID, userID,
 	)
 	if err != nil {
 		d.Logger.Error("retro group vote query error", zap.Error(err))
@@ -158,13 +158,13 @@ func (d *Service) GroupUserVote(RetroID string, GroupID string, UserID string) (
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	votes := d.GetRetroVotes(RetroID)
+	votes := d.GetRetroVotes(retroID)
 
 	return votes, nil
 }
 
 // GroupUserSubtractVote retracts a single user vote for the retro item group
-func (d *Service) GroupUserSubtractVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
+func (d *Service) GroupUserSubtractVote(retroID string, groupID string, userID string) ([]*thunderdome.RetroVote, error) {
 	// Start a transaction
 	tx, err := d.DB.Begin()
 	if err != nil {
@@ -180,7 +180,7 @@ func (d *Service) GroupUserSubtractVote(RetroID string, GroupID string, UserID s
         FROM thunderdome.retro r
         LEFT JOIN thunderdome.retro_group_vote rgv ON r.id = rgv.retro_id AND rgv.group_id = $2 AND rgv.user_id = $3
         WHERE r.id = $1
-    `, RetroID, GroupID, UserID).Scan(&allowCumulativeVoting, &currentVoteCount)
+    `, retroID, groupID, userID).Scan(&allowCumulativeVoting, &currentVoteCount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get retro and vote information: %w", err)
 	}
@@ -196,13 +196,13 @@ func (d *Service) GroupUserSubtractVote(RetroID string, GroupID string, UserID s
             UPDATE thunderdome.retro_group_vote
             SET vote_count = vote_count - 1
             WHERE retro_id = $1 AND group_id = $2 AND user_id = $3;
-        `, RetroID, GroupID, UserID)
+        `, retroID, groupID, userID)
 	} else {
 		// Delete the vote if it's the last one or cumulative voting is not enabled
 		result, err = tx.Exec(`
             DELETE FROM thunderdome.retro_group_vote
             WHERE retro_id = $1 AND group_id = $2 AND user_id = $3;
-        `, RetroID, GroupID, UserID)
+        `, retroID, groupID, userID)
 	}
 
 	if err != nil {
@@ -222,17 +222,17 @@ func (d *Service) GroupUserSubtractVote(RetroID string, GroupID string, UserID s
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	votes := d.GetRetroVotes(RetroID)
+	votes := d.GetRetroVotes(retroID)
 	return votes, nil
 }
 
 // GetRetroVotes gets retro votes
-func (d *Service) GetRetroVotes(RetroID string) []*thunderdome.RetroVote {
+func (d *Service) GetRetroVotes(retroID string) []*thunderdome.RetroVote {
 	var votes = make([]*thunderdome.RetroVote, 0)
 
 	itemRows, itemsErr := d.DB.Query(
 		`SELECT group_id, user_id, vote_count FROM thunderdome.retro_group_vote WHERE retro_id = $1;`,
-		RetroID,
+		retroID,
 	)
 	if itemsErr == nil {
 		defer itemRows.Close()

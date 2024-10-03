@@ -13,7 +13,7 @@ import (
 
 // CheckActiveSubscriber looks for an active subscription for the user
 // also checks if the user belongs to a team or organization with an active subscription
-func (s *Service) CheckActiveSubscriber(ctx context.Context, userId string) error {
+func (s *Service) CheckActiveSubscriber(ctx context.Context, userID string) error {
 	count := 0
 
 	err := s.DB.QueryRowContext(ctx,
@@ -25,39 +25,39 @@ func (s *Service) CheckActiveSubscriber(ctx context.Context, userId string) erro
 					SELECT organization_id FROM thunderdome.organization_user WHERE user_id = $1
 				)
 				SELECT count(id)
- 				FROM thunderdome.subscription 
- 				WHERE (user_id = $1 AND active = true AND expires > NOW()) 
- 				OR (team_id IN (SELECT team_id FROM user_teams) AND active = true AND expires > NOW()) 
+ 				FROM thunderdome.subscription
+ 				WHERE (user_id = $1 AND active = true AND expires > NOW())
+ 				OR (team_id IN (SELECT team_id FROM user_teams) AND active = true AND expires > NOW())
  				OR (organization_id IN (SELECT organization_id FROM user_organizations) AND active = true AND expires > NOW());
 				`,
-		userId,
+		userID,
 	).Scan(&count)
 	if err != nil {
-		return fmt.Errorf("error encountered finding users %s active subscriptions:  %v", userId, err)
+		return fmt.Errorf("error encountered finding users %s active subscriptions:  %v", userID, err)
 	}
 
 	if count == 0 {
-		return fmt.Errorf("no active subscription(s) found for user id  %s", userId)
+		return fmt.Errorf("no active subscription(s) found for user id  %s", userID)
 	}
 
 	return nil
 }
 
-func (s *Service) GetActiveSubscriptionsByUserID(ctx context.Context, userId string) ([]thunderdome.Subscription, error) {
+func (s *Service) GetActiveSubscriptionsByUserID(ctx context.Context, userID string) ([]thunderdome.Subscription, error) {
 	subs := make([]thunderdome.Subscription, 0)
 
 	rows, err := s.DB.QueryContext(ctx,
 		`SELECT id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''),
 				customer_id, subscription_id, active, type, expires, created_date, updated_date
  				FROM thunderdome.subscription WHERE user_id = $1 AND active = true AND expires > NOW();`,
-		userId,
+		userID,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return subs, nil
 		}
 
-		return subs, fmt.Errorf("error getting user %s subscriptions:  %v", userId, err)
+		return subs, fmt.Errorf("error getting user %s subscriptions:  %v", userID, err)
 	}
 
 	defer rows.Close()
@@ -76,7 +76,7 @@ func (s *Service) GetActiveSubscriptionsByUserID(ctx context.Context, userId str
 			&sub.CreatedDate,
 			&sub.UpdatedDate,
 		); err != nil {
-			return subs, fmt.Errorf("error getting user %s subscriptions:  %v", userId, err)
+			return subs, fmt.Errorf("error getting user %s subscriptions:  %v", userID, err)
 		}
 
 		subs = append(subs, sub)
@@ -85,7 +85,7 @@ func (s *Service) GetActiveSubscriptionsByUserID(ctx context.Context, userId str
 	return subs, nil
 }
 
-func (s *Service) GetSubscriptionByID(ctx context.Context, id string) (thunderdome.Subscription, error) {
+func (s *Service) GetSubscriptionByID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
@@ -94,15 +94,15 @@ func (s *Service) GetSubscriptionByID(ctx context.Context, id string) (thunderdo
  				FROM thunderdome.subscription s
  				LEFT JOIN thunderdome.users u ON s.user_id = u.id
  				WHERE s.id = $1;`,
-		id,
+		subscriptionID,
 	).Scan(
 		&sub.ID, &sub.UserID, &sub.TeamID, &sub.OrganizationID, &sub.CustomerID, &sub.SubscriptionID,
 		&sub.Active, &sub.Type, &sub.Expires, &sub.CreatedDate, &sub.UpdatedDate,
-		&sub.User.Id, &sub.User.Name, &sub.User.Email,
+		&sub.User.ID, &sub.User.Name, &sub.User.Email,
 	)
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
-		return sub, fmt.Errorf("subscription not found %s", id)
+		return sub, fmt.Errorf("subscription not found %s", subscriptionID)
 	case err != nil:
 		return sub, fmt.Errorf("error encountered finding subscription: %v", err)
 	}
@@ -110,13 +110,13 @@ func (s *Service) GetSubscriptionByID(ctx context.Context, id string) (thunderdo
 	return sub, nil
 }
 
-func (s *Service) GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionId string) (thunderdome.Subscription, error) {
+func (s *Service) GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
 		`SELECT id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''), customer_id, subscription_id, active, type, expires, created_date, updated_date
  				FROM thunderdome.subscription WHERE subscription_id = $1;`,
-		subscriptionId,
+		subscriptionID,
 	).Scan(
 		&sub.ID, &sub.UserID, &sub.TeamID, &sub.OrganizationID,
 		&sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
@@ -124,7 +124,7 @@ func (s *Service) GetSubscriptionBySubscriptionID(ctx context.Context, subscript
 	)
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
-		return sub, fmt.Errorf("no subscription %s", subscriptionId)
+		return sub, fmt.Errorf("no subscription %s", subscriptionID)
 	case err != nil:
 		return sub, fmt.Errorf("error encountered finding subscription: %v", err)
 	}
@@ -136,7 +136,7 @@ func (s *Service) CreateSubscription(ctx context.Context, subscription thunderdo
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
-		`INSERT INTO thunderdome.subscription 
+		`INSERT INTO thunderdome.subscription
 				(user_id, team_id, organization_id, customer_id, subscription_id, type, expires)
 				VALUES ($1, NULLIF($2::text,'')::uuid, NULLIF($3::text,'')::uuid, $4, $5, $6, $7)
 				RETURNING id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''), customer_id, subscription_id, active, type, expires, created_date, updated_date;`,
@@ -154,7 +154,7 @@ func (s *Service) CreateSubscription(ctx context.Context, subscription thunderdo
 	return sub, nil
 }
 
-func (s *Service) UpdateSubscription(ctx context.Context, id string, subscription thunderdome.Subscription) (thunderdome.Subscription, error) {
+func (s *Service) UpdateSubscription(ctx context.Context, subscriptionID string, subscription thunderdome.Subscription) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
@@ -163,7 +163,7 @@ func (s *Service) UpdateSubscription(ctx context.Context, id string, subscriptio
  				updated_date = NOW()
  				WHERE id = $1
 				RETURNING id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''), customer_id, subscription_id, active, type, expires, created_date, updated_date;`,
-		id, subscription.CustomerID, subscription.SubscriptionID, subscription.Active,
+		subscriptionID, subscription.CustomerID, subscription.SubscriptionID, subscription.Active,
 		subscription.Type, subscription.Expires, subscription.TeamID, subscription.OrganizationID,
 	).Scan(
 		&sub.ID, &sub.UserID, &sub.TeamID, &sub.OrganizationID,
@@ -177,7 +177,7 @@ func (s *Service) UpdateSubscription(ctx context.Context, id string, subscriptio
 	return sub, nil
 }
 
-func (s *Service) GetSubscriptions(ctx context.Context, Limit int, Offset int) ([]thunderdome.Subscription, int, error) {
+func (s *Service) GetSubscriptions(ctx context.Context, limit int, offset int) ([]thunderdome.Subscription, int, error) {
 	var count int
 
 	e := s.DB.QueryRowContext(ctx,
@@ -196,9 +196,9 @@ func (s *Service) GetSubscriptions(ctx context.Context, Limit int, Offset int) (
  				s.customer_id, s.subscription_id, s.active, s.type, s.expires,
  				s.created_date, s.updated_date, u.id, u.name, u.email
  				FROM thunderdome.subscription s
- 				LEFT JOIN thunderdome.users u ON s.user_id = u.id 
+ 				LEFT JOIN thunderdome.users u ON s.user_id = u.id
  				ORDER BY s.created_date ASC LIMIT $1 OFFSET $2 ;`,
-		Limit, Offset,
+		limit, offset,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -223,7 +223,7 @@ func (s *Service) GetSubscriptions(ctx context.Context, Limit int, Offset int) (
 			&sub.Expires,
 			&sub.CreatedDate,
 			&sub.UpdatedDate,
-			&sub.User.Id,
+			&sub.User.ID,
 			&sub.User.Name,
 			&sub.User.Email,
 		); err != nil {

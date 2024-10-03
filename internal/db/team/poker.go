@@ -9,7 +9,7 @@ import (
 )
 
 // TeamPokerList gets a list of team poker games
-func (d *Service) TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker {
+func (d *Service) TeamPokerList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Poker {
 	var pokers = make([]*thunderdome.Poker, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT p.id, p.name
@@ -18,9 +18,9 @@ func (d *Service) TeamPokerList(ctx context.Context, TeamID string, Limit int, O
         ORDER BY p.created_date DESC
 		LIMIT $2
 		OFFSET $3;`,
-		TeamID,
-		Limit,
-		Offset,
+		teamID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -29,7 +29,7 @@ func (d *Service) TeamPokerList(ctx context.Context, TeamID string, Limit int, O
 			var tb thunderdome.Poker
 
 			if err := rows.Scan(
-				&tb.Id,
+				&tb.ID,
 				&tb.Name,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_poker list query scan error", zap.Error(err))
@@ -45,11 +45,11 @@ func (d *Service) TeamPokerList(ctx context.Context, TeamID string, Limit int, O
 }
 
 // TeamAddPoker adds a poker game to a team
-func (d *Service) TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error {
+func (d *Service) TeamAddPoker(ctx context.Context, teamID string, pokerID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.poker SET team_id = $1 WHERE id = $2;`,
-		TeamID,
-		PokerID,
+		teamID,
+		pokerID,
 	)
 
 	if err != nil {
@@ -60,11 +60,11 @@ func (d *Service) TeamAddPoker(ctx context.Context, TeamID string, PokerID strin
 }
 
 // TeamRemovePoker removes a poker game from a team
-func (d *Service) TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error {
+func (d *Service) TeamRemovePoker(ctx context.Context, teamID string, pokerID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.poker SET team_id = null WHERE id = $2 AND team_id = $1;`,
-		TeamID,
-		PokerID,
+		teamID,
+		pokerID,
 	)
 
 	if err != nil {

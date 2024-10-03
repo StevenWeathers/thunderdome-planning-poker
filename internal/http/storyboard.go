@@ -40,16 +40,16 @@ type storyboardCreateRequestBody struct {
 func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		TeamID, teamIdExists := vars["teamId"]
-		if !teamIdExists && s.Config.RequireTeams {
+		teamID, teamIDExists := vars["teamId"]
+		if !teamIDExists && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "STORYBOARD_CREATION_REQUIRES_TEAM"))
 			return
 		}
@@ -76,14 +76,14 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 		var newStoryboard *thunderdome.Storyboard
 		var err error
 		// if storyboard created with team association
-		if teamIdExists {
+		if teamIDExists {
 			if isTeamUserOrAnAdmin(r) {
-				newStoryboard, err = s.StoryboardDataSvc.TeamCreateStoryboard(ctx, TeamID, UserID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode)
+				newStoryboard, err = s.StoryboardDataSvc.TeamCreateStoryboard(ctx, teamID, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode)
 
 				if err != nil {
 					s.Logger.Ctx(ctx).Error("handleStoryboardCreate error", zap.Error(err),
-						zap.String("entity_user_id", UserID), zap.String("team_id", TeamID),
-						zap.String("storyboard_name", sb.StoryboardName), zap.String("session_user_id", SessionUserID))
+						zap.String("entity_user_id", userID), zap.String("team_id", teamID),
+						zap.String("storyboard_name", sb.StoryboardName), zap.String("session_user_id", sessionUserID))
 					s.Failure(w, r, http.StatusInternalServerError, err)
 					return
 				}
@@ -92,10 +92,10 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newStoryboard, err = s.StoryboardDataSvc.CreateStoryboard(ctx, UserID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode)
+			newStoryboard, err = s.StoryboardDataSvc.CreateStoryboard(ctx, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode)
 			if err != nil {
 				s.Logger.Ctx(ctx).Error("handleStoryboardCreate error", zap.Error(err),
-					zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID),
+					zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID),
 					zap.String("storyboard_name", sb.StoryboardName))
 				s.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -120,16 +120,16 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 func (s *Service) handleStoryboardGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		StoryboardID := vars["storyboardId"]
-		idErr := validate.Var(StoryboardID, "required,uuid")
+		storyboardID := vars["storyboardId"]
+		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		sessionUserID := r.Context().Value(contextKeyUserID).(string)
+		userType := r.Context().Value(contextKeyUserType).(string)
 
-		sb, err := s.StoryboardDataSvc.GetStoryboard(StoryboardID, SessionUserID)
+		sb, err := s.StoryboardDataSvc.GetStoryboard(storyboardID, sessionUserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARD_NOT_FOUND"))
 			return
@@ -137,8 +137,8 @@ func (s *Service) handleStoryboardGet() http.HandlerFunc {
 
 		// don't allow retrieving storyboard details if storyboard has JoinCode and user hasn't joined yet
 		if sb.JoinCode != "" {
-			UserErr := s.StoryboardDataSvc.GetStoryboardUserActiveStatus(StoryboardID, SessionUserID)
-			if UserErr != nil && UserType != thunderdome.AdminUserType {
+			UserErr := s.StoryboardDataSvc.GetStoryboardUserActiveStatus(storyboardID, sessionUserID)
+			if UserErr != nil && userType != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_STORYBOARD"))
 				return
 			}
@@ -164,32 +164,32 @@ func (s *Service) handleStoryboardGet() http.HandlerFunc {
 func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		limit, offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		storyboards, Count, err := s.StoryboardDataSvc.GetStoryboardsByUser(UserID, Limit, Offset)
+		storyboards, count, err := s.StoryboardDataSvc.GetStoryboardsByUser(userID, limit, offset)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetUserStoryboards error", zap.Error(err), zap.Int("limit", Limit),
-				zap.Int("offset", Offset), zap.String("entity_user_id", UserID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleGetUserStoryboards error", zap.Error(err), zap.Int("limit", limit),
+				zap.Int("offset", offset), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARDS_NOT_FOUND"))
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, storyboards, Meta)
+		s.Success(w, r, http.StatusOK, storyboards, meta)
 	}
 }
 
@@ -208,35 +208,35 @@ func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 func (s *Service) handleGetStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		limit, offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
-		var Count int
+		var count int
 		var storyboards []*thunderdome.Storyboard
-		Active, _ := strconv.ParseBool(query.Get("active"))
+		active, _ := strconv.ParseBool(query.Get("active"))
 
-		if Active {
-			storyboards, Count, err = s.StoryboardDataSvc.GetActiveStoryboards(Limit, Offset)
+		if active {
+			storyboards, count, err = s.StoryboardDataSvc.GetActiveStoryboards(limit, offset)
 		} else {
-			storyboards, Count, err = s.StoryboardDataSvc.GetStoryboards(Limit, Offset)
+			storyboards, count, err = s.StoryboardDataSvc.GetStoryboards(limit, offset)
 		}
 
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetStoryboards error", zap.Error(err), zap.Int("limit", Limit),
-				zap.Int("offset", Offset), zap.Bool("storyboard_active", Active),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleGetStoryboards error", zap.Error(err), zap.Int("limit", limit),
+				zap.Int("offset", offset), zap.Bool("storyboard_active", active),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, storyboards, Meta)
+		s.Success(w, r, http.StatusOK, storyboards, meta)
 	}
 }
 
@@ -255,18 +255,18 @@ func (s *Service) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFun
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		Id := vars["storyboardId"]
-		idErr := validate.Var(Id, "required,uuid")
+		storyboardID := vars["storyboardId"]
+		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
-		err := sb.APIEvent(ctx, Id, SessionUserID, "concede_storyboard", "")
+		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "concede_storyboard", "")
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleStoryboardDelete error", zap.Error(err), zap.String("storyboard_id", Id),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleStoryboardDelete error", zap.Error(err), zap.String("storyboard_id", storyboardID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -295,13 +295,13 @@ func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFu
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		Id := vars["storyboardId"]
-		idErr := validate.Var(Id, "required,uuid")
+		storyboardID := vars["storyboardId"]
+		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
@@ -322,12 +322,12 @@ func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFu
 			return
 		}
 
-		err := sb.APIEvent(ctx, Id, SessionUserID, "add_goal", sbm.Name)
+		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "add_goal", sbm.Name)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard goal add error",
 				zap.Error(err),
-				zap.String("storyboard_id", Id),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("storyboard_id", storyboardID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -356,13 +356,13 @@ func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.Handler
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		Id := vars["storyboardId"]
-		idErr := validate.Var(Id, "required,uuid")
+		storyboardID := vars["storyboardId"]
+		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
@@ -389,12 +389,12 @@ func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.Handler
 			return
 		}
 
-		err = sb.APIEvent(ctx, Id, SessionUserID, "add_column", string(eventValue))
+		err = sb.APIEvent(ctx, storyboardID, sessionUserID, "add_column", string(eventValue))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard column add error",
 				zap.Error(err),
-				zap.String("storyboard_id", Id),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("storyboard_id", storyboardID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -424,13 +424,13 @@ func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerF
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		Id := vars["storyboardId"]
-		idErr := validate.Var(Id, "required,uuid")
+		storyboardID := vars["storyboardId"]
+		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
@@ -457,12 +457,12 @@ func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerF
 			return
 		}
 
-		err = sb.APIEvent(ctx, Id, SessionUserID, "add_story", string(eventValue))
+		err = sb.APIEvent(ctx, storyboardID, sessionUserID, "add_story", string(eventValue))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story add error",
 				zap.Error(err),
-				zap.String("storyboard_id", Id),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("storyboard_id", storyboardID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -494,19 +494,19 @@ func (s *Service) handleStoryboardStoryMove(sb *storyboard.Service) http.Handler
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		Id := vars["storyboardId"]
-		idErr := validate.Var(Id, "required,uuid")
+		storyboardID := vars["storyboardId"]
+		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		StoryId := vars["storyId"]
-		idErr = validate.Var(Id, "required,uuid")
+		storyID := vars["storyId"]
+		idErr = validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := r.Context().Value(contextKeyUserID).(string)
+		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
@@ -534,7 +534,7 @@ func (s *Service) handleStoryboardStoryMove(sb *storyboard.Service) http.Handler
 			ColumnID    string `json:"columnId"`
 		}
 		sbme := moveEvent{
-			StoryID:     StoryId,
+			StoryID:     storyID,
 			PlaceBefore: sbm.PlaceBefore,
 			GoalID:      sbm.GoalID,
 			ColumnID:    sbm.ColumnID,
@@ -545,13 +545,13 @@ func (s *Service) handleStoryboardStoryMove(sb *storyboard.Service) http.Handler
 			return
 		}
 
-		err := sb.APIEvent(ctx, Id, SessionUserID, "move_story", string(moveEventJSON))
+		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "move_story", string(moveEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story move error",
 				zap.Error(err),
-				zap.String("storyboard_id", Id),
-				zap.String("story_id", StoryId),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("storyboard_id", storyboardID),
+				zap.String("story_id", storyID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

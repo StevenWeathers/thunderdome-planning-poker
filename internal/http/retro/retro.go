@@ -27,7 +27,7 @@ type Config struct {
 }
 
 type AuthDataSvc interface {
-	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
+	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
 
 type UserDataSvc interface {

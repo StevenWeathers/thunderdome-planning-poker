@@ -85,8 +85,8 @@ func HashString(s string) string {
 }
 
 // HashSaltPassword takes a password byte then salt + hashes it returning a hash string
-func HashSaltPassword(UserPassword string) (string, error) {
-	pwd := []byte(UserPassword)
+func HashSaltPassword(password string) (string, error) {
+	pwd := []byte(password)
 	// Use GenerateFromPassword to hash & salt pwd.
 	// MinCost is just an integer constant provided by the bcrypt
 	// package along with DefaultCost & MaxCost.

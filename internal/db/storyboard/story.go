@@ -11,13 +11,13 @@ import (
 )
 
 // CreateStoryboardStory adds a new story to a Storyboard
-func (d *Service) CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
 	var betweenAkey *string
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
-		zap.String("storyboard_id", StoryboardID),
-		zap.String("column_id", ColumnID),
-		zap.String("goal_id", GoalID),
+		zap.String("storyboard_id", storyboardID),
+		zap.String("column_id", columnID),
+		zap.String("goal_id", goalID),
 	)
 
 	tx, err := d.DB.BeginTx(context.Background(), nil)
@@ -29,14 +29,14 @@ func (d *Service) CreateStoryboardStory(StoryboardID string, GoalID string, Colu
 
 	if err := tx.QueryRow(
 		`
-		SELECT 
+		SELECT
     COALESCE(
         (SELECT MAX(display_order)
          FROM thunderdome.storyboard_story
          WHERE column_id = $1 AND goal_id = $2 AND storyboard_id = $3),
         'a0'
     ) AS last_display_order;`,
-		ColumnID, GoalID, StoryboardID,
+		columnID, goalID, storyboardID,
 	).Scan(&betweenAkey); err != nil {
 		logger.Error("get display_order between query error",
 			zap.Error(err),
@@ -61,9 +61,9 @@ func (d *Service) CreateStoryboardStory(StoryboardID string, GoalID string, Colu
 	}
 
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.storyboard_story (storyboard_id, goal_id, column_id, display_order) 
+		`INSERT INTO thunderdome.storyboard_story (storyboard_id, goal_id, column_id, display_order)
 		VALUES ($1, $2, $3, $4);`,
-		StoryboardID, GoalID, ColumnID, displayOrder,
+		storyboardID, goalID, columnID, displayOrder,
 	); err != nil {
 		logger.Error(
 			"create story error",
@@ -78,112 +78,112 @@ func (d *Service) CreateStoryboardStory(StoryboardID string, GoalID string, Colu
 		return nil, fmt.Errorf("failed to update storyboard story display_order: %v", commitErr)
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ReviseStoryName updates the story name by ID
-func (d *Service) ReviseStoryName(StoryboardID string, userID string, StoryID string, StoryName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryName(storyboardID string, userID string, storyID string, storyName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET name = $2, updated_date = NOW() WHERE id = $1;`,
-		StoryID,
-		StoryName,
+		storyID,
+		storyName,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_name error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ReviseStoryContent updates the story content by ID
-func (d *Service) ReviseStoryContent(StoryboardID string, userID string, StoryID string, StoryContent string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryContent(storyboardID string, userID string, storyID string, storyContent string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET content = $2, updated_date = NOW() WHERE id = $1;`,
-		StoryID,
-		StoryContent,
+		storyID,
+		storyContent,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_content error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ReviseStoryColor updates the story color by ID
-func (d *Service) ReviseStoryColor(StoryboardID string, userID string, StoryID string, StoryColor string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryColor(storyboardID string, userID string, storyID string, storyColor string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET color = $2, updated_date = NOW() WHERE id = $1;`,
-		StoryID,
-		StoryColor,
+		storyID,
+		storyColor,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_color error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ReviseStoryPoints updates the story points by ID
-func (d *Service) ReviseStoryPoints(StoryboardID string, userID string, StoryID string, Points int) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryPoints(storyboardID string, userID string, storyID string, points int) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET points = $2, updated_date = NOW() WHERE id = $1;`,
-		StoryID,
-		Points,
+		storyID,
+		points,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_points error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ReviseStoryClosed updates the story closed status by ID
-func (d *Service) ReviseStoryClosed(StoryboardID string, userID string, StoryID string, Closed bool) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryClosed(storyboardID string, userID string, storyID string, closed bool) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET closed = $2, updated_date = NOW() WHERE id = $1;`,
-		StoryID,
-		Closed,
+		storyID,
+		closed,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_closed error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ReviseStoryLink updates the story link by ID
-func (d *Service) ReviseStoryLink(StoryboardID string, userID string, StoryID string, Link string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryLink(storyboardID string, userID string, storyID string, link string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET link = $2, updated_date = NOW() WHERE id = $1;`,
-		StoryID,
-		Link,
+		storyID,
+		link,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.sb_story_link_edit error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // MoveStoryboardStory moves the story by ID to Goal/Column by ID
-func (d *Service) MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) MoveStoryboardStory(storyboardID string, userID string, storyID string, goalID string, columnID string, placeBefore string) ([]*thunderdome.StoryboardGoal, error) {
 	var betweenAkey *string
 	var betweenBkey *string
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
-		zap.String("storyboard_id", StoryboardID),
-		zap.String("story_id", StoryID),
-		zap.String("place_before", PlaceBefore),
-		zap.String("column_id", ColumnID),
-		zap.String("goal_id", GoalID),
+		zap.String("storyboard_id", storyboardID),
+		zap.String("story_id", storyID),
+		zap.String("place_before", placeBefore),
+		zap.String("column_id", columnID),
+		zap.String("goal_id", goalID),
 	)
 
 	tx, err := d.DB.BeginTx(context.Background(), nil)
@@ -193,15 +193,15 @@ func (d *Service) MoveStoryboardStory(StoryboardID string, userID string, StoryI
 	}
 	defer tx.Rollback()
 
-	if PlaceBefore == "" {
+	if placeBefore == "" {
 		if err := tx.QueryRow(
 			`
-		SELECT 
+		SELECT
         (SELECT MAX(display_order)
          FROM thunderdome.storyboard_story
          WHERE column_id = $1 AND goal_id = $2 AND storyboard_id = $3)
           AS last_display_order;`,
-			ColumnID, GoalID, StoryboardID,
+			columnID, goalID, storyboardID,
 		).Scan(&betweenAkey); err != nil {
 			logger.Error("get display_order between query error",
 				zap.Error(err),
@@ -225,13 +225,13 @@ func (d *Service) MoveStoryboardStory(StoryboardID string, userID string, StoryI
 			ORDER BY display_order DESC
 			LIMIT 1
 		)
-		SELECT 
+		SELECT
 			cs.display_order AS current_display_order,
 			ps.display_order AS preceding_display_order
 		FROM current_story cs
 		LEFT JOIN preceding_story ps ON true;
 		`,
-			PlaceBefore, ColumnID, GoalID,
+			placeBefore, columnID, goalID,
 		).Scan(&betweenBkey, &betweenAkey); err != nil {
 			logger.Error("get display_order between query error",
 				zap.Error(err),
@@ -259,9 +259,9 @@ func (d *Service) MoveStoryboardStory(StoryboardID string, userID string, StoryI
 	}
 
 	if _, err := tx.Exec(
-		`UPDATE thunderdome.storyboard_story 
+		`UPDATE thunderdome.storyboard_story
 		SET display_order = $1, column_id = $2, goal_id = $3, updated_date = NOW() WHERE id = $4;`,
-		displayOrder, ColumnID, GoalID, StoryID,
+		displayOrder, columnID, goalID, storyID,
 	); err != nil {
 		logger.Error(
 			"update story display_order",
@@ -278,66 +278,66 @@ func (d *Service) MoveStoryboardStory(StoryboardID string, userID string, StoryI
 		return nil, fmt.Errorf("failed to update storyboard story display_order: %v", commitErr)
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // DeleteStoryboardStory removes a story from the current board by ID
-func (d *Service) DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) DeleteStoryboardStory(storyboardID string, userID string, storyID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_story WHERE id = $1`, StoryID); err != nil {
+		`DELETE FROM thunderdome.storyboard_story WHERE id = $1`, storyID); err != nil {
 		d.Logger.Error("storyboard story delete error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // AddStoryComment adds a comment to a story
-func (d *Service) AddStoryComment(StoryboardID string, UserID string, StoryID string, Comment string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) AddStoryComment(storyboardID string, userID string, storyID string, comment string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.storyboard_story_comment (storyboard_id, story_id, user_id, comment) VALUES ($1, $2, $3, $4);`,
-		StoryboardID,
-		StoryID,
-		UserID,
-		Comment,
+		storyboardID,
+		storyID,
+		userID,
+		comment,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.story_comment_add error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // EditStoryComment edits a story comment
-func (d *Service) EditStoryComment(StoryboardID string, CommentID string, Comment string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story_comment SET comment = $2
         WHERE id = $1;`,
-		CommentID,
-		Comment,
+		commentID,
+		comment,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.story_comment_edit error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // DeleteStoryComment deletes a story comment
-func (d *Service) DeleteStoryComment(StoryboardID string, CommentID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.storyboard_story_comment WHERE id = $1;`,
-		CommentID,
+		commentID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.story_comment_delete error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }

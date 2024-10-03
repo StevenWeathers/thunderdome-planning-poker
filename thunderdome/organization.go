@@ -6,7 +6,7 @@ import (
 
 // Organization can be a company
 type Organization struct {
-	Id          string    `json:"id"`
+	ID          string    `json:"id"`
 	Name        string    `json:"name"`
 	Subscribed  *bool     `json:"subscribed,omitempty"`
 	CreatedDate time.Time `json:"createdDate"`
@@ -24,7 +24,7 @@ type UserDepartment struct {
 }
 
 type OrganizationUser struct {
-	Id           string `json:"id"`
+	ID           string `json:"id"`
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	Role         string `json:"role"`
@@ -34,8 +34,8 @@ type OrganizationUser struct {
 }
 
 type OrganizationUserInvite struct {
-	InviteId       string    `json:"invite_id"`
-	OrganizationId string    `json:"organization_id"`
+	InviteID       string    `json:"invite_id"`
+	OrganizationID string    `json:"organization_id"`
 	Email          string    `json:"email"`
 	Role           string    `json:"role"`
 	CreatedDate    time.Time `json:"created_date"`
@@ -43,15 +43,15 @@ type OrganizationUserInvite struct {
 }
 
 type Department struct {
-	Id             string    `json:"id"`
+	ID             string    `json:"id"`
 	Name           string    `json:"name"`
-	OrganizationId string    `json:"organization_id"`
+	OrganizationID string    `json:"organization_id"`
 	CreatedDate    time.Time `json:"createdDate"`
 	UpdatedDate    time.Time `json:"updatedDate"`
 }
 
 type DepartmentUser struct {
-	Id           string `json:"id"`
+	ID           string `json:"id"`
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	Role         string `json:"role"`
@@ -61,8 +61,8 @@ type DepartmentUser struct {
 }
 
 type DepartmentUserInvite struct {
-	InviteId     string    `json:"invite_id"`
-	DepartmentId string    `json:"department_id"`
+	InviteID     string    `json:"invite_id"`
+	DepartmentID string    `json:"department_id"`
 	Email        string    `json:"email"`
 	Role         string    `json:"role"`
 	CreatedDate  time.Time `json:"created_date"`

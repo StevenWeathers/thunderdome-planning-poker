@@ -24,24 +24,24 @@ import (
 func (s *Service) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		APIKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, UserID)
+		apiKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, userID)
 		if keysErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserAPIKeys error", zap.Error(keysErr),
-				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, APIKeys, nil)
+		s.Success(w, r, http.StatusOK, apiKeys, nil)
 	}
 }
 
@@ -64,10 +64,10 @@ type apikeyGenerateRequestBody struct {
 func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
+		userID := vars["userId"]
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		idErr := validate.Var(UserID, "required,uuid")
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -92,28 +92,28 @@ func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, UserID)
+		apiKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, userID)
 		if keysErr != nil {
 			s.Logger.Ctx(ctx).Error("handleAPIKeyGenerate error", zap.Error(keysErr),
-				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		if len(APIKeys) == s.Config.UserAPIKeyLimit {
+		if len(apiKeys) == s.Config.UserAPIKeyLimit {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "USER_APIKEY_LIMIT_REACHED"))
 			return
 		}
 
-		APIKey, keyErr := s.ApiKeyDataSvc.GenerateApiKey(ctx, UserID, k.Name)
+		apiKey, keyErr := s.ApiKeyDataSvc.GenerateApiKey(ctx, userID, k.Name)
 		if keyErr != nil {
 			s.Logger.Ctx(ctx).Error("handleAPIKeyGenerate error", zap.Error(keyErr),
-				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, APIKey, nil)
+		s.Success(w, r, http.StatusOK, apiKey, nil)
 	}
 }
 
@@ -137,18 +137,18 @@ type apikeyUpdateRequestBody struct {
 func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		APK := vars["keyID"]
-		apkErr := validate.Var(APK, "required")
-		if apkErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, apkErr.Error()))
+		keyID := vars["keyID"]
+		keyIDErr := validate.Var(keyID, "required")
+		if keyIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, keyIDErr.Error()))
 			return
 		}
 
@@ -171,16 +171,16 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.ApiKeyDataSvc.UpdateUserApiKey(ctx, UserID, APK, k.Active)
+		keys, keysErr := s.ApiKeyDataSvc.UpdateUserApiKey(ctx, userID, keyID, k.Active)
 		if keysErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserAPIKeyUpdate error", zap.Error(keysErr),
-				zap.String("entity_user_id", UserID), zap.String("apikey_id", APK),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("entity_user_id", userID), zap.String("apikey_id", keyID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, APIKeys, nil)
+		s.Success(w, r, http.StatusOK, keys, nil)
 	}
 }
 
@@ -199,30 +199,30 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		APK := vars["keyID"]
-		apkErr := validate.Var(APK, "required")
-		if apkErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, apkErr.Error()))
+		keyID := vars["keyID"]
+		keyIDErr := validate.Var(keyID, "required")
+		if keyIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, keyIDErr.Error()))
 			return
 		}
 
-		APIKeys, keysErr := s.ApiKeyDataSvc.DeleteUserApiKey(ctx, UserID, APK)
+		keys, keysErr := s.ApiKeyDataSvc.DeleteUserApiKey(ctx, userID, keyID)
 		if keysErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserAPIKeyDelete error", zap.Error(keysErr),
-				zap.String("entity_user_id", UserID), zap.String("apikey_id", APK),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("entity_user_id", userID), zap.String("apikey_id", keyID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, APIKeys, nil)
+		s.Success(w, r, http.StatusOK, keys, nil)
 	}
 }

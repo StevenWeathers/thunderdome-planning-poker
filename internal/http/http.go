@@ -313,16 +313,16 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	if a.Config.FeaturePoker {
 		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handlePokerCreate()))).Methods("POST")
 		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handleGetUserGames()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveBattle())))).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames()))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame())))).Methods("DELETE")
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.handlePokerCreate()))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveBattle())))).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames()))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame())))).Methods("DELETE")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handlePokerCreate())))).Methods("POST")
-		teamRouter.HandleFunc("/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveBattle())))).Methods("DELETE")
+		teamRouter.HandleFunc("/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames()))).Methods("GET")
+		teamRouter.HandleFunc("/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame())))).Methods("DELETE")
 		teamRouter.HandleFunc("/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handlePokerCreate())))).Methods("POST")
-		apiRouter.HandleFunc("/maintenance/clean-battles", a.userOnly(a.adminOnly(a.handleCleanBattles()))).Methods("DELETE")
+		apiRouter.HandleFunc("/maintenance/clean-battles", a.userOnly(a.adminOnly(a.handleCleanPokerGames()))).Methods("DELETE")
 		apiRouter.HandleFunc("/battles", a.userOnly(a.adminOnly(a.handleGetPokerGames()))).Methods("GET")
 		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetPokerGame())).Methods("GET")
 		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handlePokerDelete(pokerSvc))).Methods("DELETE")
@@ -518,8 +518,8 @@ func (s *Service) ListenAndServe() error {
 }
 
 // handleIndex parses the index html file, injecting any relevant data
-func (s *Service) handleIndex(FSS fs.FS, uiConfig thunderdome.UIConfig) http.HandlerFunc {
-	tmpl := s.getIndexTemplate(FSS)
+func (s *Service) handleIndex(filesystem fs.FS, uiConfig thunderdome.UIConfig) http.HandlerFunc {
+	tmpl := s.getIndexTemplate(filesystem)
 
 	ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(context.Background()) // prime the active alerts cache
 
@@ -528,7 +528,7 @@ func (s *Service) handleIndex(FSS fs.FS, uiConfig thunderdome.UIConfig) http.Han
 		nonce := secure.CSPNonce(r.Context())
 
 		if s.Config.EmbedUseOS {
-			tmpl = s.getIndexTemplate(FSS)
+			tmpl = s.getIndexTemplate(filesystem)
 		}
 
 		type templateData struct {

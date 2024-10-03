@@ -34,36 +34,36 @@ type teamResponse struct {
 func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		UserTeamRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		userTeamRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		// Workaround until v5 refactor to replace meta's with consistency
-		TeamRole := UserTeamRoles.TeamRole
-		if TeamRole == nil {
+		teamRole := userTeamRoles.TeamRole
+		if teamRole == nil {
 			var adminStr string
-			TeamRole = &adminStr
+			teamRole = &adminStr
 		}
 
-		Team, err := s.TeamDataSvc.TeamGet(ctx, TeamID)
+		team, err := s.TeamDataSvc.TeamGet(ctx, teamID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetTeamByUser error", zap.Error(err),
-				zap.String("team_id", TeamID),
-				zap.String("session_user_id", SessionUserID),
-				zap.String("team_role", *TeamRole))
+				zap.String("team_id", teamID),
+				zap.String("session_user_id", sessionUserID),
+				zap.String("team_role", *teamRole))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		result := &teamResponse{
-			Team:     Team,
-			TeamRole: *TeamRole,
+			Team:     team,
+			TeamRole: *teamRole,
 		}
 
 		s.Success(w, r, http.StatusOK, result, nil)
@@ -84,18 +84,18 @@ func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.TeamDataSvc.TeamListByUser(ctx, UserID, Limit, Offset)
+		teams := s.TeamDataSvc.TeamListByUser(ctx, userID, limit, offset)
 
-		s.Success(w, r, http.StatusOK, Teams, nil)
+		s.Success(w, r, http.StatusOK, teams, nil)
 	}
 }
 
@@ -113,18 +113,18 @@ func (s *Service) handleGetTeamsByUserNonOrg() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.TeamDataSvc.TeamListByUserNonOrg(ctx, UserID, Limit, Offset)
+		teams := s.TeamDataSvc.TeamListByUserNonOrg(ctx, userID, limit, offset)
 
-		s.Success(w, r, http.StatusOK, Teams, nil)
+		s.Success(w, r, http.StatusOK, teams, nil)
 	}
 }
 
@@ -140,31 +140,31 @@ func (s *Service) handleGetTeamsByUserNonOrg() http.HandlerFunc {
 func (s *Service) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Users, UserCount, err := s.TeamDataSvc.TeamUserList(ctx, TeamID, Limit, Offset)
+		users, userCount, err := s.TeamDataSvc.TeamUserList(ctx, teamID, limit, offset)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetTeamUsers error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleGetTeamUsers error", zap.Error(err), zap.String("team_id", teamID),
+				zap.Int("limit", limit), zap.Int("offset", offset), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  UserCount,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  userCount,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Users, Meta)
+		s.Success(w, r, http.StatusOK, users, meta)
 	}
 }
 
@@ -187,10 +187,10 @@ type teamCreateRequestBody struct {
 func (s *Service) handleCreateTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -215,15 +215,15 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := s.TeamDataSvc.TeamCreate(ctx, UserID, team.Name)
+		newTeam, err := s.TeamDataSvc.TeamCreate(ctx, userID, team.Name)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleCreateTeam error", zap.Error(err), zap.String("entity_user_id", UserID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleCreateTeam error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, NewTeam, nil)
+		s.Success(w, r, http.StatusOK, newTeam, nil)
 	}
 }
 
@@ -242,10 +242,10 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 func (s *Service) handleTeamUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -270,16 +270,16 @@ func (s *Service) handleTeamUpdate() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := s.TeamDataSvc.TeamUpdate(ctx, TeamID, team.Name)
+		newTeam, err := s.TeamDataSvc.TeamUpdate(ctx, teamID, team.Name)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamUpdate error", zap.Error(err),
-				zap.String("team_id", TeamID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("team_id", teamID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, NewTeam, nil)
+		s.Success(w, r, http.StatusOK, newTeam, nil)
 	}
 }
 
@@ -308,10 +308,10 @@ type teamInviteUserRequestBody struct {
 func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -336,48 +336,48 @@ func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := strings.ToLower(u.Email)
+		userEmail := strings.ToLower(u.Email)
 
 		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled {
-			User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-			if UserErr == nil {
-				_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+			user, userErr := s.UserDataSvc.GetUserByEmail(ctx, userEmail)
+			if userErr == nil {
+				_, err := s.TeamDataSvc.TeamAddUser(ctx, teamID, user.ID, u.Role)
 				if err != nil {
-					s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(err), zap.String("team_id", TeamID),
-						zap.String("user_id", User.Id), zap.String("team_role", u.Role),
-						zap.String("session_user_id", SessionUserID))
+					s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(err), zap.String("team_id", teamID),
+						zap.String("user_id", user.ID), zap.String("team_role", u.Role),
+						zap.String("session_user_id", sessionUserID))
 					s.Failure(w, r, http.StatusInternalServerError, err)
 					return
 				}
 				s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
 				return
-			} else if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
-				s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(UserErr),
-					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, UserErr)
+			} else if userErr != nil && !errors.Is(userErr, sql.ErrNoRows) {
+				s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(userErr),
+					zap.String("team_id", teamID), zap.String("session_user_id", sessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, userErr)
 				return
 			}
 		}
 
-		inviteID, inviteErr := s.TeamDataSvc.TeamInviteUser(ctx, TeamID, UserEmail, u.Role)
+		inviteID, inviteErr := s.TeamDataSvc.TeamInviteUser(ctx, teamID, userEmail, u.Role)
 		if inviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(inviteErr),
-				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				zap.String("team_id", teamID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, inviteErr)
 			return
 		}
-		team, teamErr := s.TeamDataSvc.TeamGet(ctx, TeamID)
+		team, teamErr := s.TeamDataSvc.TeamGet(ctx, teamID)
 		if teamErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(teamErr),
-				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				zap.String("team_id", teamID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, teamErr)
 			return
 		}
 
-		emailErr := s.Email.SendTeamInvite(team.Name, UserEmail, inviteID)
+		emailErr := s.Email.SendTeamInvite(team.Name, userEmail, inviteID)
 		if emailErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(emailErr),
-				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				zap.String("team_id", teamID), zap.String("session_user_id", sessionUserID))
 			return
 		}
 
@@ -405,16 +405,16 @@ type teamUpdateUserRequestBody struct {
 func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		tidErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		tidErr := validate.Var(teamID, "required,uuid")
 		if tidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tidErr.Error()))
 			return
 		}
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -439,11 +439,11 @@ func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := s.TeamDataSvc.TeamUpdateUser(ctx, TeamID, UserID, u.Role)
+		_, err := s.TeamDataSvc.TeamUpdateUser(ctx, teamID, userID, u.Role)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("user_id", UserID), zap.String("team_role", u.Role),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("user_id", userID), zap.String("team_role", u.Role),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -467,25 +467,25 @@ func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		tidErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		tidErr := validate.Var(teamID, "required,uuid")
 		if tidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tidErr.Error()))
 			return
 		}
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemoveUser(ctx, TeamID, UserID)
+		err := s.TeamDataSvc.TeamRemoveUser(ctx, teamID, userID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamRemoveUser error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("user_id", UserID), zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleTeamRemoveUser error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("user_id", userID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -494,7 +494,7 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 	}
 }
 
-// handleGetTeamBattles gets a list of battles associated to the team
+// handleGetTeamPokerGames gets a list of battles associated to the team
 // @Summary      Get Team Battles
 // @Description  Get a list of battles associated to the team
 // @Tags         team
@@ -503,59 +503,59 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 // @Success      200     object  standardJsonResponse{data=[]thunderdome.Poker}
 // @Security     ApiKeyAuth
 // @Router       /teams/{teamId}/battles [get]
-func (s *Service) handleGetTeamBattles() http.HandlerFunc {
+func (s *Service) handleGetTeamPokerGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Battles := s.TeamDataSvc.TeamPokerList(ctx, TeamID, Limit, Offset)
+		games := s.TeamDataSvc.TeamPokerList(ctx, teamID, limit, offset)
 
-		s.Success(w, r, http.StatusOK, Battles, nil)
+		s.Success(w, r, http.StatusOK, games, nil)
 	}
 }
 
-// handleTeamRemoveBattle handles removing battle from a team
+// handleTeamRemovePokerGame handles removing poker game from a team
 // @Summary      Remove Team Poker
-// @Description  Remove a battle from the team
+// @Description  Remove a poker game from the team
 // @Tags         team
 // @Produce      json
 // @Param        teamId    path    string  true  "the team ID"
-// @Param        battleId  path    string  true  "the battle ID"
+// @Param        battleId  path    string  true  "the game ID"
 // @Success      200       object  standardJsonResponse{}
 // @Success      403       object  standardJsonResponse{}
 // @Success      500       object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /teams/{teamId}/battles/{battleId} [delete]
-func (s *Service) handleTeamRemoveBattle() http.HandlerFunc {
+func (s *Service) handleTeamRemovePokerGame() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		BattleID := vars["battleId"]
-		idErr = validate.Var(BattleID, "required,uuid")
+		gameID := vars["battleId"]
+		idErr = validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemovePoker(ctx, TeamID, BattleID)
+		err := s.TeamDataSvc.TeamRemovePoker(ctx, teamID, gameID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamRemoveBattle error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("battle_id", BattleID), zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleTeamRemoveBattle error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("battle_id", gameID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -578,19 +578,19 @@ func (s *Service) handleTeamRemoveBattle() http.HandlerFunc {
 func (s *Service) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.TeamDataSvc.TeamDelete(ctx, TeamID)
+		err := s.TeamDataSvc.TeamDelete(ctx, teamID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleDeleteTeam error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleDeleteTeam error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -612,17 +612,17 @@ func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Retrospectives := s.TeamDataSvc.TeamRetroList(ctx, TeamID, Limit, Offset)
+		retrospectives := s.TeamDataSvc.TeamRetroList(ctx, teamID, limit, offset)
 
-		s.Success(w, r, http.StatusOK, Retrospectives, nil)
+		s.Success(w, r, http.StatusOK, retrospectives, nil)
 	}
 }
 
@@ -641,25 +641,25 @@ func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		RetrospectiveID := vars["retroId"]
-		idErr = validate.Var(RetrospectiveID, "required,uuid")
+		retrospectiveID := vars["retroId"]
+		idErr = validate.Var(retrospectiveID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemoveRetro(ctx, TeamID, RetrospectiveID)
+		err := s.TeamDataSvc.TeamRemoveRetro(ctx, teamID, retrospectiveID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamRemoveRetro error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("retro_id", RetrospectiveID), zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleTeamRemoveRetro error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("retro_id", retrospectiveID), zap.String("session_user_id", sessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -679,17 +679,17 @@ func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Storyboards := s.TeamDataSvc.TeamStoryboardList(ctx, TeamID, Limit, Offset)
+		storyboards := s.TeamDataSvc.TeamStoryboardList(ctx, teamID, limit, offset)
 
-		s.Success(w, r, http.StatusOK, Storyboards, nil)
+		s.Success(w, r, http.StatusOK, storyboards, nil)
 	}
 }
 
@@ -708,25 +708,25 @@ func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		StoryboardID := vars["storyboardId"]
-		idErr = validate.Var(StoryboardID, "required,uuid")
+		storyboardID := vars["storyboardId"]
+		idErr = validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemoveStoryboard(ctx, TeamID, StoryboardID)
+		err := s.TeamDataSvc.TeamRemoveStoryboard(ctx, teamID, storyboardID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamRemoveStoryboard error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("storyboard_id", StoryboardID), zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleTeamRemoveStoryboard error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("storyboard_id", storyboardID), zap.String("session_user_id", sessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -748,37 +748,37 @@ func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 		var err error
-		var Count int
-		var Actions []*thunderdome.RetroAction
+		var count int
+		var actions []*thunderdome.RetroAction
 		query := r.URL.Query()
-		Completed, _ := strconv.ParseBool(query.Get("completed"))
+		completed, _ := strconv.ParseBool(query.Get("completed"))
 
-		Actions, Count, err = s.RetroDataSvc.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
+		actions, count, err = s.RetroDataSvc.GetTeamRetroActions(teamID, limit, offset, completed)
 
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetTeamRetroActions error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleGetTeamRetroActions error", zap.Error(err), zap.String("team_id", teamID),
+				zap.Int("limit", limit), zap.Int("offset", offset), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Actions, Meta)
+		s.Success(w, r, http.StatusOK, actions, meta)
 	}
 }
 
@@ -794,19 +794,19 @@ func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 func (s *Service) handleGetTeamUserInvites() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		invites, err := s.TeamDataSvc.TeamGetUserInvites(ctx, TeamID)
+		invites, err := s.TeamDataSvc.TeamGetUserInvites(ctx, teamID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetTeamUserInvites error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleGetTeamUserInvites error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -830,25 +830,25 @@ func (s *Service) handleGetTeamUserInvites() http.HandlerFunc {
 func (s *Service) handleDeleteTeamUserInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		inviteId := vars["inviteId"]
-		idErr = validate.Var(inviteId, "required,uuid")
+		inviteID := vars["inviteId"]
+		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.TeamDataSvc.TeamDeleteUserInvite(ctx, inviteId)
+		err := s.TeamDataSvc.TeamDeleteUserInvite(ctx, inviteID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleDeleteTeamUserInvite error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("invite_id", inviteId), zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleDeleteTeamUserInvite error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("invite_id", inviteID), zap.String("session_user_id", sessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

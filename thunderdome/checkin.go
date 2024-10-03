@@ -1,7 +1,7 @@
 package thunderdome
 
 type TeamCheckin struct {
-	Id          string            `json:"id"`
+	ID          string            `json:"id"`
 	User        *TeamUser         `json:"user"`
 	Yesterday   string            `json:"yesterday"`
 	Today       string            `json:"today"`

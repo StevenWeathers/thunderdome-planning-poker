@@ -36,13 +36,13 @@ func createJsonCookieValue(value any) (string, error) {
 }
 
 // CreateUserCookie creates the users CookieService
-func (s *CookieService) CreateUserCookie(w http.ResponseWriter, UserID string) error {
-	return s.CreateCookie(w, s.config.SecureCookieName, UserID, int(time.Hour.Seconds()*24*365))
+func (s *CookieService) CreateUserCookie(w http.ResponseWriter, userID string) error {
+	return s.CreateCookie(w, s.config.SecureCookieName, userID, int(time.Hour.Seconds()*24*365))
 }
 
 // CreateSessionCookie creates the user's session CookieService
-func (s *CookieService) CreateSessionCookie(w http.ResponseWriter, SessionID string) error {
-	return s.CreateCookie(w, s.config.SessionCookieName, SessionID, int(time.Hour.Seconds()*24*30))
+func (s *CookieService) CreateSessionCookie(w http.ResponseWriter, sessionID string) error {
+	return s.CreateCookie(w, s.config.SessionCookieName, sessionID, int(time.Hour.Seconds()*24*30))
 }
 
 // CreateUserUICookie creates the user's frontend UI cookie

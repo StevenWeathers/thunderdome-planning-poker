@@ -29,41 +29,40 @@ func (s *Service) panicRecovery(h http.Handler) http.Handler {
 // userOnly validates that the request was made by a valid user
 func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		apiKey := r.Header.Get(apiKeyHeaderName)
-		apiKey = strings.TrimSpace(apiKey)
+		apiKey := strings.TrimSpace(r.Header.Get(apiKeyHeaderName))
 		ctx := r.Context()
-		var User *thunderdome.User
+		var user *thunderdome.User
 
 		if apiKey != "" && s.Config.ExternalAPIEnabled {
 			var apiKeyErr error
-			User, apiKeyErr = s.ApiKeyDataSvc.GetApiKeyUser(ctx, apiKey)
+			user, apiKeyErr = s.ApiKeyDataSvc.GetApiKeyUser(ctx, apiKey)
 			if apiKeyErr != nil {
 				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
 			}
 		} else {
-			SessionId, cookieErr := s.Cookie.ValidateSessionCookie(w, r)
+			sessionID, cookieErr := s.Cookie.ValidateSessionCookie(w, r)
 			if cookieErr != nil && cookieErr.Error() != "COOKIE_NOT_FOUND" {
 				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 				return
 			}
 
-			if SessionId != "" {
+			if sessionID != "" {
 				var userErr error
-				User, userErr = s.AuthDataSvc.GetSessionUser(ctx, SessionId)
+				user, userErr = s.AuthDataSvc.GetSessionUser(ctx, sessionID)
 				if userErr != nil {
 					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
 				}
 			} else {
-				UserID, err := s.Cookie.ValidateUserCookie(w, r)
+				userID, err := s.Cookie.ValidateUserCookie(w, r)
 				if err != nil {
 					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
 				}
 
 				var userErr error
-				User, userErr = s.UserDataSvc.GetGuestUser(ctx, UserID)
+				user, userErr = s.UserDataSvc.GetGuestUser(ctx, userID)
 				if userErr != nil {
 					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -71,8 +70,8 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		}
 
-		ctx = context.WithValue(ctx, contextKeyUserID, User.Id)
-		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
+		ctx = context.WithValue(ctx, contextKeyUserID, user.ID)
+		ctx = context.WithValue(ctx, contextKeyUserType, user.Type)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -83,16 +82,16 @@ func (s *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		EntityUserID := vars["userId"]
-		idErr := validate.Var(EntityUserID, "required,uuid")
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		entityUserID := vars["userId"]
+		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		if UserType != thunderdome.AdminUserType && EntityUserID != UserID {
+		if userType != thunderdome.AdminUserType && entityUserID != userID {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -104,9 +103,9 @@ func (s *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 // registeredUserOnly validates that the request was made by a registered user
 func (s *Service) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		userType := r.Context().Value(contextKeyUserType).(string)
 
-		if UserType == thunderdome.GuestUserType {
+		if userType == thunderdome.GuestUserType {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "REGISTERED_USER_ONLY"))
 			return
 		}
@@ -118,9 +117,9 @@ func (s *Service) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 // adminOnly middleware checks if the user is an admin, otherwise reject their request
 func (s *Service) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		userType := r.Context().Value(contextKeyUserType).(string)
 
-		if UserType != thunderdome.AdminUserType {
+		if userType != thunderdome.AdminUserType {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ADMIN"))
 			return
 		}
@@ -134,30 +133,30 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		EntityUserID := vars["userId"]
-		idErr := validate.Var(EntityUserID, "required,uuid")
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		entityUserID := vars["userId"]
+		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		if UserType != thunderdome.AdminUserType && (EntityUserID != SessionUserID) {
+		if userType != thunderdome.AdminUserType && (entityUserID != sessionUserID) {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
-		EntityUser, EntityUserErr := s.UserDataSvc.GetUser(ctx, EntityUserID)
-		if EntityUserErr != nil {
+		entityUser, entityUserErr := s.UserDataSvc.GetUser(ctx, entityUserID)
+		if entityUserErr != nil {
 			s.Logger.Ctx(ctx).Error(
-				"verifiedUserOnly error", zap.Error(EntityUserErr), zap.String("entity_user_id", EntityUserID),
-				zap.String("session_user_id", SessionUserID), zap.String("session_user_type", UserType))
-			s.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
+				"verifiedUserOnly error", zap.Error(entityUserErr), zap.String("entity_user_id", entityUserID),
+				zap.String("session_user_id", sessionUserID), zap.String("session_user_type", userType))
+			s.Failure(w, r, http.StatusInternalServerError, entityUserErr)
 			return
 		}
 
-		if s.Config.ExternalAPIVerifyRequired && !EntityUser.Verified {
+		if s.Config.ExternalAPIVerifyRequired && !entityUser.Verified {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}
@@ -171,16 +170,16 @@ func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc 
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		EntityUserID := vars["userId"]
-		idErr := validate.Var(EntityUserID, "required,uuid")
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		entityUserID := vars["userId"]
+		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		if UserType != thunderdome.AdminUserType && (EntityUserID != UserID) {
+		if userType != thunderdome.AdminUserType && (entityUserID != userID) {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -191,8 +190,8 @@ func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc 
 		}
 
 		// admins can bypass active subscriber functions
-		if UserType != thunderdome.AdminUserType {
-			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, EntityUserID)
+		if userType != thunderdome.AdminUserType {
+			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, entityUserID)
 			if subscriberErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
 				return
@@ -207,8 +206,8 @@ func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc 
 func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
 
 		if !s.Config.SubscriptionsEnabled {
 			h(w, r)
@@ -216,8 +215,8 @@ func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// admins can bypass active subscriber functions
-		if UserType != thunderdome.AdminUserType {
-			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, UserID)
+		if userType != thunderdome.AdminUserType {
+			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, userID)
 			if subscriberErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
 				return
@@ -233,16 +232,16 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		orgID := vars["orgId"]
+		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		_, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
+		_, err := s.OrganizationDataSvc.OrganizationGet(ctx, orgID)
 		if err != nil && err.Error() == "ORGANIZATION_NOT_FOUND" {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "ORGANIZATION_NOT_FOUND"))
 			return
@@ -251,19 +250,19 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		var Role string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			Role, UserErr = s.OrganizationDataSvc.OrganizationUserRole(ctx, UserID, OrgID)
-			if UserErr != nil {
+		var role string
+		if userType != thunderdome.AdminUserType {
+			var userErr error
+			role, userErr = s.OrganizationDataSvc.OrganizationUserRole(ctx, userID, orgID)
+			if userErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
 			}
 		} else {
-			Role = thunderdome.AdminUserType
+			role = thunderdome.AdminUserType
 		}
 
-		ctx = context.WithValue(ctx, contextKeyOrgRole, Role)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, role)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -274,32 +273,32 @@ func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		orgID := vars["orgId"]
+		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		var Role string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			Role, UserErr = s.OrganizationDataSvc.OrganizationUserRole(ctx, UserID, OrgID)
-			if UserErr != nil {
+		var role string
+		if userType != thunderdome.AdminUserType {
+			var userErr error
+			role, userErr = s.OrganizationDataSvc.OrganizationUserRole(ctx, userID, orgID)
+			if userErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
 			}
-			if Role != thunderdome.AdminUserType {
+			if role != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ORG_ADMIN"))
 				return
 			}
 		} else {
-			Role = thunderdome.AdminUserType
+			role = thunderdome.AdminUserType
 		}
 
-		ctx = context.WithValue(ctx, contextKeyOrgRole, Role)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, role)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -310,42 +309,42 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		orgID := vars["orgId"]
+		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		DepartmentID := vars["departmentId"]
-		idErr = validate.Var(DepartmentID, "required,uuid")
+		departmentID := vars["departmentId"]
+		idErr = validate.Var(departmentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		var OrgRole string
-		var DepartmentRole string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			OrgRole, DepartmentRole, UserErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
-			if UserErr != nil || (DepartmentRole == "" && OrgRole != thunderdome.AdminUserType) {
+		var orgRole string
+		var departmentRole string
+		if userType != thunderdome.AdminUserType {
+			var userErr error
+			orgRole, departmentRole, userErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, userID, orgID, departmentID)
+			if userErr != nil || (departmentRole == "" && orgRole != thunderdome.AdminUserType) {
 				s.Logger.Ctx(ctx).Warn("middleware departmentUserOnly REQUIRES_DEPARTMENT_USER",
-					zap.Error(UserErr),
-					zap.String("user_id", UserID),
-					zap.String("org_id", OrgID),
-					zap.String("department_id", DepartmentID))
+					zap.Error(userErr),
+					zap.String("user_id", userID),
+					zap.String("org_id", orgID),
+					zap.String("department_id", departmentID))
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
 			}
 		} else {
-			OrgRole = thunderdome.AdminUserType
-			DepartmentRole = thunderdome.AdminUserType
+			orgRole = thunderdome.AdminUserType
+			departmentRole = thunderdome.AdminUserType
 		}
 
-		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
-		ctx = context.WithValue(ctx, contextKeyDepartmentRole, DepartmentRole)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, orgRole)
+		ctx = context.WithValue(ctx, contextKeyDepartmentRole, departmentRole)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -356,41 +355,41 @@ func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		orgID := vars["orgId"]
+		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		DepartmentID := vars["departmentId"]
-		idErr = validate.Var(DepartmentID, "required,uuid")
+		departmentID := vars["departmentId"]
+		idErr = validate.Var(departmentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		var OrgRole string
-		var DepartmentRole string
-		if UserType != thunderdome.AdminUserType {
-			var UserErr error
-			OrgRole, DepartmentRole, UserErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
-			if UserErr != nil {
+		var orgRole string
+		var departmentRole string
+		if userType != thunderdome.AdminUserType {
+			var userErr error
+			orgRole, departmentRole, userErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, userID, orgID, departmentID)
+			if userErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
 			}
-			if DepartmentRole != thunderdome.AdminUserType && OrgRole != thunderdome.AdminUserType {
+			if departmentRole != thunderdome.AdminUserType && orgRole != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
 				return
 			}
 		} else {
-			OrgRole = thunderdome.AdminUserType
-			DepartmentRole = thunderdome.AdminUserType
+			orgRole = thunderdome.AdminUserType
+			departmentRole = thunderdome.AdminUserType
 		}
 
-		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
-		ctx = context.WithValue(ctx, contextKeyDepartmentRole, DepartmentRole)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, orgRole)
+		ctx = context.WithValue(ctx, contextKeyDepartmentRole, departmentRole)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -402,34 +401,34 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
-		UserType := ctx.Value(contextKeyUserType).(string)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		Roles, err := s.TeamDataSvc.TeamUserRoles(ctx, UserID, TeamID)
+		roles, err := s.TeamDataSvc.TeamUserRoles(ctx, userID, teamID)
 		if err != nil && err.Error() == "TEAM_NOT_FOUND" {
 			s.Logger.Ctx(ctx).Warn("middleware teamUserOnly TEAM_NOT_FOUND",
-				zap.Any("team_user_roles", Roles),
-				zap.String("user_type", UserType))
+				zap.Any("team_user_roles", roles),
+				zap.String("user_type", userType))
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "TEAM_NOT_FOUND"))
 			return
-		} else if err != nil || (UserType != thunderdome.AdminUserType &&
-			Roles.AssociationLevel != "TEAM" &&
-			(Roles.DepartmentRole == nil || (Roles.DepartmentRole != nil && *Roles.DepartmentRole != thunderdome.AdminUserType)) &&
-			(Roles.OrganizationRole == nil || (Roles.OrganizationRole != nil && *Roles.OrganizationRole != thunderdome.AdminUserType))) {
+		} else if err != nil || (userType != thunderdome.AdminUserType &&
+			roles.AssociationLevel != "TEAM" &&
+			(roles.DepartmentRole == nil || (roles.DepartmentRole != nil && *roles.DepartmentRole != thunderdome.AdminUserType)) &&
+			(roles.OrganizationRole == nil || (roles.OrganizationRole != nil && *roles.OrganizationRole != thunderdome.AdminUserType))) {
 			s.Logger.Ctx(ctx).Warn("middleware teamUserOnly REQUIRES_TEAM_USER",
-				zap.Any("team_user_roles", Roles),
-				zap.String("user_type", UserType))
+				zap.Any("team_user_roles", roles),
+				zap.String("user_type", userType))
 			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 
-		ctx = context.WithValue(ctx, contextKeyUserTeamRoles, Roles)
+		ctx = context.WithValue(ctx, contextKeyUserTeamRoles, roles)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -440,16 +439,16 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 func (s *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		UserType := ctx.Value(contextKeyUserType).(string)
-		TeamUserRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
+		userType := ctx.Value(contextKeyUserType).(string)
+		teamUserRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
 
-		if UserType != thunderdome.AdminUserType &&
-			(TeamUserRoles.TeamRole == nil || *TeamUserRoles.TeamRole != thunderdome.AdminUserType) &&
-			(TeamUserRoles.DepartmentRole == nil || *TeamUserRoles.DepartmentRole != thunderdome.AdminUserType) &&
-			(TeamUserRoles.OrganizationRole == nil || *TeamUserRoles.OrganizationRole != thunderdome.AdminUserType) {
+		if userType != thunderdome.AdminUserType &&
+			(teamUserRoles.TeamRole == nil || *teamUserRoles.TeamRole != thunderdome.AdminUserType) &&
+			(teamUserRoles.DepartmentRole == nil || *teamUserRoles.DepartmentRole != thunderdome.AdminUserType) &&
+			(teamUserRoles.OrganizationRole == nil || *teamUserRoles.OrganizationRole != thunderdome.AdminUserType) {
 			s.Logger.Ctx(ctx).Warn("middleware teamAdminOnly REQUIRES_TEAM_ADMIN",
-				zap.Any("team_user_roles", TeamUserRoles),
-				zap.String("user_type", UserType))
+				zap.Any("team_user_roles", teamUserRoles),
+				zap.String("user_type", userType))
 			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_ADMIN"))
 			return
 		}
@@ -463,9 +462,9 @@ func (s *Service) subscribedOrgOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserType := ctx.Value(contextKeyUserType).(string)
-		OrgID := vars["orgId"]
-		idErr := validate.Var(OrgID, "required,uuid")
+		userType := ctx.Value(contextKeyUserType).(string)
+		orgID := vars["orgId"]
+		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -476,8 +475,8 @@ func (s *Service) subscribedOrgOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if UserType != thunderdome.AdminUserType {
-			subscribed, err := s.OrganizationDataSvc.OrganizationIsSubscribed(ctx, OrgID)
+		if userType != thunderdome.AdminUserType {
+			subscribed, err := s.OrganizationDataSvc.OrganizationIsSubscribed(ctx, orgID)
 			if err != nil || !subscribed {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_SUBSCRIPTION_REQUIRED"))
 				return
@@ -493,9 +492,9 @@ func (s *Service) subscribedTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserType := ctx.Value(contextKeyUserType).(string)
-		TeamID := vars["teamId"]
-		idErr := validate.Var(TeamID, "required,uuid")
+		userType := ctx.Value(contextKeyUserType).(string)
+		teamID := vars["teamId"]
+		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -506,8 +505,8 @@ func (s *Service) subscribedTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if UserType != thunderdome.AdminUserType {
-			subscribed, err := s.TeamDataSvc.TeamIsSubscribed(ctx, TeamID)
+		if userType != thunderdome.AdminUserType {
+			subscribed, err := s.TeamDataSvc.TeamIsSubscribed(ctx, teamID)
 			if err != nil || !subscribed {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "TEAM_SUBSCRIPTION_REQUIRED"))
 				return

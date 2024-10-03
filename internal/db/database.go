@@ -24,7 +24,7 @@ var fs embed.FS
 
 // New runs db migrations, sets up a db connection pool
 // and sets previously active users to false during startup
-func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Service {
+func New(adminEmail string, config *Config, logger *otelzap.Logger) *Service {
 	ctx := context.Background()
 
 	// Do this once for each unique policy, and use the policy for the life of the program
@@ -85,12 +85,12 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Service {
 	}
 
 	// on server start if admin email is specified set that user to admin type
-	if AdminEmail != "" {
+	if adminEmail != "" {
 		if _, err := d.DB.Exec(
 			`UPDATE thunderdome.users SET type = 'ADMIN', updated_date = NOW() WHERE email = $1;`,
-			AdminEmail,
+			adminEmail,
 		); err != nil {
-			d.Logger.Ctx(ctx).Error("CALL thunderdome.promote_user_by_email error", zap.Error(err), zap.String("admin_email", AdminEmail))
+			d.Logger.Ctx(ctx).Error("CALL thunderdome.promote_user_by_email error", zap.Error(err), zap.String("admin_email", adminEmail))
 		}
 	}
 

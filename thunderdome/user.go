@@ -12,7 +12,7 @@ const (
 )
 
 type UserUICookie struct {
-	Id                   string `json:"id"`
+	ID                   string `json:"id"`
 	Name                 string `json:"name"`
 	Email                string `json:"email"`
 	Rank                 string `json:"rank"`
@@ -23,7 +23,7 @@ type UserUICookie struct {
 
 // User aka user
 type User struct {
-	Id                   string    `json:"id"`
+	ID                   string    `json:"id"`
 	Name                 string    `json:"name"`
 	Email                string    `json:"email"`
 	Type                 string    `json:"rank"`

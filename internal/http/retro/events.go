@@ -128,15 +128,15 @@ func (b *Service) UserUnMarkReady(ctx context.Context, RetroID string, UserID st
 // GroupItem changes a retro item's group_id
 func (b *Service) GroupItem(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
-		ItemId  string `json:"itemId"`
-		GroupId string `json:"groupId"`
+		ItemID  string `json:"itemId"`
+		GroupID string `json:"groupId"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	item, err := b.RetroService.GroupRetroItem(RetroID, rs.ItemId, rs.GroupId)
+	item, err := b.RetroService.GroupRetroItem(RetroID, rs.ItemID, rs.GroupID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -173,7 +173,7 @@ func (b *Service) DeleteItem(ctx context.Context, RetroID string, UserID string,
 // GroupNameChange changes a retro group's name
 func (b *Service) GroupNameChange(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
-		GroupId string `json:"groupId"`
+		GroupID string `json:"groupId"`
 		Name    string `json:"name"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &rs)
@@ -181,7 +181,7 @@ func (b *Service) GroupNameChange(ctx context.Context, RetroID string, UserID st
 		return nil, err, false
 	}
 
-	group, err := b.RetroService.GroupNameChange(RetroID, rs.GroupId, rs.Name)
+	group, err := b.RetroService.GroupNameChange(RetroID, rs.GroupID, rs.Name)
 	if err != nil {
 		return nil, err, false
 	}
@@ -195,14 +195,14 @@ func (b *Service) GroupNameChange(ctx context.Context, RetroID string, UserID st
 // GroupUserVote handles a users vote for an item group
 func (b *Service) GroupUserVote(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
-		GroupId string `json:"groupId"`
+		GroupID string `json:"groupId"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	votes, err := b.RetroService.GroupUserVote(RetroID, rs.GroupId, UserID)
+	votes, err := b.RetroService.GroupUserVote(RetroID, rs.GroupID, UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -216,14 +216,14 @@ func (b *Service) GroupUserVote(ctx context.Context, RetroID string, UserID stri
 // GroupUserSubtractVote handles removing a users vote from an item group
 func (b *Service) GroupUserSubtractVote(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
-		GroupId string `json:"groupId"`
+		GroupID string `json:"groupId"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	votes, err := b.RetroService.GroupUserSubtractVote(RetroID, rs.GroupId, UserID)
+	votes, err := b.RetroService.GroupUserSubtractVote(RetroID, rs.GroupID, UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -532,7 +532,7 @@ func (b *Service) Abandon(ctx context.Context, RetroID string, UserID string, Ev
 
 // SendCompletedEmails sends an email to attendees with the retro items and actions
 func (b *Service) SendCompletedEmails(retro *thunderdome.Retro) {
-	users := b.RetroService.RetroGetUsers(retro.Id)
+	users := b.RetroService.RetroGetUsers(retro.ID)
 
 	for _, user := range users {
 		// don't send emails to guest's as they have no email

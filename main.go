@@ -143,7 +143,7 @@ func main() {
 	}, logger, subscriptionDataSvc, emailSvc, userService,
 	)
 
-	HFS, FSS := ui.New(embedUseOS)
+	uiHTTPFilesystem, uiFilesystem := ui.New(embedUseOS)
 	h := http.New(http.Service{
 		Config: &http.Config{
 			Port:                      c.Http.Port,
@@ -258,7 +258,7 @@ func main() {
 				WebsocketSubdomain:        c.Http.WebsocketSubdomain,
 			},
 		},
-	}, FSS, HFS)
+	}, uiFilesystem, uiHTTPFilesystem)
 
 	err := h.ListenAndServe()
 	if err != nil {

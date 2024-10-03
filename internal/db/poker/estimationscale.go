@@ -131,7 +131,7 @@ func (d *Service) GetPublicEstimationScales(ctx context.Context, limit, offset i
 // CreateEstimationScale creates a new estimation scale
 func (d *Service) CreateEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error) {
 	query := `
-		INSERT INTO thunderdome.estimation_scale 
+		INSERT INTO thunderdome.estimation_scale
 		(name, description, scale_type, values, created_by, is_public, organization_id, team_id, default_scale)
 		VALUES ($1, $2, $3, $4, $5, $6, NULLIF($7, '')::uuid, NULLIF($8, '')::uuid, $9)
 		RETURNING id, created_at, updated_at;
@@ -160,7 +160,7 @@ func (d *Service) CreateEstimationScale(ctx context.Context, scale *thunderdome.
 func (d *Service) UpdateEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error) {
 	query := `
 		UPDATE thunderdome.estimation_scale
-		SET name = $2, description = $3, scale_type = $4, values = $5, is_public = $6, 
+		SET name = $2, description = $3, scale_type = $4, values = $5, is_public = $6,
 			organization_id = NULLIF($7, '')::uuid, team_id = NULLIF($8, '')::uuid, default_scale = $9, updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1
 		RETURNING updated_at;
@@ -188,7 +188,7 @@ func (d *Service) UpdateEstimationScale(ctx context.Context, scale *thunderdome.
 func (d *Service) UpdateTeamEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error) {
 	query := `
 		UPDATE thunderdome.estimation_scale
-		SET name = $2, description = $3, scale_type = $4, values = $5, is_public = $6, 
+		SET name = $2, description = $3, scale_type = $4, values = $5, is_public = $6,
 			default_scale = $8, updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1 AND team_id = $7
 		RETURNING updated_at;
@@ -215,7 +215,7 @@ func (d *Service) UpdateTeamEstimationScale(ctx context.Context, scale *thunderd
 func (d *Service) UpdateOrganizationEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error) {
 	query := `
 		UPDATE thunderdome.estimation_scale
-		SET name = $2, description = $3, scale_type = $4, values = $5, is_public = $6, 
+		SET name = $2, description = $3, scale_type = $4, values = $5, is_public = $6,
 			default_scale = $8, updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1 AND organization_id = $7
 		RETURNING updated_at;
@@ -350,7 +350,7 @@ func (d *Service) GetDefaultEstimationScale(ctx context.Context, organizationID,
 }
 
 // GetEstimationScale retrieves an estimation scale by its ID
-func (d *Service) GetEstimationScale(ctx context.Context, id string) (*thunderdome.EstimationScale, error) {
+func (d *Service) GetEstimationScale(ctx context.Context, scaleID string) (*thunderdome.EstimationScale, error) {
 	query := `
 		SELECT id, name, description, scale_type, values, COALESCE(created_by::TEXT, ''), created_at,
 		 updated_at, is_public, default_scale, COALESCE(organization_id::TEXT, ''), COALESCE(team_id::TEXT,'')
@@ -362,7 +362,7 @@ func (d *Service) GetEstimationScale(ctx context.Context, id string) (*thunderdo
 	var vArray pgtype.Array[string]
 	m := pgtype.NewMap()
 
-	err := d.DB.QueryRowContext(ctx, query, id).Scan(
+	err := d.DB.QueryRowContext(ctx, query, scaleID).Scan(
 		&scale.ID,
 		&scale.Name,
 		&scale.Description,
@@ -387,7 +387,7 @@ func (d *Service) GetEstimationScale(ctx context.Context, id string) (*thunderdo
 }
 
 // GetPublicEstimationScale retrieves a public estimation scale by its ID
-func (d *Service) GetPublicEstimationScale(ctx context.Context, id string) (*thunderdome.EstimationScale, error) {
+func (d *Service) GetPublicEstimationScale(ctx context.Context, scaleID string) (*thunderdome.EstimationScale, error) {
 	query := `
 		SELECT id, name, description, scale_type, values, COALESCE(created_by::TEXT, ''), created_at, updated_at, is_public, default_scale
 		FROM thunderdome.estimation_scale
@@ -398,7 +398,7 @@ func (d *Service) GetPublicEstimationScale(ctx context.Context, id string) (*thu
 	var vArray pgtype.Array[string]
 	m := pgtype.NewMap()
 
-	err := d.DB.QueryRowContext(ctx, query, id).Scan(
+	err := d.DB.QueryRowContext(ctx, query, scaleID).Scan(
 		&scale.ID,
 		&scale.Name,
 		&scale.Description,

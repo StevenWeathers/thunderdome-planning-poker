@@ -24,8 +24,8 @@ type CheckinService struct {
 }
 
 // CheckinList gets a list of team checkins by day
-func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*thunderdome.TeamCheckin, error) {
-	Checkins := make([]*thunderdome.TeamCheckin, 0)
+func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date string, timeZone string) ([]*thunderdome.TeamCheckin, error) {
+	checkins := make([]*thunderdome.TeamCheckin, 0)
 
 	rows, err := d.DB.QueryContext(ctx, `SELECT
  		tc.id, u.id, u.name, u.email, u.avatar, COALESCE(u.picture, ''),
@@ -42,9 +42,9 @@ func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date st
 		AND date(tc.created_date AT TIME ZONE $3) = $2
 		GROUP BY tc.id, u.id;
 		`,
-		TeamId,
-		Date,
-		TimeZone,
+		teamID,
+		date,
+		timeZone,
 	)
 
 	if err == nil {
@@ -52,11 +52,11 @@ func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date st
 		for rows.Next() {
 			var checkin thunderdome.TeamCheckin
 			var user thunderdome.TeamUser
-			var comments string
+			var commentsVal string
 
 			if err := rows.Scan(
-				&checkin.Id,
-				&user.Id,
+				&checkin.ID,
+				&user.ID,
 				&user.Name,
 				&user.GravatarHash,
 				&user.Avatar,
@@ -68,30 +68,30 @@ func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date st
 				&checkin.GoalsMet,
 				&checkin.CreatedDate,
 				&checkin.UpdatedDate,
-				&comments,
+				&commentsVal,
 			); err != nil {
 				return nil, err
 			} else {
 				user.GravatarHash = db.CreateGravatarHash(user.GravatarHash)
 				checkin.User = &user
 
-				Comments := make([]*thunderdome.CheckinComment, 0)
-				jsonErr := json.Unmarshal([]byte(comments), &Comments)
+				comments := make([]*thunderdome.CheckinComment, 0)
+				jsonErr := json.Unmarshal([]byte(commentsVal), &comments)
 				if jsonErr != nil {
 					d.Logger.Ctx(ctx).Error("checkin comments json error", zap.Error(jsonErr))
 				}
-				checkin.Comments = Comments
+				checkin.Comments = comments
 
-				Checkins = append(Checkins, &checkin)
+				checkins = append(checkins, &checkin)
 			}
 		}
 	}
 
-	return Checkins, err
+	return checkins, err
 }
 
 // CheckinLastByUser gets the last checkin by a user
-func (d *CheckinService) CheckinLastByUser(ctx context.Context, TeamId string, UserId string) (*thunderdome.TeamCheckin, error) {
+func (d *CheckinService) CheckinLastByUser(ctx context.Context, teamID string, userID string) (*thunderdome.TeamCheckin, error) {
 	var checkin thunderdome.TeamCheckin
 
 	err := d.DB.QueryRowContext(ctx, `SELECT
@@ -102,10 +102,10 @@ func (d *CheckinService) CheckinLastByUser(ctx context.Context, TeamId string, U
 		WHERE tc.team_id = $1 AND tc.user_id = $2
 		ORDER BY tc.created_date DESC LIMIT 1;
 		`,
-		TeamId,
-		UserId,
+		teamID,
+		userID,
 	).Scan(
-		&checkin.Id,
+		&checkin.ID,
 		&checkin.Yesterday,
 		&checkin.Today,
 		&checkin.Blockers,
@@ -126,15 +126,15 @@ func (d *CheckinService) CheckinLastByUser(ctx context.Context, TeamId string, U
 // CheckinCreate creates a team checkin
 func (d *CheckinService) CheckinCreate(
 	ctx context.Context,
-	TeamId string, UserId string,
-	Yesterday string, Today string, Blockers string, Discuss string,
-	GoalsMet bool,
+	teamID string, userID string,
+	yesterday string, today string, blockers string, discuss string,
+	goalsMet bool,
 ) error {
 	var userCount int
 	// target user must be on team to check in
 	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
-		TeamId,
-		UserId,
+		teamID,
+		userID,
 	).Scan(&userCount)
 	if usrErr != nil {
 		return fmt.Errorf("checkin create get team user error: %v", usrErr)
@@ -143,22 +143,22 @@ func (d *CheckinService) CheckinCreate(
 		return errors.New("REQUIRES_TEAM_USER")
 	}
 
-	SanitizedYesterday := d.HTMLSanitizerPolicy.Sanitize(Yesterday)
-	SanitizedToday := d.HTMLSanitizerPolicy.Sanitize(Today)
-	SanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(Blockers)
-	SanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(Discuss)
+	sanitizedYesterday := d.HTMLSanitizerPolicy.Sanitize(yesterday)
+	sanitizedToday := d.HTMLSanitizerPolicy.Sanitize(today)
+	sanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(blockers)
+	sanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(discuss)
 
 	if _, err := d.DB.Exec(`INSERT INTO thunderdome.team_checkin
 		(team_id, user_id, yesterday, today, blockers, discuss, goals_met)
 		VALUES ($1, $2, $3, $4, $5, $6, $7);
 		`,
-		TeamId,
-		UserId,
-		SanitizedYesterday,
-		SanitizedToday,
-		SanitizedBlockers,
-		SanitizedDiscuss,
-		GoalsMet,
+		teamID,
+		userID,
+		sanitizedYesterday,
+		sanitizedToday,
+		sanitizedBlockers,
+		sanitizedDiscuss,
+		goalsMet,
 	); err != nil {
 		return fmt.Errorf("checkin create error: %v", err)
 	}
@@ -169,26 +169,26 @@ func (d *CheckinService) CheckinCreate(
 // CheckinUpdate updates a team checkin
 func (d *CheckinService) CheckinUpdate(
 	ctx context.Context,
-	CheckinId string,
-	Yesterday string, Today string, Blockers string, Discuss string,
-	GoalsMet bool,
+	checkinID string,
+	yesterday string, today string, blockers string, discuss string,
+	goalsMet bool,
 ) error {
-	SanitizedYesterday := d.HTMLSanitizerPolicy.Sanitize(Yesterday)
-	SanitizedToday := d.HTMLSanitizerPolicy.Sanitize(Today)
-	SanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(Blockers)
-	SanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(Discuss)
+	sanitizedYesterday := d.HTMLSanitizerPolicy.Sanitize(yesterday)
+	sanitizedToday := d.HTMLSanitizerPolicy.Sanitize(today)
+	sanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(blockers)
+	sanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(discuss)
 
 	if _, err := d.DB.ExecContext(ctx, `
 		UPDATE thunderdome.team_checkin
 		SET Yesterday = $2, today = $3, blockers = $4, discuss = $5, goals_met = $6
 		WHERE id = $1;
 		`,
-		CheckinId,
-		SanitizedYesterday,
-		SanitizedToday,
-		SanitizedBlockers,
-		SanitizedDiscuss,
-		GoalsMet,
+		checkinID,
+		sanitizedYesterday,
+		sanitizedToday,
+		sanitizedBlockers,
+		sanitizedDiscuss,
+		goalsMet,
 	); err != nil {
 		return fmt.Errorf("checkin update query error: %v", err)
 	}
@@ -197,10 +197,10 @@ func (d *CheckinService) CheckinUpdate(
 }
 
 // CheckinDelete deletes a team checkin
-func (d *CheckinService) CheckinDelete(ctx context.Context, CheckinId string) error {
+func (d *CheckinService) CheckinDelete(ctx context.Context, checkinID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_checkin WHERE id = $1;`,
-		CheckinId,
+		checkinID,
 	)
 
 	if err != nil {
@@ -213,16 +213,16 @@ func (d *CheckinService) CheckinDelete(ctx context.Context, CheckinId string) er
 // CheckinComment comments on a team checkin
 func (d *CheckinService) CheckinComment(
 	ctx context.Context,
-	TeamId string,
-	CheckinId string,
-	UserId string,
-	Comment string,
+	teamID string,
+	checkinID string,
+	userID string,
+	comment string,
 ) error {
 	var userCount int
 	// target user must be on team to comment on checkin
 	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
-		TeamId,
-		UserId,
+		teamID,
+		userID,
 	).Scan(&userCount)
 	if usrErr != nil {
 		return fmt.Errorf("checkin comment get team user error: %v", usrErr)
@@ -234,9 +234,9 @@ func (d *CheckinService) CheckinComment(
 	if _, err := d.DB.ExecContext(ctx, `
 		INSERT INTO thunderdome.team_checkin_comment (checkin_id, user_id, comment) VALUES ($1, $2, $3);
 		`,
-		CheckinId,
-		UserId,
-		Comment,
+		checkinID,
+		userID,
+		comment,
 	); err != nil {
 		return fmt.Errorf("checkin comment query error: %v", err)
 	}
@@ -245,12 +245,12 @@ func (d *CheckinService) CheckinComment(
 }
 
 // CheckinCommentEdit edits a team checkin comment
-func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error {
+func (d *CheckinService) CheckinCommentEdit(ctx context.Context, teamID string, userID string, commentID string, comment string) error {
 	var userCount int
 	// target user must be on team to comment on checkin
 	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
-		TeamId,
-		UserId,
+		teamID,
+		userID,
 	).Scan(&userCount)
 	if usrErr != nil {
 		return fmt.Errorf("checkin edit comment get team user error: %v", usrErr)
@@ -261,8 +261,8 @@ func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, 
 
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.team_checkin_comment SET comment = $2, updated_date = NOW() WHERE id = $1;`,
-		CommentId,
-		Comment,
+		commentID,
+		comment,
 	)
 
 	if err != nil {
@@ -273,10 +273,10 @@ func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, 
 }
 
 // CheckinCommentDelete deletes a team checkin comment
-func (d *CheckinService) CheckinCommentDelete(ctx context.Context, CommentId string) error {
+func (d *CheckinService) CheckinCommentDelete(ctx context.Context, commentID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_checkin_comment WHERE id = $1;`,
-		CommentId,
+		commentID,
 	)
 
 	if err != nil {

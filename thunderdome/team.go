@@ -5,10 +5,10 @@ import (
 )
 
 type Team struct {
-	Id             string    `json:"id"`
+	ID             string    `json:"id"`
 	Name           string    `json:"name"`
-	OrganizationId string    `json:"organization_id"`
-	DepartmentId   string    `json:"department_id"`
+	OrganizationID string    `json:"organization_id"`
+	DepartmentID   string    `json:"department_id"`
 	Subscribed     *bool     `json:"subscribed,omitempty"`
 	CreatedDate    time.Time `json:"createdDate"`
 	UpdatedDate    time.Time `json:"updatedDate"`
@@ -20,7 +20,7 @@ type UserTeam struct {
 }
 
 type TeamUser struct {
-	Id           string `json:"id"`
+	ID           string `json:"id"`
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	Role         string `json:"role"`
@@ -30,8 +30,8 @@ type TeamUser struct {
 }
 
 type TeamUserInvite struct {
-	InviteId    string    `json:"invite_id"`
-	TeamId      string    `json:"team_id"`
+	InviteID    string    `json:"invite_id"`
+	TeamID      string    `json:"team_id"`
 	Email       string    `json:"email"`
 	Role        string    `json:"role"`
 	CreatedDate time.Time `json:"created_date"`

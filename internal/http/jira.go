@@ -25,20 +25,20 @@ import (
 func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		userId := vars["userId"]
-		idErr := validate.Var(userId, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		instances, err := s.JiraDataSvc.FindInstancesByUserId(ctx, userId)
+		instances, err := s.JiraDataSvc.FindInstancesByUserId(ctx, userID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleGetUserJiraInstances error", zap.Error(err), zap.String("entity_user_id", userId),
-				zap.String("session_user_id", SessionUserID))
+				"handleGetUserJiraInstances error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -67,10 +67,10 @@ type jiraInstanceRequestBody struct {
 func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		userId := vars["userId"]
-		idErr := validate.Var(userId, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -95,11 +95,11 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 			return
 		}
 
-		instance, err := s.JiraDataSvc.CreateInstance(ctx, userId, req.Host, req.ClientMail, req.AccessToken)
+		instance, err := s.JiraDataSvc.CreateInstance(ctx, userID, req.Host, req.ClientMail, req.AccessToken)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleJiraInstanceCreate error", zap.Error(err), zap.String("entity_user_id", userId),
-				zap.String("session_user_id", SessionUserID))
+				"handleJiraInstanceCreate error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -123,16 +123,16 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		userId := vars["userId"]
-		idErr := validate.Var(userId, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		instanceId := vars["instanceId"]
-		iidErr := validate.Var(instanceId, "required,uuid")
+		instanceID := vars["instanceId"]
+		iidErr := validate.Var(instanceID, "required,uuid")
 		if iidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
 			return
@@ -157,11 +157,11 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 			return
 		}
 
-		instance, err := s.JiraDataSvc.UpdateInstance(ctx, instanceId, req.Host, req.ClientMail, req.AccessToken)
+		instance, err := s.JiraDataSvc.UpdateInstance(ctx, instanceID, req.Host, req.ClientMail, req.AccessToken)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleJiraInstanceUpdate error", zap.Error(err), zap.String("entity_user_id", userId),
-				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId))
+				"handleJiraInstanceUpdate error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID), zap.String("jira_instance_id", instanceID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -184,26 +184,26 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		instanceId := vars["instanceId"]
-		iidErr := validate.Var(instanceId, "required,uuid")
+		instanceID := vars["instanceId"]
+		iidErr := validate.Var(instanceID, "required,uuid")
 		if iidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
 			return
 		}
-		userId := vars["userId"]
-		idErr := validate.Var(userId, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.JiraDataSvc.DeleteInstance(ctx, instanceId)
+		err := s.JiraDataSvc.DeleteInstance(ctx, instanceID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleJiraInstanceDelete error", zap.Error(err), zap.String("entity_user_id", userId),
-				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId))
+				"handleJiraInstanceDelete error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID), zap.String("jira_instance_id", instanceID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -234,15 +234,15 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		userId := vars["userId"]
-		idErr := validate.Var(userId, "required,uuid")
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		instanceId := vars["instanceId"]
-		iidErr := validate.Var(instanceId, "required,uuid")
+		instanceID := vars["instanceId"]
+		iidErr := validate.Var(instanceID, "required,uuid")
 		if iidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
 			return
@@ -268,11 +268,11 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 		}
 		fields := []string{"key", "summary", "priority", "issuetype", "description"}
 
-		instance, err := s.JiraDataSvc.GetInstanceById(ctx, instanceId)
+		instance, err := s.JiraDataSvc.GetInstanceById(ctx, instanceID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userId),
-				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId),
+				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID), zap.String("jira_instance_id", instanceID),
 				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
 				zap.Any("jira_fields", fields))
 			s.Failure(w, r, http.StatusInternalServerError, err)
@@ -286,8 +286,8 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 		})
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userId),
-				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId),
+				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID), zap.String("jira_instance_id", instanceID),
 				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
 				zap.Any("jira_fields", fields))
 			s.Failure(w, r, http.StatusInternalServerError, err)
@@ -297,8 +297,8 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 		stories, err := jiraClient.StoriesJQLSearch(ctx, req.JQL, fields, req.StartAt, req.MaxResults)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
-				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userId),
-				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId),
+				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userID),
+				zap.String("session_user_id", sessionUserID), zap.String("jira_instance_id", instanceID),
 				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
 				zap.Any("jira_fields", fields))
 

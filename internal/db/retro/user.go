@@ -12,7 +12,7 @@ import (
 )
 
 // RetroGetUsers retrieves the users for a given retro from db
-func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
+func (d *Service) RetroGetUsers(retroID string) []*thunderdome.RetroUser {
 	var users = make([]*thunderdome.RetroUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
@@ -21,21 +21,21 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 		LEFT JOIN thunderdome.users u ON su.user_id = u.id
 		WHERE su.retro_id = $1
 		ORDER BY u.name;`,
-		RetroID,
+		retroID,
 	)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w thunderdome.RetroUser
-			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.Email, &w.PictureURL); err != nil {
+			var ru thunderdome.RetroUser
+			if err := rows.Scan(&ru.ID, &ru.Name, &ru.Active, &ru.Avatar, &ru.Email, &ru.PictureURL); err != nil {
 				d.Logger.Error("get retro users error", zap.Error(err))
 			} else {
-				if w.Email != "" {
-					w.GravatarHash = db.CreateGravatarHash(w.Email)
+				if ru.Email != "" {
+					ru.GravatarHash = db.CreateGravatarHash(ru.Email)
 				} else {
-					w.GravatarHash = db.CreateGravatarHash(w.ID)
+					ru.GravatarHash = db.CreateGravatarHash(ru.ID)
 				}
-				users = append(users, &w)
+				users = append(users, &ru)
 			}
 		}
 	}
@@ -44,66 +44,66 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 }
 
 // RetroAddUser adds a user by ID to the retro by ID
-func (d *Service) RetroAddUser(RetroID string, UserID string) ([]*thunderdome.RetroUser, error) {
+func (d *Service) RetroAddUser(retroID string, userID string) ([]*thunderdome.RetroUser, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.retro_user (retro_id, user_id, active)
 		VALUES ($1, $2, true)
 		ON CONFLICT (retro_id, user_id) DO UPDATE SET active = true, abandoned = false`,
-		RetroID,
-		UserID,
+		retroID,
+		userID,
 	); err != nil {
 		d.Logger.Error("insert retro user error", zap.Error(err))
 	}
 
-	users := d.RetroGetUsers(RetroID)
+	users := d.RetroGetUsers(retroID)
 
 	return users, nil
 }
 
 // RetroRetreatUser removes a user from the current retro by ID
-func (d *Service) RetroRetreatUser(RetroID string, UserID string) []*thunderdome.RetroUser {
+func (d *Service) RetroRetreatUser(retroID string, userID string) []*thunderdome.RetroUser {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.retro_user SET active = false WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
+		`UPDATE thunderdome.retro_user SET active = false WHERE retro_id = $1 AND user_id = $2`, retroID, userID); err != nil {
 		d.Logger.Error("update retro user active false error", zap.Error(err))
 	}
 
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
+		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, userID); err != nil {
 		d.Logger.Error("update user last active timestamp error", zap.Error(err))
 	}
 
-	users := d.RetroGetUsers(RetroID)
+	users := d.RetroGetUsers(retroID)
 
 	return users
 }
 
 // RetroAbandon removes a user from the current retro by ID and sets abandoned true
-func (d *Service) RetroAbandon(RetroID string, UserID string) ([]*thunderdome.RetroUser, error) {
+func (d *Service) RetroAbandon(retroID string, userID string) ([]*thunderdome.RetroUser, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.retro_user SET active = false, abandoned = true WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
+		`UPDATE thunderdome.retro_user SET active = false, abandoned = true WHERE retro_id = $1 AND user_id = $2`, retroID, userID); err != nil {
 		return nil, fmt.Errorf("abandon retro query error: %v", err)
 	}
 
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
+		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, userID); err != nil {
 		return nil, fmt.Errorf("abandon retro update user query error: %v", err)
 	}
 
-	users := d.RetroGetUsers(RetroID)
+	users := d.RetroGetUsers(retroID)
 
 	return users, nil
 }
 
 // GetRetroUserActiveStatus checks retro active status of User for given retro
-func (d *Service) GetRetroUserActiveStatus(RetroID string, UserID string) error {
+func (d *Service) GetRetroUserActiveStatus(retroID string, userID string) error {
 	var active bool
 
 	err := d.DB.QueryRow(`
 		SELECT coalesce(active, FALSE)
 		FROM thunderdome.retro_user
 		WHERE user_id = $2 AND retro_id = $1;`,
-		RetroID,
-		UserID,
+		retroID,
+		userID,
 	).Scan(
 		&active,
 	)
@@ -121,16 +121,16 @@ func (d *Service) GetRetroUserActiveStatus(RetroID string, UserID string) error 
 }
 
 // MarkUserReady marks a user as ready for next phase
-func (d *Service) MarkUserReady(RetroID string, userID string) ([]string, error) {
+func (d *Service) MarkUserReady(retroID string, userID string) ([]string, error) {
 	var rawReadyUsers string
 	readyUsers := make([]string, 0)
 
 	err := d.DB.QueryRow(
-		`UPDATE thunderdome.retro 
+		`UPDATE thunderdome.retro
 		SET updated_date = NOW(), ready_users = ready_users::jsonb || to_jsonb(array[$2])
-		WHERE id = $1 
+		WHERE id = $1
 		RETURNING ready_users;`,
-		RetroID, userID,
+		retroID, userID,
 	).Scan(&rawReadyUsers)
 	if err != nil {
 		return readyUsers, fmt.Errorf("retro MarkUserReady query error: %v", err)
@@ -145,16 +145,16 @@ func (d *Service) MarkUserReady(RetroID string, userID string) ([]string, error)
 }
 
 // UnmarkUserReady un-marks a user as ready for next phase
-func (d *Service) UnmarkUserReady(RetroID string, userID string) ([]string, error) {
+func (d *Service) UnmarkUserReady(retroID string, userID string) ([]string, error) {
 	var rawReadyUsers string
 	readyUsers := make([]string, 0)
 
 	err := d.DB.QueryRow(
-		`UPDATE thunderdome.retro 
+		`UPDATE thunderdome.retro
 		SET updated_date = NOW(), ready_users = ready_users::jsonb - $2
-		WHERE id = $1 
+		WHERE id = $1
 		RETURNING ready_users;`,
-		RetroID, userID,
+		retroID, userID,
 	).Scan(&rawReadyUsers)
 	if err != nil {
 		return readyUsers, fmt.Errorf("retro UnmarkUserReady query error: %v", err)

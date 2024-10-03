@@ -19,7 +19,7 @@ type Service struct {
 
 // GetActiveAlerts gets a list of active global alerts
 func (d *Service) GetActiveAlerts(ctx context.Context) []interface{} {
-	Alerts := make([]interface{}, 0)
+	alerts := make([]interface{}, 0)
 
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, type, content, active, allow_dismiss, registered_only FROM thunderdome.alert WHERE active IS TRUE;`,
@@ -31,7 +31,7 @@ func (d *Service) GetActiveAlerts(ctx context.Context) []interface{} {
 			var a thunderdome.Alert
 
 			if err := rows.Scan(
-				&a.Id,
+				&a.ID,
 				&a.Name,
 				&a.Type,
 				&a.Content,
@@ -41,23 +41,23 @@ func (d *Service) GetActiveAlerts(ctx context.Context) []interface{} {
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("GetActiveAlerts row scan error", zap.Error(err))
 			} else {
-				Alerts = append(Alerts, &a)
+				alerts = append(alerts, &a)
 			}
 		}
 	}
 
-	return Alerts
+	return alerts
 }
 
 // AlertsList gets a list of global alerts
-func (d *Service) AlertsList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Alert, int, error) {
-	Alerts := make([]*thunderdome.Alert, 0)
-	var AlertCount int
+func (d *Service) AlertsList(ctx context.Context, limit int, offset int) ([]*thunderdome.Alert, int, error) {
+	alerts := make([]*thunderdome.Alert, 0)
+	var alertCount int
 
 	e := d.DB.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM thunderdome.alert;",
 	).Scan(
-		&AlertCount,
+		&alertCount,
 	)
 	if e != nil {
 		d.Logger.Ctx(ctx).Error("AlertsList query scan error", zap.Error(e))
@@ -69,8 +69,8 @@ func (d *Service) AlertsList(ctx context.Context, Limit int, Offset int) ([]*thu
 		LIMIT $1
 		OFFSET $2;
 		`,
-		Limit,
-		Offset,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -79,7 +79,7 @@ func (d *Service) AlertsList(ctx context.Context, Limit int, Offset int) ([]*thu
 			var a thunderdome.Alert
 
 			if err := rows.Scan(
-				&a.Id,
+				&a.ID,
 				&a.Name,
 				&a.Type,
 				&a.Content,
@@ -89,28 +89,28 @@ func (d *Service) AlertsList(ctx context.Context, Limit int, Offset int) ([]*thu
 				&a.CreatedDate,
 				&a.UpdatedDate,
 			); err != nil {
-				return nil, AlertCount, fmt.Errorf("AlertsList row scan error: %v", err)
+				return nil, alertCount, fmt.Errorf("AlertsList row scan error: %v", err)
 			} else {
-				Alerts = append(Alerts, &a)
+				alerts = append(alerts, &a)
 			}
 		}
 	}
 
-	return Alerts, AlertCount, err
+	return alerts, alertCount, err
 }
 
 // AlertsCreate creates a global alert
-func (d *Service) AlertsCreate(ctx context.Context, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
+func (d *Service) AlertsCreate(ctx context.Context, name string, alertType string, content string, active bool, allowDismiss bool, registeredOnly bool) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.alert (name, type, content, active, allow_dismiss, registered_only)
 		VALUES ($1, $2, $3, $4, $5, $6);
 		`,
-		Name,
-		Type,
-		Content,
-		Active,
-		AllowDismiss,
-		RegisteredOnly,
+		name,
+		alertType,
+		content,
+		active,
+		allowDismiss,
+		registeredOnly,
 	); err != nil {
 		return fmt.Errorf("error creating new alert: %v", err)
 	}
@@ -119,20 +119,20 @@ func (d *Service) AlertsCreate(ctx context.Context, Name string, Type string, Co
 }
 
 // AlertsUpdate updates a global alert
-func (d *Service) AlertsUpdate(ctx context.Context, ID string, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
+func (d *Service) AlertsUpdate(ctx context.Context, alertID string, name string, alertType string, content string, active bool, allowDismiss bool, registeredOnly bool) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`
 		UPDATE thunderdome.alert
 		SET name = $2, type = $3, content = $4, active = $5, allow_dismiss = $6, registered_only = $7
 		WHERE id = $1;
 		`,
-		ID,
-		Name,
-		Type,
-		Content,
-		Active,
-		AllowDismiss,
-		RegisteredOnly,
+		alertID,
+		name,
+		alertType,
+		content,
+		active,
+		allowDismiss,
+		registeredOnly,
 	); err != nil {
 		return fmt.Errorf("error updating alert: %v", err)
 	}
@@ -141,10 +141,10 @@ func (d *Service) AlertsUpdate(ctx context.Context, ID string, Name string, Type
 }
 
 // AlertDelete deletes a global alert
-func (d *Service) AlertDelete(ctx context.Context, AlertID string) error {
+func (d *Service) AlertDelete(ctx context.Context, alertID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.alert WHERE id = $1;`,
-		AlertID,
+		alertID,
 	)
 
 	if err != nil {

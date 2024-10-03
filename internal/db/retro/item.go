@@ -9,14 +9,14 @@ import (
 )
 
 // CreateRetroItem adds a feedback item to the retro
-func (d *Service) CreateRetroItem(RetroID string, UserID string, ItemType string, Content string) ([]*thunderdome.RetroItem, error) {
-	var groupId string
+func (d *Service) CreateRetroItem(retroID string, userID string, itemType string, content string) ([]*thunderdome.RetroItem, error) {
+	var groupID string
 	err := d.DB.QueryRow(
 		`INSERT INTO thunderdome.retro_group
 		(retro_id)
 		VALUES ($1) RETURNING id;`,
-		RetroID,
-	).Scan(&groupId)
+		retroID,
+	).Scan(&groupID)
 	if err != nil {
 		return nil, fmt.Errorf("insert retro group error: %v", err)
 	}
@@ -25,25 +25,25 @@ func (d *Service) CreateRetroItem(RetroID string, UserID string, ItemType string
 		`INSERT INTO thunderdome.retro_item
 		(retro_id, group_id, type, content, user_id)
 		VALUES ($1, $2, $3, $4, $5);`,
-		RetroID, groupId, ItemType, Content, UserID,
+		retroID, groupID, itemType, content, userID,
 	); err != nil {
 		d.Logger.Error("insert retro item error", zap.Error(err))
 	}
 
-	items := d.GetRetroItems(RetroID)
+	items := d.GetRetroItems(retroID)
 
 	return items, nil
 }
 
 // GroupRetroItem changes the group_id of retro item
-func (d *Service) GroupRetroItem(RetroID string, ItemId string, GroupId string) (thunderdome.RetroItem, error) {
+func (d *Service) GroupRetroItem(retroID string, itemID string, groupID string) (thunderdome.RetroItem, error) {
 	ri := thunderdome.RetroItem{}
 
 	err := d.DB.QueryRow(
 		`UPDATE thunderdome.retro_item SET group_id = $3
  				WHERE retro_id = $1 AND id = $2
  				RETURNING id, user_id, group_id, content, type;`,
-		RetroID, ItemId, GroupId,
+		retroID, itemID, groupID,
 	).Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type)
 
 	if err != nil {
@@ -55,19 +55,19 @@ func (d *Service) GroupRetroItem(RetroID string, ItemId string, GroupId string) 
 }
 
 // DeleteRetroItem removes item from the current board by ID
-func (d *Service) DeleteRetroItem(RetroID string, userID string, Type string, ItemID string) ([]*thunderdome.RetroItem, error) {
+func (d *Service) DeleteRetroItem(retroID string, userID string, itemType string, itemID string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.retro_item WHERE id = $1 AND type = $2;`, ItemID, Type); err != nil {
+		`DELETE FROM thunderdome.retro_item WHERE id = $1 AND type = $2;`, itemID, itemType); err != nil {
 		d.Logger.Error("delete retro item error", zap.Error(err))
 	}
 
-	items := d.GetRetroItems(RetroID)
+	items := d.GetRetroItems(retroID)
 
 	return items, nil
 }
 
 // GetRetroItems retrieves retro items
-func (d *Service) GetRetroItems(RetroID string) []*thunderdome.RetroItem {
+func (d *Service) GetRetroItems(retroID string) []*thunderdome.RetroItem {
 	var items = make([]*thunderdome.RetroItem, 0)
 
 	itemRows, itemsErr := d.DB.Query(
@@ -81,7 +81,7 @@ func (d *Service) GetRetroItems(RetroID string) []*thunderdome.RetroItem {
 			WHERE ri.retro_id = $1
 			GROUP BY ri.id, ri.created_date
 			ORDER BY ri.created_date ASC;`,
-		RetroID,
+		retroID,
 	)
 	if itemsErr == nil {
 		defer itemRows.Close()
@@ -108,12 +108,12 @@ func (d *Service) GetRetroItems(RetroID string) []*thunderdome.RetroItem {
 }
 
 // GetRetroGroups retrieves retro groups
-func (d *Service) GetRetroGroups(RetroID string) []*thunderdome.RetroGroup {
+func (d *Service) GetRetroGroups(retroID string) []*thunderdome.RetroGroup {
 	var groups = make([]*thunderdome.RetroGroup, 0)
 
 	itemRows, itemsErr := d.DB.Query(
 		`SELECT id, COALESCE(name, '') FROM thunderdome.retro_group WHERE retro_id = $1 ORDER BY created_date ASC;`,
-		RetroID,
+		retroID,
 	)
 	if itemsErr == nil {
 		defer itemRows.Close()
@@ -133,14 +133,14 @@ func (d *Service) GetRetroGroups(RetroID string) []*thunderdome.RetroGroup {
 }
 
 // GroupNameChange changes retro item group name
-func (d *Service) GroupNameChange(RetroID string, GroupId string, Name string) (thunderdome.RetroGroup, error) {
+func (d *Service) GroupNameChange(retroID string, groupID string, name string) (thunderdome.RetroGroup, error) {
 	rg := thunderdome.RetroGroup{}
 
 	err := d.DB.QueryRow(
 		`UPDATE thunderdome.retro_group SET name = $3
 				WHERE retro_id = $1 AND id = $2
 				RETURNING id, name;`,
-		RetroID, GroupId, Name,
+		retroID, groupID, name,
 	).Scan(&rg.ID, &rg.Name)
 
 	if err != nil {
@@ -152,46 +152,46 @@ func (d *Service) GroupNameChange(RetroID string, GroupId string, Name string) (
 }
 
 // ItemCommentAdd adds a comment to a retro item
-func (d *Service) ItemCommentAdd(RetroID string, ItemID string, UserID string, Comment string) ([]*thunderdome.RetroItem, error) {
+func (d *Service) ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.retro_item_comment (item_id, user_id, comment) VALUES ($1, $2, $3);`,
-		ItemID,
-		UserID,
-		Comment,
+		itemID,
+		userID,
+		comment,
 	); err != nil {
 		d.Logger.Error("ItemCommentAdd error", zap.Error(err))
 	}
 
-	items := d.GetRetroItems(RetroID)
+	items := d.GetRetroItems(retroID)
 
 	return items, nil
 }
 
 // ItemCommentEdit edits a retro item comment
-func (d *Service) ItemCommentEdit(RetroID string, CommentID string, Comment string) ([]*thunderdome.RetroItem, error) {
+func (d *Service) ItemCommentEdit(retroID string, commentID string, comment string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.retro_item_comment SET comment = $2 WHERE id = $1;`,
-		CommentID,
-		Comment,
+		commentID,
+		comment,
 	); err != nil {
 		d.Logger.Error("ItemCommentEdit error", zap.Error(err))
 	}
 
-	items := d.GetRetroItems(RetroID)
+	items := d.GetRetroItems(retroID)
 
 	return items, nil
 }
 
 // ItemCommentDelete deletes a retro item comment
-func (d *Service) ItemCommentDelete(RetroID string, CommentID string) ([]*thunderdome.RetroItem, error) {
+func (d *Service) ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_item_comment WHERE id = $1;`,
-		CommentID,
+		commentID,
 	); err != nil {
 		d.Logger.Error("ItemCommentDelete error", zap.Error(err))
 	}
 
-	items := d.GetRetroItems(RetroID)
+	items := d.GetRetroItems(retroID)
 
 	return items, nil
 }

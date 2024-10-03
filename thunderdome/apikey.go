@@ -6,9 +6,9 @@ import (
 
 // APIKey structure
 type APIKey struct {
-	Id          string    `json:"id"`
+	ID          string    `json:"id"`
 	Prefix      string    `json:"prefix"`
-	UserId      string    `json:"userId"`
+	UserID      string    `json:"userId"`
 	Name        string    `json:"name"`
 	Key         string    `json:"apiKey"`
 	Active      bool      `json:"active"`
@@ -18,9 +18,9 @@ type APIKey struct {
 
 // UserAPIKey structure
 type UserAPIKey struct {
-	Id          string    `json:"id"`
+	ID          string    `json:"id"`
 	Prefix      string    `json:"prefix"`
-	UserId      string    `json:"userId"`
+	UserID      string    `json:"userId"`
 	UserEmail   string    `json:"userEmail"`
 	UserName    string    `json:"userName"`
 	Name        string    `json:"name"`

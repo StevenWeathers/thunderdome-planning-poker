@@ -55,7 +55,7 @@ func (m *MockTeamDataSvc) TeamCreate(ctx context.Context, UserID string, TeamNam
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamUpdate(ctx context.Context, TeamId string, TeamName string) (*thunderdome.Team, error) {
+func (m *MockTeamDataSvc) TeamUpdate(ctx context.Context, teamID string, TeamName string) (*thunderdome.Team, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -95,7 +95,7 @@ func (m *MockTeamDataSvc) TeamDeleteUserInvite(ctx context.Context, InviteID str
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamGetUserInvites(ctx context.Context, teamId string) ([]thunderdome.TeamUserInvite, error) {
+func (m *MockTeamDataSvc) TeamGetUserInvites(ctx context.Context, teamID string) ([]thunderdome.TeamUserInvite, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -553,7 +553,7 @@ func (m *MockOrganizationDataService) OrganizationCreate(ctx context.Context, Us
 	panic("implement me")
 }
 
-func (m *MockOrganizationDataService) OrganizationUpdate(ctx context.Context, OrgId string, OrgName string) (*thunderdome.Organization, error) {
+func (m *MockOrganizationDataService) OrganizationUpdate(ctx context.Context, OrgID string, OrgName string) (*thunderdome.Organization, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -598,7 +598,7 @@ func (m *MockOrganizationDataService) OrganizationDeleteUserInvite(ctx context.C
 	panic("implement me")
 }
 
-func (m *MockOrganizationDataService) OrganizationGetUserInvites(ctx context.Context, orgId string) ([]thunderdome.OrganizationUserInvite, error) {
+func (m *MockOrganizationDataService) OrganizationGetUserInvites(ctx context.Context, orgID string) ([]thunderdome.OrganizationUserInvite, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -653,7 +653,7 @@ func (m *MockOrganizationDataService) DepartmentCreate(ctx context.Context, OrgI
 	panic("implement me")
 }
 
-func (m *MockOrganizationDataService) DepartmentUpdate(ctx context.Context, DeptId string, DeptName string) (*thunderdome.Department, error) {
+func (m *MockOrganizationDataService) DepartmentUpdate(ctx context.Context, deptID string, DeptName string) (*thunderdome.Department, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -718,7 +718,7 @@ func (m *MockOrganizationDataService) DepartmentDeleteUserInvite(ctx context.Con
 	panic("implement me")
 }
 
-func (m *MockOrganizationDataService) DepartmentGetUserInvites(ctx context.Context, deptId string) ([]thunderdome.DepartmentUserInvite, error) {
+func (m *MockOrganizationDataService) DepartmentGetUserInvites(ctx context.Context, deptID string) ([]thunderdome.DepartmentUserInvite, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -1632,12 +1632,12 @@ func (m *MockSubscriptionDataService) GetSubscriptionByID(ctx context.Context, i
 	panic("implement me")
 }
 
-func (m *MockSubscriptionDataService) GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionId string) (thunderdome.Subscription, error) {
+func (m *MockSubscriptionDataService) GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (m *MockSubscriptionDataService) GetActiveSubscriptionsByUserID(ctx context.Context, userId string) ([]thunderdome.Subscription, error) {
+func (m *MockSubscriptionDataService) GetActiveSubscriptionsByUserID(ctx context.Context, userID string) ([]thunderdome.Subscription, error) {
 	//TODO implement me
 	panic("implement me")
 }

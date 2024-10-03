@@ -9,7 +9,7 @@ import (
 )
 
 // TeamRetroList gets a list of team retros
-func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Retro {
+func (d *Service) TeamRetroList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Retro {
 	var retros = make([]*thunderdome.Retro, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT r.id, r.name, r.template_id, r.phase
@@ -18,9 +18,9 @@ func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, O
         ORDER BY r.created_date DESC
 		LIMIT $2
 		OFFSET $3;`,
-		TeamID,
-		Limit,
-		Offset,
+		teamID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -29,7 +29,7 @@ func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, O
 			var tb thunderdome.Retro
 
 			if err := rows.Scan(
-				&tb.Id,
+				&tb.ID,
 				&tb.Name,
 				&tb.TemplateID,
 				&tb.Phase,
@@ -47,11 +47,11 @@ func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, O
 }
 
 // TeamAddRetro adds a retro to a team
-func (d *Service) TeamAddRetro(ctx context.Context, TeamID string, RetroID string) error {
+func (d *Service) TeamAddRetro(ctx context.Context, teamID string, retroID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.retro SET team_id = $1 WHERE id = $2;`,
-		TeamID,
-		RetroID,
+		teamID,
+		retroID,
 	)
 
 	if err != nil {
@@ -62,11 +62,11 @@ func (d *Service) TeamAddRetro(ctx context.Context, TeamID string, RetroID strin
 }
 
 // TeamRemoveRetro removes a retro from a team
-func (d *Service) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID string) error {
+func (d *Service) TeamRemoveRetro(ctx context.Context, teamID string, retroID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.retro SET team_id = $1 WHERE id = $2;`,
-		TeamID,
-		RetroID,
+		teamID,
+		retroID,
 	)
 
 	if err != nil {

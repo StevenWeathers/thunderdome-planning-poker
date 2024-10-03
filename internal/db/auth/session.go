@@ -10,8 +10,8 @@ import (
 )
 
 // CreateSession creates a new user authenticated session
-func (d *Service) CreateSession(ctx context.Context, UserId string, enabled bool) (string, error) {
-	SessionId, err := db.RandomBase64String(32)
+func (d *Service) CreateSession(ctx context.Context, userID string, enabled bool) (string, error) {
+	sessionID, err := db.RandomBase64String(32)
 	if err != nil {
 		return "", err
 	}
@@ -19,22 +19,22 @@ func (d *Service) CreateSession(ctx context.Context, UserId string, enabled bool
 	if _, sessionErr := d.DB.ExecContext(ctx, `
 		INSERT INTO thunderdome.user_session (session_id, user_id, disabled) VALUES ($1, $2, $3);
 		`,
-		SessionId,
-		UserId,
+		sessionID,
+		userID,
 		enabled,
 	); sessionErr != nil {
 		return "", fmt.Errorf("create user session query error: %v", sessionErr)
 	}
 
-	return SessionId, nil
+	return sessionID, nil
 }
 
 // EnableSession enables a user authenticated session
-func (d *Service) EnableSession(ctx context.Context, SessionId string) error {
+func (d *Service) EnableSession(ctx context.Context, sessionID string) error {
 	if _, sessionErr := d.DB.ExecContext(ctx, `
 		UPDATE thunderdome.user_session SET disabled = false WHERE session_id = $1;
 		`,
-		SessionId,
+		sessionID,
 	); sessionErr != nil {
 		return fmt.Errorf("enable user session query error: %v", sessionErr)
 	}
@@ -43,8 +43,8 @@ func (d *Service) EnableSession(ctx context.Context, SessionId string) error {
 }
 
 // GetSessionUser gets a user session by sessionId
-func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error) {
-	User := &thunderdome.User{}
+func (d *Service) GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error) {
+	user := &thunderdome.User{}
 
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT
@@ -65,38 +65,38 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
     FROM thunderdome.user_session us
     LEFT JOIN thunderdome.users u ON u.id = us.user_id
     WHERE us.session_id = $1 AND NOW() < us.expire_date`,
-		SessionId,
+		sessionID,
 	).Scan(
-		&User.Id,
-		&User.Name,
-		&User.Email,
-		&User.Type,
-		&User.Avatar,
-		&User.NotificationsEnabled,
-		&User.Country,
-		&User.Locale,
-		&User.Company,
-		&User.JobTitle,
-		&User.Picture,
-		&User.CreatedDate,
-		&User.UpdatedDate,
-		&User.LastActive,
+		&user.ID,
+		&user.Name,
+		&user.Email,
+		&user.Type,
+		&user.Avatar,
+		&user.NotificationsEnabled,
+		&user.Country,
+		&user.Locale,
+		&user.Company,
+		&user.JobTitle,
+		&user.Picture,
+		&user.CreatedDate,
+		&user.UpdatedDate,
+		&user.LastActive,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("get session user query error: %v", err)
 	}
 
-	User.GravatarHash = db.CreateGravatarHash(User.Email)
+	user.GravatarHash = db.CreateGravatarHash(user.Email)
 
-	return User, nil
+	return user, nil
 }
 
 // DeleteSession deletes a user authenticated session
-func (d *Service) DeleteSession(ctx context.Context, SessionId string) error {
+func (d *Service) DeleteSession(ctx context.Context, sessionID string) error {
 	if _, sessionErr := d.DB.ExecContext(ctx, `
 		DELETE FROM thunderdome.user_session WHERE session_id = $1;
 		`,
-		SessionId,
+		sessionID,
 	); sessionErr != nil {
 		return fmt.Errorf("delete user session query error: %v", sessionErr)
 	}

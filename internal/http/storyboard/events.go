@@ -9,8 +9,8 @@ import (
 )
 
 // AddGoal handles adding a goal to storyboard
-func (b *Service) AddGoal(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.StoryboardService.CreateStoryboardGoal(StoryboardID, UserID, EventValue)
+func (b *Service) AddGoal(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	goals, err := b.StoryboardService.CreateStoryboardGoal(storyboardID, userID, eventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -21,16 +21,16 @@ func (b *Service) AddGoal(ctx context.Context, StoryboardID string, UserID strin
 }
 
 // ReviseGoal handles revising a storyboard goal
-func (b *Service) ReviseGoal(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) ReviseGoal(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(EventValue), &goalObj)
+	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, err, false
 	}
-	GoalID := goalObj["goalId"]
-	GoalName := goalObj["name"]
+	goalID := goalObj["goalId"]
+	goalName := goalObj["name"]
 
-	goals, err := b.StoryboardService.ReviseGoalName(StoryboardID, UserID, GoalID, GoalName)
+	goals, err := b.StoryboardService.ReviseGoalName(storyboardID, userID, goalID, goalName)
 	if err != nil {
 		return nil, err, false
 	}
@@ -41,8 +41,8 @@ func (b *Service) ReviseGoal(ctx context.Context, StoryboardID string, UserID st
 }
 
 // DeleteGoal handles deleting a storyboard goal
-func (b *Service) DeleteGoal(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.StoryboardService.DeleteStoryboardGoal(StoryboardID, UserID, EventValue)
+func (b *Service) DeleteGoal(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	goals, err := b.StoryboardService.DeleteStoryboardGoal(storyboardID, userID, eventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -53,15 +53,15 @@ func (b *Service) DeleteGoal(ctx context.Context, StoryboardID string, UserID st
 }
 
 // AddColumn handles adding a column to storyboard goal
-func (b *Service) AddColumn(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) AddColumn(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(EventValue), &goalObj)
+	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, err, false
 	}
-	GoalID := goalObj["goalId"]
+	goalID := goalObj["goalId"]
 
-	goals, err := b.StoryboardService.CreateStoryboardColumn(StoryboardID, GoalID, UserID)
+	goals, err := b.StoryboardService.CreateStoryboardColumn(storyboardID, goalID, userID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -72,17 +72,17 @@ func (b *Service) AddColumn(ctx context.Context, StoryboardID string, UserID str
 }
 
 // ReviseColumn handles revising a storyboard goal column
-func (b *Service) ReviseColumn(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) ReviseColumn(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		ColumnID string `json:"id"`
 		Name     string `json:"name"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	goals, err := b.StoryboardService.ReviseStoryboardColumn(StoryboardID, UserID, rs.ColumnID, rs.Name)
+	goals, err := b.StoryboardService.ReviseStoryboardColumn(storyboardID, userID, rs.ColumnID, rs.Name)
 	if err != nil {
 		return nil, err, false
 	}
@@ -93,8 +93,8 @@ func (b *Service) ReviseColumn(ctx context.Context, StoryboardID string, UserID 
 }
 
 // DeleteColumn handles deleting a storyboard goal column
-func (b *Service) DeleteColumn(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.StoryboardService.DeleteStoryboardColumn(StoryboardID, UserID, EventValue)
+func (b *Service) DeleteColumn(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	goals, err := b.StoryboardService.DeleteStoryboardColumn(storyboardID, userID, eventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -105,17 +105,17 @@ func (b *Service) DeleteColumn(ctx context.Context, StoryboardID string, UserID 
 }
 
 // ColumnPersonaAdd handles adding a persona to a storyboard goal column
-func (b *Service) ColumnPersonaAdd(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) ColumnPersonaAdd(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		ColumnID  string `json:"column_id"`
 		PersonaID string `json:"persona_id"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	goals, err := b.StoryboardService.ColumnPersonaAdd(StoryboardID, rs.ColumnID, rs.PersonaID)
+	goals, err := b.StoryboardService.ColumnPersonaAdd(storyboardID, rs.ColumnID, rs.PersonaID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -126,17 +126,17 @@ func (b *Service) ColumnPersonaAdd(ctx context.Context, StoryboardID string, Use
 }
 
 // ColumnPersonaRemove handles removing a persona from a storyboard goal column
-func (b *Service) ColumnPersonaRemove(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) ColumnPersonaRemove(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		ColumnID  string `json:"column_id"`
 		PersonaID string `json:"persona_id"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	goals, err := b.StoryboardService.ColumnPersonaRemove(StoryboardID, rs.ColumnID, rs.PersonaID)
+	goals, err := b.StoryboardService.ColumnPersonaRemove(storyboardID, rs.ColumnID, rs.PersonaID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -147,16 +147,16 @@ func (b *Service) ColumnPersonaRemove(ctx context.Context, StoryboardID string, 
 }
 
 // AddStory handles adding a story to storyboard
-func (b *Service) AddStory(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) AddStory(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(EventValue), &goalObj)
+	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, err, false
 	}
-	GoalID := goalObj["goalId"]
-	ColumnID := goalObj["columnId"]
+	goalID := goalObj["goalId"]
+	columnID := goalObj["columnId"]
 
-	goals, err := b.StoryboardService.CreateStoryboardStory(StoryboardID, GoalID, ColumnID, UserID)
+	goals, err := b.StoryboardService.CreateStoryboardStory(storyboardID, goalID, columnID, userID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -167,16 +167,16 @@ func (b *Service) AddStory(ctx context.Context, StoryboardID string, UserID stri
 }
 
 // UpdateStoryName handles revising a storyboard story name
-func (b *Service) UpdateStoryName(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UpdateStoryName(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(EventValue), &goalObj)
+	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, err, false
 	}
-	StoryID := goalObj["storyId"]
-	StoryName := goalObj["name"]
+	storyID := goalObj["storyId"]
+	storyName := goalObj["name"]
 
-	goals, err := b.StoryboardService.ReviseStoryName(StoryboardID, UserID, StoryID, StoryName)
+	goals, err := b.StoryboardService.ReviseStoryName(storyboardID, userID, storyID, storyName)
 	if err != nil {
 		return nil, err, false
 	}
@@ -187,16 +187,16 @@ func (b *Service) UpdateStoryName(ctx context.Context, StoryboardID string, User
 }
 
 // UpdateStoryContent handles revising a storyboard story content
-func (b *Service) UpdateStoryContent(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UpdateStoryContent(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(EventValue), &goalObj)
+	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, err, false
 	}
-	StoryID := goalObj["storyId"]
-	StoryContent := goalObj["content"]
+	storyID := goalObj["storyId"]
+	storyContent := goalObj["content"]
 
-	goals, err := b.StoryboardService.ReviseStoryContent(StoryboardID, UserID, StoryID, StoryContent)
+	goals, err := b.StoryboardService.ReviseStoryContent(storyboardID, userID, storyID, storyContent)
 	if err != nil {
 		return nil, err, false
 	}
@@ -207,16 +207,16 @@ func (b *Service) UpdateStoryContent(ctx context.Context, StoryboardID string, U
 }
 
 // UpdateStoryColor handles revising a storyboard story color
-func (b *Service) UpdateStoryColor(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UpdateStoryColor(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(EventValue), &goalObj)
+	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, err, false
 	}
-	StoryID := goalObj["storyId"]
-	StoryColor := goalObj["color"]
+	storyID := goalObj["storyId"]
+	storyColor := goalObj["color"]
 
-	goals, err := b.StoryboardService.ReviseStoryColor(StoryboardID, UserID, StoryID, StoryColor)
+	goals, err := b.StoryboardService.ReviseStoryColor(storyboardID, userID, storyID, storyColor)
 	if err != nil {
 		return nil, err, false
 	}
@@ -227,17 +227,17 @@ func (b *Service) UpdateStoryColor(ctx context.Context, StoryboardID string, Use
 }
 
 // UpdateStoryPoints handles revising a storyboard story points
-func (b *Service) UpdateStoryPoints(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UpdateStoryPoints(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		StoryID string `json:"storyId"`
 		Points  int    `json:"points"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	goals, err := b.StoryboardService.ReviseStoryPoints(StoryboardID, UserID, rs.StoryID, rs.Points)
+	goals, err := b.StoryboardService.ReviseStoryPoints(storyboardID, userID, rs.StoryID, rs.Points)
 	if err != nil {
 		return nil, err, false
 	}
@@ -248,17 +248,17 @@ func (b *Service) UpdateStoryPoints(ctx context.Context, StoryboardID string, Us
 }
 
 // UpdateStoryClosed handles revising a storyboard story closed status
-func (b *Service) UpdateStoryClosed(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UpdateStoryClosed(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		StoryID string `json:"storyId"`
 		Closed  bool   `json:"closed"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	goals, err := b.StoryboardService.ReviseStoryClosed(StoryboardID, UserID, rs.StoryID, rs.Closed)
+	goals, err := b.StoryboardService.ReviseStoryClosed(storyboardID, userID, rs.StoryID, rs.Closed)
 	if err != nil {
 		return nil, err, false
 	}
@@ -269,16 +269,16 @@ func (b *Service) UpdateStoryClosed(ctx context.Context, StoryboardID string, Us
 }
 
 // UpdateStoryLink handles revising a storyboard story link
-func (b *Service) UpdateStoryLink(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UpdateStoryLink(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(EventValue), &goalObj)
+	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, err, false
 	}
-	StoryID := goalObj["storyId"]
-	Link := goalObj["link"]
+	storyID := goalObj["storyId"]
+	link := goalObj["link"]
 
-	goals, err := b.StoryboardService.ReviseStoryLink(StoryboardID, UserID, StoryID, Link)
+	goals, err := b.StoryboardService.ReviseStoryLink(storyboardID, userID, storyID, link)
 	if err != nil {
 		return nil, err, false
 	}
@@ -289,18 +289,18 @@ func (b *Service) UpdateStoryLink(ctx context.Context, StoryboardID string, User
 }
 
 // MoveStory handles moving a storyboard story between columns/goals
-func (b *Service) MoveStory(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) MoveStory(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(EventValue), &goalObj)
+	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, err, false
 	}
-	StoryID := goalObj["storyId"]
-	GoalID := goalObj["goalId"]
-	ColumnID := goalObj["columnId"]
-	PlaceBefore := goalObj["placeBefore"]
+	storyID := goalObj["storyId"]
+	goalID := goalObj["goalId"]
+	columnID := goalObj["columnId"]
+	placeBefore := goalObj["placeBefore"]
 
-	goals, err := b.StoryboardService.MoveStoryboardStory(StoryboardID, UserID, StoryID, GoalID, ColumnID, PlaceBefore)
+	goals, err := b.StoryboardService.MoveStoryboardStory(storyboardID, userID, storyID, goalID, columnID, placeBefore)
 	if err != nil {
 		return nil, err, false
 	}
@@ -311,8 +311,8 @@ func (b *Service) MoveStory(ctx context.Context, StoryboardID string, UserID str
 }
 
 // DeleteStory handles deleting a storyboard story
-func (b *Service) DeleteStory(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.StoryboardService.DeleteStoryboardStory(StoryboardID, UserID, EventValue)
+func (b *Service) DeleteStory(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	goals, err := b.StoryboardService.DeleteStoryboardStory(storyboardID, userID, eventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -323,17 +323,17 @@ func (b *Service) DeleteStory(ctx context.Context, StoryboardID string, UserID s
 }
 
 // AddStoryComment handles adding a storyboard story comment
-func (b *Service) AddStoryComment(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) AddStoryComment(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		StoryID string `json:"storyId"`
 		Comment string `json:"comment"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	goals, err := b.StoryboardService.AddStoryComment(StoryboardID, UserID, rs.StoryID, rs.Comment)
+	goals, err := b.StoryboardService.AddStoryComment(storyboardID, userID, rs.StoryID, rs.Comment)
 	if err != nil {
 		return nil, err, false
 	}
@@ -344,17 +344,17 @@ func (b *Service) AddStoryComment(ctx context.Context, StoryboardID string, User
 }
 
 // EditStoryComment handles editing a storyboard story comment
-func (b *Service) EditStoryComment(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) EditStoryComment(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		CommentID string `json:"commentId"`
 		Comment   string `json:"comment"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	goals, err := b.StoryboardService.EditStoryComment(StoryboardID, rs.CommentID, rs.Comment)
+	goals, err := b.StoryboardService.EditStoryComment(storyboardID, rs.CommentID, rs.Comment)
 	if err != nil {
 		return nil, err, false
 	}
@@ -365,16 +365,16 @@ func (b *Service) EditStoryComment(ctx context.Context, StoryboardID string, Use
 }
 
 // DeleteStoryComment handles deleting a storyboard story comment
-func (b *Service) DeleteStoryComment(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) DeleteStoryComment(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		CommentID string `json:"commentId"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	goals, err := b.StoryboardService.DeleteStoryComment(StoryboardID, rs.CommentID)
+	goals, err := b.StoryboardService.DeleteStoryComment(storyboardID, rs.CommentID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -385,18 +385,18 @@ func (b *Service) DeleteStoryComment(ctx context.Context, StoryboardID string, U
 }
 
 // AddPersona handles adding a storyboard persona
-func (b *Service) AddPersona(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) AddPersona(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		Name        string `json:"name"`
 		Role        string `json:"role"`
 		Description string `json:"description"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	personas, err := b.StoryboardService.AddStoryboardPersona(StoryboardID, UserID, rs.Name, rs.Role, rs.Description)
+	personas, err := b.StoryboardService.AddStoryboardPersona(storyboardID, userID, rs.Name, rs.Role, rs.Description)
 	if err != nil {
 		return nil, err, false
 	}
@@ -407,19 +407,19 @@ func (b *Service) AddPersona(ctx context.Context, StoryboardID string, UserID st
 }
 
 // UpdatePersona handles updating a storyboard persona
-func (b *Service) UpdatePersona(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UpdatePersona(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
 		PersonaID   string `json:"id"`
 		Name        string `json:"name"`
 		Role        string `json:"role"`
 		Description string `json:"description"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	personas, err := b.StoryboardService.UpdateStoryboardPersona(StoryboardID, UserID, rs.PersonaID, rs.Name, rs.Role, rs.Description)
+	personas, err := b.StoryboardService.UpdateStoryboardPersona(storyboardID, userID, rs.PersonaID, rs.Name, rs.Role, rs.Description)
 	if err != nil {
 		return nil, err, false
 	}
@@ -430,8 +430,8 @@ func (b *Service) UpdatePersona(ctx context.Context, StoryboardID string, UserID
 }
 
 // DeletePersona handles deleting a storyboard persona
-func (b *Service) DeletePersona(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.StoryboardService.DeleteStoryboardPersona(StoryboardID, UserID, EventValue)
+func (b *Service) DeletePersona(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	goals, err := b.StoryboardService.DeleteStoryboardPersona(storyboardID, userID, eventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -442,16 +442,16 @@ func (b *Service) DeletePersona(ctx context.Context, StoryboardID string, UserID
 }
 
 // FacilitatorAdd handles adding a storyboard facilitator
-func (b *Service) FacilitatorAdd(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) FacilitatorAdd(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
-		UserID string `json:"userId"`
+		userID string `json:"userId"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	storyboard, err := b.StoryboardService.StoryboardFacilitatorAdd(StoryboardID, rs.UserID)
+	storyboard, err := b.StoryboardService.StoryboardFacilitatorAdd(storyboardID, rs.userID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -462,16 +462,16 @@ func (b *Service) FacilitatorAdd(ctx context.Context, StoryboardID string, UserI
 }
 
 // FacilitatorRemove handles removing a storyboard facilitator
-func (b *Service) FacilitatorRemove(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) FacilitatorRemove(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rs struct {
-		UserID string `json:"userId"`
+		userID string `json:"userId"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {
 		return nil, err, false
 	}
 
-	storyboard, err := b.StoryboardService.StoryboardFacilitatorRemove(StoryboardID, rs.UserID)
+	storyboard, err := b.StoryboardService.StoryboardFacilitatorRemove(storyboardID, rs.userID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -482,14 +482,14 @@ func (b *Service) FacilitatorRemove(ctx context.Context, StoryboardID string, Us
 }
 
 // FacilitatorSelf handles self-promoting a user to a facilitator
-func (b *Service) FacilitatorSelf(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	facilitatorCode, err := b.StoryboardService.GetStoryboardFacilitatorCode(StoryboardID)
+func (b *Service) FacilitatorSelf(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	facilitatorCode, err := b.StoryboardService.GetStoryboardFacilitatorCode(storyboardID)
 	if err != nil {
 		return nil, err, false
 	}
 
-	if EventValue == facilitatorCode {
-		storyboard, err := b.StoryboardService.StoryboardFacilitatorAdd(StoryboardID, UserID)
+	if eventValue == facilitatorCode {
+		storyboard, err := b.StoryboardService.StoryboardFacilitatorAdd(storyboardID, userID)
 		if err != nil {
 			return nil, err, false
 		}
@@ -504,8 +504,8 @@ func (b *Service) FacilitatorSelf(ctx context.Context, StoryboardID string, User
 }
 
 // ReviseColorLegend handles revising a storyboard color legend
-func (b *Service) ReviseColorLegend(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	storyboard, err := b.StoryboardService.StoryboardReviseColorLegend(StoryboardID, UserID, EventValue)
+func (b *Service) ReviseColorLegend(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	storyboard, err := b.StoryboardService.StoryboardReviseColorLegend(storyboardID, userID, eventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -516,19 +516,19 @@ func (b *Service) ReviseColorLegend(ctx context.Context, StoryboardID string, Us
 }
 
 // EditStoryboard handles editing the storyboard settings
-func (b *Service) EditStoryboard(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) EditStoryboard(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
 	var rb struct {
 		Name            string `json:"storyboardName"`
 		JoinCode        string `json:"joinCode"`
 		FacilitatorCode string `json:"facilitatorCode"`
 	}
-	err := json.Unmarshal([]byte(EventValue), &rb)
+	err := json.Unmarshal([]byte(eventValue), &rb)
 	if err != nil {
 		return nil, err, false
 	}
 
 	err = b.StoryboardService.EditStoryboard(
-		StoryboardID,
+		storyboardID,
 		rb.Name,
 		rb.JoinCode,
 		rb.FacilitatorCode,
@@ -544,8 +544,8 @@ func (b *Service) EditStoryboard(ctx context.Context, StoryboardID string, UserI
 }
 
 // Delete handles deleting the storyboard
-func (b *Service) Delete(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	err := b.StoryboardService.DeleteStoryboard(StoryboardID, UserID)
+func (b *Service) Delete(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	err := b.StoryboardService.DeleteStoryboard(storyboardID, userID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -555,8 +555,8 @@ func (b *Service) Delete(ctx context.Context, StoryboardID string, UserID string
 }
 
 // Abandon handles setting abandoned true so storyboard doesn't show up in users storyboard list, then leaves storyboard
-func (b *Service) Abandon(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	_, err := b.StoryboardService.AbandonStoryboard(StoryboardID, UserID)
+func (b *Service) Abandon(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
+	_, err := b.StoryboardService.AbandonStoryboard(storyboardID, userID)
 	if err != nil {
 		return nil, err, false
 	}

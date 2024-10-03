@@ -44,8 +44,8 @@ func NewHub(
 	config Config,
 	eventHandlers map[string]func(context.Context, string, string, string) ([]byte, error, bool),
 	facilitatorOnlyOperations map[string]struct{},
-	confirmFacilitator func(roomId string, userId string) error,
-	retreatUser func(roomId string, userId string) string,
+	confirmFacilitator func(roomID string, userID string) error,
+	retreatUser func(roomID string, userID string) string,
 ) *Hub {
 	return &Hub{
 		broadcast:                 make(chan Message),

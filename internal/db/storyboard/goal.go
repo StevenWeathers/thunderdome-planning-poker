@@ -14,12 +14,12 @@ import (
 )
 
 // CreateStoryboardGoal adds a new goal to a Storyboard
-func (d *Service) CreateStoryboardGoal(StoryboardID string, userID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalName string) ([]*thunderdome.StoryboardGoal, error) {
 	var betweenAkey *string
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
-		zap.String("storyboard_id", StoryboardID),
-		zap.String("goal_name", GoalName),
+		zap.String("storyboard_id", storyboardID),
+		zap.String("goal_name", goalName),
 	)
 
 	tx, err := d.DB.BeginTx(context.Background(), nil)
@@ -31,14 +31,14 @@ func (d *Service) CreateStoryboardGoal(StoryboardID string, userID string, GoalN
 
 	if err := tx.QueryRow(
 		`
-		SELECT 
+		SELECT
     COALESCE(
         (SELECT MAX(display_order)
          FROM thunderdome.storyboard_goal
          WHERE storyboard_id = $1),
         'a0'
     ) AS last_display_order;`,
-		StoryboardID,
+		storyboardID,
 	).Scan(&betweenAkey); err != nil {
 		logger.Error("get display_order between query error",
 			zap.Error(err),
@@ -67,7 +67,7 @@ func (d *Service) CreateStoryboardGoal(StoryboardID string, userID string, GoalN
         thunderdome.storyboard_goal
         (storyboard_id, name, display_order)
         VALUES ($1, $2, $3);`,
-		StoryboardID, GoalName, displayOrder,
+		storyboardID, goalName, displayOrder,
 	); err != nil {
 		logger.Error("create storyboard goal error",
 			zap.Error(err),
@@ -81,40 +81,40 @@ func (d *Service) CreateStoryboardGoal(StoryboardID string, userID string, GoalN
 		return nil, fmt.Errorf("failed to update storyboard story display_order: %v", commitErr)
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // ReviseGoalName updates the plan name by ID
-func (d *Service) ReviseGoalName(StoryboardID string, userID string, GoalID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseGoalName(storyboardID string, userID string, goalID string, goalName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_goal SET name = $2, updated_date = NOW() WHERE id = $1;`,
-		GoalID,
-		GoalName,
+		goalID,
+		goalName,
 	); err != nil {
 		d.Logger.Error("update storyboard goal error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // DeleteStoryboardGoal removes a goal from the current board by ID
-func (d *Service) DeleteStoryboardGoal(StoryboardID string, userID string, GoalID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) DeleteStoryboardGoal(storyboardID string, userID string, goalID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_goal WHERE id = $1;`, GoalID); err != nil {
+		`DELETE FROM thunderdome.storyboard_goal WHERE id = $1;`, goalID); err != nil {
 		d.Logger.Error("storyboard goal delete error", zap.Error(err))
 	}
 
-	goals := d.GetStoryboardGoals(StoryboardID)
+	goals := d.GetStoryboardGoals(storyboardID)
 
 	return goals, nil
 }
 
 // GetStoryboardGoals retrieves goals for given storyboard from db
-func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.StoryboardGoal {
+func (d *Service) GetStoryboardGoals(storyboardID string) []*thunderdome.StoryboardGoal {
 	var goals = make([]*thunderdome.StoryboardGoal, 0)
 
 	goalRows, goalsErr := d.DB.Query(
@@ -155,7 +155,7 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
         WHERE sg.storyboard_id = $1
         GROUP BY sg.id, sg.display_order
         ORDER BY sg.display_order;`,
-		StoryboardID,
+		storyboardID,
 	)
 	if goalsErr == nil {
 		defer goalRows.Close()
@@ -163,12 +163,12 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
 			var columns string
 			var personas string
 			var sg = &thunderdome.StoryboardGoal{
-				Id:        "",
+				ID:        "",
 				Name:      "",
 				SortOrder: "",
 				Columns:   make([]*thunderdome.StoryboardColumn, 0),
 			}
-			if err := goalRows.Scan(&sg.Id, &sg.SortOrder, &sg.Name, &columns, &personas); err != nil {
+			if err := goalRows.Scan(&sg.ID, &sg.SortOrder, &sg.Name, &columns, &personas); err != nil {
 				d.Logger.Error("get_storyboard_goals query scan error", zap.Error(err))
 			} else {
 				goalColumns := make([]*thunderdome.StoryboardColumn, 0)

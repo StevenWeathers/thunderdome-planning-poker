@@ -36,7 +36,7 @@ type subscriptionRequestBody struct {
 func (s *Service) handleSubscriptionGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		id := vars["subscriptionId"]
 		idErr := validate.Var(id, "required,uuid")
@@ -49,7 +49,7 @@ func (s *Service) handleSubscriptionGet() http.HandlerFunc {
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleGetTeamByUser error", zap.Error(err), zap.String("subscription_id", id),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -72,24 +72,24 @@ func (s *Service) handleSubscriptionGet() http.HandlerFunc {
 func (s *Service) handleGetSubscriptions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		Limit, Offset := getLimitOffsetFromRequest(r)
-		Subscriptions, Count, err := s.SubscriptionDataSvc.GetSubscriptions(ctx, Limit, Offset)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		limit, offset := getLimitOffsetFromRequest(r)
+		subscriptions, count, err := s.SubscriptionDataSvc.GetSubscriptions(ctx, limit, offset)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetSubscriptions error", zap.Error(err),
-				zap.Int("limit", Limit), zap.Int("offset", Offset),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.Int("limit", limit), zap.Int("offset", offset),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Subscriptions, Meta)
+		s.Success(w, r, http.StatusOK, subscriptions, meta)
 	}
 }
 
@@ -106,7 +106,7 @@ func (s *Service) handleGetSubscriptions() http.HandlerFunc {
 func (s *Service) handleSubscriptionCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		var sub = subscriptionRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -142,7 +142,7 @@ func (s *Service) handleSubscriptionCreate() http.HandlerFunc {
 				zap.String("sub_subscription_id", sub.SubscriptionID),
 				zap.String("sub_type", sub.Type),
 				zap.Time("sub_expires", sub.Expires),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -165,10 +165,10 @@ func (s *Service) handleSubscriptionCreate() http.HandlerFunc {
 func (s *Service) handleSubscriptionUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ID := vars["subscriptionId"]
-		idErr := validate.Var(ID, "required,uuid")
+		subscriptionID := vars["subscriptionId"]
+		idErr := validate.Var(subscriptionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -193,7 +193,7 @@ func (s *Service) handleSubscriptionUpdate() http.HandlerFunc {
 			return
 		}
 
-		subscription, err := s.SubscriptionDataSvc.UpdateSubscription(ctx, ID, thunderdome.Subscription{
+		subscription, err := s.SubscriptionDataSvc.UpdateSubscription(ctx, subscriptionID, thunderdome.Subscription{
 			UserID:         sub.UserID,
 			TeamID:         sub.TeamID,
 			OrganizationID: sub.OrganizationID,
@@ -205,8 +205,8 @@ func (s *Service) handleSubscriptionUpdate() http.HandlerFunc {
 		})
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleSubscriptionUpdate error",
-				zap.Error(err), zap.String("subscription_id", ID),
-				zap.String("session_user_id", SessionUserID))
+				zap.Error(err), zap.String("subscription_id", subscriptionID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -228,20 +228,20 @@ func (s *Service) handleSubscriptionUpdate() http.HandlerFunc {
 func (s *Service) handleSubscriptionDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		SubscriptionID := vars["subscriptionId"]
-		idErr := validate.Var(SubscriptionID, "required,uuid")
+		subscriptionID := vars["subscriptionId"]
+		idErr := validate.Var(subscriptionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.SubscriptionDataSvc.DeleteSubscription(ctx, SubscriptionID)
+		err := s.SubscriptionDataSvc.DeleteSubscription(ctx, subscriptionID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleSubscriptionDelete error", zap.Error(err),
-				zap.String("subscription_id", SubscriptionID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("subscription_id", subscriptionID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -264,24 +264,24 @@ func (s *Service) handleGetEntityUserActiveSubs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		EntityUserID := vars["userId"]
-		idErr := validate.Var(EntityUserID, "required,uuid")
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		entityUserID := vars["userId"]
+		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		Subscriptions, err := s.SubscriptionDataSvc.GetActiveSubscriptionsByUserID(ctx, EntityUserID)
+		subscriptions, err := s.SubscriptionDataSvc.GetActiveSubscriptionsByUserID(ctx, entityUserID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetSubscriptions error", zap.Error(err),
-				zap.String("entity_user_id", EntityUserID),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.String("entity_user_id", entityUserID),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, Subscriptions, nil)
+		s.Success(w, r, http.StatusOK, subscriptions, nil)
 	}
 }
 
@@ -306,15 +306,15 @@ func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		EntityUserID := vars["userId"]
-		idErr := validate.Var(EntityUserID, "required,uuid")
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		entityUserID := vars["userId"]
+		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SubscriptionID := vars["subscriptionId"]
-		sidErr := validate.Var(SubscriptionID, "required,uuid")
+		subscriptionID := vars["subscriptionId"]
+		sidErr := validate.Var(subscriptionID, "required,uuid")
 		if sidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, sidErr.Error()))
 			return
@@ -333,13 +333,13 @@ func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
 			return
 		}
 
-		sub, err := s.SubscriptionDataSvc.GetSubscriptionByID(ctx, SubscriptionID)
+		sub, err := s.SubscriptionDataSvc.GetSubscriptionByID(ctx, subscriptionID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleEntityUserUpdateSubscription GetSubscriptionByID error", zap.Error(err),
-				zap.String("subscription_id", SubscriptionID),
-				zap.String("entity_user_id", EntityUserID),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.String("subscription_id", subscriptionID),
+				zap.String("entity_user_id", entityUserID),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -362,16 +362,16 @@ func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
 			}
 		}
 
-		Subscription, err := s.SubscriptionDataSvc.UpdateSubscription(ctx, sub.ID, sub)
+		subscription, err := s.SubscriptionDataSvc.UpdateSubscription(ctx, sub.ID, sub)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleEntityUserUpdateSubscription error", zap.Error(err),
-				zap.String("subscription_id", SubscriptionID),
-				zap.String("entity_user_id", EntityUserID),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.String("subscription_id", subscriptionID),
+				zap.String("entity_user_id", entityUserID),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, Subscription, nil)
+		s.Success(w, r, http.StatusOK, subscription, nil)
 	}
 }

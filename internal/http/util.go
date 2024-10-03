@@ -29,7 +29,7 @@ type userPassword struct {
 }
 
 // validateUserAccount makes sure user's name, email are valid before creating the account
-func validateUserAccount(name string, email string) (UserName string, UserEmail string, validateErr error) {
+func validateUserAccount(name string, email string) (userName string, userEmail string, validateErr error) {
 	a := userAccount{
 		Name:  name,
 		Email: email,
@@ -43,7 +43,7 @@ func validateUserAccount(name string, email string) (UserName string, UserEmail 
 }
 
 // validateUserAccountWithPasswords makes sure user's name, email, and password are valid before creating the account
-func validateUserAccountWithPasswords(name string, email string, pwd1 string, pwd2 string) (UserName string, UserEmail string, UpdatedPassword string, validateErr error) {
+func validateUserAccountWithPasswords(name string, email string, pwd1 string, pwd2 string) (userName string, userEmail string, updatedPassword string, validateErr error) {
 	a := userAccount{
 		Name:  name,
 		Email: email,
@@ -65,7 +65,7 @@ func validateUserAccountWithPasswords(name string, email string, pwd1 string, pw
 }
 
 // validateUserPassword makes sure user password is valid before updating the password
-func validateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, validateErr error) {
+func validateUserPassword(pwd1 string, pwd2 string) (updatedPassword string, validateErr error) {
 	a := userPassword{
 		Password1: pwd1,
 		Password2: pwd2,
@@ -158,22 +158,22 @@ func sanitizeUserInputForLogs(unescapedInput string) string {
 }
 
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
-func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, UserPassword string) (*thunderdome.User, string, error) {
-	var AuthedUser *thunderdome.User
-	var SessionId string
+func (s *Service) authAndCreateUserLdap(ctx context.Context, userName string, userPassword string) (*thunderdome.User, string, error) {
+	var authedUser *thunderdome.User
+	var sessionID string
 	var sessErr error
 
 	l, err := ldap.DialURL(s.Config.AuthLdapUrl)
 	if err != nil {
 		s.Logger.Ctx(ctx).Error("Failed connecting to ldap server at " + s.Config.AuthLdapUrl)
-		return AuthedUser, SessionId, err
+		return authedUser, sessionID, err
 	}
 	defer l.Close()
 	if s.Config.AuthLdapUseTls {
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed securing ldap connection", zap.Error(err))
-			return AuthedUser, SessionId, err
+			return authedUser, sessionID, err
 		}
 	}
 
@@ -181,149 +181,150 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 		err = l.Bind(s.Config.AuthLdapBindname, s.Config.AuthLdapBindpass)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed binding for authentication", zap.Error(err))
-			return AuthedUser, SessionId, err
+			return authedUser, sessionID, err
 		}
 	}
 
 	searchRequest := ldap.NewSearchRequest(s.Config.AuthLdapBasedn,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf(s.Config.AuthLdapFilter, ldap.EscapeFilter(UserName)),
+		fmt.Sprintf(s.Config.AuthLdapFilter, ldap.EscapeFilter(userName)),
 		[]string{"dn", s.Config.AuthLdapMailAttr, s.Config.AuthLdapCnAttr},
 		nil,
 	)
 
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		s.Logger.Ctx(ctx).Error("Failed performing ldap search query", zap.String("username", sanitizeUserInputForLogs(UserName)), zap.Error(err))
-		return AuthedUser, SessionId, err
+		s.Logger.Ctx(ctx).Error("Failed performing ldap search query", zap.String("username", sanitizeUserInputForLogs(userName)), zap.Error(err))
+		return authedUser, sessionID, err
 	}
 
 	if len(sr.Entries) != 1 {
-		s.Logger.Ctx(ctx).Error("User does not exist or too many entries returned", zap.String("username", sanitizeUserInputForLogs(UserName)))
-		return AuthedUser, SessionId, errors.New("user not found")
+		s.Logger.Ctx(ctx).Error("User does not exist or too many entries returned", zap.String("username", sanitizeUserInputForLogs(userName)))
+		return authedUser, sessionID, errors.New("user not found")
 	}
 
 	userdn := sr.Entries[0].DN
 	useremail := sr.Entries[0].GetAttributeValue(s.Config.AuthLdapMailAttr)
 	usercn := sr.Entries[0].GetAttributeValue(s.Config.AuthLdapCnAttr)
 
-	err = l.Bind(userdn, UserPassword)
+	err = l.Bind(userdn, userPassword)
 	if err != nil {
-		s.Logger.Ctx(ctx).Error("Failed authenticating user", zap.String("username", sanitizeUserInputForLogs(UserName)))
-		return AuthedUser, SessionId, err
+		s.Logger.Ctx(ctx).Error("Failed authenticating user", zap.String("username", sanitizeUserInputForLogs(userName)))
+		return authedUser, sessionID, err
 	}
 
-	AuthedUser, err = s.UserDataSvc.GetUserByEmail(ctx, useremail)
+	authedUser, err = s.UserDataSvc.GetUserByEmail(ctx, useremail)
 
-	if AuthedUser == nil {
+	if authedUser == nil {
 		var verifyID string
 		s.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		AuthedUser, verifyID, err = s.UserDataSvc.CreateUserRegistered(ctx, usercn, useremail, "", "")
+		authedUser, verifyID, err = s.UserDataSvc.CreateUserRegistered(ctx, usercn, useremail, "", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
-			return AuthedUser, SessionId, err
+			return authedUser, sessionID, err
 		}
 		err = s.AuthDataSvc.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
-			return AuthedUser, SessionId, err
+			return authedUser, sessionID, err
 		}
-		SessionId, err = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id, true)
+		sessionID, err = s.AuthDataSvc.CreateSession(ctx, authedUser.ID, true)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
-			return AuthedUser, SessionId, err
+			return authedUser, sessionID, err
 		}
 	} else {
-		if AuthedUser.Disabled {
+		if authedUser.Disabled {
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id, true)
+		sessionID, sessErr = s.AuthDataSvc.CreateSession(ctx, authedUser.ID, true)
 		if sessErr != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
 		}
 	}
 
-	return AuthedUser, SessionId, nil
+	return authedUser, sessionID, nil
 }
 
 // Authenticate using HTTP headers and if user does not exist, automatically add user as a verified user
 func (s *Service) authAndCreateUserHeader(ctx context.Context, username string, useremail string) (*thunderdome.User, string, error) {
-	var AuthedUser *thunderdome.User
-	var SessionId string
+	var authedUser *thunderdome.User
+	var sessionId string
 	var sessErr error
 
-	AuthedUser, err := s.UserDataSvc.GetUserByEmail(ctx, useremail)
+	authedUser, err := s.UserDataSvc.GetUserByEmail(ctx, useremail)
 
-	if AuthedUser == nil {
+	if authedUser == nil {
 		s.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		AuthedUser, verifyID, err := s.UserDataSvc.CreateUserRegistered(ctx, username, useremail, "", "")
+		var verifyID string
+		authedUser, verifyID, err = s.UserDataSvc.CreateUserRegistered(ctx, username, useremail, "", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
-			return AuthedUser, SessionId, err
+			return authedUser, sessionId, err
 		}
 		err = s.AuthDataSvc.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
-			return AuthedUser, SessionId, err
+			return authedUser, sessionId, err
 		}
-		SessionId, err = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id, true)
+		sessionId, err = s.AuthDataSvc.CreateSession(ctx, authedUser.ID, true)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
-			return AuthedUser, SessionId, err
+			return authedUser, sessionId, err
 		}
 	} else {
-		if AuthedUser.Disabled {
+		if authedUser.Disabled {
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id, true)
+		sessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, authedUser.ID, true)
 		if sessErr != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
 		}
 	}
 
-	return AuthedUser, SessionId, nil
+	return authedUser, sessionId, nil
 }
 
 // isTeamUserOrAnAdmin determines if the request user is a team user
 // or team admin, or department admin (if applicable), or organization admin (if applicable), or application admin
 func isTeamUserOrAnAdmin(r *http.Request) bool {
 	ctx := r.Context()
-	TeamUserRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
+	teamUserRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
 	var emptyRole = ""
-	OrgRole := TeamUserRoles.OrganizationRole
-	if OrgRole == nil {
-		OrgRole = &emptyRole
+	orgRole := teamUserRoles.OrganizationRole
+	if orgRole == nil {
+		orgRole = &emptyRole
 	}
-	DepartmentRole := TeamUserRoles.DepartmentRole
-	if DepartmentRole == nil {
-		DepartmentRole = &emptyRole
+	departmentRole := teamUserRoles.DepartmentRole
+	if departmentRole == nil {
+		departmentRole = &emptyRole
 	}
-	TeamRole := TeamUserRoles.TeamRole
-	if TeamRole == nil {
-		TeamRole = &emptyRole
-	}
-
-	UserType := ctx.Value(contextKeyUserType).(string)
-	var isAdmin = UserType == thunderdome.AdminUserType
-	if DepartmentRole != nil && *DepartmentRole == thunderdome.AdminUserType {
-		isAdmin = true
-	}
-	if OrgRole != nil && *OrgRole == thunderdome.AdminUserType {
-		isAdmin = true
+	teamRole := teamUserRoles.TeamRole
+	if teamRole == nil {
+		teamRole = &emptyRole
 	}
 
-	return isAdmin || *TeamRole != ""
+	userType := ctx.Value(contextKeyUserType).(string)
+	var isAdmin = userType == thunderdome.AdminUserType
+	if departmentRole != nil && *departmentRole == thunderdome.AdminUserType {
+		isAdmin = true
+	}
+	if orgRole != nil && *orgRole == thunderdome.AdminUserType {
+		isAdmin = true
+	}
+
+	return isAdmin || *teamRole != ""
 }
 
 // get the index template from embedded filesystem
-func (s *Service) getIndexTemplate(FSS fs.FS) *template.Template {
+func (s *Service) getIndexTemplate(filesystem fs.FS) *template.Template {
 	ctx := context.Background()
 	// get the html template from dist, have it ready for requests
-	tmplContent, ioErr := fs.ReadFile(FSS, "static/index.html")
+	tmplContent, ioErr := fs.ReadFile(filesystem, "static/index.html")
 	if ioErr != nil {
 		s.Logger.Ctx(ctx).Error("Error opening index template")
 		if !s.Config.EmbedUseOS {
@@ -343,17 +344,17 @@ func (s *Service) getIndexTemplate(FSS fs.FS) *template.Template {
 	return tmpl
 }
 
-func getWebsocketConnectSrc(SecureProtocol bool, WebsocketSubdomain string, AppDomain string) string {
+func getWebsocketConnectSrc(secureProtocol bool, websocketSubdomain string, appDomain string) string {
 	wcs := "wss://"
-	if !SecureProtocol {
+	if !secureProtocol {
 		wcs = "ws://"
 	}
-	sub := WebsocketSubdomain
+	sub := websocketSubdomain
 	if sub != "" {
 		sub = fmt.Sprintf("%s.", sub)
 	}
 
-	return fmt.Sprintf("%s%s%s", wcs, sub, AppDomain)
+	return fmt.Sprintf("%s%s%s", wcs, sub, appDomain)
 }
 
 func retroTemplateBuildFormatFromRequest(requestFormat retroTemplateFormatRequestBody) *thunderdome.RetroTemplateFormat {

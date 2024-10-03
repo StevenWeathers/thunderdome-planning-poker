@@ -18,7 +18,7 @@ type Service struct {
 }
 
 // TeamGet gets a team
-func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team, error) {
+func (d *Service) TeamGet(ctx context.Context, teamID string) (*thunderdome.Team, error) {
 	var team = &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx,
@@ -29,12 +29,12 @@ func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team
         LEFT JOIN thunderdome.subscription s ON o.id = s.team_id
         LEFT JOIN thunderdome.organization_department od ON o.department_id = od.id
         WHERE o.id = $1;`,
-		TeamID,
+		teamID,
 	).Scan(
-		&team.Id,
+		&team.ID,
 		&team.Name,
-		&team.OrganizationId,
-		&team.DepartmentId,
+		&team.OrganizationID,
+		&team.DepartmentID,
 		&team.CreatedDate,
 		&team.UpdatedDate,
 		&team.Subscribed,
@@ -47,48 +47,48 @@ func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team
 }
 
 // TeamListByUser gets a list of teams the user is on
-func (d *Service) TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserTeam {
+func (d *Service) TeamListByUser(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserTeam {
 	var teams = make([]*thunderdome.UserTeam, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT 
-    t.id, 
+		`SELECT
+    t.id,
     t.name,
-    COALESCE(t.organization_id::TEXT, 
-             (SELECT organization_id::TEXT 
-              FROM thunderdome.organization_department 
-              WHERE id = t.department_id), 
-             '') AS organization_id, 
-    COALESCE(t.department_id::TEXT, ''), 
-    t.created_date, 
-    t.updated_date, 
+    COALESCE(t.organization_id::TEXT,
+             (SELECT organization_id::TEXT
+              FROM thunderdome.organization_department
+              WHERE id = t.department_id),
+             '') AS organization_id,
+    COALESCE(t.department_id::TEXT, ''),
+    t.created_date,
+    t.updated_date,
     tu.role,
     sub_check.is_subscribed
 FROM thunderdome.team_user tu
 LEFT JOIN thunderdome.team t ON tu.team_id = t.id
 LEFT JOIN LATERAL (
-    SELECT 
+    SELECT
     COALESCE(
-        (SELECT TRUE 
+        (SELECT TRUE
         FROM (
             -- Check for direct team subscription
             SELECT TRUE
-            FROM thunderdome.subscription 
+            FROM thunderdome.subscription
             WHERE team_id = t.id
-                AND active = TRUE 
+                AND active = TRUE
                 AND expires > CURRENT_TIMESTAMP
             UNION ALL
             -- Check for organization subscription (either direct or via department)
             SELECT TRUE
             FROM thunderdome.subscription s
-            JOIN thunderdome.team t2 ON 
-                CASE 
+            JOIN thunderdome.team t2 ON
+                CASE
                 WHEN t2.department_id IS NOT NULL THEN
                     s.organization_id = (SELECT organization_id FROM thunderdome.organization_department WHERE id = t2.department_id)
                 ELSE
                     s.organization_id = t2.organization_id
                 END
             WHERE t2.id = t.id
-                AND s.active = TRUE 
+                AND s.active = TRUE
                 AND s.expires > CURRENT_TIMESTAMP
         ) AS subscriptions
         LIMIT 1),
@@ -99,9 +99,9 @@ WHERE tu.user_id = $1
 ORDER BY t.created_date
 LIMIT $2
 OFFSET $3;`,
-		UserID,
-		Limit,
-		Offset,
+		userID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -110,10 +110,10 @@ OFFSET $3;`,
 			var team thunderdome.UserTeam
 
 			if err := rows.Scan(
-				&team.Id,
+				&team.ID,
 				&team.Name,
-				&team.OrganizationId,
-				&team.DepartmentId,
+				&team.OrganizationID,
+				&team.DepartmentID,
 				&team.CreatedDate,
 				&team.UpdatedDate,
 				&team.Role,
@@ -132,28 +132,28 @@ OFFSET $3;`,
 }
 
 // TeamListByUserNonOrg gets a list of teams the user is on that are not part of an organization
-func (d *Service) TeamListByUserNonOrg(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserTeam {
+func (d *Service) TeamListByUserNonOrg(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserTeam {
 	var teams = make([]*thunderdome.UserTeam, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT 
-    t.id, 
-    t.name, 
-    t.created_date, 
-    t.updated_date, 
+		`SELECT
+    t.id,
+    t.name,
+    t.created_date,
+    t.updated_date,
     tu.role,
     sub_check.is_subscribed
 FROM thunderdome.team_user tu
 LEFT JOIN thunderdome.team t ON tu.team_id = t.id
 LEFT JOIN LATERAL (
-    SELECT 
+    SELECT
     COALESCE(
-        (SELECT TRUE 
+        (SELECT TRUE
         FROM (
             -- Check for direct team subscription
             SELECT TRUE
-            FROM thunderdome.subscription 
+            FROM thunderdome.subscription
             WHERE team_id = t.id
-                AND active = TRUE 
+                AND active = TRUE
                 AND expires > CURRENT_TIMESTAMP
         ) AS subscriptions
         LIMIT 1),
@@ -164,9 +164,9 @@ WHERE tu.user_id = $1 AND t.department_id IS NULL AND t.organization_id IS NULL
 ORDER BY t.created_date
 LIMIT $2
 OFFSET $3;`,
-		UserID,
-		Limit,
-		Offset,
+		userID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -175,7 +175,7 @@ OFFSET $3;`,
 			var team thunderdome.UserTeam
 
 			if err := rows.Scan(
-				&team.Id,
+				&team.ID,
 				&team.Name,
 				&team.CreatedDate,
 				&team.UpdatedDate,
@@ -195,13 +195,13 @@ OFFSET $3;`,
 }
 
 // TeamCreate creates a team with current user as an ADMIN
-func (d *Service) TeamCreate(ctx context.Context, UserID string, TeamName string) (*thunderdome.Team, error) {
+func (d *Service) TeamCreate(ctx context.Context, userID string, teamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, name, created_date, updated_date FROM thunderdome.team_create($1, $2);`,
-		UserID,
-		TeamName,
-	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
+		userID,
+		teamName,
+	).Scan(&t.ID, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
 		return nil, fmt.Errorf("create team query error: %v", err)
@@ -211,16 +211,16 @@ func (d *Service) TeamCreate(ctx context.Context, UserID string, TeamName string
 }
 
 // TeamUpdate updates a team
-func (d *Service) TeamUpdate(ctx context.Context, TeamId string, TeamName string) (*thunderdome.Team, error) {
+func (d *Service) TeamUpdate(ctx context.Context, teamID string, teamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}
 	err := d.DB.QueryRowContext(ctx, `
 		UPDATE thunderdome.team
 		SET name = $1, updated_date = NOW()
 		WHERE id = $2
 		RETURNING id, name, created_date, updated_date;`,
-		TeamName,
-		TeamId,
-	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
+		teamName,
+		teamID,
+	).Scan(&t.ID, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
 		return nil, fmt.Errorf("team update query error: %v", err)
@@ -230,10 +230,10 @@ func (d *Service) TeamUpdate(ctx context.Context, TeamId string, TeamName string
 }
 
 // TeamDelete deletes a team
-func (d *Service) TeamDelete(ctx context.Context, TeamID string) error {
+func (d *Service) TeamDelete(ctx context.Context, teamID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team WHERE id = $1;`,
-		TeamID,
+		teamID,
 	)
 
 	if err != nil {
@@ -244,7 +244,7 @@ func (d *Service) TeamDelete(ctx context.Context, TeamID string) error {
 }
 
 // TeamList gets a list of teams
-func (d *Service) TeamList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Team, int) {
+func (d *Service) TeamList(ctx context.Context, limit int, offset int) ([]*thunderdome.Team, int) {
 	var teams = make([]*thunderdome.Team, 0)
 	var count = 0
 
@@ -263,8 +263,8 @@ func (d *Service) TeamList(ctx context.Context, Limit int, Offset int) ([]*thund
         ORDER BY t.created_date
 		LIMIT $1
 		OFFSET $2;`,
-		Limit,
-		Offset,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -273,7 +273,7 @@ func (d *Service) TeamList(ctx context.Context, Limit int, Offset int) ([]*thund
 			var team thunderdome.Team
 
 			if err := rows.Scan(
-				&team.Id,
+				&team.ID,
 				&team.Name,
 				&team.CreatedDate,
 				&team.UpdatedDate,
@@ -291,39 +291,39 @@ func (d *Service) TeamList(ctx context.Context, Limit int, Offset int) ([]*thund
 }
 
 // TeamIsSubscribed checks if a team is subscribed
-func (d *Service) TeamIsSubscribed(ctx context.Context, TeamID string) (bool, error) {
+func (d *Service) TeamIsSubscribed(ctx context.Context, teamID string) (bool, error) {
 	var subscribed bool
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT 
+		`SELECT
   COALESCE(
-      (SELECT TRUE 
+      (SELECT TRUE
        FROM (
            -- Check for direct team subscription
            SELECT TRUE
-           FROM thunderdome.subscription 
+           FROM thunderdome.subscription
            WHERE team_id = $1
-             AND active = TRUE 
+             AND active = TRUE
              AND expires > CURRENT_TIMESTAMP
            UNION ALL
            -- Check for organization subscription (either direct or via department)
            SELECT TRUE
            FROM thunderdome.subscription s
-           JOIN thunderdome.team t ON 
-             CASE 
+           JOIN thunderdome.team t ON
+             CASE
                WHEN t.department_id IS NOT NULL THEN
                  s.organization_id = (SELECT organization_id FROM thunderdome.organization_department WHERE id = t.department_id)
                ELSE
                  s.organization_id = t.organization_id
              END
            WHERE t.id = $1
-             AND s.active = TRUE 
+             AND s.active = TRUE
              AND s.expires > CURRENT_TIMESTAMP
        ) AS subscriptions
        LIMIT 1),
       FALSE
   ) AS is_subscribed;`,
-		TeamID,
+		teamID,
 	).Scan(
 		&subscribed,
 	)

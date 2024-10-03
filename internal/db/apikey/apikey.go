@@ -22,7 +22,7 @@ type Service struct {
 }
 
 // GenerateApiKey generates a new API key for a User
-func (d *Service) GenerateApiKey(ctx context.Context, UserID string, KeyName string) (*thunderdome.APIKey, error) {
+func (d *Service) GenerateApiKey(ctx context.Context, userID string, keyName string) (*thunderdome.APIKey, error) {
 	apiPrefix, prefixErr := db.RandomString(8)
 	if prefixErr != nil {
 		return nil, fmt.Errorf("error generating api prefix: %v", prefixErr)
@@ -33,15 +33,15 @@ func (d *Service) GenerateApiKey(ctx context.Context, UserID string, KeyName str
 		return nil, fmt.Errorf("error generating api secret: %v", secretErr)
 	}
 
-	key := apiPrefix + "." + apiSecret
-	hashedKey := db.HashString(key)
+	rawKey := apiPrefix + "." + apiSecret
+	hashedKey := db.HashString(rawKey)
 	keyID := apiPrefix + "." + hashedKey
 
-	APIKEY := &thunderdome.APIKey{
-		Id:          keyID,
-		Name:        KeyName,
-		Key:         key,
-		UserId:      UserID,
+	apiKey := &thunderdome.APIKey{
+		ID:          keyID,
+		Name:        keyName,
+		Key:         rawKey,
+		UserID:      userID,
 		Prefix:      apiPrefix,
 		Active:      true,
 		CreatedDate: time.Now(),
@@ -50,22 +50,22 @@ func (d *Service) GenerateApiKey(ctx context.Context, UserID string, KeyName str
 	err := d.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.api_key (id, name, user_id) VALUES ($1, $2, $3) RETURNING created_date;`,
 		keyID,
-		KeyName,
-		UserID,
-	).Scan(&APIKEY.CreatedDate)
+		keyName,
+		userID,
+	).Scan(&apiKey.CreatedDate)
 	if err != nil {
 		return nil, fmt.Errorf("error creating api key: %v", err)
 	}
 
-	return APIKEY, nil
+	return apiKey, nil
 }
 
 // GetUserApiKeys gets a list of api keys for a user
-func (d *Service) GetUserApiKeys(ctx context.Context, UserID string) ([]*thunderdome.APIKey, error) {
-	var APIKeys = make([]*thunderdome.APIKey, 0)
+func (d *Service) GetUserApiKeys(ctx context.Context, userID string) ([]*thunderdome.APIKey, error) {
+	var keys = make([]*thunderdome.APIKey, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		"SELECT id, name, user_id, active, created_date, updated_date FROM thunderdome.api_key WHERE user_id = $1 ORDER BY created_date",
-		UserID,
+		userID,
 	)
 	if err == nil {
 		defer rows.Close()
@@ -76,7 +76,7 @@ func (d *Service) GetUserApiKeys(ctx context.Context, UserID string) ([]*thunder
 			if err := rows.Scan(
 				&key,
 				&ak.Name,
-				&ak.UserId,
+				&ak.UserID,
 				&ak.Active,
 				&ak.CreatedDate,
 				&ak.UpdatedDate,
@@ -85,24 +85,24 @@ func (d *Service) GetUserApiKeys(ctx context.Context, UserID string) ([]*thunder
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
-				ak.Id = key
-				APIKeys = append(APIKeys, &ak)
+				ak.ID = key
+				keys = append(keys, &ak)
 			}
 		}
 	}
 
-	return APIKeys, err
+	return keys, err
 }
 
 // UpdateUserApiKey updates a user api key (active column only)
-func (d *Service) UpdateUserApiKey(ctx context.Context, UserID string, KeyID string, Active bool) ([]*thunderdome.APIKey, error) {
+func (d *Service) UpdateUserApiKey(ctx context.Context, userID string, keyID string, active bool) ([]*thunderdome.APIKey, error) {
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.api_key SET active = $3, updated_date = NOW() WHERE id = $1 AND user_id = $2;`,
-		KeyID, UserID, Active); err != nil {
+		keyID, userID, active); err != nil {
 		return nil, fmt.Errorf("error updating api key: %v", err)
 	}
 
-	keys, keysErr := d.GetUserApiKeys(ctx, UserID)
+	keys, keysErr := d.GetUserApiKeys(ctx, userID)
 	if keysErr != nil {
 		return nil, fmt.Errorf("error getting users api keys: %v", keysErr)
 	}
@@ -111,14 +111,14 @@ func (d *Service) UpdateUserApiKey(ctx context.Context, UserID string, KeyID str
 }
 
 // DeleteUserApiKey removes a users api key
-func (d *Service) DeleteUserApiKey(ctx context.Context, UserID string, KeyID string) ([]*thunderdome.APIKey, error) {
+func (d *Service) DeleteUserApiKey(ctx context.Context, userID string, keyID string) ([]*thunderdome.APIKey, error) {
 	if _, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.api_key WHERE id = $1 AND user_id = $2;`,
-		KeyID, UserID); err != nil {
+		keyID, userID); err != nil {
 		return nil, fmt.Errorf("error deleting api key: %v", err)
 	}
 
-	keys, keysErr := d.GetUserApiKeys(ctx, UserID)
+	keys, keysErr := d.GetUserApiKeys(ctx, userID)
 	if keysErr != nil {
 		return nil, fmt.Errorf("error getting users api keys: %v", keysErr)
 	}
@@ -127,47 +127,47 @@ func (d *Service) DeleteUserApiKey(ctx context.Context, UserID string, KeyID str
 }
 
 // GetApiKeyUser checks to see if the API key exists and returns the User
-func (d *Service) GetApiKeyUser(ctx context.Context, APK string) (*thunderdome.User, error) {
-	User := &thunderdome.User{}
+func (d *Service) GetApiKeyUser(ctx context.Context, apiKey string) (*thunderdome.User, error) {
+	user := &thunderdome.User{}
 
-	splitKey := strings.Split(APK, ".")
-	hashedKey := db.HashString(APK)
+	splitKey := strings.Split(apiKey, ".")
+	hashedKey := db.HashString(apiKey)
 	keyID := splitKey[0] + "." + hashedKey
 
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT u.id, u.name, u.email, u.type, u.avatar, u.verified, u.notifications_enabled, COALESCE(u.country, ''), COALESCE(u.locale, ''), COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.created_date, u.updated_date, u.last_active 
+		SELECT u.id, u.name, u.email, u.type, u.avatar, u.verified, u.notifications_enabled, COALESCE(u.country, ''), COALESCE(u.locale, ''), COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.created_date, u.updated_date, u.last_active
 		FROM thunderdome.api_key ak
 		LEFT JOIN thunderdome.users u ON u.id = ak.user_id
 		WHERE ak.id = $1 AND ak.active = true
 `,
 		keyID,
 	).Scan(
-		&User.Id,
-		&User.Name,
-		&User.Email,
-		&User.Type,
-		&User.Avatar,
-		&User.Verified,
-		&User.NotificationsEnabled,
-		&User.Country,
-		&User.Locale,
-		&User.Company,
-		&User.JobTitle,
-		&User.CreatedDate,
-		&User.UpdatedDate,
-		&User.LastActive)
+		&user.ID,
+		&user.Name,
+		&user.Email,
+		&user.Type,
+		&user.Avatar,
+		&user.Verified,
+		&user.NotificationsEnabled,
+		&user.Country,
+		&user.Locale,
+		&user.Company,
+		&user.JobTitle,
+		&user.CreatedDate,
+		&user.UpdatedDate,
+		&user.LastActive)
 	if err != nil {
 		return nil, fmt.Errorf("active API Key match not found: %v", err)
 	}
 
-	User.GravatarHash = db.CreateGravatarHash(User.Email)
+	user.GravatarHash = db.CreateGravatarHash(user.Email)
 
-	return User, nil
+	return user, nil
 }
 
 // GetAPIKeys gets a list of api keys
-func (d *Service) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thunderdome.UserAPIKey {
-	var APIKeys = make([]*thunderdome.UserAPIKey, 0)
+func (d *Service) GetAPIKeys(ctx context.Context, limit int, offset int) []*thunderdome.UserAPIKey {
+	var keys = make([]*thunderdome.UserAPIKey, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT apk.id, apk.name, u.id, u.name, u.email, apk.active, apk.created_date, apk.updated_date
 		FROM thunderdome.api_key apk
@@ -175,8 +175,8 @@ func (d *Service) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thun
 		ORDER BY apk.created_date
 		LIMIT $1
 		OFFSET $2;`,
-		Limit,
-		Offset,
+		limit,
+		offset,
 	)
 	if err == nil {
 		defer rows.Close()
@@ -187,7 +187,7 @@ func (d *Service) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thun
 			if err := rows.Scan(
 				&key,
 				&ak.Name,
-				&ak.UserId,
+				&ak.UserID,
 				&ak.UserName,
 				&ak.UserEmail,
 				&ak.Active,
@@ -198,13 +198,13 @@ func (d *Service) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thun
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
-				ak.Id = key
-				APIKeys = append(APIKeys, &ak)
+				ak.ID = key
+				keys = append(keys, &ak)
 			}
 		}
 	} else {
 		d.Logger.Ctx(ctx).Error("apikeys_list query error", zap.Error(err))
 	}
 
-	return APIKeys
+	return keys
 }

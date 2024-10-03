@@ -56,11 +56,11 @@ type SocketEvent struct {
 	UserID string `json:"userId"`
 }
 
-func CreateSocketEvent(Type string, Value string, UserID string) []byte {
+func CreateSocketEvent(eventType string, eventValue string, userID string) []byte {
 	newEvent := &SocketEvent{
-		Type:   Type,
-		Value:  Value,
-		UserID: UserID,
+		Type:   eventType,
+		Value:  eventValue,
+		UserID: userID,
 	}
 
 	event, _ := json.Marshal(newEvent)

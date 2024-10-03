@@ -5880,14 +5880,14 @@ paths:
       - team
   /teams/{teamId}/battles/{battleId}:
     delete:
-      description: Remove a battle from the team
+      description: Remove a poker game from the team
       parameters:
       - description: the team ID
         in: path
         name: teamId
         required: true
         type: string
-      - description: the battle ID
+      - description: the game ID
         in: path
         name: battleId
         required: true

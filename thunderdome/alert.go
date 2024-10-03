@@ -5,7 +5,7 @@ import (
 )
 
 type Alert struct {
-	Id             string    `json:"id" db:"id"`
+	ID             string    `json:"id" db:"id"`
 	Name           string    `json:"name" db:"name"`
 	Type           string    `json:"type" db:"type"`
 	Content        string    `json:"content" db:"content"`

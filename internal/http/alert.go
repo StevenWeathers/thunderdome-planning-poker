@@ -35,24 +35,24 @@ type alertRequestBody struct {
 func (s *Service) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		Limit, Offset := getLimitOffsetFromRequest(r)
-		Alerts, Count, err := s.AlertDataSvc.AlertsList(ctx, Limit, Offset)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		limit, offset := getLimitOffsetFromRequest(r)
+		alerts, count, err := s.AlertDataSvc.AlertsList(ctx, limit, offset)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetAlerts error", zap.Error(err),
-				zap.Int("limit", Limit), zap.Int("offset", Offset),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.Int("limit", limit), zap.Int("offset", offset),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Alerts, Meta)
+		s.Success(w, r, http.StatusOK, alerts, meta)
 	}
 }
 
@@ -69,7 +69,7 @@ func (s *Service) handleGetAlerts() http.HandlerFunc {
 func (s *Service) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		var alert = alertRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -93,7 +93,7 @@ func (s *Service) handleAlertCreate() http.HandlerFunc {
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleAlertCreate error", zap.Error(err),
 				zap.String("alert_name", alert.Name), zap.String("alert_type", alert.Type),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -118,10 +118,10 @@ func (s *Service) handleAlertCreate() http.HandlerFunc {
 func (s *Service) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ID := vars["alertId"]
-		idErr := validate.Var(ID, "required,uuid")
+		alertID := vars["alertId"]
+		idErr := validate.Var(alertID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -146,10 +146,10 @@ func (s *Service) handleAlertUpdate() http.HandlerFunc {
 			return
 		}
 
-		err := s.AlertDataSvc.AlertsUpdate(ctx, ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := s.AlertDataSvc.AlertsUpdate(ctx, alertID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleAlertUpdate error", zap.Error(err), zap.String("alert_id", ID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleAlertUpdate error", zap.Error(err), zap.String("alert_id", alertID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -173,19 +173,19 @@ func (s *Service) handleAlertUpdate() http.HandlerFunc {
 func (s *Service) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		AlertID := vars["alertId"]
-		idErr := validate.Var(AlertID, "required,uuid")
+		alertID := vars["alertId"]
+		idErr := validate.Var(alertID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.AlertDataSvc.AlertDelete(ctx, AlertID)
+		err := s.AlertDataSvc.AlertDelete(ctx, alertID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleAlertDelete error", zap.Error(err), zap.String("alert_id", AlertID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleAlertDelete error", zap.Error(err), zap.String("alert_id", alertID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

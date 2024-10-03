@@ -144,8 +144,8 @@ type pagination struct {
 type contextKey string
 
 type CookieManager interface {
-	CreateUserCookie(w http.ResponseWriter, UserID string) error
-	CreateSessionCookie(w http.ResponseWriter, SessionID string) error
+	CreateUserCookie(w http.ResponseWriter, userID string) error
+	CreateSessionCookie(w http.ResponseWriter, sessionID string) error
 	CreateUserUICookie(w http.ResponseWriter, userUiCookie thunderdome.UserUICookie) error
 	ClearUserCookies(w http.ResponseWriter)
 	ValidateUserCookie(w http.ResponseWriter, r *http.Request) (string, error)
@@ -164,50 +164,50 @@ type AdminDataSvc interface {
 
 type AlertDataSvc interface {
 	GetActiveAlerts(ctx context.Context) []interface{}
-	AlertsList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Alert, int, error)
-	AlertsCreate(ctx context.Context, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error
-	AlertsUpdate(ctx context.Context, ID string, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error
-	AlertDelete(ctx context.Context, AlertID string) error
+	AlertsList(ctx context.Context, limit int, offset int) ([]*thunderdome.Alert, int, error)
+	AlertsCreate(ctx context.Context, name string, alertType string, content string, active bool, allowDismiss bool, registeredOnly bool) error
+	AlertsUpdate(ctx context.Context, alertID string, name string, alertType string, content string, active bool, allowDismiss bool, registeredOnly bool) error
+	AlertDelete(ctx context.Context, alertID string) error
 }
 
 type APIKeyDataSvc interface {
-	GenerateApiKey(ctx context.Context, UserID string, KeyName string) (*thunderdome.APIKey, error)
-	GetUserApiKeys(ctx context.Context, UserID string) ([]*thunderdome.APIKey, error)
-	GetApiKeyUser(ctx context.Context, APK string) (*thunderdome.User, error)
-	GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thunderdome.UserAPIKey
-	UpdateUserApiKey(ctx context.Context, UserID string, KeyID string, Active bool) ([]*thunderdome.APIKey, error)
-	DeleteUserApiKey(ctx context.Context, UserID string, KeyID string) ([]*thunderdome.APIKey, error)
+	GenerateApiKey(ctx context.Context, userID string, keyName string) (*thunderdome.APIKey, error)
+	GetUserApiKeys(ctx context.Context, userID string) ([]*thunderdome.APIKey, error)
+	GetApiKeyUser(ctx context.Context, apiKey string) (*thunderdome.User, error)
+	GetAPIKeys(ctx context.Context, limit int, offset int) []*thunderdome.UserAPIKey
+	UpdateUserApiKey(ctx context.Context, userID string, keyID string, active bool) ([]*thunderdome.APIKey, error)
+	DeleteUserApiKey(ctx context.Context, userID string, keyID string) ([]*thunderdome.APIKey, error)
 }
 
 type AuthDataSvc interface {
-	AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*thunderdome.User, *thunderdome.Credential, string, error)
+	AuthUser(ctx context.Context, email string, password string) (*thunderdome.User, *thunderdome.Credential, string, error)
 	OauthCreateNonce(ctx context.Context) (string, error)
 	OauthValidateNonce(ctx context.Context, nonceId string) error
 	OauthAuthUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error)
-	UserResetRequest(ctx context.Context, UserEmail string) (resetID string, UserName string, resetErr error)
-	UserResetPassword(ctx context.Context, ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error)
-	UserUpdatePassword(ctx context.Context, UserID string, UserPassword string) (Name string, Email string, resetErr error)
-	UserVerifyRequest(ctx context.Context, UserId string) (*thunderdome.User, string, error)
-	VerifyUserAccount(ctx context.Context, VerifyID string) error
+	UserResetRequest(ctx context.Context, email string) (resetID string, userName string, resetErr error)
+	UserResetPassword(ctx context.Context, resetID string, password string) (userName string, email string, resetErr error)
+	UserUpdatePassword(ctx context.Context, userID string, password string) (name string, email string, resetErr error)
+	UserVerifyRequest(ctx context.Context, userId string) (*thunderdome.User, string, error)
+	VerifyUserAccount(ctx context.Context, verifyID string) error
 	MFASetupGenerate(email string) (string, string, error)
-	MFASetupValidate(ctx context.Context, UserID string, secret string, passcode string) error
-	MFARemove(ctx context.Context, UserID string) error
-	MFATokenValidate(ctx context.Context, SessionId string, passcode string) error
-	CreateSession(ctx context.Context, UserId string, enabled bool) (string, error)
-	EnableSession(ctx context.Context, SessionId string) error
-	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
-	DeleteSession(ctx context.Context, SessionId string) error
+	MFASetupValidate(ctx context.Context, userID string, secret string, passcode string) error
+	MFARemove(ctx context.Context, userID string) error
+	MFATokenValidate(ctx context.Context, sessionId string, passcode string) error
+	CreateSession(ctx context.Context, userId string, enabled bool) (string, error)
+	EnableSession(ctx context.Context, sessionId string) error
+	GetSessionUser(ctx context.Context, sessionId string) (*thunderdome.User, error)
+	DeleteSession(ctx context.Context, sessionId string) error
 }
 
 type CheckinDataSvc interface {
-	CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*thunderdome.TeamCheckin, error)
-	CheckinCreate(ctx context.Context, TeamId string, UserId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
-	CheckinUpdate(ctx context.Context, CheckinId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
-	CheckinDelete(ctx context.Context, CheckinId string) error
-	CheckinComment(ctx context.Context, TeamId string, CheckinId string, UserId string, Comment string) error
-	CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error
-	CheckinCommentDelete(ctx context.Context, CommentId string) error
-	CheckinLastByUser(ctx context.Context, TeamId string, UserId string) (*thunderdome.TeamCheckin, error)
+	CheckinList(ctx context.Context, teamID string, Date string, TimeZone string) ([]*thunderdome.TeamCheckin, error)
+	CheckinCreate(ctx context.Context, teamID string, userId string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
+	CheckinUpdate(ctx context.Context, checkinId string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
+	CheckinDelete(ctx context.Context, checkinId string) error
+	CheckinComment(ctx context.Context, teamID string, checkinId string, userId string, comment string) error
+	CheckinCommentEdit(ctx context.Context, teamID string, userId string, commentId string, comment string) error
+	CheckinCommentDelete(ctx context.Context, commentId string) error
+	CheckinLastByUser(ctx context.Context, teamID string, userId string) (*thunderdome.TeamCheckin, error)
 }
 
 type JiraDataSvc interface {
@@ -219,108 +219,108 @@ type JiraDataSvc interface {
 }
 
 type OrganizationDataSvc interface {
-	OrganizationGet(ctx context.Context, OrgID string) (*thunderdome.Organization, error)
-	OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error)
-	OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserOrganization
-	OrganizationCreate(ctx context.Context, UserID string, OrgName string) (*thunderdome.Organization, error)
-	OrganizationUpdate(ctx context.Context, OrgId string, OrgName string) (*thunderdome.Organization, error)
-	OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.OrganizationUser
-	OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
-	OrganizationUpsertUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
-	OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
-	OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error
-	OrganizationInviteUser(ctx context.Context, OrgID string, Email string, Role string) (string, error)
-	OrganizationUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.OrganizationUserInvite, error)
-	OrganizationDeleteUserInvite(ctx context.Context, InviteID string) error
-	OrganizationGetUserInvites(ctx context.Context, orgId string) ([]thunderdome.OrganizationUserInvite, error)
-	OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Team
-	OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*thunderdome.Team, error)
-	OrganizationTeamUserRole(ctx context.Context, UserID string, OrgID string, TeamID string) (string, string, error)
-	OrganizationDelete(ctx context.Context, OrgID string) error
-	OrganizationList(ctx context.Context, Limit int, Offset int) []*thunderdome.Organization
-	OrganizationIsSubscribed(ctx context.Context, OrgID string) (bool, error)
+	OrganizationGet(ctx context.Context, orgID string) (*thunderdome.Organization, error)
+	OrganizationUserRole(ctx context.Context, userID string, orgID string) (string, error)
+	OrganizationListByUser(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserOrganization
+	OrganizationCreate(ctx context.Context, userID string, orgName string) (*thunderdome.Organization, error)
+	OrganizationUpdate(ctx context.Context, orgID string, orgName string) (*thunderdome.Organization, error)
+	OrganizationUserList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.OrganizationUser
+	OrganizationAddUser(ctx context.Context, orgID string, userID string, Role string) (string, error)
+	OrganizationUpsertUser(ctx context.Context, orgID string, userID string, Role string) (string, error)
+	OrganizationUpdateUser(ctx context.Context, orgID string, userID string, Role string) (string, error)
+	OrganizationRemoveUser(ctx context.Context, organizationID string, userID string) error
+	OrganizationInviteUser(ctx context.Context, orgID string, Email string, Role string) (string, error)
+	OrganizationUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.OrganizationUserInvite, error)
+	OrganizationDeleteUserInvite(ctx context.Context, inviteID string) error
+	OrganizationGetUserInvites(ctx context.Context, orgID string) ([]thunderdome.OrganizationUserInvite, error)
+	OrganizationTeamList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.Team
+	OrganizationTeamCreate(ctx context.Context, orgID string, teamName string) (*thunderdome.Team, error)
+	OrganizationTeamUserRole(ctx context.Context, userID string, orgID string, teamID string) (string, string, error)
+	OrganizationDelete(ctx context.Context, orgID string) error
+	OrganizationList(ctx context.Context, limit int, offset int) []*thunderdome.Organization
+	OrganizationIsSubscribed(ctx context.Context, orgID string) (bool, error)
 	GetOrganizationMetrics(ctx context.Context, organizationID string) (*thunderdome.OrganizationMetrics, error)
 
-	DepartmentUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string) (string, string, error)
-	DepartmentGet(ctx context.Context, DepartmentID string) (*thunderdome.Department, error)
-	OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Department
-	DepartmentCreate(ctx context.Context, OrgID string, OrgName string) (*thunderdome.Department, error)
-	DepartmentUpdate(ctx context.Context, DeptId string, DeptName string) (*thunderdome.Department, error)
-	DepartmentTeamList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.Team
-	DepartmentTeamCreate(ctx context.Context, DepartmentID string, TeamName string) (*thunderdome.Team, error)
-	DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.DepartmentUser
-	DepartmentAddUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error)
-	DepartmentUpsertUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error)
-	DepartmentUpdateUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error)
-	DepartmentRemoveUser(ctx context.Context, DepartmentID string, UserID string) error
-	DepartmentTeamUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string, TeamID string) (string, string, string, error)
-	DepartmentDelete(ctx context.Context, DepartmentID string) error
-	DepartmentInviteUser(ctx context.Context, DeptID string, Email string, Role string) (string, error)
-	DepartmentUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.DepartmentUserInvite, error)
-	DepartmentDeleteUserInvite(ctx context.Context, InviteID string) error
-	DepartmentGetUserInvites(ctx context.Context, deptId string) ([]thunderdome.DepartmentUserInvite, error)
+	DepartmentUserRole(ctx context.Context, userID string, orgID string, departmentID string) (string, string, error)
+	DepartmentGet(ctx context.Context, departmentID string) (*thunderdome.Department, error)
+	OrganizationDepartmentList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.Department
+	DepartmentCreate(ctx context.Context, orgID string, orgName string) (*thunderdome.Department, error)
+	DepartmentUpdate(ctx context.Context, deptID string, deptName string) (*thunderdome.Department, error)
+	DepartmentTeamList(ctx context.Context, departmentID string, limit int, offset int) []*thunderdome.Team
+	DepartmentTeamCreate(ctx context.Context, departmentID string, teamName string) (*thunderdome.Team, error)
+	DepartmentUserList(ctx context.Context, departmentID string, limit int, offset int) []*thunderdome.DepartmentUser
+	DepartmentAddUser(ctx context.Context, departmentID string, userID string, Role string) (string, error)
+	DepartmentUpsertUser(ctx context.Context, departmentID string, userID string, Role string) (string, error)
+	DepartmentUpdateUser(ctx context.Context, departmentID string, userID string, Role string) (string, error)
+	DepartmentRemoveUser(ctx context.Context, departmentID string, userID string) error
+	DepartmentTeamUserRole(ctx context.Context, userID string, orgID string, departmentID string, teamID string) (string, string, string, error)
+	DepartmentDelete(ctx context.Context, departmentID string) error
+	DepartmentInviteUser(ctx context.Context, deptID string, email string, role string) (string, error)
+	DepartmentUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.DepartmentUserInvite, error)
+	DepartmentDeleteUserInvite(ctx context.Context, inviteID string) error
+	DepartmentGetUserInvites(ctx context.Context, deptID string) ([]thunderdome.DepartmentUserInvite, error)
 }
 
 type TeamDataSvc interface {
-	TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error)
-	TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team, error)
-	TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserTeam
-	TeamListByUserNonOrg(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserTeam
-	TeamCreate(ctx context.Context, UserID string, TeamName string) (*thunderdome.Team, error)
-	TeamUpdate(ctx context.Context, TeamId string, TeamName string) (*thunderdome.Team, error)
-	TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)
-	TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.TeamUser, int, error)
-	TeamUpdateUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)
-	TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error
-	TeamInviteUser(ctx context.Context, TeamID string, Email string, Role string) (string, error)
-	TeamUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.TeamUserInvite, error)
-	TeamDeleteUserInvite(ctx context.Context, InviteID string) error
+	TeamUserRole(ctx context.Context, userID string, teamID string) (string, error)
+	TeamGet(ctx context.Context, teamID string) (*thunderdome.Team, error)
+	TeamListByUser(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserTeam
+	TeamListByUserNonOrg(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserTeam
+	TeamCreate(ctx context.Context, userID string, teamName string) (*thunderdome.Team, error)
+	TeamUpdate(ctx context.Context, teamID string, teamName string) (*thunderdome.Team, error)
+	TeamAddUser(ctx context.Context, teamID string, userID string, role string) (string, error)
+	TeamUserList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.TeamUser, int, error)
+	TeamUpdateUser(ctx context.Context, teamID string, userID string, role string) (string, error)
+	TeamRemoveUser(ctx context.Context, teamID string, userID string) error
+	TeamInviteUser(ctx context.Context, teamID string, Email string, role string) (string, error)
+	TeamUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.TeamUserInvite, error)
+	TeamDeleteUserInvite(ctx context.Context, inviteID string) error
 	TeamGetUserInvites(ctx context.Context, teamId string) ([]thunderdome.TeamUserInvite, error)
-	TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker
-	TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error
-	TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error
-	TeamDelete(ctx context.Context, TeamID string) error
-	TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Retro
-	TeamAddRetro(ctx context.Context, TeamID string, RetroID string) error
-	TeamRemoveRetro(ctx context.Context, TeamID string, RetroID string) error
-	TeamStoryboardList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Storyboard
-	TeamAddStoryboard(ctx context.Context, TeamID string, StoryboardID string) error
-	TeamRemoveStoryboard(ctx context.Context, TeamID string, StoryboardID string) error
-	TeamList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Team, int)
-	TeamIsSubscribed(ctx context.Context, TeamID string) (bool, error)
+	TeamPokerList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Poker
+	TeamAddPoker(ctx context.Context, teamID string, pokerID string) error
+	TeamRemovePoker(ctx context.Context, teamID string, pokerID string) error
+	TeamDelete(ctx context.Context, teamID string) error
+	TeamRetroList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Retro
+	TeamAddRetro(ctx context.Context, teamID string, retroID string) error
+	TeamRemoveRetro(ctx context.Context, teamID string, retroID string) error
+	TeamStoryboardList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Storyboard
+	TeamAddStoryboard(ctx context.Context, teamID string, storyboardID string) error
+	TeamRemoveStoryboard(ctx context.Context, teamID string, storyboardID string) error
+	TeamList(ctx context.Context, limit int, offset int) ([]*thunderdome.Team, int)
+	TeamIsSubscribed(ctx context.Context, teamID string) (bool, error)
 	GetTeamMetrics(ctx context.Context, teamID string) (*thunderdome.TeamMetrics, error)
-	TeamUserRoles(ctx context.Context, UserID string, TeamID string) (*thunderdome.UserTeamRoleInfo, error)
+	TeamUserRoles(ctx context.Context, userID string, teamID string) (*thunderdome.UserTeamRoleInfo, error)
 }
 
 type SubscriptionDataSvc interface {
-	CheckActiveSubscriber(ctx context.Context, userId string) error
-	GetSubscriptionByID(ctx context.Context, id string) (thunderdome.Subscription, error)
-	GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionId string) (thunderdome.Subscription, error)
-	GetActiveSubscriptionsByUserID(ctx context.Context, userId string) ([]thunderdome.Subscription, error)
+	CheckActiveSubscriber(ctx context.Context, userID string) error
+	GetSubscriptionByID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error)
+	GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error)
+	GetActiveSubscriptionsByUserID(ctx context.Context, userID string) ([]thunderdome.Subscription, error)
 	CreateSubscription(ctx context.Context, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
-	UpdateSubscription(ctx context.Context, id string, sub thunderdome.Subscription) (thunderdome.Subscription, error)
-	GetSubscriptions(ctx context.Context, Limit int, Offset int) ([]thunderdome.Subscription, int, error)
-	DeleteSubscription(ctx context.Context, id string) error
+	UpdateSubscription(ctx context.Context, subscriptionID string, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
+	GetSubscriptions(ctx context.Context, limit int, offset int) ([]thunderdome.Subscription, int, error)
+	DeleteSubscription(ctx context.Context, subscriptionID string) error
 }
 
 type UserDataSvc interface {
-	GetUser(ctx context.Context, UserID string) (*thunderdome.User, error)
-	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
-	GetUserByEmail(ctx context.Context, UserEmail string) (*thunderdome.User, error)
-	GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*thunderdome.User, int, error)
-	SearchRegisteredUsersByEmail(ctx context.Context, Email string, Limit int, Offset int) ([]*thunderdome.User, int, error)
-	CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error)
-	CreateUserGuest(ctx context.Context, UserName string) (*thunderdome.User, error)
-	CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error)
-	UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
-	UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
-	UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
-	PromoteUser(ctx context.Context, UserID string) error
-	DemoteUser(ctx context.Context, UserID string) error
-	DisableUser(ctx context.Context, UserID string) error
-	EnableUser(ctx context.Context, UserID string) error
-	DeleteUser(ctx context.Context, UserID string) error
-	CleanGuests(ctx context.Context, DaysOld int) error
+	GetUser(ctx context.Context, userID string) (*thunderdome.User, error)
+	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
+	GetUserByEmail(ctx context.Context, email string) (*thunderdome.User, error)
+	GetRegisteredUsers(ctx context.Context, limit int, offset int) ([]*thunderdome.User, int, error)
+	SearchRegisteredUsersByEmail(ctx context.Context, email string, limit int, offset int) ([]*thunderdome.User, int, error)
+	CreateUser(ctx context.Context, userName string, email string, userPassword string) (newUser *thunderdome.User, verifyID string, registerErr error)
+	CreateUserGuest(ctx context.Context, userName string) (*thunderdome.User, error)
+	CreateUserRegistered(ctx context.Context, userName string, email string, userPassword string, activeuserID string) (newUser *thunderdome.User, verifyID string, registerErr error)
+	UpdateUserAccount(ctx context.Context, userID string, userName string, email string, userAvatar string, notificationsEnabled bool, country string, locale string, company string, jobTitle string, theme string) error
+	UpdateUserProfile(ctx context.Context, userID string, userName string, userAvatar string, notificationsEnabled bool, country string, locale string, company string, jobTitle string, theme string) error
+	UpdateUserProfileLdap(ctx context.Context, userID string, userAvatar string, notificationsEnabled bool, country string, locale string, company string, jobTitle string, theme string) error
+	PromoteUser(ctx context.Context, userID string) error
+	DemoteUser(ctx context.Context, userID string) error
+	DisableUser(ctx context.Context, userID string) error
+	EnableUser(ctx context.Context, userID string) error
+	DeleteUser(ctx context.Context, userID string) error
+	CleanGuests(ctx context.Context, daysOld int) error
 	GetActiveCountries(ctx context.Context) ([]string, error)
-	GetUserCredential(ctx context.Context, UserID string) (*thunderdome.Credential, error)
+	GetUserCredential(ctx context.Context, userID string) (*thunderdome.Credential, error)
 }

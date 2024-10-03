@@ -55,7 +55,7 @@ func New(config *Config, logger *otelzap.Logger) *Service {
 }
 
 // Generates an email Body with hermes
-func (s *Service) generateBody(Body hermes.Body) (emailBody string, generateErr error) {
+func (s *Service) generateBody(body hermes.Body) (emailBody string, generateErr error) {
 	currentTime := time.Now()
 	year := strconv.Itoa(currentTime.Year())
 	hms := hermes.Hermes{
@@ -68,7 +68,7 @@ func (s *Service) generateBody(Body hermes.Body) (emailBody string, generateErr 
 	}
 
 	email := hermes.Email{
-		Body: Body,
+		Body: body,
 	}
 
 	// Generate an HTML email with the provided contents (for modern clients)
@@ -81,7 +81,7 @@ func (s *Service) generateBody(Body hermes.Body) (emailBody string, generateErr 
 }
 
 // send - utility function to send emails
-func (s *Service) send(UserName string, UserEmail string, Subject string, Body string) error {
+func (s *Service) send(userName string, userEmail string, subject string, body string) error {
 	var err error
 	var c *mail.Client
 	if !s.Config.SmtpEnabled {
@@ -92,14 +92,14 @@ func (s *Service) send(UserName string, UserEmail string, Subject string, Body s
 	if err = m.From(s.Config.SmtpSender); err != nil {
 		return fmt.Errorf("failed to set From address %s error: %v", s.Config.SmtpSender, err)
 	}
-	if err = m.To(UserEmail); err != nil {
-		return fmt.Errorf("failed to set To address %s error: %v", UserEmail, err)
+	if err = m.To(userEmail); err != nil {
+		return fmt.Errorf("failed to set To address %s error: %v", userEmail, err)
 	}
 
-	m.Subject(Subject)
-	m.SetBodyString(mail.TypeTextHTML, Body)
+	m.Subject(subject)
+	m.SetBodyString(mail.TypeTextHTML, body)
 	m.SetAddrHeaderIgnoreInvalid(mail.HeaderFrom, fmt.Sprintf("%s <%s>", s.Config.SenderName, s.Config.SmtpSender))
-	m.SetAddrHeaderIgnoreInvalid(mail.HeaderTo, fmt.Sprintf("%s <%s>", UserName, UserEmail))
+	m.SetAddrHeaderIgnoreInvalid(mail.HeaderTo, fmt.Sprintf("%s <%s>", userName, userEmail))
 
 	if s.Config.SmtpSecure {
 		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithSMTPAuth(s.authType),

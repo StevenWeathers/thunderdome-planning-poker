@@ -14,7 +14,7 @@ import (
 
 // OauthCreateNonce creates a new oauth nonce
 func (d *Service) OauthCreateNonce(ctx context.Context) (string, error) {
-	nonceId, err := db.RandomBase64String(32)
+	nonceID, err := db.RandomBase64String(32)
 	if err != nil {
 		return "", err
 	}
@@ -22,19 +22,19 @@ func (d *Service) OauthCreateNonce(ctx context.Context) (string, error) {
 	if _, nonceErr := d.DB.ExecContext(ctx, `
 		INSERT INTO thunderdome.auth_nonce (nonce_id) VALUES ($1);
 		`,
-		nonceId,
+		nonceID,
 	); nonceErr != nil {
 		return "", fmt.Errorf("create oauth nonce query error: %v", nonceErr)
 	}
 
-	return nonceId, nil
+	return nonceID, nil
 }
 
-func (d *Service) OauthValidateNonce(ctx context.Context, nonceId string) error {
+func (d *Service) OauthValidateNonce(ctx context.Context, nonceID string) error {
 	var expireDate *time.Time
 	if err := d.DB.QueryRowContext(ctx,
 		`DELETE FROM thunderdome.auth_nonce WHERE nonce_id = $1 RETURNING expire_date;`,
-		nonceId,
+		nonceID,
 	).Scan(&expireDate); err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
  				 WHERE ai.provider = $1 AND ai.sub = $2;`,
 		provider, sub,
 	).Scan(
-		&user.Id,
+		&user.ID,
 		&user.Name,
 		&user.Email,
 		&user.Type,
@@ -75,12 +75,12 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 			return nil, "", txErr
 		}
 		userInsertErr := tx.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.users (name, email, type, verified, picture) 
+			`INSERT INTO thunderdome.users (name, email, type, verified, picture)
 					VALUES ($1, $2, $3, $4, $5)
 					RETURNING id, name, email, type, verified, picture;`,
 			name, email, thunderdome.RegisteredUserType, emailVerified, pictureUrl,
 		).Scan(
-			&user.Id,
+			&user.ID,
 			&user.Name,
 			&user.Email,
 			&user.Type,
@@ -95,9 +95,9 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 		}
 
 		_, identityInsertErr := tx.ExecContext(ctx,
-			`INSERT INTO thunderdome.auth_identity (user_id, provider, sub, email, picture, verified) 
+			`INSERT INTO thunderdome.auth_identity (user_id, provider, sub, email, picture, verified)
 					VALUES ($1, $2, $3, $4, $5, $6);`,
-			user.Id, provider, sub, email, pictureUrl, emailVerified,
+			user.ID, provider, sub, email, pictureUrl, emailVerified,
 		)
 		if identityInsertErr != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
@@ -116,10 +116,10 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 		return nil, "", errors.New("USER_DISABLED")
 	}
 
-	SessionId, sessErr := d.CreateSession(ctx, user.Id, true)
+	sessionID, sessErr := d.CreateSession(ctx, user.ID, true)
 	if sessErr != nil {
 		return nil, "", sessErr
 	}
 
-	return &user, SessionId, nil
+	return &user, sessionID, nil
 }

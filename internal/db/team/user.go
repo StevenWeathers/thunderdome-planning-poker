@@ -12,15 +12,15 @@ import (
 )
 
 // TeamUserRole gets a user's role in team
-func (d *Service) TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error) {
+func (d *Service) TeamUserRole(ctx context.Context, userID string, teamID string) (string, error) {
 	var teamRole string
 
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT tu.role
         FROM thunderdome.team_user tu
         WHERE tu.team_id = $2 AND tu.user_id = $1;`,
-		UserID,
-		TeamID,
+		userID,
+		teamID,
 	).Scan(
 		&teamRole,
 	)
@@ -32,39 +32,39 @@ func (d *Service) TeamUserRole(ctx context.Context, UserID string, TeamID string
 }
 
 // TeamUserRoles gets a user's set of roles in relation to the team if any, and if application the department and organization
-func (d *Service) TeamUserRoles(ctx context.Context, UserID string, TeamID string) (*thunderdome.UserTeamRoleInfo, error) {
+func (d *Service) TeamUserRoles(ctx context.Context, userID string, teamID string) (*thunderdome.UserTeamRoleInfo, error) {
 	tr := thunderdome.UserTeamRoleInfo{}
 
 	err := d.DB.QueryRowContext(ctx,
 		`WITH team_info AS (
-    SELECT 
+    SELECT
         t.id AS team_id,
         t.department_id,
         COALESCE(t.organization_id, od.organization_id) AS organization_id
-    FROM 
+    FROM
         thunderdome.team t
-    LEFT JOIN 
+    LEFT JOIN
         thunderdome.organization_department od ON t.department_id = od.id
-    WHERE 
+    WHERE
         t.id = $2
 ),
 user_roles AS (
-    SELECT 
+    SELECT
         ti.*,
         $1 AS user_id,
         tu.role AS team_role,
         du.role AS department_role,
         ou.role AS organization_role
-    FROM 
+    FROM
         team_info ti
-    LEFT JOIN 
+    LEFT JOIN
         thunderdome.team_user tu ON ti.team_id = tu.team_id AND tu.user_id = $1
-    LEFT JOIN 
+    LEFT JOIN
         thunderdome.department_user du ON ti.department_id = du.department_id AND du.user_id = $1
-    LEFT JOIN 
+    LEFT JOIN
         thunderdome.organization_user ou ON ti.organization_id = ou.organization_id AND ou.user_id = $1
 )
-SELECT 
+SELECT
     user_id,
     team_id,
     team_role,
@@ -72,16 +72,16 @@ SELECT
     department_role,
     organization_id,
     organization_role,
-    CASE 
+    CASE
         WHEN team_role IS NOT NULL THEN 'TEAM'
         WHEN department_role IS NOT NULL THEN 'DEPARTMENT'
         WHEN organization_role IS NOT NULL THEN 'ORGANIZATION'
         ELSE 'NONE'
     END AS association_level
-FROM 
+FROM
     user_roles;`,
-		UserID,
-		TeamID,
+		userID,
+		teamID,
 	).Scan(
 		&tr.UserID,
 		&tr.TeamID,
@@ -102,13 +102,13 @@ FROM
 }
 
 // TeamUserList gets a list of team users
-func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.TeamUser, int, error) {
+func (d *Service) TeamUserList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.TeamUser, int, error) {
 	var users = make([]*thunderdome.TeamUser, 0)
 	var userCount int
 
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1;`,
-		TeamID,
+		teamID,
 	).Scan(&userCount)
 	if err != nil {
 		return nil, 0, fmt.Errorf("team user list user count query error: %v", err)
@@ -126,9 +126,9 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
         ORDER BY tu.created_date
 		LIMIT $2
 		OFFSET $3;`,
-		TeamID,
-		Limit,
-		Offset,
+		teamID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -137,7 +137,7 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
 			var usr thunderdome.TeamUser
 
 			if err = rows.Scan(
-				&usr.Id,
+				&usr.ID,
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,
@@ -158,43 +158,43 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
 }
 
 // TeamAddUser adds a user to a team
-func (d *Service) TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error) {
+func (d *Service) TeamAddUser(ctx context.Context, teamID string, userID string, role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.team_user (team_id, user_id, role) VALUES ($1, $2, $3);`,
-		TeamID,
-		UserID,
-		Role,
+		teamID,
+		userID,
+		role,
 	)
 
 	if err != nil {
 		return "", fmt.Errorf("team add user query error: %v", err)
 	}
 
-	return TeamID, nil
+	return teamID, nil
 }
 
 // TeamUpdateUser updates a team user
-func (d *Service) TeamUpdateUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error) {
+func (d *Service) TeamUpdateUser(ctx context.Context, teamID string, userID string, role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.team_user SET role = $3 WHERE team_id = $1 AND user_id = $2;`,
-		TeamID,
-		UserID,
-		Role,
+		teamID,
+		userID,
+		role,
 	)
 
 	if err != nil {
 		return "", fmt.Errorf("team update user query error: %v", err)
 	}
 
-	return TeamID, nil
+	return teamID, nil
 }
 
 // TeamRemoveUser removes a user from a team
-func (d *Service) TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error {
+func (d *Service) TeamRemoveUser(ctx context.Context, teamID string, userID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
-		TeamID,
-		UserID,
+		teamID,
+		userID,
 	)
 
 	if err != nil {

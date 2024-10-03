@@ -30,42 +30,42 @@ import (
 // @Router       /users/{userId}/battles [get]
 func (s *Service) handleGetUserGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		battles, Count, err := s.PokerDataSvc.GetGamesByUser(UserID, Limit, Offset)
+		games, count, err := s.PokerDataSvc.GetGamesByUser(userID, limit, offset)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, battles, Meta)
+		s.Success(w, r, http.StatusOK, games, meta)
 	}
 }
 
 type battleRequestBody struct {
-	BattleName           string               `json:"name" validate:"required"`
+	Name                 string               `json:"name" validate:"required"`
 	EstimationScaleID    string               `json:"estimationScaleId"`
 	PointValuesAllowed   []string             `json:"pointValuesAllowed" validate:"required"`
 	AutoFinishVoting     bool                 `json:"autoFinishVoting"`
-	Plans                []*thunderdome.Story `json:"plans"`
+	Stories              []*thunderdome.Story `json:"plans"`
 	PointAverageRounding string               `json:"pointAverageRounding" validate:"required,oneof=ceil round floor"`
 	HideVoterIdentity    bool                 `json:"hideVoterIdentity"`
-	BattleLeaders        []string             `json:"battleLeaders"`
+	Facilitators         []string             `json:"battleLeaders"`
 	JoinCode             string               `json:"joinCode"`
-	LeaderCode           string               `json:"leaderCode"`
+	FacilitatorCode      string               `json:"leaderCode"`
 }
 
 // handlePokerCreate handles creating a poker game
@@ -89,17 +89,17 @@ type battleRequestBody struct {
 func (s *Service) handlePokerCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		UserID := vars["userId"]
-		idErr := validate.Var(UserID, "required,uuid")
+		userID := vars["userId"]
+		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		TeamID, teamIdExists := vars["teamId"]
-		if !teamIdExists && s.Config.RequireTeams {
+		teamID, teamIDExists := vars["teamId"]
+		if !teamIDExists && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "BATTLE_CREATION_REQUIRES_TEAM"))
 			return
 		}
@@ -151,16 +151,16 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 			}
 		}
 
-		var newBattle *thunderdome.Poker
+		var newGame *thunderdome.Poker
 		var err error
 		// if battle created with team association
-		if teamIdExists {
+		if teamIDExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = s.PokerDataSvc.TeamCreateGame(ctx, TeamID, UserID, b.BattleName, b.EstimationScaleID, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+				newGame, err = s.PokerDataSvc.TeamCreateGame(ctx, teamID, userID, b.Name, b.EstimationScaleID, b.PointValuesAllowed, b.Stories, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.FacilitatorCode, b.HideVoterIdentity)
 				if err != nil {
 					s.Logger.Ctx(ctx).Error("handlePokerCreate error", zap.Error(err),
-						zap.String("entity_user_id", UserID), zap.String("team_id", TeamID),
-						zap.String("poker_name", b.BattleName), zap.String("session_user_id", SessionUserID))
+						zap.String("entity_user_id", userID), zap.String("team_id", teamID),
+						zap.String("poker_name", b.Name), zap.String("session_user_id", sessionUserID))
 					s.Failure(w, r, http.StatusInternalServerError, err)
 					return
 				}
@@ -169,29 +169,29 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newBattle, err = s.PokerDataSvc.CreateGame(ctx, UserID, b.BattleName, b.EstimationScaleID, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+			newGame, err = s.PokerDataSvc.CreateGame(ctx, userID, b.Name, b.EstimationScaleID, b.PointValuesAllowed, b.Stories, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.FacilitatorCode, b.HideVoterIdentity)
 			if err != nil {
 				s.Logger.Ctx(ctx).Error("handlePokerCreate error", zap.Error(err),
-					zap.String("entity_user_id", UserID), zap.String("poker_name", b.BattleName),
-					zap.String("session_user_id", SessionUserID))
+					zap.String("entity_user_id", userID), zap.String("poker_name", b.Name),
+					zap.String("session_user_id", sessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, err)
 				return
 			}
 		}
 
 		// when battleLeaders array is passed add additional leaders to battle
-		if len(b.BattleLeaders) > 0 {
-			updatedLeaders, err := s.PokerDataSvc.AddFacilitatorsByEmail(ctx, newBattle.Id, b.BattleLeaders)
+		if len(b.Facilitators) > 0 {
+			updatedFacilitators, err := s.PokerDataSvc.AddFacilitatorsByEmail(ctx, newGame.ID, b.Facilitators)
 			if err != nil {
-				s.Logger.Error("error adding additional battle leaders", zap.String("poker_id", newBattle.Id),
-					zap.String("entity_user_id", UserID), zap.Any("poker_facilitators", b.BattleLeaders),
-					zap.String("session_user_id", SessionUserID))
+				s.Logger.Error("error adding additional battle leaders", zap.String("poker_id", newGame.ID),
+					zap.String("entity_user_id", userID), zap.Any("poker_facilitators", b.Facilitators),
+					zap.String("session_user_id", sessionUserID))
 			} else {
-				newBattle.Facilitators = updatedLeaders
+				newGame.Facilitators = updatedFacilitators
 			}
 		}
 
-		s.Success(w, r, http.StatusOK, newBattle, nil)
+		s.Success(w, r, http.StatusOK, newGame, nil)
 	}
 }
 
@@ -210,34 +210,34 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 func (s *Service) handleGetPokerGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		limit, offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
-		var Count int
-		var Battles []*thunderdome.Poker
+		var count int
+		var games []*thunderdome.Poker
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Battles, Count, err = s.PokerDataSvc.GetActiveGames(Limit, Offset)
+			games, count, err = s.PokerDataSvc.GetActiveGames(limit, offset)
 		} else {
-			Battles, Count, err = s.PokerDataSvc.GetGames(Limit, Offset)
+			games, count, err = s.PokerDataSvc.GetGames(limit, offset)
 		}
 
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetPokerGames error", zap.Error(err),
-				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("session_user_id", SessionUserID))
+				zap.Int("limit", limit), zap.Int("offset", offset), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Battles, Meta)
+		s.Success(w, r, http.StatusOK, games, meta)
 	}
 }
 
@@ -255,31 +255,31 @@ func (s *Service) handleGetPokerGames() http.HandlerFunc {
 func (s *Service) handleGetPokerGame() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		BattleId := vars["battleId"]
-		idErr := validate.Var(BattleId, "required,uuid")
+		gameID := vars["battleId"]
+		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		sessionUserID := r.Context().Value(contextKeyUserID).(string)
+		userType := r.Context().Value(contextKeyUserType).(string)
 
-		b, err := s.PokerDataSvc.GetGame(BattleId, SessionUserID)
+		game, err := s.PokerDataSvc.GetGame(gameID, sessionUserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
 		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
-		if b.JoinCode != "" {
-			UserErr := s.PokerDataSvc.GetUserActiveStatus(BattleId, SessionUserID)
-			if UserErr != nil && UserType != thunderdome.AdminUserType {
+		if game.JoinCode != "" {
+			userErr := s.PokerDataSvc.GetUserActiveStatus(gameID, sessionUserID)
+			if userErr != nil && userType != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
 				return
 			}
 		}
 
-		s.Success(w, r, http.StatusOK, b, nil)
+		s.Success(w, r, http.StatusOK, game, nil)
 	}
 }
 
@@ -304,17 +304,17 @@ type planRequestBody struct {
 // @Success      500  object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /battles/{battleId}/plans [post]
-func (s *Service) handlePokerStoryAdd(b *poker.Service) http.HandlerFunc {
+func (s *Service) handlePokerStoryAdd(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		BattleID := vars["battleId"]
-		idErr := validate.Var(BattleID, "required,uuid")
+		gameID := vars["battleId"]
+		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -322,24 +322,24 @@ func (s *Service) handlePokerStoryAdd(b *poker.Service) http.HandlerFunc {
 			return
 		}
 
-		var plan = planRequestBody{}
-		jsonErr := json.Unmarshal(body, &plan)
+		var story = planRequestBody{}
+		jsonErr := json.Unmarshal(body, &story)
 		if jsonErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
-		inputErr := validate.Struct(plan)
+		inputErr := validate.Struct(story)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		err := b.APIEvent(ctx, BattleID, SessionUserID, "add_plan", string(body))
+		err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "add_plan", string(body))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handlePokerStoryAdd error", zap.Error(err),
-				zap.String("poker_id", BattleID), zap.String("session_user_id", SessionUserID),
-				zap.String("story_name", plan.Name))
+				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID),
+				zap.String("story_name", story.Name))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -360,29 +360,29 @@ func (s *Service) handlePokerStoryAdd(b *poker.Service) http.HandlerFunc {
 // @Success      500  object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /battles/{battleId}/plans/{planId} [delete]
-func (s *Service) handlePokerStoryDelete(b *poker.Service) http.HandlerFunc {
+func (s *Service) handlePokerStoryDelete(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		BattleID := vars["battleId"]
-		idErr := validate.Var(BattleID, "required,uuid")
+		gameID := vars["battleId"]
+		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		PlanID := vars["planId"]
-		pidErr := validate.Var(PlanID, "required,uuid")
-		if pidErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, pidErr.Error()))
+		storyID := vars["planId"]
+		sidErr := validate.Var(storyID, "required,uuid")
+		if sidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, sidErr.Error()))
 			return
 		}
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		err := b.APIEvent(ctx, BattleID, SessionUserID, "burn_plan", PlanID)
+		err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "burn_plan", storyID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handlePokerStoryDelete error", zap.Error(err),
-				zap.String("poker_id", BattleID), zap.String("session_user_id", SessionUserID),
-				zap.String("story_id", PlanID))
+				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID),
+				zap.String("story_id", storyID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -402,22 +402,22 @@ func (s *Service) handlePokerStoryDelete(b *poker.Service) http.HandlerFunc {
 // @Success      500  object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /battles/{battleId} [delete]
-func (s *Service) handlePokerDelete(b *poker.Service) http.HandlerFunc {
+func (s *Service) handlePokerDelete(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		BattleID := vars["battleId"]
-		idErr := validate.Var(BattleID, "required,uuid")
+		gameID := vars["battleId"]
+		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		err := b.APIEvent(ctx, BattleID, SessionUserID, "concede_battle", "")
+		err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "concede_battle", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handlePokerDelete error", zap.Error(err),
-				zap.String("poker_id", BattleID), zap.String("session_user_id", SessionUserID))
+				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

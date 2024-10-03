@@ -28,11 +28,11 @@ type Config struct {
 }
 
 type AuthDataSvc interface {
-	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
+	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
 
 type UserDataSvc interface {
-	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
 // Service provides storyboard service

@@ -37,7 +37,7 @@ func (d *Service) GetPublicTemplates(ctx context.Context) ([]*thunderdome.RetroT
 		var t thunderdome.RetroTemplate
 		var format string
 		if err := rows.Scan(
-			&t.Id,
+			&t.ID,
 			&t.Name,
 			&t.Description,
 			&format,
@@ -62,14 +62,14 @@ func (d *Service) GetPublicTemplates(ctx context.Context) ([]*thunderdome.RetroT
 }
 
 // GetTemplatesByOrganization retrieves all templates for a specific organization
-func (d *Service) GetTemplatesByOrganization(ctx context.Context, organizationId string) ([]*thunderdome.RetroTemplate, error) {
+func (d *Service) GetTemplatesByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.RetroTemplate, error) {
 	templates := make([]*thunderdome.RetroTemplate, 0)
 
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, description, format, default_template, COALESCE(created_by::text, ''), organization_id, created_at, updated_at
 		FROM thunderdome.retro_template
 		WHERE organization_id = $1;`,
-		organizationId,
+		organizationID,
 	)
 
 	if err != nil {
@@ -82,13 +82,13 @@ func (d *Service) GetTemplatesByOrganization(ctx context.Context, organizationId
 		var t thunderdome.RetroTemplate
 		var format string
 		if err := rows.Scan(
-			&t.Id,
+			&t.ID,
 			&t.Name,
 			&t.Description,
 			&format,
 			&t.DefaultTemplate,
 			&t.CreatedBy,
-			&t.OrganizationId,
+			&t.OrganizationID,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		); err != nil {
@@ -107,14 +107,14 @@ func (d *Service) GetTemplatesByOrganization(ctx context.Context, organizationId
 }
 
 // GetTemplatesByTeam retrieves all templates for a specific team
-func (d *Service) GetTemplatesByTeam(ctx context.Context, teamId string) ([]*thunderdome.RetroTemplate, error) {
+func (d *Service) GetTemplatesByTeam(ctx context.Context, teamID string) ([]*thunderdome.RetroTemplate, error) {
 	templates := make([]*thunderdome.RetroTemplate, 0)
 
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, description, format, is_public, default_template, COALESCE(created_by::text, ''), team_id, created_at, updated_at
 		FROM thunderdome.retro_template
 		WHERE team_id = $1;`,
-		teamId,
+		teamID,
 	)
 
 	if err != nil {
@@ -126,14 +126,14 @@ func (d *Service) GetTemplatesByTeam(ctx context.Context, teamId string) ([]*thu
 		var t thunderdome.RetroTemplate
 		var format string
 		if err := rows.Scan(
-			&t.Id,
+			&t.ID,
 			&t.Name,
 			&t.Description,
 			&format,
 			&t.IsPublic,
 			&t.DefaultTemplate,
 			&t.CreatedBy,
-			&t.TeamId,
+			&t.TeamID,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		); err != nil {
@@ -152,7 +152,7 @@ func (d *Service) GetTemplatesByTeam(ctx context.Context, teamId string) ([]*thu
 }
 
 // GetTemplateById retrieves a specific template by its ID
-func (d *Service) GetTemplateById(ctx context.Context, templateId string) (*thunderdome.RetroTemplate, error) {
+func (d *Service) GetTemplateById(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error) {
 	var t thunderdome.RetroTemplate
 	var format string
 
@@ -160,17 +160,17 @@ func (d *Service) GetTemplateById(ctx context.Context, templateId string) (*thun
 		`SELECT id, name, description, format, is_public, default_template, COALESCE(created_by::text, ''), COALESCE(organization_id::text, ''), COALESCE(team_id::text, ''), created_at, updated_at
 		FROM thunderdome.retro_template
 		WHERE id = $1;`,
-		templateId,
+		templateID,
 	).Scan(
-		&t.Id,
+		&t.ID,
 		&t.Name,
 		&t.Description,
 		&format,
 		&t.IsPublic,
 		&t.DefaultTemplate,
 		&t.CreatedBy,
-		&t.OrganizationId,
-		&t.TeamId,
+		&t.OrganizationID,
+		&t.TeamID,
 		&t.CreatedAt,
 		&t.UpdatedAt,
 	)
@@ -203,8 +203,8 @@ func (d *Service) CreateTemplate(ctx context.Context, template *thunderdome.Retr
 		template.IsPublic,
 		template.DefaultTemplate,
 		template.CreatedBy,
-		template.OrganizationId,
-		template.TeamId,
+		template.OrganizationID,
+		template.TeamID,
 	)
 
 	if err != nil {
@@ -220,14 +220,14 @@ func (d *Service) UpdateTemplate(ctx context.Context, template *thunderdome.Retr
 		`UPDATE thunderdome.retro_template
 		SET name = $2, description = $3, format = $4, is_public = $5, default_template = $6, organization_id = $7, team_id = $8, updated_at = NOW()
 		WHERE id = $1;`,
-		template.Id,
+		template.ID,
 		template.Name,
 		template.Description,
 		template.Format,
 		template.IsPublic,
 		template.DefaultTemplate,
-		template.OrganizationId,
-		template.TeamId,
+		template.OrganizationID,
+		template.TeamID,
 	)
 
 	if err != nil {
@@ -238,10 +238,10 @@ func (d *Service) UpdateTemplate(ctx context.Context, template *thunderdome.Retr
 }
 
 // DeleteTemplate deletes a retro template by its ID
-func (d *Service) DeleteTemplate(ctx context.Context, templateId string) error {
+func (d *Service) DeleteTemplate(ctx context.Context, templateID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.retro_template WHERE id = $1;`,
-		templateId,
+		templateID,
 	)
 
 	if err != nil {
@@ -283,15 +283,15 @@ func (d *Service) ListTemplates(ctx context.Context, limit int, offset int) ([]*
 		var t thunderdome.RetroTemplate
 		var format string
 		if err := rows.Scan(
-			&t.Id,
+			&t.ID,
 			&t.Name,
 			&t.Description,
 			&format,
 			&t.IsPublic,
 			&t.DefaultTemplate,
 			&t.CreatedBy,
-			&t.OrganizationId,
-			&t.TeamId,
+			&t.OrganizationID,
+			&t.TeamID,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		); err != nil {
@@ -321,7 +321,7 @@ func (d *Service) GetDefaultPublicTemplate(ctx context.Context) (*thunderdome.Re
         WHERE is_public = true AND default_template = true
         LIMIT 1;`,
 	).Scan(
-		&t.Id,
+		&t.ID,
 		&t.Name,
 		&t.Description,
 		&format,
@@ -360,14 +360,14 @@ func (d *Service) GetDefaultTeamTemplate(ctx context.Context, teamID string) (*t
         LIMIT 1;`,
 		teamID,
 	).Scan(
-		&t.Id,
+		&t.ID,
 		&t.Name,
 		&t.Description,
 		&format,
 		&t.IsPublic,
 		&t.DefaultTemplate,
 		&t.CreatedBy,
-		&t.TeamId,
+		&t.TeamID,
 		&t.CreatedAt,
 		&t.UpdatedAt,
 	)
@@ -400,14 +400,14 @@ func (d *Service) GetDefaultOrganizationTemplate(ctx context.Context, organizati
         LIMIT 1;`,
 		organizationID,
 	).Scan(
-		&t.Id,
+		&t.ID,
 		&t.Name,
 		&t.Description,
 		&format,
 		&t.IsPublic,
 		&t.DefaultTemplate,
 		&t.CreatedBy,
-		&t.OrganizationId,
+		&t.OrganizationID,
 		&t.CreatedAt,
 		&t.UpdatedAt,
 	)
@@ -434,8 +434,8 @@ func (d *Service) UpdateTeamTemplate(ctx context.Context, template *thunderdome.
 		`UPDATE thunderdome.retro_template
 		SET name = $3, description = $4, format = $5, default_template = $6, updated_at = NOW()
 		WHERE id = $1 AND team_id = $2;`,
-		template.Id,
-		template.TeamId,
+		template.ID,
+		template.TeamID,
 		template.Name,
 		template.Description,
 		template.Format,
@@ -455,8 +455,8 @@ func (d *Service) UpdateOrganizationTemplate(ctx context.Context, template *thun
 		`UPDATE thunderdome.retro_template
 		SET name = $3, description = $4, format = $5, default_template = $6, updated_at = NOW()
 		WHERE id = $1 AND organization_id = $2;`,
-		template.Id,
-		template.OrganizationId,
+		template.ID,
+		template.OrganizationID,
 		template.Name,
 		template.Description,
 		template.Format,
@@ -471,10 +471,10 @@ func (d *Service) UpdateOrganizationTemplate(ctx context.Context, template *thun
 }
 
 // DeleteTeamTemplate deletes a team retro template by its ID
-func (d *Service) DeleteTeamTemplate(ctx context.Context, teamId string, templateId string) error {
+func (d *Service) DeleteTeamTemplate(ctx context.Context, teamID string, templateID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.retro_template WHERE id = $1 AND team_id = $2;`,
-		templateId, teamId,
+		templateID, teamID,
 	)
 
 	if err != nil {
@@ -485,10 +485,10 @@ func (d *Service) DeleteTeamTemplate(ctx context.Context, teamId string, templat
 }
 
 // DeleteOrganizationTemplate deletes an organization retro template by its ID
-func (d *Service) DeleteOrganizationTemplate(ctx context.Context, orgId string, templateId string) error {
+func (d *Service) DeleteOrganizationTemplate(ctx context.Context, orgID string, templateID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.retro_template WHERE id = $1 AND organization_id = $2;`,
-		templateId, orgId,
+		templateID, orgID,
 	)
 
 	if err != nil {

@@ -8,10 +8,10 @@ import (
 )
 
 // SendWelcome sends the welcome email to new registered user
-func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string) error {
+func (s *Service) SendWelcome(userName string, userEmail string, verifyID string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				"Welcome to the Thunderdome!",
 			},
@@ -21,7 +21,7 @@ func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Verify Account",
-						Link:  s.Config.AppURL + "verify-account/" + VerifyID,
+						Link:  s.Config.AppURL + "verify-account/" + verifyID,
 					},
 				},
 				{
@@ -36,20 +36,20 @@ func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Welcome Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 
 		return err
 	}
 
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		"Welcome to the Thunderdome!",
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Welcome Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 
@@ -57,10 +57,10 @@ func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string
 }
 
 // SendEmailVerification sends the verification email to registered user
-func (s *Service) SendEmailVerification(UserName string, UserEmail string, VerifyID string) error {
+func (s *Service) SendEmailVerification(userName string, userEmail string, verifyID string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				"Please verify your Thunderdome account email.",
 			},
@@ -70,7 +70,7 @@ func (s *Service) SendEmailVerification(UserName string, UserEmail string, Verif
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Verify Account",
-						Link:  s.Config.AppURL + "verify-account/" + VerifyID,
+						Link:  s.Config.AppURL + "verify-account/" + verifyID,
 					},
 				},
 				{
@@ -85,19 +85,19 @@ func (s *Service) SendEmailVerification(UserName string, UserEmail string, Verif
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Verification Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return err
 	}
 
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		"Verify your Thunderdome account email",
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Verification Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 
@@ -105,10 +105,10 @@ func (s *Service) SendEmailVerification(UserName string, UserEmail string, Verif
 }
 
 // SendForgotPassword Sends a Forgot Password reset email to user
-func (s *Service) SendForgotPassword(UserName string, UserEmail string, ResetID string) error {
+func (s *Service) SendForgotPassword(userName string, userEmail string, resetID string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				"It seems you've forgot your Thunderdome password.",
 			},
@@ -117,7 +117,7 @@ func (s *Service) SendForgotPassword(UserName string, UserEmail string, ResetID 
 					Instructions: "Reset your password now, the following link will expire within an hour of the original request.",
 					Button: hermes.Button{
 						Text: "Reset Password",
-						Link: s.Config.AppURL + "reset-password/" + ResetID,
+						Link: s.Config.AppURL + "reset-password/" + resetID,
 					},
 				},
 				{
@@ -132,19 +132,19 @@ func (s *Service) SendForgotPassword(UserName string, UserEmail string, ResetID 
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Forgot Password Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return err
 	}
 
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		"Forgot your Thunderdome password?",
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Forgot Password Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 
@@ -152,10 +152,10 @@ func (s *Service) SendForgotPassword(UserName string, UserEmail string, ResetID 
 }
 
 // SendPasswordReset Sends a Reset Password confirmation email to user
-func (s *Service) SendPasswordReset(UserName string, UserEmail string) error {
+func (s *Service) SendPasswordReset(userName string, userEmail string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				"Your Thunderdome password was successfully reset.",
 			},
@@ -172,19 +172,19 @@ func (s *Service) SendPasswordReset(UserName string, UserEmail string) error {
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Reset Password Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return err
 	}
 
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		"Your Thunderdome password was successfully reset.",
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Reset Password Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 
@@ -192,10 +192,10 @@ func (s *Service) SendPasswordReset(UserName string, UserEmail string) error {
 }
 
 // SendPasswordUpdate Sends an Update Password confirmation email to user
-func (s *Service) SendPasswordUpdate(UserName string, UserEmail string) error {
+func (s *Service) SendPasswordUpdate(userName string, userEmail string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				"Your Thunderdome password was successfully been updated.",
 			},
@@ -212,19 +212,19 @@ func (s *Service) SendPasswordUpdate(UserName string, UserEmail string) error {
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Update Password Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return err
 	}
 
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		"Your Thunderdome password was successfully updated.",
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Update Password Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 
@@ -232,10 +232,10 @@ func (s *Service) SendPasswordUpdate(UserName string, UserEmail string) error {
 }
 
 // SendDeleteConfirmation Sends an delete account confirmation email to user
-func (s *Service) SendDeleteConfirmation(UserName string, UserEmail string) error {
+func (s *Service) SendDeleteConfirmation(userName string, userEmail string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				"Your Thunderdome account was successfully been deleted.",
 			},
@@ -252,19 +252,19 @@ func (s *Service) SendDeleteConfirmation(UserName string, UserEmail string) erro
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Delete Account Confirmation Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return err
 	}
 
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		"Your Thunderdome account was deleted.",
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Delete Account Confirmation Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 
@@ -272,10 +272,10 @@ func (s *Service) SendDeleteConfirmation(UserName string, UserEmail string) erro
 }
 
 // SendEmailUpdate Sends an Update Service confirmation email to user
-func (s *Service) SendEmailUpdate(UserName string, UserEmail string) error {
+func (s *Service) SendEmailUpdate(userName string, userEmail string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				"Your Thunderdome account email has been lowercased in order to improve unique constraints.",
 			},
@@ -292,19 +292,19 @@ func (s *Service) SendEmailUpdate(UserName string, UserEmail string) error {
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Service Update Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return err
 	}
 
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		"Your Thunderdome account email has been updated.",
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Service Update Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 
@@ -312,10 +312,10 @@ func (s *Service) SendEmailUpdate(UserName string, UserEmail string) error {
 }
 
 // SendMergedUpdate Sends an Update Service confirmation email to user
-func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
+func (s *Service) SendMergedUpdate(userName string, userEmail string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				"Your duplicate Thunderdome accounts under the same email (lowercased) have been merged in order to improve unique constraints. The last active account password was used, in the event you can't login try resetting your password.",
 			},
@@ -332,19 +332,19 @@ func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Update Merged Service Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return err
 	}
 
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		"Your Thunderdome duplicate accounts have been merged.",
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Update Merged Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 
@@ -352,8 +352,8 @@ func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
 }
 
 // SendTeamInvite sends the team invite email to user
-func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID string) error {
-	subject := fmt.Sprintf("Join team %s on Thunderdome", TeamName)
+func (s *Service) SendTeamInvite(teamName string, userEmail string, inviteID string) error {
+	subject := fmt.Sprintf("Join team %s on Thunderdome", teamName)
 	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: "",
@@ -364,11 +364,11 @@ func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID str
 				{
 					Instructions: fmt.Sprintf(
 						"Please use the following link (expires in 24 hours) to join team %s on Thunderdome today.",
-						TeamName),
+						teamName),
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Join Team",
-						Link:  s.Config.AppURL + "invite/team/" + InviteID,
+						Link:  s.Config.AppURL + "invite/team/" + inviteID,
 					},
 				},
 				{
@@ -383,21 +383,21 @@ func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID str
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Team Invite Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 
 		return err
 	}
 
 	sendErr := s.send(
 		"",
-		UserEmail,
+		userEmail,
 		subject,
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Team Invite Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail),
-			zap.String("invite_id", InviteID))
+			zap.String("user_email", userEmail),
+			zap.String("invite_id", inviteID))
 		return sendErr
 	}
 
@@ -405,8 +405,8 @@ func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID str
 }
 
 // SendOrganizationInvite sends the organization invite email to user
-func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail string, InviteID string) error {
-	subject := fmt.Sprintf("Join %s organization on Thunderdome", OrganizationName)
+func (s *Service) SendOrganizationInvite(organizationName string, userEmail string, inviteID string) error {
+	subject := fmt.Sprintf("Join %s organization on Thunderdome", organizationName)
 	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: "",
@@ -417,11 +417,11 @@ func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail stri
 				{
 					Instructions: fmt.Sprintf(
 						"Please use the following link (expires in 24 hours) to join the %s organization on Thunderdome today.",
-						OrganizationName),
+						organizationName),
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Join Organization",
-						Link:  s.Config.AppURL + "invite/organization/" + InviteID,
+						Link:  s.Config.AppURL + "invite/organization/" + inviteID,
 					},
 				},
 				{
@@ -436,21 +436,21 @@ func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail stri
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Organization Invite Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 
 		return err
 	}
 
 	sendErr := s.send(
 		"",
-		UserEmail,
+		userEmail,
 		subject,
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Organization Invite Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail),
-			zap.String("invite_id", InviteID))
+			zap.String("user_email", userEmail),
+			zap.String("invite_id", inviteID))
 		return sendErr
 	}
 
@@ -458,7 +458,7 @@ func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail stri
 }
 
 // SendDepartmentInvite sends the department invite email to unregistered user
-func (s *Service) SendDepartmentInvite(OrganizationName string, DepartmentName string, UserEmail string, InviteID string) error {
+func (s *Service) SendDepartmentInvite(organizationName string, departmentName string, userEmail string, inviteID string) error {
 	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: "",
@@ -469,11 +469,11 @@ func (s *Service) SendDepartmentInvite(OrganizationName string, DepartmentName s
 				{
 					Instructions: fmt.Sprintf(
 						"Please register for Thunderdome using the following link (expires in 24 hours) to join the %s Organization's %s department.",
-						OrganizationName, DepartmentName),
+						organizationName, departmentName),
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Register Account",
-						Link:  s.Config.AppURL + "register/department/" + InviteID,
+						Link:  s.Config.AppURL + "register/department/" + inviteID,
 					},
 				},
 				{
@@ -488,21 +488,21 @@ func (s *Service) SendDepartmentInvite(OrganizationName string, DepartmentName s
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Department Invite Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 
 		return err
 	}
 
 	sendErr := s.send(
 		"",
-		UserEmail,
-		fmt.Sprintf("Join %s organization's %s department on Thunderdome!", OrganizationName, DepartmentName),
+		userEmail,
+		fmt.Sprintf("Join %s organization's %s department on Thunderdome!", organizationName, departmentName),
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Department Invite Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail),
-			zap.String("invite_id", InviteID))
+			zap.String("user_email", userEmail),
+			zap.String("invite_id", inviteID))
 		return sendErr
 	}
 

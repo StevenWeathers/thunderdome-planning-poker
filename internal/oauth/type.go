@@ -17,8 +17,8 @@ type Config struct {
 }
 
 type CookieManager interface {
-	CreateUserCookie(w http.ResponseWriter, UserID string) error
-	CreateSessionCookie(w http.ResponseWriter, SessionID string) error
+	CreateUserCookie(w http.ResponseWriter, userID string) error
+	CreateSessionCookie(w http.ResponseWriter, sessionID string) error
 	CreateUserUICookie(w http.ResponseWriter, userUiCookie thunderdome.UserUICookie) error
 	ClearUserCookies(w http.ResponseWriter)
 	ValidateUserCookie(w http.ResponseWriter, r *http.Request) (string, error)
@@ -38,7 +38,7 @@ type AuthDataSvc interface {
 }
 
 type SubscriptionDataSvc interface {
-	CheckActiveSubscriber(ctx context.Context, userId string) error
+	CheckActiveSubscriber(ctx context.Context, userID string) error
 }
 
 type Service struct {

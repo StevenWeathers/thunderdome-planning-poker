@@ -7,15 +7,15 @@ import (
 
 // RetroTemplate is a template for a retro board
 type RetroTemplate struct {
-	Id              string               `json:"id" db:"id"`
+	ID              string               `json:"id" db:"id"`
 	Name            string               `json:"name" db:"name"`
 	Description     string               `json:"description" db:"description"`
 	Format          *RetroTemplateFormat `json:"format" db:"format"`
 	IsPublic        bool                 `json:"isPublic" db:"is_public"`
 	DefaultTemplate bool                 `json:"defaultTemplate" db:"default_template"`
 	CreatedBy       string               `json:"createdBy" db:"created_by"`
-	OrganizationId  *string              `json:"organizationId" db:"organization_id"`
-	TeamId          *string              `json:"teamId" db:"team_id"`
+	OrganizationID  *string              `json:"organizationId" db:"organization_id"`
+	TeamID          *string              `json:"teamId" db:"team_id"`
 	CreatedAt       time.Time            `json:"createdAt" db:"created_at"`
 	UpdatedAt       time.Time            `json:"updatedAt" db:"updated_at"`
 }
@@ -36,17 +36,17 @@ type RetroTemplateDataSvc interface {
 	// GetPublicTemplates retrieves all public retro templates
 	GetPublicTemplates(ctx context.Context) ([]*RetroTemplate, error)
 	// GetTemplatesByOrganization retrieves all templates for a specific organization
-	GetTemplatesByOrganization(ctx context.Context, organizationId string) ([]*RetroTemplate, error)
+	GetTemplatesByOrganization(ctx context.Context, organizationID string) ([]*RetroTemplate, error)
 	// GetTemplatesByTeam retrieves all templates for a specific team
-	GetTemplatesByTeam(ctx context.Context, teamId string) ([]*RetroTemplate, error)
+	GetTemplatesByTeam(ctx context.Context, teamID string) ([]*RetroTemplate, error)
 	// GetTemplateById retrieves a specific template by its ID
-	GetTemplateById(ctx context.Context, templateId string) (*RetroTemplate, error)
+	GetTemplateById(ctx context.Context, templateID string) (*RetroTemplate, error)
 	// CreateTemplate creates a new retro template
 	CreateTemplate(ctx context.Context, template *RetroTemplate) error
 	// UpdateTemplate updates an existing retro template
 	UpdateTemplate(ctx context.Context, template *RetroTemplate) error
 	// DeleteTemplate deletes a retro template by its ID
-	DeleteTemplate(ctx context.Context, templateId string) error
+	DeleteTemplate(ctx context.Context, templateID string) error
 	// ListTemplates retrieves a paginated list of templates
 	ListTemplates(ctx context.Context, limit int, offset int) ([]*RetroTemplate, int, error)
 	// GetDefaultPublicTemplate retrieves the default public template
@@ -60,7 +60,7 @@ type RetroTemplateDataSvc interface {
 	// UpdateOrganizationTemplate updates an existing organization retro template
 	UpdateOrganizationTemplate(ctx context.Context, template *RetroTemplate) error
 	// DeleteOrganizationTemplate deletes an organization retro template by its ID
-	DeleteOrganizationTemplate(ctx context.Context, orgId string, templateId string) error
+	DeleteOrganizationTemplate(ctx context.Context, orgID string, templateID string) error
 	// DeleteTeamTemplate deletes a team retro template by its ID
-	DeleteTeamTemplate(ctx context.Context, teamId string, templateId string) error
+	DeleteTeamTemplate(ctx context.Context, teamID string, templateID string) error
 }

@@ -6383,7 +6383,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Remove a battle from the team",
+                "description": "Remove a poker game from the team",
                 "produces": [
                     "application/json"
                 ],
@@ -6401,7 +6401,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "the battle ID",
+                        "description": "the game ID",
                         "name": "battleId",
                         "in": "path",
                         "required": true

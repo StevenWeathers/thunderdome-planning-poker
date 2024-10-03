@@ -27,13 +27,13 @@ type Config struct {
 }
 
 type DataSvc interface {
-	GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionId string) (thunderdome.Subscription, error)
+	GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error)
 	CreateSubscription(ctx context.Context, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
-	UpdateSubscription(ctx context.Context, id string, sub thunderdome.Subscription) (thunderdome.Subscription, error)
+	UpdateSubscription(ctx context.Context, subscriptionID string, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
 }
 
 type UserDataSvc interface {
-	GetUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+	GetUser(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
 type Service struct {

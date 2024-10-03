@@ -7,7 +7,7 @@ import (
 
 // PokerUser aka user
 type PokerUser struct {
-	Id           string `json:"id"`
+	ID           string `json:"id"`
 	Name         string `json:"name"`
 	Type         string `json:"rank"`
 	Avatar       string `json:"avatar"`
@@ -20,7 +20,7 @@ type PokerUser struct {
 
 // Poker aka arena
 type Poker struct {
-	Id                   string           `json:"id"`
+	ID                   string           `json:"id"`
 	Name                 string           `json:"name"`
 	Users                []*PokerUser     `json:"users"`
 	Stories              []*Story         `json:"plans"`
@@ -43,16 +43,16 @@ type Poker struct {
 
 // Vote structure
 type Vote struct {
-	UserId    string `json:"warriorId"`
+	UserID    string `json:"warriorId"`
 	VoteValue string `json:"vote"`
 }
 
 // Story aka Story structure
 type Story struct {
-	Id                 string    `json:"id"`
+	ID                 string    `json:"id"`
 	Name               string    `json:"name"`
 	Type               string    `json:"type"`
-	ReferenceId        string    `json:"referenceId"`
+	ReferenceID        string    `json:"referenceId"`
 	Link               string    `json:"link"`
 	Description        string    `json:"description"`
 	AcceptanceCriteria string    `json:"acceptanceCriteria"`
@@ -83,69 +83,69 @@ type EstimationScale struct {
 
 type PokerDataSvc interface {
 	// CreateGame creates a new poker game
-	CreateGame(ctx context.Context, FacilitatorID string, Name string, EstimationScaleID string, PointValuesAllowed []string, Stories []*Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*Poker, error)
+	CreateGame(ctx context.Context, facilitatorID string, name string, estimationScaleID string, pointValuesAllowed []string, stories []*Story, autoFinishVoting bool, pointAverageRounding string, joinCode string, facilitatorCode string, hideVoterIdentity bool) (*Poker, error)
 	// TeamCreateGame creates a new poker game for a team
-	TeamCreateGame(ctx context.Context, TeamID string, FacilitatorID string, Name string, EstimationScaleID string, PointValuesAllowed []string, Stories []*Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*Poker, error)
+	TeamCreateGame(ctx context.Context, teamID string, facilitatorID string, name string, estimationScaleID string, pointValuesAllowed []string, stories []*Story, autoFinishVoting bool, pointAverageRounding string, joinCode string, facilitatorCode string, hideVoterIdentity bool) (*Poker, error)
 	// UpdateGame updates an existing poker game
-	UpdateGame(PokerID string, Name string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, FacilitatorCode string, TeamID string) error
+	UpdateGame(pokerID string, name string, pointValuesAllowed []string, autoFinishVoting bool, pointAverageRounding string, hideVoterIdentity bool, joinCode string, facilitatorCode string, teamID string) error
 	// GetFacilitatorCode retrieves the facilitator code for a poker game
-	GetFacilitatorCode(PokerID string) (string, error)
+	GetFacilitatorCode(pokerID string) (string, error)
 	// GetGame retrieves a poker game by its ID
-	GetGame(PokerID string, UserID string) (*Poker, error)
+	GetGame(pokerID string, userID string) (*Poker, error)
 	// GetGamesByUser retrieves a list of poker games for a user
-	GetGamesByUser(UserID string, Limit int, Offset int) ([]*Poker, int, error)
+	GetGamesByUser(userID string, limit int, offset int) ([]*Poker, int, error)
 	// ConfirmFacilitator confirms a user as a facilitator for a poker game
-	ConfirmFacilitator(PokerID string, UserID string) error
+	ConfirmFacilitator(pokerID string, userID string) error
 	// GetUserActiveStatus retrieves the active status of a user in a poker game
-	GetUserActiveStatus(PokerID string, UserID string) error
+	GetUserActiveStatus(pokerID string, userID string) error
 	// GetUsers retrieves a list of users in a poker game
-	GetUsers(PokerID string) []*PokerUser
+	GetUsers(pokerID string) []*PokerUser
 	// GetActiveUsers retrieves a list of active users in a poker game
-	GetActiveUsers(PokerID string) []*PokerUser
+	GetActiveUsers(pokerID string) []*PokerUser
 	// AddUser adds a user to a poker game
-	AddUser(PokerID string, UserID string) ([]*PokerUser, error)
+	AddUser(pokerID string, userID string) ([]*PokerUser, error)
 	// RetreatUser sets a user as inactive in a poker game
-	RetreatUser(PokerID string, UserID string) []*PokerUser
+	RetreatUser(pokerID string, userID string) []*PokerUser
 	// AbandonGame sets a user as abandoned in a poker game
-	AbandonGame(PokerID string, UserID string) ([]*PokerUser, error)
+	AbandonGame(pokerID string, userID string) ([]*PokerUser, error)
 	// AddFacilitator adds a facilitator to a poker game
-	AddFacilitator(PokerID string, UserID string) ([]string, error)
+	AddFacilitator(pokerID string, userID string) ([]string, error)
 	// RemoveFacilitator removes a facilitator from a poker game
-	RemoveFacilitator(PokerID string, UserID string) ([]string, error)
+	RemoveFacilitator(pokerID string, userID string) ([]string, error)
 	// ToggleSpectator toggles a user's spectator status in a poker game
-	ToggleSpectator(PokerID string, UserID string, Spectator bool) ([]*PokerUser, error)
+	ToggleSpectator(pokerID string, userID string, spectator bool) ([]*PokerUser, error)
 	// DeleteGame deletes a poker game
-	DeleteGame(PokerID string) error
+	DeleteGame(pokerID string) error
 	// AddFacilitatorsByEmail adds facilitators to a poker game by email
-	AddFacilitatorsByEmail(ctx context.Context, PokerID string, FacilitatorEmails []string) ([]string, error)
+	AddFacilitatorsByEmail(ctx context.Context, pokerID string, facilitatorEmails []string) ([]string, error)
 	// GetGames retrieves a list of poker games
-	GetGames(Limit int, Offset int) ([]*Poker, int, error)
+	GetGames(limit int, offset int) ([]*Poker, int, error)
 	// GetActiveGames retrieves a list of active poker games
-	GetActiveGames(Limit int, Offset int) ([]*Poker, int, error)
+	GetActiveGames(limit int, offset int) ([]*Poker, int, error)
 	// PurgeOldGames purges poker games older than a specified number of days
-	PurgeOldGames(ctx context.Context, DaysOld int) error
+	PurgeOldGames(ctx context.Context, daysOld int) error
 	// GetStories retrieves a list of stories in a poker game
-	GetStories(PokerID string, UserID string) []*Story
+	GetStories(pokerID string, userID string) []*Story
 	// CreateStory creates a new story in a poker game
-	CreateStory(PokerID string, Name string, Type string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Story, error)
+	CreateStory(pokerID string, name string, storyType string, referenceID string, link string, description string, acceptanceCriteria string, priority int32) ([]*Story, error)
 	// ActivateStoryVoting activates voting for a story in a poker game
-	ActivateStoryVoting(PokerID string, StoryID string) ([]*Story, error)
+	ActivateStoryVoting(pokerID string, storyID string) ([]*Story, error)
 	// SetVote sets a user's vote for a story in a poker game
-	SetVote(PokerID string, UserID string, StoryID string, VoteValue string) (BattlePlans []*Story, AllUsersVoted bool)
+	SetVote(pokerID string, userID string, storyID string, voteValue string) (stories []*Story, allUsersVoted bool)
 	// RetractVote retracts a user's vote for a story in a poker game
-	RetractVote(PokerID string, UserID string, StoryID string) ([]*Story, error)
+	RetractVote(pokerID string, userID string, storyID string) ([]*Story, error)
 	// EndStoryVoting ends voting for a story in a poker game
-	EndStoryVoting(PokerID string, StoryID string) ([]*Story, error)
+	EndStoryVoting(pokerID string, storyID string) ([]*Story, error)
 	// SkipStory skips a story in a poker game
-	SkipStory(PokerID string, StoryID string) ([]*Story, error)
+	SkipStory(pokerID string, storyID string) ([]*Story, error)
 	// UpdateStory updates an existing story in a poker game
-	UpdateStory(PokerID string, StoryID string, Name string, Type string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Story, error)
+	UpdateStory(pokerID string, storyID string, name string, storyType string, referenceID string, link string, description string, acceptanceCriteria string, priority int32) ([]*Story, error)
 	// DeleteStory deletes a story from a poker game
-	DeleteStory(PokerID string, StoryID string) ([]*Story, error)
+	DeleteStory(pokerID string, storyID string) ([]*Story, error)
 	// ArrangeStory sets the position of the story relative to the story it's being placed before
-	ArrangeStory(PokerID string, StoryID string, BeforeStoryID string) ([]*Story, error)
+	ArrangeStory(pokerID string, storyID string, beforeStoryID string) ([]*Story, error)
 	// FinalizeStory finalizes the points for a story in a poker game
-	FinalizeStory(PokerID string, StoryID string, Points string) ([]*Story, error)
+	FinalizeStory(pokerID string, storyID string, points string) ([]*Story, error)
 	// GetEstimationScales retrieves a list of estimation scales
 	GetEstimationScales(ctx context.Context, limit, offset int) ([]*EstimationScale, int, error)
 	// GetPublicEstimationScales retrieves a list of public estimation scales
@@ -167,7 +167,7 @@ type PokerDataSvc interface {
 	// GetTeamEstimationScales retrieves a list of estimation scales for a team
 	GetTeamEstimationScales(ctx context.Context, teamID string, limit, offset int) ([]*EstimationScale, int, error)
 	// GetEstimationScale retrieves an estimation scale by its ID
-	GetEstimationScale(ctx context.Context, id string) (*EstimationScale, error)
+	GetEstimationScale(ctx context.Context, scaleID string) (*EstimationScale, error)
 	// DeleteOrganizationEstimationScale deletes an organization's estimation scale by its ID
 	DeleteOrganizationEstimationScale(ctx context.Context, orgID string, scaleID string) error
 	// DeleteTeamEstimationScale deletes a team's estimation scale by its ID

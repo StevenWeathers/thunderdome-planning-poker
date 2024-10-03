@@ -21,7 +21,7 @@ type OrganizationService struct {
 }
 
 // OrganizationGet gets an organization
-func (d *OrganizationService) OrganizationGet(ctx context.Context, OrgID string) (*thunderdome.Organization, error) {
+func (d *OrganizationService) OrganizationGet(ctx context.Context, orgID string) (*thunderdome.Organization, error) {
 	var org = &thunderdome.Organization{}
 
 	err := d.DB.QueryRowContext(ctx,
@@ -30,9 +30,9 @@ func (d *OrganizationService) OrganizationGet(ctx context.Context, OrgID string)
         FROM thunderdome.organization o
         LEFT JOIN thunderdome.subscription s ON o.id = s.organization_id
         WHERE o.id = $1;`,
-		OrgID,
+		orgID,
 	).Scan(
-		&org.Id,
+		&org.ID,
 		&org.Name,
 		&org.CreatedDate,
 		&org.UpdatedDate,
@@ -48,7 +48,7 @@ func (d *OrganizationService) OrganizationGet(ctx context.Context, OrgID string)
 }
 
 // OrganizationUserRole gets a user's role in organization
-func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error) {
+func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID string, orgID string) (string, error) {
 	var role string
 
 	err := d.DB.QueryRowContext(ctx,
@@ -56,7 +56,7 @@ func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID s
     FROM thunderdome.organization_user ou
     WHERE ou.organization_id = $2 AND ou.user_id = $1;`,
 		UserID,
-		OrgID,
+		orgID,
 	).Scan(
 		&role,
 	)
@@ -70,7 +70,7 @@ func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID s
 }
 
 // OrganizationListByUser gets a list of organizations the user is apart of
-func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserOrganization {
+func (d *OrganizationService) OrganizationListByUser(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserOrganization {
 	var organizations = make([]*thunderdome.UserOrganization, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT o.id, o.name, o.created_date, o.updated_date, ou.role
@@ -80,9 +80,9 @@ func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID
         ORDER BY created_date
 		LIMIT $2
 		OFFSET $3;`,
-		UserID,
-		Limit,
-		Offset,
+		userID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -91,7 +91,7 @@ func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID
 			var org thunderdome.UserOrganization
 
 			if err := rows.Scan(
-				&org.Id,
+				&org.ID,
 				&org.Name,
 				&org.CreatedDate,
 				&org.UpdatedDate,
@@ -110,14 +110,14 @@ func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID
 }
 
 // OrganizationCreate creates an organization
-func (d *OrganizationService) OrganizationCreate(ctx context.Context, UserID string, OrgName string) (*thunderdome.Organization, error) {
+func (d *OrganizationService) OrganizationCreate(ctx context.Context, userID string, orgName string) (*thunderdome.Organization, error) {
 	o := &thunderdome.Organization{}
 
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, name, created_date, updated_date FROM thunderdome.organization_create($1, $2);`,
-		UserID,
-		OrgName,
-	).Scan(&o.Id, &o.Name, &o.CreatedDate, &o.UpdatedDate)
+		userID,
+		orgName,
+	).Scan(&o.ID, &o.Name, &o.CreatedDate, &o.UpdatedDate)
 
 	if err != nil {
 		return nil, fmt.Errorf("organization create query error :%v", err)
@@ -127,7 +127,7 @@ func (d *OrganizationService) OrganizationCreate(ctx context.Context, UserID str
 }
 
 // OrganizationUpdate updates an organization
-func (d *OrganizationService) OrganizationUpdate(ctx context.Context, OrgId string, OrgName string) (*thunderdome.Organization, error) {
+func (d *OrganizationService) OrganizationUpdate(ctx context.Context, orgID string, orgName string) (*thunderdome.Organization, error) {
 	o := &thunderdome.Organization{}
 
 	err := d.DB.QueryRowContext(ctx, `
@@ -135,8 +135,8 @@ func (d *OrganizationService) OrganizationUpdate(ctx context.Context, OrgId stri
 		SET name = $1, updated_date = NOW()
 		WHERE id = $2
 		RETURNING id, name, created_date, updated_date;`,
-		OrgName, OrgId,
-	).Scan(&o.Id, &o.Name, &o.CreatedDate, &o.UpdatedDate)
+		orgName, orgID,
+	).Scan(&o.ID, &o.Name, &o.CreatedDate, &o.UpdatedDate)
 	if err != nil {
 		return nil, fmt.Errorf("organization update query error :%v", err)
 	}
@@ -145,7 +145,7 @@ func (d *OrganizationService) OrganizationUpdate(ctx context.Context, OrgId stri
 }
 
 // OrganizationUserList gets a list of organization users
-func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.OrganizationUser {
+func (d *OrganizationService) OrganizationUserList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.OrganizationUser {
 	var users = make([]*thunderdome.OrganizationUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT u.id, u.name, COALESCE(u.email, ''), ou.role, u.avatar, COALESCE(u.picture, '')
@@ -155,9 +155,9 @@ func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID st
         ORDER BY ou.created_date
 		LIMIT $2
 		OFFSET $3;`,
-		OrgID,
-		Limit,
-		Offset,
+		orgID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -166,7 +166,7 @@ func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID st
 			var usr thunderdome.OrganizationUser
 
 			if err := rows.Scan(
-				&usr.Id,
+				&usr.ID,
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,
@@ -187,59 +187,59 @@ func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID st
 }
 
 // OrganizationAddUser adds a user to an organization
-func (d *OrganizationService) OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
+func (d *OrganizationService) OrganizationAddUser(ctx context.Context, orgID string, userID string, role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.organization_user (organization_id, user_id, role) VALUES ($1, $2, $3);`,
-		OrgID,
-		UserID,
-		Role,
+		orgID,
+		userID,
+		role,
 	)
 
 	if err != nil {
 		return "", fmt.Errorf("organization add user query error: %v", err)
 	}
 
-	return OrgID, nil
+	return orgID, nil
 }
 
 // OrganizationUpsertUser adds a user to an organization if not existing otherwise does nothing
-func (d *OrganizationService) OrganizationUpsertUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
+func (d *OrganizationService) OrganizationUpsertUser(ctx context.Context, orgID string, userID string, role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.organization_user (organization_id, user_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;`,
-		OrgID,
-		UserID,
-		Role,
+		orgID,
+		userID,
+		role,
 	)
 
 	if err != nil {
 		return "", fmt.Errorf("organization upsert user query error: %v", err)
 	}
 
-	return OrgID, nil
+	return orgID, nil
 }
 
 // OrganizationUpdateUser updates an organization user
-func (d *OrganizationService) OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
+func (d *OrganizationService) OrganizationUpdateUser(ctx context.Context, orgID string, userID string, role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.organization_user SET role = $3 WHERE organization_id = $1 AND user_id = $2;`,
-		OrgID,
-		UserID,
-		Role,
+		orgID,
+		userID,
+		role,
 	)
 
 	if err != nil {
 		return "", fmt.Errorf("organization update user query error: %v", err)
 	}
 
-	return OrgID, nil
+	return orgID, nil
 }
 
 // OrganizationRemoveUser removes a user from an organization
-func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error {
+func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, orgID string, userID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`CALL thunderdome.organization_user_remove($1, $2);`,
-		OrganizationID,
-		UserID,
+		orgID,
+		userID,
 	)
 
 	if err != nil {
@@ -250,34 +250,34 @@ func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, Organi
 }
 
 // OrganizationInviteUser invites a user to an organization
-func (d *OrganizationService) OrganizationInviteUser(ctx context.Context, OrgID string, Email string, Role string) (string, error) {
-	var inviteId string
+func (d *OrganizationService) OrganizationInviteUser(ctx context.Context, orgID string, email string, role string) (string, error) {
+	var inviteID string
 	err := d.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.organization_user_invite (organization_id, email, role) VALUES ($1, $2, $3) RETURNING invite_id;`,
-		OrgID,
-		Email,
-		Role,
-	).Scan(&inviteId)
+		orgID,
+		email,
+		role,
+	).Scan(&inviteID)
 
 	if err != nil {
 		return "", fmt.Errorf("organization invite user query error: %v", err)
 	}
 
-	return inviteId, nil
+	return inviteID, nil
 }
 
 // OrganizationUserGetInviteByID gets an organization user invite
-func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.OrganizationUserInvite, error) {
+func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.OrganizationUserInvite, error) {
 	oui := thunderdome.OrganizationUserInvite{}
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT invite_id, organization_id, email, role, created_date, expire_date
  				FROM thunderdome.organization_user_invite WHERE invite_id = $1 AND expire_date > CURRENT_TIMESTAMP;`,
-		InviteID,
-	).Scan(&oui.InviteId, &oui.OrganizationId, &oui.Email, &oui.Role, &oui.CreatedDate, &oui.ExpireDate)
+		inviteID,
+	).Scan(&oui.InviteID, &oui.OrganizationID, &oui.Email, &oui.Role, &oui.CreatedDate, &oui.ExpireDate)
 
 	if err != nil {
 		d.Logger.Ctx(ctx).Error("OrganizationUserGetInviteByID query error	", zap.Error(err),
-			zap.String("invite_id", InviteID))
+			zap.String("invite_id", inviteID))
 		return oui, fmt.Errorf("organization get user invite query error: %v", err)
 	}
 
@@ -285,10 +285,10 @@ func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context,
 }
 
 // OrganizationDeleteUserInvite deletes a user organization invite
-func (d *OrganizationService) OrganizationDeleteUserInvite(ctx context.Context, InviteID string) error {
+func (d *OrganizationService) OrganizationDeleteUserInvite(ctx context.Context, inviteID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.organization_user_invite where invite_id = $1;`,
-		InviteID,
+		inviteID,
 	)
 
 	if err != nil {
@@ -299,12 +299,12 @@ func (d *OrganizationService) OrganizationDeleteUserInvite(ctx context.Context, 
 }
 
 // OrganizationGetUserInvites gets organizations user invites
-func (d *OrganizationService) OrganizationGetUserInvites(ctx context.Context, orgId string) ([]thunderdome.OrganizationUserInvite, error) {
+func (d *OrganizationService) OrganizationGetUserInvites(ctx context.Context, orgID string) ([]thunderdome.OrganizationUserInvite, error) {
 	var invites = make([]thunderdome.OrganizationUserInvite, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT invite_id, organization_id, email, role, created_date, expire_date
  				FROM thunderdome.organization_user_invite WHERE organization_id = $1;`,
-		orgId,
+		orgID,
 	)
 
 	if err == nil {
@@ -313,8 +313,8 @@ func (d *OrganizationService) OrganizationGetUserInvites(ctx context.Context, or
 			var invite thunderdome.OrganizationUserInvite
 
 			if err := rows.Scan(
-				&invite.InviteId,
-				&invite.OrganizationId,
+				&invite.InviteID,
+				&invite.OrganizationID,
 				&invite.Email,
 				&invite.Role,
 				&invite.CreatedDate,
@@ -335,7 +335,7 @@ func (d *OrganizationService) OrganizationGetUserInvites(ctx context.Context, or
 }
 
 // OrganizationTeamList gets a list of organization teams
-func (d *OrganizationService) OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Team {
+func (d *OrganizationService) OrganizationTeamList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT t.id, t.name, t.created_date, t.updated_date
@@ -344,9 +344,9 @@ func (d *OrganizationService) OrganizationTeamList(ctx context.Context, OrgID st
         ORDER BY t.created_date
 		LIMIT $2
 		OFFSET $3;`,
-		OrgID,
-		Limit,
-		Offset,
+		orgID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -355,7 +355,7 @@ func (d *OrganizationService) OrganizationTeamList(ctx context.Context, OrgID st
 			var team thunderdome.Team
 
 			if err := rows.Scan(
-				&team.Id,
+				&team.ID,
 				&team.Name,
 				&team.CreatedDate,
 				&team.UpdatedDate,
@@ -373,15 +373,15 @@ func (d *OrganizationService) OrganizationTeamList(ctx context.Context, OrgID st
 }
 
 // OrganizationTeamCreate creates an organization team
-func (d *OrganizationService) OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*thunderdome.Team, error) {
+func (d *OrganizationService) OrganizationTeamCreate(ctx context.Context, orgID string, teamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx, `
-		INSERT INTO thunderdome.team (name, organization_id) 
+		INSERT INTO thunderdome.team (name, organization_id)
 		VALUES ($1, $2) RETURNING id, name, created_date, updated_date;`,
-		TeamName,
-		OrgID,
-	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
+		teamName,
+		orgID,
+	).Scan(&t.ID, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
 		return nil, fmt.Errorf("organization create team query error: %v", err)
@@ -391,7 +391,7 @@ func (d *OrganizationService) OrganizationTeamCreate(ctx context.Context, OrgID 
 }
 
 // OrganizationTeamUserRole gets a user's role in organization team
-func (d *OrganizationService) OrganizationTeamUserRole(ctx context.Context, UserID string, OrgID string, TeamID string) (string, string, error) {
+func (d *OrganizationService) OrganizationTeamUserRole(ctx context.Context, userID string, orgID string, teamID string) (string, string, error) {
 	var orgRole string
 	var teamRole string
 
@@ -400,9 +400,9 @@ func (d *OrganizationService) OrganizationTeamUserRole(ctx context.Context, User
         FROM thunderdome.organization_user ou
         LEFT JOIN thunderdome.team_user tu ON tu.user_id = $1 AND tu.team_id = $3
         WHERE ou.organization_id = $2 AND ou.user_id = $1;`,
-		UserID,
-		OrgID,
-		TeamID,
+		userID,
+		orgID,
+		teamID,
 	).Scan(
 		&orgRole,
 		&teamRole,
@@ -415,10 +415,10 @@ func (d *OrganizationService) OrganizationTeamUserRole(ctx context.Context, User
 }
 
 // OrganizationDelete deletes an organization
-func (d *OrganizationService) OrganizationDelete(ctx context.Context, OrgID string) error {
+func (d *OrganizationService) OrganizationDelete(ctx context.Context, orgID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.organization WHERE id = $1;`,
-		OrgID,
+		orgID,
 	)
 
 	if err != nil {
@@ -429,7 +429,7 @@ func (d *OrganizationService) OrganizationDelete(ctx context.Context, OrgID stri
 }
 
 // OrganizationList gets a list of organizations
-func (d *OrganizationService) OrganizationList(ctx context.Context, Limit int, Offset int) []*thunderdome.Organization {
+func (d *OrganizationService) OrganizationList(ctx context.Context, limit int, offset int) []*thunderdome.Organization {
 	var organizations = make([]*thunderdome.Organization, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT o.id, o.name, o.created_date, o.updated_date
@@ -437,8 +437,8 @@ func (d *OrganizationService) OrganizationList(ctx context.Context, Limit int, O
         ORDER BY o.created_date
 		LIMIT $1
 		OFFSET $2;`,
-		Limit,
-		Offset,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -447,7 +447,7 @@ func (d *OrganizationService) OrganizationList(ctx context.Context, Limit int, O
 			var org thunderdome.Organization
 
 			if err := rows.Scan(
-				&org.Id,
+				&org.ID,
 				&org.Name,
 				&org.CreatedDate,
 				&org.UpdatedDate,
@@ -464,21 +464,21 @@ func (d *OrganizationService) OrganizationList(ctx context.Context, Limit int, O
 	return organizations
 }
 
-func (d *OrganizationService) OrganizationIsSubscribed(ctx context.Context, OrgID string) (bool, error) {
+func (d *OrganizationService) OrganizationIsSubscribed(ctx context.Context, orgID string) (bool, error) {
 	var subscribed bool
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT 
+		`SELECT
     COALESCE(
-        (SELECT TRUE 
-         FROM thunderdome.subscription 
+        (SELECT TRUE
+         FROM thunderdome.subscription
          WHERE organization_id = $1
-           AND active = TRUE 
+           AND active = TRUE
            AND expires > CURRENT_TIMESTAMP
          LIMIT 1),
         FALSE
     ) AS is_subscribed;`,
-		OrgID,
+		orgID,
 	).Scan(
 		&subscribed,
 	)

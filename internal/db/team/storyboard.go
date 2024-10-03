@@ -9,7 +9,7 @@ import (
 )
 
 // TeamStoryboardList gets a list of team storyboards
-func (d *Service) TeamStoryboardList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Storyboard {
+func (d *Service) TeamStoryboardList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Storyboard {
 	var storyboards = make([]*thunderdome.Storyboard, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT s.id, s.name
@@ -18,9 +18,9 @@ func (d *Service) TeamStoryboardList(ctx context.Context, TeamID string, Limit i
         ORDER BY s.created_date DESC
 		LIMIT $2
 		OFFSET $3;`,
-		TeamID,
-		Limit,
-		Offset,
+		teamID,
+		limit,
+		offset,
 	)
 
 	if err == nil {
@@ -29,7 +29,7 @@ func (d *Service) TeamStoryboardList(ctx context.Context, TeamID string, Limit i
 			var tb thunderdome.Storyboard
 
 			if err := rows.Scan(
-				&tb.Id,
+				&tb.ID,
 				&tb.Name,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_storyboard_list query scan error", zap.Error(err))
@@ -45,11 +45,11 @@ func (d *Service) TeamStoryboardList(ctx context.Context, TeamID string, Limit i
 }
 
 // TeamAddStoryboard adds a storyboard to a team
-func (d *Service) TeamAddStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
+func (d *Service) TeamAddStoryboard(ctx context.Context, teamID string, storyboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.storyboard SET team_id = $1 WHERE id = $2;`,
-		TeamID,
-		StoryboardID,
+		teamID,
+		storyboardID,
 	)
 
 	if err != nil {
@@ -60,11 +60,11 @@ func (d *Service) TeamAddStoryboard(ctx context.Context, TeamID string, Storyboa
 }
 
 // TeamRemoveStoryboard removes a storyboard from a team
-func (d *Service) TeamRemoveStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
+func (d *Service) TeamRemoveStoryboard(ctx context.Context, teamID string, storyboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.storyboard SET team_id = $1 WHERE id = $2;`,
-		TeamID,
-		StoryboardID,
+		teamID,
+		storyboardID,
 	)
 
 	if err != nil {

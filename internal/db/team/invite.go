@@ -11,30 +11,30 @@ import (
 )
 
 // TeamInviteUser invites a user to a team
-func (d *Service) TeamInviteUser(ctx context.Context, TeamID string, Email string, Role string) (string, error) {
-	var inviteId string
+func (d *Service) TeamInviteUser(ctx context.Context, teamID string, email string, role string) (string, error) {
+	var inviteID string
 	err := d.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.team_user_invite (team_id, email, role) VALUES ($1, $2, $3) RETURNING invite_id;`,
-		TeamID,
-		Email,
-		Role,
-	).Scan(&inviteId)
+		teamID,
+		email,
+		role,
+	).Scan(&inviteID)
 
 	if err != nil {
 		return "", fmt.Errorf("team invite user query error: %v", err)
 	}
 
-	return inviteId, nil
+	return inviteID, nil
 }
 
 // TeamUserGetInviteByID gets a team user invite
-func (d *Service) TeamUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.TeamUserInvite, error) {
+func (d *Service) TeamUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.TeamUserInvite, error) {
 	tui := thunderdome.TeamUserInvite{}
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT invite_id, team_id, email, role, created_date, expire_date
  				FROM thunderdome.team_user_invite WHERE invite_id = $1;`,
-		InviteID,
-	).Scan(&tui.InviteId, &tui.TeamId, &tui.Email, &tui.Role, &tui.CreatedDate, &tui.ExpireDate)
+		inviteID,
+	).Scan(&tui.InviteID, &tui.TeamID, &tui.Email, &tui.Role, &tui.CreatedDate, &tui.ExpireDate)
 
 	if err != nil {
 		return tui, fmt.Errorf("team get user invite query error: %v", err)
@@ -44,10 +44,10 @@ func (d *Service) TeamUserGetInviteByID(ctx context.Context, InviteID string) (t
 }
 
 // TeamDeleteUserInvite deletes a user team invite
-func (d *Service) TeamDeleteUserInvite(ctx context.Context, InviteID string) error {
+func (d *Service) TeamDeleteUserInvite(ctx context.Context, inviteID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_user_invite where invite_id = $1;`,
-		InviteID,
+		inviteID,
 	)
 
 	if err != nil {
@@ -58,12 +58,12 @@ func (d *Service) TeamDeleteUserInvite(ctx context.Context, InviteID string) err
 }
 
 // TeamGetUserInvites gets teams user invites
-func (d *Service) TeamGetUserInvites(ctx context.Context, teamId string) ([]thunderdome.TeamUserInvite, error) {
+func (d *Service) TeamGetUserInvites(ctx context.Context, teamID string) ([]thunderdome.TeamUserInvite, error) {
 	var invites = make([]thunderdome.TeamUserInvite, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT invite_id, team_id, email, role, created_date, expire_date
  				FROM thunderdome.team_user_invite WHERE team_id = $1;`,
-		teamId,
+		teamID,
 	)
 
 	if err == nil {
@@ -72,8 +72,8 @@ func (d *Service) TeamGetUserInvites(ctx context.Context, teamId string) ([]thun
 			var invite thunderdome.TeamUserInvite
 
 			if err := rows.Scan(
-				&invite.InviteId,
-				&invite.TeamId,
+				&invite.InviteID,
+				&invite.TeamID,
 				&invite.Email,
 				&invite.Role,
 				&invite.CreatedDate,

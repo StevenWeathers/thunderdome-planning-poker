@@ -35,24 +35,24 @@ type estimationScaleRequestBody struct {
 func (s *Service) handleGetEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		Limit, Offset := getLimitOffsetFromRequest(r)
-		Scales, Count, err := s.PokerDataSvc.GetEstimationScales(ctx, Limit, Offset)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		limit, offset := getLimitOffsetFromRequest(r)
+		scales, count, err := s.PokerDataSvc.GetEstimationScales(ctx, limit, offset)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetEstimationScales error", zap.Error(err),
-				zap.Int("limit", Limit), zap.Int("offset", Offset),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.Int("limit", limit), zap.Int("offset", offset),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Scales, Meta)
+		s.Success(w, r, http.StatusOK, scales, meta)
 	}
 }
 
@@ -69,7 +69,7 @@ func (s *Service) handleGetEstimationScales() http.HandlerFunc {
 func (s *Service) handleEstimationScaleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		var scale = estimationScaleRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -96,14 +96,14 @@ func (s *Service) handleEstimationScaleCreate() http.HandlerFunc {
 			Values:       scale.Values,
 			DefaultScale: scale.DefaultScale,
 			IsPublic:     scale.IsPublic,
-			CreatedBy:    SessionUserID,
+			CreatedBy:    sessionUserID,
 		}
 
 		createdScale, err := s.PokerDataSvc.CreateEstimationScale(ctx, &es)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleEstimationScaleCreate error", zap.Error(err),
 				zap.String("scale_name", scale.Name), zap.String("scale_type", scale.ScaleType),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -126,10 +126,10 @@ func (s *Service) handleEstimationScaleCreate() http.HandlerFunc {
 func (s *Service) handleEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ID := vars["scaleId"]
-		idErr := validate.Var(ID, "required,uuid")
+		scaleID := vars["scaleId"]
+		idErr := validate.Var(scaleID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -155,7 +155,7 @@ func (s *Service) handleEstimationScaleUpdate() http.HandlerFunc {
 		}
 
 		es := thunderdome.EstimationScale{
-			ID:           ID,
+			ID:           scaleID,
 			Name:         scale.Name,
 			Description:  scale.Description,
 			ScaleType:    scale.ScaleType,
@@ -166,8 +166,8 @@ func (s *Service) handleEstimationScaleUpdate() http.HandlerFunc {
 
 		updatedScale, err := s.PokerDataSvc.UpdateEstimationScale(ctx, &es)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleEstimationScaleUpdate error", zap.Error(err), zap.String("scale_id", ID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleEstimationScaleUpdate error", zap.Error(err), zap.String("scale_id", scaleID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -189,19 +189,19 @@ func (s *Service) handleEstimationScaleUpdate() http.HandlerFunc {
 func (s *Service) handleEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ScaleID := vars["scaleId"]
-		idErr := validate.Var(ScaleID, "required,uuid")
+		scaleID := vars["scaleId"]
+		idErr := validate.Var(scaleID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.PokerDataSvc.DeleteEstimationScale(ctx, ScaleID)
+		err := s.PokerDataSvc.DeleteEstimationScale(ctx, scaleID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleEstimationScaleDelete error", zap.Error(err), zap.String("scale_id", ScaleID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleEstimationScaleDelete error", zap.Error(err), zap.String("scale_id", scaleID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -225,32 +225,32 @@ func (s *Service) handleEstimationScaleDelete() http.HandlerFunc {
 func (s *Service) handleGetOrganizationEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
-		OrgID := vars["orgId"]
-		orgIdErr := validate.Var(OrgID, "required,uuid")
-		if orgIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+		orgID := vars["orgId"]
+		orgIDErr := validate.Var(orgID, "required,uuid")
+		if orgIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
 			return
 		}
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Scales, Count, err := s.PokerDataSvc.GetOrganizationEstimationScales(ctx, OrgID, Limit, Offset)
+		scales, count, err := s.PokerDataSvc.GetOrganizationEstimationScales(ctx, orgID, limit, offset)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetOrganizationEstimationScales error", zap.Error(err),
-				zap.String("org_id", OrgID), zap.Int("limit", Limit), zap.Int("offset", Offset),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.String("org_id", orgID), zap.Int("limit", limit), zap.Int("offset", offset),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Scales, Meta)
+		s.Success(w, r, http.StatusOK, scales, meta)
 	}
 }
 
@@ -275,12 +275,12 @@ type privateEstimationScaleRequestBody struct {
 func (s *Service) handleOrganizationEstimationScaleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		OrgID := vars["orgId"]
-		orgIdErr := validate.Var(OrgID, "required,uuid")
-		if orgIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+		orgID := vars["orgId"]
+		orgIDErr := validate.Var(orgID, "required,uuid")
+		if orgIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
 			return
 		}
 
@@ -309,16 +309,16 @@ func (s *Service) handleOrganizationEstimationScaleCreate() http.HandlerFunc {
 			ScaleType:      "custom",
 			Values:         scale.Values,
 			DefaultScale:   scale.DefaultScale,
-			OrganizationID: OrgID,
-			CreatedBy:      SessionUserID,
+			OrganizationID: orgID,
+			CreatedBy:      sessionUserID,
 			IsPublic:       false,
 		}
 
 		createdScale, err := s.PokerDataSvc.CreateEstimationScale(ctx, &es)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleOrganizationEstimationScaleCreate error", zap.Error(err),
-				zap.String("org_id", OrgID), zap.String("scale_name", scale.Name),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("org_id", orgID), zap.String("scale_name", scale.Name),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -342,32 +342,32 @@ func (s *Service) handleOrganizationEstimationScaleCreate() http.HandlerFunc {
 func (s *Service) handleGetTeamEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		teamIdErr := validate.Var(TeamID, "required,uuid")
-		if teamIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+		teamID := vars["teamId"]
+		teamIDErr := validate.Var(teamID, "required,uuid")
+		if teamIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
 			return
 		}
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Scales, Count, err := s.PokerDataSvc.GetTeamEstimationScales(ctx, TeamID, Limit, Offset)
+		scales, count, err := s.PokerDataSvc.GetTeamEstimationScales(ctx, teamID, limit, offset)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetTeamEstimationScales error", zap.Error(err),
-				zap.String("team_id", TeamID), zap.Int("limit", Limit), zap.Int("offset", Offset),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.String("team_id", teamID), zap.Int("limit", limit), zap.Int("offset", offset),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Scales, Meta)
+		s.Success(w, r, http.StatusOK, scales, meta)
 	}
 }
 
@@ -385,12 +385,12 @@ func (s *Service) handleGetTeamEstimationScales() http.HandlerFunc {
 func (s *Service) handleTeamEstimationScaleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TeamID := vars["teamId"]
-		teamIdErr := validate.Var(TeamID, "required,uuid")
-		if teamIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+		teamID := vars["teamId"]
+		teamIDErr := validate.Var(teamID, "required,uuid")
+		if teamIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
 			return
 		}
 
@@ -419,16 +419,16 @@ func (s *Service) handleTeamEstimationScaleCreate() http.HandlerFunc {
 			ScaleType:    "custom",
 			Values:       scale.Values,
 			DefaultScale: scale.DefaultScale,
-			TeamID:       TeamID,
-			CreatedBy:    SessionUserID,
+			TeamID:       teamID,
+			CreatedBy:    sessionUserID,
 			IsPublic:     false,
 		}
 
 		createdScale, err := s.PokerDataSvc.CreateEstimationScale(ctx, &es)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamEstimationScaleCreate error", zap.Error(err),
-				zap.String("team_id", TeamID), zap.String("scale_name", scale.Name),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("team_id", teamID), zap.String("scale_name", scale.Name),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -450,23 +450,23 @@ func (s *Service) handleTeamEstimationScaleCreate() http.HandlerFunc {
 func (s *Service) handleGetPublicEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		Limit, Offset := getLimitOffsetFromRequest(r)
+		limit, offset := getLimitOffsetFromRequest(r)
 
-		Scales, Count, err := s.PokerDataSvc.GetPublicEstimationScales(ctx, Limit, Offset)
+		scales, count, err := s.PokerDataSvc.GetPublicEstimationScales(ctx, limit, offset)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetPublicEstimationScales error", zap.Error(err),
-				zap.Int("limit", Limit), zap.Int("offset", Offset))
+				zap.Int("limit", limit), zap.Int("offset", offset))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Scales, Meta)
+		s.Success(w, r, http.StatusOK, scales, meta)
 	}
 }
 
@@ -484,17 +484,17 @@ func (s *Service) handleGetPublicEstimationScale() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
-		ScaleID := vars["scaleId"]
-		scaleIdErr := validate.Var(ScaleID, "required,uuid")
-		if scaleIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIdErr.Error()))
+		scaleID := vars["scaleId"]
+		scaleIDErr := validate.Var(scaleID, "required,uuid")
+		if scaleIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
 
-		scale, err := s.PokerDataSvc.GetPublicEstimationScale(ctx, ScaleID)
+		scale, err := s.PokerDataSvc.GetPublicEstimationScale(ctx, scaleID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetPublicEstimationScale error", zap.Error(err),
-				zap.String("scale_id", ScaleID))
+				zap.String("scale_id", scaleID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -516,25 +516,25 @@ func (s *Service) handleGetPublicEstimationScale() http.HandlerFunc {
 func (s *Service) handleOrganizationEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ScaleID := vars["scaleId"]
-		scaleIdErr := validate.Var(ScaleID, "required,uuid")
-		if scaleIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIdErr.Error()))
+		scaleID := vars["scaleId"]
+		scaleIDErr := validate.Var(scaleID, "required,uuid")
+		if scaleIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
-		OrgID := vars["orgID"]
-		orgIdErr := validate.Var(OrgID, "required,uuid")
-		if orgIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+		orgID := vars["orgID"]
+		orgIDErr := validate.Var(orgID, "required,uuid")
+		if orgIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
 			return
 		}
 
-		err := s.PokerDataSvc.DeleteOrganizationEstimationScale(ctx, OrgID, ScaleID)
+		err := s.PokerDataSvc.DeleteOrganizationEstimationScale(ctx, orgID, scaleID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleOrganizationEstimationScaleDelete error", zap.Error(err), zap.String("scale_id", ScaleID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleOrganizationEstimationScaleDelete error", zap.Error(err), zap.String("scale_id", scaleID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -556,25 +556,25 @@ func (s *Service) handleOrganizationEstimationScaleDelete() http.HandlerFunc {
 func (s *Service) handleTeamEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ScaleID := vars["scaleId"]
-		scaleIdErr := validate.Var(ScaleID, "required,uuid")
-		if scaleIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIdErr.Error()))
+		scaleID := vars["scaleId"]
+		scaleIDErr := validate.Var(scaleID, "required,uuid")
+		if scaleIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
-		TeamID := vars["teamId"]
-		teamIdErr := validate.Var(TeamID, "required,uuid")
-		if teamIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+		teamID := vars["teamId"]
+		teamIDErr := validate.Var(teamID, "required,uuid")
+		if teamIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
 			return
 		}
 
-		err := s.PokerDataSvc.DeleteTeamEstimationScale(ctx, TeamID, ScaleID)
+		err := s.PokerDataSvc.DeleteTeamEstimationScale(ctx, teamID, scaleID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamEstimationScaleDelete error", zap.Error(err), zap.String("scale_id", ScaleID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleTeamEstimationScaleDelete error", zap.Error(err), zap.String("scale_id", scaleID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -598,18 +598,18 @@ func (s *Service) handleTeamEstimationScaleDelete() http.HandlerFunc {
 func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ID := vars["scaleId"]
-		scaleIdErr := validate.Var(ID, "required,uuid")
-		if scaleIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIdErr.Error()))
+		scaleID := vars["scaleId"]
+		scaleIDErr := validate.Var(scaleID, "required,uuid")
+		if scaleIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
-		TeamID := vars["teamId"]
-		teamIdErr := validate.Var(TeamID, "required,uuid")
-		if teamIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+		teamID := vars["teamId"]
+		teamIDErr := validate.Var(teamID, "required,uuid")
+		if teamIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
 			return
 		}
 
@@ -633,21 +633,21 @@ func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
 		}
 
 		es := thunderdome.EstimationScale{
-			ID:           ID,
+			ID:           scaleID,
 			Name:         scale.Name,
 			Description:  scale.Description,
 			ScaleType:    "custom",
 			Values:       scale.Values,
 			DefaultScale: scale.DefaultScale,
-			TeamID:       TeamID,
+			TeamID:       teamID,
 			IsPublic:     false,
 		}
 
 		updatedScale, err := s.PokerDataSvc.UpdateTeamEstimationScale(ctx, &es)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleEstimationScaleUpdate error", zap.Error(err),
-				zap.String("scale_id", ID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("scale_id", scaleID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -671,18 +671,18 @@ func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
 func (s *Service) handleOrganizationEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ID := vars["scaleId"]
-		scaleIdErr := validate.Var(ID, "required,uuid")
-		if scaleIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIdErr.Error()))
+		scaleID := vars["scaleId"]
+		scaleIDErr := validate.Var(scaleID, "required,uuid")
+		if scaleIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
-		OrgID := vars["orgId"]
-		orgIdErr := validate.Var(OrgID, "required,uuid")
-		if orgIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+		orgID := vars["orgId"]
+		orgIDErr := validate.Var(orgID, "required,uuid")
+		if orgIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
 			return
 		}
 
@@ -706,21 +706,21 @@ func (s *Service) handleOrganizationEstimationScaleUpdate() http.HandlerFunc {
 		}
 
 		es := thunderdome.EstimationScale{
-			ID:             ID,
+			ID:             scaleID,
 			Name:           scale.Name,
 			Description:    scale.Description,
 			ScaleType:      "custom",
 			Values:         scale.Values,
 			DefaultScale:   scale.DefaultScale,
-			OrganizationID: OrgID,
+			OrganizationID: orgID,
 			IsPublic:       false,
 		}
 
 		updatedScale, err := s.PokerDataSvc.UpdateOrganizationEstimationScale(ctx, &es)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleEstimationScaleUpdate error", zap.Error(err),
-				zap.String("scale_id", ID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("scale_id", scaleID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

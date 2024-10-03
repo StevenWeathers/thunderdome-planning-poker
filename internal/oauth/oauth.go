@@ -139,7 +139,7 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 			return
 		}
 
-		user, sessionId, userErr := s.authDataSvc.OauthAuthUser(
+		user, sessionID, userErr := s.authDataSvc.OauthAuthUser(
 			ctx, s.config.ProviderName, idToken.Subject, claims.Email,
 			claims.EmailVerified, claims.Name, claims.Picture,
 		)
@@ -154,17 +154,17 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 			return
 		}
 
-		if scErr := s.cookie.CreateSessionCookie(w, sessionId); scErr != nil {
+		if scErr := s.cookie.CreateSessionCookie(w, sessionID); scErr != nil {
 			logger.Error("error creating oauth user session cookie", zap.Error(scErr),
-				zap.String("userId", user.Id))
+				zap.String("userId", user.ID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		subscribedErr := s.subscriptionDataSvc.CheckActiveSubscriber(ctx, user.Id)
+		subscribedErr := s.subscriptionDataSvc.CheckActiveSubscriber(ctx, user.ID)
 
 		if err := s.cookie.CreateUserUICookie(w, thunderdome.UserUICookie{
-			Id:                   user.Id,
+			ID:                   user.ID,
 			Name:                 user.Name,
 			Email:                user.Email,
 			Rank:                 user.Type,
@@ -173,7 +173,7 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 			Subscribed:           subscribedErr == nil,
 		}); err != nil {
 			logger.Error("error creating oauth user ui cookie", zap.Error(err),
-				zap.String("userId", user.Id))
+				zap.String("userId", user.ID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

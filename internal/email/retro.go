@@ -9,7 +9,7 @@ import (
 )
 
 // SendRetroOverview sends the retro overview (items, action items) email to attendees
-func (s *Service) SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, UserName string, UserEmail string) error {
+func (s *Service) SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, userName string, userEmail string) error {
 	columnMap := make(map[string]string)
 	var columnsList string
 	for _, column := range template.Format.Columns {
@@ -35,7 +35,7 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, template *thunderd
 	subject := fmt.Sprintf("Here is your %s Retro Overview", retro.Name)
 	emailBody, err := s.generateBody(
 		hermes.Body{
-			Name: UserName,
+			Name: userName,
 			Intros: []string{
 				subject,
 			},
@@ -49,21 +49,21 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, template *thunderd
 	)
 	if err != nil {
 		s.Logger.Error("Error Generating Retro Overview Email HTML", zap.Error(err),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 
 		return err
 	}
 
 	//s.Logger.Info("Sending Retro Overview Email", zap.String("email_body", emailBody))
 	sendErr := s.send(
-		UserName,
-		UserEmail,
+		userName,
+		userEmail,
 		subject,
 		emailBody,
 	)
 	if sendErr != nil {
 		s.Logger.Error("Error sending Retro Overview Email", zap.Error(sendErr),
-			zap.String("user_email", UserEmail))
+			zap.String("user_email", userEmail))
 		return sendErr
 	}
 

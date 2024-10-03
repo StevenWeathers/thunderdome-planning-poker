@@ -17,7 +17,7 @@ type Service struct {
 
 // GetAppStats gets counts of common application metrics such as users and poker games
 func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStats, error) {
-	var Appstats thunderdome.ApplicationStats
+	var appStats thunderdome.ApplicationStats
 
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT
@@ -57,44 +57,44 @@ func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStat
     (SELECT COUNT(*) FROM thunderdome.retro_template WHERE team_id IS NOT NULL) AS team_retro_template_count
 		;`,
 	).Scan(
-		&Appstats.UnregisteredCount,
-		&Appstats.RegisteredCount,
-		&Appstats.PokerCount,
-		&Appstats.PokerStoryCount,
-		&Appstats.OrganizationCount,
-		&Appstats.DepartmentCount,
-		&Appstats.TeamCount,
-		&Appstats.APIKeyCount,
-		&Appstats.ActivePokerCount,
-		&Appstats.ActivePokerUserCount,
-		&Appstats.TeamCheckinsCount,
-		&Appstats.RetroCount,
-		&Appstats.ActiveRetroCount,
-		&Appstats.ActiveRetroUserCount,
-		&Appstats.RetroItemCount,
-		&Appstats.RetroActionCount,
-		&Appstats.StoryboardCount,
-		&Appstats.ActiveStoryboardCount,
-		&Appstats.ActiveStoryboardUserCount,
-		&Appstats.StoryboardGoalCount,
-		&Appstats.StoryboardColumnCount,
-		&Appstats.StoryboardStoryCount,
-		&Appstats.StoryboardPersonaCount,
-		&Appstats.EstimationScaleCount,
-		&Appstats.PublicEstimationScaleCount,
-		&Appstats.OrganizationEstimationScaleCount,
-		&Appstats.TeamEstimationScaleCount,
-		&Appstats.UserSubscriptionActiveCount,
-		&Appstats.TeamSubscriptionActiveCount,
-		&Appstats.OrgSubscriptionActiveCount,
-		&Appstats.RetroTemplateCount,
-		&Appstats.PublicRetroTemplateCount,
-		&Appstats.OrganizationRetroTemplateCount,
-		&Appstats.TeamRetroTemplateCount,
+		&appStats.UnregisteredCount,
+		&appStats.RegisteredCount,
+		&appStats.PokerCount,
+		&appStats.PokerStoryCount,
+		&appStats.OrganizationCount,
+		&appStats.DepartmentCount,
+		&appStats.TeamCount,
+		&appStats.APIKeyCount,
+		&appStats.ActivePokerCount,
+		&appStats.ActivePokerUserCount,
+		&appStats.TeamCheckinsCount,
+		&appStats.RetroCount,
+		&appStats.ActiveRetroCount,
+		&appStats.ActiveRetroUserCount,
+		&appStats.RetroItemCount,
+		&appStats.RetroActionCount,
+		&appStats.StoryboardCount,
+		&appStats.ActiveStoryboardCount,
+		&appStats.ActiveStoryboardUserCount,
+		&appStats.StoryboardGoalCount,
+		&appStats.StoryboardColumnCount,
+		&appStats.StoryboardStoryCount,
+		&appStats.StoryboardPersonaCount,
+		&appStats.EstimationScaleCount,
+		&appStats.PublicEstimationScaleCount,
+		&appStats.OrganizationEstimationScaleCount,
+		&appStats.TeamEstimationScaleCount,
+		&appStats.UserSubscriptionActiveCount,
+		&appStats.TeamSubscriptionActiveCount,
+		&appStats.OrgSubscriptionActiveCount,
+		&appStats.RetroTemplateCount,
+		&appStats.PublicRetroTemplateCount,
+		&appStats.OrganizationRetroTemplateCount,
+		&appStats.TeamRetroTemplateCount,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get application stats: %v", err)
 	}
 
-	return &Appstats, nil
+	return &appStats, nil
 }

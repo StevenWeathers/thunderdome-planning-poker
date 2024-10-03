@@ -26,8 +26,8 @@ type retroTemplateRequestBody struct {
 	Format          retroTemplateFormatRequestBody `json:"format" validate:"required"`
 	IsPublic        bool                           `json:"isPublic"`
 	DefaultTemplate bool                           `json:"defaultTemplate"`
-	OrganizationId  *string                        `json:"organizationId"`
-	TeamId          *string                        `json:"teamId"`
+	OrganizationID  *string                        `json:"organizationId"`
+	TeamID          *string                        `json:"teamId"`
 }
 
 // handleGetRetroTemplates gets a list of retro templates
@@ -44,24 +44,24 @@ type retroTemplateRequestBody struct {
 func (s *Service) handleGetRetroTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		Limit, Offset := getLimitOffsetFromRequest(r)
-		Templates, Count, err := s.RetroTemplateDataSvc.ListTemplates(ctx, Limit, Offset)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		limit, offset := getLimitOffsetFromRequest(r)
+		templates, count, err := s.RetroTemplateDataSvc.ListTemplates(ctx, limit, offset)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetRetroTemplates error", zap.Error(err),
-				zap.Int("limit", Limit), zap.Int("offset", Offset),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.Int("limit", limit), zap.Int("offset", offset),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
 		}
 
-		s.Success(w, r, http.StatusOK, Templates, Meta)
+		s.Success(w, r, http.StatusOK, templates, meta)
 	}
 }
 
@@ -79,7 +79,7 @@ func (s *Service) handleGetRetroTemplates() http.HandlerFunc {
 func (s *Service) handleRetroTemplateCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		var template = retroTemplateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -105,16 +105,16 @@ func (s *Service) handleRetroTemplateCreate() http.HandlerFunc {
 			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			IsPublic:        template.IsPublic,
 			DefaultTemplate: template.DefaultTemplate,
-			CreatedBy:       SessionUserID,
-			OrganizationId:  template.OrganizationId,
-			TeamId:          template.TeamId,
+			CreatedBy:       sessionUserID,
+			OrganizationID:  template.OrganizationID,
+			TeamID:          template.TeamID,
 		}
 
 		err := s.RetroTemplateDataSvc.CreateTemplate(ctx, newTemplate)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRetroTemplateCreate error", zap.Error(err),
 				zap.String("template_name", template.Name),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -138,10 +138,10 @@ func (s *Service) handleRetroTemplateCreate() http.HandlerFunc {
 func (s *Service) handleRetroTemplateUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ID := vars["templateId"]
-		idErr := validate.Var(ID, "required,uuid")
+		templateID := vars["templateId"]
+		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -167,20 +167,20 @@ func (s *Service) handleRetroTemplateUpdate() http.HandlerFunc {
 		}
 
 		updatedTemplate := &thunderdome.RetroTemplate{
-			Id:              ID,
+			ID:              templateID,
 			Name:            template.Name,
 			Description:     template.Description,
 			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			IsPublic:        template.IsPublic,
 			DefaultTemplate: template.DefaultTemplate,
-			OrganizationId:  template.OrganizationId,
-			TeamId:          template.TeamId,
+			OrganizationID:  template.OrganizationID,
+			TeamID:          template.TeamID,
 		}
 
 		err := s.RetroTemplateDataSvc.UpdateTemplate(ctx, updatedTemplate)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleRetroTemplateUpdate error", zap.Error(err), zap.String("template_id", ID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleRetroTemplateUpdate error", zap.Error(err), zap.String("template_id", templateID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -203,19 +203,19 @@ func (s *Service) handleRetroTemplateUpdate() http.HandlerFunc {
 func (s *Service) handleRetroTemplateDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TemplateID := vars["templateId"]
-		idErr := validate.Var(TemplateID, "required,uuid")
+		templateID := vars["templateId"]
+		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.RetroTemplateDataSvc.DeleteTemplate(ctx, TemplateID)
+		err := s.RetroTemplateDataSvc.DeleteTemplate(ctx, templateID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleRetroTemplateDelete error", zap.Error(err), zap.String("template_id", TemplateID),
-				zap.String("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleRetroTemplateDelete error", zap.Error(err), zap.String("template_id", templateID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -238,19 +238,19 @@ func (s *Service) handleRetroTemplateDelete() http.HandlerFunc {
 func (s *Service) handleGetRetroTemplateById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
-		TemplateID := vars["templateId"]
-		idErr := validate.Var(TemplateID, "required,uuid")
+		templateID := vars["templateId"]
+		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		template, err := s.RetroTemplateDataSvc.GetTemplateById(ctx, TemplateID)
+		template, err := s.RetroTemplateDataSvc.GetTemplateById(ctx, templateID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetRetroTemplateById error", zap.Error(err), zap.String("template_id", TemplateID),
-				zap.Stringp("session_user_id", SessionUserID))
+			s.Logger.Ctx(ctx).Error("handleGetRetroTemplateById error", zap.Error(err), zap.String("template_id", templateID),
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -275,12 +275,12 @@ func (s *Service) handleGetRetroTemplateById() http.HandlerFunc {
 func (s *Service) handleGetPublicRetroTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 
 		templates, err := s.RetroTemplateDataSvc.GetPublicTemplates(ctx)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetPublicRetroTemplates error", zap.Error(err),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -310,12 +310,12 @@ type privateRetroTemplateRequestBody struct {
 func (s *Service) handleGetOrganizationRetroTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		organizationID := vars["orgId"]
-		orgIdErr := validate.Var(organizationID, "required,uuid")
-		if orgIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+		orgIDErr := validate.Var(organizationID, "required,uuid")
+		if orgIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
 			return
 		}
 
@@ -329,7 +329,7 @@ func (s *Service) handleGetOrganizationRetroTemplates() http.HandlerFunc {
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetOrganizationRetroTemplates error", zap.Error(err),
 				zap.String("organization_id", organizationID),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -352,12 +352,12 @@ func (s *Service) handleGetOrganizationRetroTemplates() http.HandlerFunc {
 func (s *Service) handleGetTeamRetroTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		teamID := vars["teamId"]
-		teamIdErr := validate.Var(teamID, "required,uuid")
-		if teamIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+		teamIDErr := validate.Var(teamID, "required,uuid")
+		if teamIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
 			return
 		}
 
@@ -371,7 +371,7 @@ func (s *Service) handleGetTeamRetroTemplates() http.HandlerFunc {
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetTeamRetroTemplates error", zap.Error(err),
 				zap.String("team_id", teamID),
-				zap.Stringp("session_user_id", SessionUserID))
+				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -397,12 +397,12 @@ func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		teamID := vars["teamId"]
-		teamIdErr := validate.Var(teamID, "required,uuid")
-		if teamIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+		teamIDErr := validate.Var(teamID, "required,uuid")
+		if teamIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
 			return
 		}
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		var template = privateRetroTemplateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -428,8 +428,8 @@ func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			IsPublic:        false,
 			DefaultTemplate: template.DefaultTemplate,
-			CreatedBy:       SessionUserID,
-			TeamId:          &teamID,
+			CreatedBy:       sessionUserID,
+			TeamID:          &teamID,
 		}
 
 		err := s.RetroTemplateDataSvc.CreateTemplate(ctx, newTemplate)
@@ -437,7 +437,7 @@ func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleTeamRetroTemplateCreate error", zap.Error(err),
 				zap.String("template_name", template.Name),
 				zap.String("team_id", teamID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -463,12 +463,12 @@ func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		orgID := vars["orgId"]
-		orgIdErr := validate.Var(orgID, "required,uuid")
-		if orgIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+		orgIDErr := validate.Var(orgID, "required,uuid")
+		if orgIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
 			return
 		}
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		var template = privateRetroTemplateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -494,8 +494,8 @@ func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			IsPublic:        false,
 			DefaultTemplate: template.DefaultTemplate,
-			CreatedBy:       SessionUserID,
-			OrganizationId:  &orgID,
+			CreatedBy:       sessionUserID,
+			OrganizationID:  &orgID,
 		}
 
 		err := s.RetroTemplateDataSvc.CreateTemplate(ctx, newTemplate)
@@ -503,7 +503,7 @@ func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleOrganizationRetroTemplateCreate error", zap.Error(err),
 				zap.String("template_name", template.Name),
 				zap.String("organization_id", orgID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -528,18 +528,18 @@ func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ID := vars["templateId"]
-		idErr := validate.Var(ID, "required,uuid")
+		templateID := vars["templateId"]
+		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		TeamID := vars["teamId"]
-		teamIdErr := validate.Var(TeamID, "required,uuid")
-		if teamIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+		teamID := vars["teamId"]
+		teamIDErr := validate.Var(teamID, "required,uuid")
+		if teamIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
 			return
 		}
 
@@ -563,20 +563,20 @@ func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
 		}
 
 		updatedTemplate := &thunderdome.RetroTemplate{
-			Id:              ID,
+			ID:              templateID,
 			Name:            template.Name,
 			Description:     template.Description,
 			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			DefaultTemplate: template.DefaultTemplate,
-			TeamId:          &TeamID,
+			TeamID:          &teamID,
 		}
 
 		err := s.RetroTemplateDataSvc.UpdateTeamTemplate(ctx, updatedTemplate)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamRetroTemplateUpdate error", zap.Error(err),
-				zap.String("template_id", ID),
-				zap.String("team_id", TeamID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("template_id", templateID),
+				zap.String("team_id", teamID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -601,18 +601,18 @@ func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
 func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		ID := vars["templateId"]
-		idErr := validate.Var(ID, "required,uuid")
+		templateID := vars["templateId"]
+		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		OrgID := vars["orgId"]
-		orgIdErr := validate.Var(OrgID, "required,uuid")
-		if orgIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIdErr.Error()))
+		orgID := vars["orgId"]
+		orgIDErr := validate.Var(orgID, "required,uuid")
+		if orgIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
 			return
 		}
 
@@ -636,20 +636,20 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 		}
 
 		updatedTemplate := &thunderdome.RetroTemplate{
-			Id:              ID,
+			ID:              templateID,
 			Name:            template.Name,
 			Description:     template.Description,
 			Format:          retroTemplateBuildFormatFromRequest(template.Format),
 			DefaultTemplate: template.DefaultTemplate,
-			OrganizationId:  &OrgID,
+			OrganizationID:  &orgID,
 		}
 
 		err := s.RetroTemplateDataSvc.UpdateOrganizationTemplate(ctx, updatedTemplate)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleOrganizationRetroTemplateUpdate error", zap.Error(err),
-				zap.String("template_id", ID),
-				zap.String("organization_id", OrgID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("template_id", templateID),
+				zap.String("organization_id", orgID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -673,27 +673,27 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 func (s *Service) handleOrganizationRetroTemplateDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TemplateID := vars["templateId"]
-		idErr := validate.Var(TemplateID, "required,uuid")
+		templateID := vars["templateId"]
+		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		OrganizationID := vars["orgId"]
-		oidErr := validate.Var(OrganizationID, "required,uuid")
+		organizationID := vars["orgId"]
+		oidErr := validate.Var(organizationID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
 
-		err := s.RetroTemplateDataSvc.DeleteOrganizationTemplate(ctx, OrganizationID, TemplateID)
+		err := s.RetroTemplateDataSvc.DeleteOrganizationTemplate(ctx, organizationID, templateID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleOrganizationRetroTemplateDelete error", zap.Error(err),
-				zap.String("template_id", TemplateID),
-				zap.String("organization_id", OrganizationID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("template_id", templateID),
+				zap.String("organization_id", organizationID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -717,27 +717,27 @@ func (s *Service) handleOrganizationRetroTemplateDelete() http.HandlerFunc {
 func (s *Service) handleTeamRetroTemplateDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		TemplateID := vars["templateId"]
-		idErr := validate.Var(TemplateID, "required,uuid")
+		templateID := vars["templateId"]
+		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		TeamID := vars["teamId"]
-		teamIdErr := validate.Var(TeamID, "required,uuid")
-		if teamIdErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIdErr.Error()))
+		teamID := vars["teamId"]
+		teamIDErr := validate.Var(teamID, "required,uuid")
+		if teamIDErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
 			return
 		}
 
-		err := s.RetroTemplateDataSvc.DeleteTeamTemplate(ctx, TeamID, TemplateID)
+		err := s.RetroTemplateDataSvc.DeleteTeamTemplate(ctx, teamID, templateID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamRetroTemplateDelete error", zap.Error(err),
-				zap.String("template_id", TemplateID),
-				zap.String("team_id", TeamID),
-				zap.String("session_user_id", SessionUserID))
+				zap.String("template_id", templateID),
+				zap.String("team_id", teamID),
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

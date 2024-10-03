@@ -9,31 +9,31 @@ import (
 )
 
 // GetRetroFacilitatorCode retrieve the retro facilitator code
-func (d *Service) GetRetroFacilitatorCode(RetroID string) (string, error) {
-	var EncryptedCode string
+func (d *Service) GetRetroFacilitatorCode(retroID string) (string, error) {
+	var encryptedCode string
 
 	if err := d.DB.QueryRow(`
 		SELECT COALESCE(facilitator_code, '') FROM thunderdome.retro
 		WHERE id = $1`,
-		RetroID,
-	).Scan(&EncryptedCode); err != nil {
+		retroID,
+	).Scan(&encryptedCode); err != nil {
 		return "", fmt.Errorf("get retro facilitator_code query error: %v", err)
 	}
 
-	if EncryptedCode == "" {
+	if encryptedCode == "" {
 		return "", fmt.Errorf("retro facilitator_code not set")
 	}
-	DecryptedCode, codeErr := db.Decrypt(EncryptedCode, d.AESHashKey)
+	decryptedCode, codeErr := db.Decrypt(encryptedCode, d.AESHashKey)
 	if codeErr != nil {
 		return "", fmt.Errorf("retrieve retro facilitator_code decrypt error: %v", codeErr)
 	}
 
-	return DecryptedCode, nil
+	return decryptedCode, nil
 }
 
 // RetroConfirmFacilitator confirms the user is a facilitator of the retro
-func (d *Service) RetroConfirmFacilitator(RetroID string, userID string) error {
-	var facilitatorId string
+func (d *Service) RetroConfirmFacilitator(retroID string, userID string) error {
+	var facilitatorID string
 	var role string
 	err := d.DB.QueryRow("SELECT type FROM thunderdome.users WHERE id = $1", userID).Scan(&role)
 	if err != nil {
@@ -42,7 +42,7 @@ func (d *Service) RetroConfirmFacilitator(RetroID string, userID string) error {
 
 	err = d.DB.QueryRow(
 		"SELECT user_id FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2",
-		RetroID, userID).Scan(&facilitatorId)
+		retroID, userID).Scan(&facilitatorID)
 	if err != nil && role != thunderdome.AdminUserType {
 		return fmt.Errorf("get retro facilitator error: %v", err)
 	}
@@ -51,11 +51,11 @@ func (d *Service) RetroConfirmFacilitator(RetroID string, userID string) error {
 }
 
 // GetRetroFacilitators gets a list of retro facilitator ids
-func (d *Service) GetRetroFacilitators(RetroID string) []string {
+func (d *Service) GetRetroFacilitators(retroID string) []string {
 	var facilitators = make([]string, 0)
 	rows, err := d.DB.Query(
 		`SELECT user_id FROM thunderdome.retro_facilitator WHERE retro_id = $1;`,
-		RetroID,
+		retroID,
 	)
 	if err == nil {
 		defer rows.Close()
@@ -73,24 +73,24 @@ func (d *Service) GetRetroFacilitators(RetroID string) []string {
 }
 
 // RetroFacilitatorAdd adds a retro facilitator
-func (d *Service) RetroFacilitatorAdd(RetroID string, UserID string) ([]string, error) {
+func (d *Service) RetroFacilitatorAdd(retroID string, userID string) ([]string, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.retro_facilitator (retro_id, user_id) VALUES ($1, $2);`,
-		RetroID, UserID); err != nil {
+		retroID, userID); err != nil {
 		return nil, fmt.Errorf("retro add facilitator query error: %v", err)
 	}
 
-	facilitators := d.GetRetroFacilitators(RetroID)
+	facilitators := d.GetRetroFacilitators(retroID)
 
 	return facilitators, nil
 }
 
 // RetroFacilitatorRemove removes a retro facilitator
-func (d *Service) RetroFacilitatorRemove(RetroID string, UserID string) ([]string, error) {
+func (d *Service) RetroFacilitatorRemove(retroID string, userID string) ([]string, error) {
 	facilitatorCount := 0
 	err := d.DB.QueryRow(
 		`SELECT count(user_id) FROM thunderdome.retro_facilitator WHERE retro_id = $1;`,
-		RetroID,
+		retroID,
 	).Scan(&facilitatorCount)
 	if err != nil {
 		return nil, fmt.Errorf("retro remove facilitator query error: %v", err)
@@ -102,11 +102,11 @@ func (d *Service) RetroFacilitatorRemove(RetroID string, UserID string) ([]strin
 
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2;`,
-		RetroID, UserID); err != nil {
+		retroID, userID); err != nil {
 		return nil, fmt.Errorf("retro remove facilitator query error: %v", err)
 	}
 
-	facilitators := d.GetRetroFacilitators(RetroID)
+	facilitators := d.GetRetroFacilitators(retroID)
 
 	return facilitators, nil
 }

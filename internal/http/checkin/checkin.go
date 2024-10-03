@@ -27,27 +27,27 @@ type Config struct {
 }
 
 type CheckinDataSvc interface {
-	CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*thunderdome.TeamCheckin, error)
-	CheckinCreate(ctx context.Context, TeamId string, UserId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
-	CheckinUpdate(ctx context.Context, CheckinId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
-	CheckinDelete(ctx context.Context, CheckinId string) error
-	CheckinComment(ctx context.Context, TeamId string, CheckinId string, UserId string, Comment string) error
-	CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error
-	CheckinCommentDelete(ctx context.Context, CommentId string) error
-	CheckinLastByUser(ctx context.Context, TeamId string, UserId string) (*thunderdome.TeamCheckin, error)
+	CheckinList(ctx context.Context, teamID string, date string, timeZone string) ([]*thunderdome.TeamCheckin, error)
+	CheckinCreate(ctx context.Context, teamID string, userID string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
+	CheckinUpdate(ctx context.Context, checkinID string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
+	CheckinDelete(ctx context.Context, checkinID string) error
+	CheckinComment(ctx context.Context, teamID string, checkinID string, userID string, comment string) error
+	CheckinCommentEdit(ctx context.Context, teamID string, userID string, commentID string, comment string) error
+	CheckinCommentDelete(ctx context.Context, commentID string) error
+	CheckinLastByUser(ctx context.Context, teamID string, userID string) (*thunderdome.TeamCheckin, error)
 }
 
 type AuthDataSvc interface {
-	GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error)
+	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
 
 type TeamDataSvc interface {
-	TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error)
-	TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team, error)
+	TeamUserRole(ctx context.Context, userID string, teamID string) (string, error)
+	TeamGet(ctx context.Context, teamID string) (*thunderdome.Team, error)
 }
 
 type UserDataSvc interface {
-	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
+	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
 // Service provides retro service

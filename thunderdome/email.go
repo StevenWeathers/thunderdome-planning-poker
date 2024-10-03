@@ -1,19 +1,19 @@
 package thunderdome
 
 type EmailService interface {
-	SendWelcome(UserName string, UserEmail string, VerifyID string) error
-	SendEmailVerification(UserName string, UserEmail string, VerifyID string) error
-	SendForgotPassword(UserName string, UserEmail string, ResetID string) error
-	SendPasswordReset(UserName string, UserEmail string) error
-	SendPasswordUpdate(UserName string, UserEmail string) error
-	SendDeleteConfirmation(UserName string, UserEmail string) error
-	SendEmailUpdate(UserName string, UserEmail string) error
-	SendMergedUpdate(UserName string, UserEmail string) error
-	SendTeamInvite(TeamName string, UserEmail string, InviteID string) error
-	SendOrganizationInvite(OrganizationName string, UserEmail string, InviteID string) error
-	SendDepartmentInvite(OrganizationName string, DepartmentName string, UserEmail string, InviteID string) error
-	SendUserSubscriptionActive(UserName string, UserEmail string, SubscriptionType string) error
-	SendUserSubscriptionDeactivated(UserName string, UserEmail string, SubscriptionType string) error
+	SendWelcome(userName string, userEmail string, verifyID string) error
+	SendEmailVerification(userName string, userEmail string, verifyID string) error
+	SendForgotPassword(userName string, userEmail string, resetID string) error
+	SendPasswordReset(userName string, userEmail string) error
+	SendPasswordUpdate(userName string, userEmail string) error
+	SendDeleteConfirmation(userName string, userEmail string) error
+	SendEmailUpdate(userName string, userEmail string) error
+	SendMergedUpdate(userName string, userEmail string) error
+	SendTeamInvite(TeamName string, userEmail string, inviteID string) error
+	SendOrganizationInvite(organizationName string, userEmail string, inviteID string) error
+	SendDepartmentInvite(organizationName string, departmentName string, userEmail string, inviteID string) error
+	SendUserSubscriptionActive(userName string, userEmail string, subscriptionType string) error
+	SendUserSubscriptionDeactivated(userName string, userEmail string, subscriptionType string) error
 	// SendRetroOverview sends the retro overview (items, action items) email to attendees
-	SendRetroOverview(retro *Retro, template *RetroTemplate, UserName string, UserEmail string) error
+	SendRetroOverview(retro *Retro, template *RetroTemplate, userName string, userEmail string) error
 }
