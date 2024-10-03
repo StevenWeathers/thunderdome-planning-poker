@@ -2,11 +2,13 @@ package cookie
 
 import "github.com/gorilla/securecookie"
 
+// CookieService is a service for managing application browser cookies
 type CookieService struct {
 	config Config
 	sc     *securecookie.SecureCookie
 }
 
+// Config holds the configuration for the cookie service
 type Config struct {
 	// the domain of the application for cookie securing
 	AppDomain string

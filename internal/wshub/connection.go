@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Connection is the websocket connection for a client.
 type Connection struct {
 	// The websocket connection.
 	Ws *websocket.Conn
@@ -16,8 +17,11 @@ type Connection struct {
 	PongWait   time.Duration
 }
 
+// Send returns the channel to send messages to the client.
 func (c *Connection) Send() chan<- []byte { return c.send }
-func (c *Connection) Close()              { c.Ws.Close() }
+
+// Close closes the websocket client connection.
+func (c *Connection) Close() { c.Ws.Close() }
 
 // Write a message with the given message type and payload.
 func (c *Connection) Write(mt int, payload []byte) error {

@@ -8,6 +8,7 @@ import (
 	jira "github.com/ctreminiom/go-atlassian/jira/v3"
 )
 
+// New creates a new JIRA client
 func New(config Config) (*Client, error) {
 	httpClient := http.Client{
 		Timeout: time.Second * 10,

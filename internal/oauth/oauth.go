@@ -14,6 +14,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// New creates a new oauth service
 func New(
 	config Config,
 	cookie CookieManager,
@@ -51,6 +52,7 @@ func New(
 	return &s, nil
 }
 
+// HandleOAuth2Redirect handles the oauth2 redirect
 func (s *Service) HandleOAuth2Redirect() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -78,6 +80,7 @@ func (s *Service) HandleOAuth2Redirect() http.HandlerFunc {
 	}
 }
 
+// HandleOAuth2Callback handles the oauth2 callback
 func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

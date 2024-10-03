@@ -2,6 +2,7 @@ package config
 
 import "github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
+// Config is the main application configuration
 type Config struct {
 	Http
 	Analytics
@@ -15,6 +16,7 @@ type Config struct {
 	Subscription thunderdome.SubscriptionConfig
 }
 
+// Http is the application HTTP server configuration
 type Http struct {
 	Port                   string
 	SecureCookie           bool   `mapstructure:"secure_cookie"`
@@ -36,15 +38,18 @@ type Http struct {
 	WebsocketSubdomain     string `mapstructure:"websocket_subdomain"`
 }
 
+// Analytics is the application analytics configuration
 type Analytics struct {
 	Enabled bool
 	ID      string
 }
 
+// Admin is the application admin configuration
 type Admin struct {
 	Email string
 }
 
+// Otel is the application OpenTelemetry configuration
 type Otel struct {
 	Enabled      bool
 	ServiceName  string `mapstructure:"service_name"`
@@ -52,6 +57,7 @@ type Otel struct {
 	InsecureMode bool   `mapstructure:"insecure_mode"`
 }
 
+// Db is the application database configuration
 type Db struct {
 	Host            string
 	Port            int
@@ -64,6 +70,7 @@ type Db struct {
 	ConnMaxLifetime int `mapstructure:"conn_max_lifetime"`
 }
 
+// Smtp is the application SMTP configuration
 type Smtp struct {
 	Enabled       bool
 	Host          string
@@ -76,6 +83,7 @@ type Smtp struct {
 	Auth          string
 }
 
+// AppConfig is the application configuration
 type AppConfig struct {
 	AesHashkey                string   `mapstructure:"aes_hashkey"`
 	AllowedPointValues        []string `mapstructure:"allowedPointValues"`
@@ -102,18 +110,21 @@ type AppConfig struct {
 	RetroDefaultTemplateID    string   `mapstructure:"retro_default_template_id"`
 }
 
+// Feature is the application feature enablement configuration
 type Feature struct {
 	Poker      bool
 	Retro      bool
 	Storyboard bool
 }
 
+// Google is the application Google OAuth configuration
 type Google struct {
 	Enabled      bool   `mapstructure:"enabled"`
 	ClientID     string `mapstructure:"client_id"`
 	ClientSecret string `mapstructure:"client_secret"`
 }
 
+// Auth is the application authentication configuration
 type Auth struct {
 	Method string
 	Ldap   AuthLdap
@@ -121,11 +132,13 @@ type Auth struct {
 	Google
 }
 
+// AuthHeader is the application authentication header configuration
 type AuthHeader struct {
 	UsernameHeader string `mapstructure:"usernameHeader"`
 	EmailHeader    string `mapstructure:"emailHeader"`
 }
 
+// AuthLdap is the application LDAP authentication configuration
 type AuthLdap struct {
 	Url      string
 	UseTls   bool `mapstructure:"use_tls"`

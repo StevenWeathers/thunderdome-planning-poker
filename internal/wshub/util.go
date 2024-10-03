@@ -33,6 +33,7 @@ func equalASCIIFold(s, t string) bool {
 	return s == t
 }
 
+// CheckOrigin returns true if the origin is allowed to connect to the websocket server
 func checkOrigin(r *http.Request, appDomain string, subDomain string) bool {
 	origin := r.Header.Get("Origin")
 	if len(origin) == 0 {
@@ -56,6 +57,7 @@ type SocketEvent struct {
 	UserID string `json:"userId"`
 }
 
+// CreateSocketEvent creates a new socket event
 func CreateSocketEvent(eventType string, eventValue string, userID string) []byte {
 	newEvent := &SocketEvent{
 		Type:   eventType,

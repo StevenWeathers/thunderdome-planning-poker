@@ -33,11 +33,13 @@ func (h *Hub) HandleSocketClose(ctx context.Context, ws *websocket.Conn, closeCo
 	}
 }
 
+// AuthError is a custom error type for handling websocket authentication errors
 type AuthError struct {
 	Code    int
 	Message string
 }
 
+// Error returns the error message
 func (e *AuthError) Error() string {
 	return fmt.Sprintf(e.Message)
 }

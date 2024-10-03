@@ -21,26 +21,31 @@ import (
 	"github.com/stripe/stripe-go/v76/webhook"
 )
 
+// Config holds the configuration for the subscription service
 type Config struct {
 	AccountSecret string
 	WebhookSecret string
 }
 
+// DataSvc is the interface for the subscription data service
 type DataSvc interface {
 	GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error)
 	CreateSubscription(ctx context.Context, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
 	UpdateSubscription(ctx context.Context, subscriptionID string, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
 }
 
+// UserDataSvc is the interface for the user data service
 type UserDataSvc interface {
 	GetUserByID(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
+// EmailService is the interface for the email service
 type EmailService interface {
 	SendUserSubscriptionActive(userName string, userEmail string, subscriptionType string) error
 	SendUserSubscriptionDeactivated(userName string, userEmail string, subscriptionType string) error
 }
 
+// Service is the subscription service
 type Service struct {
 	config      Config
 	logger      *otelzap.Logger
@@ -49,6 +54,7 @@ type Service struct {
 	userDataSvc UserDataSvc
 }
 
+// New creates a new subscription service
 func New(
 	config Config,
 	logger *otelzap.Logger,
@@ -68,6 +74,7 @@ func New(
 	}
 }
 
+// HandleWebhook handles the stripe subscription webhook
 func (s *Service) HandleWebhook() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		const MaxBodyBytes = int64(65536)

@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Subscription represents a subscription to a room.
 type Subscription struct {
 	Conn   Connection
 	RoomID string
@@ -40,6 +41,7 @@ func (s *Subscription) WritePump() {
 	}
 }
 
+// ReadPump pumps messages from the websocket connection to the Hub.
 func (s *Subscription) ReadPump(
 	ctx context.Context,
 	hub *Hub,

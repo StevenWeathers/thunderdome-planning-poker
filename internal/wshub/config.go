@@ -2,6 +2,7 @@ package wshub
 
 import "time"
 
+// Config is the configuration for the websocket hub.
 type Config struct {
 	// Time allowed to write a message to the peer.
 	WriteWaitSec int
@@ -15,6 +16,7 @@ type Config struct {
 	WebsocketSubdomain string
 }
 
+// WriteWait returns the write wait duration.
 func (c *Config) WriteWait() time.Duration {
 	waitSec := c.WriteWaitSec
 	if waitSec <= 0 {
@@ -23,6 +25,7 @@ func (c *Config) WriteWait() time.Duration {
 	return time.Duration(waitSec) * time.Second
 }
 
+// PingPeriod returns the ping period duration.
 func (c *Config) PingPeriod() time.Duration {
 	periodSec := c.PingPeriodSec
 	if periodSec <= 0 {
@@ -31,6 +34,7 @@ func (c *Config) PingPeriod() time.Duration {
 	return time.Duration(periodSec) * time.Second
 }
 
+// PongWait returns the pong wait duration.
 func (c *Config) PongWait() time.Duration {
 	waitSec := c.PongWaitSec
 	if waitSec <= 0 {

@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
+// New creates a new CookieService
 func New(config Config) *CookieService {
 	c := CookieService{
 		config: config,
