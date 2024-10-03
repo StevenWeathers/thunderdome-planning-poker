@@ -35,6 +35,48 @@ type UserDataSvc interface {
 	GetGuestUser(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
+type StoryboardDataSvc interface {
+	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string) error
+	GetStoryboard(storyboardID string, userID string) (*thunderdome.Storyboard, error)
+	ConfirmStoryboardFacilitator(storyboardID string, userID string) error
+	AddUserToStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
+	RetreatStoryboardUser(storyboardID string, userID string) []*thunderdome.StoryboardUser
+	GetStoryboardUserActiveStatus(storyboardID string, userID string) error
+	AbandonStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
+	StoryboardFacilitatorAdd(StoryboardId string, userID string) (*thunderdome.Storyboard, error)
+	StoryboardFacilitatorRemove(StoryboardId string, userID string) (*thunderdome.Storyboard, error)
+	GetStoryboardFacilitatorCode(storyboardID string) (string, error)
+	StoryboardReviseColorLegend(storyboardID string, userID string, colorLegend string) (*thunderdome.Storyboard, error)
+	DeleteStoryboard(storyboardID string, userID string) error
+
+	AddStoryboardPersona(storyboardID string, userID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
+	UpdateStoryboardPersona(storyboardID string, userID string, personaID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
+	DeleteStoryboardPersona(storyboardID string, userID string, personaID string) ([]*thunderdome.StoryboardPersona, error)
+
+	CreateStoryboardGoal(storyboardID string, userID string, goalName string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseGoalName(storyboardID string, userID string, goalID string, goalName string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryboardGoal(storyboardID string, userID string, goalID string) ([]*thunderdome.StoryboardGoal, error)
+
+	CreateStoryboardColumn(storyboardID string, goalID string, userID string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryboardColumn(storyboardID string, userID string, columnID string, columnName string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryboardColumn(storyboardID string, userID string, columnID string) ([]*thunderdome.StoryboardGoal, error)
+	ColumnPersonaAdd(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error)
+	ColumnPersonaRemove(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error)
+
+	CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryName(storyboardID string, userID string, storyID string, storyName string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryContent(storyboardID string, userID string, storyID string, storyContent string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryColor(storyboardID string, userID string, storyID string, storyColor string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryPoints(storyboardID string, userID string, storyID string, points int) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryClosed(storyboardID string, userID string, storyID string, closed bool) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryLink(storyboardID string, userID string, storyID string, link string) ([]*thunderdome.StoryboardGoal, error)
+	MoveStoryboardStory(storyboardID string, userID string, storyID string, goalID string, columnID string, placeBefore string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryboardStory(storyboardID string, userID string, storyID string) ([]*thunderdome.StoryboardGoal, error)
+	AddStoryComment(storyboardID string, userID string, storyID string, comment string) ([]*thunderdome.StoryboardGoal, error)
+	EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error)
+}
+
 // Service provides storyboard service
 type Service struct {
 	config                Config
@@ -43,7 +85,7 @@ type Service struct {
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	UserService           UserDataSvc
 	AuthService           AuthDataSvc
-	StoryboardService     thunderdome.StoryboardDataSvc
+	StoryboardService     StoryboardDataSvc
 	hub                   *wshub.Hub
 }
 
@@ -54,7 +96,7 @@ func New(
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	userService UserDataSvc, authService AuthDataSvc,
-	storyboardService thunderdome.StoryboardDataSvc,
+	storyboardService StoryboardDataSvc,
 ) *Service {
 	sb := &Service{
 		config:                config,

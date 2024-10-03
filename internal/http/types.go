@@ -107,22 +107,22 @@ type Service struct {
 	Cookie               CookieManager
 	UIConfig             thunderdome.UIConfig
 	Router               *mux.Router
-	Email                thunderdome.EmailService
+	Email                EmailService
 	Logger               *otelzap.Logger
 	UserDataSvc          UserDataSvc
 	ApiKeyDataSvc        APIKeyDataSvc
 	AlertDataSvc         AlertDataSvc
 	AuthDataSvc          AuthDataSvc
-	PokerDataSvc         thunderdome.PokerDataSvc
+	PokerDataSvc         PokerDataSvc
 	CheckinDataSvc       CheckinDataSvc
-	RetroDataSvc         thunderdome.RetroDataSvc
-	StoryboardDataSvc    thunderdome.StoryboardDataSvc
+	RetroDataSvc         RetroDataSvc
+	StoryboardDataSvc    StoryboardDataSvc
 	TeamDataSvc          TeamDataSvc
 	OrganizationDataSvc  OrganizationDataSvc
 	AdminDataSvc         AdminDataSvc
 	JiraDataSvc          JiraDataSvc
 	SubscriptionDataSvc  SubscriptionDataSvc
-	RetroTemplateDataSvc thunderdome.RetroTemplateDataSvc
+	RetroTemplateDataSvc RetroTemplateDataSvc
 	SubscriptionSvc      *subscription.Service
 }
 
@@ -323,4 +323,249 @@ type UserDataSvc interface {
 	CleanGuests(ctx context.Context, daysOld int) error
 	GetActiveCountries(ctx context.Context) ([]string, error)
 	GetUserCredential(ctx context.Context, userID string) (*thunderdome.Credential, error)
+}
+
+type PokerDataSvc interface {
+	// CreateGame creates a new poker game
+	CreateGame(ctx context.Context, facilitatorID string, name string, estimationScaleID string, pointValuesAllowed []string, stories []*thunderdome.Story, autoFinishVoting bool, pointAverageRounding string, joinCode string, facilitatorCode string, hideVoterIdentity bool) (*thunderdome.Poker, error)
+	// TeamCreateGame creates a new poker game for a team
+	TeamCreateGame(ctx context.Context, teamID string, facilitatorID string, name string, estimationScaleID string, pointValuesAllowed []string, stories []*thunderdome.Story, autoFinishVoting bool, pointAverageRounding string, joinCode string, facilitatorCode string, hideVoterIdentity bool) (*thunderdome.Poker, error)
+	// UpdateGame updates an existing poker game
+	UpdateGame(pokerID string, name string, pointValuesAllowed []string, autoFinishVoting bool, pointAverageRounding string, hideVoterIdentity bool, joinCode string, facilitatorCode string, teamID string) error
+	// GetFacilitatorCode retrieves the facilitator code for a poker game
+	GetFacilitatorCode(pokerID string) (string, error)
+	// GetGame retrieves a poker game by its ID
+	GetGame(pokerID string, userID string) (*thunderdome.Poker, error)
+	// GetGamesByUser retrieves a list of poker games for a user
+	GetGamesByUser(userID string, limit int, offset int) ([]*thunderdome.Poker, int, error)
+	// ConfirmFacilitator confirms a user as a facilitator for a poker game
+	ConfirmFacilitator(pokerID string, userID string) error
+	// GetUserActiveStatus retrieves the active status of a user in a poker game
+	GetUserActiveStatus(pokerID string, userID string) error
+	// GetUsers retrieves a list of users in a poker game
+	GetUsers(pokerID string) []*thunderdome.PokerUser
+	// GetActiveUsers retrieves a list of active users in a poker game
+	GetActiveUsers(pokerID string) []*thunderdome.PokerUser
+	// AddUser adds a user to a poker game
+	AddUser(pokerID string, userID string) ([]*thunderdome.PokerUser, error)
+	// RetreatUser sets a user as inactive in a poker game
+	RetreatUser(pokerID string, userID string) []*thunderdome.PokerUser
+	// AbandonGame sets a user as abandoned in a poker game
+	AbandonGame(pokerID string, userID string) ([]*thunderdome.PokerUser, error)
+	// AddFacilitator adds a facilitator to a poker game
+	AddFacilitator(pokerID string, userID string) ([]string, error)
+	// RemoveFacilitator removes a facilitator from a poker game
+	RemoveFacilitator(pokerID string, userID string) ([]string, error)
+	// ToggleSpectator toggles a user's spectator status in a poker game
+	ToggleSpectator(pokerID string, userID string, spectator bool) ([]*thunderdome.PokerUser, error)
+	// DeleteGame deletes a poker game
+	DeleteGame(pokerID string) error
+	// AddFacilitatorsByEmail adds facilitators to a poker game by email
+	AddFacilitatorsByEmail(ctx context.Context, pokerID string, facilitatorEmails []string) ([]string, error)
+	// GetGames retrieves a list of poker games
+	GetGames(limit int, offset int) ([]*thunderdome.Poker, int, error)
+	// GetActiveGames retrieves a list of active poker games
+	GetActiveGames(limit int, offset int) ([]*thunderdome.Poker, int, error)
+	// PurgeOldGames purges poker games older than a specified number of days
+	PurgeOldGames(ctx context.Context, daysOld int) error
+	// GetStories retrieves a list of stories in a poker game
+	GetStories(pokerID string, userID string) []*thunderdome.Story
+	// CreateStory creates a new story in a poker game
+	CreateStory(pokerID string, name string, storyType string, referenceID string, link string, description string, acceptanceCriteria string, priority int32) ([]*thunderdome.Story, error)
+	// ActivateStoryVoting activates voting for a story in a poker game
+	ActivateStoryVoting(pokerID string, storyID string) ([]*thunderdome.Story, error)
+	// SetVote sets a user's vote for a story in a poker game
+	SetVote(pokerID string, userID string, storyID string, voteValue string) (stories []*thunderdome.Story, allUsersVoted bool)
+	// RetractVote retracts a user's vote for a story in a poker game
+	RetractVote(pokerID string, userID string, storyID string) ([]*thunderdome.Story, error)
+	// EndStoryVoting ends voting for a story in a poker game
+	EndStoryVoting(pokerID string, storyID string) ([]*thunderdome.Story, error)
+	// SkipStory skips a story in a poker game
+	SkipStory(pokerID string, storyID string) ([]*thunderdome.Story, error)
+	// UpdateStory updates an existing story in a poker game
+	UpdateStory(pokerID string, storyID string, name string, storyType string, referenceID string, link string, description string, acceptanceCriteria string, priority int32) ([]*thunderdome.Story, error)
+	// DeleteStory deletes a story from a poker game
+	DeleteStory(pokerID string, storyID string) ([]*thunderdome.Story, error)
+	// ArrangeStory sets the position of the story relative to the story it's being placed before
+	ArrangeStory(pokerID string, storyID string, beforeStoryID string) ([]*thunderdome.Story, error)
+	// FinalizeStory finalizes the points for a story in a poker game
+	FinalizeStory(pokerID string, storyID string, points string) ([]*thunderdome.Story, error)
+	// GetEstimationScales retrieves a list of estimation scales
+	GetEstimationScales(ctx context.Context, limit, offset int) ([]*thunderdome.EstimationScale, int, error)
+	// GetPublicEstimationScales retrieves a list of public estimation scales
+	GetPublicEstimationScales(ctx context.Context, limit, offset int) ([]*thunderdome.EstimationScale, int, error)
+	// CreateEstimationScale creates a new estimation scale
+	CreateEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error)
+	// UpdateEstimationScale updates an existing estimation scale
+	UpdateEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error)
+	// DeleteEstimationScale deletes an estimation scale by its ID
+	DeleteEstimationScale(ctx context.Context, scaleID string) error
+	// GetDefaultEstimationScale retrieves the default estimation scale for an organization or team
+	GetDefaultEstimationScale(ctx context.Context, organizationID, teamID string) (*thunderdome.EstimationScale, error)
+	// GetDefaultPublicEstimationScale retrieves the default public estimation scale
+	GetDefaultPublicEstimationScale(ctx context.Context) (*thunderdome.EstimationScale, error)
+	// GetPublicEstimationScale retrieves a public estimation scale by its ID
+	GetPublicEstimationScale(ctx context.Context, id string) (*thunderdome.EstimationScale, error)
+	// GetOrganizationEstimationScales retrieves a list of estimation scales for an organization
+	GetOrganizationEstimationScales(ctx context.Context, orgID string, limit, offset int) ([]*thunderdome.EstimationScale, int, error)
+	// GetTeamEstimationScales retrieves a list of estimation scales for a team
+	GetTeamEstimationScales(ctx context.Context, teamID string, limit, offset int) ([]*thunderdome.EstimationScale, int, error)
+	// GetEstimationScale retrieves an estimation scale by its ID
+	GetEstimationScale(ctx context.Context, scaleID string) (*thunderdome.EstimationScale, error)
+	// DeleteOrganizationEstimationScale deletes an organization's estimation scale by its ID
+	DeleteOrganizationEstimationScale(ctx context.Context, orgID string, scaleID string) error
+	// DeleteTeamEstimationScale deletes a team's estimation scale by its ID
+	DeleteTeamEstimationScale(ctx context.Context, teamID string, scaleID string) error
+	// UpdateOrganizationEstimationScale updates an existing organization estimation scale
+	UpdateOrganizationEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error)
+	// UpdateTeamEstimationScale updates an existing team estimation scale
+	UpdateTeamEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error)
+}
+
+type RetroDataSvc interface {
+	CreateRetro(ctx context.Context, ownerID, teamID string, retroName, joinCode, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int, phaseAutoAdvance bool, allowCumulativeVoting bool, templateID string) (*thunderdome.Retro, error)
+	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
+	RetroGet(retroID string, userID string) (*thunderdome.Retro, error)
+	RetroGetByUser(userID string, limit int, offset int) ([]*thunderdome.Retro, int, error)
+	RetroConfirmFacilitator(retroID string, userID string) error
+	RetroGetUsers(retroID string) []*thunderdome.RetroUser
+	GetRetroFacilitators(retroID string) []string
+	RetroAddUser(retroID string, userID string) ([]*thunderdome.RetroUser, error)
+	RetroFacilitatorAdd(retroID string, userID string) ([]string, error)
+	RetroFacilitatorRemove(retroID string, userID string) ([]string, error)
+	RetroRetreatUser(retroID string, userID string) []*thunderdome.RetroUser
+	RetroAbandon(retroID string, userID string) ([]*thunderdome.RetroUser, error)
+	RetroAdvancePhase(retroID string, phase string) (*thunderdome.Retro, error)
+	RetroDelete(retroID string) error
+	GetRetroUserActiveStatus(retroID string, userID string) error
+	GetRetros(limit int, offset int) ([]*thunderdome.Retro, int, error)
+	GetActiveRetros(limit int, offset int) ([]*thunderdome.Retro, int, error)
+	GetRetroFacilitatorCode(retroID string) (string, error)
+	CleanRetros(ctx context.Context, daysOld int) error
+	MarkUserReady(retroID string, userID string) ([]string, error)
+	UnmarkUserReady(retroID string, userID string) ([]string, error)
+
+	CreateRetroAction(retroID string, userID string, content string) ([]*thunderdome.RetroAction, error)
+	UpdateRetroAction(retroID string, actionID string, content string, completed bool) (Actions []*thunderdome.RetroAction, DeleteError error)
+	DeleteRetroAction(retroID string, userID string, actionID string) ([]*thunderdome.RetroAction, error)
+	GetRetroActions(retroID string) []*thunderdome.RetroAction
+	GetTeamRetroActions(teamID string, limit int, offset int, completed bool) ([]*thunderdome.RetroAction, int, error)
+	RetroActionCommentAdd(retroID string, actionID string, userID string, comment string) ([]*thunderdome.RetroAction, error)
+	RetroActionCommentEdit(retroID string, actionID string, commentID string, comment string) ([]*thunderdome.RetroAction, error)
+	RetroActionCommentDelete(retroID string, actionID string, commentID string) ([]*thunderdome.RetroAction, error)
+	RetroActionAssigneeAdd(retroID string, actionID string, userID string) ([]*thunderdome.RetroAction, error)
+	RetroActionAssigneeDelete(retroID string, actionID string, userID string) ([]*thunderdome.RetroAction, error)
+
+	CreateRetroItem(retroID string, userID string, itemType string, content string) ([]*thunderdome.RetroItem, error)
+	GroupRetroItem(retroID string, itemId string, groupId string) (thunderdome.RetroItem, error)
+	DeleteRetroItem(retroID string, userID string, itemType string, itemID string) ([]*thunderdome.RetroItem, error)
+	GetRetroItems(retroID string) []*thunderdome.RetroItem
+	GetRetroGroups(retroID string) []*thunderdome.RetroGroup
+	GroupNameChange(retroID string, groupID string, name string) (thunderdome.RetroGroup, error)
+	GetRetroVotes(retroID string) []*thunderdome.RetroVote
+	GroupUserVote(retroID string, groupID string, userID string) ([]*thunderdome.RetroVote, error)
+	GroupUserSubtractVote(retroID string, groupID string, userID string) ([]*thunderdome.RetroVote, error)
+	ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*thunderdome.RetroItem, error)
+	ItemCommentEdit(retroID string, commentID string, comment string) ([]*thunderdome.RetroItem, error)
+	ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error)
+}
+
+type RetroTemplateDataSvc interface {
+	// GetPublicTemplates retrieves all public retro templates
+	GetPublicTemplates(ctx context.Context) ([]*thunderdome.RetroTemplate, error)
+	// GetTemplatesByOrganization retrieves all templates for a specific organization
+	GetTemplatesByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.RetroTemplate, error)
+	// GetTemplatesByTeam retrieves all templates for a specific team
+	GetTemplatesByTeam(ctx context.Context, teamID string) ([]*thunderdome.RetroTemplate, error)
+	// GetTemplateById retrieves a specific template by its ID
+	GetTemplateById(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error)
+	// CreateTemplate creates a new retro template
+	CreateTemplate(ctx context.Context, template *thunderdome.RetroTemplate) error
+	// UpdateTemplate updates an existing retro template
+	UpdateTemplate(ctx context.Context, template *thunderdome.RetroTemplate) error
+	// DeleteTemplate deletes a retro template by its ID
+	DeleteTemplate(ctx context.Context, templateID string) error
+	// ListTemplates retrieves a paginated list of templates
+	ListTemplates(ctx context.Context, limit int, offset int) ([]*thunderdome.RetroTemplate, int, error)
+	// GetDefaultPublicTemplate retrieves the default public template
+	GetDefaultPublicTemplate(ctx context.Context) (*thunderdome.RetroTemplate, error)
+	// GetDefaultTeamTemplate retrieves the default template for a given team
+	GetDefaultTeamTemplate(ctx context.Context, teamID string) (*thunderdome.RetroTemplate, error)
+	// GetDefaultOrganizationTemplate retrieves the default template for a given organization
+	GetDefaultOrganizationTemplate(ctx context.Context, organizationID string) (*thunderdome.RetroTemplate, error)
+	// UpdateTeamTemplate updates an existing team retro template
+	UpdateTeamTemplate(ctx context.Context, template *thunderdome.RetroTemplate) error
+	// UpdateOrganizationTemplate updates an existing organization retro template
+	UpdateOrganizationTemplate(ctx context.Context, template *thunderdome.RetroTemplate) error
+	// DeleteOrganizationTemplate deletes an organization retro template by its ID
+	DeleteOrganizationTemplate(ctx context.Context, orgID string, templateID string) error
+	// DeleteTeamTemplate deletes a team retro template by its ID
+	DeleteTeamTemplate(ctx context.Context, teamID string, templateID string) error
+}
+
+type StoryboardDataSvc interface {
+	CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string) (*thunderdome.Storyboard, error)
+	TeamCreateStoryboard(ctx context.Context, TeamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string) (*thunderdome.Storyboard, error)
+	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string) error
+	GetStoryboard(storyboardID string, userID string) (*thunderdome.Storyboard, error)
+	GetStoryboardsByUser(userID string, limit int, offset int) ([]*thunderdome.Storyboard, int, error)
+	ConfirmStoryboardFacilitator(storyboardID string, userID string) error
+	GetStoryboardUsers(storyboardID string) []*thunderdome.StoryboardUser
+	GetStoryboardPersonas(storyboardID string) []*thunderdome.StoryboardPersona
+	GetStoryboards(limit int, offset int) ([]*thunderdome.Storyboard, int, error)
+	GetActiveStoryboards(limit int, offset int) ([]*thunderdome.Storyboard, int, error)
+	AddUserToStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
+	RetreatStoryboardUser(storyboardID string, userID string) []*thunderdome.StoryboardUser
+	GetStoryboardUserActiveStatus(storyboardID string, userID string) error
+	AbandonStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
+	StoryboardFacilitatorAdd(StoryboardId string, userID string) (*thunderdome.Storyboard, error)
+	StoryboardFacilitatorRemove(StoryboardId string, userID string) (*thunderdome.Storyboard, error)
+	GetStoryboardFacilitatorCode(storyboardID string) (string, error)
+	StoryboardReviseColorLegend(storyboardID string, userID string, colorLegend string) (*thunderdome.Storyboard, error)
+	DeleteStoryboard(storyboardID string, userID string) error
+	CleanStoryboards(ctx context.Context, daysOld int) error
+
+	AddStoryboardPersona(storyboardID string, userID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
+	UpdateStoryboardPersona(storyboardID string, userID string, personaID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
+	DeleteStoryboardPersona(storyboardID string, userID string, personaID string) ([]*thunderdome.StoryboardPersona, error)
+
+	CreateStoryboardGoal(storyboardID string, userID string, goalName string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseGoalName(storyboardID string, userID string, goalID string, goalName string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryboardGoal(storyboardID string, userID string, goalID string) ([]*thunderdome.StoryboardGoal, error)
+	GetStoryboardGoals(storyboardID string) []*thunderdome.StoryboardGoal
+
+	CreateStoryboardColumn(storyboardID string, goalID string, userID string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryboardColumn(storyboardID string, userID string, columnID string, columnName string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryboardColumn(storyboardID string, userID string, columnID string) ([]*thunderdome.StoryboardGoal, error)
+	ColumnPersonaAdd(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error)
+	ColumnPersonaRemove(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error)
+
+	CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryName(storyboardID string, userID string, storyID string, storyName string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryContent(storyboardID string, userID string, storyID string, storyContent string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryColor(storyboardID string, userID string, storyID string, storyColor string) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryPoints(storyboardID string, userID string, storyID string, points int) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryClosed(storyboardID string, userID string, storyID string, closed bool) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryLink(storyboardID string, userID string, storyID string, link string) ([]*thunderdome.StoryboardGoal, error)
+	MoveStoryboardStory(storyboardID string, userID string, storyID string, goalID string, columnID string, placeBefore string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryboardStory(storyboardID string, userID string, storyID string) ([]*thunderdome.StoryboardGoal, error)
+	AddStoryComment(storyboardID string, userID string, storyID string, comment string) ([]*thunderdome.StoryboardGoal, error)
+	EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error)
+}
+
+type EmailService interface {
+	SendWelcome(userName string, userEmail string, verifyID string) error
+	SendEmailVerification(userName string, userEmail string, verifyID string) error
+	SendForgotPassword(userName string, userEmail string, resetID string) error
+	SendPasswordReset(userName string, userEmail string) error
+	SendPasswordUpdate(userName string, userEmail string) error
+	SendDeleteConfirmation(userName string, userEmail string) error
+	SendEmailUpdate(userName string, userEmail string) error
+	SendMergedUpdate(userName string, userEmail string) error
+	SendTeamInvite(TeamName string, userEmail string, inviteID string) error
+	SendOrganizationInvite(organizationName string, userEmail string, inviteID string) error
+	SendDepartmentInvite(organizationName string, departmentName string, userEmail string, inviteID string) error
+	// SendRetroOverview sends the retro overview (items, action items) email to attendees
+	SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, userName string, userEmail string) error
 }

@@ -34,6 +34,50 @@ type UserDataSvc interface {
 	GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error)
 }
 
+type RetroDataSvc interface {
+	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
+	RetroGet(retroID string, userID string) (*thunderdome.Retro, error)
+	RetroConfirmFacilitator(retroID string, userID string) error
+	RetroGetUsers(retroID string) []*thunderdome.RetroUser
+	RetroAddUser(retroID string, userID string) ([]*thunderdome.RetroUser, error)
+	RetroFacilitatorAdd(retroID string, userID string) ([]string, error)
+	RetroFacilitatorRemove(retroID string, userID string) ([]string, error)
+	RetroRetreatUser(retroID string, userID string) []*thunderdome.RetroUser
+	RetroAbandon(retroID string, userID string) ([]*thunderdome.RetroUser, error)
+	RetroAdvancePhase(retroID string, phase string) (*thunderdome.Retro, error)
+	RetroDelete(retroID string) error
+	GetRetroUserActiveStatus(retroID string, userID string) error
+	GetRetroFacilitatorCode(retroID string) (string, error)
+	MarkUserReady(retroID string, userID string) ([]string, error)
+	UnmarkUserReady(retroID string, userID string) ([]string, error)
+
+	CreateRetroAction(retroID string, userID string, content string) ([]*thunderdome.RetroAction, error)
+	UpdateRetroAction(retroID string, actionID string, content string, completed bool) (Actions []*thunderdome.RetroAction, DeleteError error)
+	DeleteRetroAction(retroID string, userID string, actionID string) ([]*thunderdome.RetroAction, error)
+	RetroActionAssigneeAdd(retroID string, actionID string, userID string) ([]*thunderdome.RetroAction, error)
+	RetroActionAssigneeDelete(retroID string, actionID string, userID string) ([]*thunderdome.RetroAction, error)
+
+	CreateRetroItem(retroID string, userID string, itemType string, content string) ([]*thunderdome.RetroItem, error)
+	GroupRetroItem(retroID string, itemId string, groupId string) (thunderdome.RetroItem, error)
+	DeleteRetroItem(retroID string, userID string, itemType string, itemID string) ([]*thunderdome.RetroItem, error)
+	GroupNameChange(retroID string, groupID string, name string) (thunderdome.RetroGroup, error)
+	GroupUserVote(retroID string, groupID string, userID string) ([]*thunderdome.RetroVote, error)
+	GroupUserSubtractVote(retroID string, groupID string, userID string) ([]*thunderdome.RetroVote, error)
+	ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*thunderdome.RetroItem, error)
+	ItemCommentEdit(retroID string, commentID string, comment string) ([]*thunderdome.RetroItem, error)
+	ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error)
+}
+
+type RetroTemplateDataSvc interface {
+	// GetTemplateById retrieves a specific template by its ID
+	GetTemplateById(ctx context.Context, templateID string) (*thunderdome.RetroTemplate, error)
+}
+
+type EmailService interface {
+	// SendRetroOverview sends the retro overview (items, action items) email to attendees
+	SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, userName string, userEmail string) error
+}
+
 // Service provides retro service
 type Service struct {
 	config                Config
@@ -42,9 +86,9 @@ type Service struct {
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	UserService           UserDataSvc
 	AuthService           AuthDataSvc
-	RetroService          thunderdome.RetroDataSvc
-	TemplateService       thunderdome.RetroTemplateDataSvc
-	EmailService          thunderdome.EmailService
+	RetroService          RetroDataSvc
+	TemplateService       RetroTemplateDataSvc
+	EmailService          EmailService
 	hub                   *wshub.Hub
 }
 
@@ -55,8 +99,8 @@ func New(
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	userService UserDataSvc, authService AuthDataSvc,
-	retroService thunderdome.RetroDataSvc, templateService thunderdome.RetroTemplateDataSvc,
-	emailService thunderdome.EmailService,
+	retroService RetroDataSvc, templateService RetroTemplateDataSvc,
+	emailService EmailService,
 ) *Service {
 	rs := &Service{
 		config:                config,

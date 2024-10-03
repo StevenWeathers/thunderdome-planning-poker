@@ -1,7 +1,6 @@
 package thunderdome
 
 import (
-	"context"
 	"time"
 )
 
@@ -102,52 +101,4 @@ type RetroVote struct {
 	UserID  string `json:"userId" db:"user_id"`
 	GroupID string `json:"groupId" db:"group_id"`
 	Count   int    `json:"count" db:"vote_count"`
-}
-
-type RetroDataSvc interface {
-	CreateRetro(ctx context.Context, ownerID, teamID string, retroName, joinCode, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int, phaseAutoAdvance bool, allowCumulativeVoting bool, templateID string) (*Retro, error)
-	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
-	RetroGet(retroID string, userID string) (*Retro, error)
-	RetroGetByUser(userID string, limit int, offset int) ([]*Retro, int, error)
-	RetroConfirmFacilitator(retroID string, userID string) error
-	RetroGetUsers(retroID string) []*RetroUser
-	GetRetroFacilitators(retroID string) []string
-	RetroAddUser(retroID string, userID string) ([]*RetroUser, error)
-	RetroFacilitatorAdd(retroID string, userID string) ([]string, error)
-	RetroFacilitatorRemove(retroID string, userID string) ([]string, error)
-	RetroRetreatUser(retroID string, userID string) []*RetroUser
-	RetroAbandon(retroID string, userID string) ([]*RetroUser, error)
-	RetroAdvancePhase(retroID string, phase string) (*Retro, error)
-	RetroDelete(retroID string) error
-	GetRetroUserActiveStatus(retroID string, userID string) error
-	GetRetros(limit int, offset int) ([]*Retro, int, error)
-	GetActiveRetros(limit int, offset int) ([]*Retro, int, error)
-	GetRetroFacilitatorCode(retroID string) (string, error)
-	CleanRetros(ctx context.Context, daysOld int) error
-	MarkUserReady(retroID string, userID string) ([]string, error)
-	UnmarkUserReady(retroID string, userID string) ([]string, error)
-
-	CreateRetroAction(retroID string, userID string, content string) ([]*RetroAction, error)
-	UpdateRetroAction(retroID string, actionID string, content string, completed bool) (Actions []*RetroAction, DeleteError error)
-	DeleteRetroAction(retroID string, userID string, actionID string) ([]*RetroAction, error)
-	GetRetroActions(retroID string) []*RetroAction
-	GetTeamRetroActions(teamID string, limit int, offset int, completed bool) ([]*RetroAction, int, error)
-	RetroActionCommentAdd(retroID string, actionID string, userID string, comment string) ([]*RetroAction, error)
-	RetroActionCommentEdit(retroID string, actionID string, commentID string, comment string) ([]*RetroAction, error)
-	RetroActionCommentDelete(retroID string, actionID string, commentID string) ([]*RetroAction, error)
-	RetroActionAssigneeAdd(retroID string, actionID string, userID string) ([]*RetroAction, error)
-	RetroActionAssigneeDelete(retroID string, actionID string, userID string) ([]*RetroAction, error)
-
-	CreateRetroItem(retroID string, userID string, itemType string, content string) ([]*RetroItem, error)
-	GroupRetroItem(retroID string, itemId string, groupId string) (RetroItem, error)
-	DeleteRetroItem(retroID string, userID string, itemType string, itemID string) ([]*RetroItem, error)
-	GetRetroItems(retroID string) []*RetroItem
-	GetRetroGroups(retroID string) []*RetroGroup
-	GroupNameChange(retroID string, groupID string, name string) (RetroGroup, error)
-	GetRetroVotes(retroID string) []*RetroVote
-	GroupUserVote(retroID string, groupID string, userID string) ([]*RetroVote, error)
-	GroupUserSubtractVote(retroID string, groupID string, userID string) ([]*RetroVote, error)
-	ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*RetroItem, error)
-	ItemCommentEdit(retroID string, commentID string, comment string) ([]*RetroItem, error)
-	ItemCommentDelete(retroID string, commentID string) ([]*RetroItem, error)
 }

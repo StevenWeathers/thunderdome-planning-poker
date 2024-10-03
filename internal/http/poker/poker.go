@@ -24,6 +24,53 @@ type Config struct {
 	WebsocketSubdomain string
 }
 
+type PokerDataSvc interface {
+	// UpdateGame updates an existing poker game
+	UpdateGame(pokerID string, name string, pointValuesAllowed []string, autoFinishVoting bool, pointAverageRounding string, hideVoterIdentity bool, joinCode string, facilitatorCode string, teamID string) error
+	// GetFacilitatorCode retrieves the facilitator code for a poker game
+	GetFacilitatorCode(pokerID string) (string, error)
+	// GetGame retrieves a poker game by its ID
+	GetGame(pokerID string, userID string) (*thunderdome.Poker, error)
+	// ConfirmFacilitator confirms a user as a facilitator for a poker game
+	ConfirmFacilitator(pokerID string, userID string) error
+	// GetUserActiveStatus retrieves the active status of a user in a poker game
+	GetUserActiveStatus(pokerID string, userID string) error
+	// AddUser adds a user to a poker game
+	AddUser(pokerID string, userID string) ([]*thunderdome.PokerUser, error)
+	// RetreatUser sets a user as inactive in a poker game
+	RetreatUser(pokerID string, userID string) []*thunderdome.PokerUser
+	// AbandonGame sets a user as abandoned in a poker game
+	AbandonGame(pokerID string, userID string) ([]*thunderdome.PokerUser, error)
+	// AddFacilitator adds a facilitator to a poker game
+	AddFacilitator(pokerID string, userID string) ([]string, error)
+	// RemoveFacilitator removes a facilitator from a poker game
+	RemoveFacilitator(pokerID string, userID string) ([]string, error)
+	// ToggleSpectator toggles a user's spectator status in a poker game
+	ToggleSpectator(pokerID string, userID string, spectator bool) ([]*thunderdome.PokerUser, error)
+	// DeleteGame deletes a poker game
+	DeleteGame(pokerID string) error
+	// CreateStory creates a new story in a poker game
+	CreateStory(pokerID string, name string, storyType string, referenceID string, link string, description string, acceptanceCriteria string, priority int32) ([]*thunderdome.Story, error)
+	// ActivateStoryVoting activates voting for a story in a poker game
+	ActivateStoryVoting(pokerID string, storyID string) ([]*thunderdome.Story, error)
+	// SetVote sets a user's vote for a story in a poker game
+	SetVote(pokerID string, userID string, storyID string, voteValue string) (stories []*thunderdome.Story, allUsersVoted bool)
+	// RetractVote retracts a user's vote for a story in a poker game
+	RetractVote(pokerID string, userID string, storyID string) ([]*thunderdome.Story, error)
+	// EndStoryVoting ends voting for a story in a poker game
+	EndStoryVoting(pokerID string, storyID string) ([]*thunderdome.Story, error)
+	// SkipStory skips a story in a poker game
+	SkipStory(pokerID string, storyID string) ([]*thunderdome.Story, error)
+	// UpdateStory updates an existing story in a poker game
+	UpdateStory(pokerID string, storyID string, name string, storyType string, referenceID string, link string, description string, acceptanceCriteria string, priority int32) ([]*thunderdome.Story, error)
+	// DeleteStory deletes a story from a poker game
+	DeleteStory(pokerID string, storyID string) ([]*thunderdome.Story, error)
+	// ArrangeStory sets the position of the story relative to the story it's being placed before
+	ArrangeStory(pokerID string, storyID string, beforeStoryID string) ([]*thunderdome.Story, error)
+	// FinalizeStory finalizes the points for a story in a poker game
+	FinalizeStory(pokerID string, storyID string, points string) ([]*thunderdome.Story, error)
+}
+
 type AuthDataSvc interface {
 	GetSessionUser(ctx context.Context, sessionID string) (*thunderdome.User, error)
 }
@@ -40,7 +87,7 @@ type Service struct {
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	UserService           UserDataSvc
 	AuthService           AuthDataSvc
-	PokerService          thunderdome.PokerDataSvc
+	PokerService          PokerDataSvc
 	hub                   *wshub.Hub
 }
 
@@ -50,7 +97,7 @@ func New(
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	userService UserDataSvc, authService AuthDataSvc,
-	battleService thunderdome.PokerDataSvc,
+	pokerDataService PokerDataSvc,
 ) *Service {
 	b := &Service{
 		config:                config,
@@ -59,7 +106,7 @@ func New(
 		validateUserCookie:    validateUserCookie,
 		UserService:           userService,
 		AuthService:           authService,
-		PokerService:          battleService,
+		PokerService:          pokerDataService,
 	}
 
 	b.hub = wshub.NewHub(logger, wshub.Config{

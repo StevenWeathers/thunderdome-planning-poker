@@ -36,11 +36,16 @@ type UserDataSvc interface {
 	GetUser(ctx context.Context, userID string) (*thunderdome.User, error)
 }
 
+type EmailService interface {
+	SendUserSubscriptionActive(userName string, userEmail string, subscriptionType string) error
+	SendUserSubscriptionDeactivated(userName string, userEmail string, subscriptionType string) error
+}
+
 type Service struct {
 	config      Config
 	logger      *otelzap.Logger
 	dataSvc     DataSvc
-	emailSvc    thunderdome.EmailService
+	emailSvc    EmailService
 	userDataSvc UserDataSvc
 }
 
@@ -48,7 +53,7 @@ func New(
 	config Config,
 	logger *otelzap.Logger,
 	dataSvc DataSvc,
-	emailSvc thunderdome.EmailService,
+	emailSvc EmailService,
 	userDataSvc UserDataSvc,
 ) *Service {
 	// The library needs to be configured with your account's secret key.

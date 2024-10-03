@@ -1,7 +1,6 @@
 package thunderdome
 
 import (
-	"context"
 	"time"
 )
 
@@ -30,37 +29,4 @@ type RetroTemplateFormatColumn struct {
 // RetroTemplateFormat is the format of a retro template
 type RetroTemplateFormat struct {
 	Columns []RetroTemplateFormatColumn `json:"columns"`
-}
-
-type RetroTemplateDataSvc interface {
-	// GetPublicTemplates retrieves all public retro templates
-	GetPublicTemplates(ctx context.Context) ([]*RetroTemplate, error)
-	// GetTemplatesByOrganization retrieves all templates for a specific organization
-	GetTemplatesByOrganization(ctx context.Context, organizationID string) ([]*RetroTemplate, error)
-	// GetTemplatesByTeam retrieves all templates for a specific team
-	GetTemplatesByTeam(ctx context.Context, teamID string) ([]*RetroTemplate, error)
-	// GetTemplateById retrieves a specific template by its ID
-	GetTemplateById(ctx context.Context, templateID string) (*RetroTemplate, error)
-	// CreateTemplate creates a new retro template
-	CreateTemplate(ctx context.Context, template *RetroTemplate) error
-	// UpdateTemplate updates an existing retro template
-	UpdateTemplate(ctx context.Context, template *RetroTemplate) error
-	// DeleteTemplate deletes a retro template by its ID
-	DeleteTemplate(ctx context.Context, templateID string) error
-	// ListTemplates retrieves a paginated list of templates
-	ListTemplates(ctx context.Context, limit int, offset int) ([]*RetroTemplate, int, error)
-	// GetDefaultPublicTemplate retrieves the default public template
-	GetDefaultPublicTemplate(ctx context.Context) (*RetroTemplate, error)
-	// GetDefaultTeamTemplate retrieves the default template for a given team
-	GetDefaultTeamTemplate(ctx context.Context, teamID string) (*RetroTemplate, error)
-	// GetDefaultOrganizationTemplate retrieves the default template for a given organization
-	GetDefaultOrganizationTemplate(ctx context.Context, organizationID string) (*RetroTemplate, error)
-	// UpdateTeamTemplate updates an existing team retro template
-	UpdateTeamTemplate(ctx context.Context, template *RetroTemplate) error
-	// UpdateOrganizationTemplate updates an existing organization retro template
-	UpdateOrganizationTemplate(ctx context.Context, template *RetroTemplate) error
-	// DeleteOrganizationTemplate deletes an organization retro template by its ID
-	DeleteOrganizationTemplate(ctx context.Context, orgID string, templateID string) error
-	// DeleteTeamTemplate deletes a team retro template by its ID
-	DeleteTeamTemplate(ctx context.Context, teamID string, templateID string) error
 }
