@@ -22,16 +22,17 @@ type estimationScaleRequestBody struct {
 }
 
 // handleGetEstimationScales gets a list of estimation scales
-// @Summary      Get Estimation Scales
-// @Description  get list of estimation scales
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        limit   query   int  false  "Max number of results to return"
-// @Param        offset  query   int  false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.EstimationScale}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/estimation-scales [get]
+//
+//	@Summary		Get Estimation Scales
+//	@Description	get list of estimation scales
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.EstimationScale}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/estimation-scales [get]
 func (s *Service) handleGetEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -57,15 +58,16 @@ func (s *Service) handleGetEstimationScales() http.HandlerFunc {
 }
 
 // handleEstimationScaleCreate creates a new estimation scale
-// @Summary      Create Estimation Scale
-// @Description  Creates an estimation scale
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        scale  body    estimationScaleRequestBody                               true  "new estimation scale object"
-// @Success      200    object  standardJsonResponse{data=thunderdome.EstimationScale}   "returns created estimation scale"
-// @Failure      500    object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/estimation-scales [post]
+//
+//	@Summary		Create Estimation Scale
+//	@Description	Creates an estimation scale
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			scale	body	estimationScaleRequestBody								true	"new estimation scale object"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.EstimationScale}	"returns created estimation scale"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/estimation-scales [post]
 func (s *Service) handleEstimationScaleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -113,16 +115,17 @@ func (s *Service) handleEstimationScaleCreate() http.HandlerFunc {
 }
 
 // handleEstimationScaleUpdate updates an estimation scale
-// @Summary      Update Estimation Scale
-// @Description  Updates an Estimation Scale
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        scaleId  path    string                                                 true  "the estimation scale ID to update"
-// @Param        scale    body    estimationScaleRequestBody                             true  "estimation scale object to update"
-// @Success      200      object  standardJsonResponse{data=thunderdome.EstimationScale} "returns updated estimation scale"
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/estimation-scales/{scaleId} [put]
+//
+//	@Summary		Update Estimation Scale
+//	@Description	Updates an Estimation Scale
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			scaleId	path	string													true	"the estimation scale ID to update"
+//	@Param			scale	body	estimationScaleRequestBody								true	"estimation scale object to update"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.EstimationScale}	"returns updated estimation scale"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/estimation-scales/{scaleId} [put]
 func (s *Service) handleEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -177,15 +180,16 @@ func (s *Service) handleEstimationScaleUpdate() http.HandlerFunc {
 }
 
 // handleEstimationScaleDelete handles deleting an estimation scale
-// @Summary      Delete Estimation Scale
-// @Description  Deletes an Estimation Scale
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        scaleId  path    string                        true  "the estimation scale ID to delete"
-// @Success      200      object  standardJsonResponse{}        "returns success message"
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/estimation-scales/{scaleId} [delete]
+//
+//	@Summary		Delete Estimation Scale
+//	@Description	Deletes an Estimation Scale
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			scaleId	path	string					true	"the estimation scale ID to delete"
+//	@Success		200		object	standardJsonResponse{}	"returns success message"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/estimation-scales/{scaleId} [delete]
 func (s *Service) handleEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -211,17 +215,18 @@ func (s *Service) handleEstimationScaleDelete() http.HandlerFunc {
 }
 
 // handleGetOrganizationEstimationScales gets a list of estimation scales for a specific organization
-// @Summary      Get Organization Estimation Scales
-// @Description  get list of estimation scales for a specific organization
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        orgId   path    string  true   "Organization ID"
-// @Param        limit   query   int     false  "Max number of results to return"
-// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.EstimationScale}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /organizations/{orgId}/estimation-scales [get]
+//
+//	@Summary		Get Organization Estimation Scales
+//	@Description	get list of estimation scales for a specific organization
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			orgId	path	string	true	"Organization ID"
+//	@Param			limit	query	int		false	"Max number of results to return"
+//	@Param			offset	query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.EstimationScale}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/organizations/{orgId}/estimation-scales [get]
 func (s *Service) handleGetOrganizationEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -262,16 +267,17 @@ type privateEstimationScaleRequestBody struct {
 }
 
 // handleOrganizationEstimationScaleCreate creates a new estimation scale for a specific organization
-// @Summary      Create Organization Estimation Scale
-// @Description  Creates an estimation scale for a specific organization
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        orgId   path    string                                               true  "Organization ID"
-// @Param        scale   body    privateEstimationScaleRequestBody                           true  "new estimation scale object"
-// @Success      200     object  standardJsonResponse{data=thunderdome.EstimationScale}   "returns created estimation scale"
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /organizations/{orgId}/estimation-scales [post]
+//
+//	@Summary		Create Organization Estimation Scale
+//	@Description	Creates an estimation scale for a specific organization
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			orgId	path	string													true	"Organization ID"
+//	@Param			scale	body	privateEstimationScaleRequestBody						true	"new estimation scale object"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.EstimationScale}	"returns created estimation scale"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/organizations/{orgId}/estimation-scales [post]
 func (s *Service) handleOrganizationEstimationScaleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -328,17 +334,18 @@ func (s *Service) handleOrganizationEstimationScaleCreate() http.HandlerFunc {
 }
 
 // handleGetTeamEstimationScales gets a list of estimation scales for a specific team
-// @Summary      Get Team Estimation Scales
-// @Description  get list of estimation scales for a specific team
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        teamId  path    string  true   "Team ID"
-// @Param        limit   query   int     false  "Max number of results to return"
-// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.EstimationScale}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/estimation-scales [get]
+//
+//	@Summary		Get Team Estimation Scales
+//	@Description	get list of estimation scales for a specific team
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			teamId	path	string	true	"Team ID"
+//	@Param			limit	query	int		false	"Max number of results to return"
+//	@Param			offset	query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.EstimationScale}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/estimation-scales [get]
 func (s *Service) handleGetTeamEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -372,16 +379,17 @@ func (s *Service) handleGetTeamEstimationScales() http.HandlerFunc {
 }
 
 // handleTeamEstimationScaleCreate creates a new estimation scale for a specific team
-// @Summary      Create Team Estimation Scale
-// @Description  Creates an estimation scale for a specific team
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        teamId  path    string                                               true  "Team ID"
-// @Param        scale   body    privateEstimationScaleRequestBody                           true  "new estimation scale object"
-// @Success      200     object  standardJsonResponse{data=thunderdome.EstimationScale}   "returns created estimation scale"
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/estimation-scales [post]
+//
+//	@Summary		Create Team Estimation Scale
+//	@Description	Creates an estimation scale for a specific team
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			teamId	path	string													true	"Team ID"
+//	@Param			scale	body	privateEstimationScaleRequestBody						true	"new estimation scale object"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.EstimationScale}	"returns created estimation scale"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/estimation-scales [post]
 func (s *Service) handleTeamEstimationScaleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -438,15 +446,16 @@ func (s *Service) handleTeamEstimationScaleCreate() http.HandlerFunc {
 }
 
 // handleGetPublicEstimationScales gets a list of all public estimation scales
-// @Summary      Get Public Estimation Scales
-// @Description  get list of all public estimation scales
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        limit   query   int  false  "Max number of results to return"
-// @Param        offset  query   int  false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.EstimationScale}
-// @Failure      500     object  standardJsonResponse{}
-// @Router       /estimation-scales/public [get]
+//
+//	@Summary		Get Public Estimation Scales
+//	@Description	get list of all public estimation scales
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.EstimationScale}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Router			/estimation-scales/public [get]
 func (s *Service) handleGetPublicEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -471,15 +480,16 @@ func (s *Service) handleGetPublicEstimationScales() http.HandlerFunc {
 }
 
 // handleGetPublicEstimationScale gets a specific public estimation scale by ID
-// @Summary      Get Public Estimation Scale
-// @Description  get a specific public estimation scale by ID
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        scaleId  path    string  true  "Estimation Scale ID"
-// @Success      200      object  standardJsonResponse{data=thunderdome.EstimationScale}
-// @Failure      404      object  standardJsonResponse{}
-// @Failure      500      object  standardJsonResponse{}
-// @Router       /estimation-scales/public/{scaleId} [get]
+//
+//	@Summary		Get Public Estimation Scale
+//	@Description	get a specific public estimation scale by ID
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			scaleId	path	string	true	"Estimation Scale ID"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.EstimationScale}
+//	@Failure		404		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Router			/estimation-scales/public/{scaleId} [get]
 func (s *Service) handleGetPublicEstimationScale() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -504,15 +514,16 @@ func (s *Service) handleGetPublicEstimationScale() http.HandlerFunc {
 }
 
 // handleOrganizationEstimationScaleDelete handles deleting an organization's estimation scale
-// @Summary      Delete Organization Estimation Scale
-// @Description  Deletes an Organization Estimation Scale
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        scaleId  path    string                        true  "the estimation scale ID to delete"
-// @Success      200      object  standardJsonResponse{}        "returns success message"
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /organization/{orgId}/estimation-scales/{scaleId} [delete]
+//
+//	@Summary		Delete Organization Estimation Scale
+//	@Description	Deletes an Organization Estimation Scale
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			scaleId	path	string					true	"the estimation scale ID to delete"
+//	@Success		200		object	standardJsonResponse{}	"returns success message"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/organization/{orgId}/estimation-scales/{scaleId} [delete]
 func (s *Service) handleOrganizationEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -544,15 +555,16 @@ func (s *Service) handleOrganizationEstimationScaleDelete() http.HandlerFunc {
 }
 
 // handleTeamEstimationScaleDelete handles deleting a team's estimation scale
-// @Summary      Delete Team Estimation Scale
-// @Description  Deletes an Team Estimation Scale
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        scaleId  path    string                        true  "the estimation scale ID to delete"
-// @Success      200      object  standardJsonResponse{}        "returns success message"
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /team/{teamId}/estimation-scales/{scaleId} [delete]
+//
+//	@Summary		Delete Team Estimation Scale
+//	@Description	Deletes an Team Estimation Scale
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			scaleId	path	string					true	"the estimation scale ID to delete"
+//	@Success		200		object	standardJsonResponse{}	"returns success message"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/team/{teamId}/estimation-scales/{scaleId} [delete]
 func (s *Service) handleTeamEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -584,17 +596,18 @@ func (s *Service) handleTeamEstimationScaleDelete() http.HandlerFunc {
 }
 
 // handleTeamEstimationScaleUpdate updates a team estimation scale
-// @Summary      Update Team Estimation Scale
-// @Description  Updates a Team Estimation Scale
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        teamId   path    string  true   "Team ID"
-// @Param        scaleId  path    string                                                 true  "the estimation scale ID to update"
-// @Param        scale    body    privateEstimationScaleRequestBody                             true  "estimation scale object to update"
-// @Success      200      object  standardJsonResponse{data=thunderdome.EstimationScale} "returns updated estimation scale"
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/estimation-scales/{scaleId} [put]
+//
+//	@Summary		Update Team Estimation Scale
+//	@Description	Updates a Team Estimation Scale
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			teamId	path	string													true	"Team ID"
+//	@Param			scaleId	path	string													true	"the estimation scale ID to update"
+//	@Param			scale	body	privateEstimationScaleRequestBody						true	"estimation scale object to update"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.EstimationScale}	"returns updated estimation scale"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/estimation-scales/{scaleId} [put]
 func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -657,17 +670,18 @@ func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
 }
 
 // handleOrganizationEstimationScaleUpdate updates an organization estimation scale
-// @Summary      Update Organization Estimation Scale
-// @Description  Updates an Organization Estimation Scale
-// @Tags         estimation-scale
-// @Produce      json
-// @Param        orgId   path    string  true   "Organization ID"
-// @Param        scaleId  path    string                                                 true  "the estimation scale ID to update"
-// @Param        scale    body    privateEstimationScaleRequestBody                             true  "estimation scale object to update"
-// @Success      200      object  standardJsonResponse{data=thunderdome.EstimationScale} "returns updated estimation scale"
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{orgId}/estimation-scales/{scaleId} [put]
+//
+//	@Summary		Update Organization Estimation Scale
+//	@Description	Updates an Organization Estimation Scale
+//	@Tags			estimation-scale
+//	@Produce		json
+//	@Param			orgId	path	string													true	"Organization ID"
+//	@Param			scaleId	path	string													true	"the estimation scale ID to update"
+//	@Param			scale	body	privateEstimationScaleRequestBody						true	"estimation scale object to update"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.EstimationScale}	"returns updated estimation scale"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{orgId}/estimation-scales/{scaleId} [put]
 func (s *Service) handleOrganizationEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

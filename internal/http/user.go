@@ -21,15 +21,16 @@ import (
 )
 
 // handleSessionUserProfile returns the users profile by session user ID
-// @Summary      Get Session User Profile
-// @Description  Gets a users profile by session user ID
-// @Tags         auth, user
-// @Produce      json
-// @Success      200  object  standardJsonResponse{data=thunderdome.User}
-// @Failure      403  object  standardJsonResponse{}
-// @Failure      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /auth/user [get]
+//
+//	@Summary		Get Session User Profile
+//	@Description	Gets a users profile by session user ID
+//	@Tags			auth, user
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{data=thunderdome.User}
+//	@Failure		403	object	standardJsonResponse{}
+//	@Failure		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/auth/user [get]
 func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -48,16 +49,17 @@ func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 }
 
 // handleUserProfile returns the users profile if it matches their session
-// @Summary      Get User Profile
-// @Description  Gets a users profile
-// @Tags         user
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{data=thunderdome.User}
-// @Failure      403     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId} [get]
+//
+//	@Summary		Get User Profile
+//	@Description	Gets a users profile
+//	@Tags			user
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.User}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId} [get]
 func (s *Service) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -95,17 +97,18 @@ type userprofileUpdateRequestBody struct {
 }
 
 // handleUserProfileUpdate attempts to update users profile
-// @Summary      Update User Profile
-// @Description  Update a users profile
-// @Tags         user
-// @Produce      json
-// @Param        userId  path    string                        true  "the user ID"
-// @Param        user    body    userprofileUpdateRequestBody  true  "the user profile object to update"
-// @Success      200     object  standardJsonResponse{data=thunderdome.User}
-// @Failure      403     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId} [put]
+//
+//	@Summary		Update User Profile
+//	@Description	Update a users profile
+//	@Tags			user
+//	@Produce		json
+//	@Param			userId	path	string							true	"the user ID"
+//	@Param			user	body	userprofileUpdateRequestBody	true	"the user profile object to update"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.User}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId} [put]
 func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -183,16 +186,17 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 }
 
 // handleUserDelete attempts to delete a users account
-// @Summary      Delete User
-// @Description  Deletes a user
-// @Tags         user
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{}
-// @Failure      403     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId} [delete]
+//
+//	@Summary		Delete User
+//	@Description	Deletes a user
+//	@Tags			user
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId} [delete]
 func (s *Service) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -236,14 +240,15 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 }
 
 // handleVerifyRequest sends verification Email
-// @Summary      Request Verification Email
-// @Description  Sends verification Email
-// @Tags         user
-// @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{}
-// @Success      400     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Router       /users/{userId}/request-verify [post]
+//
+//	@Summary		Request Verification Email
+//	@Description	Sends verification Email
+//	@Tags			user
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{}
+//	@Success		400		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Router			/users/{userId}/request-verify [post]
 func (s *Service) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -271,12 +276,13 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 }
 
 // handleGetActiveCountries gets a list of registered users countries
-// @Summary      Get Active Countries
-// @Description  Gets a list of users countries
-// @Produce      json
-// @Success      200  object  standardJsonResponse{[]string}
-// @Failure      500  object  standardJsonResponse{}
-// @Router       /active-countries [get]
+//
+//	@Summary		Get Active Countries
+//	@Description	Gets a list of users countries
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{[]string}
+//	@Failure		500	object	standardJsonResponse{}
+//	@Router			/active-countries [get]
 func (s *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -353,15 +359,16 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 }
 
 // handleUserOrganizationInvite processes an organization invite for the user
-// @Summary      User Organization Invite
-// @Description  Processes an organization invite for the user
-// @Tags         user
-// @Param        userId  path    string  true  "the user ID"
-// @Param        inviteId  path    string  true  "the invite ID"
-// @Success      200     object  standardJsonResponse{}
-// @Success      400     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Router       /users/{userId}/invite/organization/{inviteId} [post]
+//
+//	@Summary		User Organization Invite
+//	@Description	Processes an organization invite for the user
+//	@Tags			user
+//	@Param			userId		path	string	true	"the user ID"
+//	@Param			inviteId	path	string	true	"the invite ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		400			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Router			/users/{userId}/invite/organization/{inviteId} [post]
 func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -436,15 +443,16 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 }
 
 // handleUserDepartmentInvite processes an department invite for the user
-// @Summary      User Department Invite
-// @Description  Processes an department invite for the user
-// @Tags         user
-// @Param        userId  path    string  true  "the user ID"
-// @Param        inviteId  path    string  true  "the invite ID"
-// @Success      200     object  standardJsonResponse{}
-// @Success      400     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Router       /users/{userId}/invite/department/{inviteId} [post]
+//
+//	@Summary		User Department Invite
+//	@Description	Processes an department invite for the user
+//	@Tags			user
+//	@Param			userId		path	string	true	"the user ID"
+//	@Param			inviteId	path	string	true	"the invite ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		400			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Router			/users/{userId}/invite/department/{inviteId} [post]
 func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -540,15 +548,16 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 }
 
 // handleUserTeamInvite processes a team invite for the user
-// @Summary      User Team Invite
-// @Description  Processes a team invite for the user
-// @Tags         user
-// @Param        userId  path    string  true  "the user ID"
-// @Param        inviteId  path    string  true  "the invite ID"
-// @Success      200     object  standardJsonResponse{}
-// @Success      400     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Router       /users/{userId}/invite/team/{inviteId} [post]
+//
+//	@Summary		User Team Invite
+//	@Description	Processes a team invite for the user
+//	@Tags			user
+//	@Param			userId		path	string	true	"the user ID"
+//	@Param			inviteId	path	string	true	"the invite ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		400			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Router			/users/{userId}/invite/team/{inviteId} [post]
 func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -680,16 +689,17 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 }
 
 // handleUserCredential returns the users credential if they have one
-// @Summary      Get User Credential
-// @Description  Gets a users credential
-// @Tags         user
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{data=thunderdome.Credential}
-// @Failure      403     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/credential [get]
+//
+//	@Summary		Get User Credential
+//	@Description	Gets a users credential
+//	@Tags			user
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.Credential}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/credential [get]
 func (s *Service) handleUserCredential() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

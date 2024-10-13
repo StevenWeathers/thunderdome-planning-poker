@@ -22,15 +22,16 @@ type teamResponse struct {
 }
 
 // handleGetTeamByUser gets a team with user role
-// @Summary      Get Team
-// @Description  Get a team with user role
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true  "the team ID"
-// @Success      200     object  standardJsonResponse{data=teamResponse}
-// @Success      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId} [get]
+//
+//	@Summary		Get Team
+//	@Description	Get a team with user role
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Success		200		object	standardJsonResponse{data=teamResponse}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId} [get]
 func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -71,15 +72,16 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 }
 
 // handleGetTeamsByUser gets a list of teams the user is a part of
-// @Summary      Get User Teams
-// @Description  Get a list of teams the user is a part of
-// @Tags         team
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.UserTeam}
-// @Success      403     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/teams [get]
+//
+//	@Summary		Get User Teams
+//	@Description	Get a list of teams the user is a part of
+//	@Tags			team
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.UserTeam}
+//	@Success		403		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/teams [get]
 func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -100,15 +102,16 @@ func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 }
 
 // handleGetTeamsByUser gets a list of teams the user is a part of that are not associated with an organization
-// @Summary      Get User Teams Non Org
-// @Description  Get a list of teams the user is a part of that are not associated with an organization
-// @Tags         team
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.UserTeam}
-// @Success      403     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/teams-non-org [get]
+//
+//	@Summary		Get User Teams Non Org
+//	@Description	Get a list of teams the user is a part of that are not associated with an organization
+//	@Tags			team
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.UserTeam}
+//	@Success		403		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/teams-non-org [get]
 func (s *Service) handleGetTeamsByUserNonOrg() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -129,14 +132,15 @@ func (s *Service) handleGetTeamsByUserNonOrg() http.HandlerFunc {
 }
 
 // handleGetTeamUsers gets a list of users associated to the team
-// @Summary      Get Team users
-// @Description  Get a list of users associated to the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true  "the team ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.User}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/users [get]
+//
+//	@Summary		Get Team users
+//	@Description	Get a list of users associated to the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.User}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/users [get]
 func (s *Service) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -173,17 +177,18 @@ type teamCreateRequestBody struct {
 }
 
 // handleCreateTeam handles creating a team with current user as admin
-// @Summary      Create Team
-// @Description  Creates a team with the current user as the team admin
-// @Tags         team
-// @Produce      json
-// @Param        userId  path    string                 true  "the user ID"
-// @Param        team    body    teamCreateRequestBody  true  "new team object"
-// @Success      200     object  standardJsonResponse{data=thunderdome.Team}
-// @Success      403     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/teams [post]
+//
+//	@Summary		Create Team
+//	@Description	Creates a team with the current user as the team admin
+//	@Tags			team
+//	@Produce		json
+//	@Param			userId	path	string					true	"the user ID"
+//	@Param			team	body	teamCreateRequestBody	true	"new team object"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.Team}
+//	@Success		403		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/teams [post]
 func (s *Service) handleCreateTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -228,17 +233,18 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 }
 
 // handleTeamUpdate handles updating a team
-// @Summary      Update Team
-// @Description  Updates a team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string                 true  "the team ID"
-// @Param        team    body    teamCreateRequestBody  true  "updated team object"
-// @Success      200     object  standardJsonResponse{data=thunderdome.Team}
-// @Success      403     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId} [put]
+//
+//	@Summary		Update Team
+//	@Description	Updates a team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string					true	"the team ID"
+//	@Param			team	body	teamCreateRequestBody	true	"updated team object"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.Team}
+//	@Success		403		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId} [put]
 func (s *Service) handleTeamUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -294,17 +300,18 @@ type teamInviteUserRequestBody struct {
 }
 
 // handleTeamInviteUser handles inviting user to a team
-// @Summary      Invite Team User
-// @Description  Invites a user to the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string                  true  "the team ID"
-// @Param        user    body    teamInviteUserRequestBody  true  "new team user object"
-// @Success      200     object  standardJsonResponse{}
-// @Success      403     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/invites [post]
+//
+//	@Summary		Invite Team User
+//	@Description	Invites a user to the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string						true	"the team ID"
+//	@Param			user	body	teamInviteUserRequestBody	true	"new team user object"
+//	@Success		200		object	standardJsonResponse{}
+//	@Success		403		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/invites [post]
 func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -390,18 +397,19 @@ type teamUpdateUserRequestBody struct {
 }
 
 // handleTeamUpdateUser handles updating a user on the team
-// @Summary      Update Team User
-// @Description  Updates a team user
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string                  true  "the team ID"
-// @Param        userId  path    string                  true  "the user ID"
-// @Param        user    body    teamUpdateUserRequestBody  true  "updated team user object"
-// @Success      200     object  standardJsonResponse{}
-// @Success      403     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/users/{userId} [put]
+//
+//	@Summary		Update Team User
+//	@Description	Updates a team user
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string						true	"the team ID"
+//	@Param			userId	path	string						true	"the user ID"
+//	@Param			user	body	teamUpdateUserRequestBody	true	"updated team user object"
+//	@Success		200		object	standardJsonResponse{}
+//	@Success		403		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/users/{userId} [put]
 func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -453,17 +461,18 @@ func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 }
 
 // handleTeamRemoveUser handles removing user from a team
-// @Summary      Remove Team User
-// @Description  Remove a user from the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true  "the team ID"
-// @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{}
-// @Success      403     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/users/{userId} [delete]
+//
+//	@Summary		Remove Team User
+//	@Description	Remove a user from the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{}
+//	@Success		403		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/users/{userId} [delete]
 func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -495,14 +504,15 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 }
 
 // handleGetTeamPokerGames gets a list of battles associated to the team
-// @Summary      Get Team Battles
-// @Description  Get a list of battles associated to the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true  "the team ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Poker}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/battles [get]
+//
+//	@Summary		Get Team Battles
+//	@Description	Get a list of battles associated to the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Poker}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/battles [get]
 func (s *Service) handleGetTeamPokerGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -523,17 +533,18 @@ func (s *Service) handleGetTeamPokerGames() http.HandlerFunc {
 }
 
 // handleTeamRemovePokerGame handles removing poker game from a team
-// @Summary      Remove Team Poker
-// @Description  Remove a poker game from the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId    path    string  true  "the team ID"
-// @Param        battleId  path    string  true  "the game ID"
-// @Success      200       object  standardJsonResponse{}
-// @Success      403       object  standardJsonResponse{}
-// @Success      500       object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/battles/{battleId} [delete]
+//
+//	@Summary		Remove Team Poker
+//	@Description	Remove a poker game from the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId		path	string	true	"the team ID"
+//	@Param			battleId	path	string	true	"the game ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		403			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/battles/{battleId} [delete]
 func (s *Service) handleTeamRemovePokerGame() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -565,16 +576,17 @@ func (s *Service) handleTeamRemovePokerGame() http.HandlerFunc {
 }
 
 // handleDeleteTeam handles deleting a team
-// @Summary      Delete Team
-// @Description  Delete a Team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true  "the team ID"
-// @Success      200     object  standardJsonResponse{}
-// @Success      403     object  standardJsonResponse{}
-// @Success      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId} [delete]
+//
+//	@Summary		Delete Team
+//	@Description	Delete a Team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Success		200		object	standardJsonResponse{}
+//	@Success		403		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId} [delete]
 func (s *Service) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -600,14 +612,15 @@ func (s *Service) handleDeleteTeam() http.HandlerFunc {
 }
 
 // handleGetTeamRetros gets a list of retros associated to the team
-// @Summary      Get Team Retros
-// @Description  Get a list of retros associated to the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true  "the team ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Retro}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/retros [get]
+//
+//	@Summary		Get Team Retros
+//	@Description	Get a list of retros associated to the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Retro}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/retros [get]
 func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -627,17 +640,18 @@ func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 }
 
 // handleTeamRemoveRetro handles removing retro from a team
-// @Summary      Remove Team Retro
-// @Description  Remove a retro from the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId   path    string  true  "the team ID"
-// @Param        retroId  path    string  true  "the retro ID"
-// @Success      200      object  standardJsonResponse{}
-// @Success      403      object  standardJsonResponse{}
-// @Success      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/retros/{retroId} [delete]
+//
+//	@Summary		Remove Team Retro
+//	@Description	Remove a retro from the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Param			retroId	path	string	true	"the retro ID"
+//	@Success		200		object	standardJsonResponse{}
+//	@Success		403		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/retros/{retroId} [delete]
 func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -667,14 +681,15 @@ func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 }
 
 // handleGetTeamStoryboards gets a list of storyboards associated to the team
-// @Summary      Get Team Storyboards
-// @Description  Get a list of storyboards associated to the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true  "the team ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Storyboard}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/storyboards [get]
+//
+//	@Summary		Get Team Storyboards
+//	@Description	Get a list of storyboards associated to the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Storyboard}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/storyboards [get]
 func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -694,17 +709,18 @@ func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 }
 
 // handleTeamRemoveStoryboard handles removing storyboard from a team
-// @Summary      Remove Team Storyboard
-// @Description  Remove a storyboard from the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId        path    string  true  "the team ID"
-// @Param        storyboardId  path    string  true  "the storyboard ID"
-// @Success      200           object  standardJsonResponse{}
-// @Success      403           object  standardJsonResponse{}
-// @Success      500           object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/storyboards/{storyboardId} [delete]
+//
+//	@Summary		Remove Team Storyboard
+//	@Description	Remove a storyboard from the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId			path	string	true	"the team ID"
+//	@Param			storyboardId	path	string	true	"the storyboard ID"
+//	@Success		200				object	standardJsonResponse{}
+//	@Success		403				object	standardJsonResponse{}
+//	@Success		500				object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/storyboards/{storyboardId} [delete]
 func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -734,17 +750,18 @@ func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 }
 
 // handleGetTeamRetroActions gets a list of retro actions
-// @Summary      Get Retro Actions
-// @Description  get list of retro actions
-// @Tags         team
-// @Produce      json
-// @Param        limit      query   int      false  "Max number of results to return"
-// @Param        offset     query   int      false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Param        completed  query   boolean  false  "Only completed retro actions"
-// @Success      200        object  standardJsonResponse{data=[]thunderdome.RetroAction}
-// @Failure      500        object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/retro-actions [get]
+//
+//	@Summary		Get Retro Actions
+//	@Description	get list of retro actions
+//	@Tags			team
+//	@Produce		json
+//	@Param			limit		query	int		false	"Max number of results to return"
+//	@Param			offset		query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Param			completed	query	boolean	false	"Only completed retro actions"
+//	@Success		200			object	standardJsonResponse{data=[]thunderdome.RetroAction}
+//	@Failure		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/retro-actions [get]
 func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -783,14 +800,15 @@ func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 }
 
 // handleGetTeamUserInvites gets a list of user invites associated to the team
-// @Summary      Get Team User Invites
-// @Description  Get a list of user invites associated to the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true  "the team ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.TeamUserInvite}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/invites [get]
+//
+//	@Summary		Get Team User Invites
+//	@Description	Get a list of user invites associated to the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.TeamUserInvite}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/invites [get]
 func (s *Service) handleGetTeamUserInvites() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -816,17 +834,18 @@ func (s *Service) handleGetTeamUserInvites() http.HandlerFunc {
 }
 
 // handleDeleteTeamUserInvite handles deleting user invite from a team
-// @Summary      Deletes Team User Invite
-// @Description  Delete a user invite from the team
-// @Tags         team
-// @Produce      json
-// @Param        teamId        path    string  true  "the team ID"
-// @Param        inviteId  path    string  true  "the user invite ID"
-// @Success      200           object  standardJsonResponse{}
-// @Success      403           object  standardJsonResponse{}
-// @Success      500           object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/invites/{inviteId} [delete]
+//
+//	@Summary		Deletes Team User Invite
+//	@Description	Delete a user invite from the team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId		path	string	true	"the team ID"
+//	@Param			inviteId	path	string	true	"the user invite ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		403			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/invites/{inviteId} [delete]
 func (s *Service) handleDeleteTeamUserInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -856,17 +875,18 @@ func (s *Service) handleDeleteTeamUserInvite() http.HandlerFunc {
 }
 
 // handleTeamMetrics gets the metrics for a specific team
-// @Summary      Get Team Metrics
-// @Description  Get metrics for a specific team such as user count, poker game count, etc.
-// @Tags         admin
-// @Produce      json
-// @Param        teamID   path      string  true  "Team ID"
-// @Success      200  object  standardJsonResponse{data=thunderdome.TeamMetrics}
-// @Failure      400  object  standardJsonResponse{}
-// @Failure      404  object  standardJsonResponse{}
-// @Failure      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/teams/{teamID}/metrics [get]
+//
+//	@Summary		Get Team Metrics
+//	@Description	Get metrics for a specific team such as user count, poker game count, etc.
+//	@Tags			admin
+//	@Produce		json
+//	@Param			teamID	path	string	true	"Team ID"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.TeamMetrics}
+//	@Failure		400		object	standardJsonResponse{}
+//	@Failure		404		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/teams/{teamID}/metrics [get]
 func (s *Service) handleTeamMetrics() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

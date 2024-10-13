@@ -22,16 +22,17 @@ type alertRequestBody struct {
 }
 
 // handleGetAlerts gets a list of alerts
-// @Summary      Get Alerts
-// @Description  get list of alerts (global notices)
-// @Tags         alert
-// @Produce      json
-// @Param        limit   query   int  false  "Max number of results to return"
-// @Param        offset  query   int  false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Alert}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /alerts [get]
+//
+//	@Summary		Get Alerts
+//	@Description	get list of alerts (global notices)
+//	@Tags			alert
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Alert}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/alerts [get]
 func (s *Service) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -57,15 +58,16 @@ func (s *Service) handleGetAlerts() http.HandlerFunc {
 }
 
 // handleAlertCreate creates a new alert
-// @Summary      Create Alert
-// @Description  Creates an alert (global notice)
-// @Tags         alert
-// @Produce      json
-// @Param        alert  body    alertRequestBody                                true  "new alert object"
-// @Success      200    object  standardJsonResponse{data=[]thunderdome.Alert}  "returns active alerts"
-// @Failure      500    object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /alerts [post]
+//
+//	@Summary		Create Alert
+//	@Description	Creates an alert (global notice)
+//	@Tags			alert
+//	@Produce		json
+//	@Param			alert	body	alertRequestBody								true	"new alert object"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Alert}	"returns active alerts"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/alerts [post]
 func (s *Service) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -105,16 +107,17 @@ func (s *Service) handleAlertCreate() http.HandlerFunc {
 }
 
 // handleAlertUpdate updates an alert
-// @Summary      Update Alert
-// @Description  Updates an Alert
-// @Tags         alert
-// @Produce      json
-// @Param        alertId  path    string                                          true  "the alert ID to update"
-// @Param        alert    body    alertRequestBody                                true  "alert object to update"
-// @Success      200      object  standardJsonResponse{data=[]thunderdome.Alert}  "returns active alerts"
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /alerts/{alertId} [put]
+//
+//	@Summary		Update Alert
+//	@Description	Updates an Alert
+//	@Tags			alert
+//	@Produce		json
+//	@Param			alertId	path	string											true	"the alert ID to update"
+//	@Param			alert	body	alertRequestBody								true	"alert object to update"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Alert}	"returns active alerts"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/alerts/{alertId} [put]
 func (s *Service) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -161,15 +164,16 @@ func (s *Service) handleAlertUpdate() http.HandlerFunc {
 }
 
 // handleAlertDelete handles deleting an alert
-// @Summary      Delete Alert
-// @Description  Deletes an Alert
-// @Tags         alert
-// @Produce      json
-// @Param        alertId  path    string                                          true  "the alert ID to delete"
-// @Success      200      object  standardJsonResponse{data=[]thunderdome.Alert}  "returns active alerts"
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /alerts/{alertId} [delete]
+//
+//	@Summary		Delete Alert
+//	@Description	Deletes an Alert
+//	@Tags			alert
+//	@Produce		json
+//	@Param			alertId	path	string											true	"the alert ID to delete"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Alert}	"returns active alerts"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/alerts/{alertId} [delete]
 func (s *Service) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

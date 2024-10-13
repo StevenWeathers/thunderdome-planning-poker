@@ -14,16 +14,17 @@ import (
 )
 
 // handleCheckinsGet gets a list of team checkins
-// @Summary      Get Team Checkins
-// @Description  Get a list of team checkins
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true   "the team ID"
-// @Param        date    query   string  false  "the date in YYYY-MM-DD format"
-// @Param        tz      query   string  false  "the timezone name e.g. America/New_York"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.TeamCheckin}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins [get]
+//
+//	@Summary		Get Team Checkins
+//	@Description	Get a list of team checkins
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Param			date	query	string	false	"the date in YYYY-MM-DD format"
+//	@Param			tz		query	string	false	"the timezone name e.g. America/New_York"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.TeamCheckin}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/checkins [get]
 func (s *Service) handleCheckinsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -61,15 +62,16 @@ func (s *Service) handleCheckinsGet() http.HandlerFunc {
 }
 
 // handleCheckinLastByUser gets the last checkin by user
-// @Summary      Get Users last checkin for team
-// @Description  Get Users last checkin for team
-// @Tags         team
-// @Produce      json
-// @Param        teamId  path    string  true   "the team ID"
-// @Param        userId      path   string  false  "the user id to get last checkin for"
-// @Success      200     object  standardJsonResponse{data=thunderdome.TeamCheckin}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins/users/{userId}/last [get]
+//
+//	@Summary		Get Users last checkin for team
+//	@Description	Get Users last checkin for team
+//	@Tags			team
+//	@Produce		json
+//	@Param			teamId	path	string	true	"the team ID"
+//	@Param			userId	path	string	false	"the user id to get last checkin for"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.TeamCheckin}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/checkins/users/{userId}/last [get]
 func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -119,17 +121,18 @@ type checkinCreateRequestBody struct {
 }
 
 // handleCheckinCreate handles creating a team user checkin
-// @Summary      Create Team Checkin
-// @Description  Creates a team user checkin
-// @Param        teamId   path  string                    true  "the team ID"
-// @Param        checkin  body  checkinCreateRequestBody  true  "new check in object"
-// @Tags         team
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins [post]
+//
+//	@Summary		Create Team Checkin
+//	@Description	Creates a team user checkin
+//	@Param			teamId	path	string						true	"the team ID"
+//	@Param			checkin	body	checkinCreateRequestBody	true	"new check in object"
+//	@Tags			team
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/checkins [post]
 func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -187,18 +190,19 @@ type checkinUpdateRequestBody struct {
 }
 
 // handleCheckinUpdate handles updating a team user checkin
-// @Summary      Update Team Checkin
-// @Description  Updates a team user checkin
-// @Param        teamId     path  string                    true  "the team ID"
-// @Param        checkinId  path  string                    true  "the checkin ID"
-// @Param        checkin    body  checkinUpdateRequestBody  true  "updated check in object"
-// @Tags         team
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins/{checkinId} [put]
+//
+//	@Summary		Update Team Checkin
+//	@Description	Updates a team user checkin
+//	@Param			teamId		path	string						true	"the team ID"
+//	@Param			checkinId	path	string						true	"the checkin ID"
+//	@Param			checkin		body	checkinUpdateRequestBody	true	"updated check in object"
+//	@Tags			team
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/checkins/{checkinId} [put]
 func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -250,17 +254,18 @@ func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 }
 
 // handleCheckinDelete handles deleting a team user checkin
-// @Summary      Delete Team Checkin
-// @Description  Deletes a team user checkin
-// @Param        teamId     path  string  true  "the team ID"
-// @Param        checkinId  path  string  true  "the checkin ID"
-// @Tags         team
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins/{checkinId} [delete]
+//
+//	@Summary		Delete Team Checkin
+//	@Description	Deletes a team user checkin
+//	@Param			teamId		path	string	true	"the team ID"
+//	@Param			checkinId	path	string	true	"the checkin ID"
+//	@Tags			team
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/checkins/{checkinId} [delete]
 func (s *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -311,18 +316,19 @@ type checkinCommentRequestBody struct {
 }
 
 // handleCheckinComment handles creating a team user checkin comment
-// @Summary      Create Team Checkin Comment
-// @Description  Creates a team user checkin comment
-// @Param        teamId     path  string                     true  "the team ID"
-// @Param        checkinId  path  string                     true  "the checkin ID"
-// @Param        comment    body  checkinCommentRequestBody  true  "comment object"
-// @Tags         team
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins/{checkinId}/comments [post]
+//
+//	@Summary		Create Team Checkin Comment
+//	@Description	Creates a team user checkin comment
+//	@Param			teamId		path	string						true	"the team ID"
+//	@Param			checkinId	path	string						true	"the checkin ID"
+//	@Param			comment		body	checkinCommentRequestBody	true	"comment object"
+//	@Tags			team
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/checkins/{checkinId}/comments [post]
 func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -385,19 +391,20 @@ func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 }
 
 // handleCheckinCommentEdit handles editing a team user checkin comment
-// @Summary      Edit Team Checkin Comment
-// @Description  Edits a team user checkin comment
-// @Param        teamId     path  string                     true  "the team ID"
-// @Param        checkinId  path  string                     true  "the checkin ID"
-// @Param        commentId  path  string  true  "the comment ID"
-// @Param        comment    body  checkinCommentRequestBody  true  "comment object"
-// @Tags         team
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [put]
+//
+//	@Summary		Edit Team Checkin Comment
+//	@Description	Edits a team user checkin comment
+//	@Param			teamId		path	string						true	"the team ID"
+//	@Param			checkinId	path	string						true	"the checkin ID"
+//	@Param			commentId	path	string						true	"the comment ID"
+//	@Param			comment		body	checkinCommentRequestBody	true	"comment object"
+//	@Tags			team
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/checkins/{checkinId}/comments/{commentId} [put]
 func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -460,18 +467,19 @@ func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc
 }
 
 // handleCheckinCommentDelete handles deleting a team user checkin comment
-// @Summary      Delete Team Checkin Comment
-// @Description  Deletes a team user checkin comment
-// @Param        teamId     path  string  true  "the team ID"
-// @Param        checkinId  path  string  true  "the checkin ID"
-// @Param        commentId  path  string  true  "the comment ID"
-// @Tags         team
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [delete]
+//
+//	@Summary		Delete Team Checkin Comment
+//	@Description	Deletes a team user checkin comment
+//	@Param			teamId		path	string	true	"the team ID"
+//	@Param			checkinId	path	string	true	"the checkin ID"
+//	@Param			commentId	path	string	true	"the comment ID"
+//	@Tags			team
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/teams/{teamId}/checkins/{checkinId}/comments/{commentId} [delete]
 func (s *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

@@ -24,15 +24,16 @@ type subscriptionRequestBody struct {
 }
 
 // handleSubscriptionGetByID gets a subscription
-// @Summary      Get Subscription
-// @Description  Get a subscription
-// @Tags         subscription
-// @Produce      json
-// @Param        subscriptionId  path    string  true  "the subscription ID"
-// @Success      200     object  standardJsonResponse{data=thunderdome.Subscription}
-// @Success      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /subscriptions/{subscriptionId} [get]
+//
+//	@Summary		Get Subscription
+//	@Description	Get a subscription
+//	@Tags			subscription
+//	@Produce		json
+//	@Param			subscriptionId	path	string	true	"the subscription ID"
+//	@Success		200				object	standardJsonResponse{data=thunderdome.Subscription}
+//	@Success		500				object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/subscriptions/{subscriptionId} [get]
 func (s *Service) handleSubscriptionGetByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -59,16 +60,17 @@ func (s *Service) handleSubscriptionGetByID() http.HandlerFunc {
 }
 
 // handleGetSubscriptions gets a list of subscriptions
-// @Summary      Get Subscriptions
-// @Description  get list of subscriptions
-// @Tags         subscription
-// @Produce      json
-// @Param        limit   query   int  false  "Max number of results to return"
-// @Param        offset  query   int  false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Subscription}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /subscriptions [get]
+//
+//	@Summary		Get Subscriptions
+//	@Description	get list of subscriptions
+//	@Tags			subscription
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Subscription}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/subscriptions [get]
 func (s *Service) handleGetSubscriptions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -94,15 +96,16 @@ func (s *Service) handleGetSubscriptions() http.HandlerFunc {
 }
 
 // handleSubscriptionCreate creates a new subscription
-// @Summary      Create Subscription
-// @Description  Creates a subscription
-// @Tags         subscription
-// @Produce      json
-// @Param        subscription  body    subscriptionRequestBody  true  "new subscription object"
-// @Success      200    object  standardJsonResponse{data=thunderdome.Subscription}
-// @Failure      500    object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /subscriptions [post]
+//
+//	@Summary		Create Subscription
+//	@Description	Creates a subscription
+//	@Tags			subscription
+//	@Produce		json
+//	@Param			subscription	body	subscriptionRequestBody	true	"new subscription object"
+//	@Success		200				object	standardJsonResponse{data=thunderdome.Subscription}
+//	@Failure		500				object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/subscriptions [post]
 func (s *Service) handleSubscriptionCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -152,16 +155,17 @@ func (s *Service) handleSubscriptionCreate() http.HandlerFunc {
 }
 
 // handleSubscriptionUpdate updates a subscription
-// @Summary      Update Subscription
-// @Description  Updates a Subscription
-// @Tags         subscription
-// @Produce      json
-// @Param        subscriptionId  path    string    true  "the subscription ID to update"
-// @Param        subscription    body    subscriptionRequestBody true  "subscription object to update"
-// @Success      200      object  standardJsonResponse{data=thunderdome.Subscription}
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /subscriptions/{subscriptionId} [put]
+//
+//	@Summary		Update Subscription
+//	@Description	Updates a Subscription
+//	@Tags			subscription
+//	@Produce		json
+//	@Param			subscriptionId	path	string					true	"the subscription ID to update"
+//	@Param			subscription	body	subscriptionRequestBody	true	"subscription object to update"
+//	@Success		200				object	standardJsonResponse{data=thunderdome.Subscription}
+//	@Failure		500				object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/subscriptions/{subscriptionId} [put]
 func (s *Service) handleSubscriptionUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -216,15 +220,16 @@ func (s *Service) handleSubscriptionUpdate() http.HandlerFunc {
 }
 
 // handleSubscriptionDelete handles deleting a subscription
-// @Summary      Delete Subscription
-// @Description  Deletes a Subscription
-// @Tags         subscription
-// @Produce      json
-// @Param        subscriptionId  path    string  true  "the subscription ID to delete"
-// @Success      200      object  standardJsonResponse{}
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /subscriptions/{subscriptionId} [delete]
+//
+//	@Summary		Delete Subscription
+//	@Description	Deletes a Subscription
+//	@Tags			subscription
+//	@Produce		json
+//	@Param			subscriptionId	path	string	true	"the subscription ID to delete"
+//	@Success		200				object	standardJsonResponse{}
+//	@Failure		500				object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/subscriptions/{subscriptionId} [delete]
 func (s *Service) handleSubscriptionDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -251,15 +256,16 @@ func (s *Service) handleSubscriptionDelete() http.HandlerFunc {
 }
 
 // handleGetEntityUserActiveSubs gets a list of active subscriptions for the entity user
-// @Summary      Get Entity User Active Subscriptions
-// @Description  get list of active entity user subscriptions
-// @Tags         subscription
-// @Param        userId  path    string  true  "the entity user ID"
-// @Produce      json
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Subscription}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/subscriptions [get]
+//
+//	@Summary		Get Entity User Active Subscriptions
+//	@Description	get list of active entity user subscriptions
+//	@Tags			subscription
+//	@Param			userId	path	string	true	"the entity user ID"
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{data=[]thunderdome.Subscription}
+//	@Failure		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/subscriptions [get]
 func (s *Service) handleGetEntityUserActiveSubs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -291,17 +297,18 @@ type subscriptionAssociateRequestBody struct {
 }
 
 // handleEntityUserUpdateSubscription updates an entity users subscription association
-// @Summary      Update Entity User Subscriptions
-// @Description  get list of active entity user subscriptions
-// @Tags         subscription
-// @Param        userId  path    string  true  "the entity user ID"
-// @Param        subscriptionId  path   string  true  "the subscription ID to update"
-// @Param        subscription  body    subscriptionAssociateRequestBody  true  "update subscription association object"
-// @Produce      json
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Subscription}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/subscriptions/{subscriptionId} [patch]
+//
+//	@Summary		Update Entity User Subscriptions
+//	@Description	get list of active entity user subscriptions
+//	@Tags			subscription
+//	@Param			userId			path	string								true	"the entity user ID"
+//	@Param			subscriptionId	path	string								true	"the subscription ID to update"
+//	@Param			subscription	body	subscriptionAssociateRequestBody	true	"update subscription association object"
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{data=[]thunderdome.Subscription}
+//	@Failure		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/subscriptions/{subscriptionId} [patch]
 func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

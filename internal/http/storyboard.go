@@ -20,23 +20,24 @@ type storyboardCreateRequestBody struct {
 }
 
 // handleStoryboardCreate handles creating a storyboard (arena)
-// @Summary      Create Storyboard
-// @Description  Create a storyboard associated to the user
-// @Tags         storyboard
-// @Produce      json
-// @Param        userId        path    string                       true   "the user ID"
-// @Param        orgId         path    string                       false  "the organization ID"
-// @Param        departmentId  path    string                       false  "the department ID"
-// @Param        teamId        path    string                       false  "the team ID"
-// @Param        storyboard    body    storyboardCreateRequestBody  false  "new storyboard object"
-// @Success      200           object  standardJsonResponse{data=thunderdome.Storyboard}
-// @Failure      403           object  standardJsonResponse{}
-// @Failure      500           object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/storyboards [post]
-// @Router       /teams/{teamId}/users/{userId}/storyboards [post]
-// @Router       /{orgId}/teams/{teamId}/users/{userId}/storyboards [post]
-// @Router       /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards [post]
+//
+//	@Summary		Create Storyboard
+//	@Description	Create a storyboard associated to the user
+//	@Tags			storyboard
+//	@Produce		json
+//	@Param			userId			path	string						true	"the user ID"
+//	@Param			orgId			path	string						false	"the organization ID"
+//	@Param			departmentId	path	string						false	"the department ID"
+//	@Param			teamId			path	string						false	"the team ID"
+//	@Param			storyboard		body	storyboardCreateRequestBody	false	"new storyboard object"
+//	@Success		200				object	standardJsonResponse{data=thunderdome.Storyboard}
+//	@Failure		403				object	standardJsonResponse{}
+//	@Failure		500				object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/storyboards [post]
+//	@Router			/teams/{teamId}/users/{userId}/storyboards [post]
+//	@Router			/{orgId}/teams/{teamId}/users/{userId}/storyboards [post]
+//	@Router			/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards [post]
 func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -107,16 +108,17 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 }
 
 // handleStoryboardGet gets the storyboard by ID
-// @Summary      Get Storyboard
-// @Description  get storyboard by ID
-// @Tags         storyboard
-// @Produce      json
-// @Param        storyboardId  path    string  true  "the storyboard ID to get"
-// @Success      200           object  standardJsonResponse{data=thunderdome.Storyboard}
-// @Failure      403           object  standardJsonResponse{}
-// @Failure      404           object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /storyboards/{storyboardId} [get]
+//
+//	@Summary		Get Storyboard
+//	@Description	get storyboard by ID
+//	@Tags			storyboard
+//	@Produce		json
+//	@Param			storyboardId	path	string	true	"the storyboard ID to get"
+//	@Success		200				object	standardJsonResponse{data=thunderdome.Storyboard}
+//	@Failure		403				object	standardJsonResponse{}
+//	@Failure		404				object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/storyboards/{storyboardId} [get]
 func (s *Service) handleStoryboardGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -149,18 +151,19 @@ func (s *Service) handleStoryboardGet() http.HandlerFunc {
 }
 
 // handleGetUserStoryboards looks up storyboards associated with UserID
-// @Summary      Get Storyboards
-// @Description  get list of storyboards for the user
-// @Tags         storyboard
-// @Produce      json
-// @Param        userId  path    string  true   "the user ID to get storyboards for"
-// @Param        limit   query   int     false  "Max number of results to return"
-// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Storyboard}
-// @Failure      403     object  standardJsonResponse{}
-// @Failure      404     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/storyboards [get]
+//
+//	@Summary		Get Storyboards
+//	@Description	get list of storyboards for the user
+//	@Tags			storyboard
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID to get storyboards for"
+//	@Param			limit	query	int		false	"Max number of results to return"
+//	@Param			offset	query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Storyboard}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		404		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/storyboards [get]
 func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -194,17 +197,18 @@ func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 }
 
 // handleGetStoryboards gets a list of storyboards
-// @Summary      Get Storyboards
-// @Description  get list of storyboards
-// @Tags         storyboard
-// @Produce      json
-// @Param        limit   query   int      false  "Max number of results to return"
-// @Param        offset  query   int      false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Param        active  query   boolean  false  "Only active storyboards"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Storyboard}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /storyboards [get]
+//
+//	@Summary		Get Storyboards
+//	@Description	get list of storyboards
+//	@Tags			storyboard
+//	@Produce		json
+//	@Param			limit	query	int		false	"Max number of results to return"
+//	@Param			offset	query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Param			active	query	boolean	false	"Only active storyboards"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Storyboard}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/storyboards [get]
 func (s *Service) handleGetStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -241,16 +245,17 @@ func (s *Service) handleGetStoryboards() http.HandlerFunc {
 }
 
 // handleStoryboardDelete handles deleting a storyboard
-// @Summary      Storyboard Delete
-// @Description  Delete a storyboard
-// @Param        storyboardId  path  string  true  "the storyboard ID"
-// @Tags         storyboard
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /storyboards/{storyboardId} [delete]
+//
+//	@Summary		Storyboard Delete
+//	@Description	Delete a storyboard
+//	@Param			storyboardId	path	string	true	"the storyboard ID"
+//	@Tags			storyboard
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/storyboards/{storyboardId} [delete]
 func (s *Service) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -280,17 +285,18 @@ type storyboardGoalAddRequestBody struct {
 }
 
 // handleStoryboardGoalAdd handles adding a goal to a storyboard
-// @Summary      Storyboard Goal Add
-// @Description  Add a goal to a storyboard
-// @Param        storyboardId  path  string  true  "the storyboard ID"
-// @Param        storyboard    body    storyboardGoalAddRequestBody  false  "the goal to add"
-// @Tags         storyboard
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /storyboards/{storyboardId}/goals [post]
+//
+//	@Summary		Storyboard Goal Add
+//	@Description	Add a goal to a storyboard
+//	@Param			storyboardId	path	string							true	"the storyboard ID"
+//	@Param			storyboard		body	storyboardGoalAddRequestBody	false	"the goal to add"
+//	@Tags			storyboard
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/storyboards/{storyboardId}/goals [post]
 func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -341,17 +347,18 @@ type storyboardColumnAddRequestBody struct {
 }
 
 // handleStoryboardColumnAdd handles adding a column to a storyboard goal
-// @Summary      Storyboard Column Add
-// @Description  Add a column to a storyboard goal
-// @Param        storyboardId  path  string  true  "the storyboard ID"
-// @Param        storyboard    body    storyboardColumnAddRequestBody  false "request body for adding a column"
-// @Tags         storyboard
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /storyboards/{storyboardId}/columns [post]
+//
+//	@Summary		Storyboard Column Add
+//	@Description	Add a column to a storyboard goal
+//	@Param			storyboardId	path	string							true	"the storyboard ID"
+//	@Param			storyboard		body	storyboardColumnAddRequestBody	false	"request body for adding a column"
+//	@Tags			storyboard
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/storyboards/{storyboardId}/columns [post]
 func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -409,17 +416,18 @@ type storyboardStoryAddRequestBody struct {
 }
 
 // handleStoryboardStoryAdd handles adding a story to a storyboard goal column
-// @Summary      Storyboard Story Add
-// @Description  Add a story to a storyboard goal column
-// @Param        storyboardId  path  string  true  "the storyboard ID"
-// @Param        storyboard    body    storyboardStoryAddRequestBody  false "request body for adding a story"
-// @Tags         storyboard
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /storyboards/{storyboardId}/stories [post]
+//
+//	@Summary		Storyboard Story Add
+//	@Description	Add a story to a storyboard goal column
+//	@Param			storyboardId	path	string							true	"the storyboard ID"
+//	@Param			storyboard		body	storyboardStoryAddRequestBody	false	"request body for adding a story"
+//	@Tags			storyboard
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/storyboards/{storyboardId}/stories [post]
 func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -478,18 +486,19 @@ type storyboardStoryMoveRequestBody struct {
 }
 
 // handleStoryboardStoryMove handles moving a story in a storyboard
-// @Summary      Storyboard Story Move
-// @Description  Move a story in a storyboard
-// @Param        storyboardId  path  string  true  "the storyboard ID"
-// @Param        storyId  path  string  true  "the story ID"
-// @Param        storyboard    body    storyboardStoryMoveRequestBody  false  "target goal column and place before story"
-// @Tags         storyboard
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /storyboards/{storyboardId}/stories/{storyId}/move [put]
+//
+//	@Summary		Storyboard Story Move
+//	@Description	Move a story in a storyboard
+//	@Param			storyboardId	path	string							true	"the storyboard ID"
+//	@Param			storyId			path	string							true	"the story ID"
+//	@Param			storyboard		body	storyboardStoryMoveRequestBody	false	"target goal column and place before story"
+//	@Tags			storyboard
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/storyboards/{storyboardId}/stories/{storyId}/move [put]
 func (s *Service) handleStoryboardStoryMove(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

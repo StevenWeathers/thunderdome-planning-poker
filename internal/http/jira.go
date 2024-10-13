@@ -13,15 +13,16 @@ import (
 )
 
 // handleGetUserJiraInstances gets a list of jira instances associated to user
-// @Summary      Get User Jira Instances
-// @Description  get list of Jira instances associated to user
-// @Tags         jira
-// @Produce      json
-// @Param        userId  path    string                                          true  "the user ID to find jira instances for"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.JiraInstance}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/jira-instances [get]
+//
+//	@Summary		Get User Jira Instances
+//	@Description	get list of Jira instances associated to user
+//	@Tags			jira
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID to find jira instances for"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.JiraInstance}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/jira-instances [get]
 func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -54,16 +55,17 @@ type jiraInstanceRequestBody struct {
 }
 
 // handleJiraInstanceCreate creates a new Jira Instance
-// @Summary      Create Jira Instance
-// @Description  Creates a Jira Instance associated to user
-// @Tags         jira
-// @Produce      json
-// @Param        userId  path    string                                          true  "the user ID to associate jira instance to"
-// @Param        jira  body    jiraInstanceRequestBody                                true  "new jira_instance object"
-// @Success      200    object  standardJsonResponse{data=thunderdome.JiraInstance}  "returns new jira instance"
-// @Failure      500    object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/jira-instances [post]
+//
+//	@Summary		Create Jira Instance
+//	@Description	Creates a Jira Instance associated to user
+//	@Tags			jira
+//	@Produce		json
+//	@Param			userId	path	string												true	"the user ID to associate jira instance to"
+//	@Param			jira	body	jiraInstanceRequestBody								true	"new jira_instance object"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.JiraInstance}	"returns new jira instance"
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/jira-instances [post]
 func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -109,17 +111,18 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 }
 
 // handleJiraInstanceUpdate updates a Jira Instance
-// @Summary      Update Jira Instance
-// @Description  Updates a Jira Instance associated to user
-// @Tags         jira
-// @Produce      json
-// @Param        userId  path    string                                          true  "the user ID jira instance associated to"
-// @Param        instanceId  path    string                                          true  "the jira_instance ID to update"
-// @Param        jira  body    jiraInstanceRequestBody                                true  "updated jira_instance object"
-// @Success      200    object  standardJsonResponse{data=thunderdome.JiraInstance}  "returns updated jira instance"
-// @Failure      500    object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/jira-instances/{instanceId} [put]
+//
+//	@Summary		Update Jira Instance
+//	@Description	Updates a Jira Instance associated to user
+//	@Tags			jira
+//	@Produce		json
+//	@Param			userId		path	string												true	"the user ID jira instance associated to"
+//	@Param			instanceId	path	string												true	"the jira_instance ID to update"
+//	@Param			jira		body	jiraInstanceRequestBody								true	"updated jira_instance object"
+//	@Success		200			object	standardJsonResponse{data=thunderdome.JiraInstance}	"returns updated jira instance"
+//	@Failure		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/jira-instances/{instanceId} [put]
 func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -171,16 +174,17 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 }
 
 // handleJiraInstanceDelete deletes a Jira Instance
-// @Summary      Delete Jira Instance
-// @Description  Deletes a Jira Instance associated to user
-// @Tags         jira
-// @Produce      json
-// @Param        userId  path    string                                          true  "the user ID jira instance associated to"
-// @Param        instanceId  path    string                                          true  "the jira_instance ID to delete"
-// @Success      200    object  standardJsonResponse{}
-// @Failure      500    object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/jira-instances/{instanceId} [delete]
+//
+//	@Summary		Delete Jira Instance
+//	@Description	Deletes a Jira Instance associated to user
+//	@Tags			jira
+//	@Produce		json
+//	@Param			userId		path	string	true	"the user ID jira instance associated to"
+//	@Param			instanceId	path	string	true	"the jira_instance ID to delete"
+//	@Success		200			object	standardJsonResponse{}
+//	@Failure		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/jira-instances/{instanceId} [delete]
 func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -219,17 +223,18 @@ type jiraStoryJQLSearchRequestBody struct {
 }
 
 // handleJiraStoryJQLSearch queries Jira API for Stories by JQL
-// @Summary      Query Jira for Stories by JQL
-// @Description  Queries Jira Instance API for Stories by JQL
-// @Tags         jira
-// @Produce      json
-// @Param        userId  path    string                                          true  "the user ID associated to jira instance"
-// @Param        instanceId  path    string                                          true  "the jira_instance ID to query"
-// @Param        jira  body    jiraStoryJQLSearchRequestBody                                true  "jql search request"
-// @Success      200    object  standardJsonResponse{}
-// @Failure      500    object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/jira-instances/{instanceId}/jql-story-search [post]
+//
+//	@Summary		Query Jira for Stories by JQL
+//	@Description	Queries Jira Instance API for Stories by JQL
+//	@Tags			jira
+//	@Produce		json
+//	@Param			userId		path	string							true	"the user ID associated to jira instance"
+//	@Param			instanceId	path	string							true	"the jira_instance ID to query"
+//	@Param			jira		body	jiraStoryJQLSearchRequestBody	true	"jql search request"
+//	@Success		200			object	standardJsonResponse{}
+//	@Failure		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/jira-instances/{instanceId}/jql-story-search [post]
 func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

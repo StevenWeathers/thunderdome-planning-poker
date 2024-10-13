@@ -11,14 +11,15 @@ import (
 )
 
 // handleAppStats gets the applications stats
-// @Summary      Get Application Stats
-// @Description  Get application stats such as count of registered users
-// @Tags         admin
-// @Produce      json
-// @Success      200  object  standardJsonResponse{data=[]thunderdome.ApplicationStats}
-// @Failure      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/stats [get]
+//
+//	@Summary		Get Application Stats
+//	@Description	Get application stats such as count of registered users
+//	@Tags			admin
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{data=[]thunderdome.ApplicationStats}
+//	@Failure		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/stats [get]
 func (s *Service) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -35,16 +36,17 @@ func (s *Service) handleAppStats() http.HandlerFunc {
 }
 
 // handleGetRegisteredUsers gets a list of registered users
-// @Summary      Get Registered Users
-// @Description  Get list of registered users
-// @Tags         admin
-// @Produce      json
-// @Param        limit   query   int  false  "Max number of results to return"
-// @Param        offset  query   int  false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.User}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/users [get]
+//
+//	@Summary		Get Registered Users
+//	@Description	Get list of registered users
+//	@Tags			admin
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.User}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/users [get]
 func (s *Service) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -77,16 +79,17 @@ type userCreateRequestBody struct {
 }
 
 // handleUserCreate registers a new authenticated user
-// @Summary      Create Registered User
-// @Description  Create a registered user
-// @Tags         admin
-// @Produce      json
-// @param        newUser  body    userCreateRequestBody  true  "new user object"
-// @Success      200      object  standardJsonResponse{data=thunderdome.User}
-// @Failure      400      object  standardJsonResponse{}
-// @Failure      500      object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/users [post]
+//
+//	@Summary		Create Registered User
+//	@Description	Create a registered user
+//	@Tags			admin
+//	@Produce		json
+//	@param			newUser	body	userCreateRequestBody	true	"new user object"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.User}
+//	@Failure		400		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/users [post]
 func (s *Service) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -126,16 +129,17 @@ func (s *Service) handleUserCreate() http.HandlerFunc {
 }
 
 // handleUserPromote handles promoting a user to admin
-// @Summary      Promotes User
-// @Description  Promotes a user to admin
-// @Description  Grants read and write access to administrative information
-// @Tags         admin
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID to promote"
-// @Success      200     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/users/{userId}/promote/ [patch]
+//
+//	@Summary		Promotes User
+//	@Description	Promotes a user to admin
+//	@Description	Grants read and write access to administrative information
+//	@Tags			admin
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID to promote"
+//	@Success		200		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/users/{userId}/promote/ [patch]
 func (s *Service) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -161,15 +165,16 @@ func (s *Service) handleUserPromote() http.HandlerFunc {
 }
 
 // handleUserDemote handles demoting a user to registered
-// @Summary      Demote User
-// @Description  Demotes a user from admin to registered
-// @Tags         admin
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID to demote"
-// @Success      200     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/users/{userId}/demote [patch]
+//
+//	@Summary		Demote User
+//	@Description	Demotes a user from admin to registered
+//	@Tags			admin
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID to demote"
+//	@Success		200		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/users/{userId}/demote [patch]
 func (s *Service) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -195,15 +200,16 @@ func (s *Service) handleUserDemote() http.HandlerFunc {
 }
 
 // handleUserDisable handles disabling a user
-// @Summary      Disable User
-// @Description  Disable a user from logging in
-// @Tags         admin
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID to disable"
-// @Success      200     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/users/{userId}/disable [patch]
+//
+//	@Summary		Disable User
+//	@Description	Disable a user from logging in
+//	@Tags			admin
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID to disable"
+//	@Success		200		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/users/{userId}/disable [patch]
 func (s *Service) handleUserDisable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -229,15 +235,16 @@ func (s *Service) handleUserDisable() http.HandlerFunc {
 }
 
 // handleUserEnable handles enabling a user
-// @Summary      Enable User
-// @Description  Enable a user to allow login
-// @Tags         admin
-// @Produce      json
-// @Param        userId  path    string  true  "the user ID to enable"
-// @Success      200     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/users/{userId}/enable [patch]
+//
+//	@Summary		Enable User
+//	@Description	Enable a user to allow login
+//	@Tags			admin
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID to enable"
+//	@Success		200		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/users/{userId}/enable [patch]
 func (s *Service) handleUserEnable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -263,16 +270,17 @@ func (s *Service) handleUserEnable() http.HandlerFunc {
 }
 
 // handleAdminUpdateUserPassword attempts to update a user's password
-// @Summary      Update Password
-// @Description  Updates the user's password
-// @Tags         admin
-// @Param        userId     path    string                     true   "the user ID to update password for"
-// @Param        passwords  body    updatePasswordRequestBody  false  "update password object"
-// @Success      200        object  standardJsonResponse{}
-// @Success      400        object  standardJsonResponse{}
-// @Success      500        object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/users/{userId}/password [patch]
+//
+//	@Summary		Update Password
+//	@Description	Updates the user's password
+//	@Tags			admin
+//	@Param			userId		path	string						true	"the user ID to update password for"
+//	@Param			passwords	body	updatePasswordRequestBody	false	"update password object"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		400			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/users/{userId}/password [patch]
 func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -319,16 +327,17 @@ func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 }
 
 // handleGetOrganizations gets a list of organizations
-// @Summary      Get Organizations
-// @Description  Get a list of organizations
-// @Tags         admin
-// @Produce      json
-// @Param        limit   query   int  false  "Max number of results to return"
-// @Param        offset  query   int  false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Organization}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/organizations [get]
+//
+//	@Summary		Get Organizations
+//	@Description	Get a list of organizations
+//	@Tags			admin
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Organization}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/organizations [get]
 func (s *Service) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -345,16 +354,17 @@ func (s *Service) handleGetOrganizations() http.HandlerFunc {
 }
 
 // handleGetTeams gets a list of teams
-// @Summary      Get Teams
-// @Description  Get a list of teams
-// @Tags         admin
-// @Produce      json
-// @Param        limit   query   int  false  "Max number of results to return"
-// @Param        offset  query   int  false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Team}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/teams [get]
+//
+//	@Summary		Get Teams
+//	@Description	Get a list of teams
+//	@Tags			admin
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Team}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/teams [get]
 func (s *Service) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -373,16 +383,17 @@ func (s *Service) handleGetTeams() http.HandlerFunc {
 }
 
 // handleGetAPIKeys gets a list of APIKeys
-// @Summary      Get API Keys
-// @Description  Get a list of users API Keys
-// @Tags         admin
-// @Produce      json
-// @Param        limit   query   int  false  "Max number of results to return"
-// @Param        offset  query   int  false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.UserAPIKey}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/apikeys [get]
+//
+//	@Summary		Get API Keys
+//	@Description	Get a list of users API Keys
+//	@Tags			admin
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.UserAPIKey}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/apikeys [get]
 func (s *Service) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -395,18 +406,19 @@ func (s *Service) handleGetAPIKeys() http.HandlerFunc {
 }
 
 // handleSearchRegisteredUsersByEmail gets a list of registered users filtered by Email likeness
-// @Summary      Search Registered Users by Email
-// @Description  Get list of registered users filtered by Email likeness
-// @Tags         admin
-// @Produce      json
-// @Param        search  query   string  true   "The user Email to search for"
-// @Param        limit   query   int     false  "Max number of results to return"
-// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.User}
-// @Failure      400     object  standardJsonResponse{}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /admin/search/users/email [get]
+//
+//	@Summary		Search Registered Users by Email
+//	@Description	Get list of registered users filtered by Email likeness
+//	@Tags			admin
+//	@Produce		json
+//	@Param			search	query	string	true	"The user Email to search for"
+//	@Param			limit	query	int		false	"Max number of results to return"
+//	@Param			offset	query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.User}
+//	@Failure		400		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/search/users/email [get]
 func (s *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

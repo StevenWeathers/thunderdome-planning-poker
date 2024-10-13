@@ -16,18 +16,19 @@ import (
 )
 
 // handleGetUserGames looks up poker games associated with UserID
-// @Summary      Get PokerGames
-// @Description  get list of poker games for the user
-// @Tags         poker
-// @Produce      json
-// @Param        userId  path    string  true   "the user ID to get poker games for"
-// @Param        limit   query   int     false  "Max number of results to return"
-// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Poker}
-// @Failure      403     object  standardJsonResponse{}
-// @Failure      404     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/battles [get]
+//
+//	@Summary		Get PokerGames
+//	@Description	get list of poker games for the user
+//	@Tags			poker
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID to get poker games for"
+//	@Param			limit	query	int		false	"Max number of results to return"
+//	@Param			offset	query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Poker}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		404		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/battles [get]
 func (s *Service) handleGetUserGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		limit, offset := getLimitOffsetFromRequest(r)
@@ -69,23 +70,24 @@ type battleRequestBody struct {
 }
 
 // handlePokerCreate handles creating a poker game
-// @Summary      Create Poker Game
-// @Description  Create a poker game associated to the user
-// @Tags         poker
-// @Produce      json
-// @Param        userId        path    string             true   "the user ID"
-// @Param        orgId         path    string             false  "the organization ID"
-// @Param        departmentId  path    string             false  "the department ID"
-// @Param        teamId        path    string             false  "the team ID"
-// @Param        battle        body    battleRequestBody  false  "new poker game object"
-// @Success      200           object  standardJsonResponse{data=thunderdome.Poker}
-// @Failure      403           object  standardJsonResponse{}
-// @Failure      500           object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/battles [post]
-// @Router       /teams/{teamId}/users/{userId}/battles [post]
-// @Router       /{orgId}/teams/{teamId}/users/{userId}/battles [post]
-// @Router       /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
+//
+//	@Summary		Create Poker Game
+//	@Description	Create a poker game associated to the user
+//	@Tags			poker
+//	@Produce		json
+//	@Param			userId			path	string				true	"the user ID"
+//	@Param			orgId			path	string				false	"the organization ID"
+//	@Param			departmentId	path	string				false	"the department ID"
+//	@Param			teamId			path	string				false	"the team ID"
+//	@Param			battle			body	battleRequestBody	false	"new poker game object"
+//	@Success		200				object	standardJsonResponse{data=thunderdome.Poker}
+//	@Failure		403				object	standardJsonResponse{}
+//	@Failure		500				object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/battles [post]
+//	@Router			/teams/{teamId}/users/{userId}/battles [post]
+//	@Router			/{orgId}/teams/{teamId}/users/{userId}/battles [post]
+//	@Router			/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
 func (s *Service) handlePokerCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -196,17 +198,18 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 }
 
 // handleGetPokerGames gets a list of poker games
-// @Summary      Get Poker Games
-// @Description  get list of poker games
-// @Tags         poker
-// @Produce      json
-// @Param        limit   query   int      false  "Max number of results to return"
-// @Param        offset  query   int      false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Param        active  query   boolean  false  "Only active poker games"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Poker}
-// @Failure      500     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /battles [get]
+//
+//	@Summary		Get Poker Games
+//	@Description	get list of poker games
+//	@Tags			poker
+//	@Produce		json
+//	@Param			limit	query	int		false	"Max number of results to return"
+//	@Param			offset	query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Param			active	query	boolean	false	"Only active poker games"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.Poker}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/battles [get]
 func (s *Service) handleGetPokerGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -242,16 +245,17 @@ func (s *Service) handleGetPokerGames() http.HandlerFunc {
 }
 
 // handleGetPokerGame gets the poker game by ID
-// @Summary      Get Poker Game
-// @Description  get poker game by ID
-// @Tags         poker
-// @Produce      json
-// @Param        battleId  path    string  true  "the poker game ID to get"
-// @Success      200       object  standardJsonResponse{data=thunderdome.Poker}
-// @Failure      403       object  standardJsonResponse{}
-// @Failure      404       object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /battles/{battleId} [get]
+//
+//	@Summary		Get Poker Game
+//	@Description	get poker game by ID
+//	@Tags			poker
+//	@Produce		json
+//	@Param			battleId	path	string	true	"the poker game ID to get"
+//	@Success		200			object	standardJsonResponse{data=thunderdome.Poker}
+//	@Failure		403			object	standardJsonResponse{}
+//	@Failure		404			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/battles/{battleId} [get]
 func (s *Service) handleGetPokerGame() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -293,17 +297,18 @@ type planRequestBody struct {
 }
 
 // handlePokerStoryAdd handles adding a story to poker
-// @Summary      Create Poker Story
-// @Description  Creates a poker story
-// @Param        battleId  path  string           true  "the poker game ID"
-// @Param        plan      body  planRequestBody  true  "new story object"
-// @Tags         poker
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /battles/{battleId}/plans [post]
+//
+//	@Summary		Create Poker Story
+//	@Description	Creates a poker story
+//	@Param			battleId	path	string			true	"the poker game ID"
+//	@Param			plan		body	planRequestBody	true	"new story object"
+//	@Tags			poker
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/battles/{battleId}/plans [post]
 func (s *Service) handlePokerStoryAdd(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -349,17 +354,18 @@ func (s *Service) handlePokerStoryAdd(pokerSvc *poker.Service) http.HandlerFunc 
 }
 
 // handlePokerStoryAdd handles deleting a story from poker
-// @Summary      Delete Poker Story
-// @Description  Deletes a poker story
-// @Param        battleId  path  string           true  "the poker game ID"
-// @Param        planId    path  string           true  "the story ID"
-// @Tags         poker
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /battles/{battleId}/plans/{planId} [delete]
+//
+//	@Summary		Delete Poker Story
+//	@Description	Deletes a poker story
+//	@Param			battleId	path	string	true	"the poker game ID"
+//	@Param			planId		path	string	true	"the story ID"
+//	@Tags			poker
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/battles/{battleId}/plans/{planId} [delete]
 func (s *Service) handlePokerStoryDelete(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -392,16 +398,17 @@ func (s *Service) handlePokerStoryDelete(pokerSvc *poker.Service) http.HandlerFu
 }
 
 // handlePokerDelete handles deleting a poker game
-// @Summary      Delete Poker Game
-// @Description  Deletes a poker game
-// @Param        battleId  path  string  true  "the poker game ID"
-// @Tags         poker
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Success      403  object  standardJsonResponse{}
-// @Success      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /battles/{battleId} [delete]
+//
+//	@Summary		Delete Poker Game
+//	@Description	Deletes a poker game
+//	@Param			battleId	path	string	true	"the poker game ID"
+//	@Tags			poker
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/battles/{battleId} [delete]
 func (s *Service) handlePokerDelete(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
