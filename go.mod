@@ -1,6 +1,6 @@
 module github.com/StevenWeathers/thunderdome-planning-poker
 
-go 1.23
+go 1.23.0
 
 require (
 	github.com/XSAM/otelsql v0.23.0
