@@ -2356,6 +2356,202 @@ type RootTranslation = {
    * U​s​e​r​ ​s​t​o​r​y​ ​m​a​p​p​i​n​g​ ​(​s​t​o​r​y​b​o​a​r​d​)​ ​i​s​ ​a​ ​v​i​s​u​a​l​i​z​a​t​i​o​n​ ​o​f​ ​t​h​e​ ​j​o​u​r​n​e​y​ ​a​ ​c​u​s​t​o​m​e​r​ ​t​a​k​e​s​ ​w​i​t​h​ ​a​ ​p​r​o​d​u​c​t​,​ ​f​r​o​m​ ​b​e​g​i​n​n​i​n​g​ ​t​o​ ​e​n​d​.​ ​I​t​ ​i​n​c​l​u​d​e​s​ ​a​l​l​ ​t​h​e​ ​t​a​s​k​s​ ​t​h​e​y​’​d​ ​t​y​p​i​c​a​l​l​y​ ​c​o​m​p​l​e​t​e​ ​a​s​ ​p​a​r​t​ ​o​f​ ​t​h​a​t​ ​j​o​u​r​n​e​y​.
    */
   storyboardDescription: string;
+  /**
+   * E​n​t​e​r​ ​s​c​a​l​e​ ​n​a​m​e
+   */
+  estimationScaleNamePlaceholder: string;
+  /**
+   * D​e​s​c​r​i​p​t​i​o​n
+   */
+  description: string;
+  /**
+   * E​n​t​e​r​ ​s​c​a​l​e​ ​d​e​s​c​r​i​p​t​i​o​n
+   */
+  estimationScaleDescriptionPlaceholder: string;
+  /**
+   * S​c​a​l​e​ ​T​y​p​e
+   */
+  scaleType: string;
+  /**
+   * S​e​l​e​c​t​ ​s​c​a​l​e​ ​t​y​p​e
+   */
+  estimationScaleTypePlaceholder: string;
+  /**
+   * S​c​a​l​e​ ​V​a​l​u​e​s
+   */
+  scaleValues: string;
+  /**
+   * E​n​t​e​r​ ​c​o​m​m​a​-​s​e​p​a​r​a​t​e​d​ ​v​a​l​u​e​s
+   */
+  estimationScaleValuesPlaceholder: string;
+  /**
+   * E​n​t​e​r​ ​v​a​l​u​e​s​ ​s​e​p​a​r​a​t​e​d​ ​b​y​ ​c​o​m​m​a​s​ ​(​e​.​g​.​,​ ​1​,​ ​2​,​ ​3​,​ ​5​,​ ​8​)
+   */
+  estimationScaleValuesHelp: string;
+  /**
+   * M​a​k​e​ ​t​h​i​s​ ​s​c​a​l​e​ ​p​u​b​l​i​c
+   */
+  estimationScaleIsPublic: string;
+  /**
+   * S​e​t​ ​a​s​ ​d​e​f​a​u​l​t​ ​s​c​a​l​e
+   */
+  estimationScaleDefault: string;
+  /**
+   * S​a​v​e​ ​S​c​a​l​e
+   */
+  estimationScaleSave: string;
+  /**
+   * E​s​t​i​m​a​t​i​o​n​ ​S​c​a​l​e​s
+   */
+  estimationScales: string;
+  /**
+   * C​r​e​a​t​e​ ​E​s​t​i​m​a​t​i​o​n​ ​S​c​a​l​e
+   */
+  estimationScaleCreate: string;
+  /**
+   * E​s​t​i​m​a​t​i​o​n​ ​s​c​a​l​e​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​c​r​e​a​t​e​d
+   */
+  estimationScaleCreateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​c​r​e​a​t​i​n​g​ ​e​s​t​i​m​a​t​i​o​n​ ​s​c​a​l​e
+   */
+  estimationScaleCreateError: string;
+  /**
+   * E​s​t​i​m​a​t​i​o​n​ ​s​c​a​l​e​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​u​p​d​a​t​e​d
+   */
+  estimationScaleUpdateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​e​s​t​i​m​a​t​i​o​n​ ​s​c​a​l​e
+   */
+  estimationScaleUpdateError: string;
+  /**
+   * E​s​t​i​m​a​t​i​o​n​ ​s​c​a​l​e​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​r​e​m​o​v​e​d
+   */
+  estimationScaleRemoveSuccess: string;
+  /**
+   * E​r​r​o​r​ ​r​e​m​o​v​i​n​g​ ​e​s​t​i​m​a​t​i​o​n​ ​s​c​a​l​e
+   */
+  estimationScaleRemoveError: string;
+  /**
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​e​s​t​i​m​a​t​i​o​n​ ​s​c​a​l​e​?
+   */
+  removeEstimationScaleConfirmText: string;
+  /**
+   * R​e​m​o​v​e​ ​E​s​t​i​m​a​t​i​o​n​ ​S​c​a​l​e
+   */
+  removeEstimationScale: string;
+  /**
+   * Y​e​s
+   */
+  yes: string;
+  /**
+   * N​o
+   */
+  no: string;
+  /**
+   * P​u​b​l​i​c
+   */
+  isPublic: string;
+  /**
+   * D​e​f​a​u​l​t
+   */
+  default: string;
+  /**
+   * P​u​b​l​i​c​ ​E​s​t​i​m​a​t​i​o​n​ ​S​c​a​l​e​s
+   */
+  publicEstimationScales: string;
+  /**
+   * O​r​g​a​n​i​z​a​t​i​o​n​ ​E​s​t​i​m​a​t​i​o​n​ ​S​c​a​l​e​s
+   */
+  organizationEstimationScales: string;
+  /**
+   * T​e​a​m​ ​E​s​t​i​m​a​t​i​o​n​ ​S​c​a​l​e​s
+   */
+  teamEstimationScales: string;
+  /**
+   * A​l​l​o​w​ ​C​u​m​u​l​a​t​i​v​e​ ​V​o​t​i​n​g​ ​(​m​o​r​e​ ​t​h​a​n​ ​1​ ​v​o​t​e​ ​p​e​r​ ​i​t​e​m​ ​g​r​o​u​p​)
+   */
+  allowCumulativeVotingLabel: string;
+  /**
+   * A​c​t​i​v​e​ ​S​u​b​s​c​r​i​p​t​i​o​n​s
+   */
+  activeSubscriptions: string;
+  /**
+   * R​e​t​r​o​s​p​e​c​t​i​v​e​ ​T​e​m​p​l​a​t​e​s
+   */
+  retroTemplates: string;
+  /**
+   * P​u​b​l​i​c​ ​R​e​t​r​o​ ​T​e​m​p​l​a​t​e​s
+   */
+  publicRetroTemplates: string;
+  /**
+   * O​r​g​a​n​i​z​a​t​i​o​n​ ​R​e​t​r​o​ ​T​e​m​p​l​a​t​e​s
+   */
+  organizationRetroTemplates: string;
+  /**
+   * T​e​a​m​ ​R​e​t​r​o​ ​T​e​m​p​l​a​t​e​s
+   */
+  teamRetroTemplates: string;
+  /**
+   * E​n​t​e​r​ ​t​e​m​p​l​a​t​e​ ​n​a​m​e
+   */
+  retroTemplateNamePlaceholder: string;
+  /**
+   * E​n​t​e​r​ ​t​e​m​p​l​a​t​e​ ​d​e​s​c​r​i​p​t​i​o​n
+   */
+  retroTemplateDescriptionPlaceholder: string;
+  /**
+   * F​o​r​m​a​t
+   */
+  format: string;
+  /**
+   * M​a​k​e​ ​t​h​i​s​ ​t​e​m​p​l​a​t​e​ ​p​u​b​l​i​c
+   */
+  retroTemplateIsPublic: string;
+  /**
+   * S​a​v​e​ ​T​e​m​p​l​a​t​e
+   */
+  retroTemplateSave: string;
+  /**
+   * C​r​e​a​t​e​ ​R​e​t​r​o​s​p​e​c​t​i​v​e​ ​T​e​m​p​l​a​t​e
+   */
+  retroTemplateCreate: string;
+  /**
+   * R​e​t​r​o​s​p​e​c​t​i​v​e​ ​t​e​m​p​l​a​t​e​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​c​r​e​a​t​e​d
+   */
+  retroTemplateCreateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​c​r​e​a​t​i​n​g​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​ ​t​e​m​p​l​a​t​e
+   */
+  retroTemplateCreateError: string;
+  /**
+   * R​e​t​r​o​s​p​e​c​t​i​v​e​ ​t​e​m​p​l​a​t​e​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​u​p​d​a​t​e​d
+   */
+  retroTemplateUpdateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​ ​t​e​m​p​l​a​t​e
+   */
+  retroTemplateUpdateError: string;
+  /**
+   * R​e​t​r​o​s​p​e​c​t​i​v​e​ ​t​e​m​p​l​a​t​e​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​r​e​m​o​v​e​d
+   */
+  retroTemplateRemoveSuccess: string;
+  /**
+   * E​r​r​o​r​ ​r​e​m​o​v​i​n​g​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​ ​t​e​m​p​l​a​t​e
+   */
+  retroTemplateRemoveError: string;
+  /**
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​ ​t​e​m​p​l​a​t​e​?
+   */
+  removeRetroTemplateConfirmText: string;
+  /**
+   * R​e​m​o​v​e​ ​R​e​t​r​o​s​p​e​c​t​i​v​e​ ​T​e​m​p​l​a​t​e
+   */
+  removeRetroTemplate: string;
+  /**
+   * S​e​t​ ​a​s​ ​d​e​f​a​u​l​t​ ​t​e​m​p​l​a​t​e
+   */
+  retroTemplateDefault: string;
 };
 
 export type TranslationFunctions = {
@@ -4691,6 +4887,202 @@ export type TranslationFunctions = {
    * User story mapping (storyboard) is a visualization of the journey a customer takes with a product, from beginning to end. It includes all the tasks they’d typically complete as part of that journey.
    */
   storyboardDescription: () => LocalizedString;
+  /**
+   * Enter scale name
+   */
+  estimationScaleNamePlaceholder: () => LocalizedString;
+  /**
+   * Description
+   */
+  description: () => LocalizedString;
+  /**
+   * Enter scale description
+   */
+  estimationScaleDescriptionPlaceholder: () => LocalizedString;
+  /**
+   * Scale Type
+   */
+  scaleType: () => LocalizedString;
+  /**
+   * Select scale type
+   */
+  estimationScaleTypePlaceholder: () => LocalizedString;
+  /**
+   * Scale Values
+   */
+  scaleValues: () => LocalizedString;
+  /**
+   * Enter comma-separated values
+   */
+  estimationScaleValuesPlaceholder: () => LocalizedString;
+  /**
+   * Enter values separated by commas (e.g., 1, 2, 3, 5, 8)
+   */
+  estimationScaleValuesHelp: () => LocalizedString;
+  /**
+   * Make this scale public
+   */
+  estimationScaleIsPublic: () => LocalizedString;
+  /**
+   * Set as default scale
+   */
+  estimationScaleDefault: () => LocalizedString;
+  /**
+   * Save Scale
+   */
+  estimationScaleSave: () => LocalizedString;
+  /**
+   * Estimation Scales
+   */
+  estimationScales: () => LocalizedString;
+  /**
+   * Create Estimation Scale
+   */
+  estimationScaleCreate: () => LocalizedString;
+  /**
+   * Estimation scale successfully created
+   */
+  estimationScaleCreateSuccess: () => LocalizedString;
+  /**
+   * Error creating estimation scale
+   */
+  estimationScaleCreateError: () => LocalizedString;
+  /**
+   * Estimation scale successfully updated
+   */
+  estimationScaleUpdateSuccess: () => LocalizedString;
+  /**
+   * Error updating estimation scale
+   */
+  estimationScaleUpdateError: () => LocalizedString;
+  /**
+   * Estimation scale successfully removed
+   */
+  estimationScaleRemoveSuccess: () => LocalizedString;
+  /**
+   * Error removing estimation scale
+   */
+  estimationScaleRemoveError: () => LocalizedString;
+  /**
+   * Are you sure you want to remove this estimation scale?
+   */
+  removeEstimationScaleConfirmText: () => LocalizedString;
+  /**
+   * Remove Estimation Scale
+   */
+  removeEstimationScale: () => LocalizedString;
+  /**
+   * Yes
+   */
+  yes: () => LocalizedString;
+  /**
+   * No
+   */
+  no: () => LocalizedString;
+  /**
+   * Public
+   */
+  isPublic: () => LocalizedString;
+  /**
+   * Default
+   */
+  default: () => LocalizedString;
+  /**
+   * Public Estimation Scales
+   */
+  publicEstimationScales: () => LocalizedString;
+  /**
+   * Organization Estimation Scales
+   */
+  organizationEstimationScales: () => LocalizedString;
+  /**
+   * Team Estimation Scales
+   */
+  teamEstimationScales: () => LocalizedString;
+  /**
+   * Allow Cumulative Voting (more than 1 vote per item group)
+   */
+  allowCumulativeVotingLabel: () => LocalizedString;
+  /**
+   * Active Subscriptions
+   */
+  activeSubscriptions: () => LocalizedString;
+  /**
+   * Retrospective Templates
+   */
+  retroTemplates: () => LocalizedString;
+  /**
+   * Public Retro Templates
+   */
+  publicRetroTemplates: () => LocalizedString;
+  /**
+   * Organization Retro Templates
+   */
+  organizationRetroTemplates: () => LocalizedString;
+  /**
+   * Team Retro Templates
+   */
+  teamRetroTemplates: () => LocalizedString;
+  /**
+   * Enter template name
+   */
+  retroTemplateNamePlaceholder: () => LocalizedString;
+  /**
+   * Enter template description
+   */
+  retroTemplateDescriptionPlaceholder: () => LocalizedString;
+  /**
+   * Format
+   */
+  format: () => LocalizedString;
+  /**
+   * Make this template public
+   */
+  retroTemplateIsPublic: () => LocalizedString;
+  /**
+   * Save Template
+   */
+  retroTemplateSave: () => LocalizedString;
+  /**
+   * Create Retrospective Template
+   */
+  retroTemplateCreate: () => LocalizedString;
+  /**
+   * Retrospective template successfully created
+   */
+  retroTemplateCreateSuccess: () => LocalizedString;
+  /**
+   * Error creating retrospective template
+   */
+  retroTemplateCreateError: () => LocalizedString;
+  /**
+   * Retrospective template successfully updated
+   */
+  retroTemplateUpdateSuccess: () => LocalizedString;
+  /**
+   * Error updating retrospective template
+   */
+  retroTemplateUpdateError: () => LocalizedString;
+  /**
+   * Retrospective template successfully removed
+   */
+  retroTemplateRemoveSuccess: () => LocalizedString;
+  /**
+   * Error removing retrospective template
+   */
+  retroTemplateRemoveError: () => LocalizedString;
+  /**
+   * Are you sure you want to remove this retrospective template?
+   */
+  removeRetroTemplateConfirmText: () => LocalizedString;
+  /**
+   * Remove Retrospective Template
+   */
+  removeRetroTemplate: () => LocalizedString;
+  /**
+   * Set as default template
+   */
+  retroTemplateDefault: () => LocalizedString;
 };
 
 export type Formatters = {};
