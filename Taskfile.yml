@@ -1,0 +1,114 @@
+version: '3'
+
+vars:
+  BINARY_NAME: thunderdome-planning-poker
+  BINARY_UNIX: $(BINARY_NAME)_unix
+  BINARY_WINDOWS: $(BINARY_NAME).exe
+  SWAGGER_DOCS_DIR: docs/swagger
+
+tasks:
+  install:
+    cmds:
+      - go mod download
+      - go install github.com/swaggo/swag/cmd/swag@1.8.3
+      - go install github.com/pressly/goose/v3/cmd/goose@latest
+      - npm ci --prefix ui
+
+  update-ui-deps:
+    cmds:
+      - npm update --prefix ui
+
+  update-go-deps:
+    cmds:
+      - go get -u ./...
+
+  clean:
+    cmds:
+      - rm -f {{.BINARY_NAME}}
+      - rm -f {{.BINARY_UNIX}}
+      - rm -f {{.BINARY_WINDOWS}}
+      - rm -rf ui/dist
+      - rm -rf release
+      - rm -rf {{ .SWAGGER_DOCS_DIR }}
+
+  gen-swag:
+    cmds:
+      - swag fmt
+      - swag init -g internal/http/http.go -o {{ .SWAGGER_DOCS_DIR }}
+
+  gen-i8n:
+    cmds:
+      - npm run locales --prefix ui
+
+  fmt-ui:
+    deps: [ gen-i8n ]
+    cmds:
+      - npm run format --prefix ui
+
+  fmt-e2e:
+    cmds:
+      - npm run format --prefix e2e
+
+  fmt-go:
+    deps: [ gen-swag ]
+    cmds:
+      - goimports -w .
+
+  format:
+    deps: [ fmt-go, fmt-ui, fmt-e2e ]
+
+  test-go:
+    cmds:
+      - go test -v ./... | grep -v {{ .SWAGGER_DOCS_DIR }}
+
+  build-ui:
+    deps: [ fmt-ui ]
+    cmds:
+      - npm run build --prefix ui
+
+  build-go:
+    deps: [ fmt-go ]
+    cmds:
+      - go build -o thunderdome-planning-poker -v
+
+  build-linux:
+    deps: [ gen-swag, build-ui ]
+    cmds:
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o {{.BINARY_UNIX}} -v
+
+  build-windows:
+    deps: [ gen-swag, build-ui ]
+    cmds:
+      - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o {{.BINARY_WINDOWS}} -v
+
+  build:
+    deps: [ fmt-go, build-ui ]
+    cmds:
+      - go build -o thunderdome-planning-poker -v
+
+  dev:
+    deps: [ build-ui ]
+    cmds:
+      - task: build
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_NAME}} live
+
+  dev-go:
+    cmds:
+      - task: build-go
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_NAME}} live
+
+  dev-secure:
+    cmds:
+      - task: build
+      - caddy start
+      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" COOKIE_SECURE="false" ./{{.BINARY_NAME}} live
+
+  dev-secure-go:
+    cmds:
+      - task: build-go
+      - caddy start --config build/dev.caddyfile
+      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" COOKIE_SECURE="false" ./{{.BINARY_NAME}} live
+
+  run:
+    cmds:
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./$(BINARY_NAME)

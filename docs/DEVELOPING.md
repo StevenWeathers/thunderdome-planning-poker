@@ -11,44 +11,40 @@
 - [Code Review Comments guide](https://go.dev/wiki/CodeReviewComments) from the Go project should be
   followed
 
-### Format code before commit
+## Developing locally
 
-Run `make format` to format all go and frontend code before commit
+There are a few ways to run the application locally, the easiest way is to
+use [Docker Compose](https://docs.docker.com/compose/), but you can also run
+the application directly on your machine provided you have the dependencies installed.
 
-- not doing so can result in a failed build on GitHub
+- [Building and running with Docker Compose](#building-and-running-with-docker-compose)
+- [Build and Run without Docker Compose](#build-and-run-without-docker-compose)
+- [Creating SQL Migrations](#creating-sql-migrations)
+- [Adding new Localizations](#adding-new-localizations)
+- [Format code before commit](#format-code-before-commit)
 
-## Building and running with Docker (preferred solution)
-
-### Using Docker Compose
+## Building and running with Docker Compose
 
 ```
 docker-compose up --build
 ```
 
-### Using Docker without Compose
+## Build and Run without Docker Compose
 
-This solution will require you to pass environment variables or set up the config file, as well as setup and manage the
-DB yourself.
+### Prerequisites
 
-```
-docker build ./ -f ./build/Dockerfile -t thunderdome:latest
-docker run --publish 8080:8080 --name thunderdome thunderdome:latest
-```
-
-## Building
-
-To run without docker you will need to first build, then setup the postgres DB, and pass the user, pass, name, host, and
-port to the application as environment variables or in a config file.
-
-```
-DB_HOST=
-DB_PORT=
-DB_USER=
-DB_PASS=
-DB_NAME=
-```
+- [Postgres](https://www.postgresql.org/download/)
+- [Go](https://golang.org/dl/)
+- [Node.js](https://nodejs.org/en/download/)
+- [Task](https://taskfile.dev/#/) (recommended) is used to manage development tasks in the project.
+- [Goose](https://github.com/pressly/goose) (recommended) is used to manage SQL migrations
+- [Caddy Server](https://caddyserver.com/) (optional) is used to run locally with HTTPS
 
 ### Install dependencies
+
+With [Task](https://taskfile.dev/#/) running the `task install` command will install dependencies
+
+OR manually run the following commands
 
 ```
 go mod download
@@ -56,63 +52,51 @@ go install github.com/swaggo/swag/cmd/swag@1.8.3
 cd ui && npm install
 ```
 
-## Build with Make
+#### Build and run
 
-```
-make build
-```
+Postgres must be running with the same configuration as in the `docker-compose.yml` file.
 
-### OR manual steps
+With [Task](https://taskfile.dev/#/) run the `task dev` command to build and run the application then visit
+[http://localhost:8080](http://localhost:8080) in your browser.
 
-### Build static assets
+Or `task dev-secure` to run with HTTPS (using Caddy) then
+visit [https://thunderdome.localhost](https://thunderdome.localhost) in your browser.
 
-```
-npm run build --prefix ui
-```
+### Format code before commit
 
-### Build for current OS
+- Using the above dev Task(s) will automatically handle this for you.
 
-```
-swag init -g internal/http/http.go -o docs/swagger
-go build
-```
+If you've setup Task simply `task format` to format all go and frontend code before commit, otherwise `make format` is
+still available for those with make installed.
 
-## Running with Watch (uses webapp dist files on OS instead of embedded)
+- not doing so can result in a failed build on GitHub
 
-```
-npm run autobuild --prefix ui
-make dev-go
-```
+### Restful API Changes
 
-## Let the Pointing Games begin!
+- Using the above dev Task(s) will automatically handle this for you.
 
-Run the server and visit [http://localhost:8080](http://localhost:8080)
+The restful API is documented using swagger comments in the Go code, any changes to that documentation require
+regenerating the docs with the following commands and committing the updated docs with the changes.
 
-## Restful API Changes
+With [Task](https://taskfile.dev/#/) `task gen-swag` will regenerate the swagger docs
 
-The restful API is documented using swagger, any changes to that documentation require regenerating the docs with the
-following commands and committing the updated docs with the changes.
+OR manually run the following commands
 
 ```bash
 swag fmt
 swag init -g internal/http/http.go -o docs/swagger
 ```
 
-## Creating SQL Migrations
+### Creating SQL Migrations
 
-First install [goose](https://github.com/pressly/goose) tool
-
-```
-go install github.com/pressly/goose/v3/cmd/goose@latest
-```
-
-Generate new migration file
+Generate new migration file using the following command, replacing `SHORT_DESCRIPTIVE_FILNAME` with a short descriptive
+name for the migration example `create_poker_table`.
 
 ```
 goose -dir internal/db/migrations create SHORT_DESCRIPTIVE_FILNAME sql
 ```
 
-## Adding new Localizations
+### Adding new Localizations
 
 **Thunderdome** supports Locale selection on the UI (Default en-US)
 
