@@ -11,7 +11,6 @@ GOBUILD=$(GOCMD) build
 SWAGGERDOCS=docs/swagger
 SWAGGERGEN=swag init -g internal/http/http.go -o $(SWAGGERDOCS)
 SWAGFORMAT=swag fmt
-GOFMT=gofmt
 GOIMPORTS=goimports
 BINARY_NAME=thunderdome-planning-poker
 BINARY_UNIX=$(BINARY_NAME)_unix
@@ -32,8 +31,7 @@ build:
 	$(SWAGGERGEN)
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
-clean: 
-	$(GOCLEAN)
+clean:
 	rm -f $(BINARY_NAME)
 	rm -f $(BINARY_UNIX)
 	rm -f $(BINARY_WINDOWS)
@@ -42,7 +40,6 @@ clean:
 	rm -rf $(SWAGGERDOCS)
 
 format:
-	$(GOFMT) -s -w .
 	$(GOIMPORTS) -w .
 	$(SWAGFMT)
 	$(NPM_FORMAT)
@@ -65,7 +62,6 @@ build-windows:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(BINARY_WINDOWS) -v
 
 dev:
-	$(GOFMT) -s -w .
 	$(GOIMPORTS) -w .
 	$(SWAGFMT)
 	$(GENI8N)
@@ -77,7 +73,6 @@ dev:
 	HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./$(BINARY_NAME) live
 
 dev-go:
-	$(GOFMT) -s -w .
 	$(GOIMPORTS) -w .
 	$(SWAGFMT)
 	$(SWAGGERGEN)
