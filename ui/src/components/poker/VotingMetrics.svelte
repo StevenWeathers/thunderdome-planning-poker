@@ -8,7 +8,6 @@
   export let users = [];
   export let averageRounding = 'ceil';
   let chartData = [];
-  let maxCount = 0;
   let consensusValue = '';
   let consensusPercentage = 0;
   let isNumeric = false;
@@ -21,7 +20,7 @@
       return prev;
     }, {});
     isNumeric = pointValues
-      .filter(v => v !== '?' && v !== `☕️`)
+      .filter(v => v !== '1/2' && v !== '?' && v !== `☕️`)
       .every(v => !isNaN(v));
 
     chartData = pointValues.map(value => {
@@ -33,8 +32,6 @@
         });
       return { value, count, users };
     });
-
-    maxCount = Math.max(...chartData.map(d => d.count));
 
     const modeData = chartData.reduce((a, b) => (b.count > a.count ? b : a), {
       count: 0,
