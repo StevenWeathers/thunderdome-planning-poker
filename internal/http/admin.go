@@ -24,7 +24,7 @@ func (s *Service) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		appStats, err := s.AdminDataSvc.GetAppStats(r.Context())
+		appStats, err := s.AdminDataSvc.GetAppStats(ctx)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleAppStats error", zap.Error(err), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)

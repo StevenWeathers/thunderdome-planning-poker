@@ -267,14 +267,15 @@ func main() {
 }
 
 func initTracer(logger *otelzap.Logger, serviceName string, collectorURL string, insecure bool) func(context.Context) error {
-	logger.Ctx(context.Background()).Info("initializing open telemetry")
+	ctx := context.Background()
+	logger.Ctx(ctx).Info("initializing open telemetry")
 	secureOption := otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, ""))
 	if insecure {
 		secureOption = otlptracegrpc.WithInsecure()
 	}
 
 	exporter, err := otlptrace.New(
-		context.Background(),
+		ctx,
 		otlptracegrpc.NewClient(
 			secureOption,
 			otlptracegrpc.WithEndpoint(collectorURL),
@@ -282,17 +283,17 @@ func initTracer(logger *otelzap.Logger, serviceName string, collectorURL string,
 	)
 
 	if err != nil {
-		logger.Ctx(context.Background()).Fatal("error initializing tracer", zap.Error(err))
+		logger.Ctx(ctx).Fatal("error initializing tracer", zap.Error(err))
 	}
 	resources, err := resource.New(
-		context.Background(),
+		ctx,
 		resource.WithAttributes(
 			attribute.String("service.name", serviceName),
 			attribute.String("library.language", "go"),
 		),
 	)
 	if err != nil {
-		logger.Ctx(context.Background()).Error("Could not set resources: ", zap.Error(err))
+		logger.Ctx(ctx).Error("Could not set resources: ", zap.Error(err))
 	}
 
 	otel.SetTracerProvider(

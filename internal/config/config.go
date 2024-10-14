@@ -10,6 +10,8 @@ import (
 
 // InitConfig initializes the application configuration
 func InitConfig(logger *otelzap.Logger) Config {
+	ctx := context.Background()
+
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
@@ -154,14 +156,14 @@ func InitConfig(logger *otelzap.Logger) Config {
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			logger.Ctx(context.Background()).Fatal(err.Error())
+			logger.Ctx(ctx).Fatal(err.Error())
 		}
 	}
 
 	var c Config
 	err = viper.Unmarshal(&c)
 	if err != nil {
-		logger.Ctx(context.Background()).Fatal(err.Error())
+		logger.Ctx(ctx).Fatal(err.Error())
 	}
 
 	return c
