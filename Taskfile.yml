@@ -100,7 +100,7 @@ tasks:
   dev-secure:
     cmds:
       - task: build
-      - caddy start
+      - caddy start --config build/dev.caddyfile
       - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY_NAME}} live
 
   dev-secure-go:
