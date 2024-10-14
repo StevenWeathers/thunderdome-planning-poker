@@ -27,7 +27,7 @@
   let battleName = '';
   let plans = [];
   let autoFinishVoting = true;
-  let pointAverageRounding = 'ceil';
+  let pointAverageRounding = AppConfig.DefaultPointAverageRounding || 'ceil';
   let joinCode = '';
   let leaderCode = '';
   let selectedTeam = '';

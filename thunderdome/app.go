@@ -18,39 +18,40 @@ type SubscriptionConfig struct {
 }
 
 type AppConfig struct {
-	AllowedPointValues        []string
-	DefaultPointValues        []string
-	ShowWarriorRank           bool
-	AvatarService             string
-	ToastTimeout              int
-	AllowGuests               bool
-	AllowRegistration         bool
-	AllowJiraImport           bool
-	AllowCsvImport            bool
-	DefaultLocale             string
-	OrganizationsEnabled      bool
-	AppVersion                string
-	CookieName                string
-	PathPrefix                string
-	ExternalAPIEnabled        bool
-	UserAPIKeyLimit           int
-	CleanupGuestsDaysOld      int
-	CleanupBattlesDaysOld     int
-	CleanupRetrosDaysOld      int
-	CleanupStoryboardsDaysOld int
-	ShowActiveCountries       bool
-	LdapEnabled               bool
-	HeaderAuthEnabled         bool
-	GoogleAuthEnabled         bool
-	FeaturePoker              bool
-	FeatureRetro              bool
-	FeatureStoryboard         bool
-	RequireTeams              bool
-	RepoURL                   string
-	SubscriptionsEnabled      bool
-	Subscription              SubscriptionConfig
-	RetroDefaultTemplateID    string
-	WebsocketSubdomain        string
+	AllowedPointValues          []string
+	DefaultPointValues          []string
+	ShowWarriorRank             bool
+	AvatarService               string
+	ToastTimeout                int
+	AllowGuests                 bool
+	AllowRegistration           bool
+	AllowJiraImport             bool
+	AllowCsvImport              bool
+	DefaultLocale               string
+	OrganizationsEnabled        bool
+	AppVersion                  string
+	CookieName                  string
+	PathPrefix                  string
+	ExternalAPIEnabled          bool
+	UserAPIKeyLimit             int
+	CleanupGuestsDaysOld        int
+	CleanupBattlesDaysOld       int
+	CleanupRetrosDaysOld        int
+	CleanupStoryboardsDaysOld   int
+	ShowActiveCountries         bool
+	LdapEnabled                 bool
+	HeaderAuthEnabled           bool
+	GoogleAuthEnabled           bool
+	FeaturePoker                bool
+	FeatureRetro                bool
+	FeatureStoryboard           bool
+	RequireTeams                bool
+	RepoURL                     string
+	SubscriptionsEnabled        bool
+	Subscription                SubscriptionConfig
+	RetroDefaultTemplateID      string
+	WebsocketSubdomain          string
+	DefaultPointAverageRounding string
 }
 
 type UIConfig struct {

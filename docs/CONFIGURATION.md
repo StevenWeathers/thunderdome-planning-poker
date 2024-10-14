@@ -24,28 +24,28 @@ db:
 
 For Thunderdome to work correctly the following configuration items are required:
 
-| Option                | Environment Variable | Description                                                                                                                                         | Default Value     |
-|-----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| Option                | Environment Variable | Description                                                                                                                                                                  | Default Value     |
+|-----------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
 | `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions), WebSocket origin check, and creating URLs in emails. | thunderdome.dev   |
-| `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                                                                                          | strongest-avenger |
-| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Game JoinCode, LeaderCode).                                                                          | therevengers      |
+| `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                                                                                                                   | strongest-avenger |
+| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Game JoinCode, LeaderCode).                                                                                                     | therevengers      |
 
 ### Database configuration
 
 Thunderdome uses a Postgres (13 is the minimum required version) database to store all data, the following
 configuration options exist:
 
-| Option                     | Environment Variable | Description                                                                  | Default Value |
-| -------------------------- | -------------------- |------------------------------------------------------------------------------|---------------|
-| `db.host`                  | DB_HOST              | Database host name.                                                          | db            |
-| `db.port`                  | DB_PORT              | Database port number.                                                        | 5432          |
-| `db.user`                  | DB_USER              | Database user id.                                                            | thor          |
-| `db.pass`                  | DB_PASS              | Database user password.                                                      | odinson       |
-| `db.name`                  | DB_NAME              | Database instance name.                                                      | thunderdome   |
-| `db.sslmode`               | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full). | disable       |
-| `db.max_open_conns`        | DB_MAX_OPEN_CONNS    | Max open db connections                                                      | 25            |
-| `db.max_idle_conns`        | DB_MAX_IDLE_CONNS    | Max idle db connections in pool                                              | 25            |
-| `db.conn_max_lifetime`     | DB_CONN_MAX_LIFETIME | DB Connection max lifetime in minutes                                        | 5             |
+| Option                 | Environment Variable | Description                                                                  | Default Value |
+|------------------------|----------------------|------------------------------------------------------------------------------|---------------|
+| `db.host`              | DB_HOST              | Database host name.                                                          | db            |
+| `db.port`              | DB_PORT              | Database port number.                                                        | 5432          |
+| `db.user`              | DB_USER              | Database user id.                                                            | thor          |
+| `db.pass`              | DB_PASS              | Database user password.                                                      | odinson       |
+| `db.name`              | DB_NAME              | Database instance name.                                                      | thunderdome   |
+| `db.sslmode`           | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full). | disable       |
+| `db.max_open_conns`    | DB_MAX_OPEN_CONNS    | Max open db connections                                                      | 25            |
+| `db.max_idle_conns`    | DB_MAX_IDLE_CONNS    | Max idle db connections in pool                                              | 25            |
+| `db.conn_max_lifetime` | DB_CONN_MAX_LIFETIME | DB Connection max lifetime in minutes                                        | 5             |
 
 ### SMTP (Mail) server configuration
 
@@ -74,9 +74,9 @@ set that user as ADMIN role.
 Thunderdome has a built-in `normal` authentication with user/password as well as supports `header` and `ldap`
 authentications.
 
-| Option                                | Environment Variable                | Description                                                                                                   | Default Value                                              |
-|---------------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `auth.method`                         | AUTH_METHOD                         | Choose `normal`, `header` or `ldap` as authentication method. See respective sections on auth configurations. | normal                                                     |
+| Option        | Environment Variable | Description                                                                                                   | Default Value |
+|---------------|----------------------|---------------------------------------------------------------------------------------------------------------|---------------|
+| `auth.method` | AUTH_METHOD          | Choose `normal`, `header` or `ldap` as authentication method. See respective sections on auth configurations. | normal        |
 
 ### Google OAuth
 
@@ -96,16 +96,16 @@ If the LDAP server authenticates a new user successfully, the Thunderdome user p
 
 The following configuration options are specific to the LDAP authentication method:
 
-| Option                      | Environment Variable | Description                                                        |
-| --------------------------- | -------------------- | ------------------------------------------------------------------ |
-| `auth.ldap.url`             | AUTH_LDAP_URL        | URL to LDAP server, typically `ldap://host:port`                   |
-| `auth.ldap.use_tls`         | AUTH_LDAP_USE_TLS    | Create a TLS connection after establishing the initial connection. |
-| `auth.ldap.bindname`        | AUTH_LDAP_BINDNAME   | Bind name / bind DN for connecting to LDAP. Leave empty for no authentication. |
-| `auth.ldap.bindpass`        | AUTH_LDAP_BINDPASS   | Password for the bind.                                             |
-| `auth.ldap.basedn`          | AUTH_LDAP_BASEDN     | Base DN for the search for the user.                               |
-| `auth.ldap.filter`          | AUTH_LDAP_FILTER     | Filter for searching for the user's login id. See below.          |
-| `auth.ldap.mail_attr`       | AUTH_LDAP_MAIL_ATTR  | The LDAP property containing the user's emil address.              |
-| `auth.ldap.cn_attr`         | AUTH_LDAP_CN_ATTR    | The LDAP property containing the user's name.                      |
+| Option                | Environment Variable | Description                                                                    |
+|-----------------------|----------------------|--------------------------------------------------------------------------------|
+| `auth.ldap.url`       | AUTH_LDAP_URL        | URL to LDAP server, typically `ldap://host:port`                               |
+| `auth.ldap.use_tls`   | AUTH_LDAP_USE_TLS    | Create a TLS connection after establishing the initial connection.             |
+| `auth.ldap.bindname`  | AUTH_LDAP_BINDNAME   | Bind name / bind DN for connecting to LDAP. Leave empty for no authentication. |
+| `auth.ldap.bindpass`  | AUTH_LDAP_BINDPASS   | Password for the bind.                                                         |
+| `auth.ldap.basedn`    | AUTH_LDAP_BASEDN     | Base DN for the search for the user.                                           |
+| `auth.ldap.filter`    | AUTH_LDAP_FILTER     | Filter for searching for the user's login id. See below.                       |
+| `auth.ldap.mail_attr` | AUTH_LDAP_MAIL_ATTR  | The LDAP property containing the user's emil address.                          |
+| `auth.ldap.cn_attr`   | AUTH_LDAP_CN_ATTR    | The LDAP property containing the user's name.                                  |
 
 The default `filter` is `(&(objectClass=posixAccount)(mail=%s))`. The filter must include a `%s` that will be replaced
 by the user's login id. The `mail_attr` configuration option must point to the LDAP attribute containing the user's
@@ -129,10 +129,10 @@ The assumption being that the only access to thunderdome is via a reverseproxy
 
 The following configuration options are specific to the LDAP authentication method:
 
-| Option                      | Environment Variable        | Default        | Description                               |
-| --------------------------- | --------------------------- | -------------- | ----------------------------------------- |
-| `auth.header.usernameHeader`| AUTH_HEADER_USERNAME_HEADER | `Remote-User`  | The header to use for the user's username |
-| `auth.header.emailHeader`   | AUTH_HEADER_EMAIL_HEADER    | `Remote-Email` | The header to use for the user's email    |
+| Option                       | Environment Variable        | Default        | Description                               |
+|------------------------------|-----------------------------|----------------|-------------------------------------------|
+| `auth.header.usernameHeader` | AUTH_HEADER_USERNAME_HEADER | `Remote-User`  | The header to use for the user's username |
+| `auth.header.emailHeader`    | AUTH_HEADER_EMAIL_HEADER    | `Remote-Email` | The header to use for the user's email    |
 
 ## HTTP Configuration
 
@@ -159,10 +159,10 @@ Configuring http settings allows for fine-tuning your self-hosted instance of Th
 
 Thunderdome supports Google Analytics (in use on Thunderdome.dev) to aid in tracking app engagement.
 
-| Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
-|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `analytics.enabled`                   | ANALYTICS_ENABLED                   | Enable/disable google analytics.                                                                                     | true                                                       |
-| `analytics.id`                        | ANALYTICS_ID                        | Google analytics identifier.                                                                                         | UA-140245309-1                                             |
+| Option              | Environment Variable | Description                      | Default Value  |
+|---------------------|----------------------|----------------------------------|----------------|
+| `analytics.enabled` | ANALYTICS_ENABLED    | Enable/disable google analytics. | true           |
+| `analytics.id`      | ANALYTICS_ID         | Google analytics identifier.     | UA-140245309-1 |
 
 ## Open Telemetry Tracing
 
@@ -180,31 +180,32 @@ Thunderdome features [Open Telemetry](https://opentelemetry.io/) tracing to aid 
 The following configuration items have sane defaults however aid in fine tuning your self-hosted instance to fit your
 needs.
 
-| Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
-|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `config.allowedPointValues`           | CONFIG_POINTS_ALLOWED               | List of available point values for creating games.                                                                   | 0, 1/2, 1, 2, 3, 5, 8, 13, 20, 21, 34, 40, 55, 100, ?, ☕️  |
-| `config.defaultPointValues`           | CONFIG_POINTS_DEFAULT               | List of default selected points for new games.                                                                       | 1, 2, 3, 5, 8 , 13, ?                                      |
-| `config.show_warrior_rank`            | CONFIG_SHOW_RANK                    | Set to enable an icon showing the rank of a user during game.                                                        | false                                                      |
-| `config.avatar_service`               | CONFIG_AVATAR_SERVICE               | Avatar service used, possible values see next paragraph                                                              | gravatar                                                   |
-| `config.toast_timeout`                | CONFIG_TOAST_TIMEOUT                | Number of milliseconds before notifications are hidden.                                                              | 1000                                                       |
-| `config.allow_guests`                 | CONFIG_ALLOW_GUESTS                 | Whether or not to allow guest (anonymous) users.                                                                     | true                                                       |
-| `config.allow_registration`           | CONFIG_ALLOW_REGISTRATION           | Whether or not to allow user registration (outside Admin).                                                           | true                                                       |
-| `config.allow_jira_import`            | CONFIG_ALLOW_JIRA_IMPORT            | Whether or not to allow import plans from JIRA XML.                                                                  | true                                                       |
-| `config.allow_csv_import`             | CONFIG_ALLOW_CSV_IMPORT             | Whether or not to allow import plans from a csv file                                                                 | true                                                       |
-| `config.default_locale`               | CONFIG_DEFAULT_LOCALE               | The default locale (language) for the UI                                                                             | en                                                         |
-| `config.allow_external_api`           | CONFIG_ALLOW_EXTERNAL_API           | Whether or not to allow External API access                                                                          | true                                                       |
-| `config.external_api_verify_required` | CONFIG_EXTERNAL_API_VERIFY_REQUIRED | Whether External API access requires user to be email verified                                                       | true                                                       |
-| `config.user_apikey_limit`            | CONFIG_USER_APIKEY_LIMIT            | Limit users number of API keys                                                                                       | 5                                                          |
-| `config.show_active_countries`        | CONFIG_SHOW_ACTIVE_COUNTRIES        | Whether or not to show active countries on landing page                                                              | false                                                      |
-| `config.cleanup_battles_days_old`     | CONFIG_CLEANUP_BATTLES_DAYS_OLD     | How many days back to clean up old games, e.g. games older than 180 days. Triggered manually by Admins .             | 180                                                        |
-| `config.cleanup_retros_days_old`      | CONFIG_CLEANUP_RETROS_DAYS_OLD      | How many days back to clean up old retros, e.g. retros older than 180 days. Triggered manually by Admins .           | 180                                                        |
-| `config.cleanup_storyboards_days_old` | CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD | How many days back to clean up old storyboards, e.g. storyboards older than 180 days. Triggered manually by Admins . | 180                                                        |
-| `config.cleanup_guests_days_old`      | CONFIG_CLEANUP_GUESTS_DAYS_OLD      | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.            | 180                                                        |
-| `config.organizations_enabled`        | CONFIG_ORGANIZATIONS_ENABLED        | Whether or not creating organizations (with departments) are enabled                                                 | true                                                       |
-| `config.require_teams`                | CONFIG_REQUIRE_TEAMS                | Whether or not creating games, retros, and storyboards require being associated to a Team                            | false                                                      |
-| `feature.poker`                       | FEATURE_POKER                       | Enable or Disable Agile Story Pointing (Poker) feature                                                               | true                                                       |
-| `feature.retro`                       | FEATURE_RETRO                       | Enable or Disable Agile Retrospectives feature                                                                       | true                                                       |
-| `feature.storyboard`                  | FEATURE_STORYBOARD                  | Enable or Disable Agile Storyboard feature                                                                           | true                                                       |
+| Option                                  | Environment Variable                  | Description                                                                                                                              | Default Value                                             |
+|-----------------------------------------|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| `config.allowedPointValues`             | CONFIG_POINTS_ALLOWED                 | List of available point values for creating games.                                                                                       | 0, 1/2, 1, 2, 3, 5, 8, 13, 20, 21, 34, 40, 55, 100, ?, ☕️ |
+| `config.defaultPointValues`             | CONFIG_POINTS_DEFAULT                 | List of default selected points for new games.                                                                                           | 1, 2, 3, 5, 8 , 13, ?                                     |
+| `config.default_point_average_rounding` | CONFIG_DEFAULT_POINT_AVERAGE_ROUNDING | Default selected rounding method used in calculating the average of voted points (when numeric).  Can only be one of ceil, floor, round. | ceil                                                      |
+| `config.show_warrior_rank`              | CONFIG_SHOW_RANK                      | Set to enable an icon showing the rank of a user during game.                                                                            | false                                                     |
+| `config.avatar_service`                 | CONFIG_AVATAR_SERVICE                 | Avatar service used, possible values see next paragraph                                                                                  | gravatar                                                  |
+| `config.toast_timeout`                  | CONFIG_TOAST_TIMEOUT                  | Number of milliseconds before notifications are hidden.                                                                                  | 1000                                                      |
+| `config.allow_guests`                   | CONFIG_ALLOW_GUESTS                   | Whether or not to allow guest (anonymous) users.                                                                                         | true                                                      |
+| `config.allow_registration`             | CONFIG_ALLOW_REGISTRATION             | Whether or not to allow user registration (outside Admin).                                                                               | true                                                      |
+| `config.allow_jira_import`              | CONFIG_ALLOW_JIRA_IMPORT              | Whether or not to allow import plans from JIRA XML.                                                                                      | true                                                      |
+| `config.allow_csv_import`               | CONFIG_ALLOW_CSV_IMPORT               | Whether or not to allow import plans from a csv file                                                                                     | true                                                      |
+| `config.default_locale`                 | CONFIG_DEFAULT_LOCALE                 | The default locale (language) for the UI                                                                                                 | en                                                        |
+| `config.allow_external_api`             | CONFIG_ALLOW_EXTERNAL_API             | Whether or not to allow External API access                                                                                              | true                                                      |
+| `config.external_api_verify_required`   | CONFIG_EXTERNAL_API_VERIFY_REQUIRED   | Whether External API access requires user to be email verified                                                                           | true                                                      |
+| `config.user_apikey_limit`              | CONFIG_USER_APIKEY_LIMIT              | Limit users number of API keys                                                                                                           | 5                                                         |
+| `config.show_active_countries`          | CONFIG_SHOW_ACTIVE_COUNTRIES          | Whether or not to show active countries on landing page                                                                                  | false                                                     |
+| `config.cleanup_battles_days_old`       | CONFIG_CLEANUP_BATTLES_DAYS_OLD       | How many days back to clean up old games, e.g. games older than 180 days. Triggered manually by Admins .                                 | 180                                                       |
+| `config.cleanup_retros_days_old`        | CONFIG_CLEANUP_RETROS_DAYS_OLD        | How many days back to clean up old retros, e.g. retros older than 180 days. Triggered manually by Admins .                               | 180                                                       |
+| `config.cleanup_storyboards_days_old`   | CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD   | How many days back to clean up old storyboards, e.g. storyboards older than 180 days. Triggered manually by Admins .                     | 180                                                       |
+| `config.cleanup_guests_days_old`        | CONFIG_CLEANUP_GUESTS_DAYS_OLD        | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.                                | 180                                                       |
+| `config.organizations_enabled`          | CONFIG_ORGANIZATIONS_ENABLED          | Whether or not creating organizations (with departments) are enabled                                                                     | true                                                      |
+| `config.require_teams`                  | CONFIG_REQUIRE_TEAMS                  | Whether or not creating games, retros, and storyboards require being associated to a Team                                                | false                                                     |
+| `feature.poker`                         | FEATURE_POKER                         | Enable or Disable Agile Story Pointing (Poker) feature                                                                                   | true                                                      |
+| `feature.retro`                         | FEATURE_RETRO                         | Enable or Disable Agile Retrospectives feature                                                                                           | true                                                      |
+| `feature.storyboard`                    | FEATURE_STORYBOARD                    | Enable or Disable Agile Storyboard feature                                                                                               | true                                                      |
 
 ### Avatar Service configuration
 
@@ -212,13 +213,13 @@ Use the name from table below to configure a service - if not set, `gravatar` is
 options which then can be configured by a user on the profile page. Once a service is configured, drop downs with the
 different sprites become available. The table shows all supported services and their sprites.
 
-| Name                                                     |           |           |           |           |           |           |           |           |           |
-|----------------------------------------------------------| --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
-| `goadorable` (internal)                                  |           |           |           |           |           |           |           |           |           |
-|                                                          | ![image](https://user-images.githubusercontent.com/846933/96212071-e4283d80-0f43-11eb-9f82-ff6c105f8b0a.png) |
-| `govatar` (internal)                                     | male | female |  |  |
-|                                                          | ![image](https://user-images.githubusercontent.com/846933/96212029-ce1a7d00-0f43-11eb-9e53-8ca13ba9d4b1.png) | ![image](https://user-images.githubusercontent.com/846933/96212031-ceb31380-0f43-11eb-832b-b02c275317a5.png) |  |  |
-| `gravatar`                                               | mp | identicon | monsterid | wavatar | retro | robohash | | | |
-|                                                          | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=mp&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=identicon&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=monsterid&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=wavatar&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=retro&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=robohash&r=g) | | | |
-| `robohash`                                               | set1 | set2 | set3 | set4 |
-|                                                          | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set1&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set2&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set3&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set4&size=48x48) |
+| Name                    |                                                                                                              |                                                                                                              |                                                                                                 |                                                                                               |                                                                                             |                                                                                                |           |           |           |
+|-------------------------|--------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|-----------|-----------|-----------|
+| `goadorable` (internal) |                                                                                                              |                                                                                                              |                                                                                                 |                                                                                               |                                                                                             |                                                                                                |           |           |           |
+|                         | ![image](https://user-images.githubusercontent.com/846933/96212071-e4283d80-0f43-11eb-9f82-ff6c105f8b0a.png) |
+| `govatar` (internal)    | male                                                                                                         | female                                                                                                       |                                                                                                 |                                                                                               |
+|                         | ![image](https://user-images.githubusercontent.com/846933/96212029-ce1a7d00-0f43-11eb-9e53-8ca13ba9d4b1.png) | ![image](https://user-images.githubusercontent.com/846933/96212031-ceb31380-0f43-11eb-832b-b02c275317a5.png) |                                                                                                 |                                                                                               |
+| `gravatar`              | mp                                                                                                           | identicon                                                                                                    | monsterid                                                                                       | wavatar                                                                                       | retro                                                                                       | robohash                                                                                       |           |           |           |
+|                         | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=mp&r=g)                     | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=identicon&r=g)              | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=monsterid&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=wavatar&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=retro&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=robohash&r=g) |           |           |           |
+| `robohash`              | set1                                                                                                         | set2                                                                                                         | set3                                                                                            | set4                                                                                          |
+|                         | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set1&size=48x48)                  | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set2&size=48x48)                  | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set3&size=48x48)     | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set4&size=48x48)   |

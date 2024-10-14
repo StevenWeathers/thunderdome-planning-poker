@@ -85,29 +85,30 @@ type Smtp struct {
 
 // AppConfig is the application configuration
 type AppConfig struct {
-	AesHashkey                string   `mapstructure:"aes_hashkey"`
-	AllowedPointValues        []string `mapstructure:"allowedPointValues"`
-	DefaultPointValues        []string `mapstructure:"defaultPointValues"`
-	ShowWarriorRank           bool     `mapstructure:"show_warrior_rank"`
-	AvatarService             string   `mapstructure:"avatar_service"`
-	ToastTimeout              int      `mapstructure:"toast_timeout"`
-	AllowGuests               bool     `mapstructure:"allow_guests"`
-	AllowRegistration         bool     `mapstructure:"allow_registration"`
-	AllowJiraImport           bool     `mapstructure:"allow_jira_import"`
-	AllowCsvImport            bool     `mapstructure:"allow_csv_import"`
-	DefaultLocale             string   `mapstructure:"default_locale"`
-	AllowExternalApi          bool     `mapstructure:"allow_external_api"`
-	ExternalApiVerifyRequired bool     `mapstructure:"external_api_verify_required"`
-	UserApikeyLimit           int      `mapstructure:"user_apikey_limit"`
-	ShowActiveCountries       bool     `mapstructure:"show_active_countries"`
-	CleanupBattlesDaysOld     int      `mapstructure:"cleanup_battles_days_old"`
-	CleanupGuestsDaysOld      int      `mapstructure:"cleanup_guests_days_old"`
-	CleanupRetrosDaysOld      int      `mapstructure:"cleanup_retros_days_old"`
-	CleanupStoryboardsDaysOld int      `mapstructure:"cleanup_storyboards_days_old"`
-	OrganizationsEnabled      bool     `mapstructure:"organizations_enabled"`
-	RequireTeams              bool     `mapstructure:"require_teams"`
-	SubscriptionsEnabled      bool     `mapstructure:"subscriptions_enabled"`
-	RetroDefaultTemplateID    string   `mapstructure:"retro_default_template_id"`
+	AesHashkey                  string   `mapstructure:"aes_hashkey"`
+	AllowedPointValues          []string `mapstructure:"allowedPointValues"`
+	DefaultPointValues          []string `mapstructure:"defaultPointValues"`
+	ShowWarriorRank             bool     `mapstructure:"show_warrior_rank"`
+	AvatarService               string   `mapstructure:"avatar_service"`
+	ToastTimeout                int      `mapstructure:"toast_timeout"`
+	AllowGuests                 bool     `mapstructure:"allow_guests"`
+	AllowRegistration           bool     `mapstructure:"allow_registration"`
+	AllowJiraImport             bool     `mapstructure:"allow_jira_import"`
+	AllowCsvImport              bool     `mapstructure:"allow_csv_import"`
+	DefaultLocale               string   `mapstructure:"default_locale"`
+	AllowExternalApi            bool     `mapstructure:"allow_external_api"`
+	ExternalApiVerifyRequired   bool     `mapstructure:"external_api_verify_required"`
+	UserApikeyLimit             int      `mapstructure:"user_apikey_limit"`
+	ShowActiveCountries         bool     `mapstructure:"show_active_countries"`
+	CleanupBattlesDaysOld       int      `mapstructure:"cleanup_battles_days_old"`
+	CleanupGuestsDaysOld        int      `mapstructure:"cleanup_guests_days_old"`
+	CleanupRetrosDaysOld        int      `mapstructure:"cleanup_retros_days_old"`
+	CleanupStoryboardsDaysOld   int      `mapstructure:"cleanup_storyboards_days_old"`
+	OrganizationsEnabled        bool     `mapstructure:"organizations_enabled"`
+	RequireTeams                bool     `mapstructure:"require_teams"`
+	SubscriptionsEnabled        bool     `mapstructure:"subscriptions_enabled"`
+	RetroDefaultTemplateID      string   `mapstructure:"retro_default_template_id"`
+	DefaultPointAverageRounding string   `mapstructure:"default_point_average_rounding"`
 }
 
 // Feature is the application feature enablement configuration
