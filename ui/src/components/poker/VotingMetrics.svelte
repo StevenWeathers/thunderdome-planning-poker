@@ -20,7 +20,9 @@
       prev[u.id] = u.name;
       return prev;
     }, {});
-    isNumeric = pointValues.every(value => !isNaN(value) && value !== '?');
+    isNumeric = pointValues
+      .filter(v => v !== '?' && v !== `☕️`)
+      .every(v => !isNaN(v));
 
     chartData = pointValues.map(value => {
       const count = votes.filter(v => v.vote === value).length;
@@ -43,9 +45,7 @@
       totalVoters > 0 ? Math.round((modeData.count / totalVoters) * 100) : 0;
   }
 
-  const yScale = scaleLinear().domain([0, maxCount]).range([0, 100]);
-
-  function roundMiddleIndex(middleIndex) {
+  function roundWithConfiguredAvg(middleIndex) {
     let average = 0;
     switch (averageRounding) {
       case 'round':
@@ -64,12 +64,23 @@
   function getAverageOrMedian(votes, pointValues) {
     if (isNumeric) {
       const numericVotes = votes
-        .filter(v => !isNaN(v.vote))
-        .map(v => Number(v.vote));
+        .filter(v => !isNaN(v.vote) || v.vote === '1/2')
+        .map(v => (v === '1/2' ? '0.5' : Number(v.vote)));
       const sum = numericVotes.reduce((a, b) => a + b, 0);
-      return numericVotes.length > 0
-        ? (sum / numericVotes.length).toFixed(1)
-        : 'N/A';
+      let average = 0;
+
+      if (numericVotes.length > 0) {
+        const preAverage = sum / numericVotes.length || 0;
+        if (preAverage !== 0.5) {
+          average = roundWithConfiguredAvg(preAverage);
+        } else {
+          average = preAverage;
+        }
+      } else {
+        average = 'N/A';
+      }
+
+      return average;
     } else {
       const validVotes = votes.filter(v => v.vote !== '?').map(v => v.vote);
       if (validVotes.length === 0) return 'N/A';
@@ -77,13 +88,15 @@
       const sortedVotes = validVotes.sort(
         (a, b) => pointValues.indexOf(a) - pointValues.indexOf(b),
       );
-      const middleIndex = roundMiddleIndex(sortedVotes.length / 2);
+      const middleIndex = roundWithConfiguredAvg(sortedVotes.length / 2);
 
       if (sortedVotes.length % 2 === 0) {
         // If even number of votes, take the middle two and find the value between them
         const lowerMiddle = pointValues.indexOf(sortedVotes[middleIndex - 1]);
         const upperMiddle = pointValues.indexOf(sortedVotes[middleIndex]);
-        const averageIndex = roundMiddleIndex((lowerMiddle + upperMiddle) / 2);
+        const averageIndex = roundWithConfiguredAvg(
+          (lowerMiddle + upperMiddle) / 2,
+        );
         return pointValues[averageIndex];
       } else {
         // If odd number of votes, return the middle value
