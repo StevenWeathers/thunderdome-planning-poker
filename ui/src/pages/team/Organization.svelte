@@ -39,6 +39,8 @@
   } from '../../components/team/metrics';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
   import RetroTemplatesList from '../../components/retrotemplate/RetroTemplatesList.svelte';
+  import PokerSettings from '../../components/poker/PokerSettings.svelte';
+  import RetroSettings from '../../components/retro/RetroSettings.svelte';
 
   export let xfetch;
   export let router;
@@ -589,6 +591,23 @@
   {#if AppConfig.FeaturePoker}
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <PokerSettings
+          xfetch="{xfetch}"
+          eventTag="{eventTag}"
+          notifications="{notifications}"
+          isEntityAdmin="{isAdmin}"
+          apiPrefix="{orgPrefix}"
+          organizationId="{organizationId}"
+        />
+      {:else}
+        <FeatureSubscribeBanner
+          salesPitch="Optimize your Organization's estimation workflow with customized default Planning Poker settings."
+        />
+      {/if}
+    </div>
+
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <EstimationScalesList
           xfetch="{xfetch}"
           eventTag="{eventTag}"
@@ -612,6 +631,23 @@
   {/if}
 
   {#if AppConfig.FeatureRetro}
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <RetroSettings
+          xfetch="{xfetch}"
+          eventTag="{eventTag}"
+          notifications="{notifications}"
+          isEntityAdmin="{isAdmin}"
+          apiPrefix="{orgPrefix}"
+          organizationId="{organizationId}"
+        />
+      {:else}
+        <FeatureSubscribeBanner
+          salesPitch="Enhance your Organization's reflection process with customized default Retrospective settings."
+        />
+      {/if}
+    </div>
+
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <RetroTemplatesList
