@@ -96,7 +96,21 @@ func (d *Service) UserResetRequest(ctx context.Context, userEmail string) (reset
 	var userID sql.NullString
 	var name sql.NullString
 
+	// Check if a reset request has been made in the last 3 minutes to reduce spamming
+	resetCount := 0
 	err := d.DB.QueryRowContext(ctx, `
+		SELECT count(ur.reset_id)
+		FROM thunderdome.user_reset ur
+		JOIN thunderdome.auth_credential ac ON ac.user_id = ur.user_id
+		WHERE ac.email = $1 AND ur.created_date > (CURRENT_TIMESTAMP - INTERVAL '3 minutes');
+		`,
+		db.SanitizeEmail(userEmail),
+	).Scan(&resetCount)
+	if err != nil || resetCount > 0 {
+		return "", "", fmt.Errorf("insert user reset request query error: %v", err)
+	}
+
+	err = d.DB.QueryRowContext(ctx, `
 		SELECT resetId, userId, userName FROM thunderdome.user_reset_create($1);
 		`,
 		db.SanitizeEmail(userEmail),
