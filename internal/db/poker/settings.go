@@ -1,0 +1,124 @@
+package poker
+
+import (
+	"context"
+	"database/sql"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+)
+
+// GetSettingsByOrganization retrieves poker settings for an organization
+func (s *Service) GetSettingsByOrganization(ctx context.Context, orgID string) (*thunderdome.PokerSettings, error) {
+	var settings thunderdome.PokerSettings
+	err := s.DB.QueryRowContext(ctx, `
+		SELECT id, organization_id, auto_finish_voting, point_average_rounding, hide_voter_identity, 
+		       estimation_scale_id, join_code, facilitator_code, created_at, updated_at
+		FROM thunderdome.poker_settings
+		WHERE organization_id = $1`, orgID).Scan(
+		&settings.ID, &settings.OrganizationID, &settings.AutoFinishVoting, &settings.PointAverageRounding,
+		&settings.HideVoterIdentity, &settings.EstimationScaleID, &settings.JoinCode, &settings.FacilitatorCode,
+		&settings.CreatedAt, &settings.UpdatedAt)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &settings, nil
+}
+
+// GetSettingsByDepartment retrieves poker settings for a department
+func (s *Service) GetSettingsByDepartment(ctx context.Context, deptID string) (*thunderdome.PokerSettings, error) {
+	var settings thunderdome.PokerSettings
+	err := s.DB.QueryRowContext(ctx, `
+		SELECT id, department_id, auto_finish_voting, point_average_rounding, hide_voter_identity, 
+		       estimation_scale_id, join_code, facilitator_code, created_at, updated_at
+		FROM thunderdome.poker_settings
+		WHERE department_id = $1`, deptID).Scan(
+		&settings.ID, &settings.DepartmentID, &settings.AutoFinishVoting, &settings.PointAverageRounding,
+		&settings.HideVoterIdentity, &settings.EstimationScaleID, &settings.JoinCode, &settings.FacilitatorCode,
+		&settings.CreatedAt, &settings.UpdatedAt)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &settings, nil
+}
+
+// GetSettingsByTeam retrieves poker settings for a team
+func (s *Service) GetSettingsByTeam(ctx context.Context, teamID string) (*thunderdome.PokerSettings, error) {
+	var settings thunderdome.PokerSettings
+	err := s.DB.QueryRowContext(ctx, `
+		SELECT id, team_id, auto_finish_voting, point_average_rounding, hide_voter_identity, 
+		       estimation_scale_id, join_code, facilitator_code, created_at, updated_at
+		FROM thunderdome.poker_settings
+		WHERE team_id = $1`, teamID).Scan(
+		&settings.ID, &settings.TeamID, &settings.AutoFinishVoting, &settings.PointAverageRounding,
+		&settings.HideVoterIdentity, &settings.EstimationScaleID, &settings.JoinCode, &settings.FacilitatorCode,
+		&settings.CreatedAt, &settings.UpdatedAt)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &settings, nil
+}
+
+// CreateSettings creates new poker settings
+func (s *Service) CreateSettings(ctx context.Context, settings *thunderdome.PokerSettings) error {
+	_, err := s.DB.ExecContext(ctx, `
+		INSERT INTO thunderdome.poker_settings (
+			organization_id, department_id, team_id, auto_finish_voting, point_average_rounding,
+			hide_voter_identity, estimation_scale_id, join_code, facilitator_code
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+		settings.OrganizationID, settings.DepartmentID, settings.TeamID, settings.AutoFinishVoting,
+		settings.PointAverageRounding, settings.HideVoterIdentity, settings.EstimationScaleID,
+		settings.JoinCode, settings.FacilitatorCode)
+	return err
+}
+
+// UpdateSettings updates existing poker settings
+func (s *Service) UpdateSettings(ctx context.Context, settings *thunderdome.PokerSettings) error {
+	_, err := s.DB.ExecContext(ctx, `
+		UPDATE thunderdome.poker_settings
+		SET auto_finish_voting = $1, point_average_rounding = $2, hide_voter_identity = $3,
+		    estimation_scale_id = $4, join_code = $5, facilitator_code = $6, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $7`,
+		settings.AutoFinishVoting, settings.PointAverageRounding, settings.HideVoterIdentity,
+		settings.EstimationScaleID, settings.JoinCode, settings.FacilitatorCode, settings.ID)
+	return err
+}
+
+// DeleteSettings deletes poker settings
+func (s *Service) DeleteSettings(ctx context.Context, id string) error {
+	_, err := s.DB.ExecContext(ctx, "DELETE FROM thunderdome.poker_settings WHERE id = $1", id)
+	return err
+}
+
+// GetSettingsByID retrieves poker settings by ID
+func (s *Service) GetSettingsByID(ctx context.Context, id string) (*thunderdome.PokerSettings, error) {
+	var settings thunderdome.PokerSettings
+	err := s.DB.QueryRowContext(ctx, `
+		SELECT id, organization_id, department_id, team_id, auto_finish_voting, point_average_rounding,
+		       hide_voter_identity, estimation_scale_id, join_code, facilitator_code, created_at, updated_at
+		FROM thunderdome.poker_settings
+		WHERE id = $1`, id).Scan(
+		&settings.ID, &settings.OrganizationID, &settings.DepartmentID, &settings.TeamID,
+		&settings.AutoFinishVoting, &settings.PointAverageRounding, &settings.HideVoterIdentity,
+		&settings.EstimationScaleID, &settings.JoinCode, &settings.FacilitatorCode,
+		&settings.CreatedAt, &settings.UpdatedAt)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &settings, nil
+}
