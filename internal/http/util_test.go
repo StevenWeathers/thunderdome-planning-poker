@@ -331,3 +331,36 @@ func TestSanitizeUserInputForLogs(t *testing.T) {
 		})
 	}
 }
+
+func TestContainsLink(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		{
+			name:     "Contains URL",
+			input:    "Visit https://example.com",
+			expected: true,
+		},
+		{
+			name:     "Invalid URL format",
+			input:    "This is not a URL: http:/example.com",
+			expected: false,
+		},
+		{
+			name:     "Contains Complex URL",
+			input:    "Check out https://sub.example.com:8080/path?query=value#fragment",
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := containsLink(tt.input)
+			if result != tt.expected {
+				t.Errorf("containsLink(%q) = %v, want %v", tt.input, result, tt.expected)
+			}
+		})
+	}
+}

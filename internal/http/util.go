@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"io/fs"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -372,4 +373,13 @@ func retroTemplateBuildFormatFromRequest(requestFormat retroTemplateFormatReques
 	}
 
 	return tf
+}
+
+// containsLink checks if the input string contains a link
+func containsLink(input string) bool {
+	urlPattern := `((http|https):\/\/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=]+)`
+
+	re := regexp.MustCompile(urlPattern)
+
+	return re.MatchString(input)
 }

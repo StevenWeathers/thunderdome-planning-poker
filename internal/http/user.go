@@ -141,6 +141,12 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 			return
 		}
 
+		invalidUsername := containsLink(profile.Name)
+		if invalidUsername {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
+			return
+		}
+
 		if sessionUserType == thunderdome.AdminUserType {
 			_, _, vErr := validateUserAccount(profile.Name, profile.Email)
 			if vErr != nil {

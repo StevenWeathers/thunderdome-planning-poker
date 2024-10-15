@@ -348,6 +348,12 @@ func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
+		invalidUsername := containsLink(u.Name)
+		if invalidUsername {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
+			return
+		}
+
 		newUser, err := s.UserDataSvc.CreateUserGuest(ctx, u.Name)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleCreateGuestUser error", zap.Error(err),
@@ -410,6 +416,12 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		invalidUsername := containsLink(u.Name)
+		if invalidUsername {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 			return
 		}
 
