@@ -198,13 +198,13 @@
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
         for="leaderCode"
       >
-        {$LL.leaderPasscode()}
+        {$LL.facilitatorCodeOptional()}
       </label>
       <div class="control">
         <TextInput
           name="leaderCode"
           bind:value="{leaderCode}"
-          placeholder="{$LL.optionalLeadercodePlaceholder()}"
+          placeholder="{$LL.facilitatorCodePlaceholder()}"
           id="leaderCode"
           icon="{Crown}"
         />
