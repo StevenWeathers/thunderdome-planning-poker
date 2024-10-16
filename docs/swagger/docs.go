@@ -12425,7 +12425,8 @@ const docTemplate = `{
                     "type": "string",
                     "enum": [
                         "visible",
-                        "hidden"
+                        "hidden",
+                        "concealed"
                     ]
                 },
                 "facilitatorCode": {
@@ -12444,7 +12445,7 @@ const docTemplate = `{
                 },
                 "phaseTimeLimit": {
                     "type": "integer",
-                    "maximum": 120,
+                    "maximum": 59,
                     "minimum": 0
                 },
                 "templateId": {

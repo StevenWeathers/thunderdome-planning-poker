@@ -15,8 +15,8 @@ import (
 type retroSettingsRequestBody struct {
 	MaxVotes              int16   `json:"maxVotes" validate:"gte=1,lte=100"`
 	AllowMultipleVotes    bool    `json:"allowMultipleVotes"`
-	BrainstormVisibility  string  `json:"brainstormVisibility" validate:"oneof=visible hidden"`
-	PhaseTimeLimit        int16   `json:"phaseTimeLimit" validate:"gte=0,lte=120"`
+	BrainstormVisibility  string  `json:"brainstormVisibility" validate:"oneof=visible hidden concealed"`
+	PhaseTimeLimit        int16   `json:"phaseTimeLimit" validate:"gte=0,lte=59"`
 	PhaseAutoAdvance      bool    `json:"phaseAutoAdvance"`
 	AllowCumulativeVoting bool    `json:"allowCumulativeVoting"`
 	TemplateID            *string `json:"templateId" validate:"omitempty,uuid"`

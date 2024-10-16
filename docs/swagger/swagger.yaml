@@ -428,6 +428,7 @@ definitions:
         enum:
         - visible
         - hidden
+        - concealed
         type: string
       facilitatorCode:
         type: string
@@ -440,7 +441,7 @@ definitions:
       phaseAutoAdvance:
         type: boolean
       phaseTimeLimit:
-        maximum: 120
+        maximum: 59
         minimum: 0
         type: integer
       templateId:
