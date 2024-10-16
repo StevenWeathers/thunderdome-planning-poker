@@ -7,6 +7,7 @@
   import TableContainer from '../table/TableContainer.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
+  import BooleanDisplay from '../global/BooleanDisplay.svelte';
 
   export let xfetch;
   export let notifications;
@@ -21,8 +22,8 @@
 
   let defaultSettings = {
     id: '',
-    maxVotes: false,
-    allowMultipleVotes: 0,
+    maxVotes: 0,
+    allowMultipleVotes: false,
     brainstormVisibility: false,
     phaseTimeLimit: 0,
     phaseAutoAdvance: false,
@@ -71,12 +72,13 @@
     />
     <Table>
       <tr slot="header">
+        <HeadCol>MaxVotes</HeadCol>
         <HeadCol>AllowMultipleVotes</HeadCol>
         <HeadCol>BrainstormVisibility</HeadCol>
         <HeadCol>PhaseTimeLimit</HeadCol>
         <HeadCol>PhaseAutoAdvance</HeadCol>
         <HeadCol>AllowCumulativeVoting</HeadCol>
-        <HeadCol>TemplateId</HeadCol>
+        <!--                <HeadCol>TemplateId</HeadCol>-->
         <HeadCol>Join Code</HeadCol>
         <HeadCol>Facilitator Code</HeadCol>
       </tr>
@@ -84,23 +86,32 @@
         {#if defaultSettings.id !== ''}
           <TableRow>
             <RowCol>
-              {defaultSettings.allowMultipleVotes ? 'Yes' : 'No'}
+              {defaultSettings.maxVotes}
             </RowCol>
             <RowCol>
-              {defaultSettings.brainstormVisibility ? 'Yes' : 'No'}
+              <BooleanDisplay
+                boolValue="{defaultSettings.allowMultipleVotes}"
+              />
+            </RowCol>
+            <RowCol>
+              <BooleanDisplay
+                boolValue="{defaultSettings.brainstormVisibility}"
+              />
             </RowCol>
             <RowCol>
               {defaultSettings.phaseTimeLimit}
             </RowCol>
             <RowCol>
-              {defaultSettings.phaseAutoAdvance ? 'Yes' : 'No'}
+              <BooleanDisplay boolValue="{defaultSettings.phaseAutoAdvance}" />
             </RowCol>
             <RowCol>
-              {defaultSettings.allowCumulativeVoting ? 'Yes' : 'No'}
+              <BooleanDisplay
+                boolValue="{defaultSettings.allowCumulativeVoting}"
+              />
             </RowCol>
-            <RowCol>
-              {defaultSettings.templateId}
-            </RowCol>
+            <!--                    <RowCol>-->
+            <!--                        {defaultSettings.templateId}-->
+            <!--                    </RowCol>-->
             <RowCol>
               {defaultSettings.joinCode}
             </RowCol>

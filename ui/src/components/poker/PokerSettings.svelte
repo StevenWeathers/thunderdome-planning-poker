@@ -7,6 +7,8 @@
   import TableContainer from '../table/TableContainer.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
+  import BooleanDisplay from '../global/BooleanDisplay.svelte';
+  import UpdatePokerSettings from './UpdatePokerSettings.svelte';
 
   export let xfetch;
   export let notifications;
@@ -22,9 +24,9 @@
   let defaultSettings = {
     id: '',
     autoFinishVoting: false,
-    pointAverageRounding: 0,
+    pointAverageRounding: '',
     hideVoterIdentity: false,
-    estimationScaleId: '',
+    estimationScaleId: null,
     joinCode: '',
     facilitatorCode: '',
   };
@@ -42,10 +44,15 @@
   async function getDefaultSettings() {
     const response = await xfetch(`${apiPrefix}/poker-settings`);
     if (response.ok) {
-      defaultSettings = await response.json();
+      const res = await response.json();
+      defaultSettings = res.data;
     } else {
       notifications.error('Failed to get default poker settings');
     }
+  }
+
+  function handleSettingsUpdate(event) {
+    defaultSettings = event.detail.settings;
   }
 
   getDefaultSettings();
@@ -71,7 +78,7 @@
         <HeadCol>AutoFinishVoting</HeadCol>
         <HeadCol>PointAverageRounding</HeadCol>
         <HeadCol>HideVoterIdentity</HeadCol>
-        <HeadCol>Estimation Scale ID</HeadCol>
+        <!--                <HeadCol>Estimation Scale ID</HeadCol>-->
         <HeadCol>Join Code</HeadCol>
         <HeadCol>Facilitator Code</HeadCol>
       </tr>
@@ -79,17 +86,17 @@
         {#if defaultSettings.id !== ''}
           <TableRow>
             <RowCol>
-              {defaultSettings.autoFinishVoting ? 'Yes' : 'No'}
+              <BooleanDisplay boolValue="{defaultSettings.autoFinishVoting}" />
             </RowCol>
             <RowCol>
               {defaultSettings.pointAverageRounding}
             </RowCol>
             <RowCol>
-              {defaultSettings.hideVoterIdentity ? 'Yes' : 'No'}
+              <BooleanDisplay boolValue="{defaultSettings.hideVoterIdentity}" />
             </RowCol>
-            <RowCol>
-              {defaultSettings.estimationScaleId}
-            </RowCol>
+            <!--                    <RowCol>-->
+            <!--                        {defaultSettings.estimationScaleId}-->
+            <!--                    </RowCol>-->
             <RowCol>
               {defaultSettings.joinCode}
             </RowCol>
@@ -101,4 +108,33 @@
       </tbody>
     </Table>
   </TableContainer>
+
+  {#if showCreateDefaultSettings}
+    <UpdatePokerSettings
+      toggleClose="{toggleCreateDefaultSettings}"
+      xfetch="{xfetch}"
+      notifications="{notifications}"
+      apiPrefix="{apiPrefix}"
+      organizationId="{organizationId}"
+      teamId="{teamId}"
+      departmentId="{departmentId}"
+      eventTag="{eventTag}"
+      on:updatePokerSettings="{handleSettingsUpdate}"
+    />
+  {/if}
+
+  {#if showUpdateDefaultSettings}
+    <UpdatePokerSettings
+      toggleClose="{toggleUpdateDefaultSettings}"
+      xfetch="{xfetch}"
+      notifications="{notifications}"
+      pokerSettings="{defaultSettings}"
+      apiPrefix="{apiPrefix}"
+      organizationId="{organizationId}"
+      teamId="{teamId}"
+      departmentId="{departmentId}"
+      eventTag="{eventTag}"
+      on:updatePokerSettings="{handleSettingsUpdate}"
+    />
+  {/if}
 </div>
