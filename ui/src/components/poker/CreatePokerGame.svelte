@@ -420,7 +420,7 @@
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
       for="joinCode"
     >
-      {$LL.passCode()}
+      {$LL.joinCodeLabelOptional()}
     </label>
     <div class="control">
       <TextInput

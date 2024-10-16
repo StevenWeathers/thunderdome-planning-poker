@@ -8,6 +8,8 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
   import BooleanDisplay from '../global/BooleanDisplay.svelte';
+  import UpdateRetroSettings from './UpdateRetroSettings.svelte';
+  import LL from '../../i18n/i18n-svelte';
 
   export let xfetch;
   export let notifications;
@@ -23,12 +25,11 @@
   let defaultSettings = {
     id: '',
     maxVotes: 0,
-    allowMultipleVotes: false,
-    brainstormVisibility: false,
+    brainstormVisibility: '',
     phaseTimeLimit: 0,
     phaseAutoAdvance: false,
     allowCumulativeVoting: false,
-    templateId: '',
+    templateId: null,
     joinCode: '',
     facilitatorCode: '',
   };
@@ -46,10 +47,15 @@
   async function getDefaultSettings() {
     const response = await xfetch(`${apiPrefix}/retro-settings`);
     if (response.ok) {
-      defaultSettings = await response.json();
+      const res = await response.json();
+      defaultSettings = res.data;
     } else {
       notifications.error('Failed to get default retro settings');
     }
+  }
+
+  function handleSettingsUpdate(event) {
+    defaultSettings = event.detail.settings;
   }
 
   getDefaultSettings();
@@ -72,15 +78,14 @@
     />
     <Table>
       <tr slot="header">
-        <HeadCol>MaxVotes</HeadCol>
-        <HeadCol>AllowMultipleVotes</HeadCol>
-        <HeadCol>BrainstormVisibility</HeadCol>
-        <HeadCol>PhaseTimeLimit</HeadCol>
-        <HeadCol>PhaseAutoAdvance</HeadCol>
-        <HeadCol>AllowCumulativeVoting</HeadCol>
+        <HeadCol>{$LL.retroMaxVotesPerUserLabel()}</HeadCol>
+        <HeadCol>{$LL.brainstormPhaseFeedbackVisibility()}</HeadCol>
+        <HeadCol>{$LL.retroPhaseTimeLimitMinLabel()}</HeadCol>
+        <HeadCol>{$LL.phaseAutoAdvanceLabel()}</HeadCol>
+        <HeadCol>{$LL.allowCumulativeVotingLabel()}</HeadCol>
         <!--                <HeadCol>TemplateId</HeadCol>-->
-        <HeadCol>Join Code</HeadCol>
-        <HeadCol>Facilitator Code</HeadCol>
+        <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
+        <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
       </tr>
       <tbody slot="body">
         {#if defaultSettings.id !== ''}
@@ -89,14 +94,7 @@
               {defaultSettings.maxVotes}
             </RowCol>
             <RowCol>
-              <BooleanDisplay
-                boolValue="{defaultSettings.allowMultipleVotes}"
-              />
-            </RowCol>
-            <RowCol>
-              <BooleanDisplay
-                boolValue="{defaultSettings.brainstormVisibility}"
-              />
+              {defaultSettings.brainstormVisibility}
             </RowCol>
             <RowCol>
               {defaultSettings.phaseTimeLimit}
@@ -123,4 +121,33 @@
       </tbody>
     </Table>
   </TableContainer>
+
+  {#if showCreateDefaultSettings}
+    <UpdateRetroSettings
+      toggleClose="{toggleCreateDefaultSettings}"
+      xfetch="{xfetch}"
+      notifications="{notifications}"
+      apiPrefix="{apiPrefix}"
+      organizationId="{organizationId}"
+      teamId="{teamId}"
+      departmentId="{departmentId}"
+      eventTag="{eventTag}"
+      on:updateRetroSettings="{handleSettingsUpdate}"
+    />
+  {/if}
+
+  {#if showUpdateDefaultSettings}
+    <UpdateRetroSettings
+      toggleClose="{toggleUpdateDefaultSettings}"
+      xfetch="{xfetch}"
+      notifications="{notifications}"
+      retroSettings="{defaultSettings}"
+      apiPrefix="{apiPrefix}"
+      organizationId="{organizationId}"
+      teamId="{teamId}"
+      departmentId="{departmentId}"
+      eventTag="{eventTag}"
+      on:updateRetroSettings="{handleSettingsUpdate}"
+    />
+  {/if}
 </div>

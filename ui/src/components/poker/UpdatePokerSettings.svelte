@@ -8,8 +8,6 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher();
-
   export let toggleClose = () => {};
   export let xfetch;
   export let notifications;
@@ -29,6 +27,7 @@
     facilitatorCode: '',
   };
 
+  const dispatch = createEventDispatcher();
   const allowedPointAverages = ['ceil', 'round', 'floor'];
 
   // let estimationScales = []
@@ -134,7 +133,7 @@
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
         for="joinCode"
       >
-        {$LL.passCode()}
+        {$LL.joinCodeLabelOptional()}
       </label>
       <div class="control">
         <TextInput

@@ -9,6 +9,7 @@
   import { user } from '../../stores';
   import BooleanDisplay from '../global/BooleanDisplay.svelte';
   import UpdatePokerSettings from './UpdatePokerSettings.svelte';
+  import LL from '../../i18n/i18n-svelte';
 
   export let xfetch;
   export let notifications;
@@ -75,12 +76,12 @@
     />
     <Table>
       <tr slot="header">
-        <HeadCol>AutoFinishVoting</HeadCol>
-        <HeadCol>PointAverageRounding</HeadCol>
-        <HeadCol>HideVoterIdentity</HeadCol>
+        <HeadCol>{$LL.autoFinishVotingLabel()}</HeadCol>
+        <HeadCol>{$LL.pointAverageRounding()}</HeadCol>
+        <HeadCol>{$LL.hideVoterIdentity()}</HeadCol>
         <!--                <HeadCol>Estimation Scale ID</HeadCol>-->
-        <HeadCol>Join Code</HeadCol>
-        <HeadCol>Facilitator Code</HeadCol>
+        <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
+        <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
       </tr>
       <tbody slot="body">
         {#if defaultSettings.id !== ''}
