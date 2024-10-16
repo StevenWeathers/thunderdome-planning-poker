@@ -102,3 +102,22 @@ type RetroVote struct {
 	GroupID string `json:"groupId" db:"group_id"`
 	Count   int    `json:"count" db:"vote_count"`
 }
+
+// RetroSettings represents the settings for a retro session
+type RetroSettings struct {
+	ID                    string    `json:"id"`
+	OrganizationID        *string   `json:"organizationId"`
+	DepartmentID          *string   `json:"departmentId"`
+	TeamID                *string   `json:"teamId"`
+	MaxVotes              int16     `json:"maxVotes"`
+	AllowMultipleVotes    bool      `json:"allowMultipleVotes"`
+	BrainstormVisibility  string    `json:"brainstormVisibility"`
+	PhaseTimeLimit        int16     `json:"phaseTimeLimit"`
+	PhaseAutoAdvance      bool      `json:"phaseAutoAdvance"`
+	AllowCumulativeVoting bool      `json:"allowCumulativeVoting"`
+	TemplateID            *string   `json:"templateId"`
+	JoinCode              string    `json:"joinCode"`
+	FacilitatorCode       string    `json:"facilitatorCode"`
+	CreatedAt             time.Time `json:"createdAt"`
+	UpdatedAt             time.Time `json:"updatedAt"`
+}
