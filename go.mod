@@ -26,7 +26,7 @@ require (
 	github.com/stripe/stripe-go/v76 v76.25.0
 	github.com/swaggo/swag v1.16.3
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.3.2
-	github.com/wneessen/go-mail v0.5.0
+	github.com/wneessen/go-mail v0.5.1
 	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.55.0
 	go.opentelemetry.io/otel v1.31.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.31.0

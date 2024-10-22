@@ -274,6 +274,8 @@ github.com/vanng822/go-premailer v1.22.0/go.mod h1:K7DxRBW6AxdZUTqmW9jU6041CtfAW
 github.com/vanng822/r2router v0.0.0-20150523112421-1023140a4f30/go.mod h1:1BVq8p2jVr55Ost2PkZWDrG86PiJ/0lxqcXoAcGxvWU=
 github.com/wneessen/go-mail v0.5.0 h1:TyI8XSKJrdl8BkIA030APu6my1/1hm8XRuUSosd+zuo=
 github.com/wneessen/go-mail v0.5.0/go.mod h1:kRroJvEq2hOSEPFRiKjN7Csrz0G1w+RpiGR3b6yo+Ck=
+github.com/wneessen/go-mail v0.5.1 h1:3XIiVt4N3oZzHmACyLsp1OTq5/yQuSZWtHliPMD3KsI=
+github.com/wneessen/go-mail v0.5.1/go.mod h1:kRroJvEq2hOSEPFRiKjN7Csrz0G1w+RpiGR3b6yo+Ck=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.55.0 h1:lRMfRoJnAaDWadgR58z6xyMIaH5UQ5SzFOhA+LfmUkA=
 go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.55.0/go.mod h1:7kJADjE+s91WUhMkzN7qTnDf2aUJZPzeD7RKw/uB5Xg=
