@@ -86,7 +86,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		a.Router = a.Router.PathPrefix(apiService.Config.PathPrefix).Subrouter()
 	}
 
-	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
+	swaggerJsonPath := a.Config.PathPrefix + "/swagger/doc.json"
 	swagger.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
 	// swagger docs for external API when enabled
 	// has to come before csp policy as there is currently no way to configure csp nonce for swagger ui
