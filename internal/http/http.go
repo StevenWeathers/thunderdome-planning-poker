@@ -464,6 +464,9 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 
+	// health check for load balancers, k8s, etc...
+	router.HandleFunc("/healthz", a.handleHealthCheck())
+
 	// handle index.html
 	router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
 
@@ -546,6 +549,14 @@ func (s *Service) handleIndex(filesystem fs.FS, uiConfig thunderdome.UIConfig) h
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
+	}
+}
+
+func (s *Service) handleHealthCheck() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status": "ok"}`))
 	}
 }
 
