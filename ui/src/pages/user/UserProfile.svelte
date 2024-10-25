@@ -36,6 +36,7 @@
     HeaderAuthEnabled,
     SubscriptionsEnabled,
     Subscription,
+    PathPrefix,
   } = AppConfig;
 
   function toggleUpdatePassword() {
@@ -402,7 +403,7 @@
             <div class="flex-1">
               <div class="text-right">
                 <HollowButton
-                  href="/swagger/index.html"
+                  href="{PathPrefix}/swagger/index.html"
                   options="{{ target: '_blank' }}"
                   color="blue"
                 >
