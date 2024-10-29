@@ -277,7 +277,7 @@ func (s *Service) handleGetPokerGame() http.HandlerFunc {
 		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
 		if game.JoinCode != "" {
 			userErr := s.PokerDataSvc.GetUserActiveStatus(gameID, sessionUserID)
-			if userErr != nil && userType != thunderdome.AdminUserType {
+			if userErr != nil && userErr.Error() != "DUPLICATE_BATTLE_USER" && userType != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
 				return
 			}
