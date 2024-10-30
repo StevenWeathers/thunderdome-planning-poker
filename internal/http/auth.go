@@ -98,6 +98,11 @@ func (s *Service) handleLogin() http.HandlerFunc {
 	}
 }
 
+type userLoginLdapRequestBody struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
 // handleLdapLogin attempts to authenticate the user by looking up and authenticating
 // via ldap, and then creates the user if not existing and logs them in
 //
@@ -106,7 +111,7 @@ func (s *Service) handleLogin() http.HandlerFunc {
 //	@Description	*Endpoint only available when LDAP is enabled
 //	@Tags			auth
 //	@Produce		json
-//	@Param			credentials	body	userLoginRequestBody	false	"user login object"
+//	@Param			credentials	body	userLoginLdapRequestBody	false	"user ldap login object"
 //	@Success		200			object	standardJsonResponse{data=loginResponse}
 //	@Failure		401			object	standardJsonResponse{}
 //	@Failure		500			object	standardJsonResponse{}
@@ -120,7 +125,7 @@ func (s *Service) handleLdapLogin() http.HandlerFunc {
 			return
 		}
 
-		var u = userLoginRequestBody{}
+		var u = userLoginLdapRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))

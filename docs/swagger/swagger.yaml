@@ -638,6 +638,16 @@ definitions:
     - password1
     - password2
     type: object
+  http.userLoginLdapRequestBody:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
   http.userLoginRequestBody:
     properties:
       email:
@@ -3037,11 +3047,11 @@ paths:
         attempts to log the user in with provided credentials
         *Endpoint only available when LDAP is enabled
       parameters:
-      - description: user login object
+      - description: user ldap login object
         in: body
         name: credentials
         schema:
-          $ref: '#/definitions/http.userLoginRequestBody'
+          $ref: '#/definitions/http.userLoginLdapRequestBody'
       produces:
       - application/json
       responses:

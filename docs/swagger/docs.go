@@ -1745,11 +1745,11 @@ const docTemplate = `{
                 "summary": "Login LDAP",
                 "parameters": [
                     {
-                        "description": "user login object",
+                        "description": "user ldap login object",
                         "name": "credentials",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/http.userLoginRequestBody"
+                            "$ref": "#/definitions/http.userLoginLdapRequestBody"
                         }
                     }
                 ],
@@ -11423,6 +11423,21 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 72,
                     "minLength": 6
+                }
+            }
+        },
+        "http.userLoginLdapRequestBody": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 }
             }
         },
