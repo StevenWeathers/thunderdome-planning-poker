@@ -111,10 +111,15 @@ func (d *Service) CreateGame(ctx context.Context, facilitatorID string, name str
 
 	for _, story := range stories {
 		story.Votes = make([]*thunderdome.Vote, 0)
+		priority := story.Priority
+		// default priority should be 99 for sort order purposes
+		if priority == 0 {
+			priority = 99
+		}
 
 		e := d.DB.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, position)
-					VALUES ($1, $2, $3, $4, $5, $6, $7, (
+			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, priority, position)
+					VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (
 					  coalesce(
 						(select max(position) from thunderdome.poker_story where poker_id = $1),
 						-1
@@ -127,6 +132,7 @@ func (d *Service) CreateGame(ctx context.Context, facilitatorID string, name str
 			story.Link,
 			story.Description,
 			story.AcceptanceCriteria,
+			priority,
 		).Scan(&story.ID)
 		if e != nil {
 			d.Logger.Error("insert stories error", zap.Error(e))
@@ -229,10 +235,15 @@ func (d *Service) TeamCreateGame(ctx context.Context, teamID string, facilitator
 
 	for _, story := range stories {
 		story.Votes = make([]*thunderdome.Vote, 0)
+		priority := story.Priority
+		// default priority should be 99 for sort order purposes
+		if priority == 0 {
+			priority = 99
+		}
 
 		e := d.DB.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, position)
-					VALUES ($1, $2, $3, $4, $5, $6, $7, (
+			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, priority, position)
+					VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (
 					  coalesce(
 						(select max(position) from thunderdome.poker_story where poker_id = $1),
 						-1
@@ -245,6 +256,7 @@ func (d *Service) TeamCreateGame(ctx context.Context, teamID string, facilitator
 			story.Link,
 			story.Description,
 			story.AcceptanceCriteria,
+			priority,
 		).Scan(&story.ID)
 		if e != nil {
 			d.Logger.Error("insert stories error", zap.Error(e))
