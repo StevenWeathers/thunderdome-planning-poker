@@ -70,9 +70,11 @@ func (d *Service) CreateRetro(ctx context.Context, ownerID, teamID string, retro
 			allow_cumulative_voting, template_id
 		)
 		VALUES ($1, NULLIF($2::text, '')::uuid, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-		RETURNING id
+		RETURNING id, created_date, updated_date;
 	`, ownerID, teamID, retroName, encryptedJoinCode, encryptedFacilitatorCode, maxVotes, brainstormVisibility,
-		phaseTimeLimitMin, phaseAutoAdvance, allowCumulativeVoting, templateID).Scan(&retro.ID)
+		phaseTimeLimitMin, phaseAutoAdvance, allowCumulativeVoting, templateID).Scan(
+		&retro.ID, &retro.CreatedDate, &retro.UpdatedDate,
+	)
 
 	if err != nil {
 		d.Logger.Error("create retro error", zap.Error(err),

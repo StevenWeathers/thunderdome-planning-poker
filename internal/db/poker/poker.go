@@ -75,10 +75,10 @@ func (d *Service) CreateGame(ctx context.Context, facilitatorID string, name str
             (owner_id, name, estimation_scale_id, point_values_allowed, auto_finish_voting, point_average_rounding,
              hide_voter_identity, join_code, leader_code)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-            RETURNING id
+            RETURNING id, created_date, updated_date
         `, facilitatorID, name, estimationScaleID, pointValuesAllowed, autoFinishVoting,
 		pointAverageRounding, hideVoterIdentity, encryptedJoinCode, encryptedLeaderCode,
-	).Scan(&b.ID)
+	).Scan(&b.ID, &b.CreatedDate, &b.UpdatedDate)
 	if err != nil {
 		d.Logger.Error("create poker error", zap.Error(err))
 		return nil, fmt.Errorf("failed to insert into poker table: %v", err)
@@ -193,10 +193,10 @@ func (d *Service) TeamCreateGame(ctx context.Context, teamID string, facilitator
             (owner_id, name, estimation_scale_id, point_values_allowed, auto_finish_voting, point_average_rounding,
              hide_voter_identity, join_code, leader_code, team_id)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            RETURNING id
+            RETURNING id, created_date, updated_date
         `, facilitatorID, name, estimationScaleID, pointValuesAllowed, autoFinishVoting,
 		pointAverageRounding, hideVoterIdentity, encryptedJoinCode, encryptedLeaderCode, teamID,
-	).Scan(&b.ID)
+	).Scan(&b.ID, &b.CreatedDate, &b.UpdatedDate)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			d.Logger.Error("update drivers: unable to rollback", zap.Error(rollbackErr))
