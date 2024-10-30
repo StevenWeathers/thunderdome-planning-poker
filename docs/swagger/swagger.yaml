@@ -470,6 +470,23 @@ definitions:
       success:
         type: boolean
     type: object
+  http.storyUpdateRequestBody:
+    properties:
+      acceptanceCriteria:
+        type: string
+      description:
+        type: string
+      link:
+        type: string
+      planName:
+        type: string
+      priority:
+        type: integer
+      referenceId:
+        type: string
+      type:
+        type: string
+    type: object
   http.storyboardColumnAddRequestBody:
     properties:
       goalId:
@@ -3425,6 +3442,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete Poker Story
+      tags:
+      - poker
+    put:
+      description: Updates a poker story
+      parameters:
+      - description: the poker game ID
+        in: path
+        name: battleId
+        required: true
+        type: string
+      - description: the poker story ID
+        in: path
+        name: planId
+        required: true
+        type: string
+      - description: updated story object
+        in: body
+        name: story
+        required: true
+        schema:
+          $ref: '#/definitions/http.storyUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Poker Story
       tags:
       - poker
   /estimation-scales/public:

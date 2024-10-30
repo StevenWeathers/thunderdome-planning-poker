@@ -328,6 +328,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetPokerGame())).Methods("GET")
 		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handlePokerDelete(pokerSvc))).Methods("DELETE")
 		apiRouter.HandleFunc("/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(pokerSvc))).Methods("POST")
+		apiRouter.HandleFunc("/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryUpdate(pokerSvc))).Methods("PUT")
 		apiRouter.HandleFunc("/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryDelete(pokerSvc))).Methods("DELETE")
 		apiRouter.HandleFunc("/arena/{battleId}", pokerSvc.ServeBattleWs())
 

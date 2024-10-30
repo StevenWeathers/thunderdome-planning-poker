@@ -2346,6 +2346,66 @@ const docTemplate = `{
             }
         },
         "/battles/{battleId}/plans/{planId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a poker story",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "poker"
+                ],
+                "summary": "Update Poker Story",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the poker game ID",
+                        "name": "battleId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the poker story ID",
+                        "name": "planId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated story object",
+                        "name": "story",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.storyUpdateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -11114,6 +11174,32 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "http.storyUpdateRequestBody": {
+            "type": "object",
+            "properties": {
+                "acceptanceCriteria": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "planName": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "referenceId": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },

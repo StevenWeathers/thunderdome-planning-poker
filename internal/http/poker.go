@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"slices"
@@ -354,7 +355,93 @@ func (s *Service) handlePokerStoryAdd(pokerSvc *poker.Service) http.HandlerFunc 
 	}
 }
 
-// handlePokerStoryAdd handles deleting a story from poker
+type storyUpdateRequestBody struct {
+	ID                 string `json:"planId" swaggerignore:"true"`
+	Name               string `json:"planName"`
+	Type               string `json:"type"`
+	ReferenceID        string `json:"referenceId"`
+	Link               string `json:"link"`
+	Description        string `json:"description"`
+	AcceptanceCriteria string `json:"acceptanceCriteria"`
+	Priority           int32  `json:"priority"`
+}
+
+// handlePokerStoryUpdate handles updating a poker story
+//
+//	@Summary		Update Poker Story
+//	@Description	Updates a poker story
+//	@Param			battleId	path	string					true	"the poker game ID"
+//	@Param			planId		path	string					true	"the poker story ID"
+//	@Param			story		body	storyUpdateRequestBody	true	"updated story object"
+//	@Tags			poker
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/battles/{battleId}/plans/{planId} [put]
+func (s *Service) handlePokerStoryUpdate(pokerSvc *poker.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		gameID := vars["battleId"]
+		idErr := validate.Var(gameID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(
+				EINVALID, fmt.Errorf("invalid battleId: %v", idErr.Error()).Error()),
+			)
+			return
+		}
+		storyID := vars["planId"]
+		idErr = validate.Var(storyID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(
+				EINVALID, fmt.Errorf("invalid storyId: %v", idErr.Error()).Error()),
+			)
+			return
+		}
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var story = storyUpdateRequestBody{}
+		jsonErr := json.Unmarshal(body, &story)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		story.ID = storyID
+		inputErr := validate.Struct(story)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		updatedStory, err := json.Marshal(story)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINTERNAL, err.Error()))
+			return
+		}
+
+		err = pokerSvc.APIEvent(ctx, gameID, sessionUserID, "revise_plan", string(updatedStory))
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handlePokerStoryUpdate error", zap.Error(err),
+				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID),
+				zap.String("story_id", storyID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handlePokerStoryDelete handles deleting a story from poker
 //
 //	@Summary		Delete Poker Story
 //	@Description	Deletes a poker story
