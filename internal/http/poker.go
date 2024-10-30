@@ -294,6 +294,7 @@ type planRequestBody struct {
 	Link               string `json:"link"`
 	Description        string `json:"description"`
 	AcceptanceCriteria string `json:"acceptanceCriteria"`
+	Priority           int32  `json:"priority"`
 }
 
 // handlePokerStoryAdd handles adding a story to poker

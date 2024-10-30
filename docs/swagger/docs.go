@@ -10889,6 +10889,9 @@ const docTemplate = `{
                 "planName": {
                     "type": "string"
                 },
+                "priority": {
+                    "type": "integer"
+                },
                 "referenceId": {
                     "type": "string"
                 },

@@ -309,6 +309,8 @@ definitions:
         type: string
       planName:
         type: string
+      priority:
+        type: integer
       referenceId:
         type: string
       type:
