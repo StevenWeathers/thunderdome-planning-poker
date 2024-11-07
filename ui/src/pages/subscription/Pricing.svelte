@@ -102,7 +102,8 @@
               class="w-full inline-block text-center bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-full mb-8 hover:from-blue-600 hover:to-purple-700 transition duration-300"
               href="{selectedPaymentPeriod === 'month'
                 ? AppConfig.Subscription.Individual.MonthCheckoutLink
-                : AppConfig.Subscription.Individual.YearCheckoutLink}"
+                : AppConfig.Subscription.Individual
+                    .YearCheckoutLink}?prefilled_email={$user.email}&client_reference_id={$user.id}"
               target="_blank"
             >
               Subscribe Now
@@ -147,7 +148,8 @@
               class="w-full inline-block text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-full mb-8 hover:from-purple-600 hover:to-pink-600 transition duration-300 transform hover:-translate-y-1"
               href="{selectedPaymentPeriod === 'month'
                 ? AppConfig.Subscription.Team.MonthCheckoutLink
-                : AppConfig.Subscription.Team.YearCheckoutLink}"
+                : AppConfig.Subscription.Team
+                    .YearCheckoutLink}?prefilled_email={$user.email}&client_reference_id={$user.id}"
               target="_blank"
             >
               Subscribe Now
@@ -190,7 +192,8 @@
               class="w-full inline-block text-center bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-3 px-6 rounded-full mb-8 hover:from-green-600 hover:to-blue-600 transition duration-300"
               href="{selectedPaymentPeriod === 'month'
                 ? AppConfig.Subscription.Organization.MonthCheckoutLink
-                : AppConfig.Subscription.Organization.YearCheckoutLink}"
+                : AppConfig.Subscription.Organization
+                    .YearCheckoutLink}?prefilled_email={$user.email}&client_reference_id={$user.id}"
               target="_blank"
             >
               Subscribe Now
