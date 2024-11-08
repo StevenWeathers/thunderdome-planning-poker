@@ -23,7 +23,8 @@ const es: Translation = {
   addPersona: 'Añadir Persona',
   admin: 'Admin',
   adminCleanOldRetros: 'Limpiar Retros anteriores a {daysOld} días',
-  adminCleanOldStoryboards: 'Limpiar Storyboards con más de {daysOld} días de antigüedad',
+  adminCleanOldStoryboards:
+    'Limpiar Storyboards con más de {daysOld} días de antigüedad',
   adminPageAdmin: 'Admin',
   adminPageAlerts: 'Alertas',
   adminPageApi: 'Claves API',
@@ -47,7 +48,7 @@ const es: Translation = {
   alertTypePlaceholder: 'Seleccione un tipo de alerta',
   allVotesIn: 'Todos los votos en',
   apiDocumentation: 'Documentación API',
-  apikeyCopyFailure: "No se ha podido copiar la clave API en el portapapeles",
+  apikeyCopyFailure: 'No se ha podido copiar la clave API en el portapapeles',
   apikeyCopySuccess: 'Clave API copiada en el portapapeles',
   apiKeys: 'Claves API',
   applicationStatsError: 'Error al obtener las estadísticas de la aplicación',
@@ -64,7 +65,8 @@ const es: Translation = {
   battleCreate: 'Crear Juego',
   battleDelete: 'Eliminar Juego',
   battleEdit: 'Editar Juego',
-  battleEditPointsDisabled: 'La votación está activa, no puede modificar los puntos permitidos.',
+  battleEditPointsDisabled:
+    'La votación está activa, no puede modificar los puntos permitidos.',
   battleJoin: 'Unirse al juego',
   battleName: 'Nombre del juego',
   battleRemoveError: 'Error al intentar eliminar el juego.',
@@ -78,10 +80,11 @@ const es: Translation = {
   becomeSpectator: 'Conviértase en Espectador',
   blocked: 'Bloqueado',
   blockers: 'Bloqueadores',
-  blockersPlaceholder: "Estoy bloqueado por...",
+  blockersPlaceholder: 'Estoy bloqueado por...',
   brainstorm: 'Lluvia de ideas',
   brainstormPhaseDescription: 'Añada sus comentarios',
-  brainstormPhaseFeedbackVisibility: 'Fase de lluvia de ideas Feedback Visibilidad',
+  brainstormPhaseFeedbackVisibility:
+    'Fase de lluvia de ideas Feedback Visibilidad',
   brainstormVisibilityLabelConcealed: 'Feedback Escondido',
   brainstormVisibilityLabelHidden: 'Feedback Oculto',
   brainstormVisibilityLabelVisible: 'Feedback Visible',
@@ -91,7 +94,7 @@ const es: Translation = {
   checkinCommentDeleteError: 'Error al eliminar un comentario',
   checkinCommentError: 'Error al hacer el registro de entrada',
   checkinError: 'Comprobación de errores en',
-  checkinMeetYesterdayGoalsQuestion: "¿Cumplió los objetivos de ayer?",
+  checkinMeetYesterdayGoalsQuestion: '¿Cumplió los objetivos de ayer?',
   checkins: 'Registros',
   colorLegend: 'Leyenda de colores',
   colorLegendNotSpecified: 'leyenda no especificada',
@@ -155,7 +158,8 @@ const es: Translation = {
   discussPlaceholder: 'Me gustaría discutir...',
   done: 'Hecho',
   duplicateRetroSession: 'Existe una sesión retro duplicada para su ID',
-  duplicateStoryboardSession: 'Existe una sesión de storyboard duplicada para su ID',
+  duplicateStoryboardSession:
+    'Existe una sesión de storyboard duplicada para su ID',
   edit: 'Editar',
   editColorLegend: 'Editar leyenda',
   editRetro: 'Editar Retro',
@@ -182,7 +186,7 @@ const es: Translation = {
   getApikeysError: 'Error al obtener apikeys',
   getBattleError: 'Error al acceder al juego',
   getBattlesError: 'Error al acceder a los juegos',
-  getCheckinsError: "Error al registrar",
+  getCheckinsError: 'Error al registrar',
   getOrganizationsError: 'Error al obtener organizaciones',
   getRetroErrorMessage: 'error al obtener retro',
   getRetrosErrorMessage: 'error al obtener las retro',
@@ -205,23 +209,26 @@ const es: Translation = {
   importJiraXMLBadFileTypeError: 'Error tipo de archivo incorrecto',
   importJiraXMLReadFileError: 'Error al leer el archivo',
   incorrectPassCode: 'Código de acceso incorrecto',
-  inviteLinkCopyFailure: "No se ha podido copiar el enlace de invitación al portapapeles",
+  inviteLinkCopyFailure:
+    'No se ha podido copiar el enlace de invitación al portapapeles',
   inviteLinkCopySuccess: 'Enlace de invitación copiado en el portapapeles',
   jiraXmlImport: 'Importación XML de Jira',
-  joinCodeCopyFailure: "No se puede copiar el código de acceso al portapapeles",
+  joinCodeCopyFailure: 'No se puede copiar el código de acceso al portapapeles',
   joinCodeCopySuccess: 'Código de acceso copiado en el portapapeles',
   joinCodeLabelOptional: 'Código de acceso (opcional))',
   joinCodePlaceholder: 'Introduzca un código de acceso',
   joinRetro: 'Únete a Retro',
   joinStoryboard: 'Únete al Storyboard',
-  joinStoryboardError: 'Error al unirse al storyboard, actualice e inténtelo de nuevo.',
+  joinStoryboardError:
+    'Error al unirse al storyboard, actualice e inténtelo de nuevo.',
   landingCountries: 'Usuarios en más de {contar} países',
   landingFeatureOpenSourceText:
     'Echa un vistazo al {repoOpen}Repositorio Github{repoClose} para solicitar o aportar mejoras, traducciones a otros idiomas y correcciones de errores o para {donateOpen}Donar{donateClose}.',
   landingFeatureOpenSourceTitle: 'Código abierto',
   landingSalesPitch:
     'Colaboración remota en equipo con puntuación de historias agiles, print restrospectiva, mapeo de historias y registro asíncrono de equipos.',
-  landingTitle: 'TThunderdome es una aplicación de póquer de planificación ágil',
+  landingTitle:
+    'TThunderdome es una aplicación de póquer de planificación ágil',
   lastActive: 'Último activo',
   leader: 'Líder',
   leaderPasscode: 'Código Leader',
@@ -232,9 +239,11 @@ const es: Translation = {
   loadingStoryboard: 'Cargando Storyboard...',
   login: 'Login',
   loginForRetro: 'o {loginOpen}Login{loginClose} para unirse a Retro',
-  loginForStoryboard: 'o {loginOpen}Login{loginClose} para unirse al Storyboard',
+  loginForStoryboard:
+    'o {loginOpen}Login{loginClose} para unirse al Storyboard',
   logout: 'Salir',
-  logoutError: 'Se ha producido un error al intentar cerrar la sesión del usuario',
+  logoutError:
+    'Se ha producido un error al intentar cerrar la sesión del usuario',
   makeFacilitator: 'Hacer de facilitador',
   mfa2faLabel: 'Autenticación 2FA/MFA',
   mfa2faRemove: 'Eliminar 2FA/MFA',
@@ -264,13 +273,15 @@ const es: Translation = {
   oldStoryboardsCleanError: 'Error al limpiar storyboards',
   openSource: 'Código abierto',
   optional: '(Opcional)',
-  optionalLeadercodePlaceholder: 'Código de líder opcional para convertirse en líder',
+  optionalLeadercodePlaceholder:
+    'Código de líder opcional para convertirse en líder',
   optionalPasscodePlaceholder: 'Código de acceso opcional',
   organization: 'Organización',
   organizationCreate: 'Crear organización',
   organizationDeleteError: 'Error al intentar eliminar una organización',
   organizationDeleteSuccess: 'Organización eliminada con éxito.',
-  organizationGetDepartmentsError: 'Error al obtener los departamentos de la organización',
+  organizationGetDepartmentsError:
+    'Error al obtener los departamentos de la organización',
   organizationGetError: 'Error al obtener la organización',
   organizationGetTeamsError: 'Error al obtener equipos de organización',
   organizationGetUsersError: 'Error al obtener usuarios de la organización',
@@ -291,7 +302,7 @@ const es: Translation = {
   planDescriptionPlaceholder: 'Introduzca una descripción',
   planLink: 'Enlace',
   planLinkInvalid:
-    "El enlace no es una URL absoluta válida, por ejemplo, incluye el protocolo (HTTP/HTTPS)",
+    'El enlace no es una URL absoluta válida, por ejemplo, incluye el protocolo (HTTP/HTTPS)',
   planLinkPlaceholder: 'Introduzca un enlace a la historya',
   planName: 'Nombre de la historia',
   planNamePlaceholder: 'Introduzca el nombre de la historia',
@@ -333,13 +344,14 @@ const es: Translation = {
   removeRetro: 'Eliminar Retro',
   removeRetroConfirmText: '¿Seguro que deseas eliminar este retro?',
   removeStoryboard: 'Eliminar Storyboard',
-  removeStoryboardConfirmText:
-    '¿Seguro que deseas eliminar este storyboard?',
+  removeStoryboardConfirmText: '¿Seguro que deseas eliminar este storyboard?',
   removeUser: 'Eliminar Usuario',
   removeUserConfirmText: '¿Seguro que deseas eliminar a este usuario?',
   requestVerifyEmail: 'Solicitar Correo de Verificación',
-  requestVerifyEmailFailure: 'Error al intentar enviar el Correo de Verificación',
-  requestVerifyEmailSuccess: 'Correo de Verificación solicitado, revisa tu bandeja de entrada',
+  requestVerifyEmailFailure:
+    'Error al intentar enviar el Correo de Verificación',
+  requestVerifyEmailSuccess:
+    'Correo de Verificación solicitado, revisa tu bandeja de entrada',
   retro: 'Retro',
   retroActionCommentAddError: 'error al agregar comentario de acción retro',
   retroActionCommentDeleteError: 'error al eliminar comentario de acción retro',
@@ -412,7 +424,8 @@ const es: Translation = {
   teamNamePlaceholder: 'Ingresa un nombre de equipo',
   teams: 'Equipos',
   teamSave: 'Guardar Equipo',
-  teamUserRequiredToCheckin: 'El usuario debe estar en el equipo para hacer check-in',
+  teamUserRequiredToCheckin:
+    'El usuario debe estar en el equipo para hacer check-in',
   teamUserRequiredToComment: 'El usuario debe estar en el equipo para comentar',
   today: 'Hoy',
   todayPlaceholder: 'Hoy voy a...',
@@ -437,7 +450,8 @@ const es: Translation = {
   userRemoveSuccess: 'Usuario eliminado con éxito.',
   users: 'Usuarios',
   verifyAccount: 'Verificar Cuenta',
-  verifyAccountFailedError: 'Ocurrió un error al verificar tu cuenta; el enlace podría haber expirado o ya haber sido usado.',
+  verifyAccountFailedError:
+    'Ocurrió un error al verificar tu cuenta; el enlace podría haber expirado o ya haber sido usado.',
   verifyAccountFailedTitle: 'Verificación Fallida',
   verifyAccountLoading: 'Verificando Cuenta...',
   verifyAccountVerifiedThanks: 'Gracias por verificar tu correo electrónico.',
@@ -462,11 +476,12 @@ const es: Translation = {
   yourStoryboards: 'Tus Storyboards',
   addPlan: 'Agregar Historia',
   battleNamePlaceholder: 'Ingresa un nombre de juego',
-  autoFinishVotingLabel: 'Finalizar Votación Automáticamente cuando todos los Jugadores hayan votado',
+  autoFinishVotingLabel:
+    'Finalizar Votación Automáticamente cuando todos los Jugadores hayan votado',
   averageRoundingOptions: {
-      ceil: 'Redondear hacia arriba',
-      floor: 'Redondear hacia abajo',
-      round: 'Redondear',
+    ceil: 'Redondear hacia arriba',
+    floor: 'Redondear hacia abajo',
+    round: 'Redondear',
   },
   apiKeyCreateButton: 'Crear Clave API',
   apiKeyPrefix: 'Prefijo de Clave',
@@ -487,13 +502,18 @@ const es: Translation = {
   profile: 'Perfil',
   updatePassword: 'Actualizar Contraseña',
   deleteAccount: 'Eliminar Cuenta',
-  deleteAccountWarningStatement: '¿Estás seguro de que deseas eliminar tu cuenta?',
+  deleteAccountWarningStatement:
+    '¿Estás seguro de que deseas eliminar tu cuenta?',
   deleteConfirmButton: 'Confirmar Eliminación',
   apiKeyNameInvalid: 'Por favor, ingresa un nombre de clave',
-  apiKeyCreateSuccess: 'Nueva Clave API {keyName} creada y {onlyNowOpen}solo se mostrará ahora{onlyNowClose}',
-  apiKeyStoreWarning: 'Guárdala en un lugar seguro, ya que una vez que abandones esta página, no podremos recuperar o restaurar este token generado.',
-  apiKeyLimitReached: 'Has alcanzado el número máximo de claves API permitidas.',
-  apiKeyUnverifiedUser: 'Solo los usuarios registrados y verificados pueden crear claves API.',
+  apiKeyCreateSuccess:
+    'Nueva Clave API {keyName} creada y {onlyNowOpen}solo se mostrará ahora{onlyNowClose}',
+  apiKeyStoreWarning:
+    'Guárdala en un lugar seguro, ya que una vez que abandones esta página, no podremos recuperar o restaurar este token generado.',
+  apiKeyLimitReached:
+    'Has alcanzado el número máximo de claves API permitidas.',
+  apiKeyUnverifiedUser:
+    'Solo los usuarios registrados y verificados pueden crear claves API.',
   apiKeyCreateFailed: 'Failed to create API Key',
   apiKeyName: 'Nombre clave',
   apiKeyNamePlaceholder: 'Introduzca un nombre de clave',
@@ -539,8 +559,10 @@ const es: Translation = {
   yourNamePlaceholder: 'Ingresa tu nombre',
   createAccountFormTitle:
     'Crear una Cuenta {optionalOpen}(opcional){optionalClose}',
-  sendResetPasswordSuccess: 'Instrucciones para restablecer la contraseña enviadas a {email}',
-  sendResetPasswordError: 'Error al intentar enviar el restablecimiento de contraseña',
+  sendResetPasswordSuccess:
+    'Instrucciones para restablecer la contraseña enviadas a {email}',
+  sendResetPasswordError:
+    'Error al intentar enviar el restablecimiento de contraseña',
   chooseCountryPlaceholder: 'Elige tu país (opcional)',
   locale: 'Idioma',
   companyPlaceholder: 'Ingresa tu empresa (opcional)',
@@ -566,7 +588,8 @@ const es: Translation = {
   userUpdateError: 'Error al actualizar el usuario.',
   userInvites: 'Invitaciones de Usuario',
   userInviteSent: 'Invitación de usuario enviada',
-  userInviteConfirmDelete: '¿Estás seguro de que deseas eliminar esta invitación de usuario?',
+  userInviteConfirmDelete:
+    '¿Estás seguro de que deseas eliminar esta invitación de usuario?',
   userInviteDelete: 'Eliminar Invitación',
   expireDate: 'Fecha de Expiración',
   addUserWillInviteNotFoundFieldNote:
@@ -582,7 +605,8 @@ const es: Translation = {
   hideVoterIdentity: 'Ocultar Identidad del Votante',
   storyboardName: 'Nombre del Storyboard',
   storyboardNamePlaceholder: 'Ingresa un nombre de storyboard',
-  retroPhaseTimeLimitMinLabel: 'Límite de tiempo de la fase de lluvia de ideas en minutos',
+  retroPhaseTimeLimitMinLabel:
+    'Límite de tiempo de la fase de lluvia de ideas en minutos',
   phaseAutoAdvanceLabel: 'Avanzar fases automáticamente',
   removeOnlyFacilitatorError: 'No se puede eliminar al único facilitador',
   noGamesFound: 'No se encontraron juegos, intenta crear uno.',
@@ -639,7 +663,8 @@ const es: Translation = {
   retroTemplateCreate: 'Crear Plantilla de Retrospectiva',
   retroTemplateCreateSuccess: 'Plantilla de retrospectiva creada con éxito',
   retroTemplateCreateError: 'Error al crear la plantilla de retrospectiva',
-  retroTemplateUpdateSuccess: 'Plantilla de retrospectiva actualizada con éxito',
+  retroTemplateUpdateSuccess:
+    'Plantilla de retrospectiva actualizada con éxito',
   retroTemplateUpdateError: 'Error al actualizar la plantilla de retrospectiva',
   retroTemplateRemoveSuccess: 'Plantilla de retrospectiva eliminada con éxito',
   retroTemplateRemoveError: 'Error al eliminar la plantilla de retrospectiva',
