@@ -461,8 +461,10 @@ func (d *Service) GetGamesByUser(userID string, limit int, offset int) ([]*thund
 		)
 		SELECT p.id, p.name, p.voting_locked, COALESCE(p.active_story_id::text, ''), p.point_values_allowed, p.auto_finish_voting,
 		  p.point_average_rounding, p.created_date, p.updated_date,
-		  CASE WHEN COUNT(s) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(s))) END AS stories,
-		  CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators,
+		  (SELECT CASE WHEN COUNT(s) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(s))) END
+		  FROM thunderdome.poker_story s WHERE p.id = s.poker_id) AS stories,
+		  (SELECT CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END FROM
+		  thunderdome.poker_facilitator bl WHERE bl.poker_id = p.id) AS facilitators,
 		  min(COALESCE(t.name, '')) as team_name, COALESCE(p.team_id::TEXT, ''), p.estimation_scale_id,
 		  COALESCE(
 			json_build_object(
@@ -482,8 +484,6 @@ func (d *Service) GetGamesByUser(userID string, limit int, offset int) ([]*thund
 			'{}'::jsonb
 		) AS estimation_scale
 		FROM thunderdome.poker p
-		LEFT JOIN stories AS s ON s.poker_id = p.id
-		LEFT JOIN facilitators AS bl ON bl.poker_id = p.id
 		LEFT JOIN user_teams t ON t.id = p.team_id
 		LEFT JOIN thunderdome.estimation_scale es ON p.estimation_scale_id = es.id
 		WHERE p.id IN (SELECT id FROM games)
