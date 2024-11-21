@@ -326,49 +326,46 @@
       </div>
       {#if plan[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
         <div
-          class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 cursor-pointer flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
+          class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 cursor-pointer flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
           data-testid="plan"
           data-storyid="{plan.id}"
         >
-          <div class="w-full lg:w-1/3 mb-4 lg:mb-0">
-            <div class="inline-block font-bold align-middle dark:text-white">
-              {#if plan.link !== ''}
-                <a
-                  href="{plan.link}"
-                  target="_blank"
-                  class="text-blue-800 dark:text-sky-400"
-                >
-                  <ExternalLink class="inline-block" />
-                </a>
-                &nbsp;
-              {/if}
-              <div
-                class="inline-block text-sm text-gray-500 dark:text-gray-300
-                        border-gray-300 border px-1 rounded"
-                data-testid="plan-type"
+          <div class="flex-grow font-bold align-middle dark:text-white">
+            {#if plan.link !== ''}
+              <a
+                href="{plan.link}"
+                target="_blank"
+                class="text-blue-800 dark:text-sky-400"
               >
-                {plan.type}
-              </div>
+                <ExternalLink class="inline-block" />
+              </a>
               &nbsp;
-              {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-              <svelte:component
-                this="{priorities[plan.priority].icon}"
-                class="inline-block w-6 h-6"
-              />
-              <span data-testid="plan-name">{plan.name}</span>
+            {/if}
+            <div
+              class="inline-block text-sm text-gray-500 dark:text-gray-300
+                        border-gray-300 border px-1 rounded"
+              data-testid="plan-type"
+            >
+              {plan.type}
             </div>
             &nbsp;
+            {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
+            <svelte:component
+              this="{priorities[plan.priority].icon}"
+              class="inline-block w-6 h-6"
+            />
+            <span data-testid="plan-name">{plan.name}</span>
+          </div>
+          <div class="lg:flex-none text-right">
             {#if plan.points !== ''}
               <div
                 class="inline-block font-bold text-green-600 dark:text-lime-400
-                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ms-2"
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded me-1"
                 data-testid="plan-points"
               >
                 {plan.points}
               </div>
             {/if}
-          </div>
-          <div class="w-full lg:w-2/3 text-right">
             <HollowButton
               color="blue"
               onClick="{togglePlanView(plan.id)}"
