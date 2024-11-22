@@ -273,10 +273,12 @@
           </div>
           &nbsp;
           {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-          <svelte:component
-            this="{priorities[plan.priority].icon}"
-            class="inline-block w-6 h-6"
-          />
+          {#if priorities[plan.priority]}
+            <svelte:component
+              this="{priorities[plan.priority].icon}"
+              class="inline-block w-6 h-6"
+            />
+          {/if}
           <span data-testid="plan-name">{plan.name}</span>
         </div>
         <div class="lg:flex-none text-right">
