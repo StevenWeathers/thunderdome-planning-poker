@@ -66,6 +66,10 @@ module.exports = {
           src: 'public/img',
           dest: 'dist'
         },
+        {
+          src: 'public/sounds',
+          dest: 'dist'
+        },
       ]
     }),
 
