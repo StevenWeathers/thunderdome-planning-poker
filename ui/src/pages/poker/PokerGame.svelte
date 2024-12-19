@@ -28,11 +28,12 @@
   export let router;
   export let xfetch;
 
-  const { AllowRegistration, AllowGuests } = AppConfig;
+  const { AllowRegistration, AllowGuests, PathPrefix } = AppConfig;
   const loginOrRegister: string = AllowGuests
     ? appRoutes.register
     : appRoutes.login;
 
+  const audio = new Audio(PathPrefix + '/sounds/msn-wizz-sound.mp3');
   const hostname: string = window.location.origin;
 
   const defaultStory: PokerStory = {
@@ -274,6 +275,25 @@
           })}
     `,
         );
+
+        // msn wizz animation and sound
+        if (userToNudge.id === $user.id) {
+          document.querySelector('body').classList.toggle('shake');
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(function () {
+                // Automatic playback started!
+              })
+              .catch(function (error) {
+                // Automatic playback failed, can happen: https://goo.gl/xX8pDD
+              });
+          }
+
+          setTimeout(() => {
+            document.querySelector('body').classList.toggle('shake');
+          }, 700);
+        }
         break;
       default:
         break;
