@@ -274,6 +274,15 @@
           })}
     `,
         );
+
+        // msn wizz animation and sound
+        if (userToNudge.id === $user.id) {
+          document.querySelector('body').classList.toggle('shake');
+
+          setTimeout(() => {
+            document.querySelector('body').classList.toggle('shake');
+          }, 700);
+        }
         break;
       default:
         break;
