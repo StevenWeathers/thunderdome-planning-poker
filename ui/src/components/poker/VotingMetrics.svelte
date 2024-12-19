@@ -125,8 +125,12 @@
       >
         <div class="w-full h-full flex flex-col justify-end">
           <div
-            class="w-full bg-blue-500 transition-all duration-500 ease-out relative"
+            class="bg-blue-500 transition-all duration-500 ease-out absolute bottom-0 left-0 right-0"
             style="height: {getBarHeight(count)}%; min-height: 2px;"
+          ></div>
+          <div
+            class="w-full relative"
+            style="height: {getBarHeight(count)}%; min-height: 80px;"
           >
             <div
               class="h-full flex items-center justify-center text-white font-bold text-lg"
