@@ -56,7 +56,6 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 			cspbuilder.ScriptSrc: {"$NONCE"},
 			cspbuilder.FontSrc:   {"'self'", "https://fonts.gstatic.com"},
 			cspbuilder.ImgSrc:    {"data:", "*"},
-			cspbuilder.MediaSrc:  {"data:", "*"},
 			cspbuilder.ConnectSrc: {"'self'",
 				getWebsocketConnectSrc(a.Config.SecureProtocol, a.Config.WebsocketSubdomain, a.Config.AppDomain),
 				"https://*.google-analytics.com",
@@ -465,7 +464,6 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	// static assets
 	router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
-	router.PathPrefix("/sounds/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 
 	// health check for load balancers, k8s, etc...
 	router.HandleFunc("/healthz", a.handleHealthCheck())
