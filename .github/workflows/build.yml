@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ "20.12.0" ]
+        node-version: [ "22.12.0" ]
         go-version: [ "1.23" ]
         db-host:
           - 127.0.0.1

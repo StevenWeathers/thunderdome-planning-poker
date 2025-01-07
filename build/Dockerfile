@@ -1,7 +1,7 @@
 ############################
 # STEP 1 build the ui
 ############################
-FROM node:20.12 as builderNode
+FROM node:22.12 as builderNode
 
 RUN mkdir /webapp
 COPY ./ui/ /webapp/ui/
@@ -14,7 +14,7 @@ RUN npm run build
 ############################
 # STEP 2 build executable binary
 ############################
-FROM golang:1.22-alpine as builderGo
+FROM golang:1.23-alpine as builderGo
 ARG BUILD_VERSION
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
