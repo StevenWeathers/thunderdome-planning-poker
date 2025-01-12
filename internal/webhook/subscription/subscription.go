@@ -9,16 +9,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/stripe/stripe-go/v76/checkout/session"
-	"github.com/stripe/stripe-go/v76/product"
+	"github.com/stripe/stripe-go/v81/checkout/session"
+	"github.com/stripe/stripe-go/v81/product"
 
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
-	"github.com/stripe/stripe-go/v76"
-	"github.com/stripe/stripe-go/v76/webhook"
+	"github.com/stripe/stripe-go/v81"
+	"github.com/stripe/stripe-go/v81/webhook"
 )
 
 // Config holds the configuration for the subscription service

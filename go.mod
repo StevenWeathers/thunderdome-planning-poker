@@ -23,7 +23,6 @@ require (
 	github.com/pquerna/otp v1.4.0
 	github.com/pressly/goose/v3 v3.23.1
 	github.com/spf13/viper v1.19.0
-	github.com/stripe/stripe-go/v76 v76.25.0
 	github.com/swaggo/swag v1.16.4
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.3.2
 	github.com/wneessen/go-mail v0.5.2
@@ -40,6 +39,7 @@ require (
 
 require (
 	github.com/stretchr/testify v1.10.0
+	github.com/stripe/stripe-go/v81 v81.2.0
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/unrolled/secure v1.17.0
 )
