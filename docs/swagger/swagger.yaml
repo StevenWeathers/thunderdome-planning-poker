@@ -316,6 +316,25 @@ definitions:
       type:
         type: string
     type: object
+  http.pokerSettingsRequestBody:
+    properties:
+      autoFinishVoting:
+        type: boolean
+      estimationScaleId:
+        type: string
+      facilitatorCode:
+        type: string
+      hideVoterIdentity:
+        type: boolean
+      joinCode:
+        type: string
+      pointAverageRounding:
+        enum:
+        - ceil
+        - floor
+        - round
+        type: string
+    type: object
   http.privateEstimationScaleRequestBody:
     properties:
       defaultScale:
@@ -400,6 +419,35 @@ definitions:
     - brainstormVisibility
     - maxVotes
     - retroName
+    type: object
+  http.retroSettingsRequestBody:
+    properties:
+      allowCumulativeVoting:
+        type: boolean
+      allowMultipleVotes:
+        type: boolean
+      brainstormVisibility:
+        enum:
+        - visible
+        - hidden
+        - concealed
+        type: string
+      facilitatorCode:
+        type: string
+      joinCode:
+        type: string
+      maxVotes:
+        maximum: 100
+        minimum: 1
+        type: integer
+      phaseAutoAdvance:
+        type: boolean
+      phaseTimeLimit:
+        maximum: 59
+        minimum: 0
+        type: integer
+      templateId:
+        type: string
     type: object
   http.retroTemplateFormatRequestBody:
     properties:
@@ -1056,6 +1104,33 @@ definitions:
       votingLocked:
         type: boolean
     type: object
+  thunderdome.PokerSettings:
+    properties:
+      ID:
+        type: string
+      autoFinishVoting:
+        type: boolean
+      createdAt:
+        type: string
+      departmentId:
+        type: string
+      estimationScaleId:
+        type: string
+      facilitatorCode:
+        type: string
+      hideVoterIdentity:
+        type: boolean
+      joinCode:
+        type: string
+      organizationId:
+        type: string
+      pointAverageRounding:
+        type: string
+      teamId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   thunderdome.PokerUser:
     properties:
       abandoned:
@@ -1215,6 +1290,39 @@ definitions:
       updated_date:
         type: string
       user_id:
+        type: string
+    type: object
+  thunderdome.RetroSettings:
+    properties:
+      allowCumulativeVoting:
+        type: boolean
+      allowMultipleVotes:
+        type: boolean
+      brainstormVisibility:
+        type: string
+      createdAt:
+        type: string
+      departmentId:
+        type: string
+      facilitatorCode:
+        type: string
+      id:
+        type: string
+      joinCode:
+        type: string
+      maxVotes:
+        type: integer
+      organizationId:
+        type: string
+      phaseAutoAdvance:
+        type: boolean
+      phaseTimeLimit:
+        type: integer
+      teamId:
+        type: string
+      templateId:
+        type: string
+      updatedAt:
         type: string
     type: object
   thunderdome.RetroTemplate:
@@ -2219,6 +2327,134 @@ paths:
       summary: Get Organizations
       tags:
       - admin
+  /admin/poker-settings/{id}:
+    delete:
+      description: Deletes poker settings for an organization, department, or team
+      parameters:
+      - description: Settings ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns success message
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Poker Settings
+      tags:
+      - admin
+      - poker-settings
+    get:
+      description: get poker settings by ID
+      parameters:
+      - description: Settings ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Poker Settings by ID
+      tags:
+      - admin
+      - poker-settings
+  /admin/retro-settings/{id}:
+    delete:
+      description: Deletes retro settings for an organization, department, or team
+      parameters:
+      - description: Settings ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns success message
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Retro Settings
+      tags:
+      - admin
+      - retro-settings
+    get:
+      description: get retro settings by ID
+      parameters:
+      - description: Settings ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retro Settings by ID
+      tags:
+      - admin
+      - retro-settings
   /admin/retro-templates:
     get:
       description: get list of retro templates
@@ -3493,6 +3729,86 @@ paths:
       summary: Update Poker Story
       tags:
       - poker
+  /departments/{deptId}/poker-settings:
+    post:
+      description: Creates new poker settings for a department
+      parameters:
+      - description: Department ID
+        in: path
+        name: deptId
+        required: true
+        type: string
+      - description: poker settings object to create
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.pokerSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: returns created poker settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Department Poker Settings
+      tags:
+      - poker-settings
+  /departments/{deptId}/retro-settings:
+    post:
+      description: Creates new retro settings for a department
+      parameters:
+      - description: Department ID
+        in: path
+        name: deptId
+        required: true
+        type: string
+      - description: retro settings object to create
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: returns created retro settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Department Retro Settings
+      tags:
+      - retro-settings
   /estimation-scales/public:
     get:
       description: get list of all public estimation scales
@@ -4380,6 +4696,172 @@ paths:
       summary: Update Department User
       tags:
       - organization
+  /organizations/{orgId}/departments/{deptId}/poker-settings:
+    get:
+      description: get poker settings for a specific department
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: Department ID
+        in: path
+        name: deptId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Department Poker Settings
+      tags:
+      - poker-settings
+    put:
+      description: Updates poker settings for a specific department
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: Department ID
+        in: path
+        name: deptId
+        required: true
+        type: string
+      - description: poker settings object to update
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.pokerSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated poker settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department Poker Settings
+      tags:
+      - poker-settings
+  /organizations/{orgId}/departments/{deptId}/retro-settings:
+    get:
+      description: get retro settings for a specific department
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: Department ID
+        in: path
+        name: deptId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Department Retro Settings
+      tags:
+      - retro-settings
+    put:
+      description: Updates retro settings for a specific department
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: Department ID
+        in: path
+        name: deptId
+        required: true
+        type: string
+      - description: retro settings object to update
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated retro settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department Retro Settings
+      tags:
+      - retro-settings
   /organizations/{orgId}/estimation-scales:
     get:
       description: get list of estimation scales for a specific organization
@@ -4591,6 +5073,230 @@ paths:
       summary: Get Organization Metrics
       tags:
       - admin
+  /organizations/{orgId}/poker-settings:
+    get:
+      description: get poker settings for a specific organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Poker Settings
+      tags:
+      - poker-settings
+    post:
+      description: Creates new poker settings for an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: poker settings object to create
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.pokerSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: returns created poker settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Poker Settings
+      tags:
+      - poker-settings
+    put:
+      description: Updates poker settings for a specific organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: poker settings object to update
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.pokerSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated poker settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Poker Settings
+      tags:
+      - poker-settings
+  /organizations/{orgId}/retro-settings:
+    get:
+      description: get retro settings for a specific organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Retro Settings
+      tags:
+      - retro-settings
+    post:
+      description: Creates new retro settings for an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: retro settings object to create
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: returns created retro settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Retro Settings
+      tags:
+      - retro-settings
+    put:
+      description: Updates retro settings for a specific organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: retro settings object to update
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated retro settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Retro Settings
+      tags:
+      - retro-settings
   /organizations/{orgId}/retro-templates:
     get:
       description: get list of retro templates for an organization
@@ -6489,6 +7195,118 @@ paths:
       summary: Deletes Team User Invite
       tags:
       - team
+  /teams/{teamId}/poker-settings:
+    get:
+      description: get poker settings for a specific team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Poker Settings
+      tags:
+      - poker-settings
+    post:
+      description: Creates new poker settings for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: poker settings object to create
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.pokerSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: returns created poker settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Poker Settings
+      tags:
+      - poker-settings
+    put:
+      description: Updates poker settings for a specific team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: poker settings object to update
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.pokerSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated poker settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PokerSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Poker Settings
+      tags:
+      - poker-settings
   /teams/{teamId}/retro-actions:
     get:
       description: get list of retro actions
@@ -6529,6 +7347,118 @@ paths:
       summary: Get Retro Actions
       tags:
       - team
+  /teams/{teamId}/retro-settings:
+    get:
+      description: get retro settings for a specific team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Retro Settings
+      tags:
+      - retro-settings
+    post:
+      description: Creates new retro settings for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: retro settings object to create
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: returns created retro settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Retro Settings
+      tags:
+      - retro-settings
+    put:
+      description: Updates retro settings for a specific team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: retro settings object to update
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated retro settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Retro Settings
+      tags:
+      - retro-settings
   /teams/{teamId}/retro-templates:
     get:
       description: get list of retro templates for a team

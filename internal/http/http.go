@@ -362,6 +362,25 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		adminRouter.HandleFunc("/estimation-scales", a.userOnly(a.adminOnly(a.handleEstimationScaleCreate()))).Methods("POST")
 		adminRouter.HandleFunc("/estimation-scales/{scaleId}", a.userOnly(a.adminOnly(a.handleEstimationScaleUpdate()))).Methods("PUT")
 		adminRouter.HandleFunc("/estimation-scales/{scaleId}", a.userOnly(a.adminOnly(a.handleEstimationScaleDelete()))).Methods("DELETE")
+
+		// Organization-specific poker settings routes
+		orgRouter.HandleFunc("/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationPokerSettings())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleCreateOrganizationPokerSettings())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationPokerSettingsUpdate())))).Methods("PUT")
+
+		// Department-specific poker settings routes
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetDepartmentPokerSettings())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleCreateDepartmentPokerSettings())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentPokerSettingsUpdate())))).Methods("PUT")
+
+		// Team-specific poker settings routes
+		teamRouter.HandleFunc("/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamPokerSettings())))).Methods("GET")
+		teamRouter.HandleFunc("/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleCreateTeamPokerSettings()))))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPokerSettingsUpdate()))))).Methods("PUT")
+
+		// Admin poker settings routes
+		adminRouter.HandleFunc("/poker-settings/{id}", a.userOnly(a.adminOnly(a.handleGetPokerSettingsByID()))).Methods("GET")
+		adminRouter.HandleFunc("/poker-settings/{id}", a.userOnly(a.adminOnly(a.handleDeletePokerSettings()))).Methods("DELETE")
 	}
 	// retro(s)
 	if a.Config.FeatureRetro {
@@ -406,17 +425,39 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate()))))).Methods("POST")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate()))))).Methods("PUT")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete()))))).Methods("DELETE")
+
 		// Team templates
 		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates())))).Methods("GET")
 		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate()))))).Methods("POST")
 		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate()))))).Methods("PUT")
 		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete()))))).Methods("DELETE")
+
 		// General template operations
 		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleGetRetroTemplates()))).Methods("GET")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleGetRetroTemplateByID()))).Methods("GET")
 		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleRetroTemplateCreate()))).Methods("POST")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateUpdate()))).Methods("PUT")
 		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateDelete()))).Methods("DELETE")
+
+		// Organization-specific retro settings routes
+		orgRouter.HandleFunc("/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationRetroSettings())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleCreateOrganizationRetroSettings())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroSettingsUpdate())))).Methods("PUT")
+
+		// Department-specific retro settings routes
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetDepartmentRetroSettings())))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleCreateDepartmentRetroSettings())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentRetroSettingsUpdate())))).Methods("PUT")
+
+		// Team-specific retro settings routes
+		teamRouter.HandleFunc("/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroSettings())))).Methods("GET")
+		teamRouter.HandleFunc("/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleCreateTeamRetroSettings()))))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroSettingsUpdate()))))).Methods("PUT")
+
+		// Admin retro settings routes
+		adminRouter.HandleFunc("/retro-settings/{id}", a.userOnly(a.adminOnly(a.handleGetRetroSettingsByID()))).Methods("GET")
+		adminRouter.HandleFunc("/retro-settings/{id}", a.userOnly(a.adminOnly(a.handleDeleteRetroSettings()))).Methods("DELETE")
+
 		// Retro websocket
 		apiRouter.HandleFunc("/retro/{retroId}", retroSvc.ServeWs())
 	}
