@@ -14,6 +14,9 @@
 
 # Running in production
 
+Thunderdome requires a PostgreSQL database to store the application data and a SMTP server to send emails. See
+the [Configuration Guide](docs/CONFIGURATION.md) for more details on required configuration parameters.
+
 ## Use latest docker image
 
 ```
