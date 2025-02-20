@@ -651,6 +651,7 @@ const en: BaseTranslation = {
     'Are you sure you want to remove this retrospective template?',
   removeRetroTemplate: 'Remove Retrospective Template',
   retroTemplateDefault: 'Set as default template',
+  jiradatacenterLabel: "Jira DataCenter",
 };
 
 export default en;

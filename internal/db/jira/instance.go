@@ -14,7 +14,7 @@ func (s *Service) FindInstancesByUserID(ctx context.Context, userID string) ([]t
 	instances := make([]thunderdome.JiraInstance, 0)
 
 	rows, err := s.DB.QueryContext(ctx,
-		`SELECT id, user_id, host, client_mail, access_token, created_date, updated_date
+		`SELECT id, user_id, host, client_mail, access_token, jira_data_center, created_date, updated_date
  				FROM thunderdome.jira_instance WHERE user_id = $1;`,
 		userID,
 	)
@@ -26,7 +26,7 @@ func (s *Service) FindInstancesByUserID(ctx context.Context, userID string) ([]t
 	for rows.Next() {
 		instance := thunderdome.JiraInstance{}
 		if err := rows.Scan(
-			&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken,
+			&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken, &instance.JiraDataCenter,
 			&instance.CreatedDate, &instance.UpdatedDate,
 		); err != nil {
 			return instances, fmt.Errorf("find jira instance by user id row scan error: %v", err)
@@ -46,11 +46,11 @@ func (s *Service) GetInstanceByID(ctx context.Context, instanceID string) (thund
 	instance := thunderdome.JiraInstance{}
 
 	err := s.DB.QueryRowContext(ctx,
-		`SELECT id, user_id, host, client_mail, access_token, created_date, updated_date
+		`SELECT id, user_id, host, client_mail, access_token, jira_data_center, created_date, updated_date
  				FROM thunderdome.jira_instance WHERE id = $1;`,
 		instanceID,
 	).Scan(
-		&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken,
+		&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken, &instance.JiraDataCenter,
 		&instance.CreatedDate, &instance.UpdatedDate,
 	)
 	if err != nil {
@@ -65,21 +65,21 @@ func (s *Service) GetInstanceByID(ctx context.Context, instanceID string) (thund
 }
 
 // CreateInstance creates a new JiraInstance.
-func (s *Service) CreateInstance(ctx context.Context, userID string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error) {
+func (s *Service) CreateInstance(ctx context.Context, userID string, host string, clientMail string, accessToken string, jiraDataCenter bool) (thunderdome.JiraInstance, error) {
 	instance := thunderdome.JiraInstance{}
-	at, err := db.Encrypt(accessToken, s.AESHashKey)
+	secureToken, err := db.Encrypt(accessToken, s.AESHashKey)
 	if err != nil {
 		return instance, fmt.Errorf("error encountered creating jira_instance:  %v", err)
 	}
 
 	err = s.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.jira_instance
-				(user_id, host, client_mail, access_token)
-				VALUES ($1, $2, $3, $4)
-				RETURNING id, user_id, host, client_mail, access_token, created_date, updated_date;`,
-		userID, host, clientMail, at,
+				(user_id, host, client_mail, access_token, jira_data_center)
+				VALUES ($1, $2, $3, $4, $5)
+				RETURNING id, user_id, host, client_mail, access_token, jira_data_center, created_date, updated_date;`,
+		userID, host, clientMail, secureToken, jiraDataCenter,
 	).Scan(
-		&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken,
+		&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken, &instance.JiraDataCenter,
 		&instance.CreatedDate, &instance.UpdatedDate,
 	)
 	if err != nil {
