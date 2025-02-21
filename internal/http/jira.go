@@ -33,7 +33,10 @@ func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 		userID := vars["userId"]
 
 		idErr := validate.Var(userID, "required,uuid")
-		s.ErrCheck(idErr, w, r)
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		instances, err := s.JiraDataSvc.FindInstancesByUserID(ctx, userID)
 		if err != nil {
@@ -75,17 +78,28 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 		userID := vars["userId"]
 
 		idErr := validate.Var(userID, "required,uuid")
-		s.ErrCheck(idErr, w, r)
-
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		var req = jiraInstanceRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
-		s.ErrCheck(bodyErr, w, r)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
 		jsonErr := json.Unmarshal(body, &req)
-		s.ErrCheck(jsonErr, w, r)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
 		inputErr := validate.Struct(req)
-		s.ErrCheck(inputErr, w, r)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
 
 		instance, err := s.JiraDataSvc.CreateInstance(ctx, userID, req.Host, req.ClientMail, req.AccessToken, req.JiraDataCenter)
 		if err != nil {
@@ -122,20 +136,35 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 		instanceID := vars["instanceId"]
 
 		iidErr := validate.Var(instanceID, "required,uuid")
-		s.ErrCheck(iidErr, w, r)
+		if iidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
+			return
+		}
 
 		idErr := validate.Var(userID, "required,uuid")
-		s.ErrCheck(idErr, w, r)
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var req = jiraInstanceRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
-		s.ErrCheck(bodyErr, w, r)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
 		jsonErr := json.Unmarshal(body, &req)
-		s.ErrCheck(jsonErr, w, r)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
 		inputErr := validate.Struct(req)
-		s.ErrCheck(inputErr, w, r)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
 
 		instance, err := s.JiraDataSvc.UpdateInstance(ctx, instanceID, req.Host, req.ClientMail, req.AccessToken)
 		if err != nil {
@@ -170,12 +199,18 @@ func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 		instanceID := vars["instanceId"]
 
 		iidErr := validate.Var(instanceID, "required,uuid")
-		s.ErrCheck(iidErr, w, r)
+		if iidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
+			return
+		}
 
 		userID := vars["userId"]
 
 		idErr := validate.Var(userID, "required,uuid")
-		s.ErrCheck(idErr, w, r)
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := s.JiraDataSvc.DeleteInstance(ctx, instanceID)
 		if err != nil {
@@ -216,21 +251,36 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 
 		userID := vars["userId"]
 		idErr := validate.Var(userID, "required,uuid")
-		s.ErrCheck(idErr, w, r)
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		instanceID := vars["instanceId"]
 		iidErr := validate.Var(instanceID, "required,uuid")
-		s.ErrCheck(iidErr, w, r)
+		if iidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
+			return
+		}
 
 		var req = jiraStoryJQLSearchRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
-		s.ErrCheck(bodyErr, w, r)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
 		jsonErr := json.Unmarshal(body, &req)
-		s.ErrCheck(jsonErr, w, r)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
 		inputErr := validate.Struct(req)
-		s.ErrCheck(inputErr, w, r)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
 
 		fields := []string{"key", "summary", "priority", "issuetype", "description"}
 
@@ -285,16 +335,9 @@ func CreateNewJiraInstance(instance thunderdome.JiraInstance) (*jira.Client, err
 	return jiraClient, err
 }
 
-func (s *Service) ErrCheck(err error, w http.ResponseWriter, r *http.Request) {
-	if err != nil {
-		s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
-		return
-	}
-}
-
 func (s *Service) logJiraSearchError(err error, errorTitle string, w http.ResponseWriter, r *http.Request, ctx context.Context, vars map[string]string, fields []string, req jiraStoryJQLSearchRequestBody) {
 	if err != nil {
-		s.createLoggerStructure(err, errorTitle, ctx, vars, fields, req)
+		s.createJiraLoggerStructure(err, errorTitle, ctx, vars, fields, req)
 		s.Failure(w, r, http.StatusInternalServerError, err)
 		return
 	}
@@ -303,7 +346,7 @@ func (s *Service) logJiraSearchError(err error, errorTitle string, w http.Respon
 func (s *Service) logErrorWithJSONResponse(err error, errorTitle string, w http.ResponseWriter, ctx context.Context, vars map[string]string, fields []string, req jiraStoryJQLSearchRequestBody) {
 
 	if err != nil {
-		s.createLoggerStructure(err, errorTitle, ctx, vars, fields, req)
+		s.createJiraLoggerStructure(err, errorTitle, ctx, vars, fields, req)
 
 		result := &standardJsonResponse{
 			Success: false,
@@ -322,7 +365,7 @@ func (s *Service) logErrorWithJSONResponse(err error, errorTitle string, w http.
 
 }
 
-func (s *Service) createLoggerStructure(err error, errorTitle string, ctx context.Context, vars map[string]string, fields []string, req jiraStoryJQLSearchRequestBody) {
+func (s *Service) createJiraLoggerStructure(err error, errorTitle string, ctx context.Context, vars map[string]string, fields []string, req jiraStoryJQLSearchRequestBody) {
 	s.Logger.Ctx(ctx).Error(
 		errorTitle, zap.Error(err), zap.String("entity_user_id", vars["userID"]),
 		zap.String("session_user_id", ctx.Value(contextKeyUserID).(string)), zap.String("jira_instance_id", vars["instanceID"]),
