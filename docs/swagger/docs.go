@@ -10839,6 +10839,10 @@ const docTemplate = `{
                 },
                 "host": {
                     "type": "string"
+                },
+                "jira_data_center": {
+                    "description": "Checkbox for enabling Jira Data Center",
+                    "type": "boolean"
                 }
             }
         },
@@ -11891,6 +11895,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "jira_data_center": {
+                    "description": "Checkbox for enabling Jira Data Center",
+                    "type": "boolean"
                 },
                 "updated_date": {
                     "type": "string"

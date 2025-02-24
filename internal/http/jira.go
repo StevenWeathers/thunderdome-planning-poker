@@ -1,14 +1,16 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
 
 	"go.uber.org/zap"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/internal/atlassian/jira"
-
+	jira "github.com/StevenWeathers/thunderdome-planning-poker/internal/atlassian/jira"
+	jira_data_center "github.com/StevenWeathers/thunderdome-planning-poker/internal/atlassian/jiraDataCenter"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/gorilla/mux"
 )
 
@@ -29,6 +31,7 @@ func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		userID := vars["userId"]
+
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -49,9 +52,10 @@ func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 }
 
 type jiraInstanceRequestBody struct {
-	Host        string `json:"host" validate:"required,http_url"`
-	ClientMail  string `json:"client_mail" validate:"required,email"`
-	AccessToken string `json:"access_token" validate:"required"`
+	Host           string `json:"host" validate:"required,http_url"`
+	ClientMail     string `json:"client_mail" validate:"required,email"`
+	AccessToken    string `json:"access_token" validate:"required"`
+	JiraDataCenter bool   `json:"jira_data_center"` // Checkbox for enabling Jira Data Center
 }
 
 // handleJiraInstanceCreate creates a new Jira Instance
@@ -72,12 +76,12 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		userID := vars["userId"]
+
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-
 		var req = jiraInstanceRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -97,11 +101,11 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 			return
 		}
 
-		instance, err := s.JiraDataSvc.CreateInstance(ctx, userID, req.Host, req.ClientMail, req.AccessToken)
+		instance, err := s.JiraDataSvc.CreateInstance(ctx, userID, req.Host, req.ClientMail, req.AccessToken, req.JiraDataCenter)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleJiraInstanceCreate error", zap.Error(err), zap.String("entity_user_id", userID),
-				zap.String("session_user_id", sessionUserID))
+				zap.String("session_user_id", sessionUserID), zap.Bool("jira_data_center", req.JiraDataCenter), zap.Stack("stacktrace"))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -129,15 +133,17 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		userID := vars["userId"]
-		idErr := validate.Var(userID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
 		instanceID := vars["instanceId"]
+
 		iidErr := validate.Var(instanceID, "required,uuid")
 		if iidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
+			return
+		}
+
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -191,12 +197,15 @@ func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		instanceID := vars["instanceId"]
+
 		iidErr := validate.Var(instanceID, "required,uuid")
 		if iidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, iidErr.Error()))
 			return
 		}
+
 		userID := vars["userId"]
+
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -239,13 +248,14 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
 		userID := vars["userId"]
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
+
 		instanceID := vars["instanceId"]
 		iidErr := validate.Var(instanceID, "required,uuid")
 		if iidErr != nil {
@@ -271,57 +281,94 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
+
 		fields := []string{"key", "summary", "priority", "issuetype", "description"}
 
 		instance, err := s.JiraDataSvc.GetInstanceByID(ctx, instanceID)
-		if err != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userID),
-				zap.String("session_user_id", sessionUserID), zap.String("jira_instance_id", instanceID),
-				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
-				zap.Any("jira_fields", fields))
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
+		errorTitle := "handleJiraStoryJQLSearch error"
+
+		s.logJiraSearchError(err, errorTitle, w, r, ctx, vars, fields, req)
+
+		// check here for DataCenter
+		if instance.JiraDataCenter {
+
+			jiraDataCenterClient, err := CreateNewJiraDataCenterInstance(instance)
+			s.logJiraSearchError(err, errorTitle, w, r, ctx, vars, fields, req)
+
+			stories, err := jiraDataCenterClient.StoriesJQLSearch(ctx, req.JQL, fields, req.StartAt, req.MaxResults)
+
+			s.logErrorWithJSONResponse(err, errorTitle, w, ctx, vars, fields, req)
+			s.Success(w, r, http.StatusOK, stories, nil)
+
+		} else {
+
+			jiraClient, err := CreateNewJiraInstance(instance)
+			s.logJiraSearchError(err, errorTitle, w, r, ctx, vars, fields, req)
+
+			stories, err := jiraClient.StoriesJQLSearch(ctx, req.JQL, fields, req.StartAt, req.MaxResults)
+
+			s.logErrorWithJSONResponse(err, errorTitle, w, ctx, vars, fields, req)
+			s.Success(w, r, http.StatusOK, stories, nil)
 		}
 
-		jiraClient, err := jira.New(jira.Config{
-			InstanceHost: instance.Host,
-			ClientMail:   instance.ClientMail,
-			AccessToken:  instance.AccessToken,
-		})
-		if err != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userID),
-				zap.String("session_user_id", sessionUserID), zap.String("jira_instance_id", instanceID),
-				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
-				zap.Any("jira_fields", fields))
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		stories, err := jiraClient.StoriesJQLSearch(ctx, req.JQL, fields, req.StartAt, req.MaxResults)
-		if err != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userID),
-				zap.String("session_user_id", sessionUserID), zap.String("jira_instance_id", instanceID),
-				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
-				zap.Any("jira_fields", fields))
-
-			result := &standardJsonResponse{
-				Success: false,
-				Error:   err.Error(),
-				Data:    map[string]interface{}{},
-				Meta:    map[string]interface{}{},
-			}
-
-			response, _ := json.Marshal(result)
-
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(response)
-			return
-		}
-
-		s.Success(w, r, http.StatusOK, stories, nil)
 	}
+
+}
+func CreateNewJiraDataCenterInstance(instance thunderdome.JiraInstance) (*jira_data_center.Client, error) {
+
+	jiraClient, err := jira_data_center.New(jira_data_center.Config{
+		InstanceHost:   instance.Host,
+		ClientMail:     instance.ClientMail,
+		JiraDataCenter: instance.JiraDataCenter,
+		AccessToken:    instance.AccessToken,
+	})
+	return jiraClient, err
+}
+func CreateNewJiraInstance(instance thunderdome.JiraInstance) (*jira.Client, error) {
+
+	jiraClient, err := jira.New(jira.Config{
+		InstanceHost:   instance.Host,
+		ClientMail:     instance.ClientMail,
+		JiraDataCenter: instance.JiraDataCenter,
+		AccessToken:    instance.AccessToken,
+	})
+	return jiraClient, err
+}
+
+func (s *Service) logJiraSearchError(err error, errorTitle string, w http.ResponseWriter, r *http.Request, ctx context.Context, vars map[string]string, fields []string, req jiraStoryJQLSearchRequestBody) {
+	if err != nil {
+		s.createJiraLoggerStructure(err, errorTitle, ctx, vars, fields, req)
+		s.Failure(w, r, http.StatusInternalServerError, err)
+		return
+	}
+}
+
+func (s *Service) logErrorWithJSONResponse(err error, errorTitle string, w http.ResponseWriter, ctx context.Context, vars map[string]string, fields []string, req jiraStoryJQLSearchRequestBody) {
+
+	if err != nil {
+		s.createJiraLoggerStructure(err, errorTitle, ctx, vars, fields, req)
+
+		result := &standardJsonResponse{
+			Success: false,
+			Error:   err.Error(),
+			Data:    map[string]interface{}{},
+			Meta:    map[string]interface{}{},
+		}
+
+		response, _ := json.Marshal(result)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(response)
+		return
+	}
+
+}
+
+func (s *Service) createJiraLoggerStructure(err error, errorTitle string, ctx context.Context, vars map[string]string, fields []string, req jiraStoryJQLSearchRequestBody) {
+	s.Logger.Ctx(ctx).Error(
+		errorTitle, zap.Error(err), zap.String("entity_user_id", vars["userID"]),
+		zap.String("session_user_id", ctx.Value(contextKeyUserID).(string)), zap.String("jira_instance_id", vars["instanceID"]),
+		zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
+		zap.Any("jira_fields", fields))
 }
