@@ -213,7 +213,7 @@ type CheckinDataSvc interface {
 type JiraDataSvc interface {
 	FindInstancesByUserID(ctx context.Context, userId string) ([]thunderdome.JiraInstance, error)
 	GetInstanceByID(ctx context.Context, instanceId string) (thunderdome.JiraInstance, error)
-	CreateInstance(ctx context.Context, userId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error)
+	CreateInstance(ctx context.Context, userId string, host string, clientMail string, accessToken string, jiraDataCenter bool) (thunderdome.JiraInstance, error)
 	UpdateInstance(ctx context.Context, instanceId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error)
 	DeleteInstance(ctx context.Context, instanceId string) error
 }

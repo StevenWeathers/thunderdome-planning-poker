@@ -10,10 +10,12 @@ import (
 
 // New creates a new JIRA client
 func New(config Config) (*Client, error) {
+
 	httpClient := http.Client{
 		Timeout: time.Second * 10,
 	}
 	instance, err := jira.New(&httpClient, config.InstanceHost)
+
 	if err != nil {
 		return nil, err
 	}
