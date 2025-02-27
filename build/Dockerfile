@@ -14,7 +14,7 @@ RUN npm run build
 ############################
 # STEP 2 build executable binary
 ############################
-FROM golang:1.23-alpine as builderGo
+FROM golang:1.24-alpine as builderGo
 ARG BUILD_VERSION
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.

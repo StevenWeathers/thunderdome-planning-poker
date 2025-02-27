@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ "1.23" ]
+        go: [ "1.24" ]
 
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +31,7 @@ jobs:
           # When `install-mode` is `binary` (default) the value can be v1.2 or v1.2.3 or `latest` to use the latest version.
           # When `install-mode` is `goinstall` the value can be v1.2.3, `latest`, or the hash
           version: v1.64
+          args: --timeout 3m0s
 
   ui:
     runs-on: ubuntu-latest

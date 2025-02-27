@@ -16,8 +16,8 @@
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "autobuild": "rollup --config rollup.config.js -w",
-    "prettier": "prettier --check '**/*.{ts,json,svelte,css,html}'",
-    "prettier:fix": "prettier --write '**/*.{ts,json,svelte,css,html}'",
+    "prettier": "prettier --check \"**/*.{ts,json,svelte,css,html}\"",
+    "prettier:fix": "prettier --write \"**/*.{ts,json,svelte,css,html}\"",
     "format": "npm run prettier:fix",
     "test": "jest ui/src",
     "test:watch": "npm run test -- --watch",
