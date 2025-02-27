@@ -420,6 +420,26 @@ type PokerDataSvc interface {
 	UpdateOrganizationEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error)
 	// UpdateTeamEstimationScale updates an existing team estimation scale
 	UpdateTeamEstimationScale(ctx context.Context, scale *thunderdome.EstimationScale) (*thunderdome.EstimationScale, error)
+	// GetSettingsByOrganization retrieves poker settings for an organization
+	GetSettingsByOrganization(ctx context.Context, orgID string) (*thunderdome.PokerSettings, error)
+	// GetSettingsByDepartment retrieves poker settings for a department
+	GetSettingsByDepartment(ctx context.Context, deptID string) (*thunderdome.PokerSettings, error)
+	// GetSettingsByTeam retrieves poker settings for a team
+	GetSettingsByTeam(ctx context.Context, teamID string) (*thunderdome.PokerSettings, error)
+	// CreateSettings creates poker settings for an organization or department or team
+	CreateSettings(ctx context.Context, settings *thunderdome.PokerSettings) (*thunderdome.PokerSettings, error)
+	// UpdateSettings updates existing poker settings
+	UpdateSettings(ctx context.Context, settings *thunderdome.PokerSettings) (*thunderdome.PokerSettings, error)
+	// UpdateOrganizationSettings updates existing organization poker settings
+	UpdateOrganizationSettings(ctx context.Context, settings *thunderdome.PokerSettings) (*thunderdome.PokerSettings, error)
+	// UpdateDepartmentSettings updates existing department poker settings
+	UpdateDepartmentSettings(ctx context.Context, settings *thunderdome.PokerSettings) (*thunderdome.PokerSettings, error)
+	// UpdateTeamSettings updates existing team poker settings
+	UpdateTeamSettings(ctx context.Context, settings *thunderdome.PokerSettings) (*thunderdome.PokerSettings, error)
+	// DeleteSettings deletes poker settings by its ID
+	DeleteSettings(ctx context.Context, id string) error
+	// GetSettingsByID retrieves poker settings by its ID
+	GetSettingsByID(ctx context.Context, id string) (*thunderdome.PokerSettings, error)
 }
 
 type RetroDataSvc interface {
@@ -468,6 +488,17 @@ type RetroDataSvc interface {
 	ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*thunderdome.RetroItem, error)
 	ItemCommentEdit(retroID string, commentID string, comment string) ([]*thunderdome.RetroItem, error)
 	ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error)
+
+	GetSettingsByOrganization(ctx context.Context, orgID string) (*thunderdome.RetroSettings, error)
+	GetSettingsByDepartment(ctx context.Context, deptID string) (*thunderdome.RetroSettings, error)
+	GetSettingsByTeam(ctx context.Context, teamID string) (*thunderdome.RetroSettings, error)
+	CreateSettings(ctx context.Context, settings *thunderdome.RetroSettings) (*thunderdome.RetroSettings, error)
+	UpdateSettings(ctx context.Context, settings *thunderdome.RetroSettings) (*thunderdome.RetroSettings, error)
+	UpdateOrganizationSettings(ctx context.Context, settings *thunderdome.RetroSettings) (*thunderdome.RetroSettings, error)
+	UpdateDepartmentSettings(ctx context.Context, settings *thunderdome.RetroSettings) (*thunderdome.RetroSettings, error)
+	UpdateTeamSettings(ctx context.Context, settings *thunderdome.RetroSettings) (*thunderdome.RetroSettings, error)
+	DeleteSettings(ctx context.Context, id string) error
+	GetSettingsByID(ctx context.Context, id string) (*thunderdome.RetroSettings, error)
 }
 
 type RetroTemplateDataSvc interface {
