@@ -4,59 +4,22 @@
 
 # Thunderdome
 
-🆓 Free to use! [Thunderdome Open Source Poker Planner](https://thunderdome.dev/)
-
-💵 [Premium Options Available](https://thunderdome.dev/subscriptions/pricing)
+🆓 Free to use! [Thunderdome Open Source Poker Planner](https://thunderdome.dev/) with 💵 [Premium Hosted Options Available](https://thunderdome.dev/subscriptions/pricing)
 
 ## Remote team collaboration with agile poker planning, sprint retrospectives, user story mapping and async team stand-ups (checkins).
 
 ![image](docs/img/main_preview.png)
 
-# Running in production
-
-Thunderdome requires a PostgreSQL database to store the application data and a SMTP server to send emails. See
-the [Configuration Guide](docs/CONFIGURATION.md) for more details on required configuration parameters.
-
-## Use latest docker image
-
-```
-docker pull stevenweathers/thunderdome-planning-poker
-```
-
-## Use latest released binary
-
-[![](https://img.shields.io/github/v/release/stevenweathers/thunderdome-planning-poker?include_prereleases)](https://github.com/StevenWeathers/thunderdome-planning-poker/releases/latest)
-
-## K8s
-
-```bash
-cd ./build/helm
-helm install -f thunderdome-db.yaml thunderdome-db ./db
-helm install -f thunderdome-mail.yaml thunderdome-mail ./app
-helm install -f thunderdome.yaml thunderdome ./app
-kubectl port-forward svc/thunderdome 8080:8080
-```
-
 # Guides
 
-- [User Guide](docs/GUIDE.md)
+- [Installation Guide](docs/INSTALLATION.md)
 - [Configuring Thunderdome](docs/CONFIGURATION.md)
+- [User Guide](docs/GUIDE.md)
 - [Contributing Guide](docs/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull
   requests to us.
 - [Developing Guide](docs/DEVELOPING.md) for details on setting up your local and required steps for code changes.
 - [Testing Guide](docs/TESTING.md) for details on how to test (unit and end to end) changes made to Thunderdome.
 - [Security Policy](docs/SECURITY.md) for details on how to submit a vulnerability report.
-
-# Upgrading from v2 to v3 major release
-
-If you're currently running a 2.x.x release version of Thunderdome you will need to do the following before running a
-3.x.x release version. If you're creating a fresh instance of Thunderdome you can ignore this section.
-
-- Review the breaking changes introduced in 3.x which includes the removal of Dicebear Avatars service
-- If you use the included docker-compose file to run Thunderdome you will need to upgrade your postgres dataset to 15
-- Run the latest available 2.x.x release, this will run any SQL migrations that level set the SQL schema for 3.x.x.
-- Run the latest available 3.x.x release, this will run any SQL migrations since 3.0.0, however will not run any 2.x.x
-  migrations.
 
 # Donations
 
