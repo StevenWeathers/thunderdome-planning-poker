@@ -15,6 +15,7 @@
   export let fullOnly = false;
   export let handleGuestRegistration;
   export let handleFullAccountRegistration;
+  export let isAdmin = false;
 
   let password1 = '';
   let password2 = '';
@@ -69,7 +70,7 @@
   userNameTextInput?.focus();
 </script>
 
-{#if !AppConfig.AllowRegistration && !AppConfig.AllowGuests}
+{#if !AppConfig.AllowRegistration && !AppConfig.AllowGuests && !isAdmin}
   <div class="text-red-500">
     {$LL.registrationDisabled()}
   </div>
