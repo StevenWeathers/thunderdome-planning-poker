@@ -4,6 +4,7 @@
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import TextInput from '../forms/TextInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   export let handleCreate = () => {};
   export let toggleClose = () => {};
@@ -14,6 +15,8 @@
   let host = '';
   let client_mail = '';
   let access_token = '';
+
+  let jira_data_center = false;
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -56,6 +59,7 @@
       host,
       client_mail,
       access_token,
+      jira_data_center,
     };
 
     xfetch(`/api/users/${$user.id}/jira-instances`, { body })
@@ -110,6 +114,14 @@
       <span class="font-bold dark:text-gray-400"
         >Example: https://yourjira.atlassian.net</span
       >
+    </div>
+    <div class="mb-4">
+      <Checkbox
+        bind:checked="{jira_data_center}"
+        id="jira_data_center"
+        name="jira_data_center"
+        label="{$LL.jiradatacenterLabel()}"
+      />
     </div>
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="client_mail">

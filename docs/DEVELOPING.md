@@ -48,7 +48,6 @@ OR manually run the following commands
 
 ```
 go mod download
-go install github.com/swaggo/swag/cmd/swag@1.8.3
 cd ui && npm install
 ```
 
@@ -83,8 +82,8 @@ With [Task](https://taskfile.dev/#/) `task gen-swag` will regenerate the swagger
 OR manually run the following commands
 
 ```bash
-swag fmt
-swag init -g internal/http/http.go -o docs/swagger
+go tool swag fmt
+go tool swag init -g internal/http/http.go -o docs/swagger
 ```
 
 ### Creating SQL Migrations
@@ -93,7 +92,7 @@ Generate new migration file using the following command, replacing `SHORT_DESCRI
 name for the migration example `create_poker_table`.
 
 ```
-goose -dir internal/db/migrations create SHORT_DESCRIPTIVE_FILNAME sql
+go tool goose -dir internal/db/migrations create SHORT_DESCRIPTIVE_FILNAME sql
 ```
 
 ### Adding new Localizations

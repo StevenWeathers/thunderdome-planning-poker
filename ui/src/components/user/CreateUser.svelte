@@ -13,6 +13,7 @@
       handleFullAccountRegistration="{handleCreate}"
       notifications="{notifications}"
       fullOnly="{true}"
+      isAdmin="{true}"
     />
   </div>
 </Modal>

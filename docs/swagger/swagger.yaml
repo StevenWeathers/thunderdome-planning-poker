@@ -234,6 +234,9 @@ definitions:
         type: string
       host:
         type: string
+      jira_data_center:
+        description: Checkbox for enabling Jira Data Center
+        type: boolean
     required:
     - access_token
     - client_mail
@@ -997,6 +1000,9 @@ definitions:
         type: string
       id:
         type: string
+      jira_data_center:
+        description: Checkbox for enabling Jira Data Center
+        type: boolean
       updated_date:
         type: string
       user_id:

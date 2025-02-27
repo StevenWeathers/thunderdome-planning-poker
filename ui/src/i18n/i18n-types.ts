@@ -2552,6 +2552,10 @@ type RootTranslation = {
    * S​e​t​ ​a​s​ ​d​e​f​a​u​l​t​ ​t​e​m​p​l​a​t​e
    */
   retroTemplateDefault: string;
+  /**
+   * J​i​r​a​ ​D​a​t​a​C​e​n​t​e​r
+   */
+  jiradatacenterLabel: string;
 };
 
 export type TranslationFunctions = {
@@ -5083,6 +5087,10 @@ export type TranslationFunctions = {
    * Set as default template
    */
   retroTemplateDefault: () => LocalizedString;
+  /**
+   * Jira DataCenter
+   */
+  jiradatacenterLabel: () => LocalizedString;
 };
 
 export type Formatters = {};

@@ -2,16 +2,14 @@ version: '3'
 
 vars:
   BINARY_NAME: thunderdome-planning-poker
-  BINARY_UNIX: $(BINARY_NAME)_unix
-  BINARY_WINDOWS: $(BINARY_NAME).exe
+  BINARY_LINUX: thunderdome-planning-poker_unix
+  BINARY_WINDOWS: thunderdome-planning-poker.exe
   SWAGGER_DOCS_DIR: docs/swagger
 
 tasks:
   install:
     cmds:
       - go mod download
-      - go install github.com/swaggo/swag/cmd/swag@1.8.3
-      - go install github.com/pressly/goose/v3/cmd/goose@latest
       - npm ci --prefix ui
 
   update-ui-deps:
@@ -25,7 +23,7 @@ tasks:
   clean:
     cmds:
       - rm -f {{.BINARY_NAME}}
-      - rm -f {{.BINARY_UNIX}}
+      - rm -f {{.BINARY_LINUX}}
       - rm -f {{.BINARY_WINDOWS}}
       - rm -rf ui/dist
       - rm -rf release
@@ -33,8 +31,8 @@ tasks:
 
   gen-swag:
     cmds:
-      - swag fmt
-      - swag init -g internal/http/http.go -o {{ .SWAGGER_DOCS_DIR }}
+      - go tool swag fmt
+      - go tool swag init -g internal/http/http.go -o {{ .SWAGGER_DOCS_DIR }}
 
   gen-i8n:
     cmds:
@@ -52,7 +50,7 @@ tasks:
   fmt-go:
     deps: [ gen-swag ]
     cmds:
-      - goimports -w .
+      - go tool goimports -w .
 
   format:
     deps: [ fmt-go, fmt-ui, fmt-e2e ]
@@ -74,7 +72,7 @@ tasks:
   build-linux:
     deps: [ gen-swag, build-ui ]
     cmds:
-      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o {{.BINARY_UNIX}} -v
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o {{.BINARY_LINUX}} -v
 
   build-windows:
     deps: [ gen-swag, build-ui ]
@@ -108,6 +106,12 @@ tasks:
       - task: build-go
       - caddy start --config build/dev.caddyfile
       - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY_NAME}} live
+
+  windows-dev-secure-go:
+    cmds:
+      - task: build-go
+      - caddy start --config build/dev.caddyfile
+      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY_WINDOWS}} live
 
   run:
     cmds:
