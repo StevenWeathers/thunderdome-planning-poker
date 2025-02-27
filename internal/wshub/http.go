@@ -2,7 +2,6 @@ package wshub
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -41,7 +40,7 @@ type AuthError struct {
 
 // Error returns the error message
 func (e *AuthError) Error() string {
-	return fmt.Sprintf(e.Message)
+	return e.Message
 }
 
 // WebSocketHandler creates a http.HandlerFunc for handling WebSocket connections
