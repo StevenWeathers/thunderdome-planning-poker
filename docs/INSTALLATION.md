@@ -15,12 +15,12 @@ This guide provides detailed instructions for installing and setting up Thunderd
 ### 1. Docker Installation (Recommended)
 
 1. Pull the latest Docker image:
-   \```bash
+```bash
 docker pull stevenweathers/thunderdome-planning-poker
-\```
+```
 
 2. Create a `.env` file with your configuration:
-   \```properties
+```properties
 THUNDERDOME_DB_HOST=your-db-host
 THUNDERDOME_DB_PORT=5432
 THUNDERDOME_DB_NAME=thunderdome
@@ -31,16 +31,16 @@ THUNDERDOME_SMTP_PORT=587
 THUNDERDOME_SMTP_USER=your-smtp-user
 THUNDERDOME_SMTP_PASSWORD=your-smtp-password
 THUNDERDOME_APP_HOST=your-domain.com
-\```
+```
 
 3. Run the container:
-   \```bash
+```bash
 docker run -d \
   --name thunderdome \
   --env-file .env \
   -p 8080:8080 \
   stevenweathers/thunderdome-planning-poker
-\```
+```
 
 ### 2. Binary Installation
 
@@ -51,36 +51,36 @@ docker run -d \
 3. Set up environment variables (same as Docker configuration above)
 
 4. Run the binary:
-   \```bash
+```bash
 ./thunderdome
-\```
+```
 
 ### 3. Kubernetes Installation
 
 1. Navigate to the Helm charts directory:
-   \```bash
+```bash
 cd ./build/helm
-\```
+```
 
 2. Install PostgreSQL database:
-   \```bash
+```bash
 helm install -f thunderdome-db.yaml thunderdome-db ./db
-\```
+```
 
 3. Install mail server:
-   \```bash
+```bash
 helm install -f thunderdome-mail.yaml thunderdome-mail ./app
-\```
+```
 
 4. Install Thunderdome:
-   \```bash
+```bash
 helm install -f thunderdome.yaml thunderdome ./app
-\```
+```
 
 5. Access the application:
-   \```bash
+```bash
 kubectl port-forward svc/thunderdome 8080:8080
-\```
+```
 
 ## Configuration
 
