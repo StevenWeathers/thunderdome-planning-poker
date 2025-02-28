@@ -99,6 +99,7 @@ type Config struct {
 	SubscriptionsEnabled      bool
 
 	GoogleAuth AuthProvider
+	OIDCAuth   AuthProvider
 	WebsocketConfig
 }
 

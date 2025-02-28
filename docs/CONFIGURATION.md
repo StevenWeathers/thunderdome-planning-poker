@@ -69,25 +69,59 @@ To grant Admin access to Thunderdome for the first Admin user create an account 
 environment variable or `admin.email` config file value. Upon the app starting up Thunderdome will read this value and
 set that user as ADMIN role.
 
-## Configure authentication
+## Authentication Configuration
 
-Thunderdome has a built-in `normal` authentication with user/password as well as supports `header` and `ldap`
-authentications.
+Thunderdome supports multiple authentication methods though only one primary authentication method can be selected.
 
-| Option        | Environment Variable | Description                                                                                                   | Default Value |
-|---------------|----------------------|---------------------------------------------------------------------------------------------------------------|---------------|
-| `auth.method` | AUTH_METHOD          | Choose `normal`, `header` or `ldap` as authentication method. See respective sections on auth configurations. | normal        |
+### Basic Configuration
 
-### Google OAuth
+- **Option**: `auth.method`
+- **Environment Variable**: `AUTH_METHOD`
+- **Default Value**: `normal`
+- **Possible Values**: `normal`, `header`, `ldap`, `oidc`
+- **Description**: Specifies which authentication method to use for Thunderdome.
 
-Thunderdome has support for Google OAuth authentication when the `auth.method` is set to `normal` and not `header`
-or `ldap`. Google Auth accounts are separate of internal users/password accounts even if they have the same email.
+### Authentication Types
 
-| Option                      | Environment Variable      | Description                | Default Value |
-|-----------------------------|---------------------------|----------------------------|---------------|
-| `auth.google.enabled`       | AUTH_GOOGLE_ENABLED       | Google OAuth Enabled       | false         |
-| `auth.google.client_id`     | AUTH_GOOGLE_CLIENT_ID     | Google OAuth Client ID     |               |
-| `auth.google.client_secret` | AUTH_GOOGLE_CLIENT_SECRET | Google OAuth Client Secret |               |
+#### Normal Authentication
+- **Type**: `normal`
+- **Description**: Built-in username/password authentication system
+- **Use Case**: Standard authentication for most deployments
+- **Configuration**: Default option, requires no additional setup
+
+Note: Additionally support for Google OAuth alongside the internal auth is available when normal authentication is enabled.
+See the Google OAuth section below for more details.
+
+#### Header Authentication
+- **Type**: `header`
+- **Description**: Authentication based on HTTP headers
+- **Use Case**: Integration with proxy services or systems that authenticate via headers
+- **Configuration**: Requires additional header configuration (see [header auth section](#header-auth-configuration))
+
+#### LDAP Authentication
+- **Type**: `ldap`
+- **Description**: Lightweight Directory Access Protocol integration
+- **Use Case**: Enterprise environments using directory services
+- **Configuration**: Requires LDAP server configuration (see [LDAP auth section](#ldap-configuration))
+
+#### OpenID Connect Authentication
+- **Type**: `oidc`
+- **Description**: Single sign-on using OpenID Connect OAuth2 providers
+- **Use Case**: Integration with identity providers like KeyCloak, Authentik, OneLogin, etc.
+- **Configuration**: Requires OpenID Connect OAuth2 provider configuration (see [OpenID Connect OAuth2 auth section](#openid-connect-oauth2-configuration))
+
+Note: OpenID Connect providers that don't implement discovery or host the discovery document at a non-spec complaint path (such as requiring a URL parameter) are not yet supported.
+
+### OpenID Connect OAuth2 Configuration
+
+If `auth.method` is set to `oidc`, then the Create Account function is disabled and authentication is done using the configured OpenID Connect provider.
+
+| Option                    | Environment Variable    | Description                         | Default Value |
+|---------------------------|-------------------------|-------------------------------------|---------------|
+| `auth.oidc.provider_name` | AUTH_OIDC_PROVIDER_NAME | OpenID Connect OAuth2 Provider Name |               |
+| `auth.oidc.provider_url`  | AUTH_OIDC_PROVIDER_URL  | OpenID Connect OAuth2 Provider URL  |               |
+| `auth.oidc.client_id`     | AUTH_OIDC_CLIENT_ID     | OpenID Connect OAuth2 Client ID     |               |
+| `auth.oidc.client_secret` | AUTH_OIDC_CLIENT_SECRET | OpenID Connect OAuth2 Client Secret |               |
 
 ### LDAP Configuration
 
@@ -133,6 +167,17 @@ The following configuration options are specific to the LDAP authentication meth
 |------------------------------|-----------------------------|----------------|-------------------------------------------|
 | `auth.header.usernameHeader` | AUTH_HEADER_USERNAME_HEADER | `Remote-User`  | The header to use for the user's username |
 | `auth.header.emailHeader`    | AUTH_HEADER_EMAIL_HEADER    | `Remote-Email` | The header to use for the user's email    |
+
+### Google OAuth
+
+Thunderdome has support for Google OAuth authentication when the `auth.method` is set to `normal` and not `header`
+or `ldap`. Google Auth accounts are separate of internal users/password accounts even if they have the same email.
+
+| Option                      | Environment Variable      | Description                | Default Value |
+|-----------------------------|---------------------------|----------------------------|---------------|
+| `auth.google.enabled`       | AUTH_GOOGLE_ENABLED       | Google OAuth Enabled       | false         |
+| `auth.google.client_id`     | AUTH_GOOGLE_CLIENT_ID     | Google OAuth Client ID     |               |
+| `auth.google.client_secret` | AUTH_GOOGLE_CLIENT_SECRET | Google OAuth Client Secret |               |
 
 ## HTTP Configuration
 

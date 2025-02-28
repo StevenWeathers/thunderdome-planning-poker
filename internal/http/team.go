@@ -345,7 +345,7 @@ func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 
 		userEmail := strings.ToLower(u.Email)
 
-		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled {
+		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled || s.Config.OIDCAuth.Enabled {
 			user, userErr := s.UserDataSvc.GetUserByEmail(ctx, userEmail)
 			if userErr == nil {
 				_, err := s.TeamDataSvc.TeamAddUser(ctx, teamID, user.ID, u.Role)
