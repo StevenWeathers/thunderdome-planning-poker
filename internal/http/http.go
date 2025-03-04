@@ -47,22 +47,30 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 
 	var a = &apiService
 	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
+	connectSrcCsp := []string{
+		"'self'",
+		getWebsocketConnectSrc(a.Config.SecureProtocol, a.Config.WebsocketSubdomain, a.Config.AppDomain),
+	}
+
+	if apiService.UIConfig.AnalyticsEnabled {
+		connectSrcCsp = append(
+			connectSrcCsp,
+			"https://*.google-analytics.com",
+			"https://*.analytics.google.com",
+			"https://*.googletagmanager.com",
+			"https://*.google.com",
+		)
+	}
 	// Content Security Policy
 	cspBuilder := cspbuilder.Builder{
 		Directives: map[string][]string{
 			cspbuilder.DefaultSrc: {"'self'", fmt.Sprintf("*.%s", a.Config.AppDomain)},
 			//	@TODO	- remove inline styles in svelte components to improve security by using nonce
-			cspbuilder.StyleSrc:  {"'self'", "'unsafe-inline'", "https://fonts.googleapis.com"},
-			cspbuilder.ScriptSrc: {"$NONCE"},
-			cspbuilder.FontSrc:   {"'self'", "https://fonts.gstatic.com"},
-			cspbuilder.ImgSrc:    {"data:", "*"},
-			cspbuilder.ConnectSrc: {"'self'",
-				getWebsocketConnectSrc(a.Config.SecureProtocol, a.Config.WebsocketSubdomain, a.Config.AppDomain),
-				"https://*.google-analytics.com",
-				"https://*.analytics.google.com",
-				"https://*.googletagmanager.com",
-				"https://*.google.com",
-			},
+			cspbuilder.StyleSrc:    {"'self'", "'unsafe-inline'", "https://fonts.googleapis.com"},
+			cspbuilder.ScriptSrc:   {"$NONCE"},
+			cspbuilder.FontSrc:     {"'self'", "https://fonts.gstatic.com"},
+			cspbuilder.ImgSrc:      {"data:", "*"},
+			cspbuilder.ConnectSrc:  connectSrcCsp,
 			cspbuilder.ManifestSrc: {"'self'"},
 		},
 	}
