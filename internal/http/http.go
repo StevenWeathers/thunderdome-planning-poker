@@ -50,7 +50,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	// Content Security Policy
 	cspBuilder := cspbuilder.Builder{
 		Directives: map[string][]string{
-			cspbuilder.DefaultSrc: {"self", fmt.Sprintf("*.%s", a.Config.AppDomain)},
+			cspbuilder.DefaultSrc: {"'self'", fmt.Sprintf("*.%s", a.Config.AppDomain)},
 			//	@TODO	- remove inline styles in svelte components to improve security by using nonce
 			cspbuilder.StyleSrc:  {"'self'", "'unsafe-inline'", "https://fonts.googleapis.com"},
 			cspbuilder.ScriptSrc: {"$NONCE"},
