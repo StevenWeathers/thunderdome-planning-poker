@@ -118,9 +118,17 @@ type Feature struct {
 	Storyboard bool
 }
 
-// Google is the application Google OAuth configuration
+// Google is the application Google OAuth2 configuration
 type Google struct {
 	Enabled      bool   `mapstructure:"enabled"`
+	ClientID     string `mapstructure:"client_id"`
+	ClientSecret string `mapstructure:"client_secret"`
+}
+
+// OIDC is the application OpenID Connect OAuth2 configuration
+type OIDC struct {
+	ProviderName string `mapstructure:"provider_name"`
+	ProviderURL  string `mapstructure:"provider_url"`
 	ClientID     string `mapstructure:"client_id"`
 	ClientSecret string `mapstructure:"client_secret"`
 }
@@ -131,6 +139,7 @@ type Auth struct {
 	Ldap   AuthLdap
 	Header AuthHeader
 	Google
+	OIDC
 }
 
 // AuthHeader is the application authentication header configuration

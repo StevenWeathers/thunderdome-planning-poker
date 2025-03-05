@@ -151,6 +151,13 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/auth/ldap", a.handleLdapLogin()).Methods("POST")
 	} else if a.Config.HeaderAuthEnabled {
 		apiRouter.HandleFunc("/auth", a.handleHeaderLogin()).Methods("GET")
+	} else if a.Config.OIDCAuth.Enabled {
+		authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
+			ProviderName: a.Config.OIDCAuth.ProviderName,
+			ProviderURL:  a.Config.OIDCAuth.ProviderURL,
+			ClientID:     a.Config.OIDCAuth.ClientID,
+			ClientSecret: a.Config.OIDCAuth.ClientSecret,
+		})
 	} else {
 		if a.Config.GoogleAuth.Enabled {
 			authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{

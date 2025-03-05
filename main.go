@@ -80,7 +80,7 @@ func main() {
 
 	ldapEnabled := c.Auth.Method == "ldap"
 	headerAuthEnabled := c.Auth.Method == "header"
-	//oidcEnabled := c.Auth.Method == "oidc"
+	oidcAuthEnabled := c.Auth.Method == "oauth2"
 
 	d := db.New(c.Admin.Email, &db.Config{
 		Host:                   c.Db.Host,
@@ -194,6 +194,15 @@ func main() {
 					ClientSecret: c.Auth.Google.ClientSecret,
 				},
 			},
+			OIDCAuth: http.AuthProvider{
+				Enabled: oidcAuthEnabled,
+				AuthProviderConfig: thunderdome.AuthProviderConfig{
+					ProviderName: c.Auth.OIDC.ClientID,
+					ProviderURL:  c.Auth.OIDC.ProviderURL,
+					ClientID:     c.Auth.OIDC.ClientID,
+					ClientSecret: c.Auth.OIDC.ClientSecret,
+				},
+			},
 			WebsocketConfig: http.WebsocketConfig{
 				WriteWaitSec:       c.Http.WebsocketWriteWaitSec,
 				PingPeriodSec:      c.Http.WebsocketPingPeriodSec,
@@ -247,6 +256,7 @@ func main() {
 				LdapEnabled:                 ldapEnabled,
 				HeaderAuthEnabled:           headerAuthEnabled,
 				GoogleAuthEnabled:           c.Auth.Google.Enabled,
+				OIDCAuthEnabled:             oidcAuthEnabled,
 				FeaturePoker:                c.Feature.Poker,
 				FeatureRetro:                c.Feature.Retro,
 				FeatureStoryboard:           c.Feature.Storyboard,

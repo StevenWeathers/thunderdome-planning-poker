@@ -392,7 +392,7 @@ func (s *Service) handleOrganizationInviteUser() http.HandlerFunc {
 
 		userEmail := strings.ToLower(u.Email)
 
-		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled {
+		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled || s.Config.OIDCAuth.Enabled {
 			user, userErr := s.UserDataSvc.GetUserByEmail(ctx, userEmail)
 			if userErr == nil {
 				_, err := s.OrganizationDataSvc.OrganizationAddUser(ctx, orgID, user.ID, u.Role)
