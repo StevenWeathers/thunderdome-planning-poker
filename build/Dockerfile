@@ -14,14 +14,20 @@ RUN npm run build
 ############################
 # STEP 2 build executable binary
 ############################
-FROM golang:1.23-alpine as builderGo
+FROM golang:1.23 as builderGo
 ARG BUILD_VERSION
+
+# 设置 Go 模块代理为国内源
+ENV GOPROXY=https://goproxy.cn,direct
+ENV GO111MODULE=on
+
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # Ca-certificates is required to call HTTPS endpoints.
-RUN apk update && apk add --no-cache git ca-certificates
+RUN apt-get update && apt-get install -y git ca-certificates
+
 # Create appuser
-RUN adduser -D -g '' appuser
+RUN useradd -m -s /bin/bash appuser
 # Copy the go source
 COPY ./docs/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/docs/
 COPY ./internal/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/internal/
@@ -35,8 +41,13 @@ COPY ./ui/*.go $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 COPY --from=builderNode /webapp/ui/dist $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/ui/dist
 # Set working dir
 WORKDIR $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
+
+# 更新依赖
+RUN go mod tidy
+
 # Fetch dependencies.
 RUN go mod download
+
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -ldflags "-X main.version=$BUILD_VERSION" -o /go/bin/thunderdome
 ############################

@@ -10,8 +10,10 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - redis
     links:
       - db
+      - redis
     networks:
       - asgard
     environment:
@@ -23,6 +25,8 @@ services:
       DB_NAME: thunderdome
       DB_USER: thor
       DB_PASS: odinson
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     volumes:
       - ./etc:/etc/thunderdome
   db:
@@ -36,6 +40,15 @@ services:
       - 5432:5432
     volumes:
       - thunderdome_data:/var/lib/postgresql/data
+    networks:
+      - asgard
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
     networks:
       - asgard
   mail:
@@ -52,3 +65,4 @@ networks:
 
 volumes:
   thunderdome_data:
+  redis_data:

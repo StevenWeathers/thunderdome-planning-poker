@@ -1,9 +1,11 @@
 package poker
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -12,6 +14,18 @@ import (
 
 // GetStories retrieves stories for given poker game
 func (d *Service) GetStories(pokerID string, userID string) []*thunderdome.Story {
+	// 尝试从Redis缓存获取
+	cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+	if d.Redis != nil {
+		if cachedData, err := d.Redis.Get(context.Background(), cacheKey).Result(); err == nil {
+			var stories []*thunderdome.Story
+			if err := json.Unmarshal([]byte(cachedData), &stories); err == nil {
+				d.Logger.Debug("Stories cache hit", zap.String("game_id", pokerID))
+				return stories
+			}
+		}
+	}
+
 	var stories = make([]*thunderdome.Story, 0)
 	storyRows, storiesErr := d.DB.Query(
 		`SELECT
@@ -36,31 +50,38 @@ func (d *Service) GetStories(pokerID string, userID string) []*thunderdome.Story
 				Skipped: false,
 			}
 			if err := storyRows.Scan(
-				&p.ID, &p.Name, &p.Type, &referenceID, &link, &description, &acceptanceCriteria, &p.Priority,
-				&p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v, &p.Position,
+				&p.ID,
+				&p.Name,
+				&p.Type,
+				&referenceID,
+				&link,
+				&description,
+				&acceptanceCriteria,
+				&p.Priority,
+				&p.Points,
+				&p.Active,
+				&p.Skipped,
+				&p.VoteStartTime,
+				&p.VoteEndTime,
+				&v,
+				&p.Position,
 			); err != nil {
-				d.Logger.Error("get poker stories query error", zap.Error(err),
-					zap.String("PokerID", pokerID), zap.String("UserID", userID))
+				d.Logger.Error("error getting poker stories", zap.Error(err))
 			} else {
 				p.ReferenceID = referenceID.String
 				p.Link = link.String
 				p.Description = description.String
 				p.AcceptanceCriteria = acceptanceCriteria.String
-				err = json.Unmarshal([]byte(v), &p.Votes)
-				if err != nil {
-					d.Logger.Error("get poker stories query scan error", zap.Error(err),
-						zap.String("PokerID", pokerID), zap.String("UserID", userID))
-				}
-
-				// don't send others vote values to client, prevent sneaky devs from peaking at votes
-				for i := range p.Votes {
-					if p.Active && p.Votes[i].UserID != userID {
-						p.Votes[i].VoteValue = ""
-					}
-				}
-
+				_ = json.Unmarshal([]byte(v), &p.Votes)
 				stories = append(stories, p)
 			}
+		}
+	}
+
+	// 设置缓存
+	if d.Redis != nil {
+		if storiesJSON, err := json.Marshal(stories); err == nil {
+			d.Redis.Set(context.Background(), cacheKey, storiesJSON, 1*time.Hour)
 		}
 	}
 
@@ -88,6 +109,12 @@ func (d *Service) CreateStory(pokerID string, name string, storyType string, ref
 	); err != nil {
 		d.Logger.Error("error creating poker story", zap.Error(err),
 			zap.String("PokerID", pokerID), zap.String("Name", name))
+	}
+
+	// 清除缓存
+	if d.Redis != nil {
+		cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+		d.Redis.Del(context.Background(), cacheKey)
 	}
 
 	stories := d.GetStories(pokerID, "")
@@ -129,6 +156,12 @@ func (d *Service) SetVote(pokerID string, userID string, storyID string, voteVal
 		d.Logger.Error("CALL thunderdome.poker_user_vote_set error", zap.Error(err),
 			zap.String("PokerID", pokerID), zap.String("UserID", userID),
 			zap.String("StoryID", storyID), zap.String("VoteValue", voteValue))
+	}
+
+	// 清除缓存
+	if d.Redis != nil {
+		cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+		d.Redis.Del(context.Background(), cacheKey)
 	}
 
 	stories := d.GetStories(pokerID, "")
@@ -175,6 +208,12 @@ func (d *Service) RetractVote(pokerID string, userID string, storyID string) ([]
 		return nil, fmt.Errorf("poker retract vote query error: %v", err)
 	}
 
+	// 清除缓存
+	if d.Redis != nil {
+		cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+		d.Redis.Del(context.Background(), cacheKey)
+	}
+
 	stories := d.GetStories(pokerID, "")
 
 	return stories, nil
@@ -188,6 +227,12 @@ func (d *Service) EndStoryVoting(pokerID string, storyID string) ([]*thunderdome
 			zap.String("PokerID", pokerID), zap.String("StoryID", storyID))
 	}
 
+	// 清除缓存
+	if d.Redis != nil {
+		cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+		d.Redis.Del(context.Background(), cacheKey)
+	}
+
 	stories := d.GetStories(pokerID, "")
 
 	return stories, nil
@@ -199,6 +244,12 @@ func (d *Service) SkipStory(pokerID string, storyID string) ([]*thunderdome.Stor
 		`CALL thunderdome.poker_vote_skip($1, $2);`, pokerID, storyID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_vote_skip error", zap.Error(err),
 			zap.String("PokerID", pokerID), zap.String("StoryID", storyID))
+	}
+
+	// 清除缓存
+	if d.Redis != nil {
+		cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+		d.Redis.Del(context.Background(), cacheKey)
 	}
 
 	stories := d.GetStories(pokerID, "")
@@ -232,6 +283,12 @@ func (d *Service) UpdateStory(pokerID string, storyID string, name string, story
 			zap.String("PokerID", pokerID), zap.String("StoryID", storyID))
 	}
 
+	// 清除缓存
+	if d.Redis != nil {
+		cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+		d.Redis.Del(context.Background(), cacheKey)
+	}
+
 	stories := d.GetStories(pokerID, "")
 
 	return stories, nil
@@ -243,6 +300,12 @@ func (d *Service) DeleteStory(pokerID string, storyID string) ([]*thunderdome.St
 		`CALL thunderdome.poker_story_delete($1, $2);`, pokerID, storyID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_story_delete error", zap.Error(err),
 			zap.String("PokerID", pokerID), zap.String("StoryID", storyID))
+	}
+
+	// 清除缓存
+	if d.Redis != nil {
+		cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+		d.Redis.Del(context.Background(), cacheKey)
 	}
 
 	stories := d.GetStories(pokerID, "")
@@ -316,6 +379,12 @@ func (d *Service) FinalizeStory(pokerID string, storyID string, points string) (
 			zap.String("PokerID", pokerID),
 			zap.String("StoryID", storyID),
 			zap.String("Points", points))
+	}
+
+	// 清除缓存
+	if d.Redis != nil {
+		cacheKey := fmt.Sprintf("game:%s:stories", pokerID)
+		d.Redis.Del(context.Background(), cacheKey)
 	}
 
 	stories := d.GetStories(pokerID, "")

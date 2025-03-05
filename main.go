@@ -4,8 +4,10 @@ import (
 	"context"
 	_ "embed"
 	"os"
+	"strconv"
 
 	jiraData "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/jira"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/redis"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
 
@@ -66,6 +68,58 @@ func main() {
 
 	c := config.InitConfig(logger)
 
+	// 初始化 Redis
+	redisPort, err := strconv.Atoi(os.Getenv("REDIS_PORT"))
+	if err != nil {
+		logger.Error("Failed to parse REDIS_PORT", zap.Error(err))
+	}
+	if redisPort == 0 {
+		redisPort = 6379
+		logger.Info("Using default Redis port", zap.Int("port", redisPort))
+	}
+
+	redisHost := os.Getenv("REDIS_HOST")
+	if redisHost == "" {
+		redisHost = "localhost"
+		logger.Info("Using default Redis host", zap.String("host", redisHost))
+	}
+
+	redisConfig := &redis.Config{
+		Host:     redisHost,
+		Port:     redisPort,
+		Password: "", // 如果需要密码，从环境变量获取
+		DB:       0,
+	}
+
+	logger.Info("Initializing Redis",
+		zap.String("host", redisConfig.Host),
+		zap.Int("port", redisConfig.Port),
+		zap.Int("db", redisConfig.DB))
+
+	if err := redis.InitRedis(redisConfig); err != nil {
+		logger.Error("Failed to initialize Redis", 
+			zap.Error(err),
+			zap.String("host", redisConfig.Host),
+			zap.Int("port", redisConfig.Port))
+	} else {
+		// 测试Redis连接
+		client := redis.GetClient()
+		if client == nil {
+			logger.Error("Redis client is nil after initialization")
+		} else {
+			if err := client.Ping(context.Background()).Err(); err != nil {
+				logger.Error("Redis ping failed", 
+					zap.Error(err),
+					zap.String("host", redisConfig.Host),
+					zap.Int("port", redisConfig.Port))
+			} else {
+				logger.Info("Redis initialized and connected successfully",
+					zap.String("host", redisConfig.Host),
+					zap.Int("port", redisConfig.Port))
+			}
+		}
+	}
+
 	if c.Otel.Enabled {
 		cleanup := initTracer(
 			logger,
@@ -103,6 +157,7 @@ func main() {
 	battleService := &poker.Service{
 		DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey,
 		HTMLSanitizerPolicy: d.HTMLSanitizerPolicy,
+		Redis: redis.GetClient(),
 	}
 	checkinService := &team.CheckinService{DB: d.DB, Logger: logger, HTMLSanitizerPolicy: d.HTMLSanitizerPolicy}
 	retroService := &retro.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
@@ -261,7 +316,7 @@ func main() {
 		},
 	}, uiFilesystem, uiHTTPFilesystem)
 
-	err := h.ListenAndServe()
+	err = h.ListenAndServe()
 	if err != nil {
 		logger.Fatal(err.Error())
 	}

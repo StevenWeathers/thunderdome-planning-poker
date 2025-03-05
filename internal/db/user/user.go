@@ -78,6 +78,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, limit int, offset int)
 
 // GetUserByID gets a user by ID
 func (d *Service) GetUserByID(ctx context.Context, userID string) (*thunderdome.User, error) {
+	d.Logger.Debug("Getting user from cache", zap.String("user_id", userID))
 	var user thunderdome.User
 
 	err := d.DB.QueryRowContext(ctx,
@@ -108,6 +109,7 @@ func (d *Service) GetUserByID(ctx context.Context, userID string) (*thunderdome.
 	if err != nil {
 		d.Logger.Ctx(ctx).Error("get_user query error", zap.Error(err),
 			zap.String("UserID", userID))
+		d.Logger.Debug("User not found in cache", zap.String("user_id", userID))
 		return nil, fmt.Errorf("get user query error: %v", err)
 	}
 

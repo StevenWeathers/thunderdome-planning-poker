@@ -22,6 +22,7 @@ require (
 	github.com/o1egl/govatar v0.4.1
 	github.com/pquerna/otp v1.4.0
 	github.com/pressly/goose/v3 v3.23.1
+	github.com/redis/go-redis/v9 v9.5.1
 	github.com/spf13/viper v1.19.0
 	github.com/swaggo/swag v1.16.4
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.3.2
