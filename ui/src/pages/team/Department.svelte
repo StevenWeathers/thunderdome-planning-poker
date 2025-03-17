@@ -34,6 +34,9 @@
   let organization = {
     id: organizationId,
     name: '',
+    createdDate: '',
+    updateDate: '',
+    subscribed: false,
   };
   let department = {
     id: departmentId,

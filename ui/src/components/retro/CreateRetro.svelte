@@ -20,21 +20,27 @@
 
   const maxPhaseTimeLimitMin = 59;
 
-  let retroName = '';
-  let joinCode = '';
-  let facilitatorCode = '';
-  let maxVotes = '3';
-  let brainstormVisibility = 'visible';
   let teams = [];
-  let selectedTeam = '';
-  let phaseTimeLimitMin = 0;
-  let templateId = '';
-  let phaseAutoAdvance = true;
-  let allowCumulativeVoting = false;
   let retroTemplates = [];
   let publicTemplates = [];
   let teamRetroTemplates = [];
   let organizationRetroTemplates = [];
+  let defaultRetroSettings = {
+    retroName: '',
+    maxVotes: '3',
+    brainstormVisibility: 'visible',
+    phaseTimeLimitMin: '0',
+    facilitatorCode: '',
+    joinCode: '',
+    selectedTeam: '',
+    templateId: '',
+    phaseAutoAdvance: true,
+    allowCumulativeVoting: false,
+  };
+  let retroSettings = { ...defaultRetroSettings };
+  let orgRetroSettings = {};
+  let departmentRetroSettings = {};
+  let teamRetroSettings = {};
 
   /** @type {TextInput} */
   let retroNameTextInput;
@@ -58,10 +64,12 @@
     e.preventDefault();
     let endpoint = `${apiPrefix}/users/${$user.id}/retros`;
 
-    if (templateId === '') {
+    if (retroSettings.templateId === '') {
       notifications.danger('Must select a retrospective template.');
       return;
     }
+
+    const phaseTimeLimitMin = parseInt(retroSettings.phaseTimeLimitMin, 10);
 
     if (phaseTimeLimitMin > maxPhaseTimeLimitMin || phaseTimeLimitMin < 0) {
       notifications.danger('Phase Time Limit minutes must be between 0-59');
@@ -69,19 +77,19 @@
     }
 
     const body = {
-      retroName,
-      joinCode,
-      facilitatorCode,
-      maxVotes: parseInt(maxVotes, 10),
-      brainstormVisibility,
-      phaseTimeLimitMin: parseInt(`${phaseTimeLimitMin}`, 10),
-      phaseAutoAdvance,
-      allowCumulativeVoting,
-      templateId,
+      retroName: retroSettings.retroName,
+      joinCode: retroSettings.joinCode,
+      facilitatorCode: retroSettings.facilitatorCode,
+      maxVotes: parseInt(retroSettings.maxVotes, 10),
+      brainstormVisibility: retroSettings.brainstormVisibility,
+      phaseTimeLimitMin,
+      phaseAutoAdvance: retroSettings.phaseAutoAdvance,
+      allowCumulativeVoting: retroSettings.allowCumulativeVoting,
+      templateId: retroSettings.templateId,
     };
 
-    if (selectedTeam !== '') {
-      endpoint = `/api/teams/${selectedTeam}/users/${$user.id}/retros`;
+    if (retroSettings.selectedTeam !== '') {
+      endpoint = `/api/teams/${retroSettings.selectedTeam}/users/${$user.id}/retros`;
     }
 
     xfetch(endpoint, { body })
@@ -128,16 +136,93 @@
       });
   }
 
+  function getCustomRetroSettings() {
+    teamRetroSettings = {};
+    departmentRetroSettings = {};
+    orgRetroSettings = {};
+    combineRetroSettings();
+
+    // don't get custom retro settings if a team isn't selected
+    if (retroSettings.selectedTeam === '') {
+      return;
+    }
+    const team = teams.find(t => t.id === retroSettings.selectedTeam);
+    // if subscriptions are enabled and the team (or its parent org) isn't subscribed
+    // don't attempt to get retro settings
+    if (
+      AppConfig.SubscriptionsEnabled &&
+      !validateUserIsAdmin($user) &&
+      !team.subscribed
+    ) {
+      return;
+    }
+
+    xfetch(`/api/teams/${team.id}/retro-settings`)
+      .then(res => res.json())
+      .then(function (result) {
+        if (!result.data) {
+          return;
+        }
+        teamRetroSettings = result.data;
+        combineRetroSettings();
+      })
+      .catch(function () {
+        notifications.danger('Failed to get team retro settings');
+      });
+
+    if (team.organization_id !== '') {
+      xfetch(`/api/organizations/${team.organization_id}/retro-settings`)
+        .then(res => res.json())
+        .then(function (result) {
+          if (!result.data) {
+            return;
+          }
+          orgRetroSettings = result.data;
+          combineRetroSettings();
+        })
+        .catch(function () {
+          notifications.danger('Failed to get organization retro settings');
+        });
+    }
+
+    if (team.department_id !== '') {
+      xfetch(
+        `/api/organizations/${team.organization_id}/departments/${team.department_id}/retro-settings`,
+      )
+        .then(res => res.json())
+        .then(function (result) {
+          if (!result.data) {
+            return;
+          }
+          departmentRetroSettings = result.data;
+          combineRetroSettings();
+        })
+        .catch(function () {
+          notifications.danger('Failed to get department retro settings');
+        });
+    }
+  }
+
+  const combineRetroSettings = () => {
+    // settings priority order (Team -> Department -> Organization -> Default)
+    retroSettings = {
+      ...retroSettings,
+      ...orgRetroSettings,
+      ...departmentRetroSettings,
+      ...teamRetroSettings,
+    };
+  };
+
   function getPrivateRetroTemplates() {
     teamRetroTemplates = [];
     organizationRetroTemplates = [];
     combineRetroTemplates();
 
     // don't get private templates if a team isn't selected
-    if (selectedTeam === '') {
+    if (retroSettings.selectedTeam === '') {
       return;
     }
-    const team = teams.find(t => t.id === selectedTeam);
+    const team = teams.find(t => t.id === retroSettings.selectedTeam);
     // if subscriptions are enabled and the team (or its parent org) isn't subscribed
     // don't attempt to get private templates
     if (
@@ -191,15 +276,21 @@
     retroTemplates.map(temp => {
       // Find default template with priority order (Team -> Organization -> Public)
       if (!defaultFound && temp.defaultTemplate) {
-        templateId = temp.id;
+        retroSettings.templateId = temp.id;
         defaultFound = true;
       }
     });
   };
 
   const updateSelectedTemplate = event => {
-    templateId = event.detail.id;
+    retroSettings.templateId = event.detail.id;
   };
+
+  function teamSelected() {
+    // apply settings before templates
+    getCustomRetroSettings();
+    getPrivateRetroTemplates();
+  }
 
   onMount(() => {
     if (!$user.id) {
@@ -224,7 +315,7 @@
     <div class="control">
       <TextInput
         name="retroName"
-        bind:value="{retroName}"
+        bind:value="{retroSettings.retroName}"
         bind:this="{retroNameTextInput}"
         placeholder="{$LL.retroNamePlaceholder()}"
         id="retroName"
@@ -244,8 +335,8 @@
         {/if}
       </label>
       <SelectInput
-        bind:value="{selectedTeam}"
-        on:change="{getPrivateRetroTemplates}"
+        bind:value="{retroSettings.selectedTeam}"
+        on:change="{teamSelected}"
         id="selectedTeam"
         name="selectedTeam"
       >
@@ -269,7 +360,7 @@
       on:change="{updateSelectedTemplate}"
       items="{retroTemplates}"
       label="Select a retro template..."
-      selectedItemId="{templateId}"
+      selectedItemId="{retroSettings.templateId}"
       itemType="retro_template"
     />
   </div>
@@ -284,7 +375,7 @@
     <div class="control">
       <TextInput
         name="joinCode"
-        bind:value="{joinCode}"
+        bind:value="{retroSettings.joinCode}"
         placeholder="{$LL.joinCodePlaceholder()}"
         id="joinCode"
         icon="{Lock}"
@@ -302,7 +393,7 @@
     <div class="control">
       <TextInput
         name="facilitatorCode"
-        bind:value="{facilitatorCode}"
+        bind:value="{retroSettings.facilitatorCode}"
         placeholder="{$LL.facilitatorCodePlaceholder()}"
         id="facilitatorCode"
         icon="{Crown}"
@@ -320,7 +411,7 @@
     <div class="control">
       <TextInput
         name="maxVotes"
-        bind:value="{maxVotes}"
+        bind:value="{retroSettings.maxVotes}"
         id="maxVotes"
         type="number"
         min="1"
@@ -332,7 +423,7 @@
 
   <div class="mb-4">
     <Checkbox
-      bind:checked="{allowCumulativeVoting}"
+      bind:checked="{retroSettings.allowCumulativeVoting}"
       id="allowCumulativeVoting"
       name="allowCumulativeVoting"
       label="{$LL.allowCumulativeVotingLabel()}"
@@ -347,7 +438,7 @@
       {$LL.brainstormPhaseFeedbackVisibility()}
     </label>
     <SelectInput
-      bind:value="{brainstormVisibility}"
+      bind:value="{retroSettings.brainstormVisibility}"
       id="brainstormVisibility"
       name="brainstormVisibility"
     >
@@ -369,7 +460,7 @@
     <div class="control">
       <TextInput
         name="phaseTimeLimitMin"
-        bind:value="{phaseTimeLimitMin}"
+        bind:value="{retroSettings.phaseTimeLimitMin}"
         id="phaseTimeLimitMin"
         type="number"
         min="0"
@@ -381,7 +472,7 @@
 
   <div class="mb-4">
     <Checkbox
-      bind:checked="{phaseAutoAdvance}"
+      bind:checked="{retroSettings.phaseAutoAdvance}"
       id="phaseAutoAdvance"
       name="phaseAutoAdvance"
       label="{$LL.phaseAutoAdvanceLabel()}"

@@ -79,3 +79,19 @@ type EstimationScale struct {
 	TeamID         string    `json:"teamId"`
 	DefaultScale   bool      `json:"defaultScale"`
 }
+
+// PokerSettings represents the default settings for a poker session creation
+type PokerSettings struct {
+	ID                   string    `json:"ID"`
+	OrganizationID       *string   `json:"organizationId"`
+	DepartmentID         *string   `json:"departmentId"`
+	TeamID               *string   `json:"teamId"`
+	AutoFinishVoting     bool      `json:"autoFinishVoting"`
+	PointAverageRounding string    `json:"pointAverageRounding"`
+	HideVoterIdentity    bool      `json:"hideVoterIdentity"`
+	EstimationScaleID    *string   `json:"estimationScaleId"`
+	JoinCode             string    `json:"joinCode"`
+	FacilitatorCode      string    `json:"facilitatorCode"`
+	CreatedAt            time.Time `json:"createdAt"`
+	UpdatedAt            time.Time `json:"updatedAt"`
+}

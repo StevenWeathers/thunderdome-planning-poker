@@ -67,7 +67,7 @@ tasks:
   build-go:
     deps: [ fmt-go ]
     cmds:
-      - go build -o thunderdome-planning-poker -v
+      - go build -o {{.BINARY_NAME}} -v
 
   build-linux:
     deps: [ gen-swag, build-ui ]
@@ -82,7 +82,7 @@ tasks:
   build:
     deps: [ fmt-go, build-ui ]
     cmds:
-      - go build -o thunderdome-planning-poker -v
+      - go build -o {{.BINARY_NAME}} -v
 
   dev:
     deps: [ build-ui ]
@@ -107,9 +107,14 @@ tasks:
       - caddy start --config build/dev.caddyfile
       - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY_NAME}} live
 
+  windows-build-go:
+    deps: [ fmt-go ]
+    cmds:
+      - go build -o {{.BINARY_WINDOWS}} -v
+
   windows-dev-secure-go:
     cmds:
-      - task: build-go
+      - task: windows-build-go
       - caddy start --config build/dev.caddyfile
       - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY_WINDOWS}} live
 
