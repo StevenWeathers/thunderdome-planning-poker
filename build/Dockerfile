@@ -1,7 +1,7 @@
 ############################
 # STEP 1 build the ui
 ############################
-FROM node:22.12 as builderNode
+FROM node:22.14 as builderNode
 
 RUN mkdir /webapp
 COPY ./ui/ /webapp/ui/

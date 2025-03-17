@@ -83,7 +83,7 @@ func (d *Service) GetUserByID(ctx context.Context, userID string) (*thunderdome.
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, COALESCE(email, ''), type, avatar, verified,
 			notifications_enabled, COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''),
-			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, theme, COALESCE(picture, '')
+			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, COALESCE(theme, 'auto'), COALESCE(picture, '')
 			FROM thunderdome.users WHERE id = $1`,
 		userID,
 	).Scan(
@@ -127,7 +127,7 @@ func (d *Service) GetGuestUserByID(ctx context.Context, userID string) (*thunder
 	err := d.DB.QueryRowContext(ctx, `
 SELECT id, name, COALESCE(email, ''), type, avatar, verified, notifications_enabled,
  COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), COALESCE(job_title, ''),
-  created_date, updated_date, last_active, theme
+  created_date, updated_date, last_active, COALESCE(theme, 'auto')
 FROM thunderdome.users
 WHERE id = $1 AND type = 'GUEST';
 `,
@@ -163,18 +163,31 @@ func (d *Service) GetUserByEmail(ctx context.Context, userEmail string) (*thunde
 	var user thunderdome.User
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT u.id, u.name, u.email, u.type, c.verified, u.disabled
-				FROM thunderdome.auth_credential c
-				JOIN thunderdome.users u ON c.user_id = u.id
-				WHERE c.email = $1`,
+		`SELECT u.id, u.name, COALESCE(u.email, ''), u.type, u.avatar, u.verified,
+			u.notifications_enabled, COALESCE(u.country, ''), COALESCE(u.locale, ''), COALESCE(u.company, ''),
+			COALESCE(u.job_title, ''), u.created_date, u.updated_date, u.last_active, u.disabled, COALESCE(u.theme, 'auto'), COALESCE(u.picture, '')
+		FROM thunderdome.auth_credential c
+		JOIN thunderdome.users u ON c.user_id = u.id
+		WHERE c.email = $1`,
 		db.SanitizeEmail(userEmail),
 	).Scan(
 		&user.ID,
 		&user.Name,
 		&user.Email,
 		&user.Type,
+		&user.Avatar,
 		&user.Verified,
+		&user.NotificationsEnabled,
+		&user.Country,
+		&user.Locale,
+		&user.Company,
+		&user.JobTitle,
+		&user.CreatedDate,
+		&user.UpdatedDate,
+		&user.LastActive,
 		&user.Disabled,
+		&user.Theme,
+		&user.Picture,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("get user by email query error: %w", err)

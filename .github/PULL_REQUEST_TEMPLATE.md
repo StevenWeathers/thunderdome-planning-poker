@@ -29,10 +29,10 @@ This PR [adds/removes/fixes/replaces] the [feature/bug/etc].
 - [ ] 🎨 Style
 - [ ] 🧑‍💻 Code Refactor
 - [ ] 🔥 Performance Improvements
+- [ ] 📦 Dependency updates
 - [ ] ✅ Test
 - [ ] 🤖 Build
 - [ ] 🔁 CI
-- [ ] 📦 Chore (Release)
 - [ ] ⏩ Revert
 
 ## Related Tickets & Documents
