@@ -24,20 +24,26 @@
 
   let allowedPointValues = [];
   let points = [];
-  let battleName = '';
   let plans = [];
-  let autoFinishVoting = true;
-  let pointAverageRounding = AppConfig.DefaultPointAverageRounding || 'ceil';
-  let joinCode = '';
-  let leaderCode = '';
-  let selectedTeam = '';
   let teams = [];
   let publicEstimationScales = [];
   let teamEstimationScales = [];
   let organizationEstimationScales = [];
   let estimateScales = [];
-  let hideVoterIdentity = false;
   let selectedEstimationScale = '';
+  let defaultSettings = {
+    battleName: '',
+    autoFinishVoting: true,
+    pointAverageRounding: AppConfig.DefaultPointAverageRounding || 'ceil',
+    hideVoterIdentity: false,
+    joinCode: '',
+    leaderCode: '',
+    selectedTeam: '',
+  };
+  let pokerSettings = { ...defaultSettings };
+  let teamPokerSettings = {};
+  let departmentPokerSettings = {};
+  let orgPokerSettings = {};
 
   /** @type {TextInput} */
   let battleNameTextInput;
@@ -95,19 +101,19 @@
     });
 
     const body = {
-      name: battleName,
+      name: pokerSettings.battleName,
       pointValuesAllowed,
       plans,
-      autoFinishVoting,
-      pointAverageRounding,
-      hideVoterIdentity,
-      joinCode,
-      leaderCode,
+      autoFinishVoting: pokerSettings.autoFinishVoting,
+      pointAverageRounding: pokerSettings.pointAverageRounding,
+      hideVoterIdentity: pokerSettings.hideVoterIdentity,
+      joinCode: pokerSettings.joinCode,
+      leaderCode: pokerSettings.leaderCode,
       estimationScaleId: selectedEstimationScale,
     };
 
-    if (selectedTeam !== '') {
-      endpoint = `/api/teams/${selectedTeam}/users/${$user.id}/battles`;
+    if (pokerSettings.selectedTeam !== '') {
+      endpoint = `/api/teams/${pokerSettings.selectedTeam}/users/${$user.id}/battles`;
     }
 
     xfetch(endpoint, { body })
@@ -161,10 +167,10 @@
     combineEstimationScales();
 
     // don't get private scales if a team isn't selected
-    if (selectedTeam === '') {
+    if (pokerSettings.selectedTeam === '') {
       return;
     }
-    const team = teams.find(t => t.id === selectedTeam);
+    const team = teams.find(t => t.id === pokerSettings.selectedTeam);
     // if subscriptions are enabled and the team (or its parent org) isn't subscribed
     // don't attempt to get private scales
     if (
@@ -226,6 +232,83 @@
     });
   };
 
+  function getCustomPokerSettings() {
+    teamPokerSettings = {};
+    departmentPokerSettings = {};
+    orgPokerSettings = {};
+    combinePokerSettings();
+
+    // don't get custom poker settings if a team isn't selected
+    if (pokerSettings.selectedTeam === '') {
+      return;
+    }
+    const team = teams.find(t => t.id === pokerSettings.selectedTeam);
+    // if subscriptions are enabled and the team (or its parent org) isn't subscribed
+    // don't attempt to get poker settings
+    if (
+      AppConfig.SubscriptionsEnabled &&
+      !validateUserIsAdmin($user) &&
+      !team.subscribed
+    ) {
+      return;
+    }
+
+    xfetch(`/api/teams/${team.id}/poker-settings`)
+      .then(res => res.json())
+      .then(function (result) {
+        if (!result.data) {
+          return;
+        }
+        teamPokerSettings = result.data;
+        combinePokerSettings();
+      })
+      .catch(function () {
+        notifications.danger('Failed to get team poker settings');
+      });
+
+    if (team.organization_id !== '') {
+      xfetch(`/api/organizations/${team.organization_id}/poker-settings`)
+        .then(res => res.json())
+        .then(function (result) {
+          if (!result.data) {
+            return;
+          }
+          orgPokerSettings = result.data;
+          combinePokerSettings();
+        })
+        .catch(function () {
+          notifications.danger('Failed to get organization poker settings');
+        });
+    }
+
+    if (team.department_id !== '') {
+      xfetch(
+        `/api/organizations/${team.organization_id}/departments/${team.department_id}/poker-settings`,
+      )
+        .then(res => res.json())
+        .then(function (result) {
+          if (!result.data) {
+            return;
+          }
+          departmentPokerSettings = result.data;
+          combinePokerSettings();
+        })
+        .catch(function () {
+          notifications.danger('Failed to get department poker settings');
+        });
+    }
+  }
+
+  const combinePokerSettings = () => {
+    // settings priority order (Team -> Department -> Organization -> Default)
+    pokerSettings = {
+      ...pokerSettings,
+      ...orgPokerSettings,
+      ...departmentPokerSettings,
+      ...teamPokerSettings,
+    };
+  };
+
   const updatePointValues = event => {
     const scale = event.detail;
     selectedEstimationScale = scale.id;
@@ -238,6 +321,12 @@
   const toggleImport = () => {
     showImport = !showImport;
   };
+
+  function handleTeamChange() {
+    // get custom poker settings before estimation scales
+    getCustomPokerSettings();
+    getPrivateEstimationScales();
+  }
 
   onMount(() => {
     if (!$user.id) {
@@ -263,7 +352,7 @@
       <TextInput
         name="battleName"
         bind:this="{battleNameTextInput}"
-        bind:value="{battleName}"
+        bind:value="{pokerSettings.battleName}"
         placeholder="{$LL.battleNamePlaceholder()}"
         id="battleName"
         required
@@ -281,8 +370,8 @@
         {#if !AppConfig.RequireTeams}{$LL.optional()}{/if}
       </label>
       <SelectInput
-        bind:value="{selectedTeam}"
-        on:change="{getPrivateEstimationScales}"
+        bind:value="{pokerSettings.selectedTeam}"
+        on:change="{handleTeamChange}"
         id="selectedTeam"
         name="selectedTeam"
       >
@@ -385,7 +474,7 @@
       {$LL.pointAverageRounding()}
     </label>
     <SelectInput
-      bind:value="{pointAverageRounding}"
+      bind:value="{pokerSettings.pointAverageRounding}"
       id="averageRounding"
       name="averageRounding"
     >
@@ -399,7 +488,7 @@
 
   <div class="mb-4">
     <Checkbox
-      bind:checked="{autoFinishVoting}"
+      bind:checked="{pokerSettings.autoFinishVoting}"
       id="autoFinishVoting"
       name="autoFinishVoting"
       label="{$LL.autoFinishVotingLabel()}"
@@ -408,7 +497,7 @@
 
   <div class="mb-4">
     <Checkbox
-      bind:checked="{hideVoterIdentity}"
+      bind:checked="{pokerSettings.hideVoterIdentity}"
       id="hideVoterIdentity"
       name="hideVoterIdentity"
       label="{$LL.hideVoterIdentity()}"
@@ -425,7 +514,7 @@
     <div class="control">
       <TextInput
         name="joinCode"
-        bind:value="{joinCode}"
+        bind:value="{pokerSettings.joinCode}"
         placeholder="{$LL.optionalPasscodePlaceholder()}"
         id="joinCode"
         icon="{Lock}"
@@ -443,7 +532,7 @@
     <div class="control">
       <TextInput
         name="leaderCode"
-        bind:value="{leaderCode}"
+        bind:value="{pokerSettings.leaderCode}"
         placeholder="{$LL.facilitatorCodePlaceholder()}"
         id="leaderCode"
         icon="{Crown}"
