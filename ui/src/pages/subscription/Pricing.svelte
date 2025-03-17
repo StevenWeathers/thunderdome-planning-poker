@@ -110,7 +110,7 @@
             </a>
           </SubscribeButton>
           <ul class="space-y-3">
-            <li class="flex items-center">✨ All Starter Features</li>
+            <li class="flex items-center font-bold">✨ All Starter Features</li>
             <li class="flex items-center">🔗 Import stories from Jira Cloud</li>
             <li class="flex items-center">
               🔗 Import stories from other sessions or even Storyboards
@@ -156,7 +156,13 @@
             </a>
           </SubscribeButton>
           <ul class="space-y-3">
-            <li class="flex items-center">🌟 All Individual Features</li>
+            <li class="flex items-center font-bold">
+              🌟 All Individual Features
+            </li>
+            <li class="flex items-center">
+              ⚙️ Configure default settings for creating Retrospectives and
+              Planning Poker sessions within the subscribed team
+            </li>
             <li class="flex items-center">📊 Custom Poker Estimation Scales</li>
             <li class="flex items-center">🔄 Custom Retrospective Templates</li>
             <li class="flex items-center">
@@ -200,7 +206,11 @@
             </a>
           </SubscribeButton>
           <ul class="space-y-3">
-            <li class="flex items-center">💼 All Team Features</li>
+            <li class="flex items-center font-bold">💼 All Team Features</li>
+            <li class="flex items-center">
+              ⚙️ Configure default settings for creating Retrospectives and
+              Planning Poker sessions within the subscribed organization
+            </li>
           </ul>
         </PlanBox>
       {/if}
