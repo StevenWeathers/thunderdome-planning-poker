@@ -46,6 +46,9 @@
     const response = await xfetch(`${apiPrefix}/poker-settings`);
     if (response.ok) {
       const res = await response.json();
+      if (!res.data) {
+        return;
+      }
       defaultSettings = res.data;
     } else {
       notifications.error('Failed to get default poker settings');

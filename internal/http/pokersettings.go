@@ -251,11 +251,6 @@ func (s *Service) handleGetOrganizationPokerSettings() http.HandlerFunc {
 			return
 		}
 
-		if settings == nil {
-			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "Poker settings not found"))
-			return
-		}
-
 		s.Success(w, r, http.StatusOK, settings, nil)
 	}
 }
@@ -355,11 +350,6 @@ func (s *Service) handleGetTeamPokerSettings() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleGetTeamPokerSettings error", zap.Error(err),
 				zap.String("team_id", teamID), zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		if settings == nil {
-			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "Poker settings not found"))
 			return
 		}
 
@@ -463,11 +453,6 @@ func (s *Service) handleGetDepartmentPokerSettings() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleGetDepartmentPokerSettings error", zap.Error(err),
 				zap.String("dept_id", deptID), zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		if settings == nil {
-			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "Poker settings not found"))
 			return
 		}
 

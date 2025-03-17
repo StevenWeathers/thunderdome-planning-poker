@@ -48,6 +48,9 @@
     const response = await xfetch(`${apiPrefix}/retro-settings`);
     if (response.ok) {
       const res = await response.json();
+      if (!res.data) {
+        return;
+      }
       defaultSettings = res.data;
     } else {
       notifications.error('Failed to get default retro settings');
