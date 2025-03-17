@@ -263,11 +263,6 @@ func (s *Service) handleGetOrganizationRetroSettings() http.HandlerFunc {
 			return
 		}
 
-		if settings == nil {
-			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "Retro settings not found"))
-			return
-		}
-
 		s.Success(w, r, http.StatusOK, settings, nil)
 	}
 }
@@ -370,11 +365,6 @@ func (s *Service) handleGetTeamRetroSettings() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleGetTeamRetroSettings error", zap.Error(err),
 				zap.String("team_id", teamID), zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		if settings == nil {
-			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "Retro settings not found"))
 			return
 		}
 
@@ -481,11 +471,6 @@ func (s *Service) handleGetDepartmentRetroSettings() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error("handleGetDepartmentRetroSettings error", zap.Error(err),
 				zap.String("dept_id", deptID), zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		if settings == nil {
-			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "Retro settings not found"))
 			return
 		}
 

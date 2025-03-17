@@ -160,6 +160,9 @@
     xfetch(`/api/teams/${team.id}/retro-settings`)
       .then(res => res.json())
       .then(function (result) {
+        if (!result.data) {
+          return;
+        }
         teamRetroSettings = result.data;
         combineRetroSettings();
       })
@@ -171,6 +174,9 @@
       xfetch(`/api/organizations/${team.organization_id}/retro-settings`)
         .then(res => res.json())
         .then(function (result) {
+          if (!result.data) {
+            return;
+          }
           orgRetroSettings = result.data;
           combineRetroSettings();
         })
@@ -185,6 +191,9 @@
       )
         .then(res => res.json())
         .then(function (result) {
+          if (!result.data) {
+            return;
+          }
           departmentRetroSettings = result.data;
           combineRetroSettings();
         })
