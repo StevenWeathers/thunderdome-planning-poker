@@ -3775,46 +3775,6 @@ paths:
       summary: Create Department Poker Settings
       tags:
       - poker-settings
-  /departments/{deptId}/retro-settings:
-    post:
-      description: Creates new retro settings for a department
-      parameters:
-      - description: Department ID
-        in: path
-        name: deptId
-        required: true
-        type: string
-      - description: retro settings object to create
-        in: body
-        name: settings
-        required: true
-        schema:
-          $ref: '#/definitions/http.retroSettingsRequestBody'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: returns created retro settings
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/thunderdome.RetroSettings'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Create Department Retro Settings
-      tags:
-      - retro-settings
   /estimation-scales/public:
     get:
       description: get list of all public estimation scales
@@ -4405,6 +4365,90 @@ paths:
       summary: Delete Department User Invite
       tags:
       - organization
+  /organizations/{orgId}/departments/{departmentId}/retro-settings:
+    post:
+      description: Creates new retro settings for a department
+      parameters:
+      - description: Department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: retro settings object to create
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: returns created retro settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Department Retro Settings
+      tags:
+      - retro-settings
+    put:
+      description: Updates retro settings for a specific department
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: Department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: retro settings object to update
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroSettingsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated retro settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroSettings'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department Retro Settings
+      tags:
+      - retro-settings
   /organizations/{orgId}/departments/{departmentId}/teams:
     get:
       description: Gets a list of organization department teams
@@ -4822,50 +4866,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Department Retro Settings
-      tags:
-      - retro-settings
-    put:
-      description: Updates retro settings for a specific department
-      parameters:
-      - description: Organization ID
-        in: path
-        name: orgId
-        required: true
-        type: string
-      - description: Department ID
-        in: path
-        name: deptId
-        required: true
-        type: string
-      - description: retro settings object to update
-        in: body
-        name: settings
-        required: true
-        schema:
-          $ref: '#/definitions/http.retroSettingsRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: returns updated retro settings
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/thunderdome.RetroSettings'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Update Department Retro Settings
       tags:
       - retro-settings
   /organizations/{orgId}/estimation-scales:

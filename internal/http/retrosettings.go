@@ -168,19 +168,19 @@ func (s *Service) handleCreateTeamRetroSettings() http.HandlerFunc {
 //	@Description	Creates new retro settings for a department
 //	@Tags			retro-settings
 //	@Produce		json
-//	@Param			deptId		path	string													true	"Department ID"
-//	@Param			settings	body	retroSettingsRequestBody								true	"retro settings object to create"
-//	@Success		201			object	standardJsonResponse{data=thunderdome.RetroSettings}	"returns created retro settings"
-//	@Failure		400			object	standardJsonResponse{}
-//	@Failure		500			object	standardJsonResponse{}
+//	@Param			departmentId	path	string													true	"Department ID"
+//	@Param			settings		body	retroSettingsRequestBody								true	"retro settings object to create"
+//	@Success		201				object	standardJsonResponse{data=thunderdome.RetroSettings}	"returns created retro settings"
+//	@Failure		400				object	standardJsonResponse{}
+//	@Failure		500				object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
-//	@Router			/departments/{deptId}/retro-settings [post]
+//	@Router			/organizations/{orgId}/departments/{departmentId}/retro-settings [post]
 func (s *Service) handleCreateDepartmentRetroSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		deptID := vars["deptId"]
+		deptID := vars["departmentId"]
 		deptIDErr := validate.Var(deptID, "required,uuid")
 		if deptIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, deptIDErr.Error()))
@@ -499,20 +499,20 @@ func (s *Service) handleGetDepartmentRetroSettings() http.HandlerFunc {
 //	@Description	Updates retro settings for a specific department
 //	@Tags			retro-settings
 //	@Produce		json
-//	@Param			orgId		path	string													true	"Organization ID"
-//	@Param			deptId		path	string													true	"Department ID"
-//	@Param			settings	body	retroSettingsRequestBody								true	"retro settings object to update"
-//	@Success		200			object	standardJsonResponse{data=thunderdome.RetroSettings}	"returns updated retro settings"
-//	@Failure		400			object	standardJsonResponse{}
-//	@Failure		500			object	standardJsonResponse{}
+//	@Param			orgId			path	string													true	"Organization ID"
+//	@Param			departmentId	path	string													true	"Department ID"
+//	@Param			settings		body	retroSettingsRequestBody								true	"retro settings object to update"
+//	@Success		200				object	standardJsonResponse{data=thunderdome.RetroSettings}	"returns updated retro settings"
+//	@Failure		400				object	standardJsonResponse{}
+//	@Failure		500				object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
-//	@Router			/organizations/{orgId}/departments/{deptId}/retro-settings [put]
+//	@Router			/organizations/{orgId}/departments/{departmentId}/retro-settings [put]
 func (s *Service) handleDepartmentRetroSettingsUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		deptID := vars["deptId"]
+		deptID := vars["departmentId"]
 		deptIDErr := validate.Var(deptID, "required,uuid")
 		if deptIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, deptIDErr.Error()))
