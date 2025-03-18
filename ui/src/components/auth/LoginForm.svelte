@@ -21,10 +21,11 @@
   }
 
   const {
-    AllowRegistration,
     LdapEnabled,
     GoogleAuthEnabled,
     HeaderAuthEnabled,
+    OIDCAuthEnabled,
+    OIDCProviderName,
   } = AppConfig;
   const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth';
 
@@ -40,6 +41,10 @@
 
   function googleLogin() {
     window.location = `${PathPrefix}/oauth/google/login`;
+  }
+
+  function oidcLogin() {
+    window.location = `${PathPrefix}/oauth/${OIDCProviderName.toLowerCase()}/login`;
   }
 
   function toggleForgotPassword() {
@@ -85,9 +90,6 @@
           }
           window.setTheme();
           eventTag('login', 'engagement', 'success', () => {
-            // setupI18n({
-            //     withLocale: newUser.locale,
-            // })
             router.route(targetPage, true);
           });
         }
@@ -110,9 +112,6 @@
       .then(function () {
         user.create(mfaUser);
         eventTag('login_mfa', 'engagement', 'success', () => {
-          // setupI18n({
-          //     withLocale: mfaUser.locale,
-          // })
           router.route(targetPage, true);
         });
       })
@@ -146,7 +145,23 @@
   }
 </script>
 
-{#if !forgotPassword && !mfaRequired}
+{#if OIDCAuthEnabled}
+  <button
+    on:click="{oidcLogin}"
+    data-testid="login"
+    class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    <span class="flex items-center pe-3">
+      <Lock
+        class="h-5 w-5 text-purple-300 group-hover:text-purple-200"
+        aria-hidden="true"
+      />
+    </span>
+    {$LL.loginWithSSO({ provider: OIDCProviderName })}
+  </button>
+{/if}
+
+{#if !OIDCAuthEnabled && !forgotPassword && !mfaRequired}
   <form
     on:submit="{handleLoginSubmit}"
     class="space-y-6"

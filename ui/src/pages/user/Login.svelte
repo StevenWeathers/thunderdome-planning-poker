@@ -14,7 +14,7 @@
   export let orgInviteId;
   export let teamInviteId;
 
-  const { AllowRegistration, LdapEnabled } = AppConfig;
+  const { AllowRegistration } = AppConfig;
 
   let registerLink = AllowRegistration ? appRoutes.register : '';
   if (AllowRegistration) {

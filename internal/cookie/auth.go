@@ -8,7 +8,7 @@ import (
 
 // CreateAuthStateCookie creates the oauth2 state validation cookie
 func (s *CookieService) CreateAuthStateCookie(w http.ResponseWriter, state string) error {
-	return s.CreateCookie(w, s.config.AuthStateCookieName, state, int(time.Minute.Seconds()*10))
+	return s.CreateStateCookie(w, s.config.AuthStateCookieName, state, int(time.Minute.Seconds()*10))
 }
 
 // ValidateAuthStateCookie retrieves the authstate cookie and validates its value against the state from

@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/unrolled/secure"
@@ -103,6 +104,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	}
 
 	router := a.Router.PathPrefix("/").Subrouter()
+	a.Router = router
 	router.Use(secureMiddleware.Handler)
 	router.Use(otelmux.Middleware("thunderdome"))
 
@@ -151,6 +153,13 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/auth/ldap", a.handleLdapLogin()).Methods("POST")
 	} else if a.Config.HeaderAuthEnabled {
 		apiRouter.HandleFunc("/auth", a.handleHeaderLogin()).Methods("GET")
+	} else if a.Config.OIDCAuth.Enabled {
+		authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
+			ProviderName: a.Config.OIDCAuth.ProviderName,
+			ProviderURL:  a.Config.OIDCAuth.ProviderURL,
+			ClientID:     a.Config.OIDCAuth.ClientID,
+			ClientSecret: a.Config.OIDCAuth.ClientSecret,
+		})
 	} else {
 		if a.Config.GoogleAuth.Enabled {
 			authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
@@ -540,13 +549,15 @@ func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthPro
 	}
 
 	for _, c := range providers {
-		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/login")
-		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/callback")
+		providerNameUrlPath := strings.ToLower(c.ProviderName)
+		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", providerNameUrlPath, "/login")
+		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", providerNameUrlPath, "/callback")
 		callbackRedirectURL, _ := url.JoinPath(redirectBaseURL, oauthCallbackPathPrefix)
 		authProvider, err := oauth.New(oauth.Config{
 			AuthProviderConfig:  c,
 			CallbackRedirectURL: callbackRedirectURL,
 			UIRedirectURL:       fmt.Sprintf("%s/", s.Config.PathPrefix),
+			InternalOnlyOidc:    s.Config.OIDCAuth.Enabled,
 		}, s.Cookie, s.Logger, s.AuthDataSvc, s.SubscriptionDataSvc, ctx)
 		if err != nil {
 			panic(err)

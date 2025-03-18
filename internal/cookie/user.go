@@ -75,6 +75,7 @@ func (s *CookieService) ClearUserCookies(w http.ResponseWriter) {
 		Name:   s.config.FrontendCookieName,
 		Value:  "",
 		Path:   s.config.PathPrefix + "/",
+		Domain: s.config.AppDomain,
 		MaxAge: -1,
 	}
 	http.SetCookie(w, feCookie)

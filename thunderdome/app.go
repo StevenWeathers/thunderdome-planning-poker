@@ -42,6 +42,8 @@ type AppConfig struct {
 	LdapEnabled                 bool
 	HeaderAuthEnabled           bool
 	GoogleAuthEnabled           bool
+	OIDCAuthEnabled             bool
+	OIDCProviderName            string
 	FeaturePoker                bool
 	FeatureRetro                bool
 	FeatureStoryboard           bool

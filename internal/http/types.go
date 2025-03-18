@@ -99,6 +99,7 @@ type Config struct {
 	SubscriptionsEnabled      bool
 
 	GoogleAuth AuthProvider
+	OIDCAuth   AuthProvider
 	WebsocketConfig
 }
 
@@ -184,6 +185,7 @@ type AuthDataSvc interface {
 	OauthCreateNonce(ctx context.Context) (string, error)
 	OauthValidateNonce(ctx context.Context, nonceId string) error
 	OauthAuthUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error)
+	OauthUpsertUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error)
 	UserResetRequest(ctx context.Context, email string) (resetID string, userName string, resetErr error)
 	UserResetPassword(ctx context.Context, resetID string, password string) (userName string, email string, resetErr error)
 	UserUpdatePassword(ctx context.Context, userID string, password string) (name string, email string, resetErr error)

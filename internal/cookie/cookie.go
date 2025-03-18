@@ -41,6 +41,28 @@ func (s *CookieService) CreateCookie(w http.ResponseWriter, cookieName string, v
 	return nil
 }
 
+// CreateStateCookie creates a secure cookie with given cookieName without SameSite mode for oauth redirect handling
+func (s *CookieService) CreateStateCookie(w http.ResponseWriter, cookieName string, value string, maxAge int) error {
+	encoded, err := s.sc.Encode(cookieName, value)
+	if err != nil {
+		return err
+
+	}
+
+	cookie := &http.Cookie{
+		Name:     cookieName,
+		Value:    encoded,
+		Path:     s.config.PathPrefix + "/",
+		HttpOnly: true,
+		Domain:   s.config.AppDomain,
+		MaxAge:   maxAge,
+		Secure:   s.config.SecureCookieFlag,
+	}
+	http.SetCookie(w, cookie)
+
+	return nil
+}
+
 // GetCookie returns the value from the cookie or errors if failure getting it
 func (s *CookieService) GetCookie(w http.ResponseWriter, r *http.Request, cookieName string) (string, error) {
 	var value string
