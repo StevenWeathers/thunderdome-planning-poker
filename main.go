@@ -80,7 +80,7 @@ func main() {
 
 	ldapEnabled := c.Auth.Method == "ldap"
 	headerAuthEnabled := c.Auth.Method == "header"
-	oidcAuthEnabled := c.Auth.Method == "oauth2"
+	oidcAuthEnabled := c.Auth.Method == "oidc"
 
 	d := db.New(c.Admin.Email, &db.Config{
 		Host:                   c.Db.Host,
