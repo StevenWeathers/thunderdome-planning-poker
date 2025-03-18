@@ -70,7 +70,7 @@
   userNameTextInput?.focus();
 </script>
 
-{#if !AppConfig.AllowRegistration && !AppConfig.AllowGuests && !isAdmin}
+{#if AppConfig.OIDCAuthEnabled || (!AppConfig.AllowRegistration && !AppConfig.AllowGuests && !isAdmin)}
   <div class="text-red-500">
     {$LL.registrationDisabled()}
   </div>

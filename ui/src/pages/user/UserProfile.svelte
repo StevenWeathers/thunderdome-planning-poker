@@ -37,6 +37,7 @@
     SubscriptionsEnabled,
     Subscription,
     PathPrefix,
+    OIDCAuthEnabled,
   } = AppConfig;
 
   function toggleUpdatePassword() {
@@ -630,7 +631,7 @@
       </div>
     </div>
 
-    {#if !LdapEnabled && !HeaderAuthEnabled}
+    {#if !OIDCAuthEnabled && !LdapEnabled && !HeaderAuthEnabled}
       <div class="w-full text-center mt-8">
         <HollowButton onClick="{toggleDeleteAccount}" color="red">
           {$LL.deleteAccount()}
