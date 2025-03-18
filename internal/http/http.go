@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/unrolled/secure"
@@ -547,8 +548,9 @@ func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthPro
 	}
 
 	for _, c := range providers {
-		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/login")
-		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/callback")
+		providerNameUrlPath := strings.ToLower(c.ProviderName)
+		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", providerNameUrlPath, "/login")
+		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", providerNameUrlPath, "/callback")
 		callbackRedirectURL, _ := url.JoinPath(redirectBaseURL, oauthCallbackPathPrefix)
 		authProvider, err := oauth.New(oauth.Config{
 			AuthProviderConfig:  c,
