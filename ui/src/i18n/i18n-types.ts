@@ -2556,6 +2556,11 @@ type RootTranslation = {
    * J​i​r​a​ ​D​a​t​a​C​e​n​t​e​r
    */
   jiradatacenterLabel: string;
+  /**
+   * L​o​g​i​n​ ​w​i​t​h​ ​{​p​r​o​v​i​d​e​r​}
+   * @param {unknown} provider
+   */
+  loginWithSSO: RequiredParams<'provider'>;
 };
 
 export type TranslationFunctions = {
@@ -5091,6 +5096,10 @@ export type TranslationFunctions = {
    * Jira DataCenter
    */
   jiradatacenterLabel: () => LocalizedString;
+  /**
+   * Login with {provider}
+   */
+  loginWithSSO: (arg: { provider: unknown }) => LocalizedString;
 };
 
 export type Formatters = {};

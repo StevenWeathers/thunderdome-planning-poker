@@ -652,6 +652,7 @@ const en: BaseTranslation = {
   removeRetroTemplate: 'Remove Retrospective Template',
   retroTemplateDefault: 'Set as default template',
   jiradatacenterLabel: 'Jira DataCenter',
+  loginWithSSO: 'Login with {provider}',
 };
 
 export default en;
