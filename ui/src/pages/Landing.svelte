@@ -272,7 +272,7 @@
             >
             hosted solution or
             <a
-              href="{RepoURL}#running-in-production"
+              href="{RepoURL}/blob/main/docs/INSTALLATION.md"
               class="text-indigo-500 dark:text-indigo-400 hover:underline"
               >self-host Thunderdome</a
             >.

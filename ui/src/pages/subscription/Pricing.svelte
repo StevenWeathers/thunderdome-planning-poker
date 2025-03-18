@@ -242,7 +242,7 @@
             </ul>
             <div class="flex space-x-4">
               <a
-                href="{RepoURL}#running-in-production"
+                href="{RepoURL}/blob/main/docs/INSTALLATION.md"
                 target="_blank"
                 class="bg-white text-indigo-600 hover:bg-indigo-100 font-bold py-3 px-6 rounded-full transition duration-300"
                 >Get Started</a
