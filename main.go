@@ -197,7 +197,7 @@ func main() {
 			OIDCAuth: http.AuthProvider{
 				Enabled: oidcAuthEnabled,
 				AuthProviderConfig: thunderdome.AuthProviderConfig{
-					ProviderName: c.Auth.OIDC.ClientID,
+					ProviderName: c.Auth.OIDC.ProviderName,
 					ProviderURL:  c.Auth.OIDC.ProviderURL,
 					ClientID:     c.Auth.OIDC.ClientID,
 					ClientSecret: c.Auth.OIDC.ClientSecret,

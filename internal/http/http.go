@@ -104,6 +104,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	}
 
 	router := a.Router.PathPrefix("/").Subrouter()
+	a.Router = router
 	router.Use(secureMiddleware.Handler)
 	router.Use(otelmux.Middleware("thunderdome"))
 

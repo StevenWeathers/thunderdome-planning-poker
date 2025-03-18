@@ -90,7 +90,7 @@ Thunderdome supports multiple authentication methods though only one primary aut
 - **Configuration**: Default option, requires no additional setup
 
 Note: Additionally support for Google OAuth alongside the internal auth is available when normal authentication is enabled.
-See the Google OAuth section below for more details.
+See the [Google OAuth section below](#google-oauth) for more details.
 
 #### Header Authentication
 - **Type**: `header`
