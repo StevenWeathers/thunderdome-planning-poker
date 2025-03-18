@@ -43,6 +43,7 @@ type AppConfig struct {
 	HeaderAuthEnabled           bool
 	GoogleAuthEnabled           bool
 	OIDCAuthEnabled             bool
+	OIDCProviderName            string
 	FeaturePoker                bool
 	FeatureRetro                bool
 	FeatureStoryboard           bool

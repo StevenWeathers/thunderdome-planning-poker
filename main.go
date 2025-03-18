@@ -257,6 +257,7 @@ func main() {
 				HeaderAuthEnabled:           headerAuthEnabled,
 				GoogleAuthEnabled:           c.Auth.Google.Enabled,
 				OIDCAuthEnabled:             oidcAuthEnabled,
+				OIDCProviderName:            c.Auth.OIDC.ProviderName,
 				FeaturePoker:                c.Feature.Poker,
 				FeatureRetro:                c.Feature.Retro,
 				FeatureStoryboard:           c.Feature.Storyboard,
