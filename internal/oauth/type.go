@@ -15,6 +15,7 @@ type Config struct {
 	thunderdome.AuthProviderConfig
 	CallbackRedirectURL string
 	UIRedirectURL       string
+	InternalOnlyOidc    bool
 }
 
 // CookieManager is an interface for managing cookies
@@ -38,6 +39,7 @@ type AuthDataSvc interface {
 	OauthCreateNonce(ctx context.Context) (string, error)
 	OauthValidateNonce(ctx context.Context, nonceId string) error
 	OauthAuthUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error)
+	OauthUpsertUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error)
 }
 
 // SubscriptionDataSvc is an interface for the subscription data service

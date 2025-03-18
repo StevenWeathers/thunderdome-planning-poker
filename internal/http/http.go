@@ -557,6 +557,7 @@ func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthPro
 			AuthProviderConfig:  c,
 			CallbackRedirectURL: callbackRedirectURL,
 			UIRedirectURL:       fmt.Sprintf("%s/", s.Config.PathPrefix),
+			InternalOnlyOidc:    s.Config.OIDCAuth.Enabled,
 		}, s.Cookie, s.Logger, s.AuthDataSvc, s.SubscriptionDataSvc, ctx)
 		if err != nil {
 			panic(err)

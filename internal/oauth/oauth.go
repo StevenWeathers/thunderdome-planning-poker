@@ -142,10 +142,23 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 			return
 		}
 
-		user, sessionID, userErr := s.authDataSvc.OauthAuthUser(
-			ctx, s.config.ProviderName, idToken.Subject, claims.Email,
-			claims.EmailVerified, claims.Name, claims.Picture,
-		)
+		var user *thunderdome.User
+		var sessionID string
+		var userErr error
+
+		// If InternalOnlyOidc is true then allow upsert of user by sso email instead of enforcing provider and sub auth
+		if s.config.InternalOnlyOidc {
+			user, sessionID, userErr = s.authDataSvc.OauthUpsertUser(
+				ctx, s.config.ProviderName, idToken.Subject, claims.Email,
+				claims.EmailVerified, claims.Name, claims.Picture,
+			)
+		} else {
+			user, sessionID, userErr = s.authDataSvc.OauthAuthUser(
+				ctx, s.config.ProviderName, idToken.Subject, claims.Email,
+				claims.EmailVerified, claims.Name, claims.Picture,
+			)
+		}
+
 		if userErr != nil {
 			logger.Error("error authenticating oauth user", zap.Error(userErr))
 			ue := err.Error()
