@@ -159,7 +159,7 @@ func (d *Service) OauthUpsertUser(ctx context.Context, provider string, sub stri
  				 COALESCE(u.locale, ''), u.disabled, u.theme, COALESCE(u.picture, '')
  				 FROM thunderdome.users u
  				 WHERE u.email = $1;`,
-			sub,
+			email,
 		).Scan(
 			&user.ID,
 			&user.Name,
