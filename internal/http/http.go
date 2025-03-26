@@ -543,7 +543,7 @@ func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthPro
 	}
 
 	if s.Config.SecureProtocol {
-		redirectBaseURL = fmt.Sprintf("https://%s%s", s.Config.AppDomain, port)
+		redirectBaseURL = fmt.Sprintf("https://%s%s%s", s.Config.AppDomain, port, s.Config.PathPrefix)
 	} else {
 		redirectBaseURL = fmt.Sprintf("http://%s%s%s", s.Config.AppDomain, port, s.Config.PathPrefix)
 	}
