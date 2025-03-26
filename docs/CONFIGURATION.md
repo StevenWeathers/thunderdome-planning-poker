@@ -123,6 +123,8 @@ If `auth.method` is set to `oidc`, then the Create Account function is disabled 
 | `auth.oidc.client_id`     | AUTH_OIDC_CLIENT_ID     | OpenID Connect OAuth2 Client ID     |               |
 | `auth.oidc.client_secret` | AUTH_OIDC_CLIENT_SECRET | OpenID Connect OAuth2 Client Secret |               |
 
+The OIDC redirect URI is constructed as `/oauth/<auth.oidc.provider_name>/callback` which will be added to the end of your normal hosting URL.
+
 ### LDAP Configuration
 
 If `auth.method` is set to `ldap`, then the Create Account function is disabled and authentication is done using LDAP.
