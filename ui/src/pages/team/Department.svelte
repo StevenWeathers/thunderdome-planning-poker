@@ -22,7 +22,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let organizationId;
   export let departmentId;
 
@@ -118,14 +117,12 @@
     )
       .then(res => res.json())
       .then(function () {
-        eventTag('create_department_team', 'engagement', 'success');
         toggleCreateTeam();
         notifications.success($LL.teamCreateSuccess());
         getTeams();
       })
       .catch(function () {
         notifications.danger($LL.teamCreateError());
-        eventTag('create_department_team', 'engagement', 'failure');
       });
   }
 
@@ -135,14 +132,12 @@
       { method: 'DELETE' },
     )
       .then(function () {
-        eventTag('department_delete_team', 'engagement', 'success');
         toggleDeleteTeam(null)();
         notifications.success($LL.teamDeleteSuccess());
         getTeams();
       })
       .catch(function () {
         notifications.danger($LL.teamDeleteError());
-        eventTag('department_delete_team', 'engagement', 'failure');
       });
   }
 
@@ -171,14 +166,12 @@
     )
       .then(res => res.json())
       .then(function () {
-        eventTag('update_department_team', 'engagement', 'success');
         getTeams();
         toggleUpdateTeam(defaultTeam)();
         notifications.success(`${$LL.teamUpdateSuccess()}`);
       })
       .catch(function () {
         notifications.danger(`${$LL.teamUpdateError()}`);
-        eventTag('update_department_team', 'engagement', 'failure');
       });
   }
 
@@ -277,7 +270,6 @@
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
         xfetch="{xfetch}"
-        eventTag="{eventTag}"
         notifications="{notifications}"
         pageType="department"
         teamPrefix="{deptPrefix}"
@@ -290,7 +282,6 @@
     users="{users}"
     getUsers="{getUsers}"
     xfetch="{xfetch}"
-    eventTag="{eventTag}"
     notifications="{notifications}"
     isAdmin="{isAdmin}"
     pageType="department"

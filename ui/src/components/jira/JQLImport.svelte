@@ -10,7 +10,6 @@
   const dispatch = createEventDispatcher();
 
   export let handleImport = story => {};
-  export let eventTag;
   export let notifications;
   export let xfetch;
 
@@ -76,7 +75,6 @@
         } else {
           notifications.danger('error getting jira instances');
         }
-        eventTag('fetch_profile_jira_instances', 'engagement', 'failure');
       });
   }
 
@@ -132,7 +130,6 @@
         } else {
           notifications.danger('Unknown Jira JQL search error');
         }
-        eventTag('fetch_profile_jira_instances', 'engagement', 'failure');
       });
   }
 

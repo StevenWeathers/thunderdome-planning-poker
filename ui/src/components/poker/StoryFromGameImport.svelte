@@ -5,7 +5,6 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { onMount } from 'svelte';
 
-  export let eventTag;
   export let notifications;
   export let xfetch;
   export let handleImport;
@@ -25,7 +24,6 @@
       })
       .catch(function () {
         notifications.danger($LL.myBattlesError());
-        eventTag('fetch_games', 'engagement', 'failure');
       });
   }
 
@@ -42,7 +40,6 @@
       })
       .catch(function () {
         notifications.danger($LL.getBattleError());
-        eventTag('fetch_game', 'engagement', 'failure');
       });
   }
 

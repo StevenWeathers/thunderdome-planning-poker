@@ -13,7 +13,6 @@
   export let leaders = [];
   export let points = '';
   export let sendSocketEvent = () => {};
-  export let eventTag;
   export let notifications;
 
   const showRank = AppConfig.ShowWarriorRank;
@@ -22,7 +21,6 @@
 
   function promoteLeader() {
     sendSocketEvent('promote_leader', warrior.id);
-    eventTag('promote_leader', 'battle', '');
   }
 
   function demoteLeader() {
@@ -31,23 +29,19 @@
       return;
     }
     sendSocketEvent('demote_leader', warrior.id);
-    eventTag('demote_leader', 'battle', '');
   }
 
   function jabWarrior() {
     sendSocketEvent('jab_warrior', warrior.id);
-    eventTag('jab_warrior', 'battle', '');
   }
 
   function becomeLeader(leaderCode) {
     sendSocketEvent('become_leader', leaderCode);
-    eventTag('become_leader', 'battle', '');
     toggleBecomeLeader();
   }
 
   function toggleBecomeLeader() {
     showBecomeLeader = !showBecomeLeader;
-    eventTag('toggle_become_leader', 'battle', '');
   }
 
   function toggleSpectator() {
@@ -57,7 +51,6 @@
         spectator: !warrior.spectator,
       }),
     );
-    eventTag(`spectator_toggle`, 'battle', '');
   }
 </script>
 

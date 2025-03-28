@@ -41,19 +41,6 @@
         Please enable it to continue.
     </strong>
 </noscript>
-{{if .UIConfig.AnalyticsEnabled}}
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{.UIConfig.AnalyticsID}}" nonce="{{.Nonce}}"></script>
-<script nonce="{{.Nonce}}">
-  window.dataLayer = window.dataLayer || []
-
-  function gtag () {dataLayer.push(arguments)}
-
-  gtag('js', new Date())
-
-  gtag('config', '{{.UIConfig.AnalyticsID}}')
-</script>
-{{end}}
 <script nonce="{{.Nonce}}">
   appConfig = {{.UIConfig.AppConfig}}
   ActiveAlerts = {{.UIConfig.ActiveAlerts}}

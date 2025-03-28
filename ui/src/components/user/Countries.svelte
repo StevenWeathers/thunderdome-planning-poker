@@ -2,7 +2,6 @@
   import CountryFlag from './CountryFlag.svelte';
 
   export let xfetch;
-  export let eventTag;
 
   let activeCountries = [];
 
@@ -11,9 +10,7 @@
     .then(function (result) {
       activeCountries = result.data.sort();
     })
-    .catch(function () {
-      eventTag('get_active_countries', 'engagement', 'failure');
-    });
+    .catch(function () {});
 </script>
 
 <div class="text-center">

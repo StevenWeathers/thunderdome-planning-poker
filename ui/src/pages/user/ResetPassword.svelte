@@ -9,7 +9,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let resetId;
 
   let warriorPassword1 = '';
@@ -37,13 +36,10 @@
     if (noFormErrors) {
       xfetch('/api/auth/reset-password', { body, method: 'PATCH' })
         .then(function () {
-          eventTag('reset_password', 'engagement', 'success', () => {
-            router.route(appRoutes.login, true);
-          });
+          router.route(appRoutes.login, true);
         })
         .catch(function () {
           notifications.danger($LL.passwordResetError());
-          eventTag('reset_password', 'engagement', 'failure');
         });
     }
   }

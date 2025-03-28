@@ -19,7 +19,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  // export let eventTag
 
   const apikeysPageLimit = 100;
 

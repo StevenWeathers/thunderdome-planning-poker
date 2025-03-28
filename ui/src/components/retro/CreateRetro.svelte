@@ -14,7 +14,6 @@
 
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let router;
   export let apiPrefix = '/api';
 
@@ -95,9 +94,7 @@
     xfetch(endpoint, { body })
       .then(res => res.json())
       .then(function ({ data }) {
-        eventTag('create_retro', 'engagement', 'success', () => {
-          router.route(`${appRoutes.retro}/${data.id}`);
-        });
+        router.route(`${appRoutes.retro}/${data.id}`);
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -109,7 +106,6 @@
         } else {
           notifications.danger($LL.createRetroErrorMessage());
         }
-        eventTag('create_retro', 'engagement', 'failure');
       });
   }
 

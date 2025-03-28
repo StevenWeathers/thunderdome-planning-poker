@@ -9,7 +9,6 @@
   import { onMount } from 'svelte';
 
   export let xfetch;
-  export let eventTag;
 
   const {
     ShowActiveCountries,
@@ -299,7 +298,7 @@
   {#if ShowActiveCountries}
     <section class="bg-slate-100 dark:bg-gray-900 py-20">
       <div class="container mx-auto px-4">
-        <Countries xfetch="{xfetch}" eventTag="{eventTag}" />
+        <Countries xfetch="{xfetch}" />
       </div>
     </section>
   {/if}

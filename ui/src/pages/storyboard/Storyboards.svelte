@@ -12,7 +12,6 @@
   export let xfetch;
   export let notifications;
   export let router;
-  export let eventTag;
 
   let storyboards = [];
   const storyboardsPageLimit = 10;
@@ -34,7 +33,6 @@
       })
       .catch(function (error) {
         notifications.danger($LL.getStoryboardsErrorMessage());
-        eventTag('fetch_storyboards', 'engagement', 'failure');
         loading = false;
       });
   }
@@ -105,7 +103,6 @@
         <CreateStoryboard
           notifications="{notifications}"
           router="{router}"
-          eventTag="{eventTag}"
           xfetch="{xfetch}"
         />
       </div>

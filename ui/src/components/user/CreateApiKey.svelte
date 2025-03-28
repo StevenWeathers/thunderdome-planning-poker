@@ -8,7 +8,6 @@
 
   export let handleApiKeyCreate = () => {};
   export let toggleCreateApiKey = () => {};
-  export let eventTag = () => {};
   export let xfetch = () => {};
   export let notifications;
 
@@ -20,7 +19,6 @@
 
     if (keyName === '') {
       notifications.danger($LL.apiKeyNameInvalid());
-      eventTag('create_api_key_name_invalid', 'engagement', 'failure');
       return false;
     }
 
@@ -33,7 +31,6 @@
       .then(function (result) {
         handleApiKeyCreate();
         apiKey = result.data.apiKey;
-        eventTag('create_api_key', 'engagement', 'success');
       })
       .catch(function (error, response) {
         if (Array.isArray(error)) {
@@ -55,8 +52,6 @@
         } else {
           notifications.danger($LL.apiKeyCreateFailed());
         }
-
-        eventTag('create_api_key', 'engagement', 'failure');
       });
   }
 

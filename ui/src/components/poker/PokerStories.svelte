@@ -18,7 +18,6 @@
   export let plans = [];
   export let isLeader = false;
   export let sendSocketEvent = (event: string, value: string) => {};
-  export let eventTag;
   export let notifications;
   export let xfetch;
   export let gameId = '';
@@ -78,12 +77,8 @@
   const toggleAddPlan = planId => () => {
     if (planId) {
       selectedPlan = plans.find(p => p.id === planId);
-
-      eventTag('plan_show_edit', 'battle', ``);
     } else {
       selectedPlan = { ...defaultPlan };
-
-      eventTag('plan_show_add', 'battle', ``);
     }
     showAddPlan = !showAddPlan;
   };
@@ -91,38 +86,30 @@
   const togglePlanView = planId => () => {
     if (planId) {
       selectedPlan = plans.find(p => p.id === planId);
-      eventTag('plan_show_view', 'battle', ``);
     } else {
       selectedPlan = { ...defaultPlan };
-
-      eventTag('plan_unshow_view', 'battle', ``);
     }
     showViewPlan = !showViewPlan;
   };
 
   const handlePlanAdd = newPlan => {
     sendSocketEvent('add_plan', JSON.stringify(newPlan));
-    eventTag('plan_add', 'battle', '');
   };
 
   const activatePlan = id => () => {
     sendSocketEvent('activate_plan', id);
-    eventTag('plan_activate', 'battle', '');
   };
 
   const handlePlanRevision = updatedPlan => {
     sendSocketEvent('revise_plan', JSON.stringify(updatedPlan));
-    eventTag('plan_revise', 'battle', '');
   };
 
   const handlePlanDeletion = planId => () => {
     sendSocketEvent('burn_plan', planId);
-    eventTag('plan_burn', 'battle', '');
   };
 
   const toggleShow = show => () => {
     storysShow = show;
-    eventTag('plans_show', 'battle', `show: ${show}`);
   };
 
   $: pointedPlans = plans.filter(p => p.points !== '');
@@ -158,7 +145,6 @@
           before_story_id: placeBefore,
         }),
       );
-      eventTag('story_arrange', 'battle', '');
     }
   }
 </script>
@@ -440,7 +426,6 @@
     acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
     priority="{selectedPlan.priority}"
     notifications="{notifications}"
-    eventTag="{eventTag}"
   />
 {/if}
 
@@ -463,7 +448,6 @@
     toggleImport="{toggleImport}"
     handlePlanAdd="{handlePlanAdd}"
     xfetch="{xfetch}"
-    eventTag="{eventTag}"
     gameId="{gameId}"
   />
 {/if}

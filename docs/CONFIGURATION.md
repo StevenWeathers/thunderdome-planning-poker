@@ -202,15 +202,6 @@ Configuring http settings allows for fine-tuning your self-hosted instance of Th
 | `http.websocket_pong_wait_sec`   | HTTP_WEBSOCKET_PONG_WAIT_SEC   | Time allowed to read the next pong message from the peer for Websocket connections                       | 60            |
 | `http.websocket_ping_period_sec` | HTTP_WEBSOCKET_PING_PERIOD_SEC | Send pings to peer with this period for Websocket connections. Must be less than pongWait.               | 54            |
 
-## Analytics configuration
-
-Thunderdome supports Google Analytics (in use on Thunderdome.dev) to aid in tracking app engagement.
-
-| Option              | Environment Variable | Description                      | Default Value  |
-|---------------------|----------------------|----------------------------------|----------------|
-| `analytics.enabled` | ANALYTICS_ENABLED    | Enable/disable google analytics. | true           |
-| `analytics.id`      | ANALYTICS_ID         | Google analytics identifier.     | UA-140245309-1 |
-
 ## Open Telemetry Tracing
 
 Thunderdome features [Open Telemetry](https://opentelemetry.io/) tracing to aid in monitoring application performance.

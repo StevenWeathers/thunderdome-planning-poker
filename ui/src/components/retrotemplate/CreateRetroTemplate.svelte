@@ -16,7 +16,6 @@
   export let departmentId;
   export let apiPrefix: string = '/api';
   export let xfetch: any;
-  export let eventTag: any;
   export let notifications: any;
 
   let name = '';

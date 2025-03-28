@@ -11,7 +11,6 @@
 
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let router;
   export let apiPrefix = '/api';
 
@@ -40,9 +39,7 @@
     xfetch(endpoint, { body })
       .then(res => res.json())
       .then(function ({ data }) {
-        eventTag('create_storyboard', 'engagement', 'success', () => {
-          router.route(`${appRoutes.storyboard}/${data.id}`);
-        });
+        router.route(`${appRoutes.storyboard}/${data.id}`);
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -54,7 +51,6 @@
         } else {
           notifications.danger(`Error encountered creating storyboard`);
         }
-        eventTag('create_storyboard', 'engagement', 'failure');
       });
   }
 

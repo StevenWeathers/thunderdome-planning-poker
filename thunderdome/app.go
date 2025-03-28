@@ -57,8 +57,6 @@ type AppConfig struct {
 }
 
 type UIConfig struct {
-	AnalyticsEnabled bool
-	AnalyticsID      string
-	AppConfig        AppConfig
-	ActiveAlerts     []interface{}
+	AppConfig    AppConfig
+	ActiveAlerts []interface{}
 }

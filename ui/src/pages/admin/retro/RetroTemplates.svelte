@@ -10,7 +10,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
 
   const templatesPageLimit = 100;
   let templateCount = 0;
@@ -61,7 +60,6 @@
 <AdminPageLayout activePage="retro-templates">
   <RetroTemplatesList
     xfetch="{xfetch}"
-    eventTag="{eventTag}"
     notifications="{notifications}"
     templates="{templates}"
     apiPrefix="/api/admin"

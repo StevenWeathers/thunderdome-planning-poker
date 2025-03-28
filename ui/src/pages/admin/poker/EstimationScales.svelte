@@ -10,7 +10,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
 
   const scalesPageLimit = 100;
   let scaleCount = 0;
@@ -61,7 +60,6 @@
 <AdminPageLayout activePage="estimation-scales">
   <EstimationScalesList
     xfetch="{xfetch}"
-    eventTag="{eventTag}"
     notifications="{notifications}"
     scales="{scales}"
     apiPrefix="/api/admin"
