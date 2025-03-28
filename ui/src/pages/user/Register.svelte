@@ -65,8 +65,7 @@
           notificationsEnabled: newWarrior.notificationsEnabled,
         });
 
-          router.route(targetPage(), true);
-        });
+        router.route(targetPage(), true);
       })
       .catch(function () {
         notifications.danger($LL.guestRegisterError());
