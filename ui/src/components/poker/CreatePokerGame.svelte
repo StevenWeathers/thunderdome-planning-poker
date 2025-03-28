@@ -15,7 +15,6 @@
   import { Crown, Lock } from 'lucide-svelte';
 
   export let notifications;
-  export let eventTag;
   export let router;
   export let xfetch;
   export let apiPrefix = '/api';
@@ -120,9 +119,7 @@
       .then(res => res.json())
       .then(function (result) {
         const battle = result.data;
-        eventTag('create_battle', 'engagement', 'success', () => {
-          router.route(`${appRoutes.game}/${battle.id}`);
-        });
+        router.route(`${appRoutes.game}/${battle.id}`);
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -134,7 +131,6 @@
         } else {
           notifications.danger($LL.createBattleError());
         }
-        eventTag('create_battle', 'engagement', 'failure');
       });
   }
 
@@ -441,7 +437,6 @@
           toggleImport="{toggleImport}"
           handlePlanAdd="{handlePlanImport}"
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
         />
       {/if}
     </div>

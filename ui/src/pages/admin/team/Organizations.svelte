@@ -16,7 +16,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  // export let eventTag
 
   const organizationsPageLimit = 100;
 

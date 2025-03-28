@@ -33,7 +33,6 @@
   export let storyboardId;
   export let notifications;
   export let router;
-  export let eventTag;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
@@ -78,7 +77,6 @@
       case 'init':
         JoinPassRequired = false;
         storyboard = JSON.parse(parsedEvent.value);
-        eventTag('join', 'storyboard', '');
         break;
       case 'user_joined':
         storyboard.users = JSON.parse(parsedEvent.value);
@@ -180,49 +178,35 @@
       onmessage: onSocketMessage,
       onerror: () => {
         socketError = true;
-        eventTag('socket_error', 'storyboard', '');
       },
       onclose: e => {
         if (e.code === 4004) {
-          eventTag('not_found', 'storyboard', '', () => {
-            router.route(appRoutes.storyboards);
-          });
+          router.route(appRoutes.storyboards);
         } else if (e.code === 4001) {
-          eventTag('socket_unauthorized', 'storyboard', '', () => {
-            user.delete();
-            router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
-          });
+          user.delete();
+          router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
         } else if (e.code === 4003) {
-          eventTag('socket_duplicate', 'storyboard', '', () => {
-            notifications.danger($LL.duplicateStoryboardSession());
-            router.route(`${appRoutes.storyboards}`);
-          });
+          notifications.danger($LL.duplicateStoryboardSession());
+          router.route(`${appRoutes.storyboards}`);
         } else if (e.code === 4002) {
-          eventTag('storyboard_user_abandoned', 'storyboard', '', () => {
-            router.route(appRoutes.storyboards);
-          });
+          router.route(appRoutes.storyboards);
         } else {
           socketReconnecting = true;
-          eventTag('socket_close', 'storyboard', '');
         }
       },
       onopen: () => {
         isLoading = false;
         socketError = false;
         socketReconnecting = false;
-        eventTag('socket_open', 'storyboard', '');
       },
       onmaximum: () => {
         socketReconnecting = false;
-        eventTag('socket_error', 'storyboard', 'Socket Reconnect Max Reached');
       },
     },
   );
 
   onDestroy(() => {
-    eventTag('leave', 'storyboard', '', () => {
-      ws.close();
-    });
+    ws.close();
   });
 
   const sendSocketEvent = (type, value) => {
@@ -279,13 +263,11 @@
           placeBefore,
         }),
       );
-      eventTag('story_move', 'storyboard', '');
     }
   }
 
   function authStoryboard(joinPasscode) {
     sendSocketEvent('auth_storyboard', joinPasscode);
-    eventTag('auth_storyboard', 'storyboard', '');
   }
 
   const addStory = (goalId, columnId) => () => {
@@ -296,7 +278,6 @@
         columnId,
       }),
     );
-    eventTag('story_add', 'storyboard', '');
   };
 
   const addStoryColumn = goalId => () => {
@@ -306,12 +287,10 @@
         goalId,
       }),
     );
-    eventTag('column_add', 'storyboard', '');
   };
 
   const deleteColumn = columnId => () => {
     sendSocketEvent('delete_column', columnId);
-    eventTag('column_delete', 'storyboard', '');
     toggleColumnEdit()();
   };
 
@@ -339,36 +318,29 @@
   };
 
   function concedeStoryboard() {
-    eventTag('concede_storyboard', 'storyboard', '', () => {
-      sendSocketEvent('concede_storyboard', '');
-    });
+    sendSocketEvent('concede_storyboard', '');
   }
 
   function abandonStoryboard() {
-    eventTag('abandon_storyboard', 'storyboard', '', () => {
-      sendSocketEvent('abandon_storyboard', '');
-    });
+    sendSocketEvent('abandon_storyboard', '');
   }
 
   function toggleUsersPanel() {
     showColorLegend = false;
     showPersonas = false;
     showUsers = !showUsers;
-    eventTag('show_users', 'storyboard', `show: ${showUsers}`);
   }
 
   function toggleColorLegend() {
     showUsers = false;
     showPersonas = false;
     showColorLegend = !showColorLegend;
-    eventTag('show_colorlegend', 'storyboard', `show: ${showColorLegend}`);
   }
 
   function togglePersonas() {
     showUsers = false;
     showColorLegend = false;
     showPersonas = !showPersonas;
-    eventTag('show_personas', 'storyboard', `show: ${showPersonas}`);
   }
 
   function toggleColumnEdit(column) {
@@ -380,13 +352,11 @@
   function toggleEditLegend() {
     showColorLegend = false;
     showColorLegendForm = !showColorLegendForm;
-    eventTag('show_edit_legend', 'storyboard', `show: ${showColorLegendForm}`);
   }
 
   const toggleEditPersona = persona => () => {
     showPersonas = false;
     showPersonasForm = showPersonasForm != null ? null : persona;
-    eventTag('show_edit_personas', 'storyboard', `show: ${showPersonasForm}`);
   };
 
   const toggleDeleteStoryboard = () => {
@@ -407,61 +377,49 @@
       reviseGoalName = '';
     }
     showAddGoal = !showAddGoal;
-    eventTag('show_goal_add', 'storyboard', `show: ${showAddGoal}`);
   };
 
   const handleGoalAdd = goalName => {
     sendSocketEvent('add_goal', goalName);
-    eventTag('goal_add', 'storyboard', '');
   };
 
   const handleGoalRevision = updatedGoal => {
     sendSocketEvent('revise_goal', JSON.stringify(updatedGoal));
-    eventTag('goal_edit_name', 'storyboard', '');
   };
 
   const handleGoalDeletion = goalId => () => {
     sendSocketEvent('delete_goal', goalId);
-    eventTag('goal_delete', 'storyboard', '');
   };
 
   const handleColumnRevision = column => {
     sendSocketEvent('revise_column', JSON.stringify(column));
-    eventTag('column_revise', 'storyboard', '');
   };
 
   const handleLegendRevision = legend => {
     sendSocketEvent('revise_color_legend', JSON.stringify(legend));
-    eventTag('color_legend_revise', 'storyboard', '');
   };
 
   const handlePersonaAdd = persona => {
     sendSocketEvent('add_persona', JSON.stringify(persona));
-    eventTag('persona_add', 'storyboard', '');
   };
 
   const handleColumnPersonaAdd = column_persona => {
     sendSocketEvent('column_persona_add', JSON.stringify(column_persona));
-    eventTag('column_persona_add', 'storyboard', '');
   };
   const handleColumnPersonaRemove = column_persona => () => {
     sendSocketEvent('column_persona_remove', JSON.stringify(column_persona));
-    eventTag('column_persona_remove', 'storyboard', '');
   };
 
   const handlePersonaRevision = persona => {
     sendSocketEvent('revise_persona', JSON.stringify(persona));
-    eventTag('persona_revise', 'storyboard', '');
   };
 
   const handleDeletePersona = personaId => () => {
     sendSocketEvent('delete_persona', personaId);
-    eventTag('persona_delete', 'storyboard', '');
   };
 
   function handleStoryboardEdit(revisedStoryboard) {
     sendSocketEvent('edit_storyboard', JSON.stringify(revisedStoryboard));
-    eventTag('edit_storyboard', 'storyboard', '');
     toggleEditStoryboard();
   }
 
@@ -489,13 +447,11 @@
 
   function becomeFacilitator(facilitatorCode) {
     sendSocketEvent('facilitator_self', facilitatorCode);
-    eventTag('become_facilitator', 'retro', '');
     toggleBecomeFacilitator();
   }
 
   function toggleBecomeFacilitator() {
     showBecomeFacilitator = !showBecomeFacilitator;
-    eventTag('toggle_become_facilitator', 'retro', '');
   }
 
   $: isFacilitator =
@@ -1172,7 +1128,6 @@
     toggleStoryForm="{toggleStoryForm()}"
     story="{activeStory}"
     sendSocketEvent="{sendSocketEvent}"
-    eventTag="{eventTag}"
     notifications="{notifications}"
     colorLegend="{storyboard.color_legend}"
     users="{storyboard.users}"

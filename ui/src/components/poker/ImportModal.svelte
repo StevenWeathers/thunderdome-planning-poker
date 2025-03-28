@@ -12,7 +12,6 @@
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
   export let notifications;
-  export let eventTag;
   export let xfetch;
   export let toggleImport = () => {};
   export let handlePlanAdd = handleAdd => {};
@@ -72,7 +71,6 @@
         <StoryFromGameImport
           notifications="{notifications}"
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           handleImport="{importStory}"
           gameId="{gameId}"
         />
@@ -82,7 +80,6 @@
         <StoryFromStoryboardImport
           notifications="{notifications}"
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           handleImport="{importStory}"
         />
       {/if}
@@ -94,7 +91,6 @@
         <JQLImport
           notifications="{notifications}"
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           handleImport="{importStory}"
           on:instance_selected="{() => {
             showJiraCloudSearch = true;
@@ -111,7 +107,6 @@
             <JiraImport
               handlePlanAdd="{handleAdd}"
               notifications="{notifications}"
-              eventTag="{eventTag}"
               testid="plans-importjira"
             />
           </div>
@@ -129,7 +124,6 @@
             <CsvImport
               handlePlanAdd="{handleAdd}"
               notifications="{notifications}"
-              eventTag="{eventTag}"
               testid="plans-Csvimport"
             />
           </div>

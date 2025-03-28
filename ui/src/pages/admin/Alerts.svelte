@@ -20,7 +20,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
 
   const alertsPageLimit = 25;
   let alertCount = 0;
@@ -61,8 +60,6 @@
     xfetch('/api/alerts', { body })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('admin_create_alert', 'engagement', 'success');
-
         activeAlerts.update(result.data);
         getAlerts();
         toggleCreateAlert();
@@ -70,7 +67,6 @@
       })
       .catch(function () {
         notifications.danger('createAlertError');
-        eventTag('admin_create_alert', 'engagement', 'failure');
       });
   }
 
@@ -78,8 +74,6 @@
     xfetch(`/api/alerts/${id}`, { body, method: 'PUT' })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('admin_update_alert', 'engagement', 'success');
-
         activeAlerts.update(result.data);
         getAlerts();
         toggleUpdateAlert({ ...defaultAlert })();
@@ -87,7 +81,6 @@
       })
       .catch(function () {
         notifications.danger($LL.updateAlertError());
-        eventTag('admin_update_alert', 'engagement', 'failure');
       });
   }
 
@@ -108,7 +101,6 @@
     xfetch(`/api/alerts/${deleteAlertId}`, { method: 'DELETE' })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('admin_delete_alert', 'engagement', 'success');
         activeAlerts.update(result.data);
         getAlerts();
         toggleDeleteAlert(null)();
@@ -116,7 +108,6 @@
       })
       .catch(function () {
         notifications.danger($LL.deleteAlertError());
-        eventTag('admin_delete_alert', 'engagement', 'failure');
       });
   }
 

@@ -229,8 +229,6 @@ func main() {
 		RetroTemplateDataSvc: retroTemplateDataSvc,
 		SubscriptionSvc:      subscriptionService,
 		UIConfig: thunderdome.UIConfig{
-			AnalyticsEnabled: c.Analytics.Enabled,
-			AnalyticsID:      c.Analytics.ID,
 			AppConfig: thunderdome.AppConfig{
 				AllowedPointValues:          c.Config.AllowedPointValues,
 				DefaultPointValues:          c.Config.DefaultPointValues,

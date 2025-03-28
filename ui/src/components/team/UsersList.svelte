@@ -17,7 +17,6 @@
 
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let orgId = '';
   export let deptId = '';
   export let teamPrefix = '';
@@ -43,7 +42,6 @@
     xfetch(`${teamPrefix}/users`, { body })
       .then(result => result.json())
       .then(function () {
-        eventTag(`${pageType}_add_user`, 'engagement', 'success');
         toggleAddUser();
         dispatch('user-added');
         notifications.success($LL.userAddSuccess());
@@ -52,7 +50,6 @@
       })
       .catch(function () {
         notifications.danger($LL.userAddError());
-        eventTag(`${pageType}_add_user`, 'engagement', 'failure');
       });
   }
 
@@ -65,7 +62,6 @@
     xfetch(`${teamPrefix}/invites`, { body })
       .then(result => result.json())
       .then(function (result) {
-        eventTag(`${pageType}_invite_user`, 'engagement', 'success');
         toggleAddUser();
         dispatch('user-invited');
         notifications.success($LL.userInviteSent());
@@ -73,7 +69,6 @@
       })
       .catch(function () {
         notifications.danger($LL.userAddError());
-        eventTag(`${pageType}_invite_user`, 'engagement', 'failure');
       });
   }
 
@@ -84,28 +79,24 @@
 
     xfetch(`${teamPrefix}/users/${userId}`, { body, method: 'PUT' })
       .then(function () {
-        eventTag(`${pageType}_update_user`, 'engagement', 'success');
         toggleUpdateUser({})();
         notifications.success($LL.userUpdateSuccess());
         getUsers();
       })
       .catch(function () {
         notifications.danger($LL.userUpdateError());
-        eventTag(`${pageType}_update_user`, 'engagement', 'failure');
       });
   }
 
   function handleUserRemove() {
     xfetch(`${teamPrefix}/users/${removeUserId}`, { method: 'DELETE' })
       .then(function () {
-        eventTag(`${pageType}_remove_user`, 'engagement', 'success');
         toggleRemoveUser(null)();
         notifications.success($LL.userRemoveSuccess());
         getUsers();
       })
       .catch(function () {
         notifications.danger($LL.userRemoveError());
-        eventTag(`${pageType}_remove_user`, 'engagement', 'failure');
       });
   }
 

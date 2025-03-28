@@ -21,7 +21,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let organizationId;
   export let departmentId;
 
@@ -99,14 +98,12 @@
       { method: 'DELETE' },
     )
       .then(function () {
-        eventTag('department_delete_team', 'engagement', 'success');
         toggleDeleteTeam(null)();
         notifications.success($LL.teamDeleteSuccess());
         getTeams();
       })
       .catch(function () {
         notifications.danger($LL.teamDeleteError());
-        eventTag('department_delete_team', 'engagement', 'failure');
       });
   }
 

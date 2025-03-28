@@ -39,7 +39,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let organizationId;
   export let departmentId;
   export let teamId;
@@ -337,28 +336,24 @@
   function handleBattleRemove() {
     xfetch(`${teamPrefix}/battles/${removeBattleId}`, { method: 'DELETE' })
       .then(function () {
-        eventTag('team_remove_battle', 'engagement', 'success');
         toggleRemoveBattle(null)();
         notifications.success($LL.battleRemoveSuccess());
         getBattles();
       })
       .catch(function () {
         notifications.danger($LL.battleRemoveError());
-        eventTag('team_remove_battle', 'engagement', 'failure');
       });
   }
 
   function handleRetroRemove() {
     xfetch(`${teamPrefix}/retros/${removeRetroId}`, { method: 'DELETE' })
       .then(function () {
-        eventTag('team_remove_retro', 'engagement', 'success');
         toggleRemoveRetro(null)();
         notifications.success($LL.retroRemoveSuccess());
         getRetros();
       })
       .catch(function () {
         notifications.danger($LL.retroRemoveError());
-        eventTag('team_remove_retro', 'engagement', 'failure');
       });
   }
 
@@ -367,14 +362,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('team_remove_storyboard', 'engagement', 'success');
         toggleRemoveStoryboard(null)();
         notifications.success($LL.storyboardRemoveSuccess());
         getStoryboards();
       })
       .catch(function () {
         notifications.danger($LL.storyboardRemoveError());
-        eventTag('team_remove_storyboard', 'engagement', 'failure');
       });
   }
 
@@ -383,14 +376,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('team_delete', 'engagement', 'success');
         toggleDeleteTeam();
         notifications.success($LL.teamDeleteSuccess());
         router.route(appRoutes.teams);
       })
       .catch(function () {
         notifications.danger($LL.teamDeleteError());
-        eventTag('team_delete', 'engagement', 'failure');
       });
   }
 
@@ -424,11 +415,9 @@
         getRetrosActions();
         toggleRetroActionEdit(null)();
         notifications.success($LL.updateActionItemSuccess());
-        eventTag('team_action_update', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.updateActionItemError());
-        eventTag('team_action_update', 'engagement', 'failure');
       });
   }
 
@@ -441,11 +430,9 @@
           getRetrosActions();
           toggleRetroActionEdit(null)();
           notifications.success($LL.deleteActionItemSuccess());
-          eventTag('team_action_delete', 'engagement', 'success');
         })
         .catch(function () {
           notifications.danger($LL.deleteActionItemError());
-          eventTag('team_action_delete', 'engagement', 'failure');
         });
     };
   }
@@ -456,14 +443,9 @@
       body: {
         user_id: userId,
       },
-    })
-      .then(function () {
-        getRetrosActions();
-        eventTag('team_action_assignee_add', 'engagement', 'success');
-      })
-      .catch(function () {
-        eventTag('team_action_assignee_add', 'engagement', 'failure');
-      });
+    }).then(function () {
+      getRetrosActions();
+    });
   }
 
   function handleRetroActionAssigneeRemove(retroId, actionId, userId) {
@@ -473,14 +455,9 @@
         body: {
           user_id: userId,
         },
-      })
-        .then(function () {
-          getRetrosActions();
-          eventTag('team_action_assignee_remove', 'engagement', 'success');
-        })
-        .catch(function () {
-          eventTag('team_action_assignee_remove', 'engagement', 'failure');
-        });
+      }).then(function () {
+        getRetrosActions();
+      });
     };
   }
 
@@ -578,7 +555,6 @@
           apiPrefix="{teamPrefix}"
           notifications="{notifications}"
           router="{router}"
-          eventTag="{eventTag}"
           xfetch="{xfetch}"
           showOwner="{false}"
         />
@@ -702,7 +678,6 @@
           apiPrefix="{teamPrefix}"
           notifications="{notifications}"
           router="{router}"
-          eventTag="{eventTag}"
           xfetch="{xfetch}"
         />
       </Modal>
@@ -747,7 +722,6 @@
           apiPrefix="{teamPrefix}"
           notifications="{notifications}"
           router="{router}"
-          eventTag="{eventTag}"
           xfetch="{xfetch}"
         />
       </Modal>
@@ -758,7 +732,6 @@
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
         xfetch="{xfetch}"
-        eventTag="{eventTag}"
         notifications="{notifications}"
         pageType="team"
         teamPrefix="{teamPrefix}"
@@ -771,7 +744,6 @@
     users="{users}"
     getUsers="{getUsers}"
     xfetch="{xfetch}"
-    eventTag="{eventTag}"
     notifications="{notifications}"
     isAdmin="{isAdmin}"
     pageType="team"
@@ -788,7 +760,6 @@
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <PokerSettings
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           notifications="{notifications}"
           isEntityAdmin="{isAdmin}"
           apiPrefix="{teamOnlyPrefix}"
@@ -805,7 +776,6 @@
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <EstimationScalesList
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           notifications="{notifications}"
           isEntityAdmin="{isAdmin}"
           apiPrefix="{teamPrefix}"
@@ -832,7 +802,6 @@
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <RetroSettings
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           notifications="{notifications}"
           isEntityAdmin="{isAdmin}"
           apiPrefix="{teamOnlyPrefix}"
@@ -849,7 +818,6 @@
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <RetroTemplatesList
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           notifications="{notifications}"
           isEntityAdmin="{isAdmin}"
           apiPrefix="{teamPrefix}"
@@ -938,7 +906,6 @@
       selectedActionId="{selectedRetroAction}"
       getRetrosActions="{getRetrosActions}"
       xfetch="{xfetch}"
-      eventTag="{eventTag}"
       notifications="{notifications}"
       isAdmin="{isAdmin}"
     />

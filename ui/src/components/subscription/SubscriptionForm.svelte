@@ -8,7 +8,6 @@
 
   export let handleUpdate = () => {};
   export let toggleClose = () => {};
-  export let eventTag = (a, b, c) => {};
   export let xfetch = async (url, options) => {};
   export let notifications;
 
@@ -27,39 +26,26 @@
 
     if (user_id === '') {
       notifications.danger('user_id field required');
-      eventTag('subscription_form_user_id_invalid', 'engagement', 'failure');
       return false;
     }
 
     if (customer_id === '') {
       notifications.danger('customer_id field required');
-      eventTag(
-        'subscription_form_customer_id_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
     if (subscription_id === '') {
       notifications.danger('subscription_id field required');
-      eventTag(
-        'subscription_form_subscription_id_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
     if (type === '') {
       notifications.danger('type field required');
-      eventTag('subscription_form_type_invalid', 'engagement', 'failure');
       return false;
     }
 
     if (active === '') {
       notifications.danger('active field required');
-      eventTag('subscription_form_active_invalid', 'engagement', 'failure');
       return false;
     }
 
@@ -85,12 +71,9 @@
       .then(function () {
         handleUpdate();
         toggleClose();
-        eventTag('subscription_form', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger('failed to update subscription');
-
-        eventTag('subscription_form', 'engagement', 'failure');
       });
   }
 </script>

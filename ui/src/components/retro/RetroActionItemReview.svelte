@@ -16,7 +16,6 @@
   import Table from '../table/Table.svelte';
 
   export let xfetch;
-  export let eventTag;
   export let notifications;
   export let toggle = () => {};
   export let team = {
@@ -96,11 +95,9 @@
         getTeamOpenActionItems();
         toggleRetroActionEdit(null, null)();
         notifications.success($LL.updateActionItemSuccess());
-        eventTag('team_action_update', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.updateActionItemError());
-        eventTag('team_action_update', 'engagement', 'failure');
       });
   }
 
@@ -113,11 +110,9 @@
           getTeamOpenActionItems();
           toggleRetroActionEdit(null)();
           notifications.success($LL.deleteActionItemSuccess());
-          eventTag('team_action_delete', 'engagement', 'success');
         })
         .catch(function () {
           notifications.danger($LL.deleteActionItemError());
-          eventTag('team_action_delete', 'engagement', 'failure');
         });
     };
   }
@@ -131,11 +126,8 @@
     })
       .then(function () {
         getTeamOpenActionItems();
-        eventTag('team_action_assignee_add', 'engagement', 'success');
       })
-      .catch(function () {
-        eventTag('team_action_assignee_add', 'engagement', 'failure');
-      });
+      .catch(function () {});
   }
 
   function handleRetroActionAssigneeRemove(retroId, actionId, userId) {
@@ -145,14 +137,9 @@
         body: {
           user_id: userId,
         },
-      })
-        .then(function () {
-          getTeamOpenActionItems();
-          eventTag('team_action_assignee_remove', 'engagement', 'success');
-        })
-        .catch(function () {
-          eventTag('team_action_assignee_remove', 'engagement', 'failure');
-        });
+      }).then(function () {
+        getTeamOpenActionItems();
+      });
     };
   }
 
@@ -266,7 +253,6 @@
     selectedActionId="{selectedRetroAction}"
     getRetrosActions="{getTeamOpenActionItems}"
     xfetch="{xfetch}"
-    eventTag="{eventTag}"
     notifications="{notifications}"
     isAdmin="{isAdmin}"
   />

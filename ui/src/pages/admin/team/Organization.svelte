@@ -22,7 +22,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let organizationId;
 
   const departmentsPageLimit = 1000;
@@ -128,14 +127,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('organization_delete_team', 'engagement', 'success');
         toggleDeleteTeam(null)();
         notifications.success($LL.teamDeleteSuccess());
         getTeams();
       })
       .catch(function () {
         notifications.danger($LL.teamDeleteError());
-        eventTag('organization_delete_team', 'engagement', 'failure');
       });
   }
 
@@ -144,14 +141,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('organization_delete_department', 'engagement', 'success');
         toggleDeleteDepartment(null)();
         notifications.success($LL.departmentDeleteSuccess());
         getDepartments();
       })
       .catch(function () {
         notifications.danger($LL.departmentDeleteError());
-        eventTag('organization_delete_department', 'engagement', 'failure');
       });
   }
 
@@ -160,14 +155,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('organization_delete', 'engagement', 'success');
         toggleDeleteTeam();
         notifications.success($LL.organizationDeleteSuccess());
         router.route(appRoutes.adminOrganizations);
       })
       .catch(function () {
         notifications.danger($LL.organizationDeleteError());
-        eventTag('organization_delete', 'engagement', 'failure');
       });
   }
 

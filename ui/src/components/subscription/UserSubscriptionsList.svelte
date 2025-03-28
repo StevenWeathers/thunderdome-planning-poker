@@ -8,7 +8,6 @@
   import AssociateTeamForm from './AssociateTeamForm.svelte';
   import AssociateOrgForm from './AssociateOrgForm.svelte';
 
-  export let eventTag;
   export let notifications;
   export let xfetch = async (url: string, ...options: any) => {};
 
@@ -35,7 +34,6 @@
       })
       .catch(function () {
         notifications.danger('Error getting subscriptions');
-        eventTag('fetch_users_subscriptions', 'engagement', 'failure');
       });
   }
 
@@ -116,7 +114,6 @@
                           userId="{$user.id}"
                           organizationId="{sub.organization_id}"
                           xfetch="{xfetch}"
-                          eventTag="{eventTag}"
                           notifications="{notifications}"
                         />
                       {/if}
@@ -135,7 +132,6 @@
                           userId="{$user.id}"
                           teamId="{sub.team_id}"
                           xfetch="{xfetch}"
-                          eventTag="{eventTag}"
                           notifications="{notifications}"
                         />
                       {/if}
@@ -162,7 +158,6 @@
       subscriptionId="{selectedSubscriptionId}"
       xfetch="{xfetch}"
       notifications="{notifications}"
-      eventTag="{eventTag}"
     />
   {/if}
 
@@ -173,7 +168,6 @@
       subscriptionId="{selectedSubscriptionId}"
       xfetch="{xfetch}"
       notifications="{notifications}"
-      eventTag="{eventTag}"
     />
   {/if}
 </div>

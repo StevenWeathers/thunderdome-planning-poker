@@ -13,7 +13,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let teamPrefix: String = '';
   export let pageType: String = '';
   export const f = event => {
@@ -36,10 +35,8 @@
       .then(res => res.json())
       .then(function (result) {
         invites = result.data;
-        eventTag(`${pageType}_get_invites`, 'engagement', 'success');
       })
       .catch(function () {
-        eventTag(`${pageType}_get_invites`, 'engagement', 'failure');
         notifications.danger(`error getting ${pageType} invites`);
       });
   }
@@ -49,14 +46,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag(`${pageType}_delete_invite`, 'engagement', 'success');
         toggleDeleteInvite(null)();
         notifications.success('Successfully deleted user invite');
         getInvites();
       })
       .catch(function () {
         notifications.danger('Error deleting user invite');
-        eventTag(`${pageType}_delete_invite`, 'engagement', 'failure');
       });
   }
 

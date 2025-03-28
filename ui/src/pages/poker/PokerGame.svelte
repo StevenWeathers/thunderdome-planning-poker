@@ -24,7 +24,6 @@
 
   export let battleId: string;
   export let notifications;
-  export let eventTag;
   export let router;
   export let xfetch;
 
@@ -113,7 +112,6 @@
           vote = warriorVote.vote;
         }
 
-        eventTag('join', 'battle', '');
         break;
       }
       case 'user_joined': {
@@ -295,48 +293,34 @@
     onmessage: onSocketMessage,
     onerror: err => {
       socketError = true;
-      eventTag('socket_error', 'battle', '');
     },
     onclose: e => {
       if (e.code === 4004) {
-        eventTag('not_found', 'battle', '', () => {
-          router.route(appRoutes.games);
-        });
+        router.route(appRoutes.games);
       } else if (e.code === 4001) {
-        eventTag('socket_unauthorized', 'battle', '', () => {
-          user.delete();
-          router.route(`${loginOrRegister}/battle/${battleId}`);
-        });
+        user.delete();
+        router.route(`${loginOrRegister}/battle/${battleId}`);
       } else if (e.code === 4003) {
-        eventTag('socket_duplicate', 'battle', '', () => {
-          notifications.danger($LL.sessionDuplicate());
-          router.route(`${appRoutes.games}`);
-        });
+        notifications.danger($LL.sessionDuplicate());
+        router.route(`${appRoutes.games}`);
       } else if (e.code === 4002) {
-        eventTag('battle_warrior_abandoned', 'battle', '', () => {
-          router.route(appRoutes.games);
-        });
+        router.route(appRoutes.games);
       } else {
         socketReconnecting = true;
-        eventTag('socket_close', 'battle', '');
       }
     },
     onopen: () => {
       socketError = false;
       socketReconnecting = false;
       isLoading = false;
-      eventTag('socket_open', 'battle', '');
     },
     onmaximum: () => {
       socketReconnecting = false;
-      eventTag('socket_error', 'battle', 'Socket Reconnect Max Reached');
     },
   });
 
   onDestroy(() => {
-    eventTag('leave', 'battle', '', () => {
-      ws.close();
-    });
+    ws.close();
   });
 
   const sendSocketEvent = (type, value) => {
@@ -357,14 +341,12 @@
     };
 
     sendSocketEvent('vote', JSON.stringify(voteValue));
-    eventTag('vote', 'battle', vote);
   };
 
   const handleUnvote = () => {
     vote = '';
 
     sendSocketEvent('retract_vote', pokerGame.activePlanId);
-    eventTag('retract_vote', 'battle', vote);
   };
 
   // Determine if the warrior has voted on active Plan yet
@@ -450,15 +432,11 @@
   $: isLeader = pokerGame.leaders.includes($user.id);
 
   function concedeGame() {
-    eventTag('concede_battle', 'battle', '', () => {
-      sendSocketEvent('concede_battle', '');
-    });
+    sendSocketEvent('concede_battle', '');
   }
 
   function abandonBattle() {
-    eventTag('abandon_battle', 'battle', '', () => {
-      sendSocketEvent('abandon_battle', '');
-    });
+    sendSocketEvent('abandon_battle', '');
   }
 
   function toggleEditGame() {
@@ -471,14 +449,12 @@
 
   function handleGameEdit(revisedBattle) {
     sendSocketEvent('revise_battle', JSON.stringify(revisedBattle));
-    eventTag('revise_battle', 'battle', '');
     toggleEditGame();
     pokerGame.leaderCode = revisedBattle.leaderCode;
   }
 
   function authBattle(joinPasscode) {
     sendSocketEvent('auth_game', joinPasscode);
-    eventTag('auth_battle', 'battle', '');
   }
 
   onMount(() => {
@@ -579,7 +555,6 @@
         plans="{pokerGame.plans}"
         isLeader="{isLeader}"
         sendSocketEvent="{sendSocketEvent}"
-        eventTag="{eventTag}"
         notifications="{notifications}"
         xfetch="{xfetch}"
         gameId="{pokerGame.id}"
@@ -606,7 +581,6 @@
               points="{showVote(war.id)}"
               autoFinishVoting="{pokerGame.autoFinishVoting}"
               sendSocketEvent="{sendSocketEvent}"
-              eventTag="{eventTag}"
               notifications="{notifications}"
             />
           {/if}
@@ -619,7 +593,6 @@
             sendSocketEvent="{sendSocketEvent}"
             votingLocked="{pokerGame.votingLocked}"
             highestVote="{highestVoteCount}"
-            eventTag="{eventTag}"
           />
         {/if}
       </div>

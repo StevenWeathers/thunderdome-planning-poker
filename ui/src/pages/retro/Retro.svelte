@@ -35,7 +35,6 @@
   export let retroId;
   export let notifications;
   export let router;
-  export let eventTag;
   export let xfetch;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
@@ -175,7 +174,6 @@
         }
         phaseTimeStart = new Date(retro.phase_time_start);
         phaseTimeLimitMin = retro.phase_time_limit_min;
-        eventTag('join', 'retro', '');
         getAssociatedTeam();
         break;
       case 'user_joined': {
@@ -303,48 +301,34 @@
     onmessage: onSocketMessage,
     onerror: () => {
       socketError = true;
-      eventTag('socket_error', 'retro', '');
     },
     onclose: e => {
       if (e.code === 4004) {
-        eventTag('not_found', 'retro', '', () => {
-          router.route(appRoutes.retros);
-        });
+        router.route(appRoutes.retros);
       } else if (e.code === 4001) {
-        eventTag('socket_unauthorized', 'retro', '', () => {
-          user.delete();
-          router.route(`${loginOrRegister}/retro/${retroId}`);
-        });
+        user.delete();
+        router.route(`${loginOrRegister}/retro/${retroId}`);
       } else if (e.code === 4003) {
-        eventTag('socket_duplicate', 'retro', '', () => {
-          notifications.danger($LL.duplicateRetroSession());
-          router.route(`${appRoutes.retros}`);
-        });
+        notifications.danger($LL.duplicateRetroSession());
+        router.route(`${appRoutes.retros}`);
       } else if (e.code === 4002) {
-        eventTag('retro_user_abandoned', 'retro', '', () => {
-          router.route(appRoutes.retros);
-        });
+        router.route(appRoutes.retros);
       } else {
         socketReconnecting = true;
-        eventTag('socket_close', 'retro', '');
       }
     },
     onopen: () => {
       isLoading = false;
       socketError = false;
       socketReconnecting = false;
-      eventTag('socket_open', 'retro', '');
     },
     onmaximum: () => {
       socketReconnecting = false;
-      eventTag('socket_error', 'retro', 'Socket Reconnect Max Reached');
     },
   });
 
   onDestroy(() => {
-    eventTag('leave', 'retro', '', () => {
-      ws.close();
-    });
+    ws.close();
   });
 
   $: isFacilitator =
@@ -360,15 +344,11 @@
   };
 
   function concedeRetro() {
-    eventTag('concede', 'retro', '', () => {
-      sendSocketEvent('concede_retro', '');
-    });
+    sendSocketEvent('concede_retro', '');
   }
 
   function abandonRetro() {
-    eventTag('abandon', 'retro', '', () => {
-      sendSocketEvent('abandon_retro', '');
-    });
+    sendSocketEvent('abandon_retro', '');
   }
 
   const toggleDeleteRetro = () => {
@@ -535,12 +515,10 @@
 
   function authRetro(joinPasscode) {
     sendSocketEvent('auth_retro', joinPasscode);
-    eventTag('auth_retro', 'retro', '');
   }
 
   function handleRetroEdit(revisedRetro) {
     sendSocketEvent('edit_retro', JSON.stringify(revisedRetro));
-    eventTag('edit_retro', 'retro', '');
     toggleEditRetro();
   }
 
@@ -552,7 +530,6 @@
 
   function becomeFacilitator(facilitatorCode) {
     sendSocketEvent('self_facilitator', facilitatorCode);
-    eventTag('become_facilitator', 'retro', '');
     toggleBecomeFacilitator();
   }
 
@@ -564,7 +541,6 @@
           phase: 'group',
         }),
       );
-      eventTag('phase_time_ran_out', 'retro', '');
     }
   }
 
@@ -580,7 +556,6 @@
             phase: 'group',
           }),
         );
-        eventTag('phase_all_ready', 'retro', '');
       }
       if (retro.phase === 'vote' && allUsersVoted) {
         sendSocketEvent(
@@ -589,21 +564,18 @@
             phase: 'action',
           }),
         );
-        eventTag('phase_all_voted', 'retro', '');
       }
     }
   }
 
   function toggleBecomeFacilitator() {
     showBecomeFacilitator = !showBecomeFacilitator;
-    eventTag('toggle_become_facilitator', 'retro', '');
   }
 
   let showOpenActionItems = false;
 
   function toggleReviewActionItems() {
     showOpenActionItems = !showOpenActionItems;
-    eventTag('open_action_items', 'retro', '');
   }
 
   onMount(() => {
@@ -787,7 +759,6 @@
           <RetroActionItemReview
             team="{team}"
             toggle="{toggleReviewActionItems}"
-            eventTag="{eventTag}"
             xfetch="{xfetch}"
             notifications="{notifications}"
           />

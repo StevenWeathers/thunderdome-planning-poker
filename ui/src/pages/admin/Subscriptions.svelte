@@ -20,7 +20,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
 
   const subscriptionsPageLimit = 25;
   let subscriptionCount = 0;
@@ -189,7 +188,6 @@
       <SubscriptionForm
         toggleClose="{toggleSubCreate}"
         handleUpdate="{getSubscriptions}"
-        eventTag="{eventTag}"
         xfetch="{xfetch}"
         notifications="{notifications}"
       />
@@ -198,7 +196,6 @@
       <SubscriptionForm
         toggleClose="{toggleSubUpdate({ ...defaultSubscription })}"
         handleUpdate="{getSubscriptions}"
-        eventTag="{eventTag}"
         xfetch="{xfetch}"
         notifications="{notifications}"
         subscriptionId="{selectedSub.id}"

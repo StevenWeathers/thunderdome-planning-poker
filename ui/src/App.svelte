@@ -10,7 +10,6 @@
   import { AppConfig, appRoutes } from './config';
   import apiclient from './apiclient';
   import { dir, user } from './stores';
-  import eventTag from './eventTag';
 
   import Notifications from './components/global/Notifications.svelte';
   import GlobalHeader from './components/global/GlobalHeader.svelte';
@@ -593,14 +592,12 @@
   const xfetch = apiclient(handle401);
 
   function handle401(skipRedirect) {
-    eventTag('session_expired', 'engagement', 'unauthorized', () => {
-      user.delete();
-      localStorage.removeItem('theme');
-      window.setTheme();
-      if (!skipRedirect) {
-        router.route(appRoutes.login);
-      }
-    });
+    user.delete();
+    localStorage.removeItem('theme');
+    window.setTheme();
+    if (!skipRedirect) {
+      router.route(appRoutes.login);
+    }
   }
 
   onDestroy(router.unlisten);
@@ -613,7 +610,6 @@
 
   <GlobalHeader
     router="{router}"
-    eventTag="{eventTag}"
     xfetch="{xfetch}"
     notifications="{notifications}"
     currentPage="{currentPage.name}"
@@ -626,7 +622,6 @@
     {...currentPage.params}
     notifications="{notifications}"
     router="{router}"
-    eventTag="{eventTag}"
     xfetch="{xfetch}"
   />
 </main>

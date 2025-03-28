@@ -11,7 +11,6 @@
   export let targetPage = appRoutes.landing;
   export let router;
   export let xfetch = async (url, ...options) => {};
-  export let eventTag = () => {};
   export let notifications = () => {};
 
   declare global {
@@ -49,11 +48,6 @@
 
   function toggleForgotPassword() {
     forgotPassword = !forgotPassword;
-    eventTag(
-      'forgot_password_toggle',
-      'engagement',
-      `forgot: ${forgotPassword}`,
-    );
   }
 
   function handleLoginSubmit(e) {
@@ -89,14 +83,11 @@
             localStorage.removeItem('theme');
           }
           window.setTheme();
-          eventTag('login', 'engagement', 'success', () => {
-            router.route(targetPage, true);
-          });
+          router.route(targetPage, true);
         }
       })
       .catch(function () {
         notifications.danger($LL.authError());
-        eventTag('login', 'engagement', 'failure');
       });
   }
 
@@ -111,13 +102,10 @@
       .then(res => res.json())
       .then(function () {
         user.create(mfaUser);
-        eventTag('login_mfa', 'engagement', 'success', () => {
-          router.route(targetPage, true);
-        });
+        router.route(targetPage, true);
       })
       .catch(function () {
         notifications.danger($LL.mfaAuthError());
-        eventTag('login_mfa', 'engagement', 'failure');
       });
   }
 
@@ -136,11 +124,9 @@
           2000,
         );
         forgotPassword = !forgotPassword;
-        eventTag('forgot_password', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.sendResetPasswordError());
-        eventTag('forgot_password', 'engagement', 'failure');
       });
   }
 </script>
