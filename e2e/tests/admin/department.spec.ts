@@ -28,7 +28,7 @@ test.describe(
           "bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa",
         );
 
-        const title = adminPage.page.locator("h1");
+        const title = adminPage.page.locator("h1 + p");
         await expect(title).toHaveText(
           "Elevate your agile practices, foster seamless collaboration, and unlock your team's full potential with our innovative suite of tools.",
         );
@@ -44,7 +44,7 @@ test.describe(
           "bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa",
         );
 
-        const title = adminPage.page.locator("h1");
+        const title = adminPage.page.locator("h1 + p");
         await expect(title).toHaveText(
           "Elevate your agile practices, foster seamless collaboration, and unlock your team's full potential with our innovative suite of tools.",
         );
