@@ -90,6 +90,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 
 	a.Router = mux.NewRouter()
 	a.Router.Use(a.panicRecovery)
+	a.Router.Use(otelmux.Middleware("thunderdome"))
 
 	if apiService.Config.PathPrefix != "" {
 		a.Router = a.Router.PathPrefix(apiService.Config.PathPrefix).Subrouter()
@@ -104,9 +105,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	}
 
 	router := a.Router.PathPrefix("/").Subrouter()
-	a.Router = router
 	router.Use(secureMiddleware.Handler)
-	router.Use(otelmux.Middleware("thunderdome"))
 
 	pokerSvc := poker.New(poker.Config{
 		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
@@ -517,7 +516,9 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
 	}
 
-	a.registerOauthProviderEndpoints(authProviderConfigs)
+	// have to pass router because of wonkyness with gorilla/mux and subrouters and middleware to support the Swagger UI and OIDC
+	// @todo - refactor router to get away from gorilla/mux
+	a.registerOauthProviderEndpoints(router, authProviderConfigs)
 
 	// static assets
 	router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
@@ -532,7 +533,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	return a
 }
 
-func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthProviderConfig) {
+func (s *Service) registerOauthProviderEndpoints(router *mux.Router, providers []thunderdome.AuthProviderConfig) {
 	ctx := context.Background()
 	var redirectBaseURL string
 	var port string
@@ -550,8 +551,9 @@ func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthPro
 
 	for _, c := range providers {
 		providerNameUrlPath := strings.ToLower(c.ProviderName)
-		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", providerNameUrlPath, "/login")
-		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", providerNameUrlPath, "/callback")
+		oauthPathPrefix := "/oauth/"
+		oauthLoginPathPrefix, _ := url.JoinPath(oauthPathPrefix, providerNameUrlPath, "/login")
+		oauthCallbackPathPrefix, _ := url.JoinPath(oauthPathPrefix, providerNameUrlPath, "/callback")
 		callbackRedirectURL, _ := url.JoinPath(redirectBaseURL, oauthCallbackPathPrefix)
 		authProvider, err := oauth.New(oauth.Config{
 			AuthProviderConfig:  c,
@@ -562,8 +564,8 @@ func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthPro
 		if err != nil {
 			panic(err)
 		}
-		s.Router.HandleFunc(oauthLoginPathPrefix, authProvider.HandleOAuth2Redirect()).Methods("GET")
-		s.Router.HandleFunc(oauthCallbackPathPrefix, authProvider.HandleOAuth2Callback()).Methods("GET")
+		router.HandleFunc(oauthLoginPathPrefix, authProvider.HandleOAuth2Redirect()).Methods("GET")
+		router.HandleFunc(oauthCallbackPathPrefix, authProvider.HandleOAuth2Callback()).Methods("GET")
 	}
 }
 
