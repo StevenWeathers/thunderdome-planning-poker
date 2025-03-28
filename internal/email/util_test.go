@@ -59,13 +59,12 @@ func TestRemoveAccents(t *testing.T) {
 			expected: "nino, jalapeno",
 			err:      false,
 		},
-		// Test 9: Handling an invalid error case (although unlikely)
+		// Test 9: Handling an invalid byte sequence
 		{
-			// Here we are assuming there might be some edge case or failure.
-			// For now, we expect no errors unless transform implementation changes.
-			input:    string([]byte{0x80}), // Invalid byte sequence
-			expected: "",
-			err:      true,
+			// Input with an invalid byte sequence (0x80 is not valid UTF-8)
+			input:    string([]byte{0x80}),
+			expected: "�",   // The replacement character that Go uses for invalid UTF-8 sequences
+			err:      false, // No error is expected, just replacement
 		},
 	}
 
