@@ -87,6 +87,10 @@ func (s *Service) send(userName string, userEmail string, subject string, body s
 	if !s.Config.SmtpEnabled {
 		return nil
 	}
+	cleanUsername, err := removeAccents(userName)
+	if err != nil {
+		return fmt.Errorf("failed to clean username %s: %v", userName, err)
+	}
 
 	m := mail.NewMsg()
 	if err = m.From(s.Config.SmtpSender); err != nil {
@@ -98,8 +102,12 @@ func (s *Service) send(userName string, userEmail string, subject string, body s
 
 	m.Subject(subject)
 	m.SetBodyString(mail.TypeTextHTML, body)
-	m.SetAddrHeaderIgnoreInvalid(mail.HeaderFrom, fmt.Sprintf("%s <%s>", s.Config.SenderName, s.Config.SmtpSender))
-	m.SetAddrHeaderIgnoreInvalid(mail.HeaderTo, fmt.Sprintf("%s <%s>", userName, userEmail))
+	if err = m.SetAddrHeader(mail.HeaderFrom, fmt.Sprintf("%s <%s>", s.Config.SenderName, s.Config.SmtpSender)); err != nil {
+		return fmt.Errorf("failed to set FROM header: %v", err)
+	}
+	if err = m.SetAddrHeader(mail.HeaderTo, fmt.Sprintf("%s <%s>", cleanUsername, userEmail)); err != nil {
+		return fmt.Errorf("failed to set TO header: %v", err)
+	}
 
 	if s.Config.SmtpSecure {
 		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithSMTPAuth(s.authType),
