@@ -8,7 +8,6 @@
   export let router;
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let battleId;
   export let retroId;
   export let storyboardId;
@@ -66,13 +65,10 @@
           notificationsEnabled: newWarrior.notificationsEnabled,
         });
 
-        eventTag('register_guest', 'engagement', 'success', () => {
-          router.route(targetPage(), true);
-        });
+        router.route(targetPage(), true);
       })
       .catch(function () {
         notifications.danger($LL.guestRegisterError());
-        eventTag('register_guest', 'engagement', 'failure');
       });
   }
 
@@ -97,13 +93,10 @@
           subscribed: false,
         });
 
-        eventTag('register_account', 'engagement', 'success', () => {
-          router.route(targetPage(), true);
-        });
+        router.route(targetPage(), true);
       })
       .catch(function () {
         notifications.danger($LL.registerError());
-        eventTag('register_account', 'engagement', 'failure');
       });
   }
 

@@ -14,7 +14,6 @@
 
   export let xfetch;
   export let router;
-  export let eventTag;
   export let notifications;
   export let currentPage;
 
@@ -61,14 +60,11 @@
         };
 
         user.create(newUser);
-        eventTag('login', 'engagement', 'success', () => {
-          setupI18n(newUser.locale);
-          router.route(appRoutes.games, true);
-        });
+        setupI18n(newUser.locale);
+        router.route(appRoutes.games, true);
       })
       .catch(function (err) {
         notifications.danger($LL.authError());
-        eventTag('login', 'engagement', 'failure');
       });
   }
 </script>
@@ -99,7 +95,6 @@
               xfetch="{xfetch}"
               notifications="{notifications}"
               router="{router}"
-              eventTag="{eventTag}"
               currentPage="{currentPage}"
               selectedLocale="{$locale}"
               on:locale-changed="{e => setupI18n(e.detail)}"
@@ -110,7 +105,6 @@
               xfetch="{xfetch}"
               notifications="{notifications}"
               router="{router}"
-              eventTag="{eventTag}"
               currentPage="{currentPage}"
             />
           </li>
@@ -138,7 +132,6 @@
               xfetch="{xfetch}"
               notifications="{notifications}"
               router="{router}"
-              eventTag="{eventTag}"
               currentPage="{currentPage}"
             />
           </li>

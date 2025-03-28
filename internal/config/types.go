@@ -5,7 +5,6 @@ import "github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 // Config is the main application configuration
 type Config struct {
 	Http
-	Analytics
 	Admin
 	Otel
 	Db
@@ -36,12 +35,6 @@ type Http struct {
 	WebsocketPingPeriodSec int    `mapstructure:"websocket_ping_period_sec"`
 	WebsocketPongWaitSec   int    `mapstructure:"websocket_pong_wait_sec"`
 	WebsocketSubdomain     string `mapstructure:"websocket_subdomain"`
-}
-
-// Analytics is the application analytics configuration
-type Analytics struct {
-	Enabled bool
-	ID      string
 }
 
 // Admin is the application admin configuration

@@ -6,7 +6,6 @@
   import { User } from 'lucide-svelte';
 
   export let xfetch;
-  export let eventTag;
   export let notifications;
   export let toggleComments = () => {};
   export let getRetrosActions = () => {};
@@ -46,11 +45,9 @@
       .then(function ({ data }) {
         userComment = '';
         getRetrosActions();
-        eventTag('retro_comment_add', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.retroActionCommentAddError());
-        eventTag('retro_comment_add', 'engagement', 'failure');
       });
   }
 
@@ -62,11 +59,9 @@
       .then(res => res.json())
       .then(function ({ data }) {
         getRetrosActions();
-        eventTag('retro_comment_delete', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.retroActionCommentDeleteError());
-        eventTag('retro_comment_delete', 'engagement', 'failure');
       });
   };
 
@@ -84,11 +79,9 @@
         selectedComment = null;
         selectedCommentContent = '';
         getRetrosActions();
-        eventTag('retro_comment_edit', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.retroActionCommentAddError());
-        eventTag('retro_comment_edit', 'engagement', 'failure');
       });
   };
 

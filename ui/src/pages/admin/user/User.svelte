@@ -23,7 +23,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let userId;
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
@@ -147,11 +146,9 @@
       .then(function () {
         notifications.success($LL.passwordUpdated(), 1500);
         toggleUpdatePassword();
-        eventTag('update_password', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.passwordUpdateError());
-        eventTag('update_password', 'engagement', 'failure');
       });
   }
 

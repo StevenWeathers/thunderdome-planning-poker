@@ -21,7 +21,6 @@
 
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let organizationId;
   export let teamId;
   export let departmentId;
@@ -57,14 +56,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('remove_retro_template', 'engagement', 'success');
         toggleRemoveTemplate(null)();
         notifications.success($LL.retroTemplateRemoveSuccess());
         getTemplates();
       })
       .catch(function () {
         notifications.danger($LL.retroTemplateRemoveError());
-        eventTag('remove_retro_template', 'engagement', 'failure');
       });
   }
 
@@ -180,7 +177,6 @@
       apiPrefix="{apiPrefix}"
       xfetch="{xfetch}"
       notifications="{notifications}"
-      eventTag="{eventTag}"
     />
   {/if}
 
@@ -200,7 +196,6 @@
       apiPrefix="{apiPrefix}"
       xfetch="{xfetch}"
       notifications="{notifications}"
-      eventTag="{eventTag}"
     />
   {/if}
 

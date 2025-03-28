@@ -6,7 +6,6 @@
   export let router;
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let battleId;
   export let retroId;
   export let storyboardId;
@@ -75,7 +74,6 @@
     <LoginForm
       xfetch="{xfetch}"
       notifications="{notifications}"
-      eventTag="{eventTag}"
       router="{router}"
       registerLink="{registerLink}"
       targetPage="{targetPage}"

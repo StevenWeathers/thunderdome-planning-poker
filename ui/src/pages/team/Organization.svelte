@@ -45,7 +45,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let organizationId;
 
   const departmentsPageLimit = 1000;
@@ -200,15 +199,12 @@
     xfetch(`${orgPrefix}/departments`, { body })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('create_department', 'engagement', 'success', () => {
-          router.route(
-            `${appRoutes.organization}/${organizationId}/department/${result.data.id}`,
-          );
-        });
+        router.route(
+          `${appRoutes.organization}/${organizationId}/department/${result.data.id}`,
+        );
       })
       .catch(function () {
         notifications.danger($LL.departmentCreateError());
-        eventTag('create_department', 'engagement', 'failure');
       });
   }
 
@@ -220,14 +216,12 @@
     xfetch(`${orgPrefix}/teams`, { body })
       .then(res => res.json())
       .then(function () {
-        eventTag('create_organization_team', 'engagement', 'success');
         toggleCreateTeam();
         notifications.success($LL.teamCreateSuccess());
         getTeams();
       })
       .catch(function () {
         notifications.danger($LL.teamCreateError());
-        eventTag('create_organization_team', 'engagement', 'failure');
       });
   }
 
@@ -236,14 +230,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('organization_delete_team', 'engagement', 'success');
         toggleDeleteTeam(null)();
         notifications.success($LL.teamDeleteSuccess());
         getTeams();
       })
       .catch(function () {
         notifications.danger($LL.teamDeleteError());
-        eventTag('organization_delete_team', 'engagement', 'failure');
       });
   }
 
@@ -252,14 +244,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('organization_delete_department', 'engagement', 'success');
         toggleDeleteDepartment(null)();
         notifications.success($LL.departmentDeleteSuccess());
         getDepartments();
       })
       .catch(function () {
         notifications.danger($LL.departmentDeleteError());
-        eventTag('organization_delete_department', 'engagement', 'failure');
       });
   }
 
@@ -268,14 +258,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('organization_delete', 'engagement', 'success');
         toggleDeleteTeam();
         notifications.success($LL.organizationDeleteSuccess());
         router.route(appRoutes.teams);
       })
       .catch(function () {
         notifications.danger($LL.organizationDeleteError());
-        eventTag('organization_delete', 'engagement', 'failure');
       });
   }
 
@@ -318,14 +306,12 @@
     )
       .then(res => res.json())
       .then(function (result) {
-        eventTag('update_department', 'engagement', 'success');
         getDepartments();
         toggleUpdateDepartment(defaultDepartment)();
         notifications.success(`${$LL.deptUpdateSuccess()}`);
       })
       .catch(function () {
         notifications.danger(`${$LL.deptUpdateError()}`);
-        eventTag('update_department', 'engagement', 'failure');
       });
   }
 
@@ -340,14 +326,12 @@
     })
       .then(res => res.json())
       .then(function () {
-        eventTag('create_organization_team', 'engagement', 'success');
         toggleUpdateTeam(defaultTeam)();
         getTeams();
         notifications.success(`${$LL.teamUpdateSuccess()}`);
       })
       .catch(function () {
         notifications.danger(`${$LL.teamUpdateError()}`);
-        eventTag('create_organization_team', 'engagement', 'failure');
       });
   }
 
@@ -564,7 +548,6 @@
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
         xfetch="{xfetch}"
-        eventTag="{eventTag}"
         notifications="{notifications}"
         pageType="organization"
         teamPrefix="{orgPrefix}"
@@ -577,7 +560,6 @@
     users="{users}"
     getUsers="{getUsers}"
     xfetch="{xfetch}"
-    eventTag="{eventTag}"
     notifications="{notifications}"
     isAdmin="{isAdmin}"
     pageType="organization"
@@ -593,7 +575,6 @@
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <PokerSettings
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           notifications="{notifications}"
           isEntityAdmin="{isAdmin}"
           apiPrefix="{orgPrefix}"
@@ -610,7 +591,6 @@
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <EstimationScalesList
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           notifications="{notifications}"
           isEntityAdmin="{isAdmin}"
           apiPrefix="{orgPrefix}"
@@ -635,7 +615,6 @@
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <RetroSettings
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           notifications="{notifications}"
           isEntityAdmin="{isAdmin}"
           apiPrefix="{orgPrefix}"
@@ -652,7 +631,6 @@
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <RetroTemplatesList
           xfetch="{xfetch}"
-          eventTag="{eventTag}"
           notifications="{notifications}"
           isEntityAdmin="{isAdmin}"
           apiPrefix="{orgPrefix}"

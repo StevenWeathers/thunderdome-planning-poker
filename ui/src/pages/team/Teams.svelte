@@ -20,7 +20,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
 
   const organizationsPageLimit = 1000;
   const teamsPageLimit = 1000;
@@ -98,13 +97,10 @@
     xfetch(`/api/users/${$user.id}/organizations`, { body })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('create_organization', 'engagement', 'success', () => {
-          router.route(`${appRoutes.organization}/${result.data.id}`);
-        });
+        router.route(`${appRoutes.organization}/${result.data.id}`);
       })
       .catch(function () {
         notifications.danger($LL.createOrgError());
-        eventTag('create_organization', 'engagement', 'failure');
       });
   }
 
@@ -116,13 +112,10 @@
     xfetch(`/api/users/${$user.id}/teams`, { body })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('create_team', 'engagement', 'success', () => {
-          router.route(`${appRoutes.team}/${result.data.id}`);
-        });
+        router.route(`${appRoutes.team}/${result.data.id}`);
       })
       .catch(function () {
         notifications.danger($LL.teamCreateError());
-        eventTag('create_team', 'engagement', 'failure');
       });
   }
 
@@ -137,14 +130,12 @@
     })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('update_organization', 'engagement', 'success');
         notifications.success(`${$LL.orgUpdateSuccess()}`);
         getOrganizations();
         toggleUpdateOrganization(defaultOrganization)();
       })
       .catch(function () {
         notifications.danger(`${$LL.orgUpdateError()}`);
-        eventTag('update_organization', 'engagement', 'failure');
       });
   }
 
@@ -153,14 +144,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('organization_delete', 'engagement', 'success');
         getOrganizations();
         toggleDeleteOrganization(defaultOrganization)();
         notifications.success($LL.organizationDeleteSuccess());
       })
       .catch(function () {
         notifications.danger($LL.organizationDeleteError());
-        eventTag('organization_delete', 'engagement', 'failure');
       });
   }
 
@@ -195,14 +184,12 @@
     })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('update_team', 'engagement', 'success');
         notifications.success(`${$LL.teamUpdateSuccess()}`);
         getTeams();
         toggleUpdateTeam(defaultTeam)();
       })
       .catch(function () {
         notifications.danger(`${$LL.teamUpdateError()}`);
-        eventTag('update_team', 'engagement', 'failure');
       });
   }
 
@@ -211,14 +198,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('team_delete', 'engagement', 'success');
         getTeams();
         toggleDeleteTeam(defaultTeam)();
         notifications.success($LL.teamDeleteSuccess());
       })
       .catch(function () {
         notifications.danger($LL.teamDeleteError());
-        eventTag('team_delete', 'engagement', 'failure');
       });
   }
 

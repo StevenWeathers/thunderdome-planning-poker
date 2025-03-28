@@ -53,15 +53,6 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		getWebsocketConnectSrc(a.Config.SecureProtocol, a.Config.WebsocketSubdomain, a.Config.AppDomain),
 	}
 
-	if apiService.UIConfig.AnalyticsEnabled {
-		connectSrcCsp = append(
-			connectSrcCsp,
-			"https://*.google-analytics.com",
-			"https://*.analytics.google.com",
-			"https://*.googletagmanager.com",
-			"https://*.google.com",
-		)
-	}
 	// Content Security Policy
 	cspBuilder := cspbuilder.Builder{
 		Directives: map[string][]string{

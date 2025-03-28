@@ -18,7 +18,6 @@
   export let handlePlanAdd = () => {};
   export let toggleAddPlan = () => {};
   export let handlePlanRevision = () => {};
-  export let eventTag = () => {};
   export let notifications;
 
   // going by common Jira issue types for now
@@ -72,7 +71,6 @@
     if (planLink !== '' && !isAbsolute.test(planLink)) {
       invalidPlan = true;
       notifications.danger($LL.planLinkInvalid());
-      eventTag('plan_add_invalid_link', 'battle', ``);
     }
 
     const plan = {

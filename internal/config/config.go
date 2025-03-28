@@ -38,9 +38,6 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("http.websocket_ping_period_sec", 54)
 	viper.SetDefault("http.websocket_subdomain", "")
 
-	viper.SetDefault("analytics.enabled", true)
-	viper.SetDefault("analytics.id", "UA-140245309-1")
-
 	viper.SetDefault("otel.enabled", false)
 	viper.SetDefault("otel.service_name", "thunderdome")
 	viper.SetDefault("otel.collector_url", "localhost:4317")

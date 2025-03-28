@@ -11,7 +11,6 @@
 
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let router;
 
   const battlesPageLimit = 10;
@@ -35,7 +34,6 @@
       .catch(function () {
         loading = false;
         notifications.danger($LL.myBattlesError());
-        eventTag('fetch_battles', 'engagement', 'failure');
       });
   }
 
@@ -110,7 +108,6 @@
         <CreateBattle
           notifications="{notifications}"
           router="{router}"
-          eventTag="{eventTag}"
           xfetch="{xfetch}"
         />
       </div>

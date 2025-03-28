@@ -8,7 +8,6 @@ describe('Landing Page', () => {
   it('should render successfully', () => {
     render(Landing, {
       xfetch: () => {},
-      eventTag: () => {},
     });
   });
 });

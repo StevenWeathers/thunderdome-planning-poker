@@ -3,7 +3,6 @@
   export let userId = '';
   export let xfetch = async () => {};
   export let notifications;
-  export let eventTag;
 
   let organization = {
     name: '',
@@ -16,7 +15,6 @@
     })
     .catch(function () {
       notifications.danger('Error getting associated organization');
-      eventTag('fetch_associated_organization', 'engagement', 'failure');
     });
 </script>
 
