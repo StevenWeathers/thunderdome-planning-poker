@@ -9,7 +9,8 @@
     .then(res => res.json())
     .then(function (result) {
       activeCountries = result.data.sort();
-    });
+    })
+    .catch(function () {});
 </script>
 
 <div class="text-center">
