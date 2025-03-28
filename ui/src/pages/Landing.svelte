@@ -21,6 +21,19 @@
 
   $: isRegisteredUser = $user && !!$user.id && validateUserIsRegistered($user);
 
+  const slogans = [
+    'Empower Your Agile Teams',
+    'Release the Thunder in Your Agile Process',
+    'Storm Through Your Teams Sprints',
+    'Electrifying Your Agile Experience',
+    'The Arena Where Agile Teams Excel',
+    'Bringing the Energy Back to Agile',
+    'Harness the Storm, Master the Sprint',
+    'Amplify Your Teams Agile Potential',
+  ];
+
+  $: randomSlogan = slogans[Math.floor(Math.random() * slogans.length)];
+
   onMount(() => window.scrollTo(0, 0));
 </script>
 
@@ -31,7 +44,7 @@
 <main class="bg-gray-100 dark:bg-gray-900">
   <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
     <div class="container mx-auto px-4 py-16">
-      <div class="max-w-4xl mx-auto text-center">
+      <div class="max-w-7xl mx-auto text-center">
         <h1
           class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
         >
@@ -39,9 +52,10 @@
             class="block bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500"
           >
             Thunderdome
-          </span> Empower Your Agile Teams
+          </span>
+          {randomSlogan}
         </h1>
-        <p class="text-xl sm:text-2xl text-blue-100">
+        <p class="max-w-4xl mx-auto text-xl sm:text-2xl text-blue-100">
           Elevate your agile practices, foster seamless collaboration, and
           unlock your team's full potential with our innovative suite of tools.
         </p>
