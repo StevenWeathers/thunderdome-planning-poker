@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
-    "prettier": "prettier --check '**/*.ts'",
-    "prettier:fix": "prettier --write '**/*.ts'",
+    "prettier": "prettier --check \"**/*.ts\"",
+    "prettier:fix": "prettier --write \"**/*.ts\"",
     "format": "npm run prettier:fix",
     "test:api": "npx playwright test --grep \"@api\"",
     "test:ui": "npx playwright test --grep-invert \"@api\""

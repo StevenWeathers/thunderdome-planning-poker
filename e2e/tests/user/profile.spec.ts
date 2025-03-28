@@ -418,7 +418,7 @@ test.describe("User Profile page", { tag: ["@user"] }, () => {
 
       // should be on landing page and no longer authenticated
       await expect(profilePage.page.locator("h1")).toHaveText(
-        "Thunderdome Empower Your Agile Teams",
+        "Elevate your agile practices, foster seamless collaboration, and unlock your team's full potential with our innovative suite of tools.",
       );
       await expect(
         profilePage.page.locator("data-testid=usernav-name"),
@@ -446,7 +446,7 @@ test.describe("User Profile page", { tag: ["@user"] }, () => {
 
       // should be on landing page and no longer authenticated
       await expect(profilePage.page.locator("h1")).toHaveText(
-        "Thunderdome Empower Your Agile Teams",
+        "Elevate your agile practices, foster seamless collaboration, and unlock your team's full potential with our innovative suite of tools.",
       );
       await expect(
         profilePage.page.locator("data-testid=usernav-name"),
