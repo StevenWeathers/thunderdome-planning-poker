@@ -315,6 +315,7 @@ func TestTeamUserOnly(t *testing.T) {
 			})
 
 			req, _ := http.NewRequest("GET", "/teams/"+tt.teamID, nil)
+			req.SetPathValue("teamId", tt.teamID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserID, tt.userID))
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
@@ -510,6 +511,7 @@ func TestSubscribedTeamOnly(t *testing.T) {
 			})
 
 			req := httptest.NewRequest("GET", "/teams/"+tt.teamID+"/test", nil)
+			req.SetPathValue("teamId", tt.teamID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
 			rr := httptest.NewRecorder()
@@ -809,6 +811,7 @@ func TestSubscribedOrgOnly(t *testing.T) {
 			})
 
 			req := httptest.NewRequest("GET", "/organizations/"+tt.orgID+"/test", nil)
+			req.SetPathValue("orgId", tt.orgID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
 			rr := httptest.NewRecorder()
@@ -952,6 +955,8 @@ func TestDepartmentAdminOnly(t *testing.T) {
 			})
 
 			req := httptest.NewRequest("GET", "/organizations/"+tt.orgID+"/departments/"+tt.departmentID+"/test", nil)
+			req.SetPathValue("orgId", tt.orgID)
+			req.SetPathValue("departmentId", tt.departmentID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserID, tt.userID))
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
@@ -1106,6 +1111,8 @@ func TestDepartmentUserOnly(t *testing.T) {
 			})
 
 			req := httptest.NewRequest("GET", "/organizations/"+tt.orgID+"/departments/"+tt.departmentID+"/test", nil)
+			req.SetPathValue("orgId", tt.orgID)
+			req.SetPathValue("departmentId", tt.departmentID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserID, tt.userID))
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
