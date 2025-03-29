@@ -35,7 +35,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
 
   const {
     CleanupGuestsDaysOld,
@@ -100,52 +99,40 @@
   function cleanBattles() {
     xfetch('/api/maintenance/clean-battles', { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_clean_battles', 'engagement', 'success');
-
         getAppStats();
       })
       .catch(function () {
         notifications.danger($LL.oldBattleCleanError());
-        eventTag('admin_clean_battles', 'engagement', 'failure');
       });
   }
 
   function cleanRetros() {
     xfetch('/api/maintenance/clean-retros', { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_clean_retros', 'engagement', 'success');
-
         getAppStats();
       })
       .catch(function () {
         notifications.danger($LL.oldRetrosCleanError());
-        eventTag('admin_clean_retros', 'engagement', 'failure');
       });
   }
 
   function cleanStoryboards() {
     xfetch('/api/maintenance/clean-storyboards', { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_clean_storyboards', 'engagement', 'success');
-
         getAppStats();
       })
       .catch(function () {
         notifications.danger($LL.oldStoryboardsCleanError());
-        eventTag('admin_clean_storyboards', 'engagement', 'failure');
       });
   }
 
   function cleanGuests() {
     xfetch('/api/maintenance/clean-guests', { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_clean_guests', 'engagement', 'success');
-
         getAppStats();
       })
       .catch(function () {
         notifications.danger($LL.oldGuestsCleanError());
-        eventTag('admin_clean_guests', 'engagement', 'failure');
       });
   }
 

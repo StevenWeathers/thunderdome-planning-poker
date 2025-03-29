@@ -13,7 +13,6 @@
 
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let organizationId;
   export let teamId;
   export let departmentId;
@@ -134,7 +133,6 @@
       organizationId="{organizationId}"
       teamId="{teamId}"
       departmentId="{departmentId}"
-      eventTag="{eventTag}"
       on:updateRetroSettings="{handleSettingsUpdate}"
     />
   {/if}
@@ -149,7 +147,6 @@
       organizationId="{organizationId}"
       teamId="{teamId}"
       departmentId="{departmentId}"
-      eventTag="{eventTag}"
       on:updateRetroSettings="{handleSettingsUpdate}"
     />
   {/if}

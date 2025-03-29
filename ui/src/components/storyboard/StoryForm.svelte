@@ -9,7 +9,6 @@
 
   export let toggleStoryForm = () => {};
   export let sendSocketEvent = () => {};
-  export let eventTag = () => {};
   export let notifications;
 
   export let story = {};
@@ -29,7 +28,6 @@
 
   function handleStoryDelete() {
     sendSocketEvent('delete_story', story.id);
-    eventTag('story_delete', 'storyboard', '');
     toggleStoryForm();
   }
 
@@ -41,7 +39,6 @@
         closed: true,
       }),
     );
-    eventTag('story_edit_closed', 'storyboard', 'true');
   }
 
   function markOpen() {
@@ -52,7 +49,6 @@
         closed: false,
       }),
     );
-    eventTag('story_edit_closed', 'storyboard', 'false');
   }
 
   const changeColor = color => () => {
@@ -63,7 +59,6 @@
         color,
       }),
     );
-    eventTag('story_edit_color', 'storyboard', color);
   };
 
   const updateName = evt => {
@@ -75,7 +70,6 @@
         name,
       }),
     );
-    eventTag('story_edit_name', 'storyboard', '');
   };
 
   const updateContent = () => {
@@ -86,7 +80,6 @@
         content: story.content,
       }),
     );
-    eventTag('story_edit_content', 'storyboard', '');
   };
 
   const updatePoints = evt => {
@@ -98,7 +91,6 @@
         points,
       }),
     );
-    eventTag('story_edit_points', 'storyboard', '');
   };
 
   const updateLink = evt => {
@@ -115,7 +107,6 @@
         link,
       }),
     );
-    eventTag('story_edit_link', 'storyboard', '');
   };
 
   const handleCommentSubmit = () => {
@@ -124,7 +115,6 @@
         'add_story_comment',
         JSON.stringify({ storyId: story.id, comment: userComment }),
       );
-      eventTag('story_add_comment', 'storyboard', '');
       userComment = '';
     }
   };
@@ -146,12 +136,10 @@
     );
     selectedComment = null;
     selectedCommentContent = '';
-    eventTag('story_edit_comment', 'storyboard', '');
   };
 
   const handleCommentDelete = commentId => () => {
     sendSocketEvent('delete_story_comment', JSON.stringify({ commentId }));
-    eventTag('story_delete_comment', 'storyboard', '');
   };
 </script>
 

@@ -12,7 +12,6 @@
   export let xfetch;
   export let notifications;
   export let router;
-  export let eventTag;
 
   let retros = [];
   const retrosPageLimit = 10;
@@ -34,7 +33,6 @@
       })
       .catch(function () {
         notifications.danger($LL.getRetrosErrorMessage());
-        eventTag('fetch_retros', 'engagement', 'failure');
         loading = false;
       });
   }
@@ -106,7 +104,6 @@
         <CreateRetro
           notifications="{notifications}"
           router="{router}"
-          eventTag="{eventTag}"
           xfetch="{xfetch}"
         />
       </div>

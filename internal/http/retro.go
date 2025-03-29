@@ -10,8 +10,6 @@ import (
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-
-	"github.com/gorilla/mux"
 )
 
 type retroCreateRequestBody struct {
@@ -49,15 +47,15 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		teamID, teamIDExists := vars["teamId"]
-		if !teamIDExists && s.Config.RequireTeams {
+		teamID := r.PathValue("teamId")
+		if teamID == "" && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "RETRO_CREATION_REQUIRES_TEAM"))
 			return
 		}
@@ -97,7 +95,7 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 		var err error
 
 		// if retro created with team association and user is not a team user or admin, return 403
-		if teamIDExists && !isTeamUserOrAnAdmin(r) {
+		if teamID != "" && !isTeamUserOrAnAdmin(r) {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
@@ -131,8 +129,8 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 //	@Router			/retros/{retroId} [get]
 func (s *Service) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -168,8 +166,8 @@ func (s *Service) handleRetroGet() http.HandlerFunc {
 func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		limit, offset := getLimitOffsetFromRequest(r)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -265,14 +263,13 @@ func (s *Service) handleRetroActionUpdate(retroSvc *retro.Service) http.HandlerF
 		ctx := r.Context()
 		var ra = actionUpdateRequestBody{}
 
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		actionID := vars["actionId"]
+		actionID := r.PathValue("actionId")
 		idErr = validate.Var(actionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -328,14 +325,14 @@ func (s *Service) handleRetroActionUpdate(retroSvc *retro.Service) http.HandlerF
 func (s *Service) handleRetroActionDelete(retroSvc *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		actionID := vars["actionId"]
+		actionID := r.PathValue("actionId")
 		idErr = validate.Var(actionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -384,14 +381,14 @@ func (s *Service) handleRetroActionAssigneeAdd(retroSvc *retro.Service) http.Han
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionAddAssigneeRequestBody{}
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		actionID := vars["actionId"]
+		actionID := r.PathValue("actionId")
 		idErr = validate.Var(actionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -454,14 +451,14 @@ func (s *Service) handleRetroActionAssigneeRemove(retroSvc *retro.Service) http.
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionRemoveAssigneeRequestBody{}
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		actionID := vars["actionId"]
+		actionID := r.PathValue("actionId")
 		idErr = validate.Var(actionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -523,14 +520,14 @@ func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		actionID := vars["actionId"]
+		actionID := r.PathValue("actionId")
 		idErr = validate.Var(actionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -588,20 +585,20 @@ func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 		var ra = actionCommentRequestBody{}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		actionID := vars["actionId"]
+		actionID := r.PathValue("actionId")
 		idErr = validate.Var(actionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		commentID := vars["commentId"]
+		commentID := r.PathValue("commentId")
 		idErr = validate.Var(commentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -656,20 +653,20 @@ func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		actionID := vars["actionId"]
+		actionID := r.PathValue("actionId")
 		idErr = validate.Var(actionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		commentID := vars["commentId"]
+		commentID := r.PathValue("commentId")
 		idErr = validate.Var(commentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -704,8 +701,8 @@ func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 func (s *Service) handleRetroDelete(retroSvc *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		retroID := vars["retroId"]
+
+		retroID := r.PathValue("retroId")
 		idErr := validate.Var(retroID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

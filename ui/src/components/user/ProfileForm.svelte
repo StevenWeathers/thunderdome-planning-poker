@@ -39,7 +39,6 @@
   export let credential;
   export let handleUpdate = () => {};
   export let toggleUpdatePassword;
-  export let eventTag;
   export let notifications;
   export let xfetch;
   export let ldapEnabled;
@@ -114,13 +113,10 @@
     e.preventDefault();
     xfetch(`/api/users/${profile.id}/request-verify`, { method: 'POST' })
       .then(function () {
-        eventTag('user_verify_request', 'engagement', 'success');
-
         notifications.success($LL.requestVerifyEmailSuccess());
       })
       .catch(function () {
         notifications.danger($LL.requestVerifyEmailFailure());
-        eventTag('user_verify_request', 'engagement', 'failure');
       });
   }
 
@@ -356,7 +352,6 @@
   <SetupMFA
     notifications="{notifications}"
     xfetch="{xfetch}"
-    eventTag="{eventTag}"
     toggleSetup="{toggleMfaSetup}"
     handleComplete="{handleMfaSetupCompletion}"
   />

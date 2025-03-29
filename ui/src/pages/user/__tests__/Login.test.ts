@@ -8,7 +8,6 @@ describe('Login Page', () => {
   it('should render successfully', () => {
     render(Login, {
       xfetch: () => {},
-      eventTag: () => {},
       notifications: () => {},
       router: () => {},
       battleId: null,

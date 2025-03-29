@@ -18,7 +18,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  // export let eventTag
 
   const battlesPageLimit = 100;
   let battleCount = 0;

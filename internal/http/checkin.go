@@ -9,8 +9,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/checkin"
-
-	"github.com/gorilla/mux"
 )
 
 // handleCheckinsGet gets a list of team checkins
@@ -29,8 +27,7 @@ func (s *Service) handleCheckinsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -76,14 +73,13 @@ func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		uidErr := validate.Var(userID, "required,uuid")
 		if uidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, uidErr.Error()))
@@ -137,8 +133,7 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -207,14 +202,13 @@ func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		checkinID := vars["checkinId"]
+		checkinID := r.PathValue("checkinId")
 		idErr = validate.Var(checkinID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -270,14 +264,13 @@ func (s *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		checkinID := vars["checkinId"]
+		checkinID := r.PathValue("checkinId")
 		idErr = validate.Var(checkinID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -333,14 +326,13 @@ func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		checkinID := vars["checkinId"]
+		checkinID := r.PathValue("checkinId")
 		idErr = validate.Var(checkinID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -409,14 +401,13 @@ func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		commentID := vars["commentId"]
+		commentID := r.PathValue("commentId")
 		idErr = validate.Var(commentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -484,14 +475,13 @@ func (s *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFu
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		commentID := vars["commentId"]
+		commentID := r.PathValue("commentId")
 		idErr = validate.Var(commentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

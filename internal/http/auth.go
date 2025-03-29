@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gorilla/mux"
-
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -810,8 +808,7 @@ func (s *Service) handleMFARemove() http.HandlerFunc {
 func (s *Service) handleGetTeamInviteByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		inviteID := vars["inviteId"]
+		inviteID := r.PathValue("inviteId")
 		ivdErr := validate.Var(inviteID, "required,uuid")
 		if ivdErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, ivdErr.Error()))
@@ -841,8 +838,7 @@ func (s *Service) handleGetTeamInviteByID() http.HandlerFunc {
 func (s *Service) handleGetOrganizationInviteByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		inviteID := vars["inviteId"]
+		inviteID := r.PathValue("inviteId")
 		ivdErr := validate.Var(inviteID, "required,uuid")
 		if ivdErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, ivdErr.Error()))

@@ -12,7 +12,6 @@ require (
 	github.com/go-openapi/spec v0.21.0 // indirect
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/ipsn/go-adorable v1.0.0
@@ -26,11 +25,10 @@ require (
 	github.com/swaggo/swag v1.16.4
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.3.2
 	github.com/wneessen/go-mail v0.6.2
-	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.59.0
-	go.opentelemetry.io/otel v1.34.0
+	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.34.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.34.0
-	go.opentelemetry.io/otel/sdk v1.34.0
+	go.opentelemetry.io/otel/sdk v1.35.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.35.0
 	golang.org/x/oauth2 v0.27.0
@@ -42,6 +40,7 @@ require (
 	github.com/stripe/stripe-go/v81 v81.4.0
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/unrolled/secure v1.17.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0
 )
 
 require (
@@ -167,15 +166,15 @@ require (
 	github.com/vanng822/go-premailer v1.23.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel/log v0.10.0 // indirect
-	go.opentelemetry.io/otel/metric v1.34.0 // indirect
-	go.opentelemetry.io/otel/trace v1.34.0 // indirect
+	go.opentelemetry.io/otel/metric v1.35.0 // indirect
+	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
 	golang.org/x/net v0.36.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/text v0.22.0
 	golang.org/x/tools v0.30.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250224174004-546df14abb99 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250224174004-546df14abb99 // indirect

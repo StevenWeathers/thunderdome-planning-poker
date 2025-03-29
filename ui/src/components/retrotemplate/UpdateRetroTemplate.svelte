@@ -15,7 +15,6 @@
   export let departmentId;
   export let apiPrefix;
   export let xfetch: any;
-  export let eventTag: any;
   export let notifications: any;
 
   export let templateId = '';

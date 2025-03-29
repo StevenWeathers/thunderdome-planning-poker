@@ -25,7 +25,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
 
   const usersPageLimit = 100;
 
@@ -68,14 +67,11 @@
 
     xfetch('/api/admin/users', { body })
       .then(function () {
-        eventTag('admin_create_warrior', 'engagement', 'success');
-
         getUsers();
         toggleCreateUser();
       })
       .catch(function () {
         notifications.danger($LL.createUserError());
-        eventTag('admin_create_warrior', 'engagement', 'failure');
       });
   }
 
@@ -110,13 +106,11 @@
       .then(res => res.json())
       .then(function () {
         notifications.success($LL.profileUpdateSuccess());
-        eventTag('update_profile', 'engagement', 'success');
         getUsers();
         toggleUserEdit({})();
       })
       .catch(function () {
         notifications.danger($LL.profileErrorUpdating());
-        eventTag('update_profile', 'engagement', 'failure');
       });
   }
 
@@ -124,13 +118,10 @@
     return function () {
       xfetch(`/api/admin/users/${userId}/promote`, { method: 'PATCH' })
         .then(function () {
-          eventTag('admin_promote_warrior', 'engagement', 'success');
-
           getUsers();
         })
         .catch(function () {
           notifications.danger($LL.promoteUserError());
-          eventTag('admin_promote_warrior', 'engagement', 'failure');
         });
     };
   }
@@ -139,13 +130,10 @@
     return function () {
       xfetch(`/api/admin/users/${userId}/demote`, { method: 'PATCH' })
         .then(function () {
-          eventTag('admin_demote_warrior', 'engagement', 'success');
-
           getUsers();
         })
         .catch(function () {
           notifications.danger($LL.demoteUserError());
-          eventTag('admin_demote_warrior', 'engagement', 'failure');
         });
     };
   }
@@ -154,13 +142,10 @@
     return function () {
       xfetch(`/api/admin/users/${userId}/disable`, { method: 'PATCH' })
         .then(function () {
-          eventTag('admin_disable_user', 'engagement', 'success');
-
           getUsers();
         })
         .catch(function () {
           notifications.danger('Error disabling user');
-          eventTag('admin_disable_user', 'engagement', 'failure');
         });
     };
   }
@@ -169,13 +154,10 @@
     return function () {
       xfetch(`/api/admin/users/${userId}/enable`, { method: 'PATCH' })
         .then(function () {
-          eventTag('admin_enable_user', 'engagement', 'success');
-
           getUsers();
         })
         .catch(function () {
           notifications.danger('Error enabling user');
-          eventTag('admin_enable_user', 'engagement', 'failure');
         });
     };
   }
@@ -183,14 +165,11 @@
   function handleDeleteUser() {
     xfetch(`/api/users/${userDeleteId}`, { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_delete_warrior', 'engagement', 'success');
-
         getUsers();
         toggleDeleteUser(null)();
       })
       .catch(function () {
         notifications.danger('deleteUserError');
-        eventTag('admin_delete_warrior', 'engagement', 'failure');
       });
   }
 
@@ -366,7 +345,6 @@
         handleUpdate="{handleUserEdit}"
         xfetch="{xfetch}"
         notifications="{notifications}"
-        eventTag="{eventTag}"
       />
     </Modal>
   {/if}

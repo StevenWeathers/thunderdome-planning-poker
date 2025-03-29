@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -142,8 +141,8 @@ func (s *Service) handleRetroTemplateUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		templateID := vars["templateId"]
+
+		templateID := r.PathValue("templateId")
 		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -208,8 +207,8 @@ func (s *Service) handleRetroTemplateDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		templateID := vars["templateId"]
+
+		templateID := r.PathValue("templateId")
 		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -244,8 +243,8 @@ func (s *Service) handleGetRetroTemplateByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		templateID := vars["templateId"]
+
+		templateID := r.PathValue("templateId")
 		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -318,8 +317,8 @@ func (s *Service) handleGetOrganizationRetroTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		organizationID := vars["orgId"]
+
+		organizationID := r.PathValue("orgId")
 		orgIDErr := validate.Var(organizationID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -361,8 +360,8 @@ func (s *Service) handleGetTeamRetroTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -404,8 +403,8 @@ func (s *Service) handleGetTeamRetroTemplates() http.HandlerFunc {
 func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -471,8 +470,8 @@ func (s *Service) handleTeamRetroTemplateCreate() http.HandlerFunc {
 func (s *Service) handleOrganizationRetroTemplateCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -540,14 +539,14 @@ func (s *Service) handleTeamRetroTemplateUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		templateID := vars["templateId"]
+
+		templateID := r.PathValue("templateId")
 		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -614,14 +613,14 @@ func (s *Service) handleOrganizationRetroTemplateUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		templateID := vars["templateId"]
+
+		templateID := r.PathValue("templateId")
 		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -687,14 +686,14 @@ func (s *Service) handleOrganizationRetroTemplateDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		templateID := vars["templateId"]
+
+		templateID := r.PathValue("templateId")
 		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		organizationID := vars["orgId"]
+		organizationID := r.PathValue("orgId")
 		oidErr := validate.Var(organizationID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
@@ -732,14 +731,14 @@ func (s *Service) handleTeamRetroTemplateDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		templateID := vars["templateId"]
+
+		templateID := r.PathValue("templateId")
 		idErr := validate.Var(templateID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))

@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gorilla/mux"
-
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
 )
@@ -50,8 +48,7 @@ func (h *Hub) WebSocketHandler(
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		RoomID := vars[roomIDVar]
+		RoomID := r.PathValue(roomIDVar)
 
 		// upgrade to WebSocket connection
 		var upgrader = h.CreateWebsocketUpgrader()

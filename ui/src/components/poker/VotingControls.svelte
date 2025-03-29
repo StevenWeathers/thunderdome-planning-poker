@@ -5,7 +5,6 @@
   import TextInput from '../forms/TextInput.svelte';
 
   export let sendSocketEvent = () => {};
-  export let eventTag;
   export let planId = '';
   export let points = [];
   export let votingLocked = true;
@@ -26,17 +25,14 @@
 
   const endPlanVoting = () => {
     sendSocketEvent('end_voting', planId);
-    eventTag('vote_end', 'battle', '');
   };
 
   const skipPlan = () => {
     sendSocketEvent('skip_plan', planId);
-    eventTag('plan_skip', 'battle', '');
   };
 
   const restartVoting = () => {
     sendSocketEvent('activate_plan', planId);
-    eventTag('plan_restart_vote', 'battle', '');
   };
 
   function handleSubmit(event) {
@@ -49,7 +45,6 @@
         planPoints: customPlanPoints === '' ? planPoints : customPlanPoints,
       }),
     );
-    eventTag('plan_finalize', 'battle', planPoints);
 
     planPoints = '';
     customPlanPoints = '';

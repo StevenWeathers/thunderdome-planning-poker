@@ -7,7 +7,6 @@
 
   export let handleUpdate = () => {};
   export let toggleClose = () => {};
-  export let eventTag = (a, b, c) => {};
   export let xfetch = async (url, ...options) => {};
   export let notifications;
 
@@ -30,11 +29,6 @@
 
     if (selectedOrganization === '') {
       notifications.danger('Select a organization field required');
-      eventTag(
-        'subscription_form_associated_organization_id_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
@@ -50,21 +44,10 @@
       .then(function () {
         handleUpdate();
         toggleClose();
-        eventTag(
-          'subscription_form_associate_organization',
-          'engagement',
-          'success',
-        );
       })
       .catch(function () {
         notifications.danger(
           'failed to associate organization to subscription',
-        );
-
-        eventTag(
-          'subscription_form_associate_organization',
-          'engagement',
-          'failure',
         );
       });
   }

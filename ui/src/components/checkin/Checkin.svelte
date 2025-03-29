@@ -21,7 +21,6 @@
   export let goalsMet = true;
   export let notifications;
   export let xfetch;
-  export let eventTag;
   export let teamPrefix = '';
 
   let userSubscribed = false;
@@ -71,7 +70,6 @@
           return;
         }
         notifications.danger('Error getting last checkin');
-        eventTag('checkin_last_error', 'checkin', '');
       });
   }
 

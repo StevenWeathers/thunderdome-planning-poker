@@ -12,8 +12,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-
-	"github.com/gorilla/mux"
 )
 
 type teamResponse struct {
@@ -37,8 +35,8 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		userTeamRoles := ctx.Value(contextKeyUserTeamRoles).(*thunderdome.UserTeamRoleInfo)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -85,8 +83,8 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -115,8 +113,8 @@ func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 func (s *Service) handleGetTeamsByUserNonOrg() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -145,8 +143,8 @@ func (s *Service) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -193,8 +191,8 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -249,8 +247,8 @@ func (s *Service) handleTeamUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -316,8 +314,8 @@ func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -414,14 +412,14 @@ func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		tidErr := validate.Var(teamID, "required,uuid")
 		if tidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tidErr.Error()))
 			return
 		}
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -477,14 +475,14 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		tidErr := validate.Var(teamID, "required,uuid")
 		if tidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tidErr.Error()))
 			return
 		}
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -516,8 +514,8 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 func (s *Service) handleGetTeamPokerGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -549,14 +547,14 @@ func (s *Service) handleTeamRemovePokerGame() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		gameID := vars["battleId"]
+		gameID := r.PathValue("battleId")
 		idErr = validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -591,8 +589,8 @@ func (s *Service) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -624,8 +622,8 @@ func (s *Service) handleDeleteTeam() http.HandlerFunc {
 func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -656,14 +654,14 @@ func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		retrospectiveID := vars["retroId"]
+		retrospectiveID := r.PathValue("retroId")
 		idErr = validate.Var(retrospectiveID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -693,8 +691,8 @@ func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -725,14 +723,14 @@ func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		storyboardID := vars["storyboardId"]
+		storyboardID := r.PathValue("storyboardId")
 		idErr = validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -766,8 +764,8 @@ func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -813,8 +811,8 @@ func (s *Service) handleGetTeamUserInvites() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -850,14 +848,14 @@ func (s *Service) handleDeleteTeamUserInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		inviteID := vars["inviteId"]
+		inviteID := r.PathValue("inviteId")
 		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -891,8 +889,8 @@ func (s *Service) handleTeamMetrics() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamID"]
+
+		teamID := r.PathValue("teamID")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

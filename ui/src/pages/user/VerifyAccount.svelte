@@ -3,7 +3,6 @@
   import LL from '../../i18n/i18n-svelte';
 
   export let xfetch;
-  export let eventTag;
   export let verifyId;
 
   let accountVerified = false;
@@ -12,11 +11,9 @@
   xfetch('/api/auth/verify', { body: { verifyId }, method: 'PATCH' })
     .then(function () {
       accountVerified = true;
-      eventTag('account_verify', 'engagement', 'success');
     })
     .catch(function () {
       verficationError = true;
-      eventTag('account_verify', 'engagement', 'failure');
     });
 </script>
 

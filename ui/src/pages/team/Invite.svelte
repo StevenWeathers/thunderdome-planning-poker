@@ -9,7 +9,6 @@
   export let router;
   export let xfetch;
   export let notifications;
-  export let eventTag;
   export let inviteType;
   export let inviteId;
 
@@ -48,7 +47,6 @@
           targetPage = `${appRoutes.organization}`;
         }
         inviteProcessed = true;
-        eventTag(`invite_${inviteType}`, 'engagement', 'success');
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -60,7 +58,6 @@
           inviteErr = 'Internal Error';
           inviteProcessed = true;
         }
-        eventTag(`invite_${inviteType}`, 'engagement', 'failure');
       });
   }
 

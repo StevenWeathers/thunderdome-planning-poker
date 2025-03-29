@@ -7,7 +7,6 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
-	"github.com/gorilla/mux"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
@@ -107,7 +106,7 @@ type Service struct {
 	Config               *Config
 	Cookie               CookieManager
 	UIConfig             thunderdome.UIConfig
-	Router               *mux.Router
+	Handler              http.Handler
 	Email                EmailService
 	Logger               *otelzap.Logger
 	UserDataSvc          UserDataSvc

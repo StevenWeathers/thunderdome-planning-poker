@@ -10,7 +10,6 @@ import (
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/storyboard"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/gorilla/mux"
 )
 
 type storyboardCreateRequestBody struct {
@@ -42,15 +41,15 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		teamID, teamIDExists := vars["teamId"]
-		if !teamIDExists && s.Config.RequireTeams {
+		teamID := r.PathValue("teamId")
+		if teamID == "" && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "STORYBOARD_CREATION_REQUIRES_TEAM"))
 			return
 		}
@@ -77,7 +76,7 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 		var newStoryboard *thunderdome.Storyboard
 		var err error
 		// if storyboard created with team association
-		if teamIDExists {
+		if teamID != "" {
 			if isTeamUserOrAnAdmin(r) {
 				newStoryboard, err = s.StoryboardDataSvc.TeamCreateStoryboard(ctx, teamID, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode)
 
@@ -121,8 +120,8 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 //	@Router			/storyboards/{storyboardId} [get]
 func (s *Service) handleStoryboardGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		storyboardID := vars["storyboardId"]
+
+		storyboardID := r.PathValue("storyboardId")
 		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -169,8 +168,8 @@ func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		limit, offset := getLimitOffsetFromRequest(r)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -259,8 +258,8 @@ func (s *Service) handleGetStoryboards() http.HandlerFunc {
 func (s *Service) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		storyboardID := vars["storyboardId"]
+
+		storyboardID := r.PathValue("storyboardId")
 		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -300,8 +299,8 @@ type storyboardGoalAddRequestBody struct {
 func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		storyboardID := vars["storyboardId"]
+
+		storyboardID := r.PathValue("storyboardId")
 		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -362,8 +361,8 @@ type storyboardColumnAddRequestBody struct {
 func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		storyboardID := vars["storyboardId"]
+
+		storyboardID := r.PathValue("storyboardId")
 		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -431,8 +430,8 @@ type storyboardStoryAddRequestBody struct {
 func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		storyboardID := vars["storyboardId"]
+
+		storyboardID := r.PathValue("storyboardId")
 		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -502,14 +501,14 @@ type storyboardStoryMoveRequestBody struct {
 func (s *Service) handleStoryboardStoryMove(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		storyboardID := vars["storyboardId"]
+
+		storyboardID := r.PathValue("storyboardId")
 		idErr := validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		storyID := vars["storyId"]
+		storyID := r.PathValue("storyId")
 		idErr = validate.Var(storyboardID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

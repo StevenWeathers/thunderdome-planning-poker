@@ -7,7 +7,6 @@
   import { Lock, LogOut, User, Vote } from 'lucide-svelte';
 
   export let currentPage;
-  export let eventTag;
   export let notifications;
   export let router;
   export let xfetch;
@@ -48,23 +47,19 @@
       })
       .catch(function () {
         notifications.danger($LL.profileErrorRetrieving());
-        eventTag('fetch_profile', 'engagement', 'failure');
       });
   }
 
   function logoutUser() {
     xfetch('/api/auth/logout', { method: 'DELETE' })
       .then(function () {
-        eventTag('logout', 'engagement', 'success', () => {
-          user.delete();
-          localStorage.removeItem('theme');
-          window.setTheme();
-          router.route(appRoutes.landing, true);
-        });
+        user.delete();
+        localStorage.removeItem('theme');
+        window.setTheme();
+        router.route(appRoutes.landing, true);
       })
       .catch(function () {
         notifications.danger($LL.logoutError());
-        eventTag('logout', 'engagement', 'failure');
       });
   }
 

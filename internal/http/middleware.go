@@ -9,8 +9,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-
-	"github.com/gorilla/mux"
 )
 
 func (s *Service) panicRecovery(h http.Handler) http.Handler {
@@ -80,11 +78,11 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 // entityUserOnly validates that the request was made by the session user matching the {userId} of the entity (or ADMIN)
 func (s *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userID := ctx.Value(contextKeyUserID).(string)
 		userType := ctx.Value(contextKeyUserType).(string)
-		entityUserID := vars["userId"]
+		entityUserID := r.PathValue("userId")
 		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -131,11 +129,11 @@ func (s *Service) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 // verifiedUserOnly validates that the request was made by a verified registered user
 func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		userType := ctx.Value(contextKeyUserType).(string)
-		entityUserID := vars["userId"]
+		entityUserID := r.PathValue("userId")
 		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -168,11 +166,11 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 // subscribedEntityUserOnly validates that the request was made by the subscribed entity user
 func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userID := ctx.Value(contextKeyUserID).(string)
 		userType := ctx.Value(contextKeyUserType).(string)
-		entityUserID := vars["userId"]
+		entityUserID := r.PathValue("userId")
 		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -230,11 +228,11 @@ func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 // orgUserOnly validates that the request was made by a valid user of the organization
 func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userID := ctx.Value(contextKeyUserID).(string)
 		userType := ctx.Value(contextKeyUserType).(string)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -271,11 +269,11 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 // orgAdminOnly validates that the request was made by an ADMIN of the organization
 func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userID := ctx.Value(contextKeyUserID).(string)
 		userType := ctx.Value(contextKeyUserType).(string)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -307,17 +305,17 @@ func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 // departmentUserOnly validates that the request was made by a valid user of the organization (with department role)
 func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userID := ctx.Value(contextKeyUserID).(string)
 		userType := ctx.Value(contextKeyUserType).(string)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		idErr = validate.Var(departmentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -353,17 +351,17 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 // departmentAdminOnly validates that the request was made by an ADMIN of the organization (with department role)
 func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userID := ctx.Value(contextKeyUserID).(string)
 		userType := ctx.Value(contextKeyUserType).(string)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		idErr = validate.Var(departmentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -399,11 +397,11 @@ func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 // with bypass for global admins, and if associated to team department and/or organization admins
 func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userID := ctx.Value(contextKeyUserID).(string)
 		userType := ctx.Value(contextKeyUserType).(string)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -460,10 +458,10 @@ func (s *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 // subscribedOrgOnly validates that the request was made by a subscribed organization only
 func (s *Service) subscribedOrgOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userType := ctx.Value(contextKeyUserType).(string)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -490,10 +488,10 @@ func (s *Service) subscribedOrgOnly(h http.HandlerFunc) http.HandlerFunc {
 // subscribedTeamOnly validates that the request was made by a subscribed team only
 func (s *Service) subscribedTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		userType := ctx.Value(contextKeyUserType).(string)
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr := validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

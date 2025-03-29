@@ -5,7 +5,6 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { onMount } from 'svelte';
 
-  export let eventTag;
   export let notifications;
   export let xfetch;
   export let handleImport;
@@ -26,7 +25,6 @@
       })
       .catch(function () {
         notifications.danger($LL.getStoryboardsErrorMessage());
-        eventTag('fetch_storyboards', 'engagement', 'failure');
       });
   }
 
@@ -46,7 +44,6 @@
       })
       .catch(function () {
         notifications.danger($LL.getStoryboardErrorMessage());
-        eventTag('fetch_storyboard', 'engagement', 'failure');
       });
   }
 

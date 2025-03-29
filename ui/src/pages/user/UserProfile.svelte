@@ -19,7 +19,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
 
   let userProfile = {};
   let userCredential = null;
@@ -42,11 +41,6 @@
 
   function toggleUpdatePassword() {
     updatePassword = !updatePassword;
-    eventTag(
-      'update_password_toggle',
-      'engagement',
-      `update: ${updatePassword}`,
-    );
   }
 
   function getProfile() {
@@ -57,7 +51,6 @@
       })
       .catch(function () {
         notifications.danger($LL.profileErrorRetrieving());
-        eventTag('fetch_profile', 'engagement', 'failure');
       });
   }
 
@@ -69,7 +62,6 @@
       })
       .catch(function () {
         notifications.danger("Error retrieving user's credential");
-        eventTag('fetch_credential', 'engagement', 'failure');
       });
   }
 
@@ -99,11 +91,9 @@
         window.setTheme();
 
         notifications.success($LL.profileUpdateSuccess());
-        eventTag('update_profile', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.profileErrorUpdating());
-        eventTag('update_profile', 'engagement', 'failure');
       });
   }
 
@@ -117,11 +107,9 @@
       .then(function () {
         notifications.success($LL.passwordUpdated(), 1500);
         toggleUpdatePassword();
-        eventTag('update_password', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.passwordUpdateError());
-        eventTag('update_password', 'engagement', 'failure');
       });
   }
 
@@ -133,7 +121,6 @@
       })
       .catch(function () {
         notifications.danger($LL.apiKeysErrorRetrieving());
-        eventTag('fetch_profile_apikeys', 'engagement', 'failure');
       });
   }
 
@@ -167,7 +154,6 @@
         } else {
           notifications.danger('error getting jira instances');
         }
-        eventTag('fetch_profile_jira_instances', 'engagement', 'failure');
       });
   }
 
@@ -216,14 +202,10 @@
     xfetch(`/api/users/${$user.id}`, { method: 'DELETE' })
       .then(function () {
         user.delete();
-
-        eventTag('delete_warrior', 'engagement', 'success');
-
         router.route(appRoutes.landing);
       })
       .catch(function () {
         notifications.danger($LL.profileDeleteError());
-        eventTag('delete_warrior', 'engagement', 'failure');
       });
   }
 
@@ -325,7 +307,6 @@
             toggleUpdatePassword="{toggleUpdatePassword}"
             xfetch="{xfetch}"
             notifications="{notifications}"
-            eventTag="{eventTag}"
             ldapEnabled="{LdapEnabled}"
             headerAuthEnabled="{HeaderAuthEnabled}"
           />
@@ -377,7 +358,6 @@
           {#if $user.subscribed}
             <UserSubscriptionsList
               xfetch="{xfetch}"
-              eventTag="{eventTag}"
               notifications="{notifications}"
             />
           {:else}
@@ -645,7 +625,6 @@
       handleApiKeyCreate="{getApiKeys}"
       notifications="{notifications}"
       xfetch="{xfetch}"
-      eventTag="{eventTag}"
     />
   {/if}
   {#if showJiraInstanceCreate}
@@ -654,7 +633,6 @@
       handleCreate="{getJiraInstances}"
       notifications="{notifications}"
       xfetch="{xfetch}"
-      eventTag="{eventTag}"
     />
   {/if}
 

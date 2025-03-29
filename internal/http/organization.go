@@ -11,8 +11,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-
-	"github.com/gorilla/mux"
 )
 
 type addUserRequestBody struct {
@@ -52,8 +50,8 @@ func (s *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -89,8 +87,8 @@ func (s *Service) handleGetOrganizationByUser() http.HandlerFunc {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		orgRole := ctx.Value(contextKeyOrgRole).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -136,8 +134,8 @@ func (s *Service) handleCreateOrganization() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -191,8 +189,8 @@ func (s *Service) handleOrganizationUpdate() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -245,8 +243,8 @@ func (s *Service) handleGetOrganizationTeams() http.HandlerFunc {
 			return
 		}
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -278,8 +276,8 @@ func (s *Service) handleGetOrganizationUsers() http.HandlerFunc {
 			return
 		}
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -314,8 +312,8 @@ func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -369,8 +367,8 @@ func (s *Service) handleOrganizationInviteUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -464,14 +462,14 @@ func (s *Service) handleOrganizationUpdateUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		idErr = validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -526,14 +524,14 @@ func (s *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		idErr = validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -585,14 +583,14 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			teamRole = &emptyRole
 		}
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr = validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -653,14 +651,14 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		idErr = validate.Var(teamID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -720,8 +718,8 @@ func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -755,8 +753,8 @@ func (s *Service) handleGetOrganizationUserInvites() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -796,14 +794,14 @@ func (s *Service) handleDeleteOrganizationUserInvite() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		idErr := validate.Var(orgID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		inviteID := vars["inviteId"]
+		inviteID := r.PathValue("inviteId")
 		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -840,8 +838,8 @@ func (s *Service) handleOrganizationMetrics() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		organizationID := vars["orgId"]
+
+		organizationID := r.PathValue("orgId")
 		idErr := validate.Var(organizationID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, errors.New("organization ID is required"))

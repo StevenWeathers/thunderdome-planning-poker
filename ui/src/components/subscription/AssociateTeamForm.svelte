@@ -7,7 +7,6 @@
 
   export let handleUpdate = () => {};
   export let toggleClose = () => {};
-  export let eventTag = (a, b, c) => {};
   export let xfetch = async (url, ...options) => {};
   export let notifications;
 
@@ -30,11 +29,6 @@
 
     if (selectedTeam === '') {
       notifications.danger('Select a team field required');
-      eventTag(
-        'subscription_form_associated_team_id_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
@@ -50,12 +44,9 @@
       .then(function () {
         handleUpdate();
         toggleClose();
-        eventTag('subscription_form_associate_team', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger('failed to associate team to subscription');
-
-        eventTag('subscription_form_associate_team', 'engagement', 'failure');
       });
   }
 </script>

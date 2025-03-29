@@ -19,7 +19,6 @@
   export let router;
   export let notifications;
   export let subscriptionId;
-  export let eventTag;
 
   let defaultSubscription = {
     id: subscriptionId,

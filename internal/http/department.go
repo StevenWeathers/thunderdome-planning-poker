@@ -9,8 +9,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-
-	"github.com/gorilla/mux"
 )
 
 type departmentResponse struct {
@@ -46,8 +44,7 @@ func (s *Service) handleGetOrganizationDepartments() http.HandlerFunc {
 			return
 		}
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
@@ -83,14 +80,13 @@ func (s *Service) handleGetDepartmentByUser() http.HandlerFunc {
 		orgRole := ctx.Value(contextKeyOrgRole).(string)
 		departmentRole := ctx.Value(contextKeyDepartmentRole).(string)
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
@@ -148,8 +144,7 @@ func (s *Service) handleCreateDepartment() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
@@ -203,14 +198,13 @@ func (s *Service) handleDepartmentUpdate() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		deptID := vars["departmentId"]
+		deptID := r.PathValue("departmentId")
 		didErr := validate.Var(deptID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
@@ -264,8 +258,7 @@ func (s *Service) handleGetDepartmentTeams() http.HandlerFunc {
 			return
 		}
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
@@ -297,8 +290,7 @@ func (s *Service) handleGetDepartmentUsers() http.HandlerFunc {
 			return
 		}
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
@@ -333,14 +325,13 @@ func (s *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
@@ -395,14 +386,13 @@ func (s *Service) handleDepartmentAddUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
@@ -458,20 +448,19 @@ func (s *Service) handleDepartmentUpdateUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
 			return
 		}
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		uidErr := validate.Var(userID, "required,uuid")
 		if uidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, uidErr.Error()))
@@ -526,20 +515,19 @@ func (s *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
 			return
 		}
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -582,20 +570,20 @@ func (s *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
 			return
 		}
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		tidErr := validate.Var(teamID, "required,uuid")
 		if tidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tidErr.Error()))
@@ -674,20 +662,20 @@ func (s *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 		if teamRole == nil {
 			teamRole = &emptyRole
 		}
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
 			return
 		}
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		tidErr := validate.Var(teamID, "required,uuid")
 		if tidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tidErr.Error()))
@@ -753,14 +741,14 @@ func (s *Service) handleDeleteDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		idErr := validate.Var(departmentID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -795,8 +783,8 @@ func (s *Service) handleGetDepartmentUserInvites() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		deptID := vars["departmentId"]
+
+		deptID := r.PathValue("departmentId")
 		didErr := validate.Var(deptID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
@@ -837,20 +825,20 @@ func (s *Service) handleDeleteDepartmentUserInvite() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		deptID := vars["departmentId"]
+		deptID := r.PathValue("departmentId")
 		didErr := validate.Var(deptID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
 			return
 		}
-		inviteID := vars["inviteId"]
+		inviteID := r.PathValue("inviteId")
 		idErr := validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -895,14 +883,14 @@ func (s *Service) handleDepartmentInviteUser() http.HandlerFunc {
 		}
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		oidErr := validate.Var(orgID, "required,uuid")
 		if oidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, oidErr.Error()))
 			return
 		}
-		departmentID := vars["departmentId"]
+		departmentID := r.PathValue("departmentId")
 		didErr := validate.Var(departmentID, "required,uuid")
 		if didErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, didErr.Error()))
