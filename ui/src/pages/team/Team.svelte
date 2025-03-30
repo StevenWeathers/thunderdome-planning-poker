@@ -36,12 +36,23 @@
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let organizationId;
-  export let departmentId;
-  export let teamId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    organizationId: any;
+    departmentId: any;
+    teamId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    organizationId,
+    departmentId,
+    teamId
+  }: Props = $props();
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -51,68 +62,68 @@
   const storyboardsPageLimit = 1000;
   const usersPageLimit = 1000;
 
-  let invitesList;
+  let invitesList = $state();
 
-  let team = {
+  let team = $state({
     id: teamId,
     name: '',
     subscribed: false,
-  };
-  let organization = {
+  });
+  let organization = $state({
     id: organizationId,
     name: '',
     subscribed: false,
-  };
-  let department = {
+  });
+  let department = $state({
     id: departmentId,
     name: '',
-  };
+  });
 
-  let users = [];
-  let battles = [];
-  let retros = [];
-  let retroActions = [];
-  let storyboards = [];
-  let estimationScales = [];
-  let showCreateBattle = false;
-  let showCreateRetro = false;
-  let showCreateStoryboard = false;
-  let showRemoveBattle = false;
-  let showRemoveRetro = false;
-  let showRemoveStoryboard = false;
-  let showDeleteTeam = false;
+  let users = $state([]);
+  let battles = $state([]);
+  let retros = $state([]);
+  let retroActions = $state([]);
+  let storyboards = $state([]);
+  let estimationScales = $state([]);
+  let showCreateBattle = $state(false);
+  let showCreateRetro = $state(false);
+  let showCreateStoryboard = $state(false);
+  let showRemoveBattle = $state(false);
+  let showRemoveRetro = $state(false);
+  let showRemoveStoryboard = $state(false);
+  let showDeleteTeam = $state(false);
   let removeBattleId = null;
   let removeRetroId = null;
   let removeStoryboardId = null;
   let usersPage = 1;
   let battlesPage = 1;
   let retrosPage = 1;
-  let retroActionsPage = 1;
+  let retroActionsPage = $state(1);
   let storyboardsPage = 1;
-  let totalRetroActions = 0;
-  let completedActionItems = false;
+  let totalRetroActions = $state(0);
+  let completedActionItems = $state(false);
 
   let organizationRole = '';
   let departmentRole = '';
   let teamRole = '';
-  let isAdmin = false;
-  let isTeamMember = false;
+  let isAdmin = $state(false);
+  let isTeamMember = $state(false);
 
   const apiPrefix = '/api';
-  $: orgPrefix = departmentId
+  let orgPrefix = $derived(departmentId
     ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
-    : `${apiPrefix}/organizations/${organizationId}`;
-  $: teamPrefix = organizationId
+    : `${apiPrefix}/organizations/${organizationId}`);
+  let teamPrefix = $derived(organizationId
     ? `${orgPrefix}/teams/${teamId}`
-    : `${apiPrefix}/teams/${teamId}`;
+    : `${apiPrefix}/teams/${teamId}`);
 
   const teamOnlyPrefix = `${apiPrefix}/teams/${teamId}`;
 
-  $: currentPageUrl = teamPrefix
+  let currentPageUrl = $derived(teamPrefix
     .replace('/api', '')
     .replace('organizations', 'organization')
     .replace('departments', 'department')
-    .replace('teams', 'team');
+    .replace('teams', 'team'));
 
   function toggleCreateBattle() {
     showCreateBattle = !showCreateBattle;
@@ -146,8 +157,8 @@
   };
 
   const scalesPageLimit = 20;
-  let scaleCount = 0;
-  let scalesPage = 1;
+  let scaleCount = $state(0);
+  let scalesPage = $state(1);
 
   const changeScalesPage = evt => {
     scalesPage = evt.detail;
@@ -177,9 +188,9 @@
   }
 
   const retroTemplatePageLimit = 20;
-  let retroTemplates = [];
+  let retroTemplates = $state([]);
   let retroTemplateCount = 0;
-  let retroTemplatesPage = 1;
+  let retroTemplatesPage = $state(1);
 
   const changeRetroTemplatesPage = evt => {
     retroTemplatesPage = evt.detail;
@@ -207,8 +218,8 @@
     }
   }
 
-  let showRetroActionComments = false;
-  let selectedRetroAction = null;
+  let showRetroActionComments = $state(false);
+  let selectedRetroAction = $state(null);
   const toggleRetroActionComments = id => () => {
     showRetroActionComments = !showRetroActionComments;
     selectedRetroAction = id;
@@ -395,8 +406,8 @@
     getRetrosActions();
   };
 
-  let showRetroActionEdit = false;
-  let selectedAction = null;
+  let showRetroActionEdit = $state(false);
+  let selectedAction = $state(null);
   const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
     selectedAction =
@@ -609,57 +620,61 @@
               />
             </TableNav>
             <Table>
-              <tr slot="header">
-                <HeadCol>{$LL.actionItem()}</HeadCol>
-                <HeadCol>{$LL.completed()}</HeadCol>
-                <HeadCol>{$LL.comments()}</HeadCol>
-                <HeadCol />
-              </tr>
-              <tbody slot="body">
-                {#each retroActions as item, i}
-                  <TableRow itemIndex="{i}">
-                    <RowCol>
-                      <div class="whitespace-pre-wrap">
-                        {#each item.assignees as assignee}
-                          <UserAvatar
-                            warriorId="{assignee.id}"
-                            gravatarHash="{assignee.gravatarHash}"
-                            avatar="{assignee.avatar}"
-                            userName="{assignee.name}"
-                            width="24"
-                            class="inline-block me-2"
-                          />
-                        {/each}{item.content}
-                      </div>
-                    </RowCol>
-                    <RowCol>
-                      <BooleanDisplay boolValue="{item.completed}" />
-                    </RowCol>
-                    <RowCol>
-                      <MessageSquareMore
-                        width="22"
-                        height="22"
-                        class="inline-block"
-                      />
-                      <button
-                        class="text-lg text-blue-400 dark:text-sky-400"
-                        on:click="{toggleRetroActionComments(item.id)}"
-                      >
-                        &nbsp;{item.comments.length}
-                      </button>
-                    </RowCol>
-                    <RowCol type="action">
-                      <CrudActions
-                        editBtnClickHandler="{toggleRetroActionEdit(
-                          item.retroId,
-                          item.id,
-                        )}"
-                        deleteBtnEnabled="{false}"
-                      />
-                    </RowCol>
-                  </TableRow>
-                {/each}
-              </tbody>
+              {#snippet header()}
+                            <tr >
+                  <HeadCol>{$LL.actionItem()}</HeadCol>
+                  <HeadCol>{$LL.completed()}</HeadCol>
+                  <HeadCol>{$LL.comments()}</HeadCol>
+                  <HeadCol />
+                </tr>
+                          {/snippet}
+              {#snippet body()}
+                            <tbody >
+                  {#each retroActions as item, i}
+                    <TableRow itemIndex="{i}">
+                      <RowCol>
+                        <div class="whitespace-pre-wrap">
+                          {#each item.assignees as assignee}
+                            <UserAvatar
+                              warriorId="{assignee.id}"
+                              gravatarHash="{assignee.gravatarHash}"
+                              avatar="{assignee.avatar}"
+                              userName="{assignee.name}"
+                              width="24"
+                              class="inline-block me-2"
+                            />
+                          {/each}{item.content}
+                        </div>
+                      </RowCol>
+                      <RowCol>
+                        <BooleanDisplay boolValue="{item.completed}" />
+                      </RowCol>
+                      <RowCol>
+                        <MessageSquareMore
+                          width="22"
+                          height="22"
+                          class="inline-block"
+                        />
+                        <button
+                          class="text-lg text-blue-400 dark:text-sky-400"
+                          onclick={toggleRetroActionComments(item.id)}
+                        >
+                          &nbsp;{item.comments.length}
+                        </button>
+                      </RowCol>
+                      <RowCol type="action">
+                        <CrudActions
+                          editBtnClickHandler="{toggleRetroActionEdit(
+                            item.retroId,
+                            item.id,
+                          )}"
+                          deleteBtnEnabled="{false}"
+                        />
+                      </RowCol>
+                    </TableRow>
+                  {/each}
+                </tbody>
+                          {/snippet}
             </Table>
             <TableFooter
               bind:current="{retroActionsPage}"

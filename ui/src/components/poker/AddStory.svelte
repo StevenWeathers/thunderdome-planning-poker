@@ -15,10 +15,6 @@
   import Editor from '../forms/Editor.svelte';
   import { onMount } from 'svelte';
 
-  export let handlePlanAdd = () => {};
-  export let toggleAddPlan = () => {};
-  export let handlePlanRevision = () => {};
-  export let notifications;
 
   // going by common Jira issue types for now
   const planTypes = [
@@ -48,21 +44,42 @@
     },
   ];
 
-  export let planId = '';
-  export let planName = '';
-  export let planType = $LL.planTypeStory();
-  export let referenceId = '';
-  export let planLink = '';
-  export let description = '';
-  export let acceptanceCriteria = '';
-  export let priority = 99;
+  interface Props {
+    handlePlanAdd?: any;
+    toggleAddPlan?: any;
+    handlePlanRevision?: any;
+    notifications: any;
+    planId?: string;
+    planName?: string;
+    planType?: any;
+    referenceId?: string;
+    planLink?: string;
+    description?: string;
+    acceptanceCriteria?: string;
+    priority?: number;
+  }
+
+  let {
+    handlePlanAdd = () => {},
+    toggleAddPlan = () => {},
+    handlePlanRevision = () => {},
+    notifications,
+    planId = '',
+    planName = $bindable(''),
+    planType = $bindable($LL.planTypeStory()),
+    referenceId = $bindable(''),
+    planLink = $bindable(''),
+    description = $bindable(''),
+    acceptanceCriteria = $bindable(''),
+    priority = $bindable(99)
+  }: Props = $props();
 
   /** @type {TextInput} */
-  let planNameTextInput;
+  let planNameTextInput = $state();
 
   const isAbsolute = new RegExp('^([a-z]+://|//)', 'i');
-  let descriptionExpanded = false;
-  let acceptanceExpanded = false;
+  let descriptionExpanded = $state(false);
+  let acceptanceExpanded = $state(false);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -102,7 +119,7 @@
 </script>
 
 <Modal closeModal="{toggleAddPlan}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
-  <form on:submit="{handleSubmit}" name="addPlan">
+  <form onsubmit={handleSubmit} name="addPlan">
     <div class="mb-4">
       <label class="block font-bold mb-2 dark:text-gray-400" for="planType">
         {$LL.planType()}
@@ -165,8 +182,7 @@
         </option>
         {#each priorities as p}
           <option value="{p.value}">
-            <svelte:component
-              this="{p.icon}"
+            <p.icon"
               class="inline-block w-6 h-6"
             />{p.name}</option
           >
@@ -176,10 +192,10 @@
     <div>
       <div class="font-bold mb-2">
         <button
-          on:click="{e => {
+          onclick={e => {
             e.preventDefault();
             descriptionExpanded = !descriptionExpanded;
-          }}"
+          }}
           class="inline-block align-baseline text-sm
                         text-blue-700 dark:text-sky-400 hover:text-blue-800 dark:hover:text-sky-600 bg-transparent
                         border-transparent me-1 font-bold text-xl"
@@ -205,10 +221,10 @@
     <div>
       <div class="font-bold mb-2">
         <button
-          on:click="{e => {
+          onclick={e => {
             e.preventDefault();
             acceptanceExpanded = !acceptanceExpanded;
-          }}"
+          }}
           class="inline-block align-baseline text-sm
                         text-blue-700 dark:text-sky-400 hover:text-blue-800 dark:hover:text-sky-600 bg-transparent
                         border-transparent me-1 font-bold text-xl"

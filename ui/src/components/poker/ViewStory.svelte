@@ -11,15 +11,28 @@
   } from 'lucide-svelte';
   import Bars2 from '../icons/Bars2.svelte';
 
-  export let togglePlanView = () => {};
 
-  export let planName = '';
-  export let planType = '';
-  export let referenceId = '';
-  export let planLink = '';
-  export let description = '';
-  export let acceptanceCriteria = '';
-  export let priority = 99;
+  interface Props {
+    togglePlanView?: any;
+    planName?: string;
+    planType?: string;
+    referenceId?: string;
+    planLink?: string;
+    description?: string;
+    acceptanceCriteria?: string;
+    priority?: number;
+  }
+
+  let {
+    togglePlanView = () => {},
+    planName = '',
+    planType = '',
+    referenceId = '',
+    planLink = '',
+    description = '',
+    acceptanceCriteria = '',
+    priority = 99
+  }: Props = $props();
 
   const priorities = {
     99: {
@@ -85,12 +98,12 @@
       </a>
     {/if}
   </div>
+  {@const SvelteComponent = priorities[priority].icon}
   <div class="mb-4 dark:text-white">
     <div class="font-bold mb-2 dark:text-gray-400">
       {$LL.planPriority()}
     </div>
-    <svelte:component
-      this="{priorities[priority].icon}"
+    <SvelteComponent"
       class="inline-block w-6 h-6"
     />{priorities[priority].name}
   </div>

@@ -13,13 +13,17 @@
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import TableFooter from '../../../components/table/TableFooter.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const organizationsPageLimit = 100;
 
-  let appStats = {
+  let appStats = $state({
     unregisteredUserCount: 0,
     registeredUserCount: 0,
     battleCount: 0,
@@ -27,9 +31,9 @@
     organizationCount: 0,
     departmentCount: 0,
     teamCount: 0,
-  };
-  let organizations = [];
-  let organizationsPage = 1;
+  });
+  let organizations = $state([]);
+  let organizationsPage = $state(1);
 
   function getAppStats() {
     xfetch('/api/admin/stats')
@@ -88,36 +92,40 @@
   <TableContainer>
     <TableNav title="{$LL.organizations()}" createBtnEnabled="{false}" />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateCreated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each organizations as org, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <a
-                href="{appRoutes.adminOrganizations}/{org.id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >{org.name}</a
-              >
-            </RowCol>
-            <RowCol>
-              {new Date(org.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(org.updatedDate).toLocaleString()}
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateCreated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each organizations as org, i}
+            <TableRow itemIndex="{i}">
+              <RowCol>
+                <a
+                  href="{appRoutes.adminOrganizations}/{org.id}"
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >{org.name}</a
+                >
+              </RowCol>
+              <RowCol>
+                {new Date(org.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(org.updatedDate).toLocaleString()}
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
       bind:current="{organizationsPage}"

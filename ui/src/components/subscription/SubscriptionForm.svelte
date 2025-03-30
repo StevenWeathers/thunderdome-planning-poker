@@ -6,20 +6,38 @@
   import TextInput from '../forms/TextInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
 
-  export let handleUpdate = () => {};
-  export let toggleClose = () => {};
-  export let xfetch = async (url, options) => {};
-  export let notifications;
 
-  export let subscriptionId = '';
-  export let user_id = '';
-  export let team_id = '';
-  export let organization_id = '';
-  export let customer_id = '';
-  export let subscription_id = '';
-  export let type = 'user';
-  export let active = true;
-  export let expires = new Date().toISOString();
+  interface Props {
+    handleUpdate?: any;
+    toggleClose?: any;
+    xfetch?: any;
+    notifications: any;
+    subscriptionId?: string;
+    user_id?: string;
+    team_id?: string;
+    organization_id?: string;
+    customer_id?: string;
+    subscription_id?: string;
+    type?: string;
+    active?: boolean;
+    expires?: any;
+  }
+
+  let {
+    handleUpdate = () => {},
+    toggleClose = () => {},
+    xfetch = async (url, options) => {},
+    notifications,
+    subscriptionId = '',
+    user_id = $bindable(''),
+    team_id = $bindable(''),
+    organization_id = $bindable(''),
+    customer_id = $bindable(''),
+    subscription_id = $bindable(''),
+    type = $bindable('user'),
+    active = $bindable(true),
+    expires = $bindable(new Date().toISOString())
+  }: Props = $props();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -79,7 +97,7 @@
 </script>
 
 <Modal closeModal="{toggleClose}">
-  <form on:submit="{handleSubmit}" name="subscriptionform">
+  <form onsubmit={handleSubmit} name="subscriptionform">
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="userId">
         Thunderdome User Id<span class="text-red-500 dark:text-red-400">*</span>

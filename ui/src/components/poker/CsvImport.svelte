@@ -3,8 +3,12 @@
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
 
-  export let notifications;
-  export let handlePlanAdd = () => {};
+  interface Props {
+    notifications: any;
+    handlePlanAdd?: any;
+  }
+
+  let { notifications, handlePlanAdd = () => {} }: Props = $props();
 
   const allowCsvImport = AppConfig.AllowCsvImport;
 
@@ -86,7 +90,7 @@
     {$LL.selectFile()}
     <input
       type="file"
-      on:change="{uploadFile}"
+      onchange={uploadFile}
       class="hidden"
       id="csvimport"
       accept=".csv"

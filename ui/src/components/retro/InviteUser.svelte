@@ -3,8 +3,12 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { ClipboardCopy } from 'lucide-svelte';
 
-  export let hostname = '';
-  export let retroId = '';
+  interface Props {
+    hostname?: string;
+    retroId?: string;
+  }
+
+  let { hostname = '', retroId = '' }: Props = $props();
 
   function copyRetrospectiveLink() {
     const retrospectiveLink = document.getElementById('RetrospectiveLink');

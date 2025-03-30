@@ -11,15 +11,25 @@
   import StoryFromStoryboardImport from './StoryFromStoryboardImport.svelte';
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
-  export let notifications;
-  export let xfetch;
-  export let toggleImport = () => {};
-  export let handlePlanAdd = handleAdd => {};
-  export let gameId = '';
+  interface Props {
+    notifications: any;
+    xfetch: any;
+    toggleImport?: any;
+    handlePlanAdd?: any;
+    gameId?: string;
+  }
 
-  let showJiraCloudSearch = false;
-  let showGameImport = false;
-  let showStoryboardImport = false;
+  let {
+    notifications,
+    xfetch,
+    toggleImport = () => {},
+    handlePlanAdd = handleAdd => {},
+    gameId = ''
+  }: Props = $props();
+
+  let showJiraCloudSearch = $state(false);
+  let showGameImport = $state(false);
+  let showStoryboardImport = $state(false);
 
   const toggleGameImport = () => {
     showGameImport = !showGameImport;

@@ -2,8 +2,12 @@
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
 
-  export let handleDelete = () => {};
-  export let toggleDelete = () => {};
+  interface Props {
+    handleDelete?: any;
+    toggleDelete?: any;
+  }
+
+  let { handleDelete = () => {}, toggleDelete = () => {} }: Props = $props();
 </script>
 
 <Modal closeModal="{toggleDelete}">
@@ -19,7 +23,7 @@
       type="button"
       class="inline-block align-baseline font-bold text-sm text-blue-500
             hover:text-blue-800 me-4"
-      on:click="{toggleDelete}"
+      onclick={toggleDelete}
       data-testid="confirm-cancel"
     >
       Cancel

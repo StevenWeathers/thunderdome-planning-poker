@@ -4,10 +4,14 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
 
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
 
-  export let organizationName = '';
+  interface Props {
+    toggleCreate?: any;
+    handleCreate?: any;
+    organizationName?: string;
+  }
+
+  let { toggleCreate = () => {}, handleCreate = () => {}, organizationName = $bindable('') }: Props = $props();
 
   function onSubmit(e) {
     e.preventDefault();
@@ -15,11 +19,11 @@
     handleCreate(organizationName);
   }
 
-  $: createDisabled = organizationName === '';
+  let createDisabled = $derived(organizationName === '');
 </script>
 
 <Modal closeModal="{toggleCreate}">
-  <form on:submit="{onSubmit}" name="createOrganization">
+  <form onsubmit={onSubmit} name="createOrganization">
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"

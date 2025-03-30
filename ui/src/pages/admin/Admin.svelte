@@ -32,9 +32,13 @@
     Zap,
   } from 'lucide-svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const {
     CleanupGuestsDaysOld,
@@ -48,7 +52,7 @@
     OrganizationsEnabled,
   } = AppConfig;
 
-  let appStats = {
+  let appStats = $state({
     unregisteredUserCount: 0,
     registeredUserCount: 0,
     battleCount: 0,
@@ -83,7 +87,7 @@
     retroTemplateCount: 0,
     organizationRetroTemplateCount: 0,
     teamRetroTemplateCount: 0,
-  };
+  });
 
   function getAppStats() {
     xfetch('/api/admin/stats')
@@ -149,7 +153,7 @@
     getAppStats();
   });
 
-  $: statGroups = [
+  let statGroups = $derived([
     {
       title: $LL.users(),
       active: true,
@@ -410,7 +414,7 @@
         },
       ],
     },
-  ];
+  ]);
 </script>
 
 <svelte:head>
@@ -440,8 +444,7 @@
                       <div
                         class="w-10 h-10 justify-center text-center content-center rounded-full {group.bgColor} text-white"
                       >
-                        <svelte:component
-                          this="{stat.icon}"
+                        <stat.icon
                           width="20"
                           height="20"
                           class="mx-auto"

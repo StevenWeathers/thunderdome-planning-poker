@@ -17,18 +17,22 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const subscriptionsPageLimit = 25;
-  let subscriptionCount = 0;
-  let subscriptions = [];
-  let subscriptionsPage = 1;
+  let subscriptionCount = $state(0);
+  let subscriptions = $state([]);
+  let subscriptionsPage = $state(1);
 
-  let showSubCreate = false;
-  let showSubUpdate = false;
-  let showSubDelete = false;
+  let showSubCreate = $state(false);
+  let showSubUpdate = $state(false);
+  let showSubDelete = $state(false);
   let deleteSubId = null;
   let defaultSubscription = {
     id: '',
@@ -44,9 +48,9 @@
       name: '',
     },
   };
-  let selectedSub = {
+  let selectedSub = $state({
     ...defaultSubscription,
-  };
+  });
 
   function toggleSubCreate() {
     showSubCreate = !showSubCreate;
@@ -123,59 +127,63 @@
       createBtnTestId="subscription-create"
     />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.email()}
-        </HeadCol>
-        <HeadCol>Customer ID</HeadCol>
-        <HeadCol>Subscription ID</HeadCol>
-        <HeadCol>
-          {$LL.type()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.active()}
-        </HeadCol>
-        <HeadCol>Expires</HeadCol>
-        <HeadCol type="action">
-          <span class="sr-only">Actions</span>
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each subscriptions as subscription, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <a
-                href="{appRoutes.adminUsers}/{subscription.user_id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-              >
-                {subscription.user.name}
-              </a>
-            </RowCol>
-            <RowCol>
-              {subscription.customer_id}
-            </RowCol>
-            <RowCol>
-              {subscription.subscription_id}
-            </RowCol>
-            <RowCol>
-              {subscription.type}
-            </RowCol>
-            <RowCol>
-              <BooleanDisplay boolValue="{subscription.active}" />
-            </RowCol>
-            <RowCol>
-              {new Date(subscription.expires).toLocaleString()}
-            </RowCol>
-            <RowCol type="action">
-              <CrudActions
-                detailsLink="{appRoutes.adminSubscriptions}/{subscription.id}"
-                editBtnClickHandler="{toggleSubUpdate(subscription)}"
-                deleteBtnClickHandler="{toggleSubDelete(subscription.id)}"
-              />
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.email()}
+          </HeadCol>
+          <HeadCol>Customer ID</HeadCol>
+          <HeadCol>Subscription ID</HeadCol>
+          <HeadCol>
+            {$LL.type()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.active()}
+          </HeadCol>
+          <HeadCol>Expires</HeadCol>
+          <HeadCol type="action">
+            <span class="sr-only">Actions</span>
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each subscriptions as subscription, i}
+            <TableRow itemIndex="{i}">
+              <RowCol>
+                <a
+                  href="{appRoutes.adminUsers}/{subscription.user_id}"
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                >
+                  {subscription.user.name}
+                </a>
+              </RowCol>
+              <RowCol>
+                {subscription.customer_id}
+              </RowCol>
+              <RowCol>
+                {subscription.subscription_id}
+              </RowCol>
+              <RowCol>
+                {subscription.type}
+              </RowCol>
+              <RowCol>
+                <BooleanDisplay boolValue="{subscription.active}" />
+              </RowCol>
+              <RowCol>
+                {new Date(subscription.expires).toLocaleString()}
+              </RowCol>
+              <RowCol type="action">
+                <CrudActions
+                  detailsLink="{appRoutes.adminSubscriptions}/{subscription.id}"
+                  editBtnClickHandler="{toggleSubUpdate(subscription)}"
+                  deleteBtnClickHandler="{toggleSubDelete(subscription.id)}"
+                />
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
       bind:current="{subscriptionsPage}"

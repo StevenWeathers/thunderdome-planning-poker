@@ -2,17 +2,31 @@
   import LL from '../../i18n/i18n-svelte';
   import { Eye, Pencil, Trash2 } from 'lucide-svelte';
 
-  export let detailsLink = '';
-  export let editBtnEnabled = true;
-  export let editBtnClickHandler = () => {};
-  export let editBtnTestId = 'edit';
-  export let deleteBtnEnabled = true;
-  export let deleteBtnClickHandler = () => {};
-  export let deleteBtnTestId = 'delete';
+  interface Props {
+    detailsLink?: string;
+    editBtnEnabled?: boolean;
+    editBtnClickHandler?: any;
+    editBtnTestId?: string;
+    deleteBtnEnabled?: boolean;
+    deleteBtnClickHandler?: any;
+    deleteBtnTestId?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    detailsLink = '',
+    editBtnEnabled = true,
+    editBtnClickHandler = () => {},
+    editBtnTestId = 'edit',
+    deleteBtnEnabled = true,
+    deleteBtnClickHandler = () => {},
+    deleteBtnTestId = 'delete',
+    children
+  }: Props = $props();
 </script>
 
 <div class="flex gap-2 justify-end items-center">
-  <slot />
+  {@render children?.()}
   {#if detailsLink !== ''}
     <a href="{detailsLink}" class="hover:text-blue-500">
       <Eye />
@@ -21,7 +35,7 @@
   {/if}
   {#if editBtnEnabled}
     <button
-      on:click="{editBtnClickHandler}"
+      onclick={editBtnClickHandler}
       class="hover:text-green-500"
       data-testid="{editBtnTestId}"
     >
@@ -31,7 +45,7 @@
   {/if}
   {#if deleteBtnEnabled}
     <button
-      on:click="{deleteBtnClickHandler}"
+      onclick={deleteBtnClickHandler}
       class="hover:text-red-500"
       data-testid="{deleteBtnTestId}"
     >

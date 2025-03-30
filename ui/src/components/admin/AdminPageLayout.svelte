@@ -17,7 +17,12 @@
     Users,
   } from 'lucide-svelte';
 
-  export let activePage = 'admin';
+  interface Props {
+    activePage?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { activePage = 'admin', children }: Props = $props();
 
   const {
     ExternalAPIEnabled,
@@ -28,7 +33,7 @@
     SubscriptionsEnabled,
   } = AppConfig;
 
-  $: pages = $LL && [
+  let pages = $derived($LL && [
     {
       name: 'Admin',
       label: $LL.adminPageAdmin(),
@@ -113,7 +118,7 @@
       icon: SquareDashedKanban,
       enabled: FeatureRetro,
     },
-  ];
+  ]);
 </script>
 
 <section class="flex min-h-screen">
@@ -123,6 +128,6 @@
     menuType="admin"
   />
   <div class="flex-1 px-4 py-4 md:py-6 md:px-6 lg:py-8 lg:px-8">
-    <slot />
+    {@render children?.()}
   </div>
 </section>

@@ -30,20 +30,24 @@
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
 
-  export let storyboardId;
-  export let notifications;
-  export let router;
+  interface Props {
+    storyboardId: any;
+    notifications: any;
+    router: any;
+  }
+
+  let { storyboardId, notifications, router }: Props = $props();
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
 
-  let isLoading = true;
-  let JoinPassRequired = false;
-  let socketError = false;
-  let socketReconnecting = false;
-  let storyboard = {
+  let isLoading = $state(true);
+  let JoinPassRequired = $state(false);
+  let socketError = $state(false);
+  let socketReconnecting = $state(false);
+  let storyboard = $state({
     goals: [],
     users: [],
     colorLegend: [],
@@ -51,17 +55,17 @@
     facilitators: [],
     facilitatorCode: '',
     joinCode: '',
-  };
-  let showUsers = false;
-  let showColorLegend = false;
-  let showColorLegendForm = false;
-  let showPersonas = false;
-  let showPersonasForm = null;
-  let editColumn = null;
-  let activeStory = null;
-  let showDeleteStoryboard = false;
-  let showEditStoryboard = false;
-  let collapseGoals = [];
+  });
+  let showUsers = $state(false);
+  let showColorLegend = $state(false);
+  let showColorLegendForm = $state(false);
+  let showPersonas = $state(false);
+  let showPersonasForm = $state(null);
+  let editColumn = $state(null);
+  let activeStory = $state(null);
+  let showDeleteStoryboard = $state(false);
+  let showEditStoryboard = $state(false);
+  let collapseGoals = $state([]);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -363,9 +367,9 @@
     showDeleteStoryboard = !showDeleteStoryboard;
   };
 
-  let showAddGoal = false;
-  let reviseGoalId = '';
-  let reviseGoalName = '';
+  let showAddGoal = $state(false);
+  let reviseGoalId = $state('');
+  let reviseGoalName = $state('');
 
   const toggleAddGoal = goalId => () => {
     if (goalId) {
@@ -443,7 +447,7 @@
     };
   }
 
-  let showBecomeFacilitator = false;
+  let showBecomeFacilitator = $state(false);
 
   function becomeFacilitator(facilitatorCode) {
     sendSocketEvent('facilitator_self', facilitatorCode);
@@ -454,8 +458,8 @@
     showBecomeFacilitator = !showBecomeFacilitator;
   }
 
-  $: isFacilitator =
-    storyboard.facilitators && storyboard.facilitators.includes($user.id);
+  let isFacilitator =
+    $derived(storyboard.facilitators && storyboard.facilitators.includes($user.id));
 
   onMount(() => {
     if (!$user.id) {
@@ -670,7 +674,7 @@
                         {#if isFacilitator}
                           &nbsp;|&nbsp;
                           <button
-                            on:click="{toggleEditPersona(persona)}"
+                            onclick={toggleEditPersona(persona)}
                             class="text-orange-500
                                                         hover:text-orange-800"
                             data-testid="persona-edit"
@@ -679,7 +683,7 @@
                           </button>
                           &nbsp;|&nbsp;
                           <button
-                            on:click="{handleDeletePersona(persona.id)}"
+                            onclick={handleDeletePersona(persona.id)}
                             class="text-red-500
                                                         hover:text-red-800"
                             data-testid="persona-delete"
@@ -823,7 +827,7 @@
           <div class="font-bold dark:text-gray-200 text-xl">
             <h2 class="inline-block align-middle pt-1">
               <button
-                on:click="{toggleGoalCollapse(goal.id)}"
+                onclick={toggleGoalCollapse(goal.id)}
                 data-testid="goal-expand"
                 data-collapsed="{collapseGoals.includes(goal.id)}"
               >
@@ -907,7 +911,7 @@
                         {goalColumn.name}
                       </span>
                       <button
-                        on:click="{toggleColumnEdit(goalColumn)}"
+                        onclick={toggleColumnEdit(goalColumn)}
                         class="flex-none font-bold text-xl
                                         border-dashed border-2 border-gray-400 dark:border-gray-600
                                         hover:border-green-500 text-gray-600 dark:text-gray-400
@@ -922,7 +926,7 @@
                   <div class="w-full">
                     <div class="flex">
                       <button
-                        on:click="{addStory(goal.id, goalColumn.id)}"
+                        onclick={addStory(goal.id, goalColumn.id)}
                         class="flex-grow font-bold text-xl py-1
                                         px-2 border-dashed border-2
                                         border-gray-400 dark:border-gray-600 hover:border-green-500
@@ -954,8 +958,8 @@
                       'dark:outline-yellow-400',
                     ],
                   }}"
-                  on:consider="{handleDndConsider}"
-                  on:finalize="{handleDndFinalize}"
+                  onconsider={handleDndConsider}
+                  onfinalize={handleDndFinalize}
                 >
                   {#each goalColumn.stories as story (story.id)}
                     <div
@@ -969,8 +973,8 @@
                       data-columnid="{goalColumn.id}"
                       data-storyid="{story.id}"
                       data-testid="column-story"
-                      on:click="{toggleStoryForm(story)}"
-                      on:keypress="{toggleStoryForm(story)}"
+                      onclick={toggleStoryForm(story)}
+                      onkeypress={toggleStoryForm(story)}
                     >
                       <div>
                         <div>
@@ -1033,8 +1037,8 @@
                           data-columnid="{goalColumn.id}"
                           data-storyid="{story.id}"
                           data-testid="column-story-shadowitem"
-                          on:click="{toggleStoryForm(story)}"
-                          on:keypress="{toggleStoryForm(story)}"
+                          onclick={toggleStoryForm(story)}
+                          onkeypress={toggleStoryForm(story)}
                         >
                           <div>
                             <div>

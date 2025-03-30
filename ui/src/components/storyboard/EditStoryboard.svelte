@@ -5,11 +5,21 @@
   import TextInput from '../forms/TextInput.svelte';
   import { Crown, Lock } from 'lucide-svelte';
 
-  export let toggleEditStoryboard = () => {};
-  export let handleStoryboardEdit = () => {};
-  export let storyboardName = '';
-  export let joinCode = '';
-  export let facilitatorCode = '';
+  interface Props {
+    toggleEditStoryboard?: any;
+    handleStoryboardEdit?: any;
+    storyboardName?: string;
+    joinCode?: string;
+    facilitatorCode?: string;
+  }
+
+  let {
+    toggleEditStoryboard = () => {},
+    handleStoryboardEdit = () => {},
+    storyboardName = $bindable(''),
+    joinCode = $bindable(''),
+    facilitatorCode = $bindable('')
+  }: Props = $props();
 
   function saveStoryboard(e) {
     e.preventDefault();
@@ -28,7 +38,7 @@
   closeModal="{toggleEditStoryboard}"
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
 >
-  <form on:submit="{saveStoryboard}" name="createStoryboard">
+  <form onsubmit={saveStoryboard} name="createStoryboard">
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"

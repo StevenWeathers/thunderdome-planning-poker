@@ -1,16 +1,25 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { ChevronLeft, ChevronRight } from 'lucide-svelte';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
 
-  export let current = 1;
-  export let num_items = 120;
-  export let per_page = 5;
+  interface Props {
+    current?: number;
+    num_items?: number;
+    per_page?: number;
+  }
 
-  $: num_pages = Math.ceil(num_items / per_page);
+  let { current = $bindable(1), num_items = 120, per_page = 5 }: Props = $props();
 
-  let arr_pages = [];
+  let num_pages;
+  run(() => {
+    num_pages = Math.ceil(num_items / per_page);
+  });
+
+  let arr_pages = $state([]);
 
   function buildArr(c, n) {
     if (n <= 7) {
@@ -28,20 +37,26 @@
     arr_pages = buildArr(current, num_pages);
   }
 
-  $: if (current) {
-    setArrPages();
-  }
+  run(() => {
+    if (current) {
+      setArrPages();
+    }
+  });
 
-  $: if (per_page) {
-    setArrPages();
-    current = 1;
-  }
+  run(() => {
+    if (per_page) {
+      setArrPages();
+      current = 1;
+    }
+  });
 
-  $: if (num_items) {
-    num_pages = Math.ceil(num_items / per_page);
-    setArrPages();
-    current = current || 1;
-  }
+  run(() => {
+    if (num_items) {
+      num_pages = Math.ceil(num_items / per_page);
+      setArrPages();
+      current = current || 1;
+    }
+  });
 
   function setCurrent(i) {
     if (isNaN(i)) return;
@@ -49,13 +64,13 @@
     dispatch('navigate', current);
   }
 
-  $: showingBegin = num_items === 0 ? 0 : (current - 1) * per_page + 1;
-  $: showingEnd =
-    current === num_pages
+  let showingBegin = $derived(num_items === 0 ? 0 : (current - 1) * per_page + 1);
+  let showingEnd =
+    $derived(current === num_pages
       ? num_items
       : num_items === 0
       ? 0
-      : current * per_page;
+      : current * per_page);
 </script>
 
 <nav
@@ -75,8 +90,8 @@
     <li>
       <button
         class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-        on:click="{() => current > 1 && setCurrent(current - 1)}"
-        on:keypress="{() => current > 1 && setCurrent(current - 1)}"
+        onclick={() => current > 1 && setCurrent(current - 1)}
+        onkeypress={() => current > 1 && setCurrent(current - 1)}
       >
         <span class="sr-only">Previous</span>
         <ChevronLeft class="w-5 h-5 inline-block" />
@@ -100,8 +115,8 @@
         {:else}
           <button
             class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            on:click="{() => setCurrent(i)}"
-            on:keypress="{() => setCurrent(i)}"
+            onclick={() => setCurrent(i)}
+            onkeypress={() => setCurrent(i)}
           >
             {i}
           </button>
@@ -111,8 +126,8 @@
     <li>
       <button
         class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-        on:click="{() => current < num_pages && setCurrent(current + 1)}"
-        on:keypress="{() => current < num_pages && setCurrent(current + 1)}"
+        onclick={() => current < num_pages && setCurrent(current + 1)}
+        onkeypress={() => current < num_pages && setCurrent(current + 1)}
       >
         <span class="sr-only">Next</span>
         <ChevronRight class="w-5 h-5 inline-block" />

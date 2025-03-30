@@ -9,15 +9,19 @@
   import Pagination from '../../components/global/Pagination.svelte';
   import BoxList from '../../components/BoxList.svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let router;
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+  }
+
+  let { xfetch, notifications, router }: Props = $props();
 
   const battlesPageLimit = 10;
-  let battleCount = 0;
-  let battlesPage = 1;
-  let battles = [];
-  let loading = true;
+  let battleCount = $state(0);
+  let battlesPage = $state(1);
+  let battles = $state([]);
+  let loading = $state(true);
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;

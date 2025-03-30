@@ -5,21 +5,35 @@
   import UserRegisterForm from '../../components/user/UserRegisterForm.svelte';
   import { onMount } from 'svelte';
 
-  export let router;
-  export let xfetch;
-  export let notifications;
-  export let battleId;
-  export let retroId;
-  export let storyboardId;
-  export let orgInviteId;
-  export let teamInviteId;
-  export let subscription = false;
+  interface Props {
+    router: any;
+    xfetch: any;
+    notifications: any;
+    battleId: any;
+    retroId: any;
+    storyboardId: any;
+    orgInviteId: any;
+    teamInviteId: any;
+    subscription?: boolean;
+  }
+
+  let {
+    router,
+    xfetch,
+    notifications,
+    battleId,
+    retroId,
+    storyboardId,
+    orgInviteId,
+    teamInviteId,
+    subscription = false
+  }: Props = $props();
 
   let userName = $user.name || '';
-  let wasInvited = false;
-  let inviteDetails = {
+  let wasInvited = $state(false);
+  let inviteDetails = $state({
     email: '',
-  };
+  });
 
   function targetPage() {
     let tp = appRoutes.games;
@@ -114,7 +128,7 @@
       });
   }
 
-  $: registerDisabled = wasInvited && inviteDetails.email === '';
+  let registerDisabled = $derived(wasInvited && inviteDetails.email === '');
 
   const loginLinkContextClasses =
     'font-rajdhani uppercase text-lg md:text-xl lg:text-2xl md:leading-tight';

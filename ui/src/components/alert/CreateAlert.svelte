@@ -6,17 +6,33 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
 
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
-  export let toggleUpdate = () => {};
-  export let handleUpdate = () => {};
-  export let alertId = '';
-  export let alertName = '';
-  export let alertType = '';
-  export let content = '';
-  export let active = true;
-  export let registeredOnly = false;
-  export let allowDismiss = true;
+  interface Props {
+    toggleCreate?: any;
+    handleCreate?: any;
+    toggleUpdate?: any;
+    handleUpdate?: any;
+    alertId?: string;
+    alertName?: string;
+    alertType?: string;
+    content?: string;
+    active?: boolean;
+    registeredOnly?: boolean;
+    allowDismiss?: boolean;
+  }
+
+  let {
+    toggleCreate = () => {},
+    handleCreate = () => {},
+    toggleUpdate = () => {},
+    handleUpdate = () => {},
+    alertId = '',
+    alertName = $bindable(''),
+    alertType = $bindable(''),
+    content = $bindable(''),
+    active = $bindable(true),
+    registeredOnly = $bindable(false),
+    allowDismiss = $bindable(true)
+  }: Props = $props();
 
   const alertTypes = ['ERROR', 'INFO', 'NEW', 'SUCCESS', 'WARNING'];
 
@@ -47,11 +63,11 @@
     }
   }
 
-  $: createDisabled = alertName === '' || alertType === '' || content === '';
+  let createDisabled = $derived(alertName === '' || alertType === '' || content === '');
 </script>
 
 <Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="createAlert">
+  <form onsubmit={onSubmit} name="createAlert">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"

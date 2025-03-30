@@ -4,19 +4,34 @@
   import { user as sessionUser } from '../../stores';
   import { ThumbsUp } from 'lucide-svelte';
 
-  export let user = { id: '' };
-  export let votes = [];
-  export let maxVotes = 3;
-  export let facilitators = [];
-  export let readyUsers = [];
-  export let phase = '';
-  export let handleAddFacilitator = () => {};
-  export let handleRemoveFacilitator = () => {};
-  export let handleUserReady = () => {};
-  export let handleUserUnReady = () => {};
+  interface Props {
+    user?: any;
+    votes?: any;
+    maxVotes?: number;
+    facilitators?: any;
+    readyUsers?: any;
+    phase?: string;
+    handleAddFacilitator?: any;
+    handleRemoveFacilitator?: any;
+    handleUserReady?: any;
+    handleUserUnReady?: any;
+  }
 
-  $: voteTally =
-    votes &&
+  let {
+    user = { id: '' },
+    votes = [],
+    maxVotes = 3,
+    facilitators = [],
+    readyUsers = [],
+    phase = '',
+    handleAddFacilitator = () => {},
+    handleRemoveFacilitator = () => {},
+    handleUserReady = () => {},
+    handleUserUnReady = () => {}
+  }: Props = $props();
+
+  let voteTally =
+    $derived(votes &&
     votes.reduce(
       (p, v) => {
         if (v.userId === user.id) {
@@ -27,9 +42,9 @@
         return p;
       },
       { userVoteCount: 0, votesLeft: maxVotes },
-    );
+    ));
 
-  $: userReady = readyUsers && readyUsers.includes(user.id);
+  let userReady = $derived(readyUsers && readyUsers.includes(user.id));
 </script>
 
 <div
@@ -56,7 +71,7 @@
         {#if facilitators.includes($sessionUser.id)}
           <button
             class="text-red-500 text-sm"
-            on:click="{handleRemoveFacilitator(user.id)}">{$LL.remove()}</button
+            onclick={handleRemoveFacilitator(user.id)}>{$LL.remove()}</button
           >
         {/if}
       </div>
@@ -64,7 +79,7 @@
       <div>
         <button
           class="text-blue-500 dark:text-sky-400 text-sm"
-          on:click="{handleAddFacilitator(user.id)}"
+          onclick={handleAddFacilitator(user.id)}
           >{$LL.makeFacilitator()}</button
         >
       </div>
@@ -73,9 +88,9 @@
       {#if user.id === $sessionUser.id}
         <div>
           <button
-            on:click="{!userReady
+            onclick={!userReady
               ? handleUserReady($sessionUser.id)
-              : handleUserUnReady($sessionUser.id)}"
+              : handleUserUnReady($sessionUser.id)}
             class="inline-block pointer text-gray-300 dark:text-gray-500 {userReady
               ? 'text-lime-600 dark:text-lime-400'
               : ''} hover:text-cyan-400 dark:hover:text-cyan-400"

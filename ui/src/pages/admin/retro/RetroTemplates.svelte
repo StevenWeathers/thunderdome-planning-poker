@@ -7,14 +7,18 @@
   import AdminPageLayout from '../../../components/admin/AdminPageLayout.svelte';
   import RetroTemplatesList from '../../../components/retrotemplate/RetroTemplatesList.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const templatesPageLimit = 100;
-  let templateCount = 0;
-  let templatesPage = 1;
-  let templates = [];
+  let templateCount = $state(0);
+  let templatesPage = $state(1);
+  let templates = $state([]);
 
   function getTemplates() {
     const templatesOffset = (templatesPage - 1) * templatesPageLimit;

@@ -4,23 +4,38 @@
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
 
-  let klass = '';
-  export { klass as class };
-  export let phase = '';
-  export let item = {
+  
+  interface Props {
+    class?: string;
+    phase?: string;
+    item?: any;
+    feedbackVisibility?: string;
+    isFacilitator?: boolean;
+    users?: any;
+    columnColors?: any;
+    sendSocketEvent?: any;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    class: klass = '',
+    phase = '',
+    item = {
     id: '',
     type: '',
     content: '',
     comments: [],
-  };
-  export let feedbackVisibility = 'visible';
-  export let isFacilitator = false;
-  export let users = [];
-  export let columnColors: any = {};
-  export let sendSocketEvent = (event: string, value: any) => {};
+  },
+    feedbackVisibility = 'visible',
+    isFacilitator = false,
+    users = [],
+    columnColors = {},
+    sendSocketEvent = (event: string, value: any) => {},
+    children
+  }: Props = $props();
 
-  let showComments = false;
-  let selectedItem = null;
+  let showComments = $state(false);
+  let selectedItem = $state(null);
 
   const toggleComments = item => () => {
     showComments = !showComments;
@@ -82,7 +97,7 @@
         class="inline-block leading-none text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-sky-400 transition-colors duration-200"
         class:cursor-not-allowed="{phase === 'brainstorm' &&
           feedbackVisibility === 'hidden'}"
-        on:click="{toggleComments(item)}"
+        onclick={toggleComments(item)}
         disabled="{phase === 'brainstorm' && feedbackVisibility === 'hidden'}"
       >
         <MessageSquare class="inline w-4 h-4" />
@@ -94,7 +109,7 @@
     {#if phase === 'brainstorm' && item.userId === $user.id}
       <button
         aria-label="Delete feedback"
-        on:click="{handleDelete}"
+        onclick={handleDelete}
         class="float-right inline-block leading-none text-gray-700 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200"
       >
         <Trash2 class="w-5 h-5" />
@@ -111,7 +126,7 @@
       {item.content}
     {/if}
   </p>
-  <slot />
+  {@render children?.()}
 
   {#if showComments}
     <ItemComments

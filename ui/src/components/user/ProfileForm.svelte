@@ -22,7 +22,19 @@
     setLocale(locale);
   };
 
-  export let profile = {
+  interface Props {
+    profile?: any;
+    credential: any;
+    handleUpdate?: any;
+    toggleUpdatePassword: any;
+    notifications: any;
+    xfetch: any;
+    ldapEnabled: any;
+    headerAuthEnabled: any;
+  }
+
+  let {
+    profile = $bindable({
     id: '',
     rank: '',
     name: '',
@@ -35,14 +47,15 @@
     gravatarHash: '',
     verified: false,
     theme: 'auto',
-  };
-  export let credential;
-  export let handleUpdate = () => {};
-  export let toggleUpdatePassword;
-  export let notifications;
-  export let xfetch;
-  export let ldapEnabled;
-  export let headerAuthEnabled;
+  }),
+    credential = $bindable(),
+    handleUpdate = () => {},
+    toggleUpdatePassword,
+    notifications,
+    xfetch,
+    ldapEnabled,
+    headerAuthEnabled
+  }: Props = $props();
 
   const { AvatarService } = AppConfig;
 
@@ -80,7 +93,7 @@
     }
   }
 
-  let showMFASetup = false;
+  let showMFASetup = $state(false);
 
   function toggleMfaSetup() {
     showMFASetup = !showMFASetup;
@@ -91,7 +104,7 @@
     toggleMfaSetup();
   }
 
-  let showMfaRemove = false;
+  let showMfaRemove = $state(false);
 
   function toggleMfaRemove() {
     showMfaRemove = !showMfaRemove;
@@ -120,11 +133,11 @@
       });
   }
 
-  $: updateDisabled = profile.name === '';
-  $: userIsAdmin = validateUserIsAdmin($user);
+  let updateDisabled = $derived(profile.name === '');
+  let userIsAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
-<form on:submit="{handleSubmit}" name="updateProfile">
+<form onsubmit={handleSubmit} name="updateProfile">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -163,7 +176,7 @@
           <button
             class="float-right inline-block align-baseline font-bold text-sm text-blue-500
                                         hover:text-blue-800"
-            on:click="{requestVerifyEmail}"
+            onclick={requestVerifyEmail}
             data-testid="request-verify"
             type="button"
             >{$LL.requestVerifyEmail()}
@@ -334,7 +347,7 @@
             type="button"
             class="inline-block align-baseline font-bold
                                     text-sm text-blue-500 hover:text-blue-800 me-4"
-            on:click="{toggleUpdatePassword}"
+            onclick={toggleUpdatePassword}
             data-testid="toggle-updatepassword"
           >
             {$LL.updatePassword()}

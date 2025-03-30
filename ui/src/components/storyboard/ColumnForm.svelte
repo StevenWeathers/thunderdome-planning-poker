@@ -7,19 +7,31 @@
   import LL from '../../i18n/i18n-svelte';
   import { Trash2, User } from 'lucide-svelte';
 
-  export let toggleColumnEdit = () => {};
-  export let handleColumnRevision = () => {};
-  export let deleteColumn = () => () => {};
-  export let handlePersonaRemove = () => () => {};
-  export let handlePersonaAdd = () => {};
-  export let personas = [];
-  export let column = {
+  interface Props {
+    toggleColumnEdit?: any;
+    handleColumnRevision?: any;
+    deleteColumn?: any;
+    handlePersonaRemove?: any;
+    handlePersonaAdd?: any;
+    personas?: any;
+    column?: any;
+  }
+
+  let {
+    toggleColumnEdit = () => {},
+    handleColumnRevision = () => {},
+    deleteColumn = () => () => {},
+    handlePersonaRemove = () => () => {},
+    handlePersonaAdd = () => {},
+    personas = [],
+    column = $bindable({
     id: '',
     name: '',
     personas: [],
-  };
+  })
+  }: Props = $props();
 
-  let selectedPersona = '';
+  let selectedPersona = $state('');
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -39,7 +51,7 @@
 </script>
 
 <Modal closeModal="{toggleColumnEdit}">
-  <form on:submit="{handleSubmit}" name="addColumn">
+  <form onsubmit={handleSubmit} name="addColumn">
     <div class="mb-4">
       <label
         class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"

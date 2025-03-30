@@ -8,22 +8,42 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
 
-  export let toggleUpdate = () => {};
-  export let handleUpdate = () => {};
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix;
-  export let xfetch: any;
-  export let notifications: any;
 
-  export let scaleId = '';
-  export let name = '';
-  export let description = '';
-  export let scaleType = 'custom';
-  export let values: string[] = [];
-  export let isPublic = false;
-  export let defaultScale = false;
+  interface Props {
+    toggleUpdate?: any;
+    handleUpdate?: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix: any;
+    xfetch: any;
+    notifications: any;
+    scaleId?: string;
+    name?: string;
+    description?: string;
+    scaleType?: string;
+    values?: string[];
+    isPublic?: boolean;
+    defaultScale?: boolean;
+  }
+
+  let {
+    toggleUpdate = () => {},
+    handleUpdate = () => {},
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix,
+    xfetch,
+    notifications,
+    scaleId = '',
+    name = $bindable(''),
+    description = $bindable(''),
+    scaleType = $bindable('custom'),
+    values = $bindable([]),
+    isPublic = $bindable(false),
+    defaultScale = $bindable(false)
+  }: Props = $props();
 
   const scaleTypes = [
     'fibonacci',
@@ -93,12 +113,12 @@
     }
   }
 
-  $: updateDisabled = name === '' || scaleType === '' || values.length === 0;
-  $: isAdmin = validateUserIsAdmin($user);
+  let updateDisabled = $derived(name === '' || scaleType === '' || values.length === 0);
+  let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
 <Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="updateEstimationScale">
+  <form onsubmit={onSubmit} name="updateEstimationScale">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"

@@ -16,18 +16,22 @@
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
 
-  let userProfile = {};
-  let userCredential = null;
-  let apiKeys = [];
-  let jiraInstances = [];
-  let showApiKeyCreate = false;
-  let showAccountDeletion = false;
+  let { xfetch, router, notifications }: Props = $props();
 
-  let updatePassword = false;
+  let userProfile = $state({});
+  let userCredential = $state(null);
+  let apiKeys = $state([]);
+  let jiraInstances = $state([]);
+  let showApiKeyCreate = $state(false);
+  let showAccountDeletion = $state(false);
+
+  let updatePassword = $state(false);
 
   const {
     ExternalAPIEnabled,
@@ -213,7 +217,7 @@
     showAccountDeletion = !showAccountDeletion;
   }
 
-  let showJiraInstanceCreate = false;
+  let showJiraInstanceCreate = $state(false);
 
   function toggleCreateJiraInstance() {
     showJiraInstanceCreate = !showJiraInstanceCreate;

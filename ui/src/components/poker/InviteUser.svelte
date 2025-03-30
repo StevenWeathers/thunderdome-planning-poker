@@ -4,10 +4,19 @@
   import { appRoutes } from '../../config';
   import { ClipboardCopy } from 'lucide-svelte';
 
-  export let notifications;
-  export let hostname = '';
-  export let battleId = '';
-  export let joinCode = '';
+  interface Props {
+    notifications: any;
+    hostname?: string;
+    battleId?: string;
+    joinCode?: string;
+  }
+
+  let {
+    notifications,
+    hostname = '',
+    battleId = '',
+    joinCode = ''
+  }: Props = $props();
 
   function copyBattleLink() {
     const bl = document.getElementById('BattleLink');

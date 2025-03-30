@@ -32,20 +32,29 @@
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
 
-  export let retroId;
-  export let notifications;
-  export let router;
-  export let xfetch;
+  interface Props {
+    retroId: any;
+    notifications: any;
+    router: any;
+    xfetch: any;
+  }
+
+  let {
+    retroId,
+    notifications,
+    router,
+    xfetch
+  }: Props = $props();
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
 
-  let isLoading = true;
-  let socketError = false;
-  let socketReconnecting = false;
-  let retro = {
+  let isLoading = $state(true);
+  let socketError = $state(false);
+  let socketReconnecting = $state(false);
+  let retro = $state({
     name: '',
     ownerId: '',
     teamId: '',
@@ -73,19 +82,19 @@
       },
     },
     allowCumulativeVoting: false,
-  };
-  let showDeleteRetro = false;
-  let actionItem = '';
-  let showExport = false;
-  let groupedItems = [];
-  let JoinPassRequired = false;
-  let voteLimitReached = false;
+  });
+  let showDeleteRetro = $state(false);
+  let actionItem = $state('');
+  let showExport = $state(false);
+  let groupedItems = $state([]);
+  let JoinPassRequired = $state(false);
+  let voteLimitReached = $state(false);
   let allUsersVoted = false;
-  let showEditRetro = false;
-  let phaseTimeStart = new Date();
-  let phaseTimeLimitMin = 0;
-  let team = null;
-  let columnColors = {};
+  let showEditRetro = $state(false);
+  let phaseTimeStart = $state(new Date());
+  let phaseTimeLimitMin = $state(0);
+  let team = $state(null);
+  let columnColors = $state({});
 
   function getAssociatedTeam() {
     if (retro.teamId) {
@@ -331,8 +340,8 @@
     ws.close();
   });
 
-  $: isFacilitator =
-    retro.facilitators && retro.facilitators.includes($user.id);
+  let isFacilitator =
+    $derived(retro.facilitators && retro.facilitators.includes($user.id));
 
   const sendSocketEvent = (type, value) => {
     ws.send(
@@ -359,8 +368,8 @@
     showExport = !showExport;
   };
 
-  let showActionEdit = false;
-  let selectedAction = null;
+  let showActionEdit = $state(false);
+  let selectedAction = $state(null);
   const toggleActionEdit = id => () => {
     showActionEdit = !showActionEdit;
     selectedAction = retro.actionItems.find(r => r.id === id);
@@ -526,7 +535,7 @@
     showEditRetro = !showEditRetro;
   }
 
-  let showBecomeFacilitator = false;
+  let showBecomeFacilitator = $state(false);
 
   function becomeFacilitator(facilitatorCode) {
     sendSocketEvent('self_facilitator', facilitatorCode);
@@ -572,7 +581,7 @@
     showBecomeFacilitator = !showBecomeFacilitator;
   }
 
-  let showOpenActionItems = false;
+  let showOpenActionItems = $state(false);
 
   function toggleReviewActionItems() {
     showOpenActionItems = !showOpenActionItems;
@@ -687,7 +696,7 @@
           class="flex-initial px-1 {retro.phase === 'intro' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('intro')}">{$LL.primeDirective()}</button>
+          <button onclick={setPhase('intro')}>{$LL.primeDirective()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -696,7 +705,7 @@
           class="flex-initial px-1 {retro.phase === 'brainstorm' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('brainstorm')}">{$LL.brainstorm()}</button
+          <button onclick={setPhase('brainstorm')}>{$LL.brainstorm()}</button
           >
         </div>
         <div class="flex-initial px-1">
@@ -706,7 +715,7 @@
           class="flex-initial px-1 {retro.phase === 'group' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('group')}">{$LL.group()}</button>
+          <button onclick={setPhase('group')}>{$LL.group()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -715,7 +724,7 @@
           class="flex-initial px-1 {retro.phase === 'vote' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('vote')}">{$LL.vote()}</button>
+          <button onclick={setPhase('vote')}>{$LL.vote()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -724,7 +733,7 @@
           class="flex-initial px-1 {retro.phase === 'action' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('action')}">{$LL.actionItems()}</button>
+          <button onclick={setPhase('action')}>{$LL.actionItems()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -733,7 +742,7 @@
           class="flex-initial px-1 {retro.phase === 'completed' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('completed')}">{$LL.done()}</button>
+          <button onclick={setPhase('completed')}>{$LL.done()}</button>
         </div>
       </div>
     </div>
@@ -883,7 +892,7 @@
                     />
                   </div>
                   <div class="flex-grow">
-                    <form on:submit="{handleActionItem}">
+                    <form onsubmit={handleActionItem}>
                       <input
                         bind:value="{actionItem}"
                         placeholder="{$LL.actionItemPlaceholder()}"
@@ -907,7 +916,7 @@
                   <div class="flex items-center">
                     <div class="flex-shrink">
                       <button
-                        on:click="{toggleActionEdit(item.id)}"
+                        onclick={toggleActionEdit(item.id)}
                         class="pe-2 pt-1 text-gray-500 dark:text-gray-400
                                                 hover:text-blue-500"
                       >
@@ -935,11 +944,11 @@
                         id="{i}Completed"
                         checked="{item.completed}"
                         class="opacity-0 absolute h-6 w-6"
-                        on:change="{handleActionUpdate(
+                        onchange={handleActionUpdate(
                           item.id,
                           item.completed,
                           item.content,
-                        )}"
+                        )}
                       />
                       <div
                         class="bg-white dark:bg-gray-800 border-2 rounded-md

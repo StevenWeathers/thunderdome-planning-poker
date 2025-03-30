@@ -11,7 +11,7 @@
 
   const { RepoURL } = AppConfig;
 
-  let selectedPaymentPeriod = 'month';
+  let selectedPaymentPeriod = $state('month');
 
   function togglePaymentPeriod() {
     selectedPaymentPeriod =

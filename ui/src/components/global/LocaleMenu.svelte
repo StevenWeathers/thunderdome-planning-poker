@@ -1,13 +1,19 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { locales } from '../../config';
   import { createEventDispatcher } from 'svelte';
   import { Globe } from 'lucide-svelte';
 
-  export let currentPage;
-  export let selectedLocale = 'en';
+  interface Props {
+    currentPage: any;
+    selectedLocale?: string;
+  }
+
+  let { currentPage, selectedLocale = 'en' }: Props = $props();
 
   const supportedLocales = [];
-  let showMenu = false;
+  let showMenu = $state(false);
 
   function toggleMenu() {
     showMenu = !showMenu;
@@ -19,11 +25,11 @@
     }
   }
 
-  $: {
+  run(() => {
     if (typeof currentPage !== 'undefined') {
       pageChangeHandler();
     }
-  }
+  });
 
   for (const [key, value] of Object.entries(locales)) {
     supportedLocales.push({
@@ -47,7 +53,7 @@
     class="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
     aria-label="Locale"
     type="button"
-    on:click="{toggleMenu}"
+    onclick={toggleMenu}
   >
     <Globe />
   </button>
@@ -68,7 +74,7 @@
           tabindex="-1"
         >
           <div class="ms-3">
-            <button on:click="{switchLocale(locale.value)}"
+            <button onclick={switchLocale(locale.value)}
               >{locale.name}</button
             >
           </div>

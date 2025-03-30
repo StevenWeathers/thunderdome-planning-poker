@@ -15,15 +15,19 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import Toggle from '../../../components/forms/Toggle.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const storyboardsPageLimit = 100;
-  let storyboardCount = 0;
-  let storyboards = [];
-  let storyboardsPage = 1;
-  let activeStoryboards = false;
+  let storyboardCount = $state(0);
+  let storyboards = $state([]);
+  let storyboardsPage = $state(1);
+  let activeStoryboards = $state(false);
 
   function getStoryboards() {
     const storyboardsOffset = (storyboardsPage - 1) * storyboardsPageLimit;
@@ -80,44 +84,48 @@
       />
     </TableNav>
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateCreated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-        <HeadCol type="action">
-          <span class="sr-only">{$LL.actions()}</span>
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each storyboards as storyboard, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <a
-                href="{appRoutes.admin}/storyboards/{storyboard.id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >{storyboard.name}</a
-              >
-            </RowCol>
-            <RowCol>
-              {new Date(storyboard.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(storyboard.updatedDate).toLocaleString()}
-            </RowCol>
-            <RowCol type="action">
-              <HollowButton href="{appRoutes.storyboard}/{storyboard.id}">
-                {$LL.joinStoryboard()}
-              </HollowButton>
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateCreated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+          <HeadCol type="action">
+            <span class="sr-only">{$LL.actions()}</span>
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each storyboards as storyboard, i}
+            <TableRow itemIndex="{i}">
+              <RowCol>
+                <a
+                  href="{appRoutes.admin}/storyboards/{storyboard.id}"
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >{storyboard.name}</a
+                >
+              </RowCol>
+              <RowCol>
+                {new Date(storyboard.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(storyboard.updatedDate).toLocaleString()}
+              </RowCol>
+              <RowCol type="action">
+                <HollowButton href="{appRoutes.storyboard}/{storyboard.id}">
+                  {$LL.joinStoryboard()}
+                </HollowButton>
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
       bind:current="{storyboardsPage}"

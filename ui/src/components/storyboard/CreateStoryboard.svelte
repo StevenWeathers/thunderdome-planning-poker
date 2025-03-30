@@ -9,19 +9,28 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import { Crown, Lock } from 'lucide-svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let router;
-  export let apiPrefix = '/api';
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+    apiPrefix?: string;
+  }
 
-  let storyboardName = '';
-  let joinCode = '';
-  let facilitatorCode = '';
-  let selectedTeam = '';
-  let teams = [];
+  let {
+    xfetch,
+    notifications,
+    router,
+    apiPrefix = '/api'
+  }: Props = $props();
+
+  let storyboardName = $state('');
+  let joinCode = $state('');
+  let facilitatorCode = $state('');
+  let selectedTeam = $state('');
+  let teams = $state([]);
 
   /** @type {TextInput} */
-  let storyboardNameTextInput;
+  let storyboardNameTextInput = $state();
 
   function createStoryboard(e) {
     e.preventDefault();
@@ -76,7 +85,7 @@
   });
 </script>
 
-<form on:submit="{createStoryboard}" name="createStoryboard">
+<form onsubmit={createStoryboard} name="createStoryboard">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"

@@ -7,14 +7,27 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import { Crown, Lock } from 'lucide-svelte';
 
-  export let toggleEditRetro = () => {};
-  export let handleRetroEdit = () => {};
-  export let retroName = '';
-  export let joinCode = '';
-  export let facilitatorCode = '';
-  export let maxVotes = '3';
-  export let brainstormVisibility = 'visible';
-  export let phaseAutoAdvance = true;
+  interface Props {
+    toggleEditRetro?: any;
+    handleRetroEdit?: any;
+    retroName?: string;
+    joinCode?: string;
+    facilitatorCode?: string;
+    maxVotes?: string;
+    brainstormVisibility?: string;
+    phaseAutoAdvance?: boolean;
+  }
+
+  let {
+    toggleEditRetro = () => {},
+    handleRetroEdit = () => {},
+    retroName = $bindable(''),
+    joinCode = $bindable(''),
+    facilitatorCode = $bindable(''),
+    maxVotes = $bindable('3'),
+    brainstormVisibility = $bindable('visible'),
+    phaseAutoAdvance = $bindable(true)
+  }: Props = $props();
 
   const brainstormVisibilityOptions = [
     {
@@ -48,7 +61,7 @@
 </script>
 
 <Modal closeModal="{toggleEditRetro}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
-  <form on:submit="{saveRetro}" name="createRetro">
+  <form onsubmit={saveRetro} name="createRetro">
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"

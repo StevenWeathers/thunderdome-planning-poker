@@ -2,8 +2,12 @@
   import { RetroTemplateFormat } from '../../types/retro';
   import Modal from '../global/Modal.svelte';
 
-  export let format: RetroTemplateFormat;
-  export let toggleClose: (template) => void;
+  interface Props {
+    format: RetroTemplateFormat;
+    toggleClose: (template) => void;
+  }
+
+  let { format, toggleClose }: Props = $props();
 </script>
 
 <Modal closeModal="{() => toggleClose(null)}" widthClasses="w-full md:w-2/3">

@@ -13,26 +13,44 @@
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
 
-  export let toggleEditBattle = () => {};
-  export let handleBattleEdit = (battle: any) => {};
-  export let points = [];
-  export let battleName = '';
-  export let votingLocked = false;
-  export let autoFinishVoting = true;
-  export let pointAverageRounding = 'ceil';
-  export let joinCode = '';
-  export let leaderCode = '';
-  export let hideVoterIdentity = false;
-  export let teamId = '';
-  export let notifications: any;
-  export let xfetch: any;
+  interface Props {
+    toggleEditBattle?: any;
+    handleBattleEdit?: any;
+    points?: any;
+    battleName?: string;
+    votingLocked?: boolean;
+    autoFinishVoting?: boolean;
+    pointAverageRounding?: string;
+    joinCode?: string;
+    leaderCode?: string;
+    hideVoterIdentity?: boolean;
+    teamId?: string;
+    notifications: any;
+    xfetch: any;
+  }
+
+  let {
+    toggleEditBattle = () => {},
+    handleBattleEdit = (battle: any) => {},
+    points = $bindable([]),
+    battleName = $bindable(''),
+    votingLocked = false,
+    autoFinishVoting = $bindable(true),
+    pointAverageRounding = $bindable('ceil'),
+    joinCode = $bindable(''),
+    leaderCode = $bindable(''),
+    hideVoterIdentity = $bindable(false),
+    teamId = $bindable(''),
+    notifications,
+    xfetch
+  }: Props = $props();
 
   let checkedPointColor =
     'border-green-500 bg-green-100 text-green-600 dark:bg-gray-900 dark:text-lime-500 dark:border-lime-500';
   let uncheckedPointColor =
     'border-gray-300 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300';
 
-  let teams = [];
+  let teams = $state([]);
 
   function getTeams() {
     xfetch(`/api/users/${$user.id}/teams?limit=100`)
@@ -75,7 +93,7 @@
   closeModal="{toggleEditBattle}"
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
 >
-  <form on:submit="{saveBattle}" name="createBattle">
+  <form onsubmit={saveBattle} name="createBattle">
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"

@@ -8,28 +8,40 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import { Trash2 } from 'lucide-svelte';
 
-  export let toggleEdit = () => {};
-  export let handleEdit = action => {};
-  export let handleDelete = () => {};
-  export let handleAssigneeAdd = (retroId, actionId, userId) => {};
-  export let handleAssigneeRemove = (retroId, actionId, userId) => () => {};
-  export let assignableUsers = [];
-  export let action = {
+  interface Props {
+    toggleEdit?: any;
+    handleEdit?: any;
+    handleDelete?: any;
+    handleAssigneeAdd?: any;
+    handleAssigneeRemove?: any;
+    assignableUsers?: any;
+    action?: any;
+  }
+
+  let {
+    toggleEdit = () => {},
+    handleEdit = action => {},
+    handleDelete = () => {},
+    handleAssigneeAdd = (retroId, actionId, userId) => {},
+    handleAssigneeRemove = (retroId, actionId, userId) => () => {},
+    assignableUsers = [],
+    action = {
     id: '',
     retroId: '',
     content: '',
     completed: false,
     assignees: [],
-  };
+  }
+  }: Props = $props();
 
-  let selectedAssignee = '';
+  let selectedAssignee = $state('');
 
-  let editAction = {
+  let editAction = $state({
     id: action.id,
     retroId: action.retroId,
     content: action.content,
     completed: action.completed,
-  };
+  });
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -43,7 +55,7 @@
 </script>
 
 <Modal closeModal="{toggleEdit}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
-  <form on:submit="{handleSubmit}">
+  <form onsubmit={handleSubmit}>
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"

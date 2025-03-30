@@ -1,20 +1,25 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { scaleLinear } from 'd3-scale';
   import { TriangleAlert } from 'lucide-svelte';
   import { onMount } from 'svelte';
 
-  export let votes = [];
-  export let pointValues = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?'];
-  export let users = [];
-  export let averageRounding = 'ceil';
-  let chartData = [];
-  let consensusValue = '';
-  let consensusPercentage = 0;
-  let isNumeric = false;
-  let totalVoters = 0;
-  let userMap = {};
+  /** @type {{votes?: any, pointValues?: any, users?: any, averageRounding?: string}} */
+  let {
+    votes = [],
+    pointValues = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?'],
+    users = [],
+    averageRounding = 'ceil'
+  } = $props();
+  let chartData = $state([]);
+  let consensusValue = $state('');
+  let consensusPercentage = $state(0);
+  let isNumeric = $state(false);
+  let totalVoters = $state(0);
+  let userMap = $state({});
 
-  $: {
+  run(() => {
     userMap = users.reduce((prev, u) => {
       prev[u.id] = u.name;
       return prev;
@@ -40,7 +45,7 @@
     totalVoters = votes.length;
     consensusPercentage =
       totalVoters > 0 ? Math.round((modeData.count / totalVoters) * 100) : 0;
-  }
+  });
 
   function roundWithConfiguredAvg(middleIndex) {
     let average = 0;
@@ -108,7 +113,7 @@
     return count > 0 ? Math.max(scaledHeight, minHeight) : 0;
   }
 
-  $: averageOrMedian = getAverageOrMedian(votes, pointValues) || 'N/A';
+  let averageOrMedian = $derived(getAverageOrMedian(votes, pointValues) || 'N/A');
 </script>
 
 <div

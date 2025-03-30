@@ -5,15 +5,26 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { User } from 'lucide-svelte';
 
-  export let checkinId = {};
-  export let comment = {};
-  export let userMap = {};
-  export let isAdmin = false;
-  export let handleEdit = () => {};
-  export let handleDelete = () => {};
+  interface Props {
+    checkinId?: any;
+    comment?: any;
+    userMap?: any;
+    isAdmin?: boolean;
+    handleEdit?: any;
+    handleDelete?: any;
+  }
 
-  let showEdit = false;
-  let editcomment = `${comment.comment}`;
+  let {
+    checkinId = {},
+    comment = {},
+    userMap = {},
+    isAdmin = false,
+    handleEdit = () => {},
+    handleDelete = () => {}
+  }: Props = $props();
+
+  let showEdit = $state(false);
+  let editcomment = $state(`${comment.comment}`);
 
   function toggleEdit() {
     showEdit = !showEdit;
@@ -41,7 +52,7 @@
   </div>
   {#if showEdit}
     <div class="w-full my-2">
-      <form on:submit="{onSubmit}" name="checkinComment">
+      <form onsubmit={onSubmit} name="checkinComment">
         <textarea
           class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
     rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
@@ -66,13 +77,13 @@
     <div class="mb-2 text-right">
       <button
         class="text-blue-500 hover:text-blue-300 dark:text-sky-300 dark:hover:text-sky-100 me-1"
-        on:click="{toggleEdit}"
+        onclick={toggleEdit}
       >
         {$LL.edit()}
       </button>
       <button
         class="text-red-500"
-        on:click="{handleDelete(checkinId, comment.id)}"
+        onclick={handleDelete(checkinId, comment.id)}
       >
         {$LL.delete()}
       </button>

@@ -3,14 +3,27 @@
   import GroupNameForm from './GroupNameForm.svelte';
   import RetroFeedbackItem from './RetroFeedbackItem.svelte';
 
-  export let phase = 'group';
-  export let groups = [];
-  export let handleItemChange = (itemId: string, groupId: string) => {};
-  export let handleGroupNameChange = () => {};
-  export let isFacilitator = false;
-  export let users = [];
-  export let columnColors: any = {};
-  export let sendSocketEvent = (event: string, value: any) => {};
+  interface Props {
+    phase?: string;
+    groups?: any;
+    handleItemChange?: any;
+    handleGroupNameChange?: any;
+    isFacilitator?: boolean;
+    users?: any;
+    columnColors?: any;
+    sendSocketEvent?: any;
+  }
+
+  let {
+    phase = 'group',
+    groups = $bindable([]),
+    handleItemChange = (itemId: string, groupId: string) => {},
+    handleGroupNameChange = () => {},
+    isFacilitator = false,
+    users = [],
+    columnColors = {},
+    sendSocketEvent = (event: string, value: any) => {}
+  }: Props = $props();
 
   function handleDndConsider(e) {
     const groupIndex = e.target.dataset.groupindex;
@@ -56,8 +69,8 @@
           'dark:outline-yellow-400',
         ],
       }}"
-      on:consider="{handleDndConsider}"
-      on:finalize="{handleDndFinalize}"
+      onconsider={handleDndConsider}
+      onfinalize={handleDndFinalize}
       data-groupindex="{i}"
       class="flex-1 grow"
       style="min-height: 40px;"

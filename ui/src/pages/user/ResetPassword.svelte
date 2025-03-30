@@ -6,13 +6,22 @@
   import { appRoutes } from '../../config';
   import TextInput from '../../components/forms/TextInput.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let resetId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    resetId: any;
+  }
 
-  let warriorPassword1 = '';
-  let warriorPassword2 = '';
+  let {
+    xfetch,
+    router,
+    notifications,
+    resetId
+  }: Props = $props();
+
+  let warriorPassword1 = $state('');
+  let warriorPassword2 = $state('');
 
   function resetWarriorPassword(e) {
     e.preventDefault();
@@ -44,7 +53,7 @@
     }
   }
 
-  $: resetDisabled = warriorPassword1 === '' || warriorPassword2 === '';
+  let resetDisabled = $derived(warriorPassword1 === '' || warriorPassword2 === '');
 </script>
 
 <svelte:head>
@@ -55,7 +64,7 @@
   <div class="flex justify-center">
     <div class="w-full md:w-1/2 lg:w-1/3">
       <form
-        on:submit="{resetWarriorPassword}"
+        onsubmit={resetWarriorPassword}
         class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
         name="resetWarriorPassword"
       >

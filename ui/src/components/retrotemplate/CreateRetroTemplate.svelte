@@ -9,22 +9,35 @@
   import { RetroTemplateFormat } from '../../types/retro';
   import ColumnForm from './ColumnForm.svelte';
 
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix: string = '/api';
-  export let xfetch: any;
-  export let notifications: any;
+  interface Props {
+    toggleCreate?: any;
+    handleCreate?: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    xfetch: any;
+    notifications: any;
+  }
 
-  let name = '';
-  let description = '';
-  let isPublic = false;
-  let defaultTemplate = false;
-  let format: RetroTemplateFormat = {
+  let {
+    toggleCreate = () => {},
+    handleCreate = () => {},
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    xfetch,
+    notifications
+  }: Props = $props();
+
+  let name = $state('');
+  let description = $state('');
+  let isPublic = $state(false);
+  let defaultTemplate = $state(false);
+  let format: RetroTemplateFormat = $state({
     columns: [],
-  };
+  });
 
   function toggleClose() {
     toggleCreate();
@@ -57,13 +70,13 @@
       });
   }
 
-  $: createDisabled =
-    name === '' || format.columns.length < 2 || format.columns.length > 5;
-  $: isAdmin = validateUserIsAdmin($user);
+  let createDisabled =
+    $derived(name === '' || format.columns.length < 2 || format.columns.length > 5);
+  let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
 <Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="createRetroTemplate">
+  <form onsubmit={onSubmit} name="createRetroTemplate">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"

@@ -2,12 +2,16 @@
   import type { ComponentType } from 'svelte';
   import { HelpCircle } from 'lucide-svelte';
 
-  export let metrics: Array<{
+  interface Props {
+    metrics: Array<{
     key: string;
     name: string;
     value: number | string;
     icon: ComponentType;
   }>;
+  }
+
+  let { metrics }: Props = $props();
 
   const getMetricValue = (value: number | string) => {
     if (typeof value === 'number') {
@@ -19,10 +23,10 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
   {#each metrics as { key, name, value, icon }}
+    {@const SvelteComponent = icon || HelpCircle}
     <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex items-center">
       <div class="mr-4">
-        <svelte:component
-          this="{icon || HelpCircle}"
+        <SvelteComponent
           class="w-8 h-8 text-blue-500 dark:text-blue-400"
         />
       </div>

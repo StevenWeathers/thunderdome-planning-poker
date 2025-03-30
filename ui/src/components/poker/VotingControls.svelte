@@ -1,19 +1,34 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import TextInput from '../forms/TextInput.svelte';
 
-  export let sendSocketEvent = () => {};
-  export let planId = '';
-  export let points = [];
-  export let votingLocked = true;
-  export let highestVote = '';
+  interface Props {
+    sendSocketEvent?: any;
+    planId?: string;
+    points?: any;
+    votingLocked?: boolean;
+    highestVote?: string;
+  }
 
-  let customPointValue = false;
+  let {
+    sendSocketEvent = () => {},
+    planId = '',
+    points = [],
+    votingLocked = true,
+    highestVote = ''
+  }: Props = $props();
 
-  $: planPoints = highestVote;
-  let customPlanPoints = '';
+  let customPointValue = $state(false);
+
+  let planPoints;
+  run(() => {
+    planPoints = highestVote;
+  });
+  let customPlanPoints = $state('');
 
   const toggleCustomPointValue = () => {
     if (planPoints === 'CUSTOM') {
@@ -79,7 +94,7 @@
       >
         {$LL.votingRestart()}
       </SolidButton>
-      <form on:submit="{handleSubmit}" name="savePlanPoints">
+      <form onsubmit={handleSubmit} name="savePlanPoints">
         <legend
           class="text-xl mb-2 font-semibold leading-tight dark:text-gray-300"
         >

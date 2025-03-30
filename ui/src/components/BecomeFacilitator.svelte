@@ -4,10 +4,14 @@
   import SolidButton from './global/SolidButton.svelte';
   import TextInput from './forms/TextInput.svelte';
 
-  export let toggleBecomeFacilitator = () => {};
-  export let handleBecomeFacilitator = () => {};
+  interface Props {
+    toggleBecomeFacilitator?: any;
+    handleBecomeFacilitator?: any;
+  }
 
-  let facilitatorCode = '';
+  let { toggleBecomeFacilitator = () => {}, handleBecomeFacilitator = () => {} }: Props = $props();
+
+  let facilitatorCode = $state('');
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -20,7 +24,7 @@
   closeModal="{toggleBecomeFacilitator}"
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
 >
-  <form on:submit="{handleSubmit}" name="becomeLeader">
+  <form onsubmit={handleSubmit} name="becomeLeader">
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"

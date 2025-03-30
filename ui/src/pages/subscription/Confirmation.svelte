@@ -3,7 +3,11 @@
   import { user } from '../../stores';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
 
-  export let router;
+  interface Props {
+    router: any;
+  }
+
+  let { router }: Props = $props();
 
   const { RepoURL } = AppConfig;
 

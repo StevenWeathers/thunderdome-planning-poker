@@ -3,9 +3,13 @@
   import { locales } from '../../config';
   import SelectInput from './SelectInput.svelte';
 
-  export let selectedLocale = 'en';
-  let klass = '';
-  export { klass as class };
+  interface Props {
+    selectedLocale?: string;
+    class?: string;
+  }
+
+  let { selectedLocale = 'en', class: klass = '' }: Props = $props();
+  
   const supportedLocales = [];
 
   for (const [key, value] of Object.entries(locales)) {

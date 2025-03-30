@@ -14,22 +14,31 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { Crown, Lock } from 'lucide-svelte';
 
-  export let notifications;
-  export let router;
-  export let xfetch;
-  export let apiPrefix = '/api';
+  interface Props {
+    notifications: any;
+    router: any;
+    xfetch: any;
+    apiPrefix?: string;
+  }
+
+  let {
+    notifications,
+    router,
+    xfetch,
+    apiPrefix = '/api'
+  }: Props = $props();
 
   const allowedPointAverages = ['ceil', 'round', 'floor'];
 
-  let allowedPointValues = [];
-  let points = [];
-  let plans = [];
-  let teams = [];
+  let allowedPointValues = $state([]);
+  let points = $state([]);
+  let plans = $state([]);
+  let teams = $state([]);
   let publicEstimationScales = [];
   let teamEstimationScales = [];
   let organizationEstimationScales = [];
-  let estimateScales = [];
-  let selectedEstimationScale = '';
+  let estimateScales = $state([]);
+  let selectedEstimationScale = $state('');
   let defaultSettings = {
     battleName: '',
     autoFinishVoting: true,
@@ -39,13 +48,13 @@
     leaderCode: '',
     selectedTeam: '',
   };
-  let pokerSettings = { ...defaultSettings };
+  let pokerSettings = $state({ ...defaultSettings });
   let teamPokerSettings = {};
   let departmentPokerSettings = {};
   let orgPokerSettings = {};
 
   /** @type {TextInput} */
-  let battleNameTextInput;
+  let battleNameTextInput = $state();
 
   let checkedPointColor =
     'border-green-500 bg-green-50 text-green-700 dark:bg-lime-50 dark:text-lime-700 dark:border-lime-500';
@@ -312,7 +321,7 @@
     points = scale.values;
   };
 
-  let showImport = false;
+  let showImport = $state(false);
 
   const toggleImport = () => {
     showImport = !showImport;
@@ -336,7 +345,7 @@
   });
 </script>
 
-<form on:submit="{createBattle}" name="createBattle">
+<form onsubmit={createBattle} name="createBattle">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"

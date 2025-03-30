@@ -2,9 +2,13 @@
   import Modal from '../global/Modal.svelte';
   import UserRegisterForm from './UserRegisterForm.svelte';
 
-  export let notifications;
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
+  interface Props {
+    notifications: any;
+    toggleCreate?: any;
+    handleCreate?: any;
+  }
+
+  let { notifications, toggleCreate = () => {}, handleCreate = () => {} }: Props = $props();
 </script>
 
 <Modal closeModal="{toggleCreate}">

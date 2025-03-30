@@ -23,52 +23,63 @@
   import Toggle from '../../components/forms/Toggle.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let organizationId;
-  export let departmentId;
-  export let teamId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    organizationId: any;
+    departmentId: any;
+    teamId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    organizationId,
+    departmentId,
+    teamId
+  }: Props = $props();
 
   const { AllowRegistration, AllowGuests } = AppConfig;
 
-  let timezone = getTimezoneName();
-  let showCheckin = false;
+  let timezone = $state(getTimezoneName());
+  let showCheckin = $state(false);
   let now = new Date();
-  let maxNegativeDate;
-  let selectedDate;
-  let selectedCheckin;
-  let stats = {
+  let maxNegativeDate = $state();
+  let selectedDate = $state();
+  let selectedCheckin = $state();
+  let stats = $state({
     participants: 0,
     pPerc: 0,
     goals: 0,
     gPerc: 0,
     blocked: 0,
     bPerc: 0,
-  };
+  });
 
-  let team = {
+  let team = $state({
     id: teamId,
     name: '',
-  };
-  let organization = {
+  });
+  let organization = $state({
     id: organizationId,
     name: '',
-  };
-  let department = {
+  });
+  let department = $state({
     id: departmentId,
     name: '',
-  };
+  });
   let users = [];
-  let userCount = 1;
+  let userCount = $state(1);
 
-  let organizationRole = '';
-  let departmentRole = '';
-  let teamRole = '';
+  let organizationRole = $state('');
+  let departmentRole = $state('');
+  let teamRole = $state('');
 
-  let checkins = [];
-  let checkinColumns = [];
-  let showOnlyDiscussionItems = false;
+  let checkins = $state([]);
+  let checkinColumns = $state([]);
+  let showOnlyDiscussionItems = $state(false);
 
   function updateTimezone(ev) {
     timezone = ev.detail.timezone;
@@ -96,12 +107,12 @@
   }
 
   const apiPrefix = '/api';
-  $: orgPrefix = departmentId
+  let orgPrefix = $derived(departmentId
     ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
-    : `${apiPrefix}/organizations/${organizationId}`;
-  $: teamPrefix = organizationId
+    : `${apiPrefix}/organizations/${organizationId}`);
+  let teamPrefix = $derived(organizationId
     ? `${orgPrefix}/teams/${teamId}`
-    : `${apiPrefix}/teams/${teamId}`;
+    : `${apiPrefix}/teams/${teamId}`);
 
   function getTeam() {
     xfetch(teamPrefix)
@@ -136,7 +147,7 @@
       });
   }
 
-  let userMap = {};
+  let userMap = $state({});
 
   function getUsers() {
     xfetch(`${teamPrefix}/users?limit=1000&offset=0`)
@@ -360,18 +371,18 @@
     return stats;
   }
 
-  $: isAdmin =
-    organizationRole === 'ADMIN' ||
+  let isAdmin =
+    $derived(organizationRole === 'ADMIN' ||
     departmentRole === 'ADMIN' ||
-    teamRole === 'ADMIN';
-  $: isTeamMember =
-    organizationRole === 'ADMIN' ||
+    teamRole === 'ADMIN');
+  let isTeamMember =
+    $derived(organizationRole === 'ADMIN' ||
     departmentRole === 'ADMIN' ||
-    teamRole !== '';
+    teamRole !== '');
 
-  $: checkStats = checkins && userCount && calculateCheckinStats();
-  $: alreadyCheckedIn =
-    checkins && checkins.find(c => c.user.id === $user.id) !== undefined;
+  let checkStats = $derived(checkins && userCount && calculateCheckinStats());
+  let alreadyCheckedIn =
+    $derived(checkins && checkins.find(c => c.user.id === $user.id) !== undefined);
 </script>
 
 <svelte:head>
@@ -401,7 +412,7 @@
             bind:value="{selectedDate}"
             min="{maxNegativeDate}"
             max="{formatDayForInput(now)}"
-            on:change="{getCheckins}"
+            onchange={getCheckins}
             class="bg-transparent text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white"
           />
           <Picker
@@ -591,9 +602,9 @@
                   {#if checkin.user.id === $user.id || isAdmin}
                     <div>
                       <button
-                        on:click="{() => {
+                        onclick={() => {
                           toggleCheckin(checkin);
-                        }}"
+                        }}
                         class="text-blue-500"
                         title="{$LL.edit()}"
                         data-testid="checkin-edit"
@@ -602,9 +613,9 @@
                         <Pencil />
                       </button>
                       <button
-                        on:click="{() => {
+                        onclick={() => {
                           handleCheckinDelete(checkin.id);
-                        }}"
+                        }}
                         class="text-red-500"
                         title="Delete"
                         data-testid="checkin-delete"

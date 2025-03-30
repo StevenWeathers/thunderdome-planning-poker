@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import Modal from '../global/Modal.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import LL from '../../i18n/i18n-svelte';
@@ -8,15 +10,28 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  export let toggleClose = () => {};
-  export let xfetch;
-  export let notifications;
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix = '/api';
-  export let isEntityAdmin = false;
-  export let retroSettings = {
+  interface Props {
+    toggleClose?: any;
+    xfetch: any;
+    notifications: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    isEntityAdmin?: boolean;
+    retroSettings?: any;
+  }
+
+  let {
+    toggleClose = () => {},
+    xfetch,
+    notifications,
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    isEntityAdmin = false,
+    retroSettings = $bindable({
     id: '',
     maxVotes: 3,
     allowMultipleVotes: false,
@@ -27,7 +42,8 @@
     templateId: null,
     joinCode: '',
     facilitatorCode: '',
-  };
+  })
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
   const brainstormVisibilityOptions = [
@@ -87,7 +103,7 @@
 </script>
 
 <Modal closeModal="{toggleClose}">
-  <form on:submit|preventDefault="{handleSubmit}" class="mt-6 space-y-6">
+  <form onsubmit={preventDefault(handleSubmit)} class="mt-6 space-y-6">
     <div>
       <label
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"

@@ -22,10 +22,19 @@
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
 
-  export let battleId: string;
-  export let notifications;
-  export let router;
-  export let xfetch;
+  interface Props {
+    battleId: string;
+    notifications: any;
+    router: any;
+    xfetch: any;
+  }
+
+  let {
+    battleId,
+    notifications,
+    router,
+    xfetch
+  }: Props = $props();
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister: string = AllowGuests
@@ -52,13 +61,13 @@
     position: 0,
   };
 
-  let isLoading: boolean = true;
-  let JoinPassRequired: boolean = false;
-  let socketError: boolean = false;
-  let socketReconnecting: boolean = false;
-  let points: Array<string> = ['1', '2', '3', '5', '8', '13', '?'];
-  let vote: string = '';
-  let pokerGame: PokerGame = {
+  let isLoading: boolean = $state(true);
+  let JoinPassRequired: boolean = $state(false);
+  let socketError: boolean = $state(false);
+  let socketReconnecting: boolean = $state(false);
+  let points: Array<string> = $state(['1', '2', '3', '5', '8', '13', '?']);
+  let vote: string = $state('');
+  let pokerGame: PokerGame = $state({
     leaders: [],
     autoFinishVoting: false,
     createdDate: undefined,
@@ -72,12 +81,12 @@
     users: [],
     votingLocked: false,
     teamId: '',
-  };
-  let currentStory = { ...defaultStory };
-  let showEditGame: boolean = false;
-  let showDeleteGame: boolean = false;
-  let isSpectator: boolean = false;
-  let voteStartTime: Date = new Date();
+  });
+  let currentStory = $state({ ...defaultStory });
+  let showEditGame: boolean = $state(false);
+  let showDeleteGame: boolean = $state(false);
+  let isSpectator: boolean = $state(false);
+  let voteStartTime: Date = $state(new Date());
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -422,14 +431,14 @@
     return highestVote.vote;
   }
 
-  $: highestVoteCount =
-    pokerGame.activePlanId !== '' && pokerGame.votingLocked === true
+  let highestVoteCount =
+    $derived(pokerGame.activePlanId !== '' && pokerGame.votingLocked === true
       ? getHighestVote()
-      : '';
-  $: showVotingResults =
-    pokerGame.activePlanId !== '' && pokerGame.votingLocked === true;
+      : '');
+  let showVotingResults =
+    $derived(pokerGame.activePlanId !== '' && pokerGame.votingLocked === true);
 
-  $: isLeader = pokerGame.leaders.includes($user.id);
+  let isLeader = $derived(pokerGame.leaders.includes($user.id));
 
   function concedeGame() {
     sendSocketEvent('concede_battle', '');

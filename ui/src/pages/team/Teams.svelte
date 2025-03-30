@@ -17,9 +17,13 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const organizationsPageLimit = 1000;
   const teamsPageLimit = 1000;
@@ -30,10 +34,10 @@
     name: '',
   };
 
-  let organizations = [];
-  let teams = [];
-  let showCreateOrganization = false;
-  let showCreateTeam = false;
+  let organizations = $state([]);
+  let teams = $state([]);
+  let showCreateOrganization = $state(false);
+  let showCreateTeam = $state(false);
   let organizationsPage = 1;
   let teamsPage = 1;
 
@@ -41,8 +45,8 @@
     showCreateOrganization = !showCreateOrganization;
   }
 
-  let showOrganizationUpdate = false;
-  let selectedOrganization = { ...defaultOrganization };
+  let showOrganizationUpdate = $state(false);
+  let selectedOrganization = $state({ ...defaultOrganization });
 
   function toggleUpdateOrganization(selectedOrg) {
     return () => {
@@ -55,7 +59,7 @@
     showCreateTeam = !showCreateTeam;
   }
 
-  let showDeleteOrganization = false;
+  let showDeleteOrganization = $state(false);
   const toggleDeleteOrganization = selectedOrg => () => {
     selectedOrganization = selectedOrg;
     showDeleteOrganization = !showDeleteOrganization;
@@ -157,8 +161,8 @@
     id: '',
     name: '',
   };
-  let selectedTeam = { ...defaultTeam };
-  let showTeamUpdate = false;
+  let selectedTeam = $state({ ...defaultTeam });
+  let showTeamUpdate = $state(false);
 
   function toggleUpdateTeam(team) {
     return () => {
@@ -167,7 +171,7 @@
     };
   }
 
-  let showDeleteTeam = false;
+  let showDeleteTeam = $state(false);
   const toggleDeleteTeam = team => () => {
     selectedTeam = team;
     showDeleteTeam = !showDeleteTeam;
@@ -235,50 +239,54 @@
           createBtnTestId="organization-create"
         />
         <Table>
-          <tr slot="header">
-            <HeadCol>
-              {$LL.name()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateCreated()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateUpdated()}
-            </HeadCol>
-            <HeadCol type="action" />
-          </tr>
-          <tbody slot="body" let:class="{className}" class="{className}">
-            {#each organizations as organization, i}
-              <TableRow itemIndex="{i}">
-                <RowCol>
-                  <a
-                    href="{appRoutes.organization}/{organization.id}"
-                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                  >
-                    {organization.name}
-                  </a>
-                </RowCol>
-                <RowCol>
-                  {new Date(organization.createdDate).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(organization.updatedDate).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  {#if organization.role === 'ADMIN'}
-                    <CrudActions
-                      editBtnClickHandler="{toggleUpdateOrganization(
-                        organization,
-                      )}"
-                      deleteBtnClickHandler="{toggleDeleteOrganization(
-                        organization,
-                      )}"
-                    />
-                  {/if}
-                </RowCol>
-              </TableRow>
-            {/each}
-          </tbody>
+          {#snippet header()}
+                    <tr >
+              <HeadCol>
+                {$LL.name()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateCreated()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateUpdated()}
+              </HeadCol>
+              <HeadCol type="action" />
+            </tr>
+                  {/snippet}
+          {#snippet body({ class: className })}
+                    <tbody   class="{className}">
+              {#each organizations as organization, i}
+                <TableRow itemIndex="{i}">
+                  <RowCol>
+                    <a
+                      href="{appRoutes.organization}/{organization.id}"
+                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                    >
+                      {organization.name}
+                    </a>
+                  </RowCol>
+                  <RowCol>
+                    {new Date(organization.createdDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol>
+                    {new Date(organization.updatedDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol type="action">
+                    {#if organization.role === 'ADMIN'}
+                      <CrudActions
+                        editBtnClickHandler="{toggleUpdateOrganization(
+                          organization,
+                        )}"
+                        deleteBtnClickHandler="{toggleDeleteOrganization(
+                          organization,
+                        )}"
+                      />
+                    {/if}
+                  </RowCol>
+                </TableRow>
+              {/each}
+            </tbody>
+                  {/snippet}
         </Table>
       </TableContainer>
     </div>
@@ -292,46 +300,50 @@
       createBtnTestId="team-create"
     />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateCreated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-        <HeadCol type="action" />
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each teams as team, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <a
-                href="{appRoutes.team}/{team.id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-              >
-                {team.name}
-              </a>
-            </RowCol>
-            <RowCol>
-              {new Date(team.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(team.updatedDate).toLocaleString()}
-            </RowCol>
-            <RowCol type="action">
-              {#if team.role === 'ADMIN'}
-                <CrudActions
-                  editBtnClickHandler="{toggleUpdateTeam(team)}"
-                  deleteBtnClickHandler="{toggleDeleteTeam(team)}"
-                />
-              {/if}
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateCreated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+          <HeadCol type="action" />
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each teams as team, i}
+            <TableRow itemIndex="{i}">
+              <RowCol>
+                <a
+                  href="{appRoutes.team}/{team.id}"
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                >
+                  {team.name}
+                </a>
+              </RowCol>
+              <RowCol>
+                {new Date(team.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(team.updatedDate).toLocaleString()}
+              </RowCol>
+              <RowCol type="action">
+                {#if team.role === 'ADMIN'}
+                  <CrudActions
+                    editBtnClickHandler="{toggleUpdateTeam(team)}"
+                    deleteBtnClickHandler="{toggleDeleteTeam(team)}"
+                  />
+                {/if}
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
   </TableContainer>
 

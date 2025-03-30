@@ -3,19 +3,33 @@
   import LL from '../../i18n/i18n-svelte';
   import LoginForm from '../../components/auth/LoginForm.svelte';
 
-  export let router;
-  export let xfetch;
-  export let notifications;
-  export let battleId;
-  export let retroId;
-  export let storyboardId;
-  export let subscription = false;
-  export let orgInviteId;
-  export let teamInviteId;
+  interface Props {
+    router: any;
+    xfetch: any;
+    notifications: any;
+    battleId: any;
+    retroId: any;
+    storyboardId: any;
+    subscription?: boolean;
+    orgInviteId: any;
+    teamInviteId: any;
+  }
+
+  let {
+    router,
+    xfetch,
+    notifications,
+    battleId,
+    retroId,
+    storyboardId,
+    subscription = false,
+    orgInviteId,
+    teamInviteId
+  }: Props = $props();
 
   const { AllowRegistration } = AppConfig;
 
-  let registerLink = AllowRegistration ? appRoutes.register : '';
+  let registerLink = $state(AllowRegistration ? appRoutes.register : '');
   if (AllowRegistration) {
     if (teamInviteId) {
       registerLink = `${registerLink}/team/${teamInviteId}`;
@@ -37,7 +51,7 @@
     }
   }
 
-  let targetPage = appRoutes.games;
+  let targetPage = $state(appRoutes.games);
   if (teamInviteId) {
     targetPage = `${appRoutes.invite}/team/${teamInviteId}`;
   }

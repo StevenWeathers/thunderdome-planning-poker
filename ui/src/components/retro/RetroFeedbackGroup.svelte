@@ -2,18 +2,31 @@
   import { ThumbsUp } from 'lucide-svelte';
   import RetroFeedbackItem from './RetroFeedbackItem.svelte';
 
-  export let phase = '';
-  export let group: any = {
+  interface Props {
+    phase?: string;
+    group?: any;
+    handleVoteAction: (group: any) => void;
+    voteLimitReached: boolean;
+    isFacilitator?: boolean;
+    users?: any;
+    columnColors?: any;
+    sendSocketEvent?: any;
+  }
+
+  let {
+    phase = '',
+    group = {
     name: 'Group',
     voteCount: 0,
     userVoted: false,
-  };
-  export let handleVoteAction: (group: any) => void;
-  export let voteLimitReached: boolean;
-  export let isFacilitator = false;
-  export let users = [];
-  export let columnColors: any = {};
-  export let sendSocketEvent = (event: string, value: any) => {};
+  },
+    handleVoteAction,
+    voteLimitReached,
+    isFacilitator = false,
+    users = [],
+    columnColors = {},
+    sendSocketEvent = (event: string, value: any) => {}
+  }: Props = $props();
 </script>
 
 <div
@@ -24,9 +37,9 @@
     <div class="flex items-center space-x-2">
       {#if phase === 'vote'}
         <button
-          on:click="{() => {
+          onclick={() => {
             handleVoteAction(group);
-          }}"
+          }}
           disabled="{voteLimitReached && !group.userVoted}"
           class="inline-block leading-none"
           class:text-gray-300="{voteLimitReached && !group.userVoted}"

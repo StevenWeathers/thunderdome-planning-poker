@@ -1,10 +1,16 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { MonitorCog, MoonStar, Sun } from 'lucide-svelte';
 
-  export let currentPage;
+  interface Props {
+    currentPage: any;
+  }
 
-  let selectedTheme = localStorage.getItem('theme') || 'auto';
-  let showMenu = false;
+  let { currentPage }: Props = $props();
+
+  let selectedTheme = $state(localStorage.getItem('theme') || 'auto');
+  let showMenu = $state(false);
 
   function toggleMenu() {
     showMenu = !showMenu;
@@ -16,11 +22,11 @@
     }
   }
 
-  $: {
+  run(() => {
     if (typeof currentPage !== 'undefined') {
       pageChangeHandler();
     }
-  }
+  });
 
   const setTheme = theme => () => {
     selectedTheme = theme;
@@ -40,7 +46,7 @@
     class="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700"
     aria-label="Theme"
     type="button"
-    on:click="{toggleMenu}"
+    onclick={toggleMenu}
   >
     <Sun class="dark:hidden h-5 w-5" />
     <MoonStar class="hidden h-5 w-5 dark:block" />
@@ -57,7 +63,7 @@
           ? 'bg-indigo-600 text-white'
           : ''}"
         tabindex="-1"
-        on:click="{setTheme('light')}"
+        onclick={setTheme('light')}
       >
         <div
           class="rounded-md bg-white p-1 shadow ring-1 ring-slate-900/5 dark:bg-slate-700 dark:ring-inset dark:ring-white/5 text-slate-700 dark:text-slate-400 text-slate-900"
@@ -72,7 +78,7 @@
           ? 'bg-indigo-600 text-white'
           : ''}"
         tabindex="-1"
-        on:click="{setTheme('dark')}"
+        onclick={setTheme('dark')}
       >
         <div
           class="rounded-md bg-white p-1 shadow ring-1 ring-slate-900/5 dark:bg-slate-700 dark:ring-inset dark:ring-white/5 text-slate-700 dark:text-slate-400 text-slate-900"
@@ -87,7 +93,7 @@
           ? 'bg-indigo-600 text-white'
           : ''}"
         tabindex="-1"
-        on:click="{setTheme('auto')}"
+        onclick={setTheme('auto')}
       >
         <div
           class="rounded-md bg-white p-1 shadow ring-1 ring-slate-900/5 dark:bg-slate-700 dark:ring-inset dark:ring-white/5 text-slate-700 dark:text-slate-400 text-slate-900"

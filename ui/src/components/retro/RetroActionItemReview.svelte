@@ -15,16 +15,25 @@
   import ActionComments from './ActionComments.svelte';
   import Table from '../table/Table.svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let toggle = () => {};
-  export let team = {
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    toggle?: any;
+    team?: any;
+  }
+
+  let {
+    xfetch,
+    notifications,
+    toggle = () => {},
+    team = {
     id: '',
     name: '',
     organization_id: '',
     department_id: '',
     role: '',
-  };
+  }
+  }: Props = $props();
 
   const orgPrefix =
     team.organization_id !== ''
@@ -39,10 +48,10 @@
   const retroActionsPageLimit = 10;
   const usersPageLimit = 1000;
 
-  let totalRetroActions = 0;
-  let retroActionsPage = 1;
-  let actionItems = [];
-  let users = [];
+  let totalRetroActions = $state(0);
+  let retroActionsPage = $state(1);
+  let actionItems = $state([]);
+  let users = $state([]);
   let usersPage = 1;
 
   let organizationRole = '';
@@ -68,15 +77,15 @@
       });
   }
 
-  let showRetroActionComments = false;
-  let selectedRetroAction = null;
+  let showRetroActionComments = $state(false);
+  let selectedRetroAction = $state(null);
   const toggleRetroActionComments = id => () => {
     showRetroActionComments = !showRetroActionComments;
     selectedRetroAction = id;
   };
 
-  let showRetroActionEdit = false;
-  let selectedAction = null;
+  let showRetroActionEdit = $state(false);
+  let selectedAction = $state(null);
   const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
     selectedAction =
@@ -171,57 +180,61 @@
     <TableContainer>
       <TableNav title="Open Action Items" createBtnEnabled="{false}" />
       <Table>
-        <tr slot="header">
-          <HeadCol>{$LL.actionItem()}</HeadCol>
-          <HeadCol>{$LL.completed()}</HeadCol>
-          <HeadCol>{$LL.comments()}</HeadCol>
-          <HeadCol />
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each actionItems as item, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <div class="whitespace-pre-wrap">
-                  {#each item.assignees as assignee}
-                    <UserAvatar
-                      warriorId="{assignee.id}"
-                      gravatarHash="{assignee.gravatarHash}"
-                      avatar="{assignee.avatar}"
-                      userName="{assignee.name}"
-                      width="24"
-                      class="inline-block me-2"
-                    />
-                  {/each}{item.content}
-                </div>
-              </RowCol>
-              <RowCol>
-                <BooleanDisplay boolValue="{item.completed}" />
-              </RowCol>
-              <RowCol>
-                <MessageSquareMore
-                  width="22"
-                  height="22"
-                  class="inline-block"
-                />
-                <button
-                  class="text-lg text-blue-400 dark:text-sky-400"
-                  on:click="{toggleRetroActionComments(item.id)}"
-                >
-                  &nbsp;{item.comments.length}
-                </button>
-              </RowCol>
-              <RowCol type="action">
-                <CrudActions
-                  editBtnClickHandler="{toggleRetroActionEdit(
-                    item.retroId,
-                    item.id,
-                  )}"
-                  deleteBtnEnabled="{false}"
-                />
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>{$LL.actionItem()}</HeadCol>
+            <HeadCol>{$LL.completed()}</HeadCol>
+            <HeadCol>{$LL.comments()}</HeadCol>
+            <HeadCol />
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each actionItems as item, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  <div class="whitespace-pre-wrap">
+                    {#each item.assignees as assignee}
+                      <UserAvatar
+                        warriorId="{assignee.id}"
+                        gravatarHash="{assignee.gravatarHash}"
+                        avatar="{assignee.avatar}"
+                        userName="{assignee.name}"
+                        width="24"
+                        class="inline-block me-2"
+                      />
+                    {/each}{item.content}
+                  </div>
+                </RowCol>
+                <RowCol>
+                  <BooleanDisplay boolValue="{item.completed}" />
+                </RowCol>
+                <RowCol>
+                  <MessageSquareMore
+                    width="22"
+                    height="22"
+                    class="inline-block"
+                  />
+                  <button
+                    class="text-lg text-blue-400 dark:text-sky-400"
+                    onclick={toggleRetroActionComments(item.id)}
+                  >
+                    &nbsp;{item.comments.length}
+                  </button>
+                </RowCol>
+                <RowCol type="action">
+                  <CrudActions
+                    editBtnClickHandler="{toggleRetroActionEdit(
+                      item.retroId,
+                      item.id,
+                    )}"
+                    deleteBtnEnabled="{false}"
+                  />
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
       <TableFooter
         bind:current="{retroActionsPage}"

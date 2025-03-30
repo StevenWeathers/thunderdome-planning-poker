@@ -5,14 +5,18 @@
   import SolidButton from '../global/SolidButton.svelte';
   import PasswordInput from '../forms/PasswordInput.svelte';
 
-  export let handleUpdate = () => {};
-  export let toggleForm = () => {};
-  export let notifications;
+  interface Props {
+    handleUpdate?: any;
+    toggleForm?: any;
+    notifications: any;
+  }
+
+  let { handleUpdate = () => {}, toggleForm = () => {}, notifications }: Props = $props();
 
   const { LdapEnabled, HeaderAuthEnabled } = AppConfig;
 
-  let password1 = '';
-  let password2 = '';
+  let password1 = $state('');
+  let password2 = $state('');
 
   function updatePassword(e) {
     e.preventDefault();
@@ -31,11 +35,11 @@
     }
   }
 
-  $: updatePasswordDisabled =
-    password1 === '' || password2 === '' || LdapEnabled || HeaderAuthEnabled;
+  let updatePasswordDisabled =
+    $derived(password1 === '' || password2 === '' || LdapEnabled || HeaderAuthEnabled);
 </script>
 
-<form on:submit="{updatePassword}" name="updatePassword">
+<form onsubmit={updatePassword} name="updatePassword">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -73,7 +77,7 @@
       type="button"
       class="inline-block align-baseline font-bold text-sm
             text-blue-500 hover:text-blue-800 me-4"
-      on:click="{toggleForm}"
+      onclick={toggleForm}
     >
       {$LL.cancel()}
     </button>

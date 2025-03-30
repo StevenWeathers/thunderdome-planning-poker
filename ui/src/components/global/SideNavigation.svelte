@@ -1,11 +1,15 @@
 <script lang="ts">
   import { Menu, X } from 'lucide-svelte';
 
-  let isCollapsed = true;
+  let isCollapsed = $state(true);
 
-  export let menuItems = [];
-  export let activePage = '';
-  export let menuType = '';
+  interface Props {
+    menuItems?: any;
+    activePage?: string;
+    menuType?: string;
+  }
+
+  let { menuItems = [], activePage = '', menuType = '' }: Props = $props();
 </script>
 
 <div
@@ -14,7 +18,7 @@
     : 'w-64'} transition-all duration-300 ease-in-out"
 >
   <div class="flex justify-end p-4">
-    <button on:click="{() => (isCollapsed = !isCollapsed)}" class="text-white">
+    <button onclick={() => (isCollapsed = !isCollapsed)} class="text-white">
       {#if isCollapsed}
         <Menu size="{24}" />
       {:else}
@@ -38,7 +42,7 @@
               title="{item.label}"
             >
               <span class="mr-3">
-                <svelte:component this="{item.icon}" size="{24}" />
+                <item.icon" size="{24}" />
               </span>
               <span class:hidden="{isCollapsed}">{item.label}</span>
             </a>

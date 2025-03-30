@@ -3,13 +3,25 @@
   import LL from '../../i18n/i18n-svelte';
   import { User } from 'lucide-svelte';
 
-  export let activePlanId = '';
-  export let plans = [];
-  export let points = [];
-  export let warriors = [];
-  export let highestVote = '';
-  export let averageRounding = 'ceil';
-  export let hideVoterIdentity = false;
+  interface Props {
+    activePlanId?: string;
+    plans?: any;
+    points?: any;
+    warriors?: any;
+    highestVote?: string;
+    averageRounding?: string;
+    hideVoterIdentity?: boolean;
+  }
+
+  let {
+    activePlanId = '',
+    plans = [],
+    points = [],
+    warriors = [],
+    highestVote = '',
+    averageRounding = 'ceil',
+    hideVoterIdentity = false
+  }: Props = $props();
 
   let totalVotes = plans.find(p => p.id === activePlanId).votes.length;
 
@@ -82,9 +94,9 @@
     }, {});
   }
 
-  $: average = getVoteAverage(warriors);
-  $: counts = compileVoteCounts(warriors);
-  let showHighestVoters = false;
+  let average = $derived(getVoteAverage(warriors));
+  let counts = $derived(compileVoteCounts(warriors));
+  let showHighestVoters = $state(false);
 </script>
 
 <div
@@ -122,16 +134,16 @@
       >
       <span class="relative">
         <button
-          on:mouseenter="{() => {
+          onmouseenter={() => {
             if (!hideVoterIdentity) {
               showHighestVoters = true;
             }
-          }}"
-          on:mouseleave="{() => {
+          }}
+          onmouseleave={() => {
             if (!hideVoterIdentity) {
               showHighestVoters = false;
             }
-          }}"
+          }}
           class="relative leading-none"
           title="{$LL.showVoters()}"
         >

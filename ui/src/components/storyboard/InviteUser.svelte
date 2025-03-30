@@ -3,8 +3,12 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { ClipboardCopy } from 'lucide-svelte';
 
-  export let hostname = '';
-  export let storyboardId = '';
+  interface Props {
+    hostname?: string;
+    storyboardId?: string;
+  }
+
+  let { hostname = '', storyboardId = '' }: Props = $props();
 
   function copyStoryboardLink() {
     const storyboardLink = document.getElementById('StoryboardLink');

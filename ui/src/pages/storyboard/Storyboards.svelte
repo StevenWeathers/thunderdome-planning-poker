@@ -9,15 +9,19 @@
   import BoxList from '../../components/BoxList.svelte';
   import Pagination from '../../components/global/Pagination.svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let router;
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+  }
 
-  let storyboards = [];
+  let { xfetch, notifications, router }: Props = $props();
+
+  let storyboards = $state([]);
   const storyboardsPageLimit = 10;
-  let storyboardCount = 0;
-  let storyboardsPage = 1;
-  let loading = true;
+  let storyboardCount = $state(0);
+  let storyboardsPage = $state(1);
+  let loading = $state(true);
 
   function getStoryboards() {
     const retrosOffset = (storyboardsPage - 1) * storyboardsPageLimit;

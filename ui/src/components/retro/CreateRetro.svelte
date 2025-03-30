@@ -12,15 +12,24 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { Crown, Lock } from 'lucide-svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let router;
-  export let apiPrefix = '/api';
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+    apiPrefix?: string;
+  }
+
+  let {
+    xfetch,
+    notifications,
+    router,
+    apiPrefix = '/api'
+  }: Props = $props();
 
   const maxPhaseTimeLimitMin = 59;
 
-  let teams = [];
-  let retroTemplates = [];
+  let teams = $state([]);
+  let retroTemplates = $state([]);
   let publicTemplates = [];
   let teamRetroTemplates = [];
   let organizationRetroTemplates = [];
@@ -36,13 +45,13 @@
     phaseAutoAdvance: true,
     allowCumulativeVoting: false,
   };
-  let retroSettings = { ...defaultRetroSettings };
+  let retroSettings = $state({ ...defaultRetroSettings });
   let orgRetroSettings = {};
   let departmentRetroSettings = {};
   let teamRetroSettings = {};
 
   /** @type {TextInput} */
-  let retroNameTextInput;
+  let retroNameTextInput = $state();
 
   const brainstormVisibilityOptions = [
     {
@@ -300,7 +309,7 @@
   });
 </script>
 
-<form on:submit="{createRetro}" name="createRetro">
+<form onsubmit={createRetro} name="createRetro">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"

@@ -10,19 +10,29 @@
   import { onMount } from 'svelte';
   import CrudActions from '../table/CrudActions.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let teamPrefix: String = '';
-  export let pageType: String = '';
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    teamPrefix?: String;
+    pageType?: String;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    teamPrefix = '',
+    pageType = ''
+  }: Props = $props();
   export const f = event => {
     if (event === 'user-invited') {
       getInvites();
     }
   };
 
-  let invites = [];
-  let showDeleteInvite = false;
+  let invites = $state([]);
+  let showDeleteInvite = $state(false);
   let deleteInviteId = '';
 
   const toggleDeleteInvite = inviteId => () => {
@@ -63,37 +73,41 @@
 <TableContainer>
   <TableNav title="{$LL.userInvites()}" createBtnEnabled="{false}" />
   <Table>
-    <tr slot="header">
-      <HeadCol>{$LL.email()}</HeadCol>
-      <HeadCol>{$LL.role()}</HeadCol>
-      <HeadCol>{$LL.dateCreated()}</HeadCol>
-      <HeadCol>{$LL.expireDate()}</HeadCol>
-      <HeadCol />
-    </tr>
-    <tbody slot="body" let:class="{className}" class="{className}">
-      {#each invites as item, i}
-        <TableRow itemIndex="{i}">
-          <RowCol>
-            <span data-testid="invite-user-email">{item.email}</span>
-          </RowCol>
-          <RowCol>
-            {item.role}
-          </RowCol>
-          <RowCol>
-            {new Date(item.created_date).toLocaleString()}
-          </RowCol>
-          <RowCol>
-            {new Date(item.expire_date).toLocaleString()}
-          </RowCol>
-          <RowCol type="action">
-            <CrudActions
-              editBtnEnabled="{false}"
-              deleteBtnClickHandler="{toggleDeleteInvite(item.invite_id)}"
-            />
-          </RowCol>
-        </TableRow>
-      {/each}
-    </tbody>
+    {#snippet header()}
+        <tr >
+        <HeadCol>{$LL.email()}</HeadCol>
+        <HeadCol>{$LL.role()}</HeadCol>
+        <HeadCol>{$LL.dateCreated()}</HeadCol>
+        <HeadCol>{$LL.expireDate()}</HeadCol>
+        <HeadCol />
+      </tr>
+      {/snippet}
+    {#snippet body({ class: className })}
+        <tbody   class="{className}">
+        {#each invites as item, i}
+          <TableRow itemIndex="{i}">
+            <RowCol>
+              <span data-testid="invite-user-email">{item.email}</span>
+            </RowCol>
+            <RowCol>
+              {item.role}
+            </RowCol>
+            <RowCol>
+              {new Date(item.created_date).toLocaleString()}
+            </RowCol>
+            <RowCol>
+              {new Date(item.expire_date).toLocaleString()}
+            </RowCol>
+            <RowCol type="action">
+              <CrudActions
+                editBtnEnabled="{false}"
+                deleteBtnClickHandler="{toggleDeleteInvite(item.invite_id)}"
+              />
+            </RowCol>
+          </TableRow>
+        {/each}
+      </tbody>
+      {/snippet}
   </Table>
 </TableContainer>
 

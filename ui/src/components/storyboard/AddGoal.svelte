@@ -4,12 +4,22 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
 
-  export let handleGoalAdd = () => {};
-  export let toggleAddGoal = () => {};
-  export let handleGoalRevision = () => {};
 
-  export let goalId = '';
-  export let goalName = '';
+  interface Props {
+    handleGoalAdd?: any;
+    toggleAddGoal?: any;
+    handleGoalRevision?: any;
+    goalId?: string;
+    goalName?: string;
+  }
+
+  let {
+    handleGoalAdd = () => {},
+    toggleAddGoal = () => {},
+    handleGoalRevision = () => {},
+    goalId = '',
+    goalName = $bindable('')
+  }: Props = $props();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -27,7 +37,7 @@
 </script>
 
 <Modal closeModal="{toggleAddGoal}">
-  <form on:submit="{handleSubmit}" name="addGoal">
+  <form onsubmit={handleSubmit} name="addGoal">
     <div class="mb-4">
       <label
         class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"

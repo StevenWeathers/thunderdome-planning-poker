@@ -1,10 +1,21 @@
 <script lang="ts">
-  export let label: string = '';
-  export let id: string = '';
-  export let name: string = '';
-  export let disabled: boolean = false;
-  export let value: string | number = '';
-  export let checked: boolean | undefined = false;
+  interface Props {
+    label?: string;
+    id?: string;
+    name?: string;
+    disabled?: boolean;
+    value?: string | number;
+    checked?: boolean | undefined;
+  }
+
+  let {
+    label = '',
+    id = '',
+    name = '',
+    disabled = false,
+    value = '',
+    checked = $bindable(false)
+  }: Props = $props();
 </script>
 
 <div class="flex items-center">

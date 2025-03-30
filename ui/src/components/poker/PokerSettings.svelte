@@ -11,17 +11,29 @@
   import UpdatePokerSettings from './UpdatePokerSettings.svelte';
   import LL from '../../i18n/i18n-svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix = '/api';
-  export let isEntityAdmin = false;
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    isEntityAdmin?: boolean;
+  }
 
-  $: isAdmin = validateUserIsAdmin($user);
+  let {
+    xfetch,
+    notifications,
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    isEntityAdmin = false
+  }: Props = $props();
 
-  let defaultSettings = {
+  let isAdmin = $derived(validateUserIsAdmin($user));
+
+  let defaultSettings = $state({
     id: '',
     autoFinishVoting: false,
     pointAverageRounding: '',
@@ -29,9 +41,9 @@
     estimationScaleId: null,
     joinCode: '',
     facilitatorCode: '',
-  };
-  let showCreateDefaultSettings = false;
-  let showUpdateDefaultSettings = false;
+  });
+  let showCreateDefaultSettings = $state(false);
+  let showUpdateDefaultSettings = $state(false);
 
   function toggleCreateDefaultSettings() {
     showCreateDefaultSettings = !showCreateDefaultSettings;
@@ -77,38 +89,42 @@
         : 'create'}-btn"
     />
     <Table>
-      <tr slot="header">
-        <HeadCol>{$LL.autoFinishVotingLabel()}</HeadCol>
-        <HeadCol>{$LL.pointAverageRounding()}</HeadCol>
-        <HeadCol>{$LL.hideVoterIdentity()}</HeadCol>
-        <!--                <HeadCol>Estimation Scale ID</HeadCol>-->
-        <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
-        <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
-      </tr>
-      <tbody slot="body">
-        {#if defaultSettings.id !== ''}
-          <TableRow>
-            <RowCol>
-              <BooleanDisplay boolValue="{defaultSettings.autoFinishVoting}" />
-            </RowCol>
-            <RowCol>
-              {defaultSettings.pointAverageRounding}
-            </RowCol>
-            <RowCol>
-              <BooleanDisplay boolValue="{defaultSettings.hideVoterIdentity}" />
-            </RowCol>
-            <!--                    <RowCol>-->
-            <!--                        {defaultSettings.estimationScaleId}-->
-            <!--                    </RowCol>-->
-            <RowCol>
-              {defaultSettings.joinCode}
-            </RowCol>
-            <RowCol>
-              {defaultSettings.facilitatorCode}
-            </RowCol>
-          </TableRow>
-        {/if}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>{$LL.autoFinishVotingLabel()}</HeadCol>
+          <HeadCol>{$LL.pointAverageRounding()}</HeadCol>
+          <HeadCol>{$LL.hideVoterIdentity()}</HeadCol>
+          <!--                <HeadCol>Estimation Scale ID</HeadCol>-->
+          <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
+          <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body()}
+            <tbody >
+          {#if defaultSettings.id !== ''}
+            <TableRow>
+              <RowCol>
+                <BooleanDisplay boolValue="{defaultSettings.autoFinishVoting}" />
+              </RowCol>
+              <RowCol>
+                {defaultSettings.pointAverageRounding}
+              </RowCol>
+              <RowCol>
+                <BooleanDisplay boolValue="{defaultSettings.hideVoterIdentity}" />
+              </RowCol>
+              <!--                    <RowCol>-->
+              <!--                        {defaultSettings.estimationScaleId}-->
+              <!--                    </RowCol>-->
+              <RowCol>
+                {defaultSettings.joinCode}
+              </RowCol>
+              <RowCol>
+                {defaultSettings.facilitatorCode}
+              </RowCol>
+            </TableRow>
+          {/if}
+        </tbody>
+          {/snippet}
     </Table>
   </TableContainer>
 

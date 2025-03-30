@@ -6,16 +6,25 @@
   import TextInput from '../forms/TextInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
 
-  export let handleCreate = () => {};
-  export let toggleClose = () => {};
-  export let xfetch = () => {};
-  export let notifications;
+  interface Props {
+    handleCreate?: any;
+    toggleClose?: any;
+    xfetch?: any;
+    notifications: any;
+  }
 
-  let host = '';
-  let client_mail = '';
-  let access_token = '';
+  let {
+    handleCreate = () => {},
+    toggleClose = () => {},
+    xfetch = () => {},
+    notifications
+  }: Props = $props();
 
-  let jira_data_center = false;
+  let host = $state('');
+  let client_mail = $state('');
+  let access_token = $state('');
+
+  let jira_data_center = $state(false);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -84,7 +93,7 @@
 </script>
 
 <Modal closeModal="{toggleClose}">
-  <form on:submit="{handleSubmit}" name="createjirainstance">
+  <form onsubmit={handleSubmit} name="createjirainstance">
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="host">
         Host

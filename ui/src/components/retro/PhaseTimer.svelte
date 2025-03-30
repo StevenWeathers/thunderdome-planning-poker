@@ -1,30 +1,38 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { createEventDispatcher, onDestroy } from 'svelte';
   import { addMinutesToDate } from '../../dateUtils';
 
-  export let retroId: string = '';
-  export let timeLimitMin: number = 0;
-  export let timeStart: Date = new Date();
+  interface Props {
+    retroId?: string;
+    timeLimitMin?: number;
+    timeStart?: Date;
+  }
+
+  let { retroId = '', timeLimitMin = 0, timeStart = new Date() }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
   let phaseEndTime = addMinutesToDate(timeStart, timeLimitMin);
-  let now: Date = new Date();
+  let now: Date = $state(new Date());
 
-  $: count = Math.round((phaseEndTime - now) / 1000);
-  $: h = Math.floor(count / 3600);
-  $: m = Math.floor((count - h * 3600) / 60);
-  $: s = count - h * 3600 - m * 60;
+  let count = $derived(Math.round((phaseEndTime - now) / 1000));
+  let h = $derived(Math.floor(count / 3600));
+  let m = $derived(Math.floor((count - h * 3600) / 60));
+  let s = $derived(count - h * 3600 - m * 60);
 
   function updateTimer() {
     now = new Date();
   }
 
   let interval = setInterval(updateTimer, 1000);
-  $: if (count === 0) {
-    clearInterval(interval);
-    dispatch('ended');
-  }
+  run(() => {
+    if (count === 0) {
+      clearInterval(interval);
+      dispatch('ended');
+    }
+  });
 
   function padValue(value, length = 2, char = '0') {
     const { length: currentLength } = value.toString();

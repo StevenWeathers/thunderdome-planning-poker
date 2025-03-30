@@ -42,34 +42,43 @@
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let organizationId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    organizationId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    organizationId
+  }: Props = $props();
 
   const departmentsPageLimit = 1000;
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
   const orgPrefix = `/api/organizations/${organizationId}`;
 
-  let invitesList;
-  let organization = {
+  let invitesList = $state();
+  let organization = $state({
     id: organizationId,
     name: '',
     createdDate: '',
     updateDate: '',
     subscribed: false,
-  };
-  let role = 'MEMBER';
-  let users = [];
-  let departments = [];
-  let teams = [];
+  });
+  let role = $state('MEMBER');
+  let users = $state([]);
+  let departments = $state([]);
+  let teams = $state([]);
   let invites = [];
-  let showCreateDepartment = false;
-  let showCreateTeam = false;
-  let showDeleteTeam = false;
-  let showDeleteDepartment = false;
-  let showDeleteOrganization = false;
+  let showCreateDepartment = $state(false);
+  let showCreateTeam = $state(false);
+  let showDeleteTeam = $state(false);
+  let showDeleteDepartment = $state(false);
+  let showDeleteOrganization = $state(false);
   let deleteTeamId = null;
   let deleteDeptId = null;
   let teamsPage = 1;
@@ -116,7 +125,7 @@
       });
   }
 
-  let organizationMetrics: MetricItem[] = [
+  let organizationMetrics: MetricItem[] = $state([
     {
       key: 'department_count',
       name: 'Departments',
@@ -151,7 +160,7 @@
       value: 0,
       icon: SquareDashedKanban,
     },
-  ];
+  ]);
 
   function getUsers() {
     const usersOffset = (usersPage - 1) * usersPageLimit;
@@ -271,8 +280,8 @@
     id: '',
     name: '',
   };
-  let selectedDepartment = { ...defaultDepartment };
-  let showDepartmentUpdate = false;
+  let selectedDepartment = $state({ ...defaultDepartment });
+  let showDepartmentUpdate = $state(false);
 
   function toggleUpdateDepartment(dept) {
     return () => {
@@ -285,8 +294,8 @@
     id: '',
     name: '',
   };
-  let selectedTeam = { ...defaultTeam };
-  let showTeamUpdate = false;
+  let selectedTeam = $state({ ...defaultTeam });
+  let showTeamUpdate = $state(false);
 
   function toggleUpdateTeam(team) {
     return () => {
@@ -336,9 +345,9 @@
   }
 
   const scalesPageLimit = 20;
-  let estimationScales = [];
+  let estimationScales = $state([]);
   let scaleCount = 0;
-  let scalesPage = 1;
+  let scalesPage = $state(1);
 
   const changeScalesPage = evt => {
     scalesPage = evt.detail;
@@ -366,9 +375,9 @@
   }
 
   const retroTemplatePageLimit = 20;
-  let retroTemplates = [];
+  let retroTemplates = $state([]);
   let retroTemplateCount = 0;
-  let retroTemplatesPage = 1;
+  let retroTemplatesPage = $state(1);
 
   const changeRetroTemplatesPage = evt => {
     retroTemplatesPage = evt.detail;
@@ -412,7 +421,7 @@
     }
   });
 
-  $: isAdmin = role === 'ADMIN';
+  let isAdmin = $derived(role === 'ADMIN');
 </script>
 
 <svelte:head>
@@ -440,50 +449,54 @@
         createBtnTestId="department-create"
       />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-          <HeadCol type="action">
-            <span class="sr-only">{$LL.actions()}</span>
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each departments as department, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.organization}/{organizationId}/department/{department.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {department.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(department.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(department.updatedDate).toLocaleString()}
-              </RowCol>
-              <RowCol type="action">
-                {#if isAdmin}
-                  <CrudActions
-                    editBtnClickHandler="{toggleUpdateDepartment(department)}"
-                    deleteBtnClickHandler="{toggleDeleteDepartment(
-                      department.id,
-                    )}"
-                  />
-                {/if}
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+            <HeadCol type="action">
+              <span class="sr-only">{$LL.actions()}</span>
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each departments as department, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  <a
+                    href="{appRoutes.organization}/{organizationId}/department/{department.id}"
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >
+                    {department.name}
+                  </a>
+                </RowCol>
+                <RowCol>
+                  {new Date(department.createdDate).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(department.updatedDate).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  {#if isAdmin}
+                    <CrudActions
+                      editBtnClickHandler="{toggleUpdateDepartment(department)}"
+                      deleteBtnClickHandler="{toggleDeleteDepartment(
+                        department.id,
+                      )}"
+                    />
+                  {/if}
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -498,48 +511,52 @@
         createBtnTestId="team-create"
       />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-          <HeadCol type="action">
-            <span class="sr-only">{$LL.actions()}</span>
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each teams as team, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.organization}/{organizationId}/team/{team.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {team.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(team.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(team.updatedDate).toLocaleString()}
-              </RowCol>
-              <RowCol type="action">
-                {#if isAdmin}
-                  <CrudActions
-                    editBtnClickHandler="{toggleUpdateTeam(team)}"
-                    deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
-                  />
-                {/if}
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+            <HeadCol type="action">
+              <span class="sr-only">{$LL.actions()}</span>
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each teams as team, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  <a
+                    href="{appRoutes.organization}/{organizationId}/team/{team.id}"
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >
+                    {team.name}
+                  </a>
+                </RowCol>
+                <RowCol>
+                  {new Date(team.createdDate).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(team.updatedDate).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  {#if isAdmin}
+                    <CrudActions
+                      editBtnClickHandler="{toggleUpdateTeam(team)}"
+                      deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                    />
+                  {/if}
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
   </div>

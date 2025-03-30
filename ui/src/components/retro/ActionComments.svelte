@@ -5,23 +5,36 @@
   import { user } from '../../stores';
   import { User } from 'lucide-svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let toggleComments = () => {};
-  export let getRetrosActions = () => {};
-  export let actions = [];
-  export let users = [];
-  export let selectedActionId;
-  export let isAdmin = false;
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    toggleComments?: any;
+    getRetrosActions?: any;
+    actions?: any;
+    users?: any;
+    selectedActionId: any;
+    isAdmin?: boolean;
+  }
+
+  let {
+    xfetch,
+    notifications,
+    toggleComments = () => {},
+    getRetrosActions = () => {},
+    actions = [],
+    users = [],
+    selectedActionId,
+    isAdmin = false
+  }: Props = $props();
 
   const userMap = users.reduce((prev, cur) => {
     prev[cur.id] = cur.name;
     return prev;
   }, {});
 
-  let userComment = '';
-  let selectedComment = null;
-  let selectedCommentContent = '';
+  let userComment = $state('');
+  let selectedComment = $state(null);
+  let selectedCommentContent = $state('');
 
   const toggleCommentEdit = comment => () => {
     selectedComment = comment;
@@ -85,7 +98,7 @@
       });
   };
 
-  $: selectedAction = actions && actions.find(a => a.id === selectedActionId);
+  let selectedAction = $derived(actions && actions.find(a => a.id === selectedActionId));
 </script>
 
 <Modal closeModal="{toggleComments}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
@@ -132,13 +145,13 @@
           <div class="mb-2 text-right">
             <button
               class="text-blue-500 hover:text-blue-300 me-1"
-              on:click="{toggleCommentEdit(comment)}"
+              onclick={toggleCommentEdit(comment)}
             >
               {$LL.edit()}
             </button>
             <button
               class="text-red-500"
-              on:click="{handleCommentDelete(comment.id)}"
+              onclick={handleCommentDelete(comment.id)}
             >
               {$LL.delete()}
             </button>

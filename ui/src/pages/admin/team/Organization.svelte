@@ -19,33 +19,42 @@
   import TableNav from '../../../components/table/TableNav.svelte';
   import CrudActions from '../../../components/table/CrudActions.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let organizationId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    organizationId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    organizationId
+  }: Props = $props();
 
   const departmentsPageLimit = 1000;
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
 
-  let organization = {
+  let organization = $state({
     id: organizationId,
     name: '',
     createdDate: '',
     updateDate: '',
-  };
+  });
   let role = 'MEMBER';
-  let departments = [];
-  let teams = [];
-  let users = [];
+  let departments = $state([]);
+  let teams = $state([]);
+  let users = $state([]);
   let showCreateDepartment = false;
   let showCreateTeam = false;
   let showAddUser = false;
   let showRemoveUser = false;
   let removeUserId = null;
-  let showDeleteTeam = false;
-  let showDeleteDepartment = false;
-  let showDeleteOrganization = false;
+  let showDeleteTeam = $state(false);
+  let showDeleteDepartment = $state(false);
+  let showDeleteOrganization = $state(false);
   let deleteTeamId = null;
   let deleteDeptId = null;
   let teamsPage = 1;
@@ -193,48 +202,52 @@
     <TableContainer>
       <TableNav title="{$LL.departments()}" createBtnEnabled="{false}" />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-          <HeadCol type="action">
-            <span class="sr-only">{$LL.actions()}</span>
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each departments as department, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.adminOrganizations}/{organizationId}/department/{department.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {department.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(department.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(department.updatedDate).toLocaleString()}
-              </RowCol>
-              <RowCol type="action">
-                <CrudActions
-                  editBtnEnabled="{false}"
-                  deleteBtnClickHandler="{toggleDeleteDepartment(
-                    department.id,
-                  )}"
-                />
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+            <HeadCol type="action">
+              <span class="sr-only">{$LL.actions()}</span>
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each departments as department, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  <a
+                    href="{appRoutes.adminOrganizations}/{organizationId}/department/{department.id}"
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >
+                    {department.name}
+                  </a>
+                </RowCol>
+                <RowCol>
+                  {new Date(department.createdDate).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(department.updatedDate).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  <CrudActions
+                    editBtnEnabled="{false}"
+                    deleteBtnClickHandler="{toggleDeleteDepartment(
+                      department.id,
+                    )}"
+                  />
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -243,46 +256,50 @@
     <TableContainer>
       <TableNav title="{$LL.teams()}" createBtnEnabled="{false}" />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-          <HeadCol type="action">
-            <span class="sr-only">{$LL.actions()}</span>
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each teams as team, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.adminOrganizations}/{organizationId}/team/{team.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {team.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(team.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(team.updatedDate).toLocaleString()}
-              </RowCol>
-              <RowCol type="action">
-                <CrudActions
-                  editBtnEnabled="{false}"
-                  deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
-                />
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+            <HeadCol type="action">
+              <span class="sr-only">{$LL.actions()}</span>
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each teams as team, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  <a
+                    href="{appRoutes.adminOrganizations}/{organizationId}/team/{team.id}"
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >
+                    {team.name}
+                  </a>
+                </RowCol>
+                <RowCol>
+                  {new Date(team.createdDate).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(team.updatedDate).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  <CrudActions
+                    editBtnEnabled="{false}"
+                    deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                  />
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -290,64 +307,68 @@
   <TableContainer>
     <TableNav title="{$LL.users()}" createBtnEnabled="{false}" />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.email()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.role()}
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each users as user, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <div class="flex items-center">
-                <div class="flex-shrink-0 h-10 w-10">
-                  <UserAvatar
-                    warriorId="{user.id}"
-                    avatar="{user.avatar}"
-                    gravatarHash="{user.gravatarHash}"
-                    userName="{user.name}"
-                    width="48"
-                    class="h-10 w-10 rounded-full"
-                  />
-                </div>
-                <div class="ms-4">
-                  <div class="font-medium text-gray-900 dark:text-gray-200">
-                    <a
-                      data-testid="user-name"
-                      href="{appRoutes.adminUsers}/{user.id}"
-                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                      >{user.name}</a
-                    >
-                    {#if user.country}
-                      &nbsp;
-                      <CountryFlag
-                        country="{user.country}"
-                        additionalClass="inline-block"
-                        width="32"
-                        height="24"
-                      />
-                    {/if}
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.email()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.role()}
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each users as user, i}
+            <TableRow itemIndex="{i}">
+              <RowCol>
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <UserAvatar
+                      warriorId="{user.id}"
+                      avatar="{user.avatar}"
+                      gravatarHash="{user.gravatarHash}"
+                      userName="{user.name}"
+                      width="48"
+                      class="h-10 w-10 rounded-full"
+                    />
+                  </div>
+                  <div class="ms-4">
+                    <div class="font-medium text-gray-900 dark:text-gray-200">
+                      <a
+                        data-testid="user-name"
+                        href="{appRoutes.adminUsers}/{user.id}"
+                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                        >{user.name}</a
+                      >
+                      {#if user.country}
+                        &nbsp;
+                        <CountryFlag
+                          country="{user.country}"
+                          additionalClass="inline-block"
+                          width="32"
+                          height="24"
+                        />
+                      {/if}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </RowCol>
-            <RowCol>
-              <span data-testid="user-email">{user.email}</span>
-            </RowCol>
-            <RowCol>
-              <div class="text-sm text-gray-500 dark:text-gray-300">
-                {user.role}
-              </div>
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+              </RowCol>
+              <RowCol>
+                <span data-testid="user-email">{user.email}</span>
+              </RowCol>
+              <RowCol>
+                <div class="text-sm text-gray-500 dark:text-gray-300">
+                  {user.role}
+                </div>
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
   </TableContainer>
 

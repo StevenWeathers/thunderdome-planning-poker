@@ -16,13 +16,17 @@
   import CrudActions from '../../../components/table/CrudActions.svelte';
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const apikeysPageLimit = 100;
 
-  let appStats = {
+  let appStats = $state({
     unregisteredUserCount: 0,
     registeredUserCount: 0,
     battleCount: 0,
@@ -31,9 +35,9 @@
     departmentCount: 0,
     teamCount: 0,
     apikeyCount: 0,
-  };
-  let apikeys = [];
-  let apikeysPage = 1;
+  });
+  let apikeys = $state([]);
+  let apikeysPage = $state(1);
 
   function getAppStats() {
     xfetch('/api/admin/stats')
@@ -126,80 +130,84 @@
   <TableContainer>
     <TableNav title="{$LL.apiKeys()}" createBtnEnabled="{false}" />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.apiKeyName()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.apiKeyPrefix()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.userName()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.active()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateCreated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.actions()}
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each apikeys as apikey, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              {apikey.name}
-            </RowCol>
-            <RowCol>
-              {apikey.prefix}
-            </RowCol>
-            <RowCol>
-              <a
-                href="{appRoutes.adminUsers}/{apikey.userId}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-              >
-                {apikey.userName}
-              </a>
-            </RowCol>
-            <RowCol>
-              <BooleanDisplay boolValue="{apikey.active}" />
-            </RowCol>
-            <RowCol>
-              {new Date(apikey.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(apikey.updatedDate).toLocaleString()}
-            </RowCol>
-            <RowCol type="action">
-              <CrudActions
-                editBtnEnabled="{false}"
-                deleteBtnClickHandler="{deleteApiKey(apikey.userId, apikey.id)}"
-                deleteBtnTestId="apikey-delete"
-              >
-                <HollowButton
-                  onClick="{toggleApiKeyActiveStatus(
-                    apikey.userId,
-                    apikey.id,
-                    apikey.active,
-                  )}"
-                  testid="apikey-activetoggle"
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.apiKeyName()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.apiKeyPrefix()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.userName()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.active()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateCreated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.actions()}
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each apikeys as apikey, i}
+            <TableRow itemIndex="{i}">
+              <RowCol>
+                {apikey.name}
+              </RowCol>
+              <RowCol>
+                {apikey.prefix}
+              </RowCol>
+              <RowCol>
+                <a
+                  href="{appRoutes.adminUsers}/{apikey.userId}"
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                 >
-                  {#if !apikey.active}
-                    {$LL.activate()}
-                  {:else}
-                    {$LL.deactivate()}
-                  {/if}
-                </HollowButton>
-              </CrudActions>
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+                  {apikey.userName}
+                </a>
+              </RowCol>
+              <RowCol>
+                <BooleanDisplay boolValue="{apikey.active}" />
+              </RowCol>
+              <RowCol>
+                {new Date(apikey.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(apikey.updatedDate).toLocaleString()}
+              </RowCol>
+              <RowCol type="action">
+                <CrudActions
+                  editBtnEnabled="{false}"
+                  deleteBtnClickHandler="{deleteApiKey(apikey.userId, apikey.id)}"
+                  deleteBtnTestId="apikey-delete"
+                >
+                  <HollowButton
+                    onClick="{toggleApiKeyActiveStatus(
+                      apikey.userId,
+                      apikey.id,
+                      apikey.active,
+                    )}"
+                    testid="apikey-activetoggle"
+                  >
+                    {#if !apikey.active}
+                      {$LL.activate()}
+                    {:else}
+                      {$LL.deactivate()}
+                    {/if}
+                  </HollowButton>
+                </CrudActions>
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
       bind:current="{apikeysPage}"

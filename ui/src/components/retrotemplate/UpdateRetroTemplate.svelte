@@ -8,21 +8,40 @@
   import { user } from '../../stores';
   import ColumnForm from './ColumnForm.svelte';
 
-  export let toggleUpdate = () => {};
-  export let handleUpdate = () => {};
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix;
-  export let xfetch: any;
-  export let notifications: any;
 
-  export let templateId = '';
-  export let name = '';
-  export let description = '';
-  export let format: any;
-  export let isPublic = false;
-  export let defaultTemplate = false;
+  interface Props {
+    toggleUpdate?: any;
+    handleUpdate?: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix: any;
+    xfetch: any;
+    notifications: any;
+    templateId?: string;
+    name?: string;
+    description?: string;
+    format: any;
+    isPublic?: boolean;
+    defaultTemplate?: boolean;
+  }
+
+  let {
+    toggleUpdate = () => {},
+    handleUpdate = () => {},
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix,
+    xfetch,
+    notifications,
+    templateId = '',
+    name = $bindable(''),
+    description = $bindable(''),
+    format = $bindable(),
+    isPublic = $bindable(false),
+    defaultTemplate = $bindable(false)
+  }: Props = $props();
 
   function toggleClose() {
     toggleUpdate();
@@ -56,13 +75,13 @@
       });
   }
 
-  $: updateDisabled =
-    name === '' || format.columns.length < 2 || format.columns.length > 5;
-  $: isAdmin = validateUserIsAdmin($user);
+  let updateDisabled =
+    $derived(name === '' || format.columns.length < 2 || format.columns.length > 5);
+  let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
 <Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="updateRetroTemplate">
+  <form onsubmit={onSubmit} name="updateRetroTemplate">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"

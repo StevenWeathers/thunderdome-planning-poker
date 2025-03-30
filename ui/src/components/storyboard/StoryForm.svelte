@@ -7,24 +7,35 @@
   import Editor from '../forms/Editor.svelte';
   import { User } from 'lucide-svelte';
 
-  export let toggleStoryForm = () => {};
-  export let sendSocketEvent = () => {};
-  export let notifications;
 
-  export let story = {};
-  export let colorLegend = [];
-  export let users = [];
+  interface Props {
+    toggleStoryForm?: any;
+    sendSocketEvent?: any;
+    notifications: any;
+    story?: any;
+    colorLegend?: any;
+    users?: any;
+  }
+
+  let {
+    toggleStoryForm = () => {},
+    sendSocketEvent = () => {},
+    notifications,
+    story = $bindable({}),
+    colorLegend = [],
+    users = []
+  }: Props = $props();
 
   const isAbsolute = new RegExp('^([a-z]+://|//)', 'i');
 
-  let userComment = '';
-  let selectedComment = null;
-  let selectedCommentContent = '';
+  let userComment = $state('');
+  let selectedComment = $state(null);
+  let selectedCommentContent = $state('');
 
-  $: userMap = users.reduce((prev, usr) => {
+  let userMap = $derived(users.reduce((prev, usr) => {
     prev[usr.id] = usr.name;
     return prev;
-  }, {});
+  }, {}));
 
   function handleStoryDelete() {
     sendSocketEvent('delete_story', story.id);
@@ -325,13 +336,13 @@
                   <div class="mb-2 text-right">
                     <button
                       class="text-blue-500 hover:text-blue-300 me-1"
-                      on:click="{toggleCommentEdit(comment)}"
+                      onclick={toggleCommentEdit(comment)}
                     >
                       {$LL.edit()}
                     </button>
                     <button
                       class="text-red-500 hover:text-red-300"
-                      on:click="{handleCommentDelete(comment.id)}"
+                      onclick={handleCommentDelete(comment.id)}
                     >
                       {$LL.delete()}
                     </button>
@@ -377,7 +388,7 @@
           min="0"
           max="999"
           bind:value="{story.points}"
-          on:change="{updatePoints}"
+          onchange={updatePoints}
           placeholder="Enter story points e.g. 1, 2, 3, 5,
                         8"
           name="storyPoints"
@@ -390,7 +401,7 @@
         <div>
           {#each colorLegend as color}
             <button
-              on:click="{changeColor(color.color)}"
+              onclick={changeColor(color.color)}
               class="p-4 me-2 mb-2 colorcard-{color.color}
                                 border-2 border-solid {story.color ===
               color.color

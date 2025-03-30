@@ -1,20 +1,33 @@
 <script lang="ts">
   import ItemForm from './ItemForm.svelte';
 
-  export let phase: string = '';
-  export let sendSocketEvent: (event: string, data: any) => void;
-  export let isFacilitator: boolean = false;
-  export let items: any = [];
-  export let template: any = {
+  interface Props {
+    phase?: string;
+    sendSocketEvent: (event: string, data: any) => void;
+    isFacilitator?: boolean;
+    items?: any;
+    template?: any;
+    users?: any;
+    brainstormVisibility?: boolean;
+    columnColors?: any;
+  }
+
+  let {
+    phase = '',
+    sendSocketEvent,
+    isFacilitator = false,
+    items = [],
+    template = {
     format: {
       columns: [],
     },
-  };
-  export let users: any = [];
-  export let brainstormVisibility: boolean = false;
-  export let columnColors: any = {};
+  },
+    users = [],
+    brainstormVisibility = false,
+    columnColors = {}
+  }: Props = $props();
 
-  $: numCols = template.format.columns.length;
+  let numCols = $derived(template.format.columns.length);
 </script>
 
 <div

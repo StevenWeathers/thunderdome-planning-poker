@@ -1,6 +1,11 @@
 <script lang="ts">
   import { user } from '../../stores.ts';
   import { appRoutes } from '../../config';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 </script>
 
 {#if !$user.name || !$user.rank || $user.rank === 'GUEST'}
@@ -19,5 +24,5 @@
     Already subscribed.
   </p>
 {:else}
-  <slot />
+  {@render children?.()}
 {/if}

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   // Copied from https://github.com/tricinel/svelte-timezone-picker due to lack of svelte4 and typescript support
   // and to modify the appearance to fit dark/light modes
   import { createEventDispatcher, onMount } from 'svelte';
@@ -18,39 +20,48 @@
   // ***** Public API *****
 
   // allow customizing the main btn styles
-  export let btnClasses = '';
 
   // The timezone value comes from the consumer of the component
   // If it's not provided, we will set it in onMount to be the user's current timezone
-  export let timezone = null;
 
   // Should the dropdown be expanded by default?
-  export let expanded = false;
 
   // We can allow the user to filter the timezones displayed to only a few
-  export let allowedTimezones = null;
+  interface Props {
+    btnClasses?: string;
+    timezone?: any;
+    expanded?: boolean;
+    allowedTimezones?: any;
+  }
+
+  let {
+    btnClasses = '',
+    timezone = $bindable(null),
+    expanded = $bindable(false),
+    allowedTimezones = null
+  }: Props = $props();
 
   // ***** End Public API *****
 
   // What is the current zone?
   // Array ['Abidjan', '+00:00', '+00:00']
   // The first value is the display name for the zone, the second is the standard offset, the third the daylight saving time offset
-  let currentZone;
+  let currentZone = $state();
 
   // We keep track of what the user is typing in the search box
   // String
-  let userSearch;
+  let userSearch = $state();
 
   // What is the currently selected zone in the dropdown?
   // String 'Africa/Abidjan'
-  let highlightedZone;
+  let highlightedZone = $state();
 
   // DOM nodes refs
-  let toggleButtonRef;
-  let searchInputRef;
+  let toggleButtonRef = $state();
+  let searchInputRef = $state();
   let clearButtonRef;
-  let listBoxRef;
-  let listBoxOptionRefs;
+  let listBoxRef = $state();
+  let listBoxOptionRefs = $state();
 
   // A few IDs that will we use for a11y
   const labelId = uid();
@@ -67,7 +78,7 @@
 
   // We will only display the timezones the user passed in
   // and default to all the zones if that's empty or the wrong format
-  let availableZones = ungroupedZones;
+  let availableZones = $state(ungroupedZones);
 
   if (allowedTimezones) {
     if (Array.isArray(allowedTimezones)) {
@@ -89,7 +100,7 @@
   const validZones = Object.keys(availableZones);
 
   // Zones will be filtered as the user types, so we keep track of them internally here
-  let filteredZones = [];
+  let filteredZones = $state([]);
 
   // We take the ungroupedZones and create a list of just the user-visible labels
   // and add them to the refs
@@ -248,10 +259,12 @@
   // ***** Reactive *****
 
   // As the user types, we filter the available zones to show only those that should be visible
-  $: filteredZones =
-    userSearch && userSearch.length > 0
-      ? filter(userSearch, availableZones)
-      : validZones.slice();
+  run(() => {
+    filteredZones =
+      userSearch && userSearch.length > 0
+        ? filter(userSearch, availableZones)
+        : validZones.slice();
+  });
 
   const setTimezone = tz => {
     if (!tz) {
@@ -275,7 +288,9 @@
   // that might come in from the consumer of the component.
   // This includes setting the proper timezone and dispatching the updated values
   // back up to the consumer
-  $: setTimezone(timezone);
+  run(() => {
+    setTimezone(timezone);
+  });
 
   // ***** Lifecycle methods *****
   onMount(() => {
@@ -394,7 +409,7 @@
 </style>
 
 {#if expanded}
-  <div class="overlay" on:click="{reset}"></div>
+  <div class="overlay" onclick={reset}></div>
 {/if}
 
 <button
@@ -404,8 +419,8 @@
   aria-haspopup="listbox"
   data-toggle="true"
   aria-expanded="{expanded}"
-  on:click="{toggleExpanded}"
-  on:keydown="{toggleExpanded}"
+  onclick={toggleExpanded}
+  onkeydown={toggleExpanded}
   class="{btnClasses}"
 >
   <span>{currentZone[0]} <small>GMT {currentZone[1]}</small></span>
@@ -422,14 +437,14 @@
   <div
     class="tz-dropdown rounded shadow bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-400"
     transition:slide
-    on:introend="{scrollToHighlighted}"
-    on:keydown="{keyDown}"
+    onintroend={scrollToHighlighted}
+    onkeydown={keyDown}
   >
     <span class="sr-only" id="{labelId}">
       Select a timezone from the list. Start typing to filter or use the arrow
       keys to navigate the list
     </span>
-    <!-- svelte-ignore a11y-autofocus -->
+    <!-- svelte-ignore a11y_autofocus -->
     <div class="w-full p-2">
       <TextInput
         id="{searchInputId}"
@@ -470,8 +485,8 @@
                 bind:this="{listBoxOptionRefs[zoneLabel]}"
                 aria-label="{`Select ${zoneDetails[0]}`}"
                 aria-selected="{highlightedZone === zoneDetails[0]}"
-                on:mouseover="{() => setHighlightedZone(zoneDetails[0])}"
-                on:click="{ev => handleTimezoneUpdate(ev, zoneLabel)}"
+                onmouseover={() => setHighlightedZone(zoneDetails[0])}
+                onclick={ev => handleTimezoneUpdate(ev, zoneLabel)}
                 class="hover:bg-blue-500 hover:text-white dark:hover:bg-sky-300 dark:hover:text-gray-800 focus:bg-blue-500 focus:text-white dark:focus:bg-sky-300 dark:focus:text-gray-800"
               >
                 {zoneDetails[0]} <span>GMT {zoneDetails[1]}</span>

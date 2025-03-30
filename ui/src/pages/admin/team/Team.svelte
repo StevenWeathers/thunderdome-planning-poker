@@ -21,12 +21,23 @@
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let organizationId;
-  export let departmentId;
-  export let teamId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    organizationId: any;
+    departmentId: any;
+    teamId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    organizationId,
+    departmentId,
+    teamId
+  }: Props = $props();
 
   const battlesPageLimit = 1000;
   const retrosPageLimit = 1000;
@@ -34,40 +45,40 @@
   const storyboardsPageLimit = 1000;
   const usersPageLimit = 1000;
 
-  let team = {
+  let team = $state({
     id: teamId,
     name: '',
-  };
-  let organization = {
+  });
+  let organization = $state({
     id: organizationId,
     name: '',
-  };
-  let department = {
+  });
+  let department = $state({
     id: departmentId,
     name: '',
-  };
-  let users = [];
-  let battles = [];
-  let retros = [];
-  let retroActions = [];
-  let storyboards = [];
+  });
+  let users = $state([]);
+  let battles = $state([]);
+  let retros = $state([]);
+  let retroActions = $state([]);
+  let storyboards = $state([]);
   let usersPage = 1;
   let battlesPage = 1;
   let retrosPage = 1;
-  let retroActionsPage = 1;
+  let retroActionsPage = $state(1);
   let storyboardsPage = 1;
-  let totalRetroActions = 0;
-  let completedActionItems = false;
+  let totalRetroActions = $state(0);
+  let completedActionItems = $state(false);
 
-  let showDeleteTeam = false;
+  let showDeleteTeam = $state(false);
 
   const apiPrefix = '/api';
-  $: orgPrefix = departmentId
+  let orgPrefix = $derived(departmentId
     ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
-    : `${apiPrefix}/organizations/${organizationId}`;
-  $: teamPrefix = organizationId
+    : `${apiPrefix}/organizations/${organizationId}`);
+  let teamPrefix = $derived(organizationId
     ? `${orgPrefix}/teams/${teamId}`
-    : `${apiPrefix}/teams/${teamId}`;
+    : `${apiPrefix}/teams/${teamId}`);
 
   let showRetroActionComments = false;
   let selectedRetroAction = null;
@@ -266,24 +277,28 @@
     <TableContainer>
       <TableNav title="{team.name}" createBtnEnabled="{false}" />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          <TableRow itemIndex="{0}">
-            <RowCol>
-              {new Date(team.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(team.updatedDate).toLocaleString()}
-            </RowCol>
-          </TableRow>
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            <TableRow itemIndex="{0}">
+              <RowCol>
+                {new Date(team.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(team.updatedDate).toLocaleString()}
+              </RowCol>
+            </TableRow>
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -382,55 +397,59 @@
             </div>
 
             <Table>
-              <tr slot="header">
-                <HeadCol>{$LL.actionItem()}</HeadCol>
-                <HeadCol>{$LL.completed()}</HeadCol>
-                <HeadCol>{$LL.comments()}</HeadCol>
-              </tr>
-              <tbody slot="body" let:class="{className}" class="{className}">
-                {#each retroActions as item, i}
-                  <TableRow itemIndex="{i}">
-                    <RowCol>
-                      <div class="whitespace-pre-wrap">
-                        {item.content}
-                      </div>
-                    </RowCol>
-                    <RowCol>
-                      <input
-                        type="checkbox"
-                        id="{i}Completed"
-                        checked="{item.completed}"
-                        class="opacity-0 absolute h-6 w-6"
-                        disabled
-                      />
-                      <div
-                        class="bg-white dark:bg-gray-800 border-2 rounded-md
-                                            border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center me-2
-                                            focus-within:border-blue-500 dark:focus-within:border-sky-500"
-                      >
-                        <Check
-                          class="hidden w-4 h-4 text-green-600 pointer-events-none"
+              {#snippet header()}
+                            <tr >
+                  <HeadCol>{$LL.actionItem()}</HeadCol>
+                  <HeadCol>{$LL.completed()}</HeadCol>
+                  <HeadCol>{$LL.comments()}</HeadCol>
+                </tr>
+                          {/snippet}
+              {#snippet body({ class: className })}
+                            <tbody   class="{className}">
+                  {#each retroActions as item, i}
+                    <TableRow itemIndex="{i}">
+                      <RowCol>
+                        <div class="whitespace-pre-wrap">
+                          {item.content}
+                        </div>
+                      </RowCol>
+                      <RowCol>
+                        <input
+                          type="checkbox"
+                          id="{i}Completed"
+                          checked="{item.completed}"
+                          class="opacity-0 absolute h-6 w-6"
+                          disabled
                         />
-                      </div>
-                      <label for="{i}Completed" class="select-none"></label>
-                    </RowCol>
-                    <RowCol>
-                      <MessageSquareMore
-                        width="22"
-                        height="22"
-                        class="inline-block"
-                      />
-                      <button
-                        class="text-lg text-blue-400 dark:text-sky-400"
-                        on:click="{toggleRetroActionComments(item.id)}"
-                      >
-                        &nbsp;{item.comments.length}
-                      </button>
-                    </RowCol>
-                  </TableRow>
-                {/each}
-              </tbody>
+                        <div
+                          class="bg-white dark:bg-gray-800 border-2 rounded-md
+                                              border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
+                                              justify-center items-center me-2
+                                              focus-within:border-blue-500 dark:focus-within:border-sky-500"
+                        >
+                          <Check
+                            class="hidden w-4 h-4 text-green-600 pointer-events-none"
+                          />
+                        </div>
+                        <label for="{i}Completed" class="select-none"></label>
+                      </RowCol>
+                      <RowCol>
+                        <MessageSquareMore
+                          width="22"
+                          height="22"
+                          class="inline-block"
+                        />
+                        <button
+                          class="text-lg text-blue-400 dark:text-sky-400"
+                          onclick={toggleRetroActionComments(item.id)}
+                        >
+                          &nbsp;{item.comments.length}
+                        </button>
+                      </RowCol>
+                    </TableRow>
+                  {/each}
+                </tbody>
+                          {/snippet}
             </Table>
             <TableFooter
               bind:current="{retroActionsPage}"
@@ -483,64 +502,68 @@
     <TableContainer>
       <TableNav title="{$LL.users()}" createBtnEnabled="{false}" />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.email()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.role()}
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each users as user, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <UserAvatar
-                      warriorId="{user.id}"
-                      avatar="{user.avatar}"
-                      gravatarHash="{user.gravatarHash}"
-                      userName="{user.name}"
-                      width="48"
-                      class="h-10 w-10 rounded-full"
-                    />
-                  </div>
-                  <div class="ms-4">
-                    <div class="font-medium text-gray-900 dark:text-gray-200">
-                      <a
-                        data-testid="user-name"
-                        href="{appRoutes.adminUsers}/{user.id}"
-                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                        >{user.name}</a
-                      >
-                      {#if user.country}
-                        &nbsp;
-                        <CountryFlag
-                          country="{user.country}"
-                          additionalClass="inline-block"
-                          width="32"
-                          height="24"
-                        />
-                      {/if}
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.email()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.role()}
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each users as user, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                      <UserAvatar
+                        warriorId="{user.id}"
+                        avatar="{user.avatar}"
+                        gravatarHash="{user.gravatarHash}"
+                        userName="{user.name}"
+                        width="48"
+                        class="h-10 w-10 rounded-full"
+                      />
+                    </div>
+                    <div class="ms-4">
+                      <div class="font-medium text-gray-900 dark:text-gray-200">
+                        <a
+                          data-testid="user-name"
+                          href="{appRoutes.adminUsers}/{user.id}"
+                          class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                          >{user.name}</a
+                        >
+                        {#if user.country}
+                          &nbsp;
+                          <CountryFlag
+                            country="{user.country}"
+                            additionalClass="inline-block"
+                            width="32"
+                            height="24"
+                          />
+                        {/if}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </RowCol>
-              <RowCol>
-                <span data-testid="user-email">{user.email}</span>
-              </RowCol>
-              <RowCol>
-                <div class="text-sm text-gray-500 dark:text-gray-300">
-                  {user.role}
-                </div>
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+                </RowCol>
+                <RowCol>
+                  <span data-testid="user-email">{user.email}</span>
+                </RowCol>
+                <RowCol>
+                  <div class="text-sm text-gray-500 dark:text-gray-300">
+                    {user.role}
+                  </div>
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
 

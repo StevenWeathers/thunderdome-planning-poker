@@ -13,15 +13,19 @@
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import TableFooter from '../../../components/table/TableFooter.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const teamsPageLimit = 100;
 
-  let teamCount = 0;
-  let teams = [];
-  let teamsPage = 1;
+  let teamCount = $state(0);
+  let teams = $state([]);
+  let teamsPage = $state(1);
 
   function getTeams() {
     const teamsOffset = (teamsPage - 1) * teamsPageLimit;
@@ -63,36 +67,40 @@
   <TableContainer>
     <TableNav title="{$LL.teams()}" createBtnEnabled="{false}" />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateCreated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each teams as team, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <a
-                href="{appRoutes.adminTeams}/{team.id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >{team.name}</a
-              >
-            </RowCol>
-            <RowCol>
-              {new Date(team.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(team.updatedDate).toLocaleString()}
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateCreated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each teams as team, i}
+            <TableRow itemIndex="{i}">
+              <RowCol>
+                <a
+                  href="{appRoutes.adminTeams}/{team.id}"
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >{team.name}</a
+                >
+              </RowCol>
+              <RowCol>
+                {new Date(team.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(team.updatedDate).toLocaleString()}
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
       bind:current="{teamsPage}"

@@ -8,21 +8,34 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
 
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix: string = '/api';
-  export let xfetch: any;
-  export let notifications: any;
+  interface Props {
+    toggleCreate?: any;
+    handleCreate?: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    xfetch: any;
+    notifications: any;
+  }
 
-  let name = '';
-  let description = '';
-  let scaleType = 'custom';
-  let values: string[] = [];
-  let isPublic = false;
-  let defaultScale = false;
+  let {
+    toggleCreate = () => {},
+    handleCreate = () => {},
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    xfetch,
+    notifications
+  }: Props = $props();
+
+  let name = $state('');
+  let description = $state('');
+  let scaleType = $state('custom');
+  let values: string[] = $state([]);
+  let isPublic = $state(false);
+  let defaultScale = $state(false);
 
   const scaleTypes = [
     'fibonacci',
@@ -91,12 +104,12 @@
     }
   }
 
-  $: createDisabled = name === '' || scaleType === '' || values.length === 0;
-  $: isAdmin = validateUserIsAdmin($user);
+  let createDisabled = $derived(name === '' || scaleType === '' || values.length === 0);
+  let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
 <Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="createEstimationScale">
+  <form onsubmit={onSubmit} name="createEstimationScale">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"

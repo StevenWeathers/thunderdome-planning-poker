@@ -5,23 +5,33 @@
 
   const dispatch = createEventDispatcher();
 
-  export let point = '1';
-  export let active = false;
-  export let isLocked = true;
-  export let results = {
+  interface Props {
+    point?: string;
+    active?: boolean;
+    isLocked?: boolean;
+    results?: any;
+    hideVoterIdentity?: boolean;
+  }
+
+  let {
+    point = '1',
+    active = false,
+    isLocked = true,
+    results = {
     count: 0,
     voters: [],
-  };
-  export let hideVoterIdentity = false;
+  },
+    hideVoterIdentity = false
+  }: Props = $props();
 
-  let showVoters = false;
+  let showVoters = $state(false);
 
-  $: activeColor = active
+  let activeColor = $derived(active
     ? 'border-green-500 bg-green-100 text-green-600 dark:border-lime-500 dark:bg-lime-100 dark:text-lime-700'
-    : 'border-gray-300 bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200';
-  $: lockedClass = isLocked
+    : 'border-gray-300 bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200');
+  let lockedClass = $derived(isLocked
     ? 'opacity-25 cursor-not-allowed'
-    : 'cursor-pointer';
+    : 'cursor-pointer');
 
   function voteAction() {
     if (isLocked) {
@@ -52,16 +62,16 @@
     >
       {results.count}
       <button
-        on:mouseenter="{() => {
+        onmouseenter={() => {
           if (!hideVoterIdentity) {
             showVoters = true;
           }
-        }}"
-        on:mouseleave="{() => {
+        }}
+        onmouseleave={() => {
           if (!hideVoterIdentity) {
             showVoters = false;
           }
-        }}"
+        }}
         title="{$LL.showVoters()}"
         class="text-green-500 dark:text-lime-400 relative leading-none"
       >
@@ -84,8 +94,8 @@
         {lockedClass} relative text-5xl lg:text-6xl relative z-0 font-rajdhani"
     role="button"
     tabindex="0"
-    on:click="{voteAction}"
-    on:keypress="{voteAction}"
+    onclick={voteAction}
+    onkeypress={voteAction}
   >
     <div class="py-12 md:py-16 text-center">{point}</div>
   </div>

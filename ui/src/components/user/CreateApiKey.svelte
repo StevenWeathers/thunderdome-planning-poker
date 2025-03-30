@@ -6,13 +6,22 @@
   import TextInput from '../forms/TextInput.svelte';
   import { ClipboardCopy } from 'lucide-svelte';
 
-  export let handleApiKeyCreate = () => {};
-  export let toggleCreateApiKey = () => {};
-  export let xfetch = () => {};
-  export let notifications;
+  interface Props {
+    handleApiKeyCreate?: any;
+    toggleCreateApiKey?: any;
+    xfetch?: any;
+    notifications: any;
+  }
 
-  let keyName = '';
-  let apiKey = '';
+  let {
+    handleApiKeyCreate = () => {},
+    toggleCreateApiKey = () => {},
+    xfetch = () => {},
+    notifications
+  }: Props = $props();
+
+  let keyName = $state('');
+  let apiKey = $state('');
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -76,7 +85,7 @@
 
 <Modal closeModal="{toggleCreateApiKey}">
   {#if apiKey === ''}
-    <form on:submit="{handleSubmit}" name="createApiKey">
+    <form onsubmit={handleSubmit} name="createApiKey">
       <div class="mb-4">
         <label class="block dark:text-gray-400 font-bold mb-2" for="keyName">
           {$LL.apiKeyName()}

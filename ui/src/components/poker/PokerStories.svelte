@@ -15,12 +15,23 @@
   import ViewPlan from './ViewStory.svelte';
   import ImportModal from './ImportModal.svelte';
 
-  export let plans = [];
-  export let isLeader = false;
-  export let sendSocketEvent = (event: string, value: string) => {};
-  export let notifications;
-  export let xfetch;
-  export let gameId = '';
+  interface Props {
+    plans?: any;
+    isLeader?: boolean;
+    sendSocketEvent?: any;
+    notifications: any;
+    xfetch: any;
+    gameId?: string;
+  }
+
+  let {
+    plans = $bindable([]),
+    isLeader = false,
+    sendSocketEvent = (event: string, value: string) => {},
+    notifications,
+    xfetch,
+    gameId = ''
+  }: Props = $props();
 
   let defaultPlan = {
     id: '',
@@ -64,11 +75,11 @@
     },
   };
 
-  let showAddPlan = false;
-  let showViewPlan = false;
-  let selectedPlan = { ...defaultPlan };
-  let storysShow = 'unpointed';
-  let showImport = false;
+  let showAddPlan = $state(false);
+  let showViewPlan = $state(false);
+  let selectedPlan = $state({ ...defaultPlan });
+  let storysShow = $state('unpointed');
+  let showImport = $state(false);
 
   const toggleImport = () => {
     showImport = !showImport;
@@ -112,13 +123,13 @@
     storysShow = show;
   };
 
-  $: pointedPlans = plans.filter(p => p.points !== '');
-  $: totalPoints = pointedPlans.reduce((previousValue, currentValue) => {
+  let pointedPlans = $derived(plans.filter(p => p.points !== ''));
+  let totalPoints = $derived(pointedPlans.reduce((previousValue, currentValue) => {
     var currentPoints =
       currentValue.points === '1/2' ? 0.5 : parseInt(currentValue.points);
     return isNaN(currentPoints) ? previousValue : previousValue + currentPoints;
-  }, 0);
-  $: unpointedPlans = plans.filter(p => p.points === '');
+  }, 0));
+  let unpointedPlans = $derived(plans.filter(p => p.points === ''));
 
   // event handlers
   function handleDndConsider(e) {
@@ -179,7 +190,7 @@
           ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
           : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
                 bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
-        on:click="{toggleShow('unpointed')}"
+        onclick={toggleShow('unpointed')}
         data-testid="plans-unpointed"
       >
         {$LL.unpointed({ count: unpointedPlans.length })}
@@ -191,7 +202,7 @@
           ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
           : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
                 bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
-        on:click="{toggleShow('pointed')}"
+        onclick={toggleShow('pointed')}
         data-testid="plans-pointed"
       >
         {$LL.pointed({ count: pointedPlans.length })}
@@ -203,7 +214,7 @@
           ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
           : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
                   bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
-        on:click="{toggleShow('all')}"
+        onclick={toggleShow('all')}
         data-testid="plans-all"
       >
         {$LL.allStoryWithCount({ count: plans.length })}
@@ -224,8 +235,8 @@
       ],
       dragDisabled: !isLeader || storysShow !== 'all',
     }}"
-    on:consider="{handleDndConsider}"
-    on:finalize="{handleDndFinalize}"
+    onconsider={handleDndConsider}
+    onfinalize={handleDndFinalize}
   >
     {#each plans as plan (plan.id)}
       <div
@@ -260,8 +271,8 @@
           &nbsp;
           {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
           {#if priorities[plan.priority]}
-            <svelte:component
-              this="{priorities[plan.priority].icon}"
+            {@const SvelteComponent = priorities[plan.priority].icon}
+            <SvelteComponent
               class="inline-block w-6 h-6"
             />
           {/if}
@@ -313,6 +324,7 @@
         </div>
       </div>
       {#if plan[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+        {@const SvelteComponent_1 = priorities[plan.priority].icon}
         <div
           class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 cursor-pointer flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
           data-testid="plan"
@@ -338,8 +350,7 @@
             </div>
             &nbsp;
             {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-            <svelte:component
-              this="{priorities[plan.priority].icon}"
+            <SvelteComponent_1
               class="inline-block w-6 h-6"
             />
             <span data-testid="plan-name">{plan.name}</span>

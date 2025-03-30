@@ -19,26 +19,44 @@
   import { Eye } from 'lucide-svelte';
   import ViewFormat from './ViewFormat.svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let isEntityAdmin = false;
-  export let templates = [];
-  export let apiPrefix = '/api';
-  export let templateCount = 0;
-  export let templatesPage = 1;
-  export let templatesPageLimit = 10;
-  export let changePage = () => {};
-  export let getTemplates = () => {};
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    isEntityAdmin?: boolean;
+    templates?: any;
+    apiPrefix?: string;
+    templateCount?: number;
+    templatesPage?: number;
+    templatesPageLimit?: number;
+    changePage?: any;
+    getTemplates?: any;
+  }
+
+  let {
+    xfetch,
+    notifications,
+    organizationId,
+    teamId,
+    departmentId,
+    isEntityAdmin = false,
+    templates = [],
+    apiPrefix = '/api',
+    templateCount = 0,
+    templatesPage = $bindable(1),
+    templatesPageLimit = 10,
+    changePage = () => {},
+    getTemplates = () => {}
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  let showAddTemplate = false;
-  let showUpdateTemplate = false;
-  let updateTemplate = {};
-  let showRemoveTemplate = false;
+  let showAddTemplate = $state(false);
+  let showUpdateTemplate = $state(false);
+  let updateTemplate = $state({});
+  let showRemoveTemplate = $state(false);
   let removeTemplateId = null;
 
   function handleCreateTemplate() {
@@ -79,10 +97,10 @@
     removeTemplateId = templateId;
   };
 
-  $: isAdmin = validateUserIsAdmin($user);
+  let isAdmin = $derived(validateUserIsAdmin($user));
 
-  let showFormat = false;
-  let selectedTemplate = null;
+  let showFormat = $state(false);
+  let selectedTemplate = $state(null);
 
   let toggleViewFormat = template => {
     showFormat = !showFormat;
@@ -100,64 +118,68 @@
       createBtnTestId="template-create"
     />
     <Table>
-      <tr slot="header">
-        <HeadCol>{$LL.name()}</HeadCol>
-        <HeadCol>{$LL.description()}</HeadCol>
-        <HeadCol>{$LL.format()}</HeadCol>
-        {#if isAdmin && !teamId && !organizationId}
-          <HeadCol>{$LL.isPublic()}</HeadCol>
-        {/if}
-        <HeadCol>{$LL.default()}</HeadCol>
-        <HeadCol type="action">
-          <span class="sr-only">{$LL.actions()}</span>
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each templates as template, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <div class="font-medium text-gray-900 dark:text-gray-200">
-                <span data-testid="template-name">{template.name}</span>
-              </div>
-            </RowCol>
-            <RowCol>
-              <span data-testid="template-description"
-                >{template.description}</span
-              >
-            </RowCol>
-            <RowCol>
-              <span data-testid="template-format">
-                <button
-                  on:click="{() => toggleViewFormat(template)}"
-                  class="text-blue-500 dark:text-sky-400"
-                >
-                  <Eye class="w-5 h-5" />
-                </button>
-              </span>
-            </RowCol>
-            {#if isAdmin && !teamId && !organizationId}
+      {#snippet header()}
+            <tr >
+          <HeadCol>{$LL.name()}</HeadCol>
+          <HeadCol>{$LL.description()}</HeadCol>
+          <HeadCol>{$LL.format()}</HeadCol>
+          {#if isAdmin && !teamId && !organizationId}
+            <HeadCol>{$LL.isPublic()}</HeadCol>
+          {/if}
+          <HeadCol>{$LL.default()}</HeadCol>
+          <HeadCol type="action">
+            <span class="sr-only">{$LL.actions()}</span>
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each templates as template, i}
+            <TableRow itemIndex="{i}">
               <RowCol>
-                <span data-testid="template-is-public"
-                  ><BooleanDisplay boolValue="{template.isPublic}" /></span
+                <div class="font-medium text-gray-900 dark:text-gray-200">
+                  <span data-testid="template-name">{template.name}</span>
+                </div>
+              </RowCol>
+              <RowCol>
+                <span data-testid="template-description"
+                  >{template.description}</span
                 >
               </RowCol>
-            {/if}
-            <RowCol>
-              <span data-testid="template-is-default"
-                ><BooleanDisplay boolValue="{template.defaultTemplate}" />
-              </span>
-            </RowCol>
-            <RowCol type="action">
-              {#if isAdmin || isEntityAdmin}
-                <CrudActions
-                  editBtnClickHandler="{toggleUpdateTemplate(template)}"
-                  deleteBtnClickHandler="{toggleRemoveTemplate(template.id)}"
-                />
+              <RowCol>
+                <span data-testid="template-format">
+                  <button
+                    onclick={() => toggleViewFormat(template)}
+                    class="text-blue-500 dark:text-sky-400"
+                  >
+                    <Eye class="w-5 h-5" />
+                  </button>
+                </span>
+              </RowCol>
+              {#if isAdmin && !teamId && !organizationId}
+                <RowCol>
+                  <span data-testid="template-is-public"
+                    ><BooleanDisplay boolValue="{template.isPublic}" /></span
+                  >
+                </RowCol>
               {/if}
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+              <RowCol>
+                <span data-testid="template-is-default"
+                  ><BooleanDisplay boolValue="{template.defaultTemplate}" />
+                </span>
+              </RowCol>
+              <RowCol type="action">
+                {#if isAdmin || isEntityAdmin}
+                  <CrudActions
+                    editBtnClickHandler="{toggleUpdateTemplate(template)}"
+                    deleteBtnClickHandler="{toggleRemoveTemplate(template.id)}"
+                  />
+                {/if}
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
       bind:current="{templatesPage}"

@@ -1,9 +1,13 @@
 <script lang="ts">
   import CountryFlag from './CountryFlag.svelte';
 
-  export let xfetch;
+  interface Props {
+    xfetch: any;
+  }
 
-  let activeCountries = [];
+  let { xfetch }: Props = $props();
+
+  let activeCountries = $state([]);
 
   xfetch('/api/active-countries')
     .then(res => res.json())

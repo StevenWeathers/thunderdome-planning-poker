@@ -9,29 +9,47 @@
   import { onMount } from 'svelte';
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
-  export let toggleCheckin = () => {};
-  export let handleCheckin = () => {};
-  export let handleCheckinEdit = () => {};
-  export let userId;
-  export let checkinId;
-  export let today = '';
-  export let yesterday = '';
-  export let blockers = '';
-  export let discuss = '';
-  export let goalsMet = true;
-  export let notifications;
-  export let xfetch;
-  export let teamPrefix = '';
+  interface Props {
+    toggleCheckin?: any;
+    handleCheckin?: any;
+    handleCheckinEdit?: any;
+    userId: any;
+    checkinId: any;
+    today?: string;
+    yesterday?: string;
+    blockers?: string;
+    discuss?: string;
+    goalsMet?: boolean;
+    notifications: any;
+    xfetch: any;
+    teamPrefix?: string;
+  }
 
-  let userSubscribed = false;
-  let lastCheckin = {
+  let {
+    toggleCheckin = () => {},
+    handleCheckin = () => {},
+    handleCheckinEdit = () => {},
+    userId,
+    checkinId,
+    today = $bindable(''),
+    yesterday = $bindable(''),
+    blockers = $bindable(''),
+    discuss = $bindable(''),
+    goalsMet = $bindable(true),
+    notifications,
+    xfetch,
+    teamPrefix = ''
+  }: Props = $props();
+
+  let userSubscribed = $state(false);
+  let lastCheckin = $state({
     id: '',
     yesterday: '',
     today: '',
     blockers: '',
     discuss: '',
     goalsMet: false,
-  };
+  });
 
   function onSubmit(e) {
     e.preventDefault();
@@ -85,7 +103,7 @@
 </script>
 
 <Modal closeModal="{toggleCheckin}" widthClasses="md:w-2/3">
-  <form on:submit="{onSubmit}" name="teamCheckin" class="flex flex-wrap mt-8">
+  <form onsubmit={onSubmit} name="teamCheckin" class="flex flex-wrap mt-8">
     {#if userSubscribed}
       {#if lastCheckin.id !== ''}
         <div

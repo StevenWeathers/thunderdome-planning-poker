@@ -5,17 +5,21 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { onMount } from 'svelte';
 
-  export let notifications;
-  export let xfetch;
-  export let handleImport;
+  interface Props {
+    notifications: any;
+    xfetch: any;
+    handleImport: any;
+  }
 
-  let selectedStoryboardIdx = '';
-  let storyboards = [];
-  let storyboard = {
+  let { notifications, xfetch, handleImport }: Props = $props();
+
+  let selectedStoryboardIdx = $state('');
+  let storyboards = $state([]);
+  let storyboard = $state({
     id: '',
     goals: [],
-  };
-  let selectedGoalIdx = '';
+  });
+  let selectedGoalIdx = $state('');
 
   function getStoryboards() {
     xfetch(`/api/users/${$user.id}/storyboards?limit=${9999}&offset=${0}`)

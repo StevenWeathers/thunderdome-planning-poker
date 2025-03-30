@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token -->
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';

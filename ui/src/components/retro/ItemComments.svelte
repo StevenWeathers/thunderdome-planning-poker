@@ -5,23 +5,33 @@
   import { user } from '../../stores';
   import { User } from 'lucide-svelte';
 
-  export let toggleComments = () => {};
-  export let item: any = {
+  interface Props {
+    toggleComments?: any;
+    item?: any;
+    users?: any;
+    isFacilitator?: boolean;
+    sendSocketEvent?: any;
+  }
+
+  let {
+    toggleComments = () => {},
+    item = {
     id: '',
     comments: [],
-  };
-  export let users = [];
-  export let isFacilitator = false;
-  export let sendSocketEvent = (event: string, value: any) => {};
+  },
+    users = [],
+    isFacilitator = false,
+    sendSocketEvent = (event: string, value: any) => {}
+  }: Props = $props();
 
   const userMap = users.reduce((prev, cur) => {
     prev[cur.id] = cur.name;
     return prev;
   }, {});
 
-  let userComment = '';
-  let selectedComment = null;
-  let selectedCommentContent = '';
+  let userComment = $state('');
+  let selectedComment = $state(null);
+  let selectedCommentContent = $state('');
 
   const toggleCommentEdit = comment => () => {
     selectedComment = comment;
@@ -106,13 +116,13 @@
           <div class="mb-2 text-right">
             <button
               class="text-blue-500 hover:text-blue-300 me-1"
-              on:click="{toggleCommentEdit(comment)}"
+              onclick={toggleCommentEdit(comment)}
             >
               {$LL.edit()}
             </button>
             <button
               class="text-red-500"
-              on:click="{handleCommentDelete(comment.id)}"
+              onclick={handleCommentDelete(comment.id)}
             >
               {$LL.delete()}
             </button>

@@ -9,9 +9,13 @@
 
   const dispatch = createEventDispatcher();
 
-  export let handleImport = story => {};
-  export let notifications;
-  export let xfetch;
+  interface Props {
+    handleImport?: any;
+    notifications: any;
+    xfetch: any;
+  }
+
+  let { handleImport = story => {}, notifications, xfetch }: Props = $props();
 
   // going by common Jira issue types for now
   const planTypes = [
@@ -39,11 +43,11 @@
     },
   ];
 
-  let jiraInstances = [];
-  let jiraStories = [];
-  let selectedJiraInstance = '';
-  let searchJQL = '';
-  let jqlError = '';
+  let jiraInstances = $state([]);
+  let jiraStories = $state([]);
+  let selectedJiraInstance = $state('');
+  let searchJQL = $state('');
+  let jqlError = $state('');
 
   function getJiraInstances() {
     xfetch(`/api/users/${$user.id}/jira-instances`)
@@ -201,7 +205,7 @@
     </div>
 
     {#if selectedJiraInstance !== ''}
-      <form on:submit="{handleJQLSearch}" class="mb-4">
+      <form onsubmit={handleJQLSearch} class="mb-4">
         <label
           for="jql-search"
           class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
