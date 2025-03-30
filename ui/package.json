@@ -13,8 +13,12 @@
   },
   "homepage": "https://github.com/StevenWeathers/thunderdome-planning-poker#readme",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "rollup --config rollup.config.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
     "autobuild": "rollup --config rollup.config.js -w",
     "prettier": "prettier --check \"**/*.{ts,json,css,html}\"",
     "prettier:fix": "prettier --write \"**/*.{ts,json,css,html}\"",
@@ -23,8 +27,7 @@
     "test:watch": "npm run test -- --watch",
     "test:snapshot": "npm test -- -u",
     "locales": "npx typesafe-i18n --no-watch",
-    "locales:watch": "typesafe-i18n",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "locales:watch": "typesafe-i18n"
   },
   "dependencies": {
     "compute-scroll-into-view": "^3.1.0",
@@ -40,14 +43,10 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
-    "@rollup/plugin-commonjs": "^25.0.2",
-    "@rollup/plugin-html": "^1.0.2",
-    "@rollup/plugin-node-resolve": "^15.1.0",
-    "@rollup/plugin-terser": "^0.4.3",
-    "@rollup/plugin-typescript": "^11.1.1",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/svelte": "^4.0.0",
-    "@tsconfig/svelte": "^4.0.1",
+    "@tsconfig/svelte": "^5.0.4",
     "@types/js-cookie": "^3.0.3",
     "autoprefixer": "^10.4.14",
     "cssnano": "^5.1.12",
@@ -58,22 +57,15 @@
     "postcss-nesting": "^11.3.0",
     "prettier": "^3.1.0",
     "prettier-plugin-svelte": "^3.3.3",
-    "rollup": "^3.29.5",
-    "rollup-plugin-bundle-html": "^0.2.2",
-    "rollup-plugin-copy": "^3.4.0",
-    "rollup-plugin-delete": "^2.0.0",
-    "rollup-plugin-livereload": "^2.0.5",
-    "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-svelte": "^7.2.2",
-    "svelte": "^5.0.0",
-    "svelte-check": "^4.0.0",
+    "svelte": "^5.15.0",
+    "svelte-check": "^4.1.1",
     "svelte-jester": "^2.3.2",
-    "svelte-preprocess": "^6.0.0",
-    "tailwindcss": "^3.3.2",
+    "tailwindcss": "^3.4.17",
     "ts-jest": "^29.1.0",
     "tslib": "^2.6.0",
     "typesafe-i18n": "^5.24.3",
-    "typescript": "^5.5.0"
+    "typescript": "~5.6.2",
+    "vite": "^6.0.5"
   },
   "optionalDependencies": {
     "fsevents": "^2.3.2"

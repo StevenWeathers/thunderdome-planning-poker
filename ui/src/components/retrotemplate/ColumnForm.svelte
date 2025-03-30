@@ -143,7 +143,7 @@
         >
           {#if column.icon}
             {@const SvelteComponent = getIconComponent(column.icon)}
-            <SvelteComponent"
+            <SvelteComponent
               class="w-6 h-6 text-gray-700 dark:text-white"
             />
           {/if}
@@ -198,7 +198,7 @@
         >
           {#if newColumn.icon}
             {@const SvelteComponent_1 = getIconComponent(newColumn.icon)}
-            <SvelteComponent_1"
+            <SvelteComponent_1
               class="w-6 h-6 text-gray-700 dark:text-white"
             />
           {/if}

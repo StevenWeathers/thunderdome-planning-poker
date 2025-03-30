@@ -325,7 +325,7 @@ func isTeamUserOrAnAdmin(r *http.Request) bool {
 func (s *Service) getIndexTemplate(filesystem fs.FS) *template.Template {
 	ctx := context.Background()
 	// get the html template from dist, have it ready for requests
-	tmplContent, ioErr := fs.ReadFile(filesystem, "static/index.html")
+	tmplContent, ioErr := fs.ReadFile(filesystem, "index.html")
 	if ioErr != nil {
 		s.Logger.Ctx(ctx).Error("Error opening index template")
 		if !s.Config.EmbedUseOS {

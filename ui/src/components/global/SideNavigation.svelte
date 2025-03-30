@@ -42,7 +42,7 @@
               title="{item.label}"
             >
               <span class="mr-3">
-                <item.icon" size="{24}" />
+                <item.icon size="{24}" />
               </span>
               <span class:hidden="{isCollapsed}">{item.label}</span>
             </a>

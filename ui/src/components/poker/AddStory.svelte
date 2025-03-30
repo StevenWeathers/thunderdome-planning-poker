@@ -182,7 +182,7 @@
         </option>
         {#each priorities as p}
           <option value="{p.value}">
-            <p.icon"
+            <p.icon
               class="inline-block w-6 h-6"
             />{p.name}</option
           >

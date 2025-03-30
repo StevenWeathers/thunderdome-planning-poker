@@ -103,7 +103,7 @@
     <div class="font-bold mb-2 dark:text-gray-400">
       {$LL.planPriority()}
     </div>
-    <SvelteComponent"
+    <SvelteComponent
       class="inline-block w-6 h-6"
     />{priorities[priority].name}
   </div>
