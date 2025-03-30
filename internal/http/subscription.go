@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/gorilla/mux"
 
 	"go.uber.org/zap"
 )
@@ -38,8 +37,8 @@ func (s *Service) handleSubscriptionGetByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		id := vars["subscriptionId"]
+
+		id := r.PathValue("subscriptionId")
 		idErr := validate.Var(id, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -170,8 +169,8 @@ func (s *Service) handleSubscriptionUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		subscriptionID := vars["subscriptionId"]
+
+		subscriptionID := r.PathValue("subscriptionId")
 		idErr := validate.Var(subscriptionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -234,8 +233,8 @@ func (s *Service) handleSubscriptionDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		subscriptionID := vars["subscriptionId"]
+
+		subscriptionID := r.PathValue("subscriptionId")
 		idErr := validate.Var(subscriptionID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -269,9 +268,9 @@ func (s *Service) handleSubscriptionDelete() http.HandlerFunc {
 func (s *Service) handleGetEntityUserActiveSubs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
+
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		entityUserID := vars["userId"]
+		entityUserID := r.PathValue("userId")
 		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -312,15 +311,15 @@ type subscriptionAssociateRequestBody struct {
 func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
+
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		entityUserID := vars["userId"]
+		entityUserID := r.PathValue("userId")
 		idErr := validate.Var(entityUserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		subscriptionID := vars["subscriptionId"]
+		subscriptionID := r.PathValue("subscriptionId")
 		sidErr := validate.Var(subscriptionID, "required,uuid")
 		if sidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, sidErr.Error()))

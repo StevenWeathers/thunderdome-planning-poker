@@ -8,8 +8,6 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"go.uber.org/zap"
-
-	"github.com/gorilla/mux"
 )
 
 type pokerSettingsRequestBody struct {
@@ -38,8 +36,8 @@ func (s *Service) handleCreateOrganizationPokerSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -104,8 +102,8 @@ func (s *Service) handleCreateTeamPokerSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -170,8 +168,8 @@ func (s *Service) handleCreateDepartmentPokerSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		deptID := vars["deptId"]
+
+		deptID := r.PathValue("deptId")
 		deptIDErr := validate.Var(deptID, "required,uuid")
 		if deptIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, deptIDErr.Error()))
@@ -235,8 +233,8 @@ func (s *Service) handleGetOrganizationPokerSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -272,8 +270,8 @@ func (s *Service) handleOrganizationPokerSettingsUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -337,8 +335,8 @@ func (s *Service) handleGetTeamPokerSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -374,8 +372,8 @@ func (s *Service) handleTeamPokerSettingsUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -440,8 +438,8 @@ func (s *Service) handleGetDepartmentPokerSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		deptID := vars["deptId"]
+
+		deptID := r.PathValue("deptId")
 		deptIDErr := validate.Var(deptID, "required,uuid")
 		if deptIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, deptIDErr.Error()))
@@ -478,8 +476,8 @@ func (s *Service) handleDepartmentPokerSettingsUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		deptID := vars["deptId"]
+
+		deptID := r.PathValue("deptId")
 		deptIDErr := validate.Var(deptID, "required,uuid")
 		if deptIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, deptIDErr.Error()))
@@ -543,8 +541,8 @@ func (s *Service) handleDeletePokerSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		settingsID := vars["id"]
+
+		settingsID := r.PathValue("id")
 		idErr := validate.Var(settingsID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -579,8 +577,8 @@ func (s *Service) handleGetPokerSettingsByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		settingsID := vars["id"]
+
+		settingsID := r.PathValue("id")
 		idErr := validate.Var(settingsID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

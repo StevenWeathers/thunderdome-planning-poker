@@ -8,8 +8,6 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"go.uber.org/zap"
-
-	"github.com/gorilla/mux"
 )
 
 type retroSettingsRequestBody struct {
@@ -41,8 +39,8 @@ func (s *Service) handleCreateOrganizationRetroSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -110,8 +108,8 @@ func (s *Service) handleCreateTeamRetroSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -179,8 +177,8 @@ func (s *Service) handleCreateDepartmentRetroSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		deptID := vars["departmentId"]
+
+		deptID := r.PathValue("departmentId")
 		deptIDErr := validate.Var(deptID, "required,uuid")
 		if deptIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, deptIDErr.Error()))
@@ -247,8 +245,8 @@ func (s *Service) handleGetOrganizationRetroSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -284,8 +282,8 @@ func (s *Service) handleOrganizationRetroSettingsUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -352,8 +350,8 @@ func (s *Service) handleGetTeamRetroSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -389,8 +387,8 @@ func (s *Service) handleTeamRetroSettingsUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -458,8 +456,8 @@ func (s *Service) handleGetDepartmentRetroSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		deptID := vars["deptId"]
+
+		deptID := r.PathValue("deptId")
 		deptIDErr := validate.Var(deptID, "required,uuid")
 		if deptIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, deptIDErr.Error()))
@@ -496,8 +494,8 @@ func (s *Service) handleDepartmentRetroSettingsUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		deptID := vars["departmentId"]
+
+		deptID := r.PathValue("departmentId")
 		deptIDErr := validate.Var(deptID, "required,uuid")
 		if deptIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, deptIDErr.Error()))
@@ -564,8 +562,8 @@ func (s *Service) handleDeleteRetroSettings() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		settingsID := vars["id"]
+
+		settingsID := r.PathValue("id")
 		idErr := validate.Var(settingsID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -600,8 +598,8 @@ func (s *Service) handleGetRetroSettingsByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		settingsID := vars["id"]
+
+		settingsID := r.PathValue("id")
 		idErr := validate.Var(settingsID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

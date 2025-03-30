@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"go.uber.org/zap"
-
-	"github.com/gorilla/mux"
 )
 
 var ActiveAlerts []interface{}
@@ -122,8 +120,7 @@ func (s *Service) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		alertID := vars["alertId"]
+		alertID := r.PathValue("alertId")
 		idErr := validate.Var(alertID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -178,8 +175,7 @@ func (s *Service) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		alertID := vars["alertId"]
+		alertID := r.PathValue("alertId")
 		idErr := validate.Var(alertID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

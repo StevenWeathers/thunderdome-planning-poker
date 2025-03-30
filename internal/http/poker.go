@@ -12,8 +12,6 @@ import (
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/poker"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-
-	"github.com/gorilla/mux"
 )
 
 // handleGetUserGames looks up poker games associated with UserID
@@ -33,8 +31,8 @@ import (
 func (s *Service) handleGetUserGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		limit, offset := getLimitOffsetFromRequest(r)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -93,16 +91,16 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		teamID, teamIDExists := vars["teamId"]
-		if !teamIDExists && s.Config.RequireTeams {
+		teamID := r.PathValue("teamId")
+		if teamID == "" && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "BATTLE_CREATION_REQUIRES_TEAM"))
 			return
 		}
@@ -157,7 +155,7 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 		var newGame *thunderdome.Poker
 		var err error
 		// if battle created with team association
-		if teamIDExists {
+		if teamID != "" {
 			if isTeamUserOrAnAdmin(r) {
 				newGame, err = s.PokerDataSvc.TeamCreateGame(ctx, teamID, userID, b.Name, b.EstimationScaleID, b.PointValuesAllowed, b.Stories, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.FacilitatorCode, b.HideVoterIdentity)
 				if err != nil {
@@ -259,8 +257,8 @@ func (s *Service) handleGetPokerGames() http.HandlerFunc {
 //	@Router			/battles/{battleId} [get]
 func (s *Service) handleGetPokerGame() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		gameID := vars["battleId"]
+
+		gameID := r.PathValue("battleId")
 		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -314,8 +312,8 @@ type planRequestBody struct {
 func (s *Service) handlePokerStoryAdd(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		gameID := vars["battleId"]
+
+		gameID := r.PathValue("battleId")
 		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -383,8 +381,8 @@ type storyUpdateRequestBody struct {
 func (s *Service) handlePokerStoryUpdate(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		gameID := vars["battleId"]
+
+		gameID := r.PathValue("battleId")
 		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(
@@ -392,7 +390,7 @@ func (s *Service) handlePokerStoryUpdate(pokerSvc *poker.Service) http.HandlerFu
 			)
 			return
 		}
-		storyID := vars["planId"]
+		storyID := r.PathValue("planId")
 		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(
@@ -457,14 +455,14 @@ func (s *Service) handlePokerStoryUpdate(pokerSvc *poker.Service) http.HandlerFu
 func (s *Service) handlePokerStoryDelete(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		gameID := vars["battleId"]
+
+		gameID := r.PathValue("battleId")
 		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		storyID := vars["planId"]
+		storyID := r.PathValue("planId")
 		sidErr := validate.Var(storyID, "required,uuid")
 		if sidErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, sidErr.Error()))
@@ -500,8 +498,8 @@ func (s *Service) handlePokerStoryDelete(pokerSvc *poker.Service) http.HandlerFu
 func (s *Service) handlePokerDelete(pokerSvc *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		gameID := vars["battleId"]
+
+		gameID := r.PathValue("battleId")
 		idErr := validate.Var(gameID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))

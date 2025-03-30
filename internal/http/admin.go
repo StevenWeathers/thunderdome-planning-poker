@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"go.uber.org/zap"
-
-	"github.com/gorilla/mux"
 )
 
 // handleAppStats gets the applications stats
@@ -143,8 +141,7 @@ func (s *Service) handleUserCreate() http.HandlerFunc {
 func (s *Service) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
@@ -178,8 +175,7 @@ func (s *Service) handleUserPromote() http.HandlerFunc {
 func (s *Service) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
@@ -213,8 +209,7 @@ func (s *Service) handleUserDemote() http.HandlerFunc {
 func (s *Service) handleUserDisable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
@@ -248,8 +243,7 @@ func (s *Service) handleUserDisable() http.HandlerFunc {
 func (s *Service) handleUserEnable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
@@ -284,8 +278,7 @@ func (s *Service) handleUserEnable() http.HandlerFunc {
 func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {

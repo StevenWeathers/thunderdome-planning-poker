@@ -12,11 +12,9 @@ import (
 
 	"github.com/unrolled/secure"
 	"github.com/unrolled/secure/cspbuilder"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/oauth"
-
-	"github.com/gorilla/mux"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/storyboard"
 
@@ -79,25 +77,6 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		ReferrerPolicy:        "strict-origin-when-cross-origin",
 	})
 
-	a.Router = mux.NewRouter()
-	a.Router.Use(a.panicRecovery)
-	a.Router.Use(otelmux.Middleware("thunderdome"))
-
-	if apiService.Config.PathPrefix != "" {
-		a.Router = a.Router.PathPrefix(apiService.Config.PathPrefix).Subrouter()
-	}
-
-	swaggerJsonPath := a.Config.PathPrefix + "/swagger/doc.json"
-	swagger.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
-	// swagger docs for external API when enabled
-	// has to come before csp policy as there is currently no way to configure csp nonce for swagger ui
-	if a.Config.ExternalAPIEnabled {
-		a.Router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
-	}
-
-	router := a.Router.PathPrefix("/").Subrouter()
-	router.Use(secureMiddleware.Handler)
-
 	pokerSvc := poker.New(poker.Config{
 		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:        a.Config.WebsocketConfig.PongWaitSec,
@@ -130,19 +109,22 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 
 	validate = validator.New()
 
-	apiRouter := router.PathPrefix("/api").Subrouter()
-	userRouter := apiRouter.PathPrefix("/users").Subrouter()
-	orgRouter := apiRouter.PathPrefix("/organizations").Subrouter()
-	teamRouter := apiRouter.PathPrefix("/teams").Subrouter()
-	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
+	prefix := apiService.Config.PathPrefix
 
-	apiRouter.HandleFunc("/", a.handleApiIndex()).Methods("GET")
+	router := http.NewServeMux()
+
+	swaggerJsonPath := a.Config.PathPrefix + "/swagger/doc.json"
+	swagger.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
+	// swagger docs for external API when enabled
+	if a.Config.ExternalAPIEnabled {
+		router.Handle(prefix+"/swagger/", httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
+	}
 
 	// user authentication, profile
 	if a.Config.LdapEnabled {
-		apiRouter.HandleFunc("/auth/ldap", a.handleLdapLogin()).Methods("POST")
+		router.Handle("POST "+prefix+"/api/auth/ldap", a.handleLdapLogin())
 	} else if a.Config.HeaderAuthEnabled {
-		apiRouter.HandleFunc("/auth", a.handleHeaderLogin()).Methods("GET")
+		router.Handle("GET "+prefix+"/api/auth", a.handleHeaderLogin())
 	} else if a.Config.OIDCAuth.Enabled {
 		authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
 			ProviderName: a.Config.OIDCAuth.ProviderName,
@@ -159,372 +141,390 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 				ClientSecret: a.Config.GoogleAuth.ClientSecret,
 			})
 		}
-		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")
-		apiRouter.HandleFunc("/auth/forgot-password", a.handleForgotPassword()).Methods("POST")
-		apiRouter.HandleFunc("/auth/reset-password", a.handleResetPassword()).Methods("PATCH")
-		apiRouter.HandleFunc("/auth/update-password", a.userOnly(a.handleUpdatePassword())).Methods("PATCH")
-		apiRouter.HandleFunc("/auth/verify", a.handleAccountVerification()).Methods("PATCH")
-		apiRouter.HandleFunc("/auth/register", a.handleUserRegistration()).Methods("POST")
-		apiRouter.HandleFunc("/auth/invite/team/{inviteId}", a.handleGetTeamInviteByID()).Methods("GET")
-		apiRouter.HandleFunc("/auth/invite/organization/{inviteId}", a.handleGetOrganizationInviteByID()).Methods("GET")
+		router.Handle("POST "+prefix+"/api/auth", a.handleLogin())
+		router.Handle("POST "+prefix+"/api/auth/forgot-password", a.handleForgotPassword())
+		router.Handle("PATCH "+prefix+"/api/auth/reset-password", a.handleResetPassword())
+		router.Handle("PATCH "+prefix+"/api/auth/update-password", a.userOnly(a.handleUpdatePassword()))
+		router.Handle("PATCH "+prefix+"/api/auth/verify", a.handleAccountVerification())
+		router.Handle("POST "+prefix+"/api/auth/register", a.handleUserRegistration())
+		router.Handle("GET "+prefix+"/api/auth/invite/team/{inviteId}", a.handleGetTeamInviteByID())
+		router.Handle("GET "+prefix+"/api/auth/invite/organization/{inviteId}", a.handleGetOrganizationInviteByID())
 	}
-	apiRouter.HandleFunc("/auth/mfa", a.handleMFALogin()).Methods("POST")
-	apiRouter.HandleFunc("/auth/mfa", a.userOnly(a.registeredUserOnly(a.handleMFARemove()))).Methods("DELETE")
-	apiRouter.HandleFunc("/auth/mfa/setup/generate", a.userOnly(a.registeredUserOnly(a.handleMFASetupGenerate()))).Methods("POST")
-	apiRouter.HandleFunc("/auth/mfa/setup/validate", a.userOnly(a.registeredUserOnly(a.handleMFASetupValidate()))).Methods("POST")
-	apiRouter.HandleFunc("/auth/guest", a.handleCreateGuestUser()).Methods("POST")
-	apiRouter.HandleFunc("/auth/user", a.userOnly(a.handleSessionUserProfile())).Methods("GET")
-	apiRouter.HandleFunc("/auth/logout", a.handleLogout()).Methods("DELETE")
+	router.Handle("POST "+prefix+"/api/auth/mfa", a.handleMFALogin())
+	router.Handle("DELETE "+prefix+"/api/auth/mfa", a.userOnly(a.registeredUserOnly(a.handleMFARemove())))
+	router.Handle("POST "+prefix+"/api/auth/mfa/setup/generate", a.userOnly(a.registeredUserOnly(a.handleMFASetupGenerate())))
+	router.Handle("POST "+prefix+"/api/auth/mfa/setup/validate", a.userOnly(a.registeredUserOnly(a.handleMFASetupValidate())))
+	router.Handle("POST "+prefix+"/api/auth/guest", a.handleCreateGuestUser())
+	router.Handle("GET "+prefix+"/api/auth/user", a.userOnly(a.handleSessionUserProfile()))
+	router.Handle("DELETE "+prefix+"/api/auth/logout", a.handleLogout())
 	// user(s)
-	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfile()))).Methods("GET")
-	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfileUpdate()))).Methods("PUT")
-	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserDelete()))).Methods("DELETE")
-	userRouter.HandleFunc("/{userId}/credential", a.userOnly(a.entityUserOnly(a.handleUserCredential()))).Methods("GET")
-	userRouter.HandleFunc("/{userId}/request-verify", a.userOnly(a.entityUserOnly(a.handleVerifyRequest()))).Methods("POST")
-	userRouter.HandleFunc("/{userId}/invite/team/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserTeamInvite()))).Methods("POST")
-	userRouter.HandleFunc("/{userId}/invite/organization/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserOrganizationInvite()))).Methods("POST")
-	userRouter.HandleFunc("/{userId}/invite/department/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserDepartmentInvite()))).Methods("POST")
-	userRouter.HandleFunc("/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleGetOrganizationsByUser()))).Methods("GET")
-	userRouter.HandleFunc("/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleCreateOrganization()))).Methods("POST")
-	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUser()))).Methods("GET")
-	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleCreateTeam()))).Methods("POST")
-	userRouter.HandleFunc("/{userId}/teams-non-org", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUserNonOrg()))).Methods("GET")
+	router.Handle("GET "+prefix+"/api/users/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfile())))
+	router.Handle("PUT "+prefix+"/api/users/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfileUpdate())))
+	router.Handle("DELETE "+prefix+"/api/users/{userId}", a.userOnly(a.entityUserOnly(a.handleUserDelete())))
+	router.Handle("GET "+prefix+"/api/users/{userId}/credential", a.userOnly(a.entityUserOnly(a.handleUserCredential())))
+	router.Handle("POST "+prefix+"/api/users/{userId}/request-verify", a.userOnly(a.entityUserOnly(a.handleVerifyRequest())))
+	router.Handle("POST "+prefix+"/api/users/{userId}/invite/team/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserTeamInvite())))
+	router.Handle("POST "+prefix+"/api/users/{userId}/invite/organization/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserOrganizationInvite())))
+	router.Handle("POST "+prefix+"/api/users/{userId}/invite/department/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserDepartmentInvite())))
+	router.Handle("GET "+prefix+"/api/users/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleGetOrganizationsByUser())))
+	router.Handle("POST "+prefix+"/api/users/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleCreateOrganization())))
+	router.Handle("GET "+prefix+"/api/users/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUser())))
+	router.Handle("POST "+prefix+"/api/users/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleCreateTeam())))
+	router.Handle("GET "+prefix+"/api/users/{userId}/teams-non-org", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUserNonOrg())))
 	if a.Config.SubscriptionsEnabled {
-		userRouter.HandleFunc("/{userId}/subscriptions", a.userOnly(a.entityUserOnly(a.handleGetEntityUserActiveSubs()))).Methods("GET")
-		userRouter.HandleFunc("/{userId}/subscriptions/{subscriptionId}", a.userOnly(a.entityUserOnly(a.handleEntityUserUpdateSubscription()))).Methods("PATCH")
+		router.Handle("GET "+prefix+"/api/users/{userId}/subscriptions", a.userOnly(a.entityUserOnly(a.handleGetEntityUserActiveSubs())))
+		router.Handle("PATCH "+prefix+"/api/users/{userId}/subscriptions/{subscriptionId}", a.userOnly(a.entityUserOnly(a.handleEntityUserUpdateSubscription())))
 	}
-	userRouter.HandleFunc("/{userId}/jira-instances", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleGetUserJiraInstances())))).Methods("GET")
-	userRouter.HandleFunc("/{userId}/jira-instances", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraInstanceCreate())))).Methods("POST")
-	userRouter.HandleFunc("/{userId}/jira-instances/{instanceId}", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraInstanceUpdate())))).Methods("PUT")
-	userRouter.HandleFunc("/{userId}/jira-instances/{instanceId}", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraInstanceDelete())))).Methods("DELETE")
-	userRouter.HandleFunc("/{userId}/jira-instances/{instanceId}/jql-story-search", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraStoryJQLSearch())))).Methods("POST")
+	router.Handle("GET "+prefix+"/api/users/{userId}/jira-instances", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleGetUserJiraInstances()))))
+	router.Handle("POST "+prefix+"/api/users/{userId}/jira-instances", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraInstanceCreate()))))
+	router.Handle("PUT "+prefix+"/api/users/{userId}/jira-instances/{instanceId}", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraInstanceUpdate()))))
+	router.Handle("DELETE "+prefix+"/api/users/{userId}/jira-instances/{instanceId}", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraInstanceDelete()))))
+	router.Handle("POST "+prefix+"/api/users/{userId}/jira-instances/{instanceId}/jql-story-search", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraStoryJQLSearch()))))
 
 	if a.Config.ExternalAPIEnabled {
-		userRouter.HandleFunc("/{userId}/apikeys", a.userOnly(a.entityUserOnly(a.handleUserAPIKeys()))).Methods("GET")
-		userRouter.HandleFunc("/{userId}/apikeys", a.userOnly(a.verifiedUserOnly(a.handleAPIKeyGenerate()))).Methods("POST")
-		userRouter.HandleFunc("/{userId}/apikeys/{keyID}", a.userOnly(a.entityUserOnly(a.handleUserAPIKeyUpdate()))).Methods("PUT")
-		userRouter.HandleFunc("/{userId}/apikeys/{keyID}", a.userOnly(a.entityUserOnly(a.handleUserAPIKeyDelete()))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/users/{userId}/apikeys", a.userOnly(a.entityUserOnly(a.handleUserAPIKeys())))
+		router.Handle("POST "+prefix+"/api/users/{userId}/apikeys", a.userOnly(a.verifiedUserOnly(a.handleAPIKeyGenerate())))
+		router.Handle("PUT "+prefix+"/api/users/{userId}/apikeys/{keyID}", a.userOnly(a.entityUserOnly(a.handleUserAPIKeyUpdate())))
+		router.Handle("DELETE "+prefix+"/api/users/{userId}/apikeys/{keyID}", a.userOnly(a.entityUserOnly(a.handleUserAPIKeyDelete())))
 	}
 	// country(s)
 	if a.Config.ShowActiveCountries {
-		apiRouter.HandleFunc("/active-countries", a.handleGetActiveCountries()).Methods("GET")
+		router.Handle("GET "+prefix+"/api/active-countries", a.handleGetActiveCountries())
 	}
 	// org
-	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationByUser()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdate()))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgAdminOnly(a.handleDeleteOrganization()))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/metrics", a.userOnly(a.orgUserOnly(a.handleOrganizationMetrics()))).Methods("GET")
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationByUser())))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdate())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}", a.userOnly(a.orgAdminOnly(a.handleDeleteOrganization())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/metrics", a.userOnly(a.orgUserOnly(a.handleOrganizationMetrics())))
 	// org departments(s)
-	orgRouter.HandleFunc("/{orgId}/departments", a.userOnly(a.orgUserOnly(a.handleGetOrganizationDepartments()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments", a.userOnly(a.orgAdminOnly(a.handleCreateDepartment()))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentByUser()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.orgAdminOnly(a.handleDepartmentUpdate()))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.orgAdminOnly(a.handleDeleteDepartment()))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/invites", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUserInvites()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/invites", a.userOnly(a.departmentAdminOnly(a.handleDepartmentInviteUser()))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/invites/{inviteId}", a.userOnly(a.departmentAdminOnly(a.handleDeleteDepartmentUserInvite()))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUsers()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentAdminOnly(a.handleDepartmentAddUser()))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users/{userId}", a.userOnly(a.departmentAdminOnly(a.handleDepartmentUpdateUser()))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users/{userId}", a.userOnly(a.departmentAdminOnly(a.handleDepartmentRemoveUser()))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentTeams()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams", a.userOnly(a.departmentAdminOnly(a.handleCreateDepartmentTeam()))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.teamUserOnly(a.handleDepartmentTeamByUser()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleTeamUpdate()))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleGetTeamUserInvites()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleTeamInviteUser()))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/invites/{inviteId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDeleteTeamUserInvite())))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDepartmentTeamAddUser())))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamUpdateUser())))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveUser())))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinsGet()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinCreate(checkinSvc)))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/users/{userId}/last", a.userOnly(a.subscribedUserOnly(a.teamUserOnly(a.handleCheckinLastByUser())))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinUpdate(checkinSvc)))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinDelete(checkinSvc)))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.teamUserOnly(a.handleCheckinComment(checkinSvc)))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinSvc)))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinSvc)))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics()))).Methods("GET")
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments", a.userOnly(a.orgUserOnly(a.handleGetOrganizationDepartments())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments", a.userOnly(a.orgAdminOnly(a.handleCreateDepartment())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentByUser())))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}", a.userOnly(a.orgAdminOnly(a.handleDepartmentUpdate())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}", a.userOnly(a.orgAdminOnly(a.handleDeleteDepartment())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/invites", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUserInvites())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/invites", a.userOnly(a.departmentAdminOnly(a.handleDepartmentInviteUser())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/invites/{inviteId}", a.userOnly(a.departmentAdminOnly(a.handleDeleteDepartmentUserInvite())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUsers())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentAdminOnly(a.handleDepartmentAddUser())))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/users/{userId}", a.userOnly(a.departmentAdminOnly(a.handleDepartmentUpdateUser())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/users/{userId}", a.userOnly(a.departmentAdminOnly(a.handleDepartmentRemoveUser())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentTeams())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams", a.userOnly(a.departmentAdminOnly(a.handleCreateDepartmentTeam())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.teamUserOnly(a.handleDepartmentTeamByUser())))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleTeamUpdate())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleDeleteTeam())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleGetTeamUserInvites())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleTeamInviteUser())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/invites/{inviteId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDeleteTeamUserInvite()))))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDepartmentTeamAddUser()))))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamUpdateUser()))))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveUser()))))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinsGet())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinCreate(checkinSvc))))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/users/{userId}/last", a.userOnly(a.subscribedUserOnly(a.teamUserOnly(a.handleCheckinLastByUser()))))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinUpdate(checkinSvc))))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinDelete(checkinSvc))))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.teamUserOnly(a.handleCheckinComment(checkinSvc))))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinSvc))))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinSvc))))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics())))
 	// org teams
-	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgUserOnly(a.handleGetOrganizationTeams()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgAdminOnly(a.handleCreateOrganizationTeam()))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.teamUserOnly(a.handleGetOrganizationTeamByUser()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleTeamUpdate()))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleGetTeamUserInvites()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleTeamInviteUser()))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/invites/{inviteId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDeleteTeamUserInvite())))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleOrganizationTeamAddUser())))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamUpdateUser())))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveUser())))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinsGet()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinCreate(checkinSvc)))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/users/{userId}/last", a.userOnly(a.subscribedUserOnly(a.teamUserOnly(a.handleCheckinLastByUser())))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinUpdate(checkinSvc)))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinDelete(checkinSvc)))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.teamUserOnly(a.handleCheckinComment(checkinSvc)))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinSvc)))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinSvc)))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics()))).Methods("GET")
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams", a.userOnly(a.orgUserOnly(a.handleGetOrganizationTeams())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams", a.userOnly(a.orgAdminOnly(a.handleCreateOrganizationTeam())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}", a.userOnly(a.teamUserOnly(a.handleGetOrganizationTeamByUser())))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleTeamUpdate())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleDeleteTeam())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleGetTeamUserInvites())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleTeamInviteUser())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/invites/{inviteId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDeleteTeamUserInvite()))))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleOrganizationTeamAddUser()))))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamUpdateUser()))))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveUser()))))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinsGet())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinCreate(checkinSvc))))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins/users/{userId}/last", a.userOnly(a.subscribedUserOnly(a.teamUserOnly(a.handleCheckinLastByUser()))))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinUpdate(checkinSvc))))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinDelete(checkinSvc))))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.teamUserOnly(a.handleCheckinComment(checkinSvc))))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinSvc))))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinSvc))))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics())))
 	// org users
-	orgRouter.HandleFunc("/{orgId}/users", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUsers()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdateUser()))).Methods("PUT")
-	orgRouter.HandleFunc("/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationRemoveUser()))).Methods("DELETE")
-	orgRouter.HandleFunc("/{orgId}/invites", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUserInvites()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/invites", a.userOnly(a.orgAdminOnly(a.handleOrganizationInviteUser()))).Methods("POST")
-	orgRouter.HandleFunc("/{orgId}/invites/{inviteId}", a.userOnly(a.orgAdminOnly(a.handleDeleteOrganizationUserInvite()))).Methods("DELETE")
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/users", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUsers())))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdateUser())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationRemoveUser())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/invites", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUserInvites())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/invites", a.userOnly(a.orgAdminOnly(a.handleOrganizationInviteUser())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/invites/{inviteId}", a.userOnly(a.orgAdminOnly(a.handleDeleteOrganizationUserInvite())))
 	// teams(s)
-	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamUserOnly(a.handleGetTeamByUser()))).Methods("GET")
-	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamUpdate())))).Methods("PUT")
-	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDeleteTeam())))).Methods("DELETE")
-	teamRouter.HandleFunc("/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleGetTeamUserInvites()))).Methods("GET")
-	teamRouter.HandleFunc("/{teamId}/invites", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamInviteUser())))).Methods("POST")
-	teamRouter.HandleFunc("/{teamId}/invites/{inviteId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDeleteTeamUserInvite())))).Methods("DELETE")
-	teamRouter.HandleFunc("/{teamId}/users", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
-	teamRouter.HandleFunc("/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamUpdateUser())))).Methods("PUT")
-	teamRouter.HandleFunc("/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveUser())))).Methods("DELETE")
-	teamRouter.HandleFunc("/{teamId}/checkin", checkinSvc.ServeWs())
-	teamRouter.HandleFunc("/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinsGet()))).Methods("GET")
-	teamRouter.HandleFunc("/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinCreate(checkinSvc)))).Methods("POST")
-	teamRouter.HandleFunc("/{teamId}/checkins/users/{userId}/last", a.userOnly(a.subscribedUserOnly(a.teamUserOnly(a.handleCheckinLastByUser())))).Methods("GET")
-	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinUpdate(checkinSvc)))).Methods("PUT")
-	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinDelete(checkinSvc)))).Methods("DELETE")
-	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.teamUserOnly(a.handleCheckinComment(checkinSvc)))).Methods("POST")
-	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinSvc)))).Methods("PUT")
-	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinSvc)))).Methods("DELETE")
-	teamRouter.HandleFunc("/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics()))).Methods("GET")
+	router.Handle("GET "+prefix+"/api/teams/{teamId}", a.userOnly(a.teamUserOnly(a.handleGetTeamByUser())))
+	router.Handle("PUT "+prefix+"/api/teams/{teamId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamUpdate()))))
+	router.Handle("DELETE "+prefix+"/api/teams/{teamId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDeleteTeam()))))
+	router.Handle("GET "+prefix+"/api/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleGetTeamUserInvites())))
+	router.Handle("POST "+prefix+"/api/teams/{teamId}/invites", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamInviteUser()))))
+	router.Handle("DELETE "+prefix+"/api/teams/{teamId}/invites/{inviteId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleDeleteTeamUserInvite()))))
+	router.Handle("GET "+prefix+"/api/teams/{teamId}/users", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers())))
+	router.Handle("PUT "+prefix+"/api/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamUpdateUser()))))
+	router.Handle("DELETE "+prefix+"/api/teams/{teamId}/users/{userId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveUser()))))
+	router.Handle(prefix+"/api/teams/{teamId}/checkin", checkinSvc.ServeWs())
+	router.Handle("GET "+prefix+"/api/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinsGet())))
+	router.Handle("POST "+prefix+"/api/teams/{teamId}/checkins", a.userOnly(a.teamUserOnly(a.handleCheckinCreate(checkinSvc))))
+	router.Handle("GET "+prefix+"/api/teams/{teamId}/checkins/users/{userId}/last", a.userOnly(a.subscribedUserOnly(a.teamUserOnly(a.handleCheckinLastByUser()))))
+	router.Handle("PUT "+prefix+"/api/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinUpdate(checkinSvc))))
+	router.Handle("DELETE "+prefix+"/api/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinDelete(checkinSvc))))
+	router.Handle("POST "+prefix+"/api/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.teamUserOnly(a.handleCheckinComment(checkinSvc))))
+	router.Handle("PUT "+prefix+"/api/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinSvc))))
+	router.Handle("DELETE "+prefix+"/api/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinSvc))))
+	router.Handle("GET "+prefix+"/api/teams/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics())))
 	// admin
-	adminRouter.HandleFunc("/stats", a.userOnly(a.adminOnly(a.handleAppStats()))).Methods("GET")
-	adminRouter.HandleFunc("/users", a.userOnly(a.adminOnly(a.handleGetRegisteredUsers()))).Methods("GET")
-	adminRouter.HandleFunc("/users", a.userOnly(a.adminOnly(a.handleUserCreate()))).Methods("POST")
-	adminRouter.HandleFunc("/users/{userId}/promote", a.userOnly(a.adminOnly(a.handleUserPromote()))).Methods("PATCH")
-	adminRouter.HandleFunc("/users/{userId}/demote", a.userOnly(a.adminOnly(a.handleUserDemote()))).Methods("PATCH")
-	adminRouter.HandleFunc("/users/{userId}/disable", a.userOnly(a.adminOnly(a.handleUserDisable()))).Methods("PATCH")
-	adminRouter.HandleFunc("/users/{userId}/enable", a.userOnly(a.adminOnly(a.handleUserEnable()))).Methods("PATCH")
-	adminRouter.HandleFunc("/users/{userId}/password", a.userOnly(a.adminOnly(a.handleAdminUpdateUserPassword()))).Methods("PATCH")
-	adminRouter.HandleFunc("/organizations", a.userOnly(a.adminOnly(a.handleGetOrganizations()))).Methods("GET")
-	adminRouter.HandleFunc("/teams", a.userOnly(a.adminOnly(a.handleGetTeams()))).Methods("GET")
-	adminRouter.HandleFunc("/apikeys", a.userOnly(a.adminOnly(a.handleGetAPIKeys()))).Methods("GET")
-	adminRouter.HandleFunc("/search/users/email", a.userOnly(a.adminOnly(a.handleSearchRegisteredUsersByEmail()))).Methods("GET")
+	router.Handle("GET "+prefix+"/api/admin/stats", a.userOnly(a.adminOnly(a.handleAppStats())))
+	router.Handle("GET "+prefix+"/api/admin/users", a.userOnly(a.adminOnly(a.handleGetRegisteredUsers())))
+	router.Handle("POST "+prefix+"/api/admin/users", a.userOnly(a.adminOnly(a.handleUserCreate())))
+	router.Handle("PATCH "+prefix+"/api/admin/users/{userId}/promote", a.userOnly(a.adminOnly(a.handleUserPromote())))
+	router.Handle("PATCH "+prefix+"/api/admin/users/{userId}/demote", a.userOnly(a.adminOnly(a.handleUserDemote())))
+	router.Handle("PATCH "+prefix+"/api/admin/users/{userId}/disable", a.userOnly(a.adminOnly(a.handleUserDisable())))
+	router.Handle("PATCH "+prefix+"/api/admin/users/{userId}/enable", a.userOnly(a.adminOnly(a.handleUserEnable())))
+	router.Handle("PATCH "+prefix+"/api/admin/users/{userId}/password", a.userOnly(a.adminOnly(a.handleAdminUpdateUserPassword())))
+	router.Handle("GET "+prefix+"/api/admin/organizations", a.userOnly(a.adminOnly(a.handleGetOrganizations())))
+	router.Handle("GET "+prefix+"/api/admin/teams", a.userOnly(a.adminOnly(a.handleGetTeams())))
+	router.Handle("GET "+prefix+"/api/admin/apikeys", a.userOnly(a.adminOnly(a.handleGetAPIKeys())))
+	router.Handle("GET "+prefix+"/api/admin/search/users/email", a.userOnly(a.adminOnly(a.handleSearchRegisteredUsersByEmail())))
 	// alert
-	apiRouter.HandleFunc("/alerts", a.userOnly(a.adminOnly(a.handleGetAlerts()))).Methods("GET")
-	apiRouter.HandleFunc("/alerts", a.userOnly(a.adminOnly(a.handleAlertCreate()))).Methods("POST")
-	apiRouter.HandleFunc("/alerts/{alertId}", a.userOnly(a.adminOnly(a.handleAlertUpdate()))).Methods("PUT")
-	apiRouter.HandleFunc("/alerts/{alertId}", a.userOnly(a.adminOnly(a.handleAlertDelete()))).Methods("DELETE")
+	router.Handle("GET "+prefix+"/api/alerts", a.userOnly(a.adminOnly(a.handleGetAlerts())))
+	router.Handle("POST "+prefix+"/api/alerts", a.userOnly(a.adminOnly(a.handleAlertCreate())))
+	router.Handle("PUT "+prefix+"/api/alerts/{alertId}", a.userOnly(a.adminOnly(a.handleAlertUpdate())))
+	router.Handle("DELETE "+prefix+"/api/alerts/{alertId}", a.userOnly(a.adminOnly(a.handleAlertDelete())))
 	// maintenance
-	apiRouter.HandleFunc("/maintenance/clean-guests", a.userOnly(a.adminOnly(a.handleCleanGuests()))).Methods("DELETE")
+	router.Handle("DELETE "+prefix+"/api/maintenance/clean-guests", a.userOnly(a.adminOnly(a.handleCleanGuests())))
 	// poker games(s)
 	if a.Config.FeaturePoker {
-		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handlePokerCreate()))).Methods("POST")
-		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handleGetUserGames()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame())))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.handlePokerCreate()))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame())))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handlePokerCreate())))).Methods("POST")
-		teamRouter.HandleFunc("/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames()))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame())))).Methods("DELETE")
-		teamRouter.HandleFunc("/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handlePokerCreate())))).Methods("POST")
-		apiRouter.HandleFunc("/maintenance/clean-battles", a.userOnly(a.adminOnly(a.handleCleanPokerGames()))).Methods("DELETE")
-		apiRouter.HandleFunc("/battles", a.userOnly(a.adminOnly(a.handleGetPokerGames()))).Methods("GET")
-		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetPokerGame())).Methods("GET")
-		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handlePokerDelete(pokerSvc))).Methods("DELETE")
-		apiRouter.HandleFunc("/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(pokerSvc))).Methods("POST")
-		apiRouter.HandleFunc("/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryUpdate(pokerSvc))).Methods("PUT")
-		apiRouter.HandleFunc("/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryDelete(pokerSvc))).Methods("DELETE")
-		apiRouter.HandleFunc("/arena/{battleId}", pokerSvc.ServeBattleWs())
+		router.Handle("POST "+prefix+"/api/users/{userId}/battles", a.userOnly(a.entityUserOnly(a.handlePokerCreate())))
+		router.Handle("GET "+prefix+"/api/users/{userId}/battles", a.userOnly(a.entityUserOnly(a.handleGetUserGames())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames())))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.handlePokerCreate())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames())))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handlePokerCreate()))))
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamPokerGames())))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/battles/{battleId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemovePokerGame()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handlePokerCreate()))))
+		router.Handle("DELETE "+prefix+"/api/maintenance/clean-battles", a.userOnly(a.adminOnly(a.handleCleanPokerGames())))
+		router.Handle("GET "+prefix+"/api/battles", a.userOnly(a.adminOnly(a.handleGetPokerGames())))
+		router.Handle("GET "+prefix+"/api/battles/{battleId}", a.userOnly(a.handleGetPokerGame()))
+		router.Handle("DELETE "+prefix+"/api/battles/{battleId}", a.userOnly(a.handlePokerDelete(pokerSvc)))
+		router.Handle("PUT "+prefix+"/api/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(pokerSvc)))
+		router.Handle("PUT "+prefix+"/api/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryUpdate(pokerSvc)))
+		router.Handle("DELETE "+prefix+"/api/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryDelete(pokerSvc)))
+		router.Handle(prefix+"/api/arena/{battleId}", pokerSvc.ServeBattleWs())
 
 		// estimation scales
 		// Public estimation scale routes
-		apiRouter.HandleFunc("/estimation-scales/public", a.userOnly(a.handleGetPublicEstimationScales())).Methods("GET")
-		apiRouter.HandleFunc("/estimation-scales/public/{scaleId}", a.userOnly(a.handleGetPublicEstimationScale())).Methods("GET")
+		router.Handle("GET "+prefix+"/api/estimation-scales/public", a.userOnly(a.handleGetPublicEstimationScales()))
+		router.Handle("GET "+prefix+"/api/estimation-scales/public/{scaleId}", a.userOnly(a.handleGetPublicEstimationScale()))
 
 		// Organization-specific estimation scale routes
-		orgRouter.HandleFunc("/{orgId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationEstimationScales())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleCreate())))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleUpdate())))).Methods("PUT")
-		orgRouter.HandleFunc("/{orgId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleDelete())))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetTeamEstimationScales())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate()))))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleUpdate()))))).Methods("PUT")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleDelete()))))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamEstimationScales())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate()))))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleUpdate()))))).Methods("PUT")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleDelete()))))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationEstimationScales()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleCreate()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleUpdate()))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationEstimationScaleDelete()))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetTeamEstimationScales()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleDelete())))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamEstimationScales()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleDelete())))))
 
 		// Team-specific estimation scale routes
-		teamRouter.HandleFunc("/{teamId}/estimation-scales", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamEstimationScales())))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/estimation-scales", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate()))))).Methods("POST")
-		teamRouter.HandleFunc("/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleUpdate()))))).Methods("PUT")
-		teamRouter.HandleFunc("/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleDelete()))))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamEstimationScales()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/estimation-scales", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleCreate())))))
+		router.Handle("PUT "+prefix+"/api/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/estimation-scales/{scaleId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamEstimationScaleDelete())))))
 
 		// Admin estimation scale routes
-		adminRouter.HandleFunc("/estimation-scales", a.userOnly(a.adminOnly(a.handleGetEstimationScales()))).Methods("GET")
-		adminRouter.HandleFunc("/estimation-scales", a.userOnly(a.adminOnly(a.handleEstimationScaleCreate()))).Methods("POST")
-		adminRouter.HandleFunc("/estimation-scales/{scaleId}", a.userOnly(a.adminOnly(a.handleEstimationScaleUpdate()))).Methods("PUT")
-		adminRouter.HandleFunc("/estimation-scales/{scaleId}", a.userOnly(a.adminOnly(a.handleEstimationScaleDelete()))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/admin/estimation-scales", a.userOnly(a.adminOnly(a.handleGetEstimationScales())))
+		router.Handle("POST "+prefix+"/api/admin/estimation-scales", a.userOnly(a.adminOnly(a.handleEstimationScaleCreate())))
+		router.Handle("PUT "+prefix+"/api/admin/estimation-scales/{scaleId}", a.userOnly(a.adminOnly(a.handleEstimationScaleUpdate())))
+		router.Handle("DELETE "+prefix+"/api/admin/estimation-scales/{scaleId}", a.userOnly(a.adminOnly(a.handleEstimationScaleDelete())))
 
 		// Organization-specific poker settings routes
-		orgRouter.HandleFunc("/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationPokerSettings())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleCreateOrganizationPokerSettings())))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationPokerSettingsUpdate())))).Methods("PUT")
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationPokerSettings()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleCreateOrganizationPokerSettings()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationPokerSettingsUpdate()))))
 
 		// Department-specific poker settings routes
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetDepartmentPokerSettings())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleCreateDepartmentPokerSettings())))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentPokerSettingsUpdate())))).Methods("PUT")
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetDepartmentPokerSettings()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleCreateDepartmentPokerSettings()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/poker-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentPokerSettingsUpdate()))))
 
 		// Team-specific poker settings routes
-		teamRouter.HandleFunc("/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamPokerSettings())))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleCreateTeamPokerSettings()))))).Methods("POST")
-		teamRouter.HandleFunc("/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPokerSettingsUpdate()))))).Methods("PUT")
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamPokerSettings()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleCreateTeamPokerSettings())))))
+		router.Handle("PUT "+prefix+"/api/teams/{teamId}/poker-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPokerSettingsUpdate())))))
 
 		// Admin poker settings routes
-		adminRouter.HandleFunc("/poker-settings/{id}", a.userOnly(a.adminOnly(a.handleGetPokerSettingsByID()))).Methods("GET")
-		adminRouter.HandleFunc("/poker-settings/{id}", a.userOnly(a.adminOnly(a.handleDeletePokerSettings()))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/admin/poker-settings/{id}", a.userOnly(a.adminOnly(a.handleGetPokerSettingsByID())))
+		router.Handle("DELETE "+prefix+"/api/admin/poker-settings/{id}", a.userOnly(a.adminOnly(a.handleDeletePokerSettings())))
 	}
 	// retro(s)
 	if a.Config.FeatureRetro {
-		userRouter.HandleFunc("/{userId}/retros", a.userOnly(a.entityUserOnly(a.handleRetroCreate()))).Methods("POST")
-		userRouter.HandleFunc("/{userId}/retros", a.userOnly(a.entityUserOnly(a.handleRetrosGetByUser()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retros", a.userOnly(a.teamUserOnly(a.handleGetTeamRetros()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retros/{retroId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveRetro())))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-actions", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroActions()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros", a.userOnly(a.teamUserOnly(a.handleRetroCreate()))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retros", a.userOnly(a.teamUserOnly(a.handleGetTeamRetros()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-actions", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroActions()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retros/{retroId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveRetro())))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/retros", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleRetroCreate())))).Methods("POST")
-		teamRouter.HandleFunc("/{teamId}/retros", a.userOnly(a.teamUserOnly(a.handleGetTeamRetros()))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/retros/{retroId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveRetro())))).Methods("DELETE")
-		teamRouter.HandleFunc("/{teamId}/retro-actions", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroActions()))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/users/{userId}/retros", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleRetroCreate())))).Methods("POST")
-		apiRouter.HandleFunc("/maintenance/clean-retros", a.userOnly(a.adminOnly(a.handleCleanRetros()))).Methods("DELETE")
-		apiRouter.HandleFunc("/retros", a.userOnly(a.adminOnly(a.handleGetRetros()))).Methods("GET")
-		apiRouter.HandleFunc("/retros/{retroId}", a.userOnly(a.handleRetroGet())).Methods("GET")
-		apiRouter.HandleFunc("/retros/{retroId}", a.userOnly(a.handleRetroDelete(retroSvc))).Methods("DELETE")
-		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}", a.userOnly(a.handleRetroActionUpdate(retroSvc))).Methods("PUT")
-		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}", a.userOnly(a.handleRetroActionDelete(retroSvc))).Methods("DELETE")
-		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/assignees", a.userOnly(a.handleRetroActionAssigneeAdd(retroSvc))).Methods("POST")
-		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/assignees", a.userOnly(a.handleRetroActionAssigneeRemove(retroSvc))).Methods("DELETE")
-		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments", a.userOnly(a.handleRetroActionCommentAdd())).Methods("POST")
-		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments/{commentId}", a.userOnly(a.handleRetroActionCommentEdit())).Methods("PUT")
-		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments/{commentId}", a.userOnly(a.handleRetroActionCommentDelete())).Methods("DELETE")
+		router.Handle("POST "+prefix+"/api/users/{userId}/retros", a.userOnly(a.entityUserOnly(a.handleRetroCreate())))
+		router.Handle("GET "+prefix+"/api/users/{userId}/retros", a.userOnly(a.entityUserOnly(a.handleRetrosGetByUser())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retros", a.userOnly(a.teamUserOnly(a.handleGetTeamRetros())))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retros/{retroId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveRetro()))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-actions", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroActions())))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros", a.userOnly(a.teamUserOnly(a.handleRetroCreate())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retros", a.userOnly(a.teamUserOnly(a.handleGetTeamRetros())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-actions", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroActions())))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retros/{retroId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveRetro()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/users/{userId}/retros", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleRetroCreate()))))
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/retros", a.userOnly(a.teamUserOnly(a.handleGetTeamRetros())))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/retros/{retroId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveRetro()))))
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/retro-actions", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroActions())))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/users/{userId}/retros", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleRetroCreate()))))
+		router.Handle("DELETE "+prefix+"/api/maintenance/clean-retros", a.userOnly(a.adminOnly(a.handleCleanRetros())))
+		router.Handle("GET "+prefix+"/api/retros", a.userOnly(a.adminOnly(a.handleGetRetros())))
+		router.Handle("GET "+prefix+"/api/retros/{retroId}", a.userOnly(a.handleRetroGet()))
+		router.Handle("DELETE "+prefix+"/api/retros/{retroId}", a.userOnly(a.handleRetroDelete(retroSvc)))
+		router.Handle("PUT "+prefix+"/api/retros/{retroId}/actions/{actionId}", a.userOnly(a.handleRetroActionUpdate(retroSvc)))
+		router.Handle("DELETE "+prefix+"/api/retros/{retroId}/actions/{actionId}", a.userOnly(a.handleRetroActionDelete(retroSvc)))
+		router.Handle("POST "+prefix+"/api/retros/{retroId}/actions/{actionId}/assignees", a.userOnly(a.handleRetroActionAssigneeAdd(retroSvc)))
+		router.Handle("DELETE "+prefix+"/api/retros/{retroId}/actions/{actionId}/assignees", a.userOnly(a.handleRetroActionAssigneeRemove(retroSvc)))
+		router.Handle("POST "+prefix+"/api/retros/{retroId}/actions/{actionId}/comments", a.userOnly(a.handleRetroActionCommentAdd()))
+		router.Handle("PUT "+prefix+"/api/retros/{retroId}/actions/{actionId}/comments/{commentId}", a.userOnly(a.handleRetroActionCommentEdit()))
+		router.Handle("DELETE "+prefix+"/api/retros/{retroId}/actions/{actionId}/comments/{commentId}", a.userOnly(a.handleRetroActionCommentDelete()))
 
 		// Retro Templates
-		apiRouter.HandleFunc("/retro-templates/public", a.userOnly(a.handleGetPublicRetroTemplates())).Methods("GET")
+		router.Handle("GET "+prefix+"/api/retro-templates/public", a.userOnly(a.handleGetPublicRetroTemplates()))
 		// Organization templates
-		orgRouter.HandleFunc("/{orgId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationRetroTemplates())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateCreate())))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateUpdate())))).Methods("PUT")
-		orgRouter.HandleFunc("/{orgId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateDelete())))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetTeamRetroTemplates())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate()))))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate()))))).Methods("PUT")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete()))))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate()))))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate()))))).Methods("PUT")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete()))))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationRetroTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateCreate()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateUpdate()))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTemplateDelete()))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetTeamRetroTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete())))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete())))))
 
 		// Team templates
-		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates())))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate()))))).Methods("POST")
-		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate()))))).Methods("PUT")
-		teamRouter.HandleFunc("/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete()))))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroTemplates()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/retro-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/retro-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTemplateDelete())))))
 
 		// General template operations
-		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleGetRetroTemplates()))).Methods("GET")
-		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleGetRetroTemplateByID()))).Methods("GET")
-		adminRouter.HandleFunc("/retro-templates", a.userOnly(a.adminOnly(a.handleRetroTemplateCreate()))).Methods("POST")
-		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateUpdate()))).Methods("PUT")
-		adminRouter.HandleFunc("/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateDelete()))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/admin/retro-templates", a.userOnly(a.adminOnly(a.handleGetRetroTemplates())))
+		router.Handle("GET "+prefix+"/api/admin/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleGetRetroTemplateByID())))
+		router.Handle("POST "+prefix+"/api/admin/retro-templates", a.userOnly(a.adminOnly(a.handleRetroTemplateCreate())))
+		router.Handle("PUT "+prefix+"/api/admin/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateUpdate())))
+		router.Handle("DELETE "+prefix+"/api/admin/retro-templates/{templateId}", a.userOnly(a.adminOnly(a.handleRetroTemplateDelete())))
 
 		// Organization-specific retro settings routes
-		orgRouter.HandleFunc("/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationRetroSettings())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleCreateOrganizationRetroSettings())))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroSettingsUpdate())))).Methods("PUT")
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationRetroSettings()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleCreateOrganizationRetroSettings()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroSettingsUpdate()))))
 
 		// Department-specific retro settings routes
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetDepartmentRetroSettings())))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleCreateDepartmentRetroSettings())))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentRetroSettingsUpdate())))).Methods("PUT")
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetDepartmentRetroSettings()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleCreateDepartmentRetroSettings()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/retro-settings", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentRetroSettingsUpdate()))))
 
 		// Team-specific retro settings routes
-		teamRouter.HandleFunc("/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroSettings())))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleCreateTeamRetroSettings()))))).Methods("POST")
-		teamRouter.HandleFunc("/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroSettingsUpdate()))))).Methods("PUT")
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroSettings()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleCreateTeamRetroSettings())))))
+		router.Handle("PUT "+prefix+"/api/teams/{teamId}/retro-settings", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroSettingsUpdate())))))
 
 		// Admin retro settings routes
-		adminRouter.HandleFunc("/retro-settings/{id}", a.userOnly(a.adminOnly(a.handleGetRetroSettingsByID()))).Methods("GET")
-		adminRouter.HandleFunc("/retro-settings/{id}", a.userOnly(a.adminOnly(a.handleDeleteRetroSettings()))).Methods("DELETE")
+		router.Handle("GET "+prefix+"/api/admin/retro-settings/{id}", a.userOnly(a.adminOnly(a.handleGetRetroSettingsByID())))
+		router.Handle("DELETE "+prefix+"/api/admin/retro-settings/{id}", a.userOnly(a.adminOnly(a.handleDeleteRetroSettings())))
 
 		// Retro websocket
-		apiRouter.HandleFunc("/retro/{retroId}", retroSvc.ServeWs())
+		router.Handle(prefix+"/api/retro/{retroId}", retroSvc.ServeWs())
 	}
 	// storyboard(s)
 	if a.Config.FeatureStoryboard {
-		userRouter.HandleFunc("/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleStoryboardCreate()))).Methods("POST")
-		userRouter.HandleFunc("/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleGetUserStoryboards()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/storyboards", a.userOnly(a.teamUserOnly(a.handleGetTeamStoryboards()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/storyboards/{storyboardId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveStoryboard())))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.handleStoryboardCreate()))).Methods("POST")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/storyboards", a.userOnly(a.teamUserOnly(a.handleGetTeamStoryboards()))).Methods("GET")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/storyboards/{storyboardId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveStoryboard())))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleStoryboardCreate())))).Methods("POST")
-		teamRouter.HandleFunc("/{teamId}/storyboards", a.userOnly(a.teamUserOnly(a.handleGetTeamStoryboards()))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/storyboards/{storyboardId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveStoryboard())))).Methods("DELETE")
-		teamRouter.HandleFunc("/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleStoryboardCreate())))).Methods("POST")
-		apiRouter.HandleFunc("/maintenance/clean-storyboards", a.userOnly(a.adminOnly(a.handleCleanStoryboards()))).Methods("DELETE")
-		apiRouter.HandleFunc("/storyboards", a.userOnly(a.adminOnly(a.handleGetStoryboards()))).Methods("GET")
-		apiRouter.HandleFunc("/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardGet())).Methods("GET")
-		apiRouter.HandleFunc("/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardDelete(storyboardSvc))).Methods("DELETE")
-		apiRouter.HandleFunc("/storyboards/{storyboardId}/goals", a.userOnly(a.handleStoryboardGoalAdd(storyboardSvc))).Methods("POST")
-		apiRouter.HandleFunc("/storyboards/{storyboardId}/columns", a.userOnly(a.handleStoryboardColumnAdd(storyboardSvc))).Methods("POST")
-		apiRouter.HandleFunc("/storyboards/{storyboardId}/stories", a.userOnly(a.handleStoryboardStoryAdd(storyboardSvc))).Methods("POST")
-		apiRouter.HandleFunc("/storyboards/{storyboardId}/stories/{storyId}/move", a.userOnly(a.handleStoryboardStoryMove(storyboardSvc))).Methods("PUT")
-		apiRouter.HandleFunc("/storyboard/{storyboardId}", storyboardSvc.ServeWs())
+		router.Handle("POST "+prefix+"/api/users/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleStoryboardCreate())))
+		router.Handle("GET "+prefix+"/api/users/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleGetUserStoryboards())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/storyboards", a.userOnly(a.teamUserOnly(a.handleGetTeamStoryboards())))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/storyboards/{storyboardId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveStoryboard()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.handleStoryboardCreate())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/storyboards", a.userOnly(a.teamUserOnly(a.handleGetTeamStoryboards())))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/storyboards/{storyboardId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveStoryboard()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleStoryboardCreate()))))
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/storyboards", a.userOnly(a.teamUserOnly(a.handleGetTeamStoryboards())))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/storyboards/{storyboardId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveStoryboard()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleStoryboardCreate()))))
+		router.Handle("DELETE "+prefix+"/api/maintenance/clean-storyboards", a.userOnly(a.adminOnly(a.handleCleanStoryboards())))
+		router.Handle("GET "+prefix+"/api/storyboards", a.userOnly(a.adminOnly(a.handleGetStoryboards())))
+		router.Handle("GET "+prefix+"/api/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardGet()))
+		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardDelete(storyboardSvc)))
+		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/goals", a.userOnly(a.handleStoryboardGoalAdd(storyboardSvc)))
+		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/columns", a.userOnly(a.handleStoryboardColumnAdd(storyboardSvc)))
+		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/stories", a.userOnly(a.handleStoryboardStoryAdd(storyboardSvc)))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/move", a.userOnly(a.handleStoryboardStoryMove(storyboardSvc)))
+		router.Handle(""+prefix+"/api/storyboard/{storyboardId}", storyboardSvc.ServeWs())
 	}
 
 	// user avatar generation
 	if a.Config.AvatarService == "goadorable" || a.Config.AvatarService == "govatar" {
-		router.PathPrefix("/avatar/{width}/{id}/{avatar}").Handler(a.handleUserAvatar()).Methods("GET")
-		router.PathPrefix("/avatar/{width}/{id}").Handler(a.handleUserAvatar()).Methods("GET")
+		router.Handle("GET "+prefix+"/avatar/{width}/{id}/{avatar}", a.handleUserAvatar())
+		router.Handle("GET "+prefix+"/avatar/{width}/{id}", a.handleUserAvatar())
 	}
 
 	if a.Config.SubscriptionsEnabled {
-		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionGetByID()))).Methods("GET")
-		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionUpdate()))).Methods("PUT")
-		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionDelete()))).Methods("DELETE")
-		apiRouter.PathPrefix("/subscriptions").Handler(a.userOnly(a.adminOnly(a.handleGetSubscriptions()))).Methods("GET")
-		apiRouter.PathPrefix("/subscriptions").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionCreate()))).Methods("POST")
-		router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
+		router.Handle("GET "+prefix+"/api/subscriptions/{subscriptionId}", a.userOnly(a.adminOnly(a.handleSubscriptionGetByID())))
+		router.Handle("PUT "+prefix+"/api/subscriptions/{subscriptionId}", a.userOnly(a.adminOnly(a.handleSubscriptionUpdate())))
+		router.Handle("DELETE "+prefix+"/api/subscriptions/{subscriptionId}", a.userOnly(a.adminOnly(a.handleSubscriptionDelete())))
+		router.Handle("GET "+prefix+"/api/subscriptions", a.userOnly(a.adminOnly(a.handleGetSubscriptions())))
+		router.Handle("POST "+prefix+"/api/subscriptions", a.userOnly(a.adminOnly(a.handleSubscriptionCreate())))
+		router.Handle("POST "+prefix+"/webhooks/subscriptions", a.SubscriptionSvc.HandleWebhook())
 	}
 
-	// have to pass router because of wonkyness with gorilla/mux and subrouters and middleware to support the Swagger UI and OIDC
-	// @todo - refactor router to get away from gorilla/mux
-	a.registerOauthProviderEndpoints(router, authProviderConfigs)
+	a.registerOauthProviderEndpoints(router, prefix, authProviderConfigs)
 
 	// static assets
-	router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
-	router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	router.Handle(prefix+"/static/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	router.Handle(prefix+"/img/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
 
 	// health check for load balancers, k8s, etc...
-	router.HandleFunc("/healthz", a.handleHealthCheck())
+	router.Handle(prefix+"/healthz", a.handleHealthCheck())
+	router.Handle("GET "+prefix+"/api/{$}", a.handleApiIndex())
 
-	// handle index.html
-	router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
+	router.Handle(prefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Don't return the index for API or other path prefixes
+		if strings.HasPrefix(r.URL.Path, prefix+"/api") ||
+			strings.HasPrefix(r.URL.Path, prefix+"/static") ||
+			strings.HasPrefix(r.URL.Path, prefix+"/img") ||
+			strings.HasPrefix(r.URL.Path, prefix+"/swagger") ||
+			strings.HasPrefix(r.URL.Path, prefix+"/avatar") ||
+			r.URL.Path == prefix+"/healthz" {
+			http.NotFound(w, r)
+			return
+		}
+
+		a.handleIndex(FSS, a.UIConfig)(w, r)
+	}))
+
+	var handler http.Handler = router
+	handler = a.panicRecovery(handler)
+	handler = otelhttp.NewHandler(handler, "thunderdome")
+	handler = cspMiddleware(handler, secureMiddleware, prefix, a.Config.ExternalAPIEnabled)
+
+	a.Handler = handler
 
 	return a
 }
 
-func (s *Service) registerOauthProviderEndpoints(router *mux.Router, providers []thunderdome.AuthProviderConfig) {
+func (s *Service) registerOauthProviderEndpoints(router *http.ServeMux, prefix string, providers []thunderdome.AuthProviderConfig) {
 	ctx := context.Background()
 	var redirectBaseURL string
 	var port string
@@ -555,14 +555,14 @@ func (s *Service) registerOauthProviderEndpoints(router *mux.Router, providers [
 		if err != nil {
 			panic(err)
 		}
-		router.HandleFunc(oauthLoginPathPrefix, authProvider.HandleOAuth2Redirect()).Methods("GET")
-		router.HandleFunc(oauthCallbackPathPrefix, authProvider.HandleOAuth2Callback()).Methods("GET")
+		router.Handle("GET "+prefix+oauthLoginPathPrefix, authProvider.HandleOAuth2Redirect())
+		router.Handle("GET "+prefix+oauthCallbackPathPrefix, authProvider.HandleOAuth2Callback())
 	}
 }
 
 func (s *Service) ListenAndServe() error {
 	srv := &http.Server{
-		Handler:           s.Router,
+		Handler:           s.Handler,
 		Addr:              fmt.Sprintf(":%s", s.Config.Port),
 		WriteTimeout:      time.Duration(s.Config.HttpWriteTimeout) * time.Second,
 		ReadTimeout:       time.Duration(s.Config.HttpReadTimeout) * time.Second,
@@ -606,7 +606,7 @@ func (s *Service) handleIndex(filesystem fs.FS, uiConfig thunderdome.UIConfig) h
 	}
 }
 
-func (s *Service) handleHealthCheck() func(http.ResponseWriter, *http.Request) {
+func (s *Service) handleHealthCheck() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -621,4 +621,17 @@ func (s *Service) handleApiIndex() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status": "ok"}`))
 	}
+}
+
+func cspMiddleware(next http.Handler, secureMiddleware *secure.Secure, prefix string, externalAPIEnabled bool) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if externalAPIEnabled && strings.HasPrefix(r.URL.Path, prefix+"/swagger") {
+			// Skip CSP for swagger docs
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// For all other requests, apply CSP
+		secureMiddleware.Handler(next).ServeHTTP(w, r)
+	})
 }

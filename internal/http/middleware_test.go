@@ -15,7 +15,6 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -316,7 +315,7 @@ func TestTeamUserOnly(t *testing.T) {
 			})
 
 			req, _ := http.NewRequest("GET", "/teams/"+tt.teamID, nil)
-			req = mux.SetURLVars(req, map[string]string{"teamId": tt.teamID})
+			req.SetPathValue("teamId", tt.teamID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserID, tt.userID))
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
@@ -512,7 +511,7 @@ func TestSubscribedTeamOnly(t *testing.T) {
 			})
 
 			req := httptest.NewRequest("GET", "/teams/"+tt.teamID+"/test", nil)
-			req = mux.SetURLVars(req, map[string]string{"teamId": tt.teamID})
+			req.SetPathValue("teamId", tt.teamID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
 			rr := httptest.NewRecorder()
@@ -812,7 +811,7 @@ func TestSubscribedOrgOnly(t *testing.T) {
 			})
 
 			req := httptest.NewRequest("GET", "/organizations/"+tt.orgID+"/test", nil)
-			req = mux.SetURLVars(req, map[string]string{"orgId": tt.orgID})
+			req.SetPathValue("orgId", tt.orgID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
 			rr := httptest.NewRecorder()
@@ -956,7 +955,8 @@ func TestDepartmentAdminOnly(t *testing.T) {
 			})
 
 			req := httptest.NewRequest("GET", "/organizations/"+tt.orgID+"/departments/"+tt.departmentID+"/test", nil)
-			req = mux.SetURLVars(req, map[string]string{"orgId": tt.orgID, "departmentId": tt.departmentID})
+			req.SetPathValue("orgId", tt.orgID)
+			req.SetPathValue("departmentId", tt.departmentID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserID, tt.userID))
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
@@ -1111,7 +1111,8 @@ func TestDepartmentUserOnly(t *testing.T) {
 			})
 
 			req := httptest.NewRequest("GET", "/organizations/"+tt.orgID+"/departments/"+tt.departmentID+"/test", nil)
-			req = mux.SetURLVars(req, map[string]string{"orgId": tt.orgID, "departmentId": tt.departmentID})
+			req.SetPathValue("orgId", tt.orgID)
+			req.SetPathValue("departmentId", tt.departmentID)
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserID, tt.userID))
 			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
 
@@ -1234,7 +1235,7 @@ func TestOrgAdminOnly(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			// Set up router with vars
-			router := mux.NewRouter()
+			router := http.NewServeMux()
 			router.HandleFunc("/organizations/{orgId}", s.orgAdminOnly(dummyHandler))
 
 			// Serve the request
@@ -1390,7 +1391,7 @@ func TestOrgUserOnly(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			// Set up router with vars
-			router := mux.NewRouter()
+			router := http.NewServeMux()
 			router.HandleFunc("/organizations/{orgId}", s.orgUserOnly(dummyHandler))
 
 			// Serve the request
@@ -1607,7 +1608,7 @@ func TestSubscribedEntityUserOnly(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			// Set up router with vars
-			router := mux.NewRouter()
+			router := http.NewServeMux()
 			router.HandleFunc("/users/{userId}", s.subscribedEntityUserOnly(dummyHandler))
 
 			// Serve the request
@@ -1818,7 +1819,7 @@ func TestVerifiedUserOnly(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			// Set up router with vars
-			router := mux.NewRouter()
+			router := http.NewServeMux()
 			router.HandleFunc("/users/{userId}", s.verifiedUserOnly(dummyHandler))
 
 			// Serve the request
@@ -2137,7 +2138,7 @@ func TestEntityUserOnly(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			// Set up router with vars
-			router := mux.NewRouter()
+			router := http.NewServeMux()
 			router.HandleFunc("/users/{userId}", s.entityUserOnly(dummyHandler))
 
 			// Serve the request

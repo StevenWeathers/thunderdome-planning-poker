@@ -8,8 +8,6 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"go.uber.org/zap"
-
-	"github.com/gorilla/mux"
 )
 
 type estimationScaleRequestBody struct {
@@ -130,8 +128,8 @@ func (s *Service) handleEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		scaleID := vars["scaleId"]
+
+		scaleID := r.PathValue("scaleId")
 		idErr := validate.Var(scaleID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -194,8 +192,8 @@ func (s *Service) handleEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		scaleID := vars["scaleId"]
+
+		scaleID := r.PathValue("scaleId")
 		idErr := validate.Var(scaleID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -231,8 +229,8 @@ func (s *Service) handleGetOrganizationEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -282,8 +280,8 @@ func (s *Service) handleOrganizationEstimationScaleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		orgID := vars["orgId"]
+
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -350,8 +348,8 @@ func (s *Service) handleGetTeamEstimationScales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -394,8 +392,8 @@ func (s *Service) handleTeamEstimationScaleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		teamID := vars["teamId"]
+
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -493,8 +491,8 @@ func (s *Service) handleGetPublicEstimationScales() http.HandlerFunc {
 func (s *Service) handleGetPublicEstimationScale() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		vars := mux.Vars(r)
-		scaleID := vars["scaleId"]
+
+		scaleID := r.PathValue("scaleId")
 		scaleIDErr := validate.Var(scaleID, "required,uuid")
 		if scaleIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
@@ -528,14 +526,14 @@ func (s *Service) handleOrganizationEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		scaleID := vars["scaleId"]
+
+		scaleID := r.PathValue("scaleId")
 		scaleIDErr := validate.Var(scaleID, "required,uuid")
 		if scaleIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
-		orgID := vars["orgID"]
+		orgID := r.PathValue("orgID")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
@@ -569,14 +567,14 @@ func (s *Service) handleTeamEstimationScaleDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		scaleID := vars["scaleId"]
+
+		scaleID := r.PathValue("scaleId")
 		scaleIDErr := validate.Var(scaleID, "required,uuid")
 		if scaleIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -612,14 +610,14 @@ func (s *Service) handleTeamEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		scaleID := vars["scaleId"]
+
+		scaleID := r.PathValue("scaleId")
 		scaleIDErr := validate.Var(scaleID, "required,uuid")
 		if scaleIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
-		teamID := vars["teamId"]
+		teamID := r.PathValue("teamId")
 		teamIDErr := validate.Var(teamID, "required,uuid")
 		if teamIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, teamIDErr.Error()))
@@ -686,14 +684,14 @@ func (s *Service) handleOrganizationEstimationScaleUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		scaleID := vars["scaleId"]
+
+		scaleID := r.PathValue("scaleId")
 		scaleIDErr := validate.Var(scaleID, "required,uuid")
 		if scaleIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, scaleIDErr.Error()))
 			return
 		}
-		orgID := vars["orgId"]
+		orgID := r.PathValue("orgId")
 		orgIDErr := validate.Var(orgID, "required,uuid")
 		if orgIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, orgIDErr.Error()))
