@@ -13,7 +13,6 @@ import (
 	"github.com/unrolled/secure"
 	"github.com/unrolled/secure/cspbuilder"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/oauth"
 
@@ -76,7 +75,6 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		BrowserXssFilter:      true,
 		ContentSecurityPolicy: cspBuilder.MustBuild(),
 		ReferrerPolicy:        "strict-origin-when-cross-origin",
-		IsDevelopment:         true,
 	})
 
 	pokerSvc := poker.New(poker.Config{
@@ -502,7 +500,6 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	router.Handle("GET "+prefix+"/api/{$}", a.handleApiIndex())
 
 	router.Handle(prefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.Logger.Debug("Handling index request", zap.String("path", r.URL.Path))
 		// Don't return the index for API or other path prefixes
 		if strings.HasPrefix(r.URL.Path, prefix+"/api") ||
 			strings.HasPrefix(r.URL.Path, prefix+"/static") ||
