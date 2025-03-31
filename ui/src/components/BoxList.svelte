@@ -84,7 +84,7 @@
       </div>
       <div class="w-full md:w-1/2 md:mb-0 md:text-right">
         {#if isAdmin}
-          <HollowButton onClick="{toggleRemove(item.id)}" color="red">
+          <HollowButton onClick={toggleRemove(item.id)} color="red">
             {$LL.remove()}
           </HollowButton>
         {/if}

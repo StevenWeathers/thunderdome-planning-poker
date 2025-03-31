@@ -72,7 +72,7 @@
     <SolidButton
       color="blue"
       additionalClasses="mb-2 w-full"
-      onClick="{skipPlan}"
+      onClick={skipPlan}
       testid="voting-skip"
     >
       {$LL.planSkip()}
@@ -80,7 +80,7 @@
     {#if !votingLocked}
       <SolidButton
         additionalClasses="w-full"
-        onClick="{endPlanVoting}"
+        onClick={endPlanVoting}
         testid="voting-finish"
       >
         {$LL.votingFinish()}
@@ -89,7 +89,7 @@
       <SolidButton
         color="blue"
         additionalClasses="mb-2 w-full"
-        onClick="{restartVoting}"
+        onClick={restartVoting}
         testid="voting-restart"
       >
         {$LL.votingRestart()}

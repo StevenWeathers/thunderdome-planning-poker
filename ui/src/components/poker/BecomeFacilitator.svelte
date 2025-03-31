@@ -22,7 +22,7 @@
 </script>
 
 <Modal
-  closeModal="{toggleBecomeLeader}"
+  closeModal={toggleBecomeLeader}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
 >
   <form onsubmit={handleSubmit} name="becomeLeader">
@@ -38,7 +38,7 @@
           name="leaderCode"
           bind:value="{leaderCode}"
           id="leaderCode"
-          icon="{Lock}"
+          icon={Lock}
         />
       </div>
     </div>

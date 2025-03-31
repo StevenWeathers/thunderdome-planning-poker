@@ -75,7 +75,7 @@
     <div class="flex -mr-px">
       <SolidButton
         color="blue-copy"
-        onClick="{copyBattleLink}"
+        onClick={copyBattleLink}
         additionalClasses="flex items-center leading-normal
             whitespace-no-wrap text-sm"
       >
@@ -102,7 +102,7 @@
         <div class="flex -mr-px">
           <SolidButton
             color="blue-copy"
-            onClick="{copyJoinCode}"
+            onClick={copyJoinCode}
             additionalClasses="flex items-center leading-normal
                 whitespace-no-wrap text-sm"
           >

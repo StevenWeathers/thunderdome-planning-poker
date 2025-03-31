@@ -66,7 +66,7 @@
   let createDisabled = $derived(alertName === '' || alertType === '' || content === '');
 </script>
 
-<Modal closeModal="{toggleClose}">
+<Modal closeModal={toggleClose}>
   <form onsubmit={onSubmit} name="createAlert">
     <div class="mb-4">
       <label

@@ -20,9 +20,9 @@
   <div class="flex justify-end p-4">
     <button onclick={() => (isCollapsed = !isCollapsed)} class="text-white">
       {#if isCollapsed}
-        <Menu size="{24}" />
+        <Menu size={24} />
       {:else}
-        <X size="{24}" />
+        <X size={24} />
       {/if}
     </button>
   </div>
@@ -42,7 +42,7 @@
               title="{item.label}"
             >
               <span class="mr-3">
-                <item.icon size="{24}" />
+                <item.icon size={24} />
               </span>
               <span class:hidden="{isCollapsed}">{item.label}</span>
             </a>

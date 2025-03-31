@@ -170,10 +170,10 @@
   {#each points as point}
     <div class="w-1/4 md:w-1/6 px-2 mb-4">
       <PointCard
-        results="{counts[point] || { count: 0 }}"
-        isLocked="{true}"
-        point="{point}"
-        hideVoterIdentity="{hideVoterIdentity}"
+        results={counts[point] || { count: 0 }}
+        isLocked={true}
+        point={point}
+        hideVoterIdentity={hideVoterIdentity}
       />
     </div>
   {/each}

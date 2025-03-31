@@ -92,7 +92,7 @@
   }
 </script>
 
-<Modal closeModal="{toggleClose}">
+<Modal closeModal={toggleClose}>
   <form onsubmit={handleSubmit} name="createjirainstance">
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="host">

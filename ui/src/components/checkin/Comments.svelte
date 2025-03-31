@@ -52,9 +52,9 @@
         checkinId="{checkin.id}"
         comment="{comment}"
         userMap="{userMap}"
-        isAdmin="{isAdmin}"
-        handleEdit="{handleEdit}"
-        handleDelete="{handleDelete}"
+        isAdmin={isAdmin}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
       />
     {/each}
   </div>

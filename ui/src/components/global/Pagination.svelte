@@ -14,7 +14,7 @@
 
   let { current = $bindable(1), num_items = 120, per_page = 5 }: Props = $props();
 
-  let num_pages;
+  let num_pages: number = $state(0);
   run(() => {
     num_pages = Math.ceil(num_items / per_page);
   });

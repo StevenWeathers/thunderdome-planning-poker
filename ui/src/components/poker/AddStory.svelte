@@ -118,7 +118,7 @@
   });
 </script>
 
-<Modal closeModal="{toggleAddPlan}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal={toggleAddPlan} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
   <form onsubmit={handleSubmit} name="addPlan">
     <div class="mb-4">
       <label class="block font-bold mb-2 dark:text-gray-400" for="planType">
@@ -212,7 +212,7 @@
               content="{description}"
               placeholder="{$LL.planDescriptionPlaceholder()}"
               id="storyDescription"
-              handleTextChange="{c => (description = c)}"
+              handleTextChange={c => (description = c)}
             />
           </div>
         </div>
@@ -241,7 +241,7 @@
               content="{acceptanceCriteria}"
               placeholder="{$LL.planAcceptanceCriteriaPlaceholder()}"
               id="acceptanceCriteria"
-              handleTextChange="{c => (acceptanceCriteria = c)}"
+              handleTextChange={c => (acceptanceCriteria = c)}
             />
           </div>
         </div>

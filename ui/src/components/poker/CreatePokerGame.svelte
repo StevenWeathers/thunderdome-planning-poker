@@ -398,7 +398,7 @@
     </div>
     <SelectWithSubtext
       on:change="{updatePointValues}"
-      items="{estimateScales}"
+      items={estimateScales}
       label="Select an estimation scale..."
       selectedItemId="{selectedEstimationScale}"
       itemType="estimation_scale"
@@ -434,17 +434,17 @@
       {$LL.plans()}
     </h3>
     <div class="control mb-4">
-      <HollowButton onClick="{toggleImport}" color="blue">
+      <HollowButton onClick={toggleImport} color="blue">
         {$LL.importPlans()}
       </HollowButton>
-      <HollowButton onClick="{addPlan}">
+      <HollowButton onClick={addPlan}>
         {$LL.addPlan()}
       </HollowButton>
       {#if showImport}
         <ImportModal
           notifications={notifications}
-          toggleImport="{toggleImport}"
-          handlePlanAdd="{handlePlanImport}"
+          toggleImport={toggleImport}
+          handlePlanAdd={handlePlanImport}
           xfetch={xfetch}
         />
       {/if}
@@ -461,7 +461,7 @@
         </div>
         <div class="w-1/4">
           <div class="ps-2">
-            <HollowButton onClick="{removePlan(i)}" color="red">
+            <HollowButton onClick={removePlan(i)} color="red">
               {$LL.remove()}
             </HollowButton>
           </div>
@@ -521,7 +521,7 @@
         bind:value="{pokerSettings.joinCode}"
         placeholder="{$LL.optionalPasscodePlaceholder()}"
         id="joinCode"
-        icon="{Lock}"
+        icon={Lock}
       />
     </div>
   </div>
@@ -539,7 +539,7 @@
         bind:value="{pokerSettings.leaderCode}"
         placeholder="{$LL.facilitatorCodePlaceholder()}"
         id="leaderCode"
-        icon="{Crown}"
+        icon={Crown}
       />
     </div>
   </div>

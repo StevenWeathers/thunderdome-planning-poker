@@ -80,7 +80,7 @@
       gravatarHash="{warrior.gravatarHash}"
       userName="{warrior.name}"
       class="rounded-full"
-      width="68"
+      width={68}
     />
   </div>
   <div class="w-3/4">
@@ -199,8 +199,8 @@
 
   {#if showBecomeLeader}
     <BecomeLeader
-      handleBecomeLeader="{becomeLeader}"
-      toggleBecomeLeader="{toggleBecomeLeader}"
+      handleBecomeLeader={becomeLeader}
+      toggleBecomeLeader={toggleBecomeLeader}
     />
   {/if}
 </div>

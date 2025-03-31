@@ -90,7 +90,7 @@
 </script>
 
 <Modal
-  closeModal="{toggleEditBattle}"
+  closeModal={toggleEditBattle}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
 >
   <form onsubmit={saveBattle} name="createBattle">
@@ -179,7 +179,7 @@
         bind:checked="{autoFinishVoting}"
         id="autoFinishVoting"
         name="autoFinishVoting"
-        disabled="{!votingLocked}"
+        disabled={!votingLocked}
         label="{$LL.autoFinishVotingLabel()}"
       />
     </div>
@@ -206,7 +206,7 @@
           bind:value="{joinCode}"
           placeholder="{$LL.optionalPasscodePlaceholder()}"
           id="joinCode"
-          icon="{Lock}"
+          icon={Lock}
         />
       </div>
     </div>
@@ -224,7 +224,7 @@
           bind:value="{leaderCode}"
           placeholder="{$LL.facilitatorCodePlaceholder()}"
           id="leaderCode"
-          icon="{Crown}"
+          icon={Crown}
         />
       </div>
     </div>

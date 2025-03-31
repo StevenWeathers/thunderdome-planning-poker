@@ -59,10 +59,10 @@
     focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
           bind:value="{editcomment}"></textarea>
         <div class="text-right">
-          <HollowButton color="blue" onClick="{toggleEdit}">
+          <HollowButton color="blue" onClick={toggleEdit}>
             {$LL.cancel()}
           </HollowButton>
-          <SolidButton type="submit" disabled="{editcomment === ''}">
+          <SolidButton type="submit" disabled={editcomment === ''}>
             {$LL.updateComment()}
           </SolidButton>
         </div>

@@ -56,7 +56,7 @@
   }
 </script>
 
-<Modal closeModal="{toggleImport}" widthClasses="md:w-full md:mx-4 lg:w-3/5">
+<Modal closeModal={toggleImport} widthClasses="md:w-full md:mx-4 lg:w-3/5">
   <div class="mt-8 mb-4">
     {#if !showJiraCloudSearch}
       <div class="mb-4 dark:text-gray-300">
@@ -67,10 +67,10 @@
           />
         {:else if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && $user.subscribed)}
           {#if !showGameImport && !showStoryboardImport}
-            <SolidButton color="indigo" onClick="{toggleGameImport}"
+            <SolidButton color="indigo" onClick={toggleGameImport}
               >Import from another Game
             </SolidButton>
-            <SolidButton color="blue" onClick="{toggleStoryboardImport}"
+            <SolidButton color="blue" onClick={toggleStoryboardImport}
               >Import from a Storyboard
             </SolidButton>
           {/if}
@@ -81,7 +81,7 @@
         <StoryFromGameImport
           notifications={notifications}
           xfetch={xfetch}
-          handleImport="{importStory}"
+          handleImport={importStory}
           gameId="{gameId}"
         />
       {/if}
@@ -90,7 +90,7 @@
         <StoryFromStoryboardImport
           notifications={notifications}
           xfetch={xfetch}
-          handleImport="{importStory}"
+          handleImport={importStory}
         />
       {/if}
     {/if}
@@ -101,7 +101,7 @@
         <JQLImport
           notifications={notifications}
           xfetch={xfetch}
-          handleImport="{importStory}"
+          handleImport={importStory}
           on:instance_selected="{() => {
             showJiraCloudSearch = true;
           }}"
@@ -115,7 +115,7 @@
               {$LL.importJiraXML()}
             </h3>
             <JiraImport
-              handlePlanAdd="{handleAdd}"
+              handlePlanAdd={handleAdd}
               notifications={notifications}
               testid="plans-importjira"
             />
@@ -132,7 +132,7 @@
               Type,Title,ReferenceId,Link,Description,AcceptanceCriteria
             </div>
             <CsvImport
-              handlePlanAdd="{handleAdd}"
+              handlePlanAdd={handleAdd}
               notifications={notifications}
               testid="plans-Csvimport"
             />

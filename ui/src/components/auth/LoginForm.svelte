@@ -170,7 +170,7 @@
       placeholder="{$LL.enterYourEmail()}"
       required
       bind:value="{email}"
-      icon="{Mail}"
+      icon={Mail}
       autocomplete="email"
     />
 
@@ -196,12 +196,12 @@
         <!--                      </label>-->
       </div>
       {#if !LdapEnabled}
-        <a
+        <button
           class="font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-all duration-300 cursor-pointer"
           onclick={toggleForgotPassword}
         >
           {$LL.forgotPassword()}
-        </a>
+        </button>
       {/if}
     </div>
 
@@ -294,7 +294,7 @@
       name="yourResetEmail"
       type="email"
       required
-      icon="{Mail}"
+      icon={Mail}
     />
 
     <div class="flex justify-between items-center">
@@ -330,7 +330,7 @@
         id="mfaToken"
         name="mfaToken"
         required
-        icon="{Shield}"
+        icon={Shield}
         inputmode="numeric"
         pattern="[0-9]*"
         autocomplete="one-time-code"

@@ -93,7 +93,7 @@
           >[{story.referenceId}] {story.name}
         </div>
         <div>
-          <SolidButton onClick="{importStory(idx)}">Import</SolidButton>
+          <SolidButton onClick={importStory(idx)}>Import</SolidButton>
         </div>
       </div>
     {/each}

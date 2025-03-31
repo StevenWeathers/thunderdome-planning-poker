@@ -103,7 +103,7 @@
             <LocaleMenu
               xfetch={xfetch}
               notifications={notifications}
-              router="{router}"
+              router={router}
               currentPage="{currentPage}"
               selectedLocale="{$locale}"
               on:locale-changed="{e => setupI18n(e.detail)}"
@@ -113,7 +113,7 @@
             <ThemeSelector
               xfetch={xfetch}
               notifications={notifications}
-              router="{router}"
+              router={router}
               currentPage="{currentPage}"
             />
           </li>
@@ -140,7 +140,7 @@
             <NavUserMenu
               xfetch={xfetch}
               notifications={notifications}
-              router="{router}"
+              router={router}
               currentPage="{currentPage}"
             />
           </li>

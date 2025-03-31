@@ -102,7 +102,7 @@
   });
 </script>
 
-<Modal closeModal="{toggleCheckin}" widthClasses="md:w-2/3">
+<Modal closeModal={toggleCheckin} widthClasses="md:w-2/3">
   <form onsubmit={onSubmit} name="teamCheckin" class="flex flex-wrap mt-8">
     {#if userSubscribed}
       {#if lastCheckin.id !== ''}
@@ -196,7 +196,7 @@
               content="{today}"
               placeholder="{$LL.todayPlaceholder()}"
               id="today"
-              handleTextChange="{c => (today = c)}"
+              handleTextChange={c => (today = c)}
             />
           </div>
         </div>
@@ -213,7 +213,7 @@
             content="{blockers}"
             placeholder="{$LL.blockersPlaceholder()}"
             id="blockers"
-            handleTextChange="{c => (blockers = c)}"
+            handleTextChange={c => (blockers = c)}
           />
         </div>
       </div>
@@ -229,7 +229,7 @@
             content="{discuss}"
             placeholder="{$LL.discussPlaceholder()}"
             id="discuss"
-            handleTextChange="{c => (discuss = c)}"
+            handleTextChange={c => (discuss = c)}
           />
         </div>
       </div>

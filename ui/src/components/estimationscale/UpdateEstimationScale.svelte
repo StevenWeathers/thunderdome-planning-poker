@@ -117,7 +117,7 @@
   let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
-<Modal closeModal="{toggleClose}">
+<Modal closeModal={toggleClose}>
   <form onsubmit={onSubmit} name="updateEstimationScale">
     <div class="mb-4">
       <label
@@ -213,7 +213,7 @@
 
     <div>
       <div class="text-right">
-        <SolidButton type="submit" disabled="{updateDisabled}">
+        <SolidButton type="submit" disabled={updateDisabled}>
           {$LL.estimationScaleSave()}
         </SolidButton>
       </div>

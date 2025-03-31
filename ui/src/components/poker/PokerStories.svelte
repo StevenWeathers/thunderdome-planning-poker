@@ -171,10 +171,10 @@
     </div>
     <div class="w-2/3 text-right">
       {#if isLeader}
-        <HollowButton onClick="{toggleImport}" color="blue">
+        <HollowButton onClick={toggleImport} color="blue">
           {$LL.importPlans()}
         </HollowButton>
-        <HollowButton onClick="{toggleAddPlan()}" testid="plans-add">
+        <HollowButton onClick={toggleAddPlan(null)} testid="plans-add">
           {$LL.planAdd()}
         </HollowButton>
       {/if}
@@ -290,7 +290,7 @@
           {/if}
           <HollowButton
             color="blue"
-            onClick="{togglePlanView(plan.id)}"
+            onClick={togglePlanView(plan.id)}
             testid="plan-view"
           >
             {$LL.view()}
@@ -299,7 +299,7 @@
             {#if !plan.active}
               <HollowButton
                 color="red"
-                onClick="{handlePlanDeletion(plan.id)}"
+                onClick={handlePlanDeletion(plan.id)}
                 testid="plan-delete"
               >
                 {$LL.delete()}
@@ -307,14 +307,14 @@
             {/if}
             <HollowButton
               color="purple"
-              onClick="{toggleAddPlan(plan.id)}"
+              onClick={toggleAddPlan(plan.id)}
               testid="plan-edit"
             >
               {$LL.edit()}
             </HollowButton>
             {#if !plan.active}
               <HollowButton
-                onClick="{activatePlan(plan.id)}"
+                onClick={activatePlan(plan.id)}
                 testid="plan-activate"
               >
                 {$LL.activate()}
@@ -367,7 +367,7 @@
             {/if}
             <HollowButton
               color="blue"
-              onClick="{togglePlanView(plan.id)}"
+              onClick={togglePlanView(plan.id)}
               testid="plan-view"
             >
               {$LL.view()}
@@ -376,7 +376,7 @@
               {#if !plan.active}
                 <HollowButton
                   color="red"
-                  onClick="{handlePlanDeletion(plan.id)}"
+                  onClick={handlePlanDeletion(plan.id)}
                   testid="plan-delete"
                 >
                   {$LL.delete()}
@@ -384,14 +384,14 @@
               {/if}
               <HollowButton
                 color="purple"
-                onClick="{toggleAddPlan(plan.id)}"
+                onClick={toggleAddPlan(plan.id)}
                 testid="plan-edit"
               >
                 {$LL.edit()}
               </HollowButton>
               {#if !plan.active}
                 <HollowButton
-                  onClick="{activatePlan(plan.id)}"
+                  onClick={activatePlan(plan.id)}
                   testid="plan-activate"
                 >
                   {$LL.activate()}
@@ -425,9 +425,9 @@
 
 {#if showAddPlan}
   <AddPlan
-    handlePlanAdd="{handlePlanAdd}"
-    toggleAddPlan="{toggleAddPlan()}"
-    handlePlanRevision="{handlePlanRevision}"
+    handlePlanAdd={handlePlanAdd}
+    toggleAddPlan={toggleAddPlan(null)}
+    handlePlanRevision={handlePlanRevision}
     planId="{selectedPlan.id}"
     planName="{selectedPlan.name}"
     planType="{selectedPlan.type}"
@@ -442,7 +442,7 @@
 
 {#if showViewPlan}
   <ViewPlan
-    togglePlanView="{togglePlanView()}"
+    togglePlanView={togglePlanView(null)}
     planName="{selectedPlan.name}"
     planType="{selectedPlan.type}"
     referenceId="{selectedPlan.referenceId}"
@@ -456,8 +456,8 @@
 {#if showImport}
   <ImportModal
     notifications={notifications}
-    toggleImport="{toggleImport}"
-    handlePlanAdd="{handlePlanAdd}"
+    toggleImport={toggleImport}
+    handlePlanAdd={handlePlanAdd}
     xfetch={xfetch}
     gameId="{gameId}"
   />

@@ -21,7 +21,7 @@
 </script>
 
 <Modal
-  closeModal="{toggleBecomeFacilitator}"
+  closeModal={toggleBecomeFacilitator}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
 >
   <form onsubmit={handleSubmit} name="becomeLeader">

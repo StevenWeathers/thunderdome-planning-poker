@@ -77,13 +77,13 @@
   <TableContainer>
     <TableNav
       title="Default Poker Settings"
-      createBtnEnabled="{isAdmin || isEntityAdmin}"
+      createBtnEnabled={isAdmin || isEntityAdmin}
       createBtnText="{defaultSettings.id !== ''
         ? 'Update'
         : 'Create'} Default Settings"
-      createButtonHandler="{defaultSettings.id !== ''
+      createButtonHandler={defaultSettings.id !== ''
         ? toggleUpdateDefaultSettings
-        : toggleCreateDefaultSettings}"
+        : toggleCreateDefaultSettings}
       createBtnTestId="poker-settings-{defaultSettings.id !== ''
         ? 'update'
         : 'create'}-btn"
@@ -104,13 +104,13 @@
           {#if defaultSettings.id !== ''}
             <TableRow>
               <RowCol>
-                <BooleanDisplay boolValue="{defaultSettings.autoFinishVoting}" />
+                <BooleanDisplay boolValue={defaultSettings.autoFinishVoting} />
               </RowCol>
               <RowCol>
                 {defaultSettings.pointAverageRounding}
               </RowCol>
               <RowCol>
-                <BooleanDisplay boolValue="{defaultSettings.hideVoterIdentity}" />
+                <BooleanDisplay boolValue={defaultSettings.hideVoterIdentity} />
               </RowCol>
               <!--                    <RowCol>-->
               <!--                        {defaultSettings.estimationScaleId}-->
@@ -130,28 +130,28 @@
 
   {#if showCreateDefaultSettings}
     <UpdatePokerSettings
-      toggleClose="{toggleCreateDefaultSettings}"
+      toggleClose={toggleCreateDefaultSettings}
       xfetch={xfetch}
       notifications={notifications}
       apiPrefix="{apiPrefix}"
       organizationId="{organizationId}"
       teamId="{teamId}"
       departmentId="{departmentId}"
-      on:updatePokerSettings="{handleSettingsUpdate}"
+      on:updatePokerSettings={handleSettingsUpdate}
     />
   {/if}
 
   {#if showUpdateDefaultSettings}
     <UpdatePokerSettings
-      toggleClose="{toggleUpdateDefaultSettings}"
+      toggleClose={toggleUpdateDefaultSettings}
       xfetch={xfetch}
       notifications={notifications}
-      pokerSettings="{defaultSettings}"
+      pokerSettings={defaultSettings}
       apiPrefix="{apiPrefix}"
       organizationId="{organizationId}"
       teamId="{teamId}"
       departmentId="{departmentId}"
-      on:updatePokerSettings="{handleSettingsUpdate}"
+      on:updatePokerSettings={handleSettingsUpdate}
     />
   {/if}
 </div>

@@ -38,7 +38,7 @@
 >
   {#each template.format.columns as column}
     <ItemForm
-      sendSocketEvent="{sendSocketEvent}"
+      sendSocketEvent={sendSocketEvent}
       itemType="{column.name}"
       newItemPlaceholder="{column.label}..."
       phase="{phase}"

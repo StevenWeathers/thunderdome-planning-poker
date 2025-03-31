@@ -123,8 +123,8 @@
 
 <section class="flex min-h-screen">
   <SideNavigation
-    menuItems="{pages}"
-    activePage="{activePage}"
+    menuItems={pages}
+    activePage={activePage}
     menuType="admin"
   />
   <div class="flex-1 px-4 py-4 md:py-6 md:px-6 lg:py-8 lg:px-8">

@@ -102,9 +102,9 @@
   <TableContainer>
     <TableNav
       title="{$LL.estimationScales()}"
-      createBtnEnabled="{isAdmin || isEntityAdmin}"
+      createBtnEnabled={isAdmin || isEntityAdmin}
       createBtnText="{$LL.estimationScaleCreate()}"
-      createButtonHandler="{toggleCreateScale}"
+      createButtonHandler={toggleCreateScale}
       createBtnTestId="scale-create"
     />
     <Table>
@@ -144,20 +144,20 @@
                 </RowCol>
                 <RowCol>
                   <span data-testid="scale-is-public"
-                    ><BooleanDisplay boolValue="{scale.isPublic}" /></span
+                    ><BooleanDisplay boolValue={scale.isPublic} /></span
                   >
                 </RowCol>
               {/if}
               <RowCol>
                 <span data-testid="scale-is-default"
-                  ><BooleanDisplay boolValue="{scale.defaultScale}" />
+                  ><BooleanDisplay boolValue={scale.defaultScale} />
                 </span>
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin || isEntityAdmin}
                   <CrudActions
-                    editBtnClickHandler="{toggleUpdateScale(scale)}"
-                    deleteBtnClickHandler="{toggleRemoveScale(scale.id)}"
+                    editBtnClickHandler={toggleUpdateScale(scale)}
+                    deleteBtnClickHandler={toggleRemoveScale(scale.id)}
                   />
                 {/if}
               </RowCol>
@@ -168,16 +168,16 @@
     </Table>
     <TableFooter
       bind:current="{scalesPage}"
-      num_items="{scaleCount}"
-      per_page="{scalesPageLimit}"
+      num_items={scaleCount}
+      per_page={scalesPageLimit}
       on:navigate="{changePage}"
     />
   </TableContainer>
 
   {#if showAddScale}
     <CreateEstimationScale
-      toggleCreate="{toggleCreateScale}"
-      handleCreate="{handleCreateScale}"
+      toggleCreate={toggleCreateScale}
+      handleCreate={handleCreateScale}
       organizationId="{organizationId}"
       departmentId="{departmentId}"
       teamId="{teamId}"
@@ -189,8 +189,8 @@
 
   {#if showUpdateScale}
     <UpdateEstimationScale
-      toggleUpdate="{toggleUpdateScale({})}"
-      handleUpdate="{handleScaleUpdate}"
+      toggleUpdate={toggleUpdateScale({})}
+      handleUpdate={handleScaleUpdate}
       scaleId="{updateScale.id}"
       name="{updateScale.name}"
       description="{updateScale.description}"
@@ -209,8 +209,8 @@
 
   {#if showRemoveScale}
     <DeleteConfirmation
-      toggleDelete="{toggleRemoveScale(null)}"
-      handleDelete="{handleScaleRemove}"
+      toggleDelete={toggleRemoveScale(null)}
+      handleDelete={handleScaleRemove}
       permanent="{true}"
       confirmText="{$LL.removeEstimationScaleConfirmText()}"
       confirmBtnText="{$LL.removeEstimationScale()}"

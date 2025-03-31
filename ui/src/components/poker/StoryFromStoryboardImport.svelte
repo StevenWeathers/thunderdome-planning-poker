@@ -87,7 +87,7 @@
     id="selectedGoal"
     bind:value="{selectedGoalIdx}"
     on:change="{getStoryboardStories}"
-    disabled="{selectedStoryboardIdx === ''}"
+    disabled={selectedStoryboardIdx === ''}
   >
     >
     <option value="" disabled>Select goal to import from</option>
@@ -111,7 +111,7 @@
               {story.name}
             </div>
             <div>
-              <SolidButton onClick="{importStory(cIdx, sIdx)}"
+              <SolidButton onClick={importStory(cIdx, sIdx)}
                 >Import
               </SolidButton>
             </div>

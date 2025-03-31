@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { user } from '../../stores.ts';
+  import { user } from '../../stores';
   import { appRoutes } from '../../config';
   interface Props {
     children?: import('svelte').Snippet;
