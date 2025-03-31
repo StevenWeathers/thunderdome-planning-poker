@@ -10,7 +10,7 @@
   let { handleDelete = () => {}, toggleDelete = () => {} }: Props = $props();
 </script>
 
-<Modal closeModal="{toggleDelete}">
+<Modal closeModal={toggleDelete}>
   <div class="mb-4">
     <p class="font-bold text-xl text-red-600">
       Are you sure you want to delete this Storyboard?
@@ -28,7 +28,7 @@
     >
       Cancel
     </button>
-    <SolidButton onClick="{handleDelete}" color="red" testid="confirm-confirm">
+    <SolidButton onClick={handleDelete} color="red" testid="confirm-confirm">
       Delete Storyboard
     </SolidButton>
   </div>

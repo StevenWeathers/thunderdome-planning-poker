@@ -69,11 +69,11 @@
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
       {#if retroCount > 0}
         <BoxList
-          items="{retros}"
+          items={retros}
           itemType="retro"
           pageRoute="{appRoutes.retro}"
           ownerField="ownerId"
-          showOwnerName="{true}"
+          showOwnerName={true}
           ownerNameField="teamName"
           joinBtnText="{$LL.joinRetro()}"
         />
@@ -88,8 +88,8 @@
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
             bind:current="{retrosPage}"
-            num_items="{retroCount}"
-            per_page="{retrosPageLimit}"
+            num_items={retroCount}
+            per_page={retrosPageLimit}
             on:navigate="{changePage}"
           />
         </div>
@@ -107,7 +107,7 @@
         </h2>
         <CreateRetro
           notifications={notifications}
-          router="{router}"
+          router={router}
           xfetch={xfetch}
         />
       </div>

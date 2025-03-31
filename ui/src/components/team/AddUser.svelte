@@ -97,7 +97,7 @@
   });
 </script>
 
-<Modal closeModal="{toggleAdd}">
+<Modal closeModal={toggleAdd}>
   <form onsubmit={onSubmit} name="teamAddUser">
     <div class="mb-4">
       <label
@@ -188,9 +188,9 @@
         id="userEmail"
         name="userEmail"
         type="email"
-        required="{selectedUser === ''}"
-        disabled="{selectedUser !== ''}"
-        icon="{Mail}"
+        required={selectedUser === ''}
+        disabled={selectedUser !== ''}
+        icon={Mail}
       />
     </div>
 
@@ -206,7 +206,7 @@
       <div class="text-right">
         <SolidButton
           type="submit"
-          disabled="{createDisabled}"
+          disabled={createDisabled}
           testid="useradd-confirm"
         >
           {$LL.userAdd()}

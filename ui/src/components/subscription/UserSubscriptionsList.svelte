@@ -154,8 +154,8 @@
 
   {#if showAssociateTeam}
     <AssociateTeamForm
-      handleUpdate="{handleAssociate}"
-      toggleClose="{toggleAssociateTeam(null)}"
+      handleUpdate={handleAssociate}
+      toggleClose={toggleAssociateTeam(null)}
       subscriptionId="{selectedSubscriptionId}"
       xfetch={xfetch}
       notifications={notifications}
@@ -164,8 +164,8 @@
 
   {#if showAssociateOrganization}
     <AssociateOrgForm
-      handleUpdate="{handleAssociate}"
-      toggleClose="{toggleAssociateOrganization(null)}"
+      handleUpdate={handleAssociate}
+      toggleClose={toggleAssociateOrganization(null)}
       subscriptionId="{selectedSubscriptionId}"
       xfetch={xfetch}
       notifications={notifications}

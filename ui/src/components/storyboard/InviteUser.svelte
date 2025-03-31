@@ -33,7 +33,7 @@
   <div class="flex -mr-px">
     <SolidButton
       color="blue-copy"
-      onClick="{copyStoryboardLink}"
+      onClick={copyStoryboardLink}
       additionalClasses="flex items-center leading-normal
             whitespace-no-wrap text-sm"
     >

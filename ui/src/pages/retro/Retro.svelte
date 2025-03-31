@@ -623,7 +623,7 @@
         {#if retro.phase === 'completed'}
           <SolidButton
             color="green"
-            onClick="{toggleExport}"
+            onClick={toggleExport}
             testid="retro-export"
           >
             {#if showExport}
@@ -636,16 +636,16 @@
         {#if retro.phase === 'brainstorm' && phaseTimeLimitMin > 0}
           <PhaseTimer
             retroId="{retro.id}"
-            timeLimitMin="{phaseTimeLimitMin}"
+            timeLimitMin={phaseTimeLimitMin}
             timeStart="{phaseTimeStart}"
-            on:ended="{phaseTimeRanOut}"
+            on:ended={phaseTimeRanOut}
           />
         {/if}
         {#if isFacilitator}
           {#if retro.phase !== 'completed'}
             <SolidButton
               color="green"
-              onClick="{setPhase(null)}"
+              onClick={setPhase(null)}
               testid="retro-nextphase"
             >
               {$LL.nextPhase()}
@@ -654,7 +654,7 @@
 
           <HollowButton
             color="blue"
-            onClick="{toggleEditRetro}"
+            onClick={toggleEditRetro}
             testid="retro-edit"
           >
             {$LL.editRetro()}
@@ -662,7 +662,7 @@
 
           <HollowButton
             color="red"
-            onClick="{toggleDeleteRetro}"
+            onClick={toggleDeleteRetro}
             class="me-2"
             testid="retro-delete"
           >
@@ -671,14 +671,14 @@
         {:else}
           <HollowButton
             color="blue"
-            onClick="{toggleBecomeFacilitator}"
+            onClick={toggleBecomeFacilitator}
             testid="become-facilitator"
           >
             {$LL.becomeFacilitator()}
           </HollowButton>
           <HollowButton
             color="red"
-            onClick="{abandonRetro}"
+            onClick={abandonRetro}
             testid="retro-leave"
           >
             {$LL.leaveRetro()}
@@ -766,15 +766,15 @@
       {#if retro.phase === 'intro'}
         {#if showOpenActionItems}
           <RetroActionItemReview
-            team="{team}"
-            toggle="{toggleReviewActionItems}"
+            team={team}
+            toggle={toggleReviewActionItems}
             xfetch={xfetch}
             notifications={notifications}
           />
           <div class="w-full text-center pt-4 md:pt-6">
             <HollowButton
               color="purple"
-              onClick="{toggleReviewActionItems}"
+              onClick={toggleReviewActionItems}
               testid="back-to-prime-directive"
               additionalClasses="py-4 px-6 text-lg"
               >Back to Prime Directive
@@ -786,7 +786,7 @@
               <div class="text-center pt-10">
                 <HollowButton
                   color="purple"
-                  onClick="{toggleReviewActionItems}"
+                  onClick={toggleReviewActionItems}
                   testid="review-action-items"
                   additionalClasses="py-4 px-6 text-lg"
                   >Review Open Action Items
@@ -827,14 +827,14 @@
       <div class="grow flex">
         {#if retro.phase === 'brainstorm'}
           <BrainstormPhase
-            items="{retro.items}"
+            items={retro.items}
             phase="{retro.phase}"
-            isFacilitator="{isFacilitator}"
-            sendSocketEvent="{sendSocketEvent}"
-            template="{retro.template}"
-            users="{retro.users}"
+            isFacilitator={isFacilitator}
+            sendSocketEvent={sendSocketEvent}
+            template={retro.template}
+            users={retro.users}
             brainstormVisibility="{retro.brainstormVisibility}"
-            columnColors="{columnColors}"
+            columnColors={columnColors}
           />
         {/if}
         {#if retro.phase === 'group'}
@@ -856,15 +856,15 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
               <VotePhase
                 phase="{retro.phase}"
-                groups="{groupedItems}"
-                handleVote="{handleVote}"
-                handleVoteSubtract="{handleVoteSubtract}"
-                voteLimitReached="{voteLimitReached}"
-                allowCumulativeVoting="{retro.allowCumulativeVoting}"
-                users="{retro.users}"
-                sendSocketEvent="{sendSocketEvent}"
-                isFacilitator="{isFacilitator}"
-                columnColors="{columnColors}"
+                groups={groupedItems}
+                handleVote={handleVote}
+                handleVoteSubtract={handleVoteSubtract}
+                voteLimitReached={voteLimitReached}
+                allowCumulativeVoting={retro.allowCumulativeVoting}
+                users={retro.users}
+                sendSocketEvent={sendSocketEvent}
+                isFacilitator={isFacilitator}
+                columnColors={columnColors}
               />
             </div>
           </div>
@@ -874,11 +874,11 @@
             <div class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
               <GroupedItems
                 phase="{retro.phase}"
-                groups="{groupedItems}"
-                users="{retro.users}"
-                sendSocketEvent="{sendSocketEvent}"
-                isFacilitator="{isFacilitator}"
-                columnColors="{columnColors}"
+                groups={groupedItems}
+                users={retro.users}
+                sendSocketEvent={sendSocketEvent}
+                isFacilitator={isFacilitator}
+                columnColors={columnColors}
               />
             </div>
           </div>
@@ -904,7 +904,7 @@
                         type="text"
                         required
                       />
-                      <button type="submit" class="hidden"></button>
+                      <button type="submit" class="hidden">submit</button>
                     </form>
                   </div>
                 </div>
@@ -931,7 +931,7 @@
                             gravatarHash="{assignee.gravatarHash}"
                             avatar="{assignee.avatar}"
                             userName="{assignee.name}"
-                            width="24"
+                            width={24}
                             class="inline-block me-2"
                           />
                         {/each}
@@ -975,15 +975,15 @@
           {#each retro.users as usr, index (usr.id)}
             {#if usr.active}
               <UserCard
-                user="{usr}"
-                votes="{retro.votes}"
-                maxVotes="{retro.maxVotes}"
-                facilitators="{retro.facilitators}"
-                readyUsers="{retro.readyUsers}"
-                handleAddFacilitator="{handleAddFacilitator}"
-                handleRemoveFacilitator="{handleRemoveFacilitator}"
-                handleUserReady="{handleUserReady}"
-                handleUserUnReady="{handleUserUnReady}"
+                user={usr}
+                votes={retro.votes}
+                maxVotes={retro.maxVotes}
+                facilitators={retro.facilitators}
+                readyUsers={retro.readyUsers}
+                handleAddFacilitator={handleAddFacilitator}
+                handleRemoveFacilitator={handleRemoveFacilitator}
+                handleUserReady={handleUserReady}
+                handleUserUnReady={handleUserUnReady}
                 phase="{retro.phase}"
               />
             {/if}
@@ -1006,20 +1006,20 @@
 {#if showEditRetro}
   <EditRetro
     retroName="{retro.name}"
-    handleRetroEdit="{handleRetroEdit}"
-    toggleEditRetro="{toggleEditRetro}"
+    handleRetroEdit={handleRetroEdit}
+    toggleEditRetro={toggleEditRetro}
     joinCode="{retro.joinCode}"
     facilitatorCode="{retro.facilitatorCode}"
-    maxVotes="{retro.maxVotes}"
+    maxVotes={retro.maxVotes}
     brainstormVisibility="{retro.brainstormVisibility}"
-    phaseAutoAdvance="{retro.phase_auto_advance}"
+    phaseAutoAdvance={retro.phase_auto_advance}
   />
 {/if}
 
 {#if showDeleteRetro}
   <DeleteConfirmation
-    toggleDelete="{toggleDeleteRetro}"
-    handleDelete="{concedeRetro}"
+    toggleDelete={toggleDeleteRetro}
+    handleDelete={concedeRetro}
     confirmText="{$LL.confirmDeleteRetro()}"
     confirmBtnText="{$LL.deleteRetro()}"
   />
@@ -1027,21 +1027,21 @@
 
 {#if showActionEdit}
   <EditActionItem
-    toggleEdit="{toggleActionEdit(null)}"
-    handleEdit="{handleActionEdit}"
-    handleDelete="{handleActionDelete}"
-    action="{selectedAction}"
-    assignableUsers="{retro.users}"
-    handleAssigneeAdd="{handleAssigneeAdd}"
-    handleAssigneeRemove="{handleAssigneeRemove}"
+    toggleEdit={toggleActionEdit(null)}
+    handleEdit={handleActionEdit}
+    handleDelete={handleActionDelete}
+    action={selectedAction}
+    assignableUsers={retro.users}
+    handleAssigneeAdd={handleAssigneeAdd}
+    handleAssigneeRemove={handleAssigneeRemove}
     retroId="{retro.id}"
   />
 {/if}
 
 {#if showBecomeFacilitator}
   <BecomeFacilitator
-    handleBecomeFacilitator="{becomeFacilitator}"
-    toggleBecomeFacilitator="{toggleBecomeFacilitator}"
+    handleBecomeFacilitator={becomeFacilitator}
+    toggleBecomeFacilitator={toggleBecomeFacilitator}
   />
 {/if}
 
@@ -1058,5 +1058,5 @@
     {$LL.loadingRetro()}
   </FullpageLoader>
 {:else if JoinPassRequired}
-  <JoinCodeForm handleSubmit="{authRetro}" submitText="{$LL.joinRetro()}" />
+  <JoinCodeForm handleSubmit={authRetro} submitText="{$LL.joinRetro()}" />
 {/if}

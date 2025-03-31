@@ -63,7 +63,7 @@
   }
 </style>
 
-<Modal closeModal="{toggleEditLegend}">
+<Modal closeModal={toggleEditLegend}>
   <form onsubmit={handleSubmit} name="colorLegend">
     <div class="mt-8 mb-4">
       {#each colorLegend as color, i}

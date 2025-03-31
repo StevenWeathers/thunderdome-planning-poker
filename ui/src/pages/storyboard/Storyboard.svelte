@@ -609,7 +609,7 @@
         {#if isFacilitator}
           <HollowButton
             color="green"
-            onClick="{toggleAddGoal()}"
+            onClick={toggleAddGoal()}
             additionalClasses="me-2"
             testid="goal-add"
           >
@@ -617,14 +617,14 @@
           </HollowButton>
           <HollowButton
             color="blue"
-            onClick="{toggleEditStoryboard}"
+            onClick={toggleEditStoryboard}
             testid="storyboard-edit"
           >
             {$LL.editStoryboard()}
           </HollowButton>
           <HollowButton
             color="red"
-            onClick="{toggleDeleteStoryboard}"
+            onClick={toggleDeleteStoryboard}
             additionalClasses="me-2"
             testid="storyboard-delete"
           >
@@ -633,14 +633,14 @@
         {:else}
           <HollowButton
             color="blue"
-            onClick="{toggleBecomeFacilitator}"
+            onClick={toggleBecomeFacilitator}
             testid="become-facilitator"
           >
             {$LL.becomeFacilitator()}
           </HollowButton>
           <HollowButton
             color="red"
-            onClick="{abandonStoryboard}"
+            onClick={abandonStoryboard}
             testid="storyboard-leave"
           >
             {$LL.leaveStoryboard()}
@@ -650,7 +650,7 @@
           <HollowButton
             color="indigo"
             additionalClasses="transition ease-in-out duration-150"
-            onClick="{togglePersonas}"
+            onClick={togglePersonas}
             testid="personas-toggle"
           >
             {$LL.personas()}
@@ -703,12 +703,12 @@
                   <div class="p-2 text-right">
                     <HollowButton
                       color="green"
-                      onClick="{toggleEditPersona({
+                      onClick={toggleEditPersona({
                         id: '',
                         name: '',
                         role: '',
                         description: '',
-                      })}"
+                      })}
                       testid="persona-add"
                     >
                       {$LL.addPersona()}
@@ -723,7 +723,7 @@
           <HollowButton
             color="teal"
             additionalClasses="transition ease-in-out duration-150"
-            onClick="{toggleColorLegend}"
+            onClick={toggleColorLegend}
             testid="colorlegend-toggle"
           >
             {$LL.colorLegend()}
@@ -759,7 +759,7 @@
                   <div class="p-2 text-right">
                     <HollowButton
                       color="orange"
-                      onClick="{toggleEditLegend}"
+                      onClick={toggleEditLegend}
                       testid="colorlegend-edit"
                     >
                       {$LL.editColorLegend()}
@@ -774,7 +774,7 @@
           <HollowButton
             color="orange"
             additionalClasses="transition ease-in-out duration-150"
-            onClick="{toggleUsersPanel}"
+            onClick={toggleUsersPanel}
             testid="users-toggle"
           >
             <Users class="me-1 inline-block" height="18" width="18" />
@@ -792,12 +792,11 @@
                 {#each storyboard.users as usr, index (usr.id)}
                   {#if usr.active}
                     <UserCard
-                      user="{usr}"
-                      sendSocketEvent="{sendSocketEvent}"
-                      showBorder="{index !== storyboard.users.length - 1}"
-                      facilitators="{storyboard.facilitators}"
-                      handleAddFacilitator="{handleAddFacilitator}"
-                      handleRemoveFacilitator="{handleRemoveFacilitator}"
+                      user={usr}
+                      showBorder={index !== storyboard.users.length - 1}
+                      facilitators={storyboard.facilitators}
+                      handleAddFacilitator={handleAddFacilitator}
+                      handleRemoveFacilitator={handleRemoveFacilitator}
                     />
                   {/if}
                 {/each}
@@ -837,7 +836,7 @@
                   <ChevronUp class="me-1 inline-block" />
                 {/if}
               </button>{goal.name}&nbsp;<GoalEstimate
-                columns="{goal.columns}"
+                columns={goal.columns}
               />
             </h2>
           </div>
@@ -846,7 +845,7 @@
           {#if isFacilitator}
             <HollowButton
               color="green"
-              onClick="{addStoryColumn(goal.id)}"
+              onClick={addStoryColumn(goal.id)}
               btnSize="small"
               testid="column-add"
             >
@@ -854,7 +853,7 @@
             </HollowButton>
             <HollowButton
               color="orange"
-              onClick="{toggleAddGoal(goal.id)}"
+              onClick={toggleAddGoal(goal.id)}
               btnSize="small"
               additionalClasses="ms-2"
               testid="goal-edit"
@@ -863,7 +862,7 @@
             </HollowButton>
             <HollowButton
               color="red"
-              onClick="{handleGoalDeletion(goal.id)}"
+              onClick={handleGoalDeletion(goal.id)}
               btnSize="small"
               additionalClasses="ms-2"
               testid="goal-delete"
@@ -1107,9 +1106,9 @@
 
 {#if showAddGoal}
   <AddGoal
-    handleGoalAdd="{handleGoalAdd}"
-    toggleAddGoal="{toggleAddGoal()}"
-    handleGoalRevision="{handleGoalRevision}"
+    handleGoalAdd={handleGoalAdd}
+    toggleAddGoal={toggleAddGoal()}
+    handleGoalRevision={handleGoalRevision}
     goalId="{reviseGoalId}"
     goalName="{reviseGoalName}"
   />
@@ -1117,49 +1116,49 @@
 
 {#if editColumn}
   <ColumnForm
-    handleColumnRevision="{handleColumnRevision}"
-    toggleColumnEdit="{toggleColumnEdit()}"
-    column="{editColumn}"
-    personas="{storyboard.personas}"
-    handlePersonaAdd="{handleColumnPersonaAdd}"
-    handlePersonaRemove="{handleColumnPersonaRemove}"
-    deleteColumn="{deleteColumn}"
+    handleColumnRevision={handleColumnRevision}
+    toggleColumnEdit={toggleColumnEdit()}
+    column={editColumn}
+    personas={storyboard.personas}
+    handlePersonaAdd={handleColumnPersonaAdd}
+    handlePersonaRemove={handleColumnPersonaRemove}
+    deleteColumn={deleteColumn}
   />
 {/if}
 
 {#if activeStory}
   <StoryForm
-    toggleStoryForm="{toggleStoryForm()}"
-    story="{activeStory}"
-    sendSocketEvent="{sendSocketEvent}"
+    toggleStoryForm={toggleStoryForm()}
+    story={activeStory}
+    sendSocketEvent={sendSocketEvent}
     notifications={notifications}
-    colorLegend="{storyboard.color_legend}"
-    users="{storyboard.users}"
+    colorLegend={storyboard.color_legend}
+    users={storyboard.users}
   />
 {/if}
 
 {#if showColorLegendForm}
   <ColorLegendForm
-    handleLegendRevision="{handleLegendRevision}"
-    toggleEditLegend="{toggleEditLegend}"
-    colorLegend="{storyboard.color_legend}"
+    handleLegendRevision={handleLegendRevision}
+    toggleEditLegend={toggleEditLegend}
+    colorLegend={storyboard.color_legend}
   />
 {/if}
 
 {#if showPersonasForm}
   <PersonasForm
-    toggleEditPersona="{toggleEditPersona()}"
-    persona="{showPersonasForm}"
-    handlePersonaAdd="{handlePersonaAdd}"
-    handlePersonaRevision="{handlePersonaRevision}"
+    toggleEditPersona={toggleEditPersona()}
+    persona={showPersonasForm}
+    handlePersonaAdd={handlePersonaAdd}
+    handlePersonaRevision={handlePersonaRevision}
   />
 {/if}
 
 {#if showEditStoryboard}
   <EditStoryboard
     storyboardName="{storyboard.name}"
-    handleStoryboardEdit="{handleStoryboardEdit}"
-    toggleEditStoryboard="{toggleEditStoryboard}"
+    handleStoryboardEdit={handleStoryboardEdit}
+    toggleEditStoryboard={toggleEditStoryboard}
     joinCode="{storyboard.joinCode}"
     facilitatorCode="{storyboard.facilitatorCode}"
   />
@@ -1167,15 +1166,15 @@
 
 {#if showDeleteStoryboard}
   <DeleteStoryboard
-    toggleDelete="{toggleDeleteStoryboard}"
-    handleDelete="{concedeStoryboard}"
+    toggleDelete={toggleDeleteStoryboard}
+    handleDelete={concedeStoryboard}
   />
 {/if}
 
 {#if showBecomeFacilitator}
   <BecomeFacilitator
-    handleBecomeFacilitator="{becomeFacilitator}"
-    toggleBecomeFacilitator="{toggleBecomeFacilitator}"
+    handleBecomeFacilitator={becomeFacilitator}
+    toggleBecomeFacilitator={toggleBecomeFacilitator}
   />
 {/if}
 
@@ -1193,7 +1192,7 @@
   </FullpageLoader>
 {:else if JoinPassRequired}
   <JoinCodeForm
-    handleSubmit="{authStoryboard}"
+    handleSubmit={authStoryboard}
     submitText="{$LL.joinStoryboard()}"
   />
 {/if}

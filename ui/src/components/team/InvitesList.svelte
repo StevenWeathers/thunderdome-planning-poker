@@ -71,7 +71,7 @@
 </script>
 
 <TableContainer>
-  <TableNav title="{$LL.userInvites()}" createBtnEnabled="{false}" />
+  <TableNav title={$LL.userInvites()} createBtnEnabled={false} />
   <Table>
     {#snippet header()}
         <tr >
@@ -100,8 +100,8 @@
             </RowCol>
             <RowCol type="action">
               <CrudActions
-                editBtnEnabled="{false}"
-                deleteBtnClickHandler="{toggleDeleteInvite(item.invite_id)}"
+                editBtnEnabled={false}
+                deleteBtnClickHandler={toggleDeleteInvite(item.invite_id)}
               />
             </RowCol>
           </TableRow>
@@ -113,9 +113,9 @@
 
 {#if showDeleteInvite}
   <DeleteConfirmation
-    toggleDelete="{toggleDeleteInvite(null)}"
-    handleDelete="{handleDeleteInvite}"
-    confirmText="{$LL.userInviteConfirmDelete()}"
-    confirmBtnText="{$LL.userInviteDelete()}"
+    toggleDelete={toggleDeleteInvite(null)}
+    handleDelete={handleDeleteInvite}
+    confirmText={$LL.userInviteConfirmDelete()}
+    confirmBtnText={$LL.userInviteDelete()}
   />
 {/if}

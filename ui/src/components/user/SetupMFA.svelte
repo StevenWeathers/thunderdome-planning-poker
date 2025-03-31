@@ -54,7 +54,7 @@
   let submitDisabled = $derived(passcode === '');
 </script>
 
-<Modal closeModal="{toggleSetup}" widthClasses="md:w-2/3 lg:w-1/2">
+<Modal closeModal={toggleSetup} widthClasses="md:w-2/3 lg:w-1/2">
   <div class="pt-12">
     <div class="dark:text-gray-300 text-center">
       <p class="font-rajdhani text-lg mb-2">
@@ -87,13 +87,13 @@
           name="mfaPasscode"
           type="password"
           required
-          icon="{Shield}"
+          icon={Shield}
         />
       </div>
 
       <div>
         <div class="text-right">
-          <SolidButton type="submit" disabled="{submitDisabled}">
+          <SolidButton type="submit" disabled={submitDisabled}>
             {$LL.mfaConfirmToken()}
           </SolidButton>
         </div>

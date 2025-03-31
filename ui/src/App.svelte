@@ -613,7 +613,7 @@
   <GlobalAlerts registered="{!!activeWarrior.name}" />
 
   <GlobalHeader
-    router="{router}"
+    router={router}
     xfetch={xfetch}
     notifications={notifications}
     currentPage="{currentPage.name}"
@@ -624,7 +624,7 @@
   <currentPage.route
     {...currentPage.params}
     notifications={notifications}
-    router="{router}"
+    router={router}
     xfetch={xfetch}
   />
 </main>

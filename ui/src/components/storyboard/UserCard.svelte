@@ -5,7 +5,7 @@
 
   interface Props {
     user?: any;
-    showBorder?: string;
+    showBorder?: boolean;
     facilitators?: any;
     handleAddFacilitator?: any;
     handleRemoveFacilitator?: any;
@@ -13,13 +13,13 @@
 
   let {
     user = {},
-    showBorder = 'true',
+    showBorder = true,
     facilitators = [],
     handleAddFacilitator = () => {},
     handleRemoveFacilitator = () => {}
   }: Props = $props();
 
-  let borderClasses = $derived(showBorder === 'true' ? 'border-b border-gray-500' : '');
+  let borderClasses = $derived(showBorder ? 'border-b border-gray-500' : '');
 </script>
 
 <div
@@ -33,7 +33,7 @@
     gravatarHash="{user.gravatarHash}"
     userName="{user.name}"
   />
-  <p
+  <div
     class="ms-2 text-l font-bold leading-tight truncate"
     data-testId="userName"
     title="{user.name}"
@@ -58,5 +58,5 @@
         >
       </div>
     {/if}
-  </p>
+    </div>
 </div>

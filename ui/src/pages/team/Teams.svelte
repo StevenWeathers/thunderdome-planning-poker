@@ -235,7 +235,7 @@
         <TableNav
           title="{$LL.organizations()}"
           createBtnText="{$LL.organizationCreate()}"
-          createButtonHandler="{toggleCreateOrganization}"
+          createButtonHandler={toggleCreateOrganization}
           createBtnTestId="organization-create"
         />
         <Table>
@@ -274,12 +274,12 @@
                   <RowCol type="action">
                     {#if organization.role === 'ADMIN'}
                       <CrudActions
-                        editBtnClickHandler="{toggleUpdateOrganization(
+                        editBtnClickHandler={toggleUpdateOrganization(
                           organization,
-                        )}"
-                        deleteBtnClickHandler="{toggleDeleteOrganization(
+                        )}
+                        deleteBtnClickHandler={toggleDeleteOrganization(
                           organization,
-                        )}"
+                        )}
                       />
                     {/if}
                   </RowCol>
@@ -296,7 +296,7 @@
     <TableNav
       title="{$LL.teams()}"
       createBtnText="{$LL.teamCreate()}"
-      createButtonHandler="{toggleCreateTeam}"
+      createButtonHandler={toggleCreateTeam}
       createBtnTestId="team-create"
     />
     <Table>
@@ -317,7 +317,7 @@
       {#snippet body({ class: className })}
             <tbody   class="{className}">
           {#each teams as team, i}
-            <TableRow itemIndex="{i}">
+            <TableRow itemIndex={i}>
               <RowCol>
                 <a
                   href="{appRoutes.team}/{team.id}"
@@ -335,8 +335,8 @@
               <RowCol type="action">
                 {#if team.role === 'ADMIN'}
                   <CrudActions
-                    editBtnClickHandler="{toggleUpdateTeam(team)}"
-                    deleteBtnClickHandler="{toggleDeleteTeam(team)}"
+                    editBtnClickHandler={toggleUpdateTeam(team)}
+                    deleteBtnClickHandler={toggleDeleteTeam(team)}
                   />
                 {/if}
               </RowCol>
@@ -349,23 +349,23 @@
 
   {#if showCreateOrganization}
     <CreateOrganization
-      toggleCreate="{toggleCreateOrganization}"
-      handleCreate="{createOrganizationHandler}"
+      toggleCreate={toggleCreateOrganization}
+      handleCreate={createOrganizationHandler}
     />
   {/if}
 
   {#if showOrganizationUpdate}
     <CreateOrganization
-      toggleCreate="{toggleUpdateOrganization(defaultOrganization)}"
+      toggleCreate={toggleUpdateOrganization(defaultOrganization)}
       organizationName="{selectedOrganization.name}"
-      handleCreate="{updateOrganizationHandler}"
+      handleCreate={updateOrganizationHandler}
     />
   {/if}
 
   {#if showDeleteOrganization}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteOrganization(defaultOrganization)}"
-      handleDelete="{handleDeleteOrganization}"
+      toggleDelete={toggleDeleteOrganization(defaultOrganization)}
+      handleDelete={handleDeleteOrganization}
       confirmText="{$LL.deleteOrganizationConfirmText()}"
       confirmBtnText="{$LL.deleteOrganization()}"
     />
@@ -373,23 +373,23 @@
 
   {#if showCreateTeam}
     <CreateTeam
-      toggleCreate="{toggleCreateTeam}"
-      handleCreate="{createTeamHandler}"
+      toggleCreate={toggleCreateTeam}
+      handleCreate={createTeamHandler}
     />
   {/if}
 
   {#if showTeamUpdate}
     <CreateTeam
       teamName="{selectedTeam.name}"
-      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
-      handleCreate="{updateTeamHandler}"
+      toggleCreate={toggleUpdateTeam(defaultTeam)}
+      handleCreate={updateTeamHandler}
     />
   {/if}
 
   {#if showDeleteTeam}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteTeam(defaultTeam)}"
-      handleDelete="{handleDeleteTeam}"
+      toggleDelete={toggleDeleteTeam(defaultTeam)}
+      handleDelete={handleDeleteTeam}
       confirmText="{$LL.deleteTeamConfirmText()}"
       confirmBtnText="{$LL.deleteTeam()}"
     />

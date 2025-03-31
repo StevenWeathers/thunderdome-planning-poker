@@ -236,7 +236,7 @@
   }
 </style>
 
-<Modal closeModal="{toggleStoryForm}" widthClasses="w-full md:w-2/3">
+<Modal closeModal={toggleStoryForm} widthClasses="w-full md:w-2/3">
   <div class="md:flex w-full md:gap-4 lg:gap-6">
     <div class="md:w-3/4">
       <div class="mb-4">
@@ -281,10 +281,10 @@
             content="{story.content}"
             placeholder="Enter story content"
             id="storyDescription"
-            handleTextChange="{c => {
+            handleTextChange={c => {
               story.content = c;
               updateContent();
-            }}"
+            }}
           />
         </div>
       </div>
@@ -314,14 +314,14 @@
                     <div class="text-right">
                       <HollowButton
                         color="blue"
-                        onClick="{toggleCommentEdit(null)}"
+                        onClick={toggleCommentEdit(null)}
                       >
                         {$LL.cancel()}
                       </HollowButton>
                       <HollowButton
                         color="green"
-                        onClick="{handleCommentEdit}"
-                        disabled="{selectedCommentContent === ''}"
+                        onClick={handleCommentEdit}
+                        disabled={selectedCommentContent === ''}
                       >
                         {$LL.updateComment()}
                       </HollowButton>
@@ -362,8 +362,8 @@
           <div class="text-right">
             <HollowButton
               color="teal"
-              onClick="{handleCommentSubmit}"
-              disabled="{userComment === ''}"
+              onClick={handleCommentSubmit}
+              disabled={userComment === ''}
             >
               Post comment
             </HollowButton>
@@ -409,23 +409,23 @@
                 : 'border-transparent'}"
               title="{color.color}{color.legend !== ''
                 ? ` - ${color.legend}`
-                : ''}"></button>
+                : ''}"><span class="hidden">change color</span></button>
           {/each}
         </div>
       </div>
       <div class="mb-4">
         {#if !story.closed}
-          <HollowButton color="orange" onClick="{markClosed}">
+          <HollowButton color="orange" onClick={markClosed}>
             Mark story as Closed
           </HollowButton>
         {:else}
-          <HollowButton color="green" onClick="{markOpen}"
+          <HollowButton color="green" onClick={markOpen}
             >Reopen story
           </HollowButton>
         {/if}
       </div>
       <div class="text-right">
-        <HollowButton color="red" onClick="{handleStoryDelete}">
+        <HollowButton color="red" onClick={handleStoryDelete}>
           Delete Story
         </HollowButton>
       </div>

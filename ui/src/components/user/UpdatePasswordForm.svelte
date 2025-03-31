@@ -81,7 +81,7 @@
     >
       {$LL.cancel()}
     </button>
-    <SolidButton type="submit" disabled="{updatePasswordDisabled}">
+    <SolidButton type="submit" disabled={updatePasswordDisabled}>
       {$LL.update()}
     </SolidButton>
   </div>

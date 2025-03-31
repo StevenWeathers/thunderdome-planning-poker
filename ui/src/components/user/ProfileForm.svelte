@@ -150,7 +150,7 @@
       placeholder="{$LL.yourNamePlaceholder()}"
       id="yourName"
       name="yourName"
-      disabled="{ldapEnabled || headerAuthEnabled}"
+      disabled={ldapEnabled || headerAuthEnabled}
       required
     />
   </div>
@@ -189,8 +189,8 @@
       id="yourEmail"
       name="yourEmail"
       type="email"
-      disabled="{!userIsAdmin}"
-      icon="{Mail}"
+      disabled={!userIsAdmin}
+      icon={Mail}
     />
   </div>
 
@@ -200,11 +200,11 @@
         {$LL.mfa2faLabel()}
       </p>
       {#if !credential.mfa_enabled}
-        <HollowButton color="teal" onClick="{toggleMfaSetup}"
+        <HollowButton color="teal" onClick={toggleMfaSetup}
           >{$LL.mfa2faSetup()}
         </HollowButton>
       {:else}
-        <HollowButton color="red" onClick="{toggleMfaRemove}"
+        <HollowButton color="red" onClick={toggleMfaRemove}
           >{$LL.mfa2faRemove()}
         </HollowButton>
       {/if}
@@ -257,7 +257,7 @@
       placeholder="{$LL.companyPlaceholder()}"
       id="yourCompany"
       name="yourCompany"
-      icon="{Building}"
+      icon={Building}
     />
   </div>
 
@@ -331,7 +331,7 @@
             avatar="{profile.avatar}"
             gravatarHash="{profile.gravatarHash}"
             userName="{profile.name}"
-            width="48"
+            width={48}
             class="rounded-full"
           />
         </div>
@@ -354,7 +354,7 @@
           </button>
         {/if}
       {/if}
-      <SolidButton type="submit" disabled="{updateDisabled}">
+      <SolidButton type="submit" disabled={updateDisabled}>
         {$LL.updateProfile()}
       </SolidButton>
     </div>
@@ -365,15 +365,15 @@
   <SetupMFA
     notifications={notifications}
     xfetch={xfetch}
-    toggleSetup="{toggleMfaSetup}"
-    handleComplete="{handleMfaSetupCompletion}"
+    toggleSetup={toggleMfaSetup}
+    handleComplete={handleMfaSetupCompletion}
   />
 {/if}
 
 {#if showMfaRemove}
   <DeleteConfirmation
-    toggleDelete="{toggleMfaRemove}"
-    handleDelete="{handleMfaRemove}"
+    toggleDelete={toggleMfaRemove}
+    handleDelete={handleMfaRemove}
     confirmText="{$LL.mfa2faRemoveText()}"
     confirmBtnText="{$LL.remove()}"
   />

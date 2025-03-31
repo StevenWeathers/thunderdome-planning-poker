@@ -39,7 +39,7 @@
   }
 </script>
 
-<Modal closeModal="{toggleEditPersona}">
+<Modal closeModal={toggleEditPersona}>
   <form onsubmit={handleSubmit} name="addPersona">
     <div class="mb-4">
       <label

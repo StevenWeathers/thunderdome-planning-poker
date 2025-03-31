@@ -224,9 +224,9 @@
     <TableContainer>
       <TableNav
         title="{$LL.teams()}"
-        createBtnEnabled="{isAdmin}"
+        createBtnEnabled={isAdmin}
         createBtnText="{$LL.teamCreate()}"
-        createButtonHandler="{toggleCreateTeam}"
+        createButtonHandler={toggleCreateTeam}
         createBtnTestId="team-create"
       />
       <Table>
@@ -267,8 +267,8 @@
                 <RowCol type="action">
                   {#if isAdmin}
                     <CrudActions
-                      editBtnClickHandler="{toggleUpdateTeam(team)}"
-                      deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                      editBtnClickHandler={toggleUpdateTeam(team)}
+                      deleteBtnClickHandler={toggleDeleteTeam(team.id)}
                     />
                   {/if}
                 </RowCol>
@@ -293,11 +293,11 @@
   {/if}
 
   <UsersList
-    users="{users}"
-    getUsers="{getUsers}"
+    users={users}
+    getUsers={getUsers}
     xfetch={xfetch}
     notifications={notifications}
-    isAdmin="{isAdmin}"
+    isAdmin={isAdmin}
     pageType="department"
     orgId="{organizationId}"
     deptId="{departmentId}"
@@ -306,23 +306,23 @@
 
   {#if showCreateTeam}
     <CreateTeam
-      toggleCreate="{toggleCreateTeam}"
-      handleCreate="{createTeamHandler}"
+      toggleCreate={toggleCreateTeam}
+      handleCreate={createTeamHandler}
     />
   {/if}
 
   {#if showTeamUpdate}
     <CreateTeam
       teamName="{selectedTeam.name}"
-      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
-      handleCreate="{updateTeamHandler}"
+      toggleCreate={toggleUpdateTeam(defaultTeam)}
+      handleCreate={updateTeamHandler}
     />
   {/if}
 
   {#if showDeleteTeam}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteTeam(null)}"
-      handleDelete="{handleDeleteTeam}"
+      toggleDelete={toggleDeleteTeam(null)}
+      handleDelete={handleDeleteTeam}
       confirmText="{$LL.deleteTeamConfirmText()}"
       confirmBtnText="{$LL.deleteTeam()}"
     />

@@ -69,9 +69,9 @@
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
       {#if storyboardCount > 0}
         <BoxList
-          items="{storyboards}"
+          items={storyboards}
           itemType="storyboard"
-          showOwnerName="{true}"
+          showOwnerName={true}
           ownerNameField="teamName"
           pageRoute="{appRoutes.storyboard}"
           joinBtnText="{$LL.joinStoryboard()}"
@@ -87,8 +87,8 @@
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
             bind:current="{storyboardsPage}"
-            num_items="{storyboardCount}"
-            per_page="{storyboardsPageLimit}"
+            num_items={storyboardCount}
+            per_page={storyboardsPageLimit}
             on:navigate="{changePage}"
           />
         </div>
@@ -106,7 +106,7 @@
         </h2>
         <CreateStoryboard
           notifications={notifications}
-          router="{router}"
+          router={router}
           xfetch={xfetch}
         />
       </div>

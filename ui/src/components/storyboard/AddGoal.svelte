@@ -36,7 +36,7 @@
   }
 </script>
 
-<Modal closeModal="{toggleAddGoal}">
+<Modal closeModal={toggleAddGoal}>
   <form onsubmit={handleSubmit} name="addGoal">
     <div class="mb-4">
       <label

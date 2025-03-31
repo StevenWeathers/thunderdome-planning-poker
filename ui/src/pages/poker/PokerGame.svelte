@@ -526,7 +526,7 @@
     <div class="w-full md:w-1/3 text-center md:text-right">
       <VoteTimer
         currentStoryId="{currentStory.id}"
-        votingLocked="{pokerGame.votingLocked}"
+        votingLocked={pokerGame.votingLocked}
         voteStartTime="{voteStartTime}"
       />
     </div>
@@ -537,10 +537,10 @@
       {#if showVotingResults}
         <div class=" mb-2 md:mb-4">
           <VotingMetrics
-            pointValues="{points}"
-            votes="{pokerGame.plans.find(p => p.id === pokerGame.activePlanId)
-              .votes}"
-            users="{pokerGame.users}"
+            pointValues={points}
+            votes={pokerGame.plans.find(p => p.id === pokerGame.activePlanId)
+              .votes}
+            users={pokerGame.users}
             averageRounding="{pokerGame.pointAverageRounding}"
           />
         </div>
@@ -550,10 +550,10 @@
             <div class="w-1/4 md:w-1/6 px-2 mb-4">
               <PointCard
                 point="{point}"
-                active="{vote === point}"
+                active={vote === point}
                 on:voted="{handleVote}"
                 on:voteRetraction="{handleUnvote}"
-                isLocked="{pokerGame.votingLocked || isSpectator}"
+                isLocked={pokerGame.votingLocked || isSpectator}
               />
             </div>
           {/each}
@@ -561,9 +561,9 @@
       {/if}
 
       <PokerStories
-        plans="{pokerGame.plans}"
-        isLeader="{isLeader}"
-        sendSocketEvent="{sendSocketEvent}"
+        plans={pokerGame.plans}
+        isLeader={isLeader}
+        sendSocketEvent={sendSocketEvent}
         notifications={notifications}
         xfetch={xfetch}
         gameId="{pokerGame.id}"
@@ -583,13 +583,13 @@
         {#each pokerGame.users as war (war.id)}
           {#if war.active}
             <UserCard
-              warrior="{war}"
-              leaders="{pokerGame.leaders}"
-              isLeader="{isLeader}"
-              voted="{didVote(war.id)}"
-              points="{showVote(war.id)}"
-              autoFinishVoting="{pokerGame.autoFinishVoting}"
-              sendSocketEvent="{sendSocketEvent}"
+              warrior={war}
+              leaders={pokerGame.leaders}
+              isLeader={isLeader}
+              voted={didVote(war.id)}
+              points={showVote(war.id)}
+              autoFinishVoting={pokerGame.autoFinishVoting}
+              sendSocketEvent={sendSocketEvent}
               notifications={notifications}
             />
           {/if}
@@ -597,10 +597,10 @@
 
         {#if isLeader}
           <VotingControls
-            points="{points}"
+            points={points}
             planId="{pokerGame.activePlanId}"
-            sendSocketEvent="{sendSocketEvent}"
-            votingLocked="{pokerGame.votingLocked}"
+            sendSocketEvent={sendSocketEvent}
+            votingLocked={pokerGame.votingLocked}
             highestVote="{highestVoteCount}"
           />
         {/if}
@@ -617,14 +617,14 @@
           <div class="mt-4 text-right">
             <HollowButton
               color="blue"
-              onClick="{toggleEditGame}"
+              onClick={toggleEditGame}
               testid="battle-edit"
             >
               {$LL.battleEdit()}
             </HollowButton>
             <HollowButton
               color="red"
-              onClick="{toggleDeleteGame}"
+              onClick={toggleDeleteGame}
               testid="battle-delete"
             >
               {$LL.battleDelete()}
@@ -634,7 +634,7 @@
           <div class="mt-4 text-right">
             <HollowButton
               color="red"
-              onClick="{abandonBattle}"
+              onClick={abandonBattle}
               testid="battle-abandon"
             >
               {$LL.battleAbandon()}
@@ -648,13 +648,13 @@
   {#if showEditGame}
     <EditPokerGame
       battleName="{pokerGame.name}"
-      points="{points}"
-      votingLocked="{pokerGame.votingLocked}"
-      autoFinishVoting="{pokerGame.autoFinishVoting}"
+      points={points}
+      votingLocked={pokerGame.votingLocked}
+      autoFinishVoting={pokerGame.autoFinishVoting}
       pointAverageRounding="{pokerGame.pointAverageRounding}"
-      hideVoterIdentity="{pokerGame.hideVoterIdentity}"
-      handleBattleEdit="{handleGameEdit}"
-      toggleEditBattle="{toggleEditGame}"
+      hideVoterIdentity={pokerGame.hideVoterIdentity}
+      handleBattleEdit={handleGameEdit}
+      toggleEditBattle={toggleEditGame}
       joinCode="{pokerGame.joinCode}"
       leaderCode="{pokerGame.leaderCode}"
       teamId="{pokerGame.teamId}"
@@ -665,8 +665,8 @@
 
   {#if showDeleteGame}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteGame}"
-      handleDelete="{concedeGame}"
+      toggleDelete={toggleDeleteGame}
+      handleDelete={concedeGame}
       confirmText="{$LL.deleteBattleConfirmText()}"
       confirmBtnText="{$LL.deleteBattle()}"
     />
@@ -685,6 +685,6 @@
       {$LL.battleLoading()}
     </FullpageLoader>
   {:else if JoinPassRequired}
-    <JoinCodeForm handleSubmit="{authBattle}" submitText="{$LL.battleJoin()}" />
+    <JoinCodeForm handleSubmit={authBattle} submitText="{$LL.battleJoin()}" />
   {/if}
 </PageLayout>

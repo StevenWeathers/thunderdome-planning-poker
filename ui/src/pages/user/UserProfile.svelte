@@ -352,7 +352,7 @@
                   <SolidButton
                     color="green"
                     href="{Subscription.ManageLink}"
-                    options="{{ target: '_blank' }}"
+                    options={{ target: '_blank' }}
                     >Manage subscriptions
                   </SolidButton>
                 {/if}
@@ -389,7 +389,7 @@
               <div class="text-right">
                 <HollowButton
                   href="{PathPrefix}/swagger/index.html"
-                  options="{{ target: '_blank' }}"
+                  options={{ target: '_blank' }}
                   color="blue"
                 >
                   {$LL.apiDocumentation()}
@@ -617,7 +617,7 @@
 
     {#if !OIDCAuthEnabled && !LdapEnabled && !HeaderAuthEnabled}
       <div class="w-full text-center mt-8">
-        <HollowButton onClick="{toggleDeleteAccount}" color="red">
+        <HollowButton onClick={toggleDeleteAccount} color="red">
           {$LL.deleteAccount()}
         </HollowButton>
       </div>
@@ -625,16 +625,16 @@
   </div>
   {#if showApiKeyCreate}
     <CreateApiKey
-      toggleCreateApiKey="{toggleCreateApiKey}"
-      handleApiKeyCreate="{getApiKeys}"
+      toggleCreateApiKey={toggleCreateApiKey}
+      handleApiKeyCreate={getApiKeys}
       notifications={notifications}
       xfetch={xfetch}
     />
   {/if}
   {#if showJiraInstanceCreate}
     <CreateJiraInstance
-      toggleClose="{toggleCreateJiraInstance}"
-      handleCreate="{getJiraInstances}"
+      toggleClose={toggleCreateJiraInstance}
+      handleCreate={getJiraInstances}
       notifications={notifications}
       xfetch={xfetch}
     />
@@ -642,8 +642,8 @@
 
   {#if showAccountDeletion}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteAccount}"
-      handleDelete="{handleDeleteAccount}"
+      toggleDelete={toggleDeleteAccount}
+      handleDelete={handleDeleteAccount}
       confirmText="{$LL.deleteAccountWarningStatement()}"
       confirmBtnText="{$LL.deleteConfirmButton()}"
     />

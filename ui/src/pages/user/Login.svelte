@@ -88,7 +88,7 @@
     <LoginForm
       xfetch={xfetch}
       notifications={notifications}
-      router="{router}"
+      router={router}
       registerLink="{registerLink}"
       targetPage="{targetPage}"
     />

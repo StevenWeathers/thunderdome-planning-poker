@@ -443,9 +443,9 @@
     <TableContainer>
       <TableNav
         title="{$LL.departments()}"
-        createBtnEnabled="{isAdmin}"
+        createBtnEnabled={isAdmin}
         createBtnText="{$LL.departmentCreate()}"
-        createButtonHandler="{toggleCreateDepartment}"
+        createButtonHandler={toggleCreateDepartment}
         createBtnTestId="department-create"
       />
       <Table>
@@ -486,10 +486,10 @@
                 <RowCol type="action">
                   {#if isAdmin}
                     <CrudActions
-                      editBtnClickHandler="{toggleUpdateDepartment(department)}"
-                      deleteBtnClickHandler="{toggleDeleteDepartment(
+                      editBtnClickHandler={toggleUpdateDepartment(department)}
+                      deleteBtnClickHandler={toggleDeleteDepartment(
                         department.id,
-                      )}"
+                      )}
                     />
                   {/if}
                 </RowCol>
@@ -505,9 +505,9 @@
     <TableContainer>
       <TableNav
         title="{$LL.teams()}"
-        createBtnEnabled="{isAdmin}"
+        createBtnEnabled={isAdmin}
         createBtnText="{$LL.teamCreate()}"
-        createButtonHandler="{toggleCreateTeam}"
+        createButtonHandler={toggleCreateTeam}
         createBtnTestId="team-create"
       />
       <Table>
@@ -548,8 +548,8 @@
                 <RowCol type="action">
                   {#if isAdmin}
                     <CrudActions
-                      editBtnClickHandler="{toggleUpdateTeam(team)}"
-                      deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                      editBtnClickHandler={toggleUpdateTeam(team)}
+                      deleteBtnClickHandler={toggleDeleteTeam(team.id)}
                     />
                   {/if}
                 </RowCol>
@@ -574,17 +574,17 @@
   {/if}
 
   <UsersList
-    users="{users}"
-    getUsers="{getUsers}"
+    users={users}
+    getUsers={getUsers}
     xfetch={xfetch}
     notifications={notifications}
-    isAdmin="{isAdmin}"
+    isAdmin={isAdmin}
     pageType="organization"
     orgId="{organizationId}"
     teamPrefix="/api/organizations/{organizationId}"
-    on:user-invited="{() => {
+    on:user-invited={() => {
       invitesList.f('user-invited');
-    }}"
+    }}
   />
 
   {#if AppConfig.FeaturePoker}
@@ -593,7 +593,7 @@
         <PokerSettings
           xfetch={xfetch}
           notifications={notifications}
-          isEntityAdmin="{isAdmin}"
+          isEntityAdmin={isAdmin}
           apiPrefix="{orgPrefix}"
           organizationId="{organizationId}"
         />
@@ -609,15 +609,15 @@
         <EstimationScalesList
           xfetch={xfetch}
           notifications={notifications}
-          isEntityAdmin="{isAdmin}"
+          isEntityAdmin={isAdmin}
           apiPrefix="{orgPrefix}"
           organizationId="{organizationId}"
-          scales="{estimationScales}"
-          getScales="{getEstimationScales}"
-          scaleCount="{scaleCount}"
-          scalesPage="{scalesPage}"
-          scalesPageLimit="{scalesPageLimit}"
-          changePage="{changeScalesPage}"
+          scales={estimationScales}
+          getScales={getEstimationScales}
+          scaleCount={scaleCount}
+          scalesPage={scalesPage}
+          scalesPageLimit={scalesPageLimit}
+          changePage={changeScalesPage}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -633,7 +633,7 @@
         <RetroSettings
           xfetch={xfetch}
           notifications={notifications}
-          isEntityAdmin="{isAdmin}"
+          isEntityAdmin={isAdmin}
           apiPrefix="{orgPrefix}"
           organizationId="{organizationId}"
         />
@@ -649,15 +649,15 @@
         <RetroTemplatesList
           xfetch={xfetch}
           notifications={notifications}
-          isEntityAdmin="{isAdmin}"
+          isEntityAdmin={isAdmin}
           apiPrefix="{orgPrefix}"
           organizationId="{organizationId}"
-          templates="{retroTemplates}"
-          getTemplates="{getRetroTemplates}"
-          templateCount="{retroTemplateCount}"
-          templatesPage="{retroTemplatesPage}"
-          templatesPageLimit="{retroTemplatePageLimit}"
-          changePage="{changeRetroTemplatesPage}"
+          templates={retroTemplates}
+          getTemplates={getRetroTemplates}
+          templateCount={retroTemplateCount}
+          templatesPage={retroTemplatesPage}
+          templatesPageLimit={retroTemplatePageLimit}
+          changePage={changeRetroTemplatesPage}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -669,7 +669,7 @@
 
   {#if isAdmin}
     <div class="w-full text-center mt-8">
-      <HollowButton onClick="{toggleDeleteOrganization}" color="red">
+      <HollowButton onClick={toggleDeleteOrganization} color="red">
         {$LL.deleteOrganization()}
       </HollowButton>
     </div>
@@ -677,38 +677,38 @@
 
   {#if showCreateDepartment}
     <CreateDepartment
-      toggleCreate="{toggleCreateDepartment}"
-      handleCreate="{createDepartmentHandler}"
+      toggleCreate={toggleCreateDepartment}
+      handleCreate={createDepartmentHandler}
     />
   {/if}
 
   {#if showDepartmentUpdate}
     <CreateDepartment
       departmentName="{selectedDepartment.name}"
-      toggleCreate="{toggleUpdateDepartment(defaultDepartment)}"
-      handleCreate="{updateDepartmentHandler}"
+      toggleCreate={toggleUpdateDepartment(defaultDepartment)}
+      handleCreate={updateDepartmentHandler}
     />
   {/if}
 
   {#if showCreateTeam}
     <CreateTeam
-      toggleCreate="{toggleCreateTeam}"
-      handleCreate="{createTeamHandler}"
+      toggleCreate={toggleCreateTeam}
+      handleCreate={createTeamHandler}
     />
   {/if}
 
   {#if showTeamUpdate}
     <CreateTeam
       teamName="{selectedTeam.name}"
-      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
-      handleCreate="{updateTeamHandler}"
+      toggleCreate={toggleUpdateTeam(defaultTeam)}
+      handleCreate={updateTeamHandler}
     />
   {/if}
 
   {#if showDeleteTeam}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteTeam(null)}"
-      handleDelete="{handleDeleteTeam}"
+      toggleDelete={toggleDeleteTeam(null)}
+      handleDelete={handleDeleteTeam}
       confirmText="{$LL.deleteTeamConfirmText()}"
       confirmBtnText="{$LL.deleteTeam()}"
     />
@@ -716,8 +716,8 @@
 
   {#if showDeleteDepartment}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteDepartment(null)}"
-      handleDelete="{handleDeleteDepartment}"
+      toggleDelete={toggleDeleteDepartment(null)}
+      handleDelete={handleDeleteDepartment}
       confirmText="{$LL.deleteDepartmentConfirmText()}"
       confirmBtnText="{$LL.deleteDepartment()}"
     />
@@ -725,8 +725,8 @@
 
   {#if showDeleteOrganization}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteOrganization}"
-      handleDelete="{handleDeleteOrganization}"
+      toggleDelete={toggleDeleteOrganization}
+      handleDelete={handleDeleteOrganization}
       confirmText="{$LL.deleteOrganizationConfirmText()}"
       confirmBtnText="{$LL.deleteOrganization()}"
     />

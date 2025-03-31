@@ -129,7 +129,7 @@
         <div class="invisible md:visible md:flex md:-mr-px">
           <SolidButton
             color="blue-copy"
-            onClick="{copyKey}"
+            onClick={copyKey}
             additionalClasses="flex items-center leading-normal
                         whitespace-no-wrap text-sm"
           >
@@ -143,7 +143,7 @@
     </div>
     <div class="text-right">
       <div>
-        <SolidButton onClick="{toggleCreateApiKey}" testid="apikey-close">
+        <SolidButton onClick={toggleCreateApiKey} testid="apikey-close">
           {$LL.close()}
         </SolidButton>
       </div>

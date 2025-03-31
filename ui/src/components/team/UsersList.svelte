@@ -133,9 +133,9 @@
   <TableContainer>
     <TableNav
       title="{$LL.users()}"
-      createBtnEnabled="{isAdmin}"
+      createBtnEnabled={isAdmin}
       createBtnText="{$LL.userAdd()}"
-      createButtonHandler="{toggleAddUser}"
+      createButtonHandler={toggleAddUser}
       createBtnTestId="user-add"
     />
     <Table>
@@ -167,7 +167,7 @@
                       avatar="{user.avatar}"
                       gravatarHash="{user.gravatarHash}"
                       userName="{user.name}"
-                      width="48"
+                      width={48}
                       class="h-10 w-10 rounded-full"
                     />
                   </div>
@@ -198,8 +198,8 @@
               <RowCol type="action">
                 {#if isAdmin}
                   <CrudActions
-                    editBtnClickHandler="{toggleUpdateUser(user)}"
-                    deleteBtnClickHandler="{toggleRemoveUser(user.id)}"
+                    editBtnClickHandler={toggleUpdateUser(user)}
+                    deleteBtnClickHandler={toggleRemoveUser(user.id)}
                   />
                 {/if}
               </RowCol>
@@ -212,9 +212,9 @@
 
   {#if showAddUser}
     <AddUser
-      toggleAdd="{toggleAddUser}"
-      handleAdd="{handleUserAdd}"
-      handleInvite="{handleUserInvite}"
+      toggleAdd={toggleAddUser}
+      handleAdd={handleUserAdd}
+      handleInvite={handleUserInvite}
       pageType="{pageType}"
       orgId="{orgId}"
       deptId="{deptId}"
@@ -225,8 +225,8 @@
 
   {#if showUpdateUser}
     <UpdateUser
-      toggleUpdate="{toggleUpdateUser({})}"
-      handleUpdate="{handleUserUpdate}"
+      toggleUpdate={toggleUpdateUser({})}
+      handleUpdate={handleUserUpdate}
       userId="{updateUser.id}"
       userEmail="{updateUser.email}"
       role="{updateUser.role}"
@@ -235,9 +235,9 @@
 
   {#if showRemoveUser}
     <DeleteConfirmation
-      toggleDelete="{toggleRemoveUser(null)}"
-      handleDelete="{handleUserRemove}"
-      permanent="{false}"
+      toggleDelete={toggleRemoveUser(null)}
+      handleDelete={handleUserRemove}
+      permanent={false}
       confirmText="{$LL.removeUserConfirmText()}"
       confirmBtnText="{$LL.removeUser()}"
     />

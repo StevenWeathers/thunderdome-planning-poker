@@ -11,13 +11,13 @@
   let { notifications, toggleCreate = () => {}, handleCreate = () => {} }: Props = $props();
 </script>
 
-<Modal closeModal="{toggleCreate}">
+<Modal closeModal={toggleCreate}>
   <div class="pt-10">
     <UserRegisterForm
-      handleFullAccountRegistration="{handleCreate}"
+      handleFullAccountRegistration={handleCreate}
       notifications={notifications}
-      fullOnly="{true}"
-      isAdmin="{true}"
+      fullOnly={true}
+      isAdmin={true}
     />
   </div>
 </Modal>

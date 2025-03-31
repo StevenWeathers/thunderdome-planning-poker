@@ -63,7 +63,7 @@
   }
 </script>
 
-<Modal closeModal="{toggleClose}">
+<Modal closeModal={toggleClose}>
   <form onsubmit={handleSubmit} name="associateOrganizationForm">
     <div class="mb-4">
       <label

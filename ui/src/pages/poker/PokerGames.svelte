@@ -70,16 +70,16 @@
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
       {#if battleCount > 0}
         <BoxList
-          items="{battles}"
+          items={battles}
           itemType="battle"
           pageRoute="{appRoutes.game}"
           joinBtnText="{$LL.battleJoin()}"
-          showOwner="{false}"
-          showOwnerName="{true}"
+          showOwner={false}
+          showOwnerName={true}
           ownerNameField="teamName"
-          showFacilitatorIcon="{true}"
+          showFacilitatorIcon={true}
           facilitatorsKey="leaders"
-          showCompletedStories="{true}"
+          showCompletedStories={true}
         />
       {:else if loading === false}
         <div
@@ -91,10 +91,10 @@
       {#if battleCount > battlesPageLimit}
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
-            bind:current="{battlesPage}"
-            num_items="{battleCount}"
-            per_page="{battlesPageLimit}"
-            on:navigate="{changePage}"
+            bind:current={battlesPage}
+            num_items={battleCount}
+            per_page={battlesPageLimit}
+            on:navigate={changePage}
           />
         </div>
       {/if}
@@ -111,7 +111,7 @@
         </h2>
         <CreateBattle
           notifications={notifications}
-          router="{router}"
+          router={router}
           xfetch={xfetch}
         />
       </div>

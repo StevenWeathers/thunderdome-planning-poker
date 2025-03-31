@@ -22,7 +22,7 @@
   let createDisabled = $derived(organizationName === '');
 </script>
 
-<Modal closeModal="{toggleCreate}">
+<Modal closeModal={toggleCreate}>
   <form onsubmit={onSubmit} name="createOrganization">
     <div class="mb-4">
       <label
@@ -42,7 +42,7 @@
 
     <div>
       <div class="text-right">
-        <SolidButton type="submit" disabled="{createDisabled}">
+        <SolidButton type="submit" disabled={createDisabled}>
           {$LL.organizationSave()}
         </SolidButton>
       </div>

@@ -479,9 +479,9 @@
     <div class="md:ps-2 md:shrink text-right">
       <SolidButton
         additionalClasses="font-rajdhani uppercase text-2xl"
-        onClick="{toggleCheckin}"
+        onClick={toggleCheckin}
         testid="check-in"
-        disabled="{selectedDate !== formatDayForInput(now) || alreadyCheckedIn}"
+        disabled={selectedDate !== formatDayForInput(now) || alreadyCheckedIn}
         >{$LL.checkIn()}
       </SolidButton>
     </div>
@@ -523,7 +523,7 @@
       name="showOnlyDiscussionItems"
       id="showOnlyDiscussionItems"
       bind:checked="{showOnlyDiscussionItems}"
-      changeHandler="{filterCheckins}"
+      changeHandler={filterCheckins}
       label="{$LL.showBlockedCheckins()}"
     />
   </div>
@@ -545,14 +545,14 @@
                         class="w-full h-full bg-gray-200 rounded-full shadow"
                       >
                         <UserAvatar
-                          width="80"
+                          width={80}
                           warriorId="{checkin.user.id}"
                           avatar="{checkin.user.avatar}"
                           gravatarHash="{checkin.user.gravatarHash}"
                           userName="{checkin.user.name}"
-                          options="{{
+                          options={{
                             class: 'w-full h-full rounded-full',
-                          }}"
+                          }}
                         />
                       </div>
                       {#if checkin.goalsMet}
@@ -678,12 +678,12 @@
                 {/if}
                 <div class="bg-gray-200 dark:bg-gray-600 rounded py-2 px-4">
                   <Comments
-                    checkin="{checkin}"
-                    userMap="{userMap}"
-                    isAdmin="{isAdmin}"
-                    handleCreate="{handleCheckinComment}"
-                    handleEdit="{handleCheckinCommentEdit}"
-                    handleDelete="{handleCommentDelete}"
+                    checkin={checkin}
+                    userMap={userMap}
+                    isAdmin={isAdmin}
+                    handleCreate={handleCheckinComment}
+                    handleEdit={handleCheckinCommentEdit}
+                    handleDelete={handleCommentDelete}
                   />
                 </div>
               </div>
@@ -705,9 +705,9 @@
         blockers="{selectedCheckin.blockers}"
         discuss="{selectedCheckin.discuss}"
         goalsMet="{selectedCheckin.goalsMet}"
-        toggleCheckin="{toggleCheckin}"
-        handleCheckin="{handleCheckin}"
-        handleCheckinEdit="{handleCheckinEdit}"
+        toggleCheckin={toggleCheckin}
+        handleCheckin={handleCheckin}
+        handleCheckinEdit={handleCheckinEdit}
         xfetch={xfetch}
         notifications={notifications}
         teamPrefix="{teamPrefix}"
@@ -716,9 +716,9 @@
       <Checkin
         teamId="{team.id}"
         userId="{$user.id}"
-        toggleCheckin="{toggleCheckin}"
-        handleCheckin="{handleCheckin}"
-        handleCheckinEdit="{handleCheckinEdit}"
+        toggleCheckin={toggleCheckin}
+        handleCheckin={handleCheckin}
+        handleCheckinEdit={handleCheckinEdit}
       />
     {/if}
   {/if}

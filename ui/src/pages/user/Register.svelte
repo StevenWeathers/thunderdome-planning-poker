@@ -194,11 +194,11 @@
     >
       <UserRegisterForm
         userName="{userName}"
-        handleFullAccountRegistration="{createUserRegistered}"
-        handleGuestRegistration="{createUserGuest}"
+        handleFullAccountRegistration={createUserRegistered}
+        handleGuestRegistration={createUserGuest}
         notifications={notifications}
-        email="{wasInvited ? inviteDetails.email : ''}"
-        wasInvited="{wasInvited}"
+        email={wasInvited ? inviteDetails.email : ''}
+        wasInvited={wasInvited}
       />
     </div>
   </div>

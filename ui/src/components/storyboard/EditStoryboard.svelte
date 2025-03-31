@@ -35,7 +35,7 @@
 </script>
 
 <Modal
-  closeModal="{toggleEditStoryboard}"
+  closeModal={toggleEditStoryboard}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
 >
   <form onsubmit={saveStoryboard} name="createStoryboard">
@@ -70,7 +70,7 @@
           bind:value="{joinCode}"
           placeholder="{$LL.optionalPasscodePlaceholder()}"
           id="joinCode"
-          icon="{Lock}"
+          icon={Lock}
         />
       </div>
     </div>
@@ -88,7 +88,7 @@
           bind:value="{facilitatorCode}"
           placeholder="{$LL.facilitatorCodePlaceholder()}"
           id="facilitatorCode"
-          icon="{Crown}"
+          icon={Crown}
         />
       </div>
     </div>

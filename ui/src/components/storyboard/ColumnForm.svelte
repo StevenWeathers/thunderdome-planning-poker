@@ -50,7 +50,7 @@
   }
 </script>
 
-<Modal closeModal="{toggleColumnEdit}">
+<Modal closeModal={toggleColumnEdit}>
   <form onsubmit={handleSubmit} name="addColumn">
     <div class="mb-4">
       <label
@@ -68,7 +68,7 @@
     </div>
     <div class="flex">
       <div class="md:w-1/2 text-left">
-        <HollowButton color="red" onClick="{deleteColumn(column.id)}">
+        <HollowButton color="red" onClick={deleteColumn(column.id)}>
           Delete Column
         </HollowButton>
       </div>
@@ -95,8 +95,8 @@
       </div>
       <div class="w-1/3">
         <HollowButton
-          onClick="{addPersona}"
-          disabled="{selectedPersona === ''}"
+          onClick={addPersona}
+          disabled={selectedPersona === ''}
         >
           Add Persona
         </HollowButton>
@@ -113,10 +113,10 @@
             <div class="w-1/4 text-right">
               <HollowButton
                 color="red"
-                onClick="{handlePersonaRemove({
+                onClick={handlePersonaRemove({
                   column_id: column.id,
                   persona_id: persona.id,
-                })}"
+                })}
               >
                 <Trash2 />
               </HollowButton>

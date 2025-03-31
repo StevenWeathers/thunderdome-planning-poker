@@ -32,7 +32,7 @@
   let updateDisabled = $derived(role === '');
 </script>
 
-<Modal closeModal="{toggleUpdate}">
+<Modal closeModal={toggleUpdate}>
   <form onsubmit={onSubmit} name="teamUpdateUser">
     <div class="mb-4">
       <label
@@ -41,7 +41,7 @@
       >
         {$LL.userEmail()}
       </label>
-      <TextInput value="{userEmail}" id="userEmail" name="userEmail" disabled />
+      <TextInput value={userEmail} id="userEmail" name="userEmail" disabled />
     </div>
 
     <div class="mb-4">
@@ -62,7 +62,7 @@
       <div class="text-right">
         <SolidButton
           type="submit"
-          disabled="{updateDisabled}"
+          disabled={updateDisabled}
           testid="userupdate-confirm"
         >
           {$LL.userUpdate()}

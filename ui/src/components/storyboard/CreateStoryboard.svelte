@@ -143,7 +143,7 @@
         bind:value="{joinCode}"
         placeholder="{$LL.optionalPasscodePlaceholder()}"
         id="joinCode"
-        icon="{Lock}"
+        icon={Lock}
       />
     </div>
   </div>
@@ -161,7 +161,7 @@
         bind:value="{facilitatorCode}"
         placeholder="{$LL.facilitatorCodePlaceholder()}"
         id="facilitatorCode"
-        icon="{Crown}"
+        icon={Crown}
       />
     </div>
   </div>
