@@ -10,7 +10,7 @@
   let { format, toggleClose }: Props = $props();
 </script>
 
-<Modal closeModal="{() => toggleClose(null)}" widthClasses="w-full md:w-2/3">
+<Modal closeModal={() => toggleClose(null)} widthClasses="w-full md:w-2/3">
   <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
     {#each format.columns as column}
       <div

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { validateName, validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import { Mail, User } from 'lucide-svelte';
@@ -10,33 +8,20 @@
   import { user } from '../../stores';
   import TextInput from '../forms/TextInput.svelte';
 
-  interface Props {
-    notifications: any;
-    wasInvited?: boolean;
-    email?: string;
-    userName?: string;
-    fullOnly?: boolean;
-    handleGuestRegistration: any;
-    handleFullAccountRegistration: any;
-    isAdmin?: boolean;
-  }
+  export let notifications;
+  export let wasInvited = false;
+  export let email = '';
+  export let userName = '';
+  export let fullOnly = false;
+  export let handleGuestRegistration;
+  export let handleFullAccountRegistration;
+  export let isAdmin = false;
 
-  let {
-    notifications,
-    wasInvited = false,
-    email = $bindable(''),
-    userName = $bindable(''),
-    fullOnly = false,
-    handleGuestRegistration,
-    handleFullAccountRegistration,
-    isAdmin = false
-  }: Props = $props();
-
-  let password1 = $state('');
-  let password2 = $state('');
+  let password1 = '';
+  let password2 = '';
 
   /** @type {TextInput} */
-  let userNameTextInput = $state();
+  let userNameTextInput;
 
   function onSubmit(e) {
     e.preventDefault();
@@ -66,23 +51,20 @@
     }
   }
 
-  let isGuest = $derived($user.id !== '' && $user.rank === 'GUEST');
-  let createFullAccount;
-  run(() => {
-    createFullAccount =
-      fullOnly ||
-      isGuest ||
-      (!AppConfig.AllowGuests && AppConfig.AllowRegistration);
-  });
-  let passwordsMatch = $derived(password1 === password2);
+  $: isGuest = $user.id !== '' && $user.rank === 'GUEST';
+  $: createFullAccount =
+    fullOnly ||
+    isGuest ||
+    (!AppConfig.AllowGuests && AppConfig.AllowRegistration);
+  $: passwordsMatch = password1 === password2;
 
-  let submitDisabled =
-    $derived(userName === '' ||
+  $: submitDisabled =
+    userName === '' ||
     (createFullAccount &&
       (email === '' ||
         password1 === '' ||
         password2 === '' ||
-        !passwordsMatch)));
+        !passwordsMatch));
 
   // Focus the warrior name input field if it exists
   userNameTextInput?.focus();
@@ -93,7 +75,7 @@
     {$LL.registrationDisabled()}
   </div>
 {:else}
-  <form onsubmit={onSubmit} name="register" class="space-y-6">
+  <form on:submit="{onSubmit}" name="register" class="space-y-6">
     <div class="space-y-2">
       <TextInput
         bind:this="{userNameTextInput}"

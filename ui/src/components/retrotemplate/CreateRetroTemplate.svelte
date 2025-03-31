@@ -75,7 +75,7 @@
   let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
-<Modal closeModal="{toggleClose}">
+<Modal closeModal={toggleClose}>
   <form onsubmit={onSubmit} name="createRetroTemplate">
     <div class="mb-4">
       <label
@@ -132,7 +132,7 @@
 
     <div>
       <div class="text-right">
-        <SolidButton type="submit" disabled="{createDisabled}">
+        <SolidButton type="submit" disabled={createDisabled}>
           {$LL.retroTemplateSave()}
         </SolidButton>
       </div>

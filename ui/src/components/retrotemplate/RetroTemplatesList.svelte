@@ -112,9 +112,9 @@
   <TableContainer>
     <TableNav
       title="{$LL.retroTemplates()}"
-      createBtnEnabled="{isAdmin || isEntityAdmin}"
+      createBtnEnabled={isAdmin || isEntityAdmin}
       createBtnText="{$LL.retroTemplateCreate()}"
-      createButtonHandler="{toggleCreateTemplate}"
+      createButtonHandler={toggleCreateTemplate}
       createBtnTestId="template-create"
     />
     <Table>
@@ -159,20 +159,20 @@
               {#if isAdmin && !teamId && !organizationId}
                 <RowCol>
                   <span data-testid="template-is-public"
-                    ><BooleanDisplay boolValue="{template.isPublic}" /></span
+                    ><BooleanDisplay boolValue={template.isPublic} /></span
                   >
                 </RowCol>
               {/if}
               <RowCol>
                 <span data-testid="template-is-default"
-                  ><BooleanDisplay boolValue="{template.defaultTemplate}" />
+                  ><BooleanDisplay boolValue={template.defaultTemplate} />
                 </span>
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin || isEntityAdmin}
                   <CrudActions
-                    editBtnClickHandler="{toggleUpdateTemplate(template)}"
-                    deleteBtnClickHandler="{toggleRemoveTemplate(template.id)}"
+                    editBtnClickHandler={toggleUpdateTemplate(template)}
+                    deleteBtnClickHandler={toggleRemoveTemplate(template.id)}
                   />
                 {/if}
               </RowCol>
@@ -183,16 +183,16 @@
     </Table>
     <TableFooter
       bind:current="{templatesPage}"
-      num_items="{templateCount}"
-      per_page="{templatesPageLimit}"
-      on:navigate="{changePage}"
+      num_items={templateCount}
+      per_page={templatesPageLimit}
+      on:navigate={changePage}
     />
   </TableContainer>
 
   {#if showAddTemplate}
     <CreateRetroTemplate
-      toggleCreate="{toggleCreateTemplate}"
-      handleCreate="{handleCreateTemplate}"
+      toggleCreate={toggleCreateTemplate}
+      handleCreate={handleCreateTemplate}
       organizationId="{organizationId}"
       departmentId="{departmentId}"
       teamId="{teamId}"
@@ -204,8 +204,8 @@
 
   {#if showUpdateTemplate}
     <UpdateRetroTemplate
-      toggleUpdate="{toggleUpdateTemplate({})}"
-      handleUpdate="{handleTemplateUpdate}"
+      toggleUpdate={toggleUpdateTemplate({})}
+      handleUpdate={handleTemplateUpdate}
       templateId="{updateTemplate.id}"
       name="{updateTemplate.name}"
       description="{updateTemplate.description}"
@@ -223,9 +223,9 @@
 
   {#if showRemoveTemplate}
     <DeleteConfirmation
-      toggleDelete="{toggleRemoveTemplate(null)}"
-      handleDelete="{handleTemplateRemove}"
-      permanent="{true}"
+      toggleDelete={toggleRemoveTemplate(null)}
+      handleDelete={handleTemplateRemove}
+      permanent={true}
       confirmText="{$LL.removeRetroTemplateConfirmText()}"
       confirmBtnText="{$LL.removeRetroTemplate()}"
     />
@@ -233,8 +233,8 @@
 
   {#if showFormat}
     <ViewFormat
-      format="{selectedTemplate.format}"
-      toggleClose="{toggleViewFormat}"
+      format={selectedTemplate.format}
+      toggleClose={toggleViewFormat}
     />
   {/if}
 </div>
