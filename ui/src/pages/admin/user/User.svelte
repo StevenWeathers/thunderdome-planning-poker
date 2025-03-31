@@ -185,8 +185,8 @@
 <AdminPageLayout activePage="users">
   <div class="mb-6 lg:mb-8">
     <TableContainer>
-      <TableNav title="{userDetails.name}" createBtnEnabled="{false}">
-        <SolidButton onClick="{toggleUpdatePassword}"
+      <TableNav title="{userDetails.name}" createBtnEnabled={false}>
+        <SolidButton onClick={toggleUpdatePassword}
           >{$LL.updatePassword()}</SolidButton
         >
       </TableNav>
@@ -225,7 +225,7 @@
                       avatar="{userDetails.avatar}"
                       gravatarHash="{userDetails.gravatarHash}"
                       userName="{user.name}"
-                      width="48"
+                      width={48}
                       class="h-10 w-10 rounded-full"
                     />
                   </div>
@@ -272,7 +272,7 @@
   {#if FeaturePoker}
     <div class="mb-6 lg:mb-8">
       <TableContainer>
-        <TableNav title="{$LL.battles()}" createBtnEnabled="{false}" />
+        <TableNav title="{$LL.battles()}" createBtnEnabled={false} />
         <Table>
           {#snippet header()}
                     <tr >
@@ -318,10 +318,10 @@
                   {/snippet}
         </Table>
         <TableFooter
-          bind:current="{battlesPage}"
-          num_items="{battleCount}"
-          per_page="{battlesPageLimit}"
-          on:navigate="{changeBattlesPage}"
+          bind:current={battlesPage}
+          num_items={battleCount}
+          per_page={battlesPageLimit}
+          on:navigate={changeBattlesPage}
         />
       </TableContainer>
     </div>
@@ -330,7 +330,7 @@
   {#if FeatureRetro}
     <div class="mb-6 lg:mb-8">
       <TableContainer>
-        <TableNav title="{$LL.retros()}" createBtnEnabled="{false}" />
+        <TableNav title="{$LL.retros()}" createBtnEnabled={false} />
         <Table>
           {#snippet header()}
                     <tr >
@@ -351,7 +351,7 @@
           {#snippet body({ class: className })}
                     <tbody   class="{className}">
               {#each retros as retro, i}
-                <TableRow itemIndex="{i}">
+                <TableRow itemIndex={i}>
                   <RowCol>
                     <a
                       href="{appRoutes.adminRetros}/{retro.id}"
@@ -376,10 +376,10 @@
                   {/snippet}
         </Table>
         <TableFooter
-          bind:current="{retrosPage}"
-          num_items="{retroCount}"
-          per_page="{retrosPageLimit}"
-          on:navigate="{changeRetrosPage}"
+          bind:current={retrosPage}
+          num_items={retroCount}
+          per_page={retrosPageLimit}
+          on:navigate={changeRetrosPage}
         />
       </TableContainer>
     </div>
@@ -388,7 +388,7 @@
   {#if FeatureStoryboard}
     <div class="mb-6 lg:mb-8">
       <TableContainer>
-        <TableNav title="{$LL.storyboards()}" createBtnEnabled="{false}" />
+        <TableNav title="{$LL.storyboards()}" createBtnEnabled={false} />
         <Table>
           {#snippet header()}
                     <tr >
@@ -434,20 +434,20 @@
                   {/snippet}
         </Table>
         <TableFooter
-          bind:current="{storyboardsPage}"
-          num_items="{storyboardCount}"
-          per_page="{storyboardsPageLimit}"
-          on:navigate="{changeStoryboardsPage}"
+          bind:current={storyboardsPage}
+          num_items={storyboardCount}
+          per_page={storyboardsPageLimit}
+          on:navigate={changeStoryboardsPage}
         />
       </TableContainer>
     </div>
   {/if}
 
   {#if showUpdatePassword}
-    <Modal closeModal="{toggleUpdatePassword}">
+    <Modal closeModal={toggleUpdatePassword}>
       <UpdatePasswordForm
-        handleUpdate="{updatePassword}"
-        toggleForm="{toggleUpdatePassword}"
+        handleUpdate={updatePassword}
+        toggleForm={toggleUpdatePassword}
         notifications={notifications}
       />
     </Modal>

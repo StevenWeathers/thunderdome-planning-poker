@@ -211,11 +211,11 @@
     <TableNav
       title="{$LL.registeredUsers()}"
       createBtnText="{$LL.warriorCreate()}"
-      createButtonHandler="{toggleCreateUser}"
+      createButtonHandler={toggleCreateUser}
       createBtnTestId="user-create"
-      searchEnabled="{true}"
+      searchEnabled={true}
       searchPlaceholder="{$LL.email()}"
-      searchHandler="{onSearchSubmit}"
+      searchHandler={onSearchSubmit}
     />
     <Table>
       {#snippet header()}
@@ -241,7 +241,7 @@
       {#snippet body({ class: className })}
             <tbody   class="{className}">
           {#each users as user, i}
-            <TableRow itemIndex="{i}">
+            <TableRow itemIndex={i}>
               <RowCol>
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10">
@@ -250,7 +250,7 @@
                       avatar="{user.avatar}"
                       gravatarHash="{user.gravatarHash}"
                       userName="{user.name}"
-                      width="48"
+                      width={48}
                       class="h-10 w-10 rounded-full"
                     />
                   </div>
@@ -311,8 +311,8 @@
               </RowCol>
               <RowCol type="action">
                 <CrudActions
-                  editBtnClickHandler="{toggleUserEdit(user)}"
-                  deleteBtnClickHandler="{toggleDeleteUser(user.id)}"
+                  editBtnClickHandler={toggleUserEdit(user)}
+                  deleteBtnClickHandler={toggleDeleteUser(user.id)}
                 >
                   {#if user.rank !== 'ADMIN'}
                     <HollowButton onClick="{promoteUser(user.id)}" color="blue">
@@ -331,26 +331,26 @@
           {/snippet}
     </Table>
     <TableFooter
-      bind:current="{usersPage}"
-      num_items="{totalUsers}"
-      per_page="{usersPageLimit}"
-      on:navigate="{changePage}"
+      bind:current={usersPage}
+      num_items={totalUsers}
+      per_page={usersPageLimit}
+      on:navigate={changePage}
     />
   </TableContainer>
 
   {#if showCreateUser}
     <CreateUser
-      toggleCreate="{toggleCreateUser}"
-      handleCreate="{createUser}"
+      toggleCreate={toggleCreateUser}
+      handleCreate={createUser}
       notifications
     />
   {/if}
 
   {#if showUserEdit}
-    <Modal closeModal="{toggleUserEdit({})}">
+    <Modal closeModal={toggleUserEdit({})}>
       <ProfileForm
-        profile="{selectedUserProfile}"
-        handleUpdate="{handleUserEdit}"
+        profile={selectedUserProfile}
+        handleUpdate={handleUserEdit}
         xfetch={xfetch}
         notifications={notifications}
       />
@@ -359,8 +359,8 @@
 
   {#if showUserDeletion}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteUser(null)}"
-      handleDelete="{handleDeleteUser}"
+      toggleDelete={toggleDeleteUser(null)}
+      handleDelete={handleDeleteUser}
       confirmText="{$LL.deleteAccountWarningStatement()}"
       confirmBtnText="{$LL.deleteConfirmButton()}"
     />

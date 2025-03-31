@@ -489,7 +489,7 @@
                 daysOld: CleanupGuestsDaysOld,
               })}
             </h5>
-            <HollowButton onClick="{cleanGuests}" color="red">
+            <HollowButton onClick={cleanGuests} color="red">
               {$LL.execute()}
             </HollowButton>
           </div>
@@ -509,7 +509,7 @@
                   daysOld: CleanupBattlesDaysOld,
                 })}
               </h5>
-              <HollowButton onClick="{cleanBattles}" color="red">
+              <HollowButton onClick={cleanBattles} color="red">
                 {$LL.execute()}
               </HollowButton>
             </div>
@@ -529,7 +529,7 @@
                   daysOld: CleanupRetrosDaysOld,
                 })}
               </h5>
-              <HollowButton onClick="{cleanRetros}" color="red">
+              <HollowButton onClick={cleanRetros} color="red">
                 {$LL.execute()}
               </HollowButton>
             </div>
@@ -549,7 +549,7 @@
                   daysOld: CleanupStoryboardsDaysOld,
                 })}
               </h5>
-              <HollowButton onClick="{cleanStoryboards}" color="red">
+              <HollowButton onClick={cleanStoryboards} color="red">
                 {$LL.execute()}
               </HollowButton>
             </div>

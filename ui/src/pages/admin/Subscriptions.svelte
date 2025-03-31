@@ -123,7 +123,7 @@
     <TableNav
       title="Subscriptions"
       createBtnText="Create Subscription"
-      createButtonHandler="{toggleSubCreate}"
+      createButtonHandler={toggleSubCreate}
       createBtnTestId="subscription-create"
     />
     <Table>
@@ -149,7 +149,7 @@
       {#snippet body({ class: className })}
             <tbody   class="{className}">
           {#each subscriptions as subscription, i}
-            <TableRow itemIndex="{i}">
+            <TableRow itemIndex={i}>
               <RowCol>
                 <a
                   href="{appRoutes.adminUsers}/{subscription.user_id}"
@@ -176,8 +176,8 @@
               <RowCol type="action">
                 <CrudActions
                   detailsLink="{appRoutes.adminSubscriptions}/{subscription.id}"
-                  editBtnClickHandler="{toggleSubUpdate(subscription)}"
-                  deleteBtnClickHandler="{toggleSubDelete(subscription.id)}"
+                  editBtnClickHandler={toggleSubUpdate(subscription)}
+                  deleteBtnClickHandler={toggleSubDelete(subscription.id)}
                 />
               </RowCol>
             </TableRow>
@@ -187,23 +187,23 @@
     </Table>
     <TableFooter
       bind:current="{subscriptionsPage}"
-      num_items="{subscriptionCount}"
-      per_page="{subscriptionsPageLimit}"
-      on:navigate="{changePage}"
+      num_items={subscriptionCount}
+      per_page={subscriptionsPageLimit}
+      on:navigate={changePage}
     />
 
     {#if showSubCreate}
       <SubscriptionForm
-        toggleClose="{toggleSubCreate}"
-        handleUpdate="{getSubscriptions}"
+        toggleClose={toggleSubCreate}
+        handleUpdate={getSubscriptions}
         xfetch={xfetch}
         notifications={notifications}
       />
     {/if}
     {#if showSubUpdate}
       <SubscriptionForm
-        toggleClose="{toggleSubUpdate({ ...defaultSubscription })}"
-        handleUpdate="{getSubscriptions}"
+        toggleClose={toggleSubUpdate({ ...defaultSubscription })}
+        handleUpdate={getSubscriptions}
         xfetch={xfetch}
         notifications={notifications}
         subscriptionId="{selectedSub.id}"
@@ -219,8 +219,8 @@
 
     {#if showSubDelete}
       <DeleteConfirmation
-        toggleDelete="{toggleSubDelete(null)}"
-        handleDelete="{deleteSub}"
+        toggleDelete={toggleSubDelete(null)}
+        handleDelete={deleteSub}
         confirmText="{$LL.deleteSubscriptionConfirmation()}"
         confirmBtnText="{$LL.deleteSubscription()}"
       />

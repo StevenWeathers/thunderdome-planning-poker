@@ -77,7 +77,7 @@
 
 <AdminPageLayout activePage="subscriptions">
   <TableContainer>
-    <TableNav title="Subscription" createBtnEnabled="{false}" />
+    <TableNav title="Subscription" createBtnEnabled={false} />
     <Table>
       {#snippet header()}
             <tr >
@@ -124,7 +124,7 @@
               {subscription.type}
             </RowCol>
             <RowCol>
-              <BooleanDisplay boolValue="{subscription.active}" />
+              <BooleanDisplay boolValue={subscription.active} />
             </RowCol>
             <RowCol>
               {new Date(subscription.created_date).toLocaleString()}

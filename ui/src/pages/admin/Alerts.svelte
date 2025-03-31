@@ -143,7 +143,7 @@
     <TableNav
       title="{$LL.alerts()}"
       createBtnText="{$LL.alertCreate()}"
-      createButtonHandler="{toggleCreateAlert}"
+      createButtonHandler={toggleCreateAlert}
       createBtnTestId="alert-create"
     />
     <Table>
@@ -175,7 +175,7 @@
       {#snippet body({ class: className })}
             <tbody   class="{className}">
           {#each alerts as alert, i}
-            <TableRow itemIndex="{i}">
+            <TableRow itemIndex={i}>
               <RowCol>
                 {alert.name}
               </RowCol>
@@ -184,17 +184,17 @@
               </RowCol>
               <RowCol>
                 {#if alert.active}
-                  <BooleanDisplay boolValue="{alert.active}" />
+                  <BooleanDisplay boolValue={alert.active} />
                 {/if}
               </RowCol>
               <RowCol>
                 {#if alert.registeredOnly}
-                  <BooleanDisplay boolValue="{alert.registeredOnly}" />
+                  <BooleanDisplay boolValue={alert.registeredOnly} />
                 {/if}
               </RowCol>
               <RowCol>
                 {#if alert.allowDismiss}
-                  <BooleanDisplay boolValue="{alert.allowDismiss}" />
+                  <BooleanDisplay boolValue={alert.allowDismiss} />
                 {/if}
               </RowCol>
               <RowCol>
@@ -202,8 +202,8 @@
               </RowCol>
               <RowCol type="action">
                 <CrudActions
-                  editBtnClickHandler="{toggleUpdateAlert(alert)}"
-                  deleteBtnClickHandler="{toggleDeleteAlert(alert.id)}"
+                  editBtnClickHandler={toggleUpdateAlert(alert)}
+                  deleteBtnClickHandler={toggleDeleteAlert(alert.id)}
                 />
               </RowCol>
             </TableRow>
@@ -212,38 +212,38 @@
           {/snippet}
     </Table>
     <TableFooter
-      bind:current="{alertsPage}"
-      num_items="{alertCount}"
-      per_page="{alertsPageLimit}"
-      on:navigate="{changePage}"
+      bind:current={alertsPage}
+      num_items={alertCount}
+      per_page={alertsPageLimit}
+      on:navigate={changePage}
     />
   </TableContainer>
 
   {#if showAlertCreate}
     <CreateAlert
-      toggleCreate="{toggleCreateAlert}"
-      handleCreate="{createAlert}"
-      alerts="{alerts}"
+      toggleCreate={toggleCreateAlert}
+      handleCreate={createAlert}
+      alerts={alerts}
     />
   {/if}
   {#if showAlertUpdate}
     <CreateAlert
-      toggleUpdate="{toggleUpdateAlert({ ...defaultAlert })}"
-      handleUpdate="{updateAlert}"
+      toggleUpdate={toggleUpdateAlert({ ...defaultAlert })}
+      handleUpdate={updateAlert}
       alertId="{selectedAlert.id}"
       alertName="{selectedAlert.name}"
       alertType="{selectedAlert.type}"
       content="{selectedAlert.content}"
-      active="{selectedAlert.active}"
-      registeredOnly="{selectedAlert.registeredOnly}"
-      allowDismiss="{selectedAlert.allowDismiss}"
+      active={selectedAlert.active}
+      registeredOnly={selectedAlert.registeredOnly}
+      allowDismiss={selectedAlert.allowDismiss}
     />
   {/if}
 
   {#if showDeleteAlert}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteAlert(null)}"
-      handleDelete="{handleDeleteAlert}"
+      toggleDelete={toggleDeleteAlert(null)}
+      handleDelete={handleDeleteAlert}
       confirmText="{$LL.alertDeleteConfirmation()}"
       confirmBtnText="{$LL.alertDelete()}"
     />

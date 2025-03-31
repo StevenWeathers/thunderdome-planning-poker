@@ -128,7 +128,7 @@
 
 <AdminPageLayout activePage="apikeys">
   <TableContainer>
-    <TableNav title="{$LL.apiKeys()}" createBtnEnabled="{false}" />
+    <TableNav title="{$LL.apiKeys()}" createBtnEnabled={false} />
     <Table>
       {#snippet header()}
             <tr >
@@ -184,16 +184,16 @@
               </RowCol>
               <RowCol type="action">
                 <CrudActions
-                  editBtnEnabled="{false}"
-                  deleteBtnClickHandler="{deleteApiKey(apikey.userId, apikey.id)}"
+                  editBtnEnabled={false}
+                  deleteBtnClickHandler={deleteApiKey(apikey.userId, apikey.id)}
                   deleteBtnTestId="apikey-delete"
                 >
                   <HollowButton
-                    onClick="{toggleApiKeyActiveStatus(
+                    onClick={toggleApiKeyActiveStatus(
                       apikey.userId,
                       apikey.id,
                       apikey.active,
-                    )}"
+                    )}
                     testid="apikey-activetoggle"
                   >
                     {#if !apikey.active}
@@ -210,10 +210,10 @@
           {/snippet}
     </Table>
     <TableFooter
-      bind:current="{apikeysPage}"
-      num_items="{appStats.apikeyCount}"
-      per_page="{apikeysPageLimit}"
-      on:navigate="{changePage}"
+      bind:current={apikeysPage}
+      num_items={appStats.apikeyCount}
+      per_page={apikeysPageLimit}
+      on:navigate={changePage}
     />
   </TableContainer>
 </AdminPageLayout>
