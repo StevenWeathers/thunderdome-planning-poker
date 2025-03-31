@@ -54,7 +54,7 @@
       <GroupNameForm
         groupName="{group.name}"
         groupId="{group.id}"
-        handleGroupNameChange="{handleGroupNameChange}"
+        handleGroupNameChange={handleGroupNameChange}
       />
     </div>
     <div
@@ -77,20 +77,20 @@
     >
       {#each group.items as item, ii (item.id)}
         <RetroFeedbackItem
-          item="{item}"
+          item={item}
           class="relative"
           phase="{phase}"
-          users="{users}"
-          sendSocketEvent="{sendSocketEvent}"
-          isFacilitator="{isFacilitator}"
-          columnColors="{columnColors}"
+          users={users}
+          sendSocketEvent={sendSocketEvent}
+          isFacilitator={isFacilitator}
+          columnColors={columnColors}
         >
           {#if item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
             <RetroFeedbackItem
               phase="{phase}"
-              item="{item}"
+              item={item}
               class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible min-h-[40px]"
-              columnColors="{columnColors}"
+              columnColors={columnColors}
             />
           {/if}
         </RetroFeedbackItem>

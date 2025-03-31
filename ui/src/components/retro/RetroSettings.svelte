@@ -79,13 +79,13 @@
   <TableContainer>
     <TableNav
       title="Default Retrospective Settings"
-      createBtnEnabled="{isAdmin || isEntityAdmin}"
+      createBtnEnabled={isAdmin || isEntityAdmin}
       createBtnText="{defaultSettings.id !== ''
         ? 'Update'
         : 'Create'} Default Settings"
-      createButtonHandler="{defaultSettings.id !== ''
+      createButtonHandler={defaultSettings.id !== ''
         ? toggleUpdateDefaultSettings
-        : toggleCreateDefaultSettings}"
+        : toggleCreateDefaultSettings}
       createBtnTestId="retro-settings-{defaultSettings.id !== ''
         ? 'update'
         : 'create'}-btn"
@@ -117,11 +117,11 @@
                 {defaultSettings.phaseTimeLimit}
               </RowCol>
               <RowCol>
-                <BooleanDisplay boolValue="{defaultSettings.phaseAutoAdvance}" />
+                <BooleanDisplay boolValue={defaultSettings.phaseAutoAdvance} />
               </RowCol>
               <RowCol>
                 <BooleanDisplay
-                  boolValue="{defaultSettings.allowCumulativeVoting}"
+                  boolValue={defaultSettings.allowCumulativeVoting}
                 />
               </RowCol>
               <!--                    <RowCol>-->
@@ -142,28 +142,28 @@
 
   {#if showCreateDefaultSettings}
     <UpdateRetroSettings
-      toggleClose="{toggleCreateDefaultSettings}"
+      toggleClose={toggleCreateDefaultSettings}
       xfetch={xfetch}
       notifications={notifications}
       apiPrefix="{apiPrefix}"
       organizationId="{organizationId}"
       teamId="{teamId}"
       departmentId="{departmentId}"
-      on:updateRetroSettings="{handleSettingsUpdate}"
+      on:updateRetroSettings={handleSettingsUpdate}
     />
   {/if}
 
   {#if showUpdateDefaultSettings}
     <UpdateRetroSettings
-      toggleClose="{toggleUpdateDefaultSettings}"
+      toggleClose={toggleUpdateDefaultSettings}
       xfetch={xfetch}
       notifications={notifications}
-      retroSettings="{defaultSettings}"
+      retroSettings={defaultSettings}
       apiPrefix="{apiPrefix}"
       organizationId="{organizationId}"
       teamId="{teamId}"
       departmentId="{departmentId}"
-      on:updateRetroSettings="{handleSettingsUpdate}"
+      on:updateRetroSettings={handleSettingsUpdate}
     />
   {/if}
 </div>

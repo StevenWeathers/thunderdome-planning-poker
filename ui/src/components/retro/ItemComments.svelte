@@ -72,7 +72,7 @@
   };
 </script>
 
-<Modal closeModal="{toggleComments}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal={toggleComments} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
   <div class="mt-12 dark:text-gray-300">
     <h3 class="text-xl pb-2 mb-4 border-b border-gray-600 dark:border-gray-400">
       Comments
@@ -95,13 +95,13 @@
                             focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
               bind:value="{selectedCommentContent}"></textarea>
             <div class="text-right">
-              <HollowButton color="blue" onClick="{toggleCommentEdit(null)}">
+              <HollowButton color="blue" onClick={toggleCommentEdit(null)}>
                 {$LL.cancel()}
               </HollowButton>
               <HollowButton
                 color="green"
-                onClick="{handleCommentEdit}"
-                disabled="{selectedCommentContent === ''}"
+                onClick={handleCommentEdit}
+                disabled={selectedCommentContent === ''}
               >
                 {$LL.updateComment()}
               </HollowButton>
@@ -144,8 +144,8 @@
       <div class="text-right">
         <HollowButton
           color="teal"
-          onClick="{handleCommentSubmit}"
-          disabled="{userComment === ''}"
+          onClick={handleCommentSubmit}
+          disabled={userComment === ''}
         >
           {$LL.postComment()}
         </HollowButton>

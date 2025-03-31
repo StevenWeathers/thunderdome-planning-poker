@@ -102,7 +102,7 @@
   }
 </script>
 
-<Modal closeModal="{toggleClose}">
+<Modal closeModal={toggleClose}>
   <form onsubmit={preventDefault(handleSubmit)} class="mt-6 space-y-6">
     <div>
       <label
@@ -167,7 +167,7 @@
           id="phaseTimeLimitMin"
           type="number"
           min="0"
-          max="{maxPhaseTimeLimitMin}"
+          max={maxPhaseTimeLimitMin}
           required
         />
       </div>
@@ -195,7 +195,7 @@
           bind:value="{retroSettings.joinCode}"
           placeholder="{$LL.joinCodePlaceholder()}"
           id="joinCode"
-          icon="{Lock}"
+          icon={Lock}
         />
       </div>
     </div>
@@ -213,7 +213,7 @@
           bind:value="{retroSettings.facilitatorCode}"
           placeholder="{$LL.facilitatorCodePlaceholder()}"
           id="leaderCode"
-          icon="{Crown}"
+          icon={Crown}
         />
       </div>
     </div>

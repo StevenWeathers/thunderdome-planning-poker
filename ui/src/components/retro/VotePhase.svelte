@@ -47,13 +47,13 @@
   {#if group.items.length > 0}
     <RetroFeedbackGroup
       phase="{phase}"
-      group="{group}"
-      handleVoteAction="{handleVoteAction}"
-      voteLimitReached="{voteLimitReached}"
-      users="{users}"
-      isFacilitator="{isFacilitator}"
-      sendSocketEvent="{sendSocketEvent}"
-      columnColors="{columnColors}"
+      group={group}
+      handleVoteAction={handleVoteAction}
+      voteLimitReached={voteLimitReached}
+      users={users}
+      isFacilitator={isFacilitator}
+      sendSocketEvent={sendSocketEvent}
+      columnColors={columnColors}
     />
   {/if}
 {/each}

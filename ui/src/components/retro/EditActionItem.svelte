@@ -54,7 +54,7 @@
   };
 </script>
 
-<Modal closeModal="{toggleEdit}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal={toggleEdit} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
   <form onsubmit={handleSubmit}>
     <div class="mb-4">
       <label
@@ -92,7 +92,7 @@
 
     <div class="flex w-full pt-4">
       <div class="w-1/2">
-        <HollowButton color="red" onClick="{handleDelete(editAction)}"
+        <HollowButton color="red" onClick={handleDelete(editAction)}
           >{$LL.delete()}</HollowButton
         >
       </div>
@@ -123,8 +123,8 @@
       </div>
       <div class="w-1/3">
         <HollowButton
-          onClick="{addAssignee}"
-          disabled="{selectedAssignee === ''}"
+          onClick={addAssignee}
+          disabled={selectedAssignee === ''}
         >
           {$LL.assigneeAdd()}
         </HollowButton>
@@ -147,11 +147,11 @@
             <div class="w-1/4 text-right">
               <HollowButton
                 color="red"
-                onClick="{handleAssigneeRemove(
+                onClick={handleAssigneeRemove(
                   action.retroId,
                   action.id,
                   assignee.id,
-                )}"
+                )}
               >
                 <Trash2 />
               </HollowButton>

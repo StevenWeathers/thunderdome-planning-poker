@@ -25,12 +25,12 @@
 {#each groups as group, i (group.id)}
   {#if group.items.length > 0}
     <RetroFeedbackGroup
-      phase="{phase}"
-      group="{group}"
-      users="{users}"
-      isFacilitator="{isFacilitator}"
-      sendSocketEvent="{sendSocketEvent}"
-      columnColors="{columnColors}"
+      phase={phase}
+      group={group}
+      users={users}
+      isFacilitator={isFacilitator}
+      sendSocketEvent={sendSocketEvent}
+      columnColors={columnColors}
     />
   {/if}
 {/each}

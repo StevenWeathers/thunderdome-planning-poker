@@ -94,10 +94,10 @@
             class="inline-block pointer text-gray-300 dark:text-gray-500 {userReady
               ? 'text-lime-600 dark:text-lime-400'
               : ''} hover:text-cyan-400 dark:hover:text-cyan-400"
+              title="Done brainstorming?"
           >
             <ThumbsUp
               class="inline-block w-8 h-8"
-              title="Done brainstorming?"
             />
           </button>
         </div>
@@ -106,8 +106,9 @@
           class="inline-block text-gray-300 dark:text-gray-500 {userReady
             ? 'text-lime-600 dark:text-lime-400'
             : ''}"
+          title="Done brainstorming?"
         >
-          <ThumbsUp class="inline-block w-8 h-8" title="Done brainstorming?" />
+          <ThumbsUp class="inline-block w-8 h-8" />
         </div>
       {/if}
     {/if}

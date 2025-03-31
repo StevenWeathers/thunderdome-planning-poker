@@ -33,7 +33,7 @@
   <div class="flex -mr-px">
     <SolidButton
       color="blue-copy"
-      onClick="{copyRetrospectiveLink}"
+      onClick={copyRetrospectiveLink}
       class="flex items-center leading-normal whitespace-no-wrap text-sm"
     >
       <ClipboardCopy />

@@ -67,12 +67,12 @@
   <div class="flex-1 grow">
     {#each group.items as item, ii (item.id)}
       <RetroFeedbackItem
-        item="{item}"
+        item={item}
         phase="{phase}"
-        users="{users}"
-        isFacilitator="{isFacilitator}"
-        sendSocketEvent="{sendSocketEvent}"
-        columnColors="{columnColors}"
+        users={users}
+        isFacilitator={isFacilitator}
+        sendSocketEvent={sendSocketEvent}
+        columnColors={columnColors}
       />
     {/each}
   </div>

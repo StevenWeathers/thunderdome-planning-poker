@@ -92,19 +92,19 @@
           type="text"
           required
         />
-        <button type="submit" class="hidden"></button>
+        <button type="submit" class="hidden">submit</button>
       </form>
     </div>
   </div>
   <div>
     {#each items.filter(i => i.type === itemType) as item}
       <RetroFeedbackItem
-        item="{item}"
+        item={item}
         phase="{phase}"
-        users="{users}"
-        isFacilitator="{isFacilitator}"
-        sendSocketEvent="{sendSocketEvent}"
-        columnColors="{columnColors}"
+        users={users}
+        isFacilitator={isFacilitator}
+        sendSocketEvent={sendSocketEvent}
+        columnColors={columnColors}
         feedbackVisibility="{feedbackVisibility}"
       />
     {/each}

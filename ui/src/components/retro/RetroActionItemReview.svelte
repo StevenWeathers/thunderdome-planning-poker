@@ -178,7 +178,7 @@
 <div class="w-full flex justify-center">
   <div class="w-full md:w-4/5 lg:w-2/3">
     <TableContainer>
-      <TableNav title="Open Action Items" createBtnEnabled="{false}" />
+      <TableNav title="Open Action Items" createBtnEnabled={false} />
       <Table>
         {#snippet header()}
                 <tr >
@@ -200,14 +200,14 @@
                         gravatarHash="{assignee.gravatarHash}"
                         avatar="{assignee.avatar}"
                         userName="{assignee.name}"
-                        width="24"
+                        width={24}
                         class="inline-block me-2"
                       />
                     {/each}{item.content}
                   </div>
                 </RowCol>
                 <RowCol>
-                  <BooleanDisplay boolValue="{item.completed}" />
+                  <BooleanDisplay boolValue={item.completed} />
                 </RowCol>
                 <RowCol>
                   <MessageSquareMore
@@ -224,11 +224,11 @@
                 </RowCol>
                 <RowCol type="action">
                   <CrudActions
-                    editBtnClickHandler="{toggleRetroActionEdit(
+                    editBtnClickHandler={toggleRetroActionEdit(
                       item.retroId,
                       item.id,
-                    )}"
-                    deleteBtnEnabled="{false}"
+                    )}
+                    deleteBtnEnabled={false}
                   />
                 </RowCol>
               </TableRow>
@@ -238,9 +238,9 @@
       </Table>
       <TableFooter
         bind:current="{retroActionsPage}"
-        num_items="{totalRetroActions}"
-        per_page="{retroActionsPageLimit}"
-        on:navigate="{changeRetroActionPage}"
+        num_items={totalRetroActions}
+        per_page={retroActionsPageLimit}
+        on:navigate={changeRetroActionPage}
       />
     </TableContainer>
   </div>
@@ -248,25 +248,25 @@
 
 {#if showRetroActionEdit}
   <EditActionItem
-    toggleEdit="{toggleRetroActionEdit(null)}"
-    handleEdit="{handleRetroActionEdit}"
-    handleDelete="{handleRetroActionDelete}"
-    assignableUsers="{users}"
+    toggleEdit={toggleRetroActionEdit(null, null)}
+    handleEdit={handleRetroActionEdit}
+    handleDelete={handleRetroActionDelete}
+    assignableUsers={users}
     action="{selectedAction}"
-    handleAssigneeAdd="{handleRetroActionAssigneeAdd}"
-    handleAssigneeRemove="{handleRetroActionAssigneeRemove}"
+    handleAssigneeAdd={handleRetroActionAssigneeAdd}
+    handleAssigneeRemove={handleRetroActionAssigneeRemove}
   />
 {/if}
 
 {#if showRetroActionComments}
   <ActionComments
-    toggleComments="{toggleRetroActionComments(null)}"
-    actions="{actionItems}"
-    users="{users}"
+    toggleComments={toggleRetroActionComments(null)}
+    actions={actionItems}
+    users={users}
     selectedActionId="{selectedRetroAction}"
-    getRetrosActions="{getTeamOpenActionItems}"
+    getRetrosActions={getTeamOpenActionItems}
     xfetch={xfetch}
     notifications={notifications}
-    isAdmin="{isAdmin}"
+    isAdmin={isAdmin}
   />
 {/if}

@@ -28,5 +28,5 @@
     name="groupName"
     type="text"
   />
-  <button type="submit" class="hidden"></button>
+  <button type="submit" class="hidden">submit</button>
 </form>

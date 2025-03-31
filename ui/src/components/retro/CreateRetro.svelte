@@ -363,7 +363,7 @@
     </div>
     <SelectWithSubtext
       on:change="{updateSelectedTemplate}"
-      items="{retroTemplates}"
+      items={retroTemplates}
       label="Select a retro template..."
       selectedItemId="{retroSettings.templateId}"
       itemType="retro_template"
@@ -383,7 +383,7 @@
         bind:value="{retroSettings.joinCode}"
         placeholder="{$LL.joinCodePlaceholder()}"
         id="joinCode"
-        icon="{Lock}"
+        icon={Lock}
       />
     </div>
   </div>
@@ -401,7 +401,7 @@
         bind:value="{retroSettings.facilitatorCode}"
         placeholder="{$LL.facilitatorCodePlaceholder()}"
         id="facilitatorCode"
-        icon="{Crown}"
+        icon={Crown}
       />
     </div>
   </div>
@@ -469,7 +469,7 @@
         id="phaseTimeLimitMin"
         type="number"
         min="0"
-        max="{maxPhaseTimeLimitMin}"
+        max={maxPhaseTimeLimitMin}
         required
       />
     </div>

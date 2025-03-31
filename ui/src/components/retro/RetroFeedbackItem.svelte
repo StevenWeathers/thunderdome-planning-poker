@@ -130,12 +130,12 @@
 
   {#if showComments}
     <ItemComments
-      toggleComments="{toggleComments(null)}"
-      selectedItem="{selectedItem}"
-      item="{item}"
-      users="{users}"
-      isFacilitator="{isFacilitator}"
-      sendSocketEvent="{sendSocketEvent}"
+      toggleComments={toggleComments(null)}
+      selectedItem={selectedItem}
+      item={item}
+      users={users}
+      isFacilitator={isFacilitator}
+      sendSocketEvent={sendSocketEvent}
     />
   {/if}
 </div>
