@@ -614,8 +614,8 @@
 
   <GlobalHeader
     router="{router}"
-    xfetch="{xfetch}"
-    notifications="{notifications}"
+    xfetch={xfetch}
+    notifications={notifications}
     currentPage="{currentPage.name}"
   />
 </header>
@@ -623,9 +623,9 @@
 <main class="flex-grow flex flex-wrap flex-col">
   <currentPage.route
     {...currentPage.params}
-    notifications="{notifications}"
+    notifications={notifications}
     router="{router}"
-    xfetch="{xfetch}"
+    xfetch={xfetch}
   />
 </main>
 

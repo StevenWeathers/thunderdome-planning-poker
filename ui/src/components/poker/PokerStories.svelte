@@ -436,7 +436,7 @@
     description="{selectedPlan.description}"
     acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
     priority="{selectedPlan.priority}"
-    notifications="{notifications}"
+    notifications={notifications}
   />
 {/if}
 
@@ -455,10 +455,10 @@
 
 {#if showImport}
   <ImportModal
-    notifications="{notifications}"
+    notifications={notifications}
     toggleImport="{toggleImport}"
     handlePlanAdd="{handlePlanAdd}"
-    xfetch="{xfetch}"
+    xfetch={xfetch}
     gameId="{gameId}"
   />
 {/if}

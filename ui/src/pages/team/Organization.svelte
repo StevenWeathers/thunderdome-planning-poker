@@ -564,8 +564,8 @@
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
         pageType="organization"
         teamPrefix="{orgPrefix}"
         bind:this="{invitesList}"
@@ -576,8 +576,8 @@
   <UsersList
     users="{users}"
     getUsers="{getUsers}"
-    xfetch="{xfetch}"
-    notifications="{notifications}"
+    xfetch={xfetch}
+    notifications={notifications}
     isAdmin="{isAdmin}"
     pageType="organization"
     orgId="{organizationId}"
@@ -591,8 +591,8 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <PokerSettings
-          xfetch="{xfetch}"
-          notifications="{notifications}"
+          xfetch={xfetch}
+          notifications={notifications}
           isEntityAdmin="{isAdmin}"
           apiPrefix="{orgPrefix}"
           organizationId="{organizationId}"
@@ -607,8 +607,8 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <EstimationScalesList
-          xfetch="{xfetch}"
-          notifications="{notifications}"
+          xfetch={xfetch}
+          notifications={notifications}
           isEntityAdmin="{isAdmin}"
           apiPrefix="{orgPrefix}"
           organizationId="{organizationId}"
@@ -631,8 +631,8 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <RetroSettings
-          xfetch="{xfetch}"
-          notifications="{notifications}"
+          xfetch={xfetch}
+          notifications={notifications}
           isEntityAdmin="{isAdmin}"
           apiPrefix="{orgPrefix}"
           organizationId="{organizationId}"
@@ -647,8 +647,8 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <RetroTemplatesList
-          xfetch="{xfetch}"
-          notifications="{notifications}"
+          xfetch={xfetch}
+          notifications={notifications}
           isEntityAdmin="{isAdmin}"
           apiPrefix="{orgPrefix}"
           organizationId="{organizationId}"

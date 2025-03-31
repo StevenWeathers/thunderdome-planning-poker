@@ -283,8 +283,8 @@
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
         pageType="department"
         teamPrefix="{deptPrefix}"
         bind:this="{invitesList}"
@@ -295,8 +295,8 @@
   <UsersList
     users="{users}"
     getUsers="{getUsers}"
-    xfetch="{xfetch}"
-    notifications="{notifications}"
+    xfetch={xfetch}
+    notifications={notifications}
     isAdmin="{isAdmin}"
     pageType="department"
     orgId="{organizationId}"

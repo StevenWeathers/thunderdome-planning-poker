@@ -114,8 +114,8 @@
                         <AssociatedOrganization
                           userId="{$user.id}"
                           organizationId="{sub.organization_id}"
-                          xfetch="{xfetch}"
-                          notifications="{notifications}"
+                          xfetch={xfetch}
+                          notifications={notifications}
                         />
                       {/if}
                     {:else}
@@ -132,8 +132,8 @@
                         <AssociatedTeam
                           userId="{$user.id}"
                           teamId="{sub.team_id}"
-                          xfetch="{xfetch}"
-                          notifications="{notifications}"
+                          xfetch={xfetch}
+                          notifications={notifications}
                         />
                       {/if}
                     {:else}
@@ -157,8 +157,8 @@
       handleUpdate="{handleAssociate}"
       toggleClose="{toggleAssociateTeam(null)}"
       subscriptionId="{selectedSubscriptionId}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 
@@ -167,8 +167,8 @@
       handleUpdate="{handleAssociate}"
       toggleClose="{toggleAssociateOrganization(null)}"
       subscriptionId="{selectedSubscriptionId}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 </div>

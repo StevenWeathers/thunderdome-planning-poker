@@ -15,7 +15,7 @@
   <div class="pt-10">
     <UserRegisterForm
       handleFullAccountRegistration="{handleCreate}"
-      notifications="{notifications}"
+      notifications={notifications}
       fullOnly="{true}"
       isAdmin="{true}"
     />

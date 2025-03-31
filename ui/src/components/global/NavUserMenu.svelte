@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
@@ -8,22 +6,13 @@
   import { onMount } from 'svelte';
   import { Lock, LogOut, User, Vote } from 'lucide-svelte';
 
-  interface Props {
-    currentPage: any;
-    notifications: any;
-    router: any;
-    xfetch: any;
-  }
+  export let currentPage;
+  export let notifications;
+  export let router;
+  export let xfetch;
 
-  let {
-    currentPage,
-    notifications,
-    router,
-    xfetch
-  }: Props = $props();
-
-  let showMenu = $state(false);
-  let profile = $state({});
+  let showMenu = false;
+  let profile = {};
 
   function toggleMenu() {
     showMenu = !showMenu;
@@ -74,11 +63,11 @@
       });
   }
 
-  run(() => {
+  $: {
     if (typeof currentPage !== 'undefined') {
       pageChangeHandler();
     }
-  });
+  }
 
   onMount(() => {
     getProfile();
@@ -95,7 +84,7 @@
     class="align-middle rounded-full focus:ring focus:outline-none focus:ring-indigo-600"
     aria-label="Account"
     aria-haspopup="true"
-    onclick={toggleMenu}
+    on:click="{toggleMenu}"
   >
     <UserAvatar
       warriorId="{$user.id}"
@@ -115,7 +104,7 @@
       <button
         class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
         data-testid="userprofile-link"
-        onclick={goToProfile}
+        on:click="{goToProfile}"
       >
         <User class="h-6 w-6 me-3 inline-block" />
         <span>{$LL.profile()}</span>
@@ -126,7 +115,7 @@
         <button
           class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
           data-testid="create-account-link"
-          onclick={goToRegister}
+          on:click="{goToRegister}"
         >
           <Vote class="w-6 h-6 me-3 inline-block" />
           <span>{$LL.createAccount()}</span>
@@ -136,7 +125,7 @@
         <button
           class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
           data-testid="login-link"
-          onclick={goToLogin}
+          on:click="{goToLogin}"
         >
           <Lock class="w-6 h-6 me-3 inline-block" />
           <span>{$LL.login()}</span>
@@ -147,7 +136,7 @@
         <button
           class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
           data-testid="logout-link"
-          onclick={logoutUser}
+          on:click="{logoutUser}"
         >
           <LogOut class="inline-block w-6 h-6 me-3" />
           <span>{$LL.logout()}</span>

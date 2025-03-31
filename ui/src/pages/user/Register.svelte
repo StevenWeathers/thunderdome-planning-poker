@@ -196,7 +196,7 @@
         userName="{userName}"
         handleFullAccountRegistration="{createUserRegistered}"
         handleGuestRegistration="{createUserGuest}"
-        notifications="{notifications}"
+        notifications={notifications}
         email="{wasInvited ? inviteDetails.email : ''}"
         wasInvited="{wasInvited}"
       />

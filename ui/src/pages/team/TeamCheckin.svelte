@@ -708,8 +708,8 @@
         toggleCheckin="{toggleCheckin}"
         handleCheckin="{handleCheckin}"
         handleCheckinEdit="{handleCheckinEdit}"
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
         teamPrefix="{teamPrefix}"
       />
     {:else}

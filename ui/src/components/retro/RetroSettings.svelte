@@ -143,8 +143,8 @@
   {#if showCreateDefaultSettings}
     <UpdateRetroSettings
       toggleClose="{toggleCreateDefaultSettings}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
       apiPrefix="{apiPrefix}"
       organizationId="{organizationId}"
       teamId="{teamId}"
@@ -156,8 +156,8 @@
   {#if showUpdateDefaultSettings}
     <UpdateRetroSettings
       toggleClose="{toggleUpdateDefaultSettings}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
       retroSettings="{defaultSettings}"
       apiPrefix="{apiPrefix}"
       organizationId="{organizationId}"

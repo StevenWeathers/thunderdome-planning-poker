@@ -305,14 +305,14 @@
           class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
         >
           <ProfileForm
-            credential="{userCredential}"
-            profile="{userProfile}"
-            handleUpdate="{updateUserProfile}"
-            toggleUpdatePassword="{toggleUpdatePassword}"
-            xfetch="{xfetch}"
-            notifications="{notifications}"
-            ldapEnabled="{LdapEnabled}"
-            headerAuthEnabled="{HeaderAuthEnabled}"
+            credential={userCredential}
+            profile={userProfile}
+            handleUpdate={updateUserProfile}
+            toggleUpdatePassword={toggleUpdatePassword}
+            xfetch={xfetch}
+            notifications={notifications}
+            ldapEnabled={LdapEnabled}
+            headerAuthEnabled={HeaderAuthEnabled}
           />
         </div>
       {/if}
@@ -327,9 +327,9 @@
           </div>
 
           <UpdatePasswordForm
-            handleUpdate="{updateUserPassword}"
-            toggleForm="{toggleUpdatePassword}"
-            notifications="{notifications}"
+            handleUpdate={updateUserPassword}
+            toggleForm={toggleUpdatePassword}
+            notifications={notifications}
           />
         </div>
       {/if}
@@ -361,8 +361,8 @@
           </div>
           {#if $user.subscribed}
             <UserSubscriptionsList
-              xfetch="{xfetch}"
-              notifications="{notifications}"
+              xfetch={xfetch}
+              notifications={notifications}
             />
           {:else}
             <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4">
@@ -395,7 +395,7 @@
                   {$LL.apiDocumentation()}
                 </HollowButton>
                 <HollowButton
-                  onClick="{toggleCreateApiKey}"
+                  onClick={toggleCreateApiKey}
                   testid="apikey-create"
                 >
                   {$LL.apiKeyCreateButton()}
@@ -471,7 +471,7 @@
                             data-testid="apikey-active"
                             data-active="{apk.active}"
                           >
-                            <BooleanDisplay boolValue="{apk.active}" />
+                            <BooleanDisplay boolValue={apk.active} />
                           </td>
                           <td class="px-6 py-4 whitespace-nowrap">
                             {new Date(apk.updatedDate).toLocaleString()}
@@ -480,10 +480,10 @@
                             class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
                           >
                             <HollowButton
-                              onClick="{toggleApiKeyActiveStatus(
+                              onClick={toggleApiKeyActiveStatus(
                                 apk.id,
                                 apk.active,
-                              )}"
+                              )}
                               testid="apikey-activetoggle"
                             >
                               {#if !apk.active}
@@ -494,7 +494,7 @@
                             </HollowButton>
                             <HollowButton
                               color="red"
-                              onClick="{deleteApiKey(apk.id)}"
+                              onClick={deleteApiKey(apk.id)}
                               testid="apikey-delete"
                             >
                               {$LL.delete()}
@@ -524,7 +524,7 @@
             <div class="flex-1">
               <div class="text-right">
                 <HollowButton
-                  onClick="{toggleCreateJiraInstance}"
+                  onClick={toggleCreateJiraInstance}
                   testid="jirainstance-create"
                 >
                   Add Jira Instance
@@ -597,7 +597,7 @@
                           >
                             <HollowButton
                               color="red"
-                              onClick="{deleteJiraInstance(ji.id)}"
+                              onClick={deleteJiraInstance(ji.id)}
                               testid="jira-delete"
                             >
                               {$LL.delete()}
@@ -627,16 +627,16 @@
     <CreateApiKey
       toggleCreateApiKey="{toggleCreateApiKey}"
       handleApiKeyCreate="{getApiKeys}"
-      notifications="{notifications}"
-      xfetch="{xfetch}"
+      notifications={notifications}
+      xfetch={xfetch}
     />
   {/if}
   {#if showJiraInstanceCreate}
     <CreateJiraInstance
       toggleClose="{toggleCreateJiraInstance}"
       handleCreate="{getJiraInstances}"
-      notifications="{notifications}"
-      xfetch="{xfetch}"
+      notifications={notifications}
+      xfetch={xfetch}
     />
   {/if}
 

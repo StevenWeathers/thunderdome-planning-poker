@@ -351,8 +351,8 @@
       <ProfileForm
         profile="{selectedUserProfile}"
         handleUpdate="{handleUserEdit}"
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
       />
     </Modal>
   {/if}

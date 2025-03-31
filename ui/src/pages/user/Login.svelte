@@ -86,8 +86,8 @@
     class="p-8 rounded-2xl shadow-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-800/50"
   >
     <LoginForm
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
       router="{router}"
       registerLink="{registerLink}"
       targetPage="{targetPage}"

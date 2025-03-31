@@ -1,31 +1,18 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { Check, ChevronDown } from 'lucide-svelte';
   import { createEventDispatcher } from 'svelte';
 
-  interface Props {
-    items?: any;
-    nameField?: string;
-    descriptionField?: string;
-    label?: string;
-    selectedItemId: any;
-    itemType?: string;
-  }
-
-  let {
-    items = [],
-    nameField = 'name',
-    descriptionField = 'description',
-    label = 'Select an item',
-    selectedItemId,
-    itemType = ''
-  }: Props = $props();
+  export let items = [];
+  export let nameField = 'name';
+  export let descriptionField = 'description';
+  export let label = 'Select an item';
+  export let selectedItemId;
+  export let itemType = '';
 
   const dispatch = createEventDispatcher();
 
-  let isOpen = $state(false);
-  let selectedItemIdx = $state(-1);
+  let isOpen = false;
+  let selectedItemIdx = -1;
 
   function toggleDropdown(e) {
     e.preventDefault();
@@ -38,17 +25,15 @@
     dispatch('change', items[itemIdx]);
   }
 
-  run(() => {
-    if (selectedItemId) {
-      selectedItemIdx = items.findIndex(item => item.id === selectedItemId);
-    }
-  });
+  $: if (selectedItemId) {
+    selectedItemIdx = items.findIndex(item => item.id === selectedItemId);
+  }
 </script>
 
 <div class="relative">
   <button
     type="button"
-    onclick={toggleDropdown}
+    on:click="{toggleDropdown}"
     class="w-full flex justify-between px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
   >
     <span class="flex">
@@ -70,7 +55,7 @@
         {#each items as item, idx}
           <button
             type="button"
-            onclick={() => handleChange(idx)}
+            on:click="{() => handleChange(idx)}"
             class="flex content-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:text-gray-100 dark:hover:bg-gray-700"
           >
             <Check

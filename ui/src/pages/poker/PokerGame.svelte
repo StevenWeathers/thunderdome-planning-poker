@@ -564,8 +564,8 @@
         plans="{pokerGame.plans}"
         isLeader="{isLeader}"
         sendSocketEvent="{sendSocketEvent}"
-        notifications="{notifications}"
-        xfetch="{xfetch}"
+        notifications={notifications}
+        xfetch={xfetch}
         gameId="{pokerGame.id}"
       />
     </div>
@@ -590,7 +590,7 @@
               points="{showVote(war.id)}"
               autoFinishVoting="{pokerGame.autoFinishVoting}"
               sendSocketEvent="{sendSocketEvent}"
-              notifications="{notifications}"
+              notifications={notifications}
             />
           {/if}
         {/each}
@@ -611,7 +611,7 @@
           hostname="{hostname}"
           battleId="{pokerGame.id}"
           joinCode="{pokerGame.joinCode}"
-          notifications="{notifications}"
+          notifications={notifications}
         />
         {#if isLeader}
           <div class="mt-4 text-right">
@@ -658,8 +658,8 @@
       joinCode="{pokerGame.joinCode}"
       leaderCode="{pokerGame.leaderCode}"
       teamId="{pokerGame.teamId}"
-      notifications="{notifications}"
-      xfetch="{xfetch}"
+      notifications={notifications}
+      xfetch={xfetch}
     />
   {/if}
 

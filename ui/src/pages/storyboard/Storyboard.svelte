@@ -1132,7 +1132,7 @@
     toggleStoryForm="{toggleStoryForm()}"
     story="{activeStory}"
     sendSocketEvent="{sendSocketEvent}"
-    notifications="{notifications}"
+    notifications={notifications}
     colorLegend="{storyboard.color_legend}"
     users="{storyboard.users}"
   />

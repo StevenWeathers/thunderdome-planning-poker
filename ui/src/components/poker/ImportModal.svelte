@@ -79,8 +79,8 @@
 
       {#if showGameImport}
         <StoryFromGameImport
-          notifications="{notifications}"
-          xfetch="{xfetch}"
+          notifications={notifications}
+          xfetch={xfetch}
           handleImport="{importStory}"
           gameId="{gameId}"
         />
@@ -88,8 +88,8 @@
 
       {#if showStoryboardImport}
         <StoryFromStoryboardImport
-          notifications="{notifications}"
-          xfetch="{xfetch}"
+          notifications={notifications}
+          xfetch={xfetch}
           handleImport="{importStory}"
         />
       {/if}
@@ -99,8 +99,8 @@
       <div class="mb-4 dark:text-gray-300">
         <h3 class="font-bold mb-2 text-xl">Import from Jira Cloud</h3>
         <JQLImport
-          notifications="{notifications}"
-          xfetch="{xfetch}"
+          notifications={notifications}
+          xfetch={xfetch}
           handleImport="{importStory}"
           on:instance_selected="{() => {
             showJiraCloudSearch = true;
@@ -116,7 +116,7 @@
             </h3>
             <JiraImport
               handlePlanAdd="{handleAdd}"
-              notifications="{notifications}"
+              notifications={notifications}
               testid="plans-importjira"
             />
           </div>
@@ -133,7 +133,7 @@
             </div>
             <CsvImport
               handlePlanAdd="{handleAdd}"
-              notifications="{notifications}"
+              notifications={notifications}
               testid="plans-Csvimport"
             />
           </div>

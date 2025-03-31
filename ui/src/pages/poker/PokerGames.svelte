@@ -110,9 +110,9 @@
           {$LL.createBattle()}
         </h2>
         <CreateBattle
-          notifications="{notifications}"
+          notifications={notifications}
           router="{router}"
-          xfetch="{xfetch}"
+          xfetch={xfetch}
         />
       </div>
     </div>

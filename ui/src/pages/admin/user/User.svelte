@@ -448,7 +448,7 @@
       <UpdatePasswordForm
         handleUpdate="{updatePassword}"
         toggleForm="{toggleUpdatePassword}"
-        notifications="{notifications}"
+        notifications={notifications}
       />
     </Modal>
   {/if}

@@ -265,8 +265,8 @@
     users="{users}"
     selectedActionId="{selectedRetroAction}"
     getRetrosActions="{getTeamOpenActionItems}"
-    xfetch="{xfetch}"
-    notifications="{notifications}"
+    xfetch={xfetch}
+    notifications={notifications}
     isAdmin="{isAdmin}"
   />
 {/if}

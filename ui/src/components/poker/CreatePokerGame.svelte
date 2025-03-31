@@ -442,10 +442,10 @@
       </HollowButton>
       {#if showImport}
         <ImportModal
-          notifications="{notifications}"
+          notifications={notifications}
           toggleImport="{toggleImport}"
           handlePlanAdd="{handlePlanImport}"
-          xfetch="{xfetch}"
+          xfetch={xfetch}
         />
       {/if}
     </div>

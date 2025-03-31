@@ -63,8 +63,8 @@
 
 <AdminPageLayout activePage="estimation-scales">
   <EstimationScalesList
-    xfetch="{xfetch}"
-    notifications="{notifications}"
+    xfetch={xfetch}
+    notifications={notifications}
     scales="{scales}"
     apiPrefix="/api/admin"
     getScales="{getScales}"

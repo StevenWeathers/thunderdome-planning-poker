@@ -131,8 +131,8 @@
   {#if showCreateDefaultSettings}
     <UpdatePokerSettings
       toggleClose="{toggleCreateDefaultSettings}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
       apiPrefix="{apiPrefix}"
       organizationId="{organizationId}"
       teamId="{teamId}"
@@ -144,8 +144,8 @@
   {#if showUpdateDefaultSettings}
     <UpdatePokerSettings
       toggleClose="{toggleUpdateDefaultSettings}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
       pokerSettings="{defaultSettings}"
       apiPrefix="{apiPrefix}"
       organizationId="{organizationId}"

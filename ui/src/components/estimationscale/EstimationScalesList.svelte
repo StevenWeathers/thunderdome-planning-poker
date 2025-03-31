@@ -182,8 +182,8 @@
       departmentId="{departmentId}"
       teamId="{teamId}"
       apiPrefix="{apiPrefix}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 
@@ -202,8 +202,8 @@
       departmentId="{departmentId}"
       teamId="{teamId}"
       apiPrefix="{apiPrefix}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 

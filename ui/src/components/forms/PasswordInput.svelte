@@ -2,14 +2,9 @@
   import { Eye, EyeOff } from 'lucide-svelte';
   import TextInput from './TextInput.svelte';
 
-  interface Props {
-    value?: string;
-    [key: string]: any
-  }
+  export let value = '';
 
-  let { value = $bindable(''), ...rest }: Props = $props();
-
-  let showPassword = $state(false);
+  let showPassword = false;
 
   function togglePassword() {
     showPassword = !showPassword;
@@ -22,19 +17,19 @@
       type="text"
       autocomplete="current-password"
       bind:value="{value}"
-      {...rest}
+      {...$$restProps}
     />
   {:else}
     <TextInput
       type="password"
       autocomplete="current-password"
       bind:value="{value}"
-      {...rest}
+      {...$$restProps}
     />
   {/if}
   <button
     type="button"
-    onclick={togglePassword}
+    on:click="{togglePassword}"
     class="absolute top-3 right-3 text-gray-500 dark:text-gray-400 focus:outline-none hover:text-indigo-500"
   >
     {#if showPassword}

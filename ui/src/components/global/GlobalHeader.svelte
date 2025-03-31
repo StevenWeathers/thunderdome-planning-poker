@@ -101,8 +101,8 @@
         {#if !$user.id}
           <li>
             <LocaleMenu
-              xfetch="{xfetch}"
-              notifications="{notifications}"
+              xfetch={xfetch}
+              notifications={notifications}
               router="{router}"
               currentPage="{currentPage}"
               selectedLocale="{$locale}"
@@ -111,8 +111,8 @@
           </li>
           <li class="flex">
             <ThemeSelector
-              xfetch="{xfetch}"
-              notifications="{notifications}"
+              xfetch={xfetch}
+              notifications={notifications}
               router="{router}"
               currentPage="{currentPage}"
             />
@@ -138,8 +138,8 @@
         {#if $user.id}
           <li class="relative">
             <NavUserMenu
-              xfetch="{xfetch}"
-              notifications="{notifications}"
+              xfetch={xfetch}
+              notifications={notifications}
               router="{router}"
               currentPage="{currentPage}"
             />

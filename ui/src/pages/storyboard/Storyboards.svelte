@@ -105,9 +105,9 @@
           {$LL.createAStoryboard()}
         </h2>
         <CreateStoryboard
-          notifications="{notifications}"
+          notifications={notifications}
           router="{router}"
-          xfetch="{xfetch}"
+          xfetch={xfetch}
         />
       </div>
     </div>

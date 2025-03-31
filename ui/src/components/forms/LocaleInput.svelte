@@ -31,7 +31,7 @@
 <div class="{klass} inline-block">
   <SelectInput
     name="locale"
-    on:change="{switchLocale}"
+    on:change={switchLocale}
     value="{selectedLocale}"
   >
     {#each supportedLocales as locale}

@@ -768,8 +768,8 @@
           <RetroActionItemReview
             team="{team}"
             toggle="{toggleReviewActionItems}"
-            xfetch="{xfetch}"
-            notifications="{notifications}"
+            xfetch={xfetch}
+            notifications={notifications}
           />
           <div class="w-full text-center pt-4 md:pt-6">
             <HollowButton

@@ -363,8 +363,8 @@
 
 {#if showMFASetup}
   <SetupMFA
-    notifications="{notifications}"
-    xfetch="{xfetch}"
+    notifications={notifications}
+    xfetch={xfetch}
     toggleSetup="{toggleMfaSetup}"
     handleComplete="{handleMfaSetupCompletion}"
   />

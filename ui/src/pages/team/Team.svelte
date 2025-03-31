@@ -564,9 +564,9 @@
       <Modal closeModal="{toggleCreateBattle}">
         <CreateBattle
           apiPrefix="{teamPrefix}"
-          notifications="{notifications}"
+          notifications={notifications}
           router="{router}"
-          xfetch="{xfetch}"
+          xfetch={xfetch}
           showOwner="{false}"
         />
       </Modal>
@@ -691,9 +691,9 @@
       <Modal closeModal="{toggleCreateRetro}">
         <CreateRetro
           apiPrefix="{teamPrefix}"
-          notifications="{notifications}"
+          notifications={notifications}
           router="{router}"
-          xfetch="{xfetch}"
+          xfetch={xfetch}
         />
       </Modal>
     {/if}
@@ -735,9 +735,9 @@
       <Modal closeModal="{toggleCreateStoryboard}">
         <CreateStoryboard
           apiPrefix="{teamPrefix}"
-          notifications="{notifications}"
+          notifications={notifications}
           router="{router}"
-          xfetch="{xfetch}"
+          xfetch={xfetch}
         />
       </Modal>
     {/if}
@@ -746,8 +746,8 @@
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
         pageType="team"
         teamPrefix="{teamPrefix}"
         bind:this="{invitesList}"
@@ -758,8 +758,8 @@
   <UsersList
     users="{users}"
     getUsers="{getUsers}"
-    xfetch="{xfetch}"
-    notifications="{notifications}"
+    xfetch={xfetch}
+    notifications={notifications}
     isAdmin="{isAdmin}"
     pageType="team"
     teamPrefix="{teamPrefix}"
@@ -774,8 +774,8 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <PokerSettings
-          xfetch="{xfetch}"
-          notifications="{notifications}"
+          xfetch={xfetch}
+          notifications={notifications}
           isEntityAdmin="{isAdmin}"
           apiPrefix="{teamOnlyPrefix}"
           organizationId="{organizationId}"
@@ -790,8 +790,8 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <EstimationScalesList
-          xfetch="{xfetch}"
-          notifications="{notifications}"
+          xfetch={xfetch}
+          notifications={notifications}
           isEntityAdmin="{isAdmin}"
           apiPrefix="{teamPrefix}"
           organizationId="{organizationId}"
@@ -816,8 +816,8 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <RetroSettings
-          xfetch="{xfetch}"
-          notifications="{notifications}"
+          xfetch={xfetch}
+          notifications={notifications}
           isEntityAdmin="{isAdmin}"
           apiPrefix="{teamOnlyPrefix}"
           organizationId="{organizationId}"
@@ -832,8 +832,8 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <RetroTemplatesList
-          xfetch="{xfetch}"
-          notifications="{notifications}"
+          xfetch={xfetch}
+          notifications={notifications}
           isEntityAdmin="{isAdmin}"
           apiPrefix="{teamPrefix}"
           organizationId="{organizationId}"
@@ -920,8 +920,8 @@
       users="{users}"
       selectedActionId="{selectedRetroAction}"
       getRetrosActions="{getRetrosActions}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
       isAdmin="{isAdmin}"
     />
   {/if}

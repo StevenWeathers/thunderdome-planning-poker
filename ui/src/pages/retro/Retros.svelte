@@ -106,9 +106,9 @@
           {$LL.createARetro()}
         </h2>
         <CreateRetro
-          notifications="{notifications}"
+          notifications={notifications}
           router="{router}"
-          xfetch="{xfetch}"
+          xfetch={xfetch}
         />
       </div>
     </div>

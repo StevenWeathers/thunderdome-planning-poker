@@ -196,16 +196,16 @@
       <SubscriptionForm
         toggleClose="{toggleSubCreate}"
         handleUpdate="{getSubscriptions}"
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
       />
     {/if}
     {#if showSubUpdate}
       <SubscriptionForm
         toggleClose="{toggleSubUpdate({ ...defaultSubscription })}"
         handleUpdate="{getSubscriptions}"
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
         subscriptionId="{selectedSub.id}"
         customer_id="{selectedSub.customer_id}"
         subscription_id="{selectedSub.subscription_id}"

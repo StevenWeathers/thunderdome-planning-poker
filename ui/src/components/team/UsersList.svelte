@@ -218,8 +218,8 @@
       pageType="{pageType}"
       orgId="{orgId}"
       deptId="{deptId}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 

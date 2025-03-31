@@ -63,8 +63,8 @@
 
 <AdminPageLayout activePage="retro-templates">
   <RetroTemplatesList
-    xfetch="{xfetch}"
-    notifications="{notifications}"
+    xfetch={xfetch}
+    notifications={notifications}
     templates="{templates}"
     apiPrefix="/api/admin"
     getTemplates="{getTemplates}"
