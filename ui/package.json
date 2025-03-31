@@ -66,9 +66,6 @@
     "typescript": "~5.6.2",
     "vite": "^6.0.5"
   },
-  "optionalDependencies": {
-    "fsevents": "^2.3.2"
-  },
   "prettier": {
     "singleQuote": true,
     "trailingComma": "all",

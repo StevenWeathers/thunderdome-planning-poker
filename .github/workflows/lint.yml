@@ -48,11 +48,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - run: npm ci --no-optional
+      - run: npm ci
         working-directory: ui
       - run: npm run prettier
         working-directory: ui
-      - run: npm ci --no-optional
+      - run: npm ci
         working-directory: e2e
       - run: npm run prettier
         working-directory: e2e

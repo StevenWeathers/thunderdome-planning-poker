@@ -49,7 +49,7 @@ jobs:
             ui/package-lock.json
             e2e/package-lock.json
 
-      - run: npm ci --no-optional
+      - run: npm ci
         working-directory: ui
       - run: npm run build
         working-directory: ui
