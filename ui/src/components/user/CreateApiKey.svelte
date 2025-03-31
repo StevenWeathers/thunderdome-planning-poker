@@ -6,13 +6,22 @@
   import TextInput from '../forms/TextInput.svelte';
   import { ClipboardCopy } from 'lucide-svelte';
 
-  export let handleApiKeyCreate = () => {};
-  export let toggleCreateApiKey = () => {};
-  export let xfetch = () => {};
-  export let notifications;
+  interface Props {
+    handleApiKeyCreate?: any;
+    toggleCreateApiKey?: any;
+    xfetch?: any;
+    notifications: any;
+  }
 
-  let keyName = '';
-  let apiKey = '';
+  let {
+    handleApiKeyCreate = () => {},
+    toggleCreateApiKey = () => {},
+    xfetch = () => {},
+    notifications
+  }: Props = $props();
+
+  let keyName = $state('');
+  let apiKey = $state('');
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -74,9 +83,9 @@
   }
 </script>
 
-<Modal closeModal="{toggleCreateApiKey}">
+<Modal closeModal={toggleCreateApiKey}>
   {#if apiKey === ''}
-    <form on:submit="{handleSubmit}" name="createApiKey">
+    <form onsubmit={handleSubmit} name="createApiKey">
       <div class="mb-4">
         <label class="block dark:text-gray-400 font-bold mb-2" for="keyName">
           {$LL.apiKeyName()}
@@ -85,7 +94,7 @@
           id="keyName"
           name="keyName"
           bind:value="{keyName}"
-          placeholder="{$LL.apiKeyNamePlaceholder()}"
+          placeholder={$LL.apiKeyNamePlaceholder()}
           required
         />
       </div>
@@ -120,7 +129,7 @@
         <div class="invisible md:visible md:flex md:-mr-px">
           <SolidButton
             color="blue-copy"
-            onClick="{copyKey}"
+            onClick={copyKey}
             additionalClasses="flex items-center leading-normal
                         whitespace-no-wrap text-sm"
           >
@@ -134,7 +143,7 @@
     </div>
     <div class="text-right">
       <div>
-        <SolidButton onClick="{toggleCreateApiKey}" testid="apikey-close">
+        <SolidButton onClick={toggleCreateApiKey} testid="apikey-close">
           {$LL.close()}
         </SolidButton>
       </div>

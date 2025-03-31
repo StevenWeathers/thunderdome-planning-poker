@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import './app.css';
   import './tailwind.css';
   import './unreset.css';
@@ -73,9 +75,9 @@
     DefaultLocale,
   } = AppConfig;
 
-  let notifications;
+  let notifications = $state();
 
-  let activeWarrior;
+  let activeWarrior = $state();
   user.subscribe(w => {
     activeWarrior = w;
   });
@@ -85,15 +87,17 @@
   loadLocale(detectedLocale);
   setLocale(detectedLocale);
 
-  $: if (document.dir !== $dir) {
-    document.dir = $dir;
-  }
+  run(() => {
+    if (document.dir !== $dir) {
+      document.dir = $dir;
+    }
+  });
 
-  let currentPage = {
+  let currentPage = $state({
     route: Landing,
     params: {},
     name: 'landing',
-  };
+  });
 
   const router = Navaid('/');
 
@@ -606,23 +610,22 @@
 <Notifications bind:this="{notifications}" />
 
 <header class="w-full">
-  <GlobalAlerts registered="{!!activeWarrior.name}" />
+  <GlobalAlerts registered={!!activeWarrior.name} />
 
   <GlobalHeader
-    router="{router}"
-    xfetch="{xfetch}"
-    notifications="{notifications}"
-    currentPage="{currentPage.name}"
+    router={router}
+    xfetch={xfetch}
+    notifications={notifications}
+    currentPage={currentPage.name}
   />
 </header>
 
 <main class="flex-grow flex flex-wrap flex-col">
-  <svelte:component
-    this="{currentPage.route}"
+  <currentPage.route
     {...currentPage.params}
-    notifications="{notifications}"
-    router="{router}"
-    xfetch="{xfetch}"
+    notifications={notifications}
+    router={router}
+    xfetch={xfetch}
   />
 </main>
 

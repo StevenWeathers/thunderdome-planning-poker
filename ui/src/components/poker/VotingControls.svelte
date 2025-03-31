@@ -1,19 +1,34 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import TextInput from '../forms/TextInput.svelte';
 
-  export let sendSocketEvent = () => {};
-  export let planId = '';
-  export let points = [];
-  export let votingLocked = true;
-  export let highestVote = '';
+  interface Props {
+    sendSocketEvent?: any;
+    planId?: string;
+    points?: any;
+    votingLocked?: boolean;
+    highestVote?: string;
+  }
 
-  let customPointValue = false;
+  let {
+    sendSocketEvent = () => {},
+    planId = '',
+    points = [],
+    votingLocked = true,
+    highestVote = ''
+  }: Props = $props();
 
-  $: planPoints = highestVote;
-  let customPlanPoints = '';
+  let customPointValue = $state(false);
+
+  let planPoints = $state('');
+  run(() => {
+    planPoints = highestVote;
+  });
+  let customPlanPoints = $state('');
 
   const toggleCustomPointValue = () => {
     if (planPoints === 'CUSTOM') {
@@ -57,7 +72,7 @@
     <SolidButton
       color="blue"
       additionalClasses="mb-2 w-full"
-      onClick="{skipPlan}"
+      onClick={skipPlan}
       testid="voting-skip"
     >
       {$LL.planSkip()}
@@ -65,7 +80,7 @@
     {#if !votingLocked}
       <SolidButton
         additionalClasses="w-full"
-        onClick="{endPlanVoting}"
+        onClick={endPlanVoting}
         testid="voting-finish"
       >
         {$LL.votingFinish()}
@@ -74,12 +89,12 @@
       <SolidButton
         color="blue"
         additionalClasses="mb-2 w-full"
-        onClick="{restartVoting}"
+        onClick={restartVoting}
         testid="voting-restart"
       >
         {$LL.votingRestart()}
       </SolidButton>
-      <form on:submit="{handleSubmit}" name="savePlanPoints">
+      <form onsubmit={handleSubmit} name="savePlanPoints">
         <legend
           class="text-xl mb-2 font-semibold leading-tight dark:text-gray-300"
         >

@@ -22,21 +22,25 @@
   import CrudActions from '../../../components/table/CrudActions.svelte';
   import { BadgeCheck, ToggleLeft, ToggleRight } from 'lucide-svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const usersPageLimit = 100;
 
-  let totalUsers = 0;
-  let users = [];
-  let showCreateUser = false;
-  let usersPage = 1;
+  let totalUsers = $state(0);
+  let users = $state([]);
+  let showCreateUser = $state(false);
+  let usersPage = $state(1);
   let userDeleteId = null;
-  let showUserDeletion = false;
+  let showUserDeletion = $state(false);
   let searchEmail = '';
-  let showUserEdit = false;
-  let selectedUserProfile = {};
+  let showUserEdit = $state(false);
+  let selectedUserProfile = $state({});
 
   const toggleDeleteUser = id => () => {
     showUserDeletion = !showUserDeletion;
@@ -205,156 +209,160 @@
 <AdminPageLayout activePage="users">
   <TableContainer>
     <TableNav
-      title="{$LL.registeredUsers()}"
-      createBtnText="{$LL.warriorCreate()}"
-      createButtonHandler="{toggleCreateUser}"
+      title={$LL.registeredUsers()}
+      createBtnText={$LL.warriorCreate()}
+      createButtonHandler={toggleCreateUser}
       createBtnTestId="user-create"
-      searchEnabled="{true}"
-      searchPlaceholder="{$LL.email()}"
-      searchHandler="{onSearchSubmit}"
+      searchEnabled={true}
+      searchPlaceholder={$LL.email()}
+      searchHandler={onSearchSubmit}
     />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.email()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.company()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.type()}
-        </HeadCol>
-        <HeadCol>Enabled</HeadCol>
-        <HeadCol type="action">
-          <span class="sr-only">{$LL.actions()}</span>
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each users as user, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <div class="flex items-center">
-                <div class="flex-shrink-0 h-10 w-10">
-                  <UserAvatar
-                    warriorId="{user.id}"
-                    avatar="{user.avatar}"
-                    gravatarHash="{user.gravatarHash}"
-                    userName="{user.name}"
-                    width="48"
-                    class="h-10 w-10 rounded-full"
-                  />
-                </div>
-                <div class="ms-4">
-                  <div class="text-sm font-medium text-gray-900">
-                    <a
-                      href="{appRoutes.adminUsers}/{user.id}"
-                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                      >{user.name}</a
-                    >
-                    {#if user.country}
-                      &nbsp;
-                      <CountryFlag
-                        country="{user.country}"
-                        additionalClass="inline-block"
-                        width="32"
-                        height="24"
-                      />
-                    {/if}
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.email()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.company()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.type()}
+          </HeadCol>
+          <HeadCol>Enabled</HeadCol>
+          <HeadCol type="action">
+            <span class="sr-only">{$LL.actions()}</span>
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each users as user, i}
+            <TableRow itemIndex={i}>
+              <RowCol>
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <UserAvatar
+                      warriorId={user.id}
+                      avatar={user.avatar}
+                      gravatarHash={user.gravatarHash}
+                      userName={user.name}
+                      width={48}
+                      class="h-10 w-10 rounded-full"
+                    />
+                  </div>
+                  <div class="ms-4">
+                    <div class="text-sm font-medium text-gray-900">
+                      <a
+                        href="{appRoutes.adminUsers}/{user.id}"
+                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                        >{user.name}</a
+                      >
+                      {#if user.country}
+                        &nbsp;
+                        <CountryFlag
+                          country={user.country}
+                          additionalClass="inline-block"
+                          width="32"
+                          height="24"
+                        />
+                      {/if}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </RowCol>
-            <RowCol>
-              {user.email}
-              {#if user.verified}
-                <span class="text-green-600" title="{$LL.verified()}">
-                  <BadgeCheck class="inline-block" />
-                </span>
-              {/if}
-            </RowCol>
-            <RowCol>
-              <div class="text-sm text-gray-900 dark:text-gray-400">
-                {user.company}
-              </div>
-              <div class="text-sm text-gray-500 dark:text-gray-300">
-                {user.jobTitle}
-              </div>
-            </RowCol>
-            <RowCol>
-              <span class="text-gray-500 dark:text-gray-300">{user.rank}</span>
-            </RowCol>
-            <RowCol>
-              <button
-                on:click="{!user.disabled
+              </RowCol>
+              <RowCol>
+                {user.email}
+                {#if user.verified}
+                  <span class="text-green-600" title="{$LL.verified()}">
+                    <BadgeCheck class="inline-block" />
+                  </span>
+                {/if}
+              </RowCol>
+              <RowCol>
+                <div class="text-sm text-gray-900 dark:text-gray-400">
+                  {user.company}
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-300">
+                  {user.jobTitle}
+                </div>
+              </RowCol>
+              <RowCol>
+                <span class="text-gray-500 dark:text-gray-300">{user.rank}</span>
+              </RowCol>
+              <RowCol>
+                <button
+                  onclick={!user.disabled
                   ? disableUser(user.id)
-                  : enableUser(user.id)}"
-                class:text-red-500="{user.disabled}"
-                class:text-green-500="{!user.disabled}"
-                title="{!user.disabled ? 'enabled' : 'disabled'}"
-              >
-                {#if user.disabled}
-                  <ToggleLeft class="h-10 w-10" />
-                {:else}
-                  <ToggleRight class="h-10 w-10" />
-                {/if}
-              </button>
-            </RowCol>
-            <RowCol type="action">
-              <CrudActions
-                editBtnClickHandler="{toggleUserEdit(user)}"
-                deleteBtnClickHandler="{toggleDeleteUser(user.id)}"
-              >
-                {#if user.rank !== 'ADMIN'}
-                  <HollowButton onClick="{promoteUser(user.id)}" color="blue">
-                    {$LL.promote()}
-                  </HollowButton>
-                {:else}
-                  <HollowButton onClick="{demoteUser(user.id)}" color="blue">
-                    {$LL.demote()}
-                  </HollowButton>
-                {/if}
-              </CrudActions>
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+                  : enableUser(user.id)}
+                  class:text-red-500="{user.disabled}"
+                  class:text-green-500="{!user.disabled}"
+                  title="{!user.disabled ? 'enabled' : 'disabled'}"
+                >
+                  {#if user.disabled}
+                    <ToggleLeft class="h-10 w-10" />
+                  {:else}
+                    <ToggleRight class="h-10 w-10" />
+                  {/if}
+                </button>
+              </RowCol>
+              <RowCol type="action">
+                <CrudActions
+                  editBtnClickHandler={toggleUserEdit(user)}
+                  deleteBtnClickHandler={toggleDeleteUser(user.id)}
+                >
+                  {#if user.rank !== 'ADMIN'}
+                    <HollowButton onClick={promoteUser(user.id)} color="blue">
+                      {$LL.promote()}
+                    </HollowButton>
+                  {:else}
+                    <HollowButton onClick={demoteUser(user.id)} color="blue">
+                      {$LL.demote()}
+                    </HollowButton>
+                  {/if}
+                </CrudActions>
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
-      bind:current="{usersPage}"
-      num_items="{totalUsers}"
-      per_page="{usersPageLimit}"
-      on:navigate="{changePage}"
+      bind:current={usersPage}
+      num_items={totalUsers}
+      per_page={usersPageLimit}
+      on:navigate={changePage}
     />
   </TableContainer>
 
   {#if showCreateUser}
     <CreateUser
-      toggleCreate="{toggleCreateUser}"
-      handleCreate="{createUser}"
+      toggleCreate={toggleCreateUser}
+      handleCreate={createUser}
       notifications
     />
   {/if}
 
   {#if showUserEdit}
-    <Modal closeModal="{toggleUserEdit({})}">
+    <Modal closeModal={toggleUserEdit({})}>
       <ProfileForm
-        profile="{selectedUserProfile}"
-        handleUpdate="{handleUserEdit}"
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        profile={selectedUserProfile}
+        handleUpdate={handleUserEdit}
+        xfetch={xfetch}
+        notifications={notifications}
       />
     </Modal>
   {/if}
 
   {#if showUserDeletion}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteUser(null)}"
-      handleDelete="{handleDeleteUser}"
-      confirmText="{$LL.deleteAccountWarningStatement()}"
-      confirmBtnText="{$LL.deleteConfirmButton()}"
+      toggleDelete={toggleDeleteUser(null)}
+      handleDelete={handleDeleteUser}
+      confirmText={$LL.deleteAccountWarningStatement()}
+      confirmBtnText={$LL.deleteConfirmButton()}
     />
   {/if}
 </AdminPageLayout>

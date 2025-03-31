@@ -1,13 +1,29 @@
 <script lang="ts">
-  export let disabled = false;
-  export let color = 'green';
-  export let additionalClasses = '';
-  export let type = 'button';
-  export let onClick = () => {};
-  export let href = '';
-  export let testid = '';
-  export let options = {};
-  export let labelFor = '';
+  interface Props {
+    disabled?: boolean;
+    color?: string;
+    additionalClasses?: string;
+    type?: string;
+    onClick?: any;
+    href?: string;
+    testid?: string;
+    options?: any;
+    labelFor?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    disabled = false,
+    color = 'green',
+    additionalClasses = '',
+    type = 'button',
+    onClick = () => {},
+    href = '',
+    testid = '',
+    options = {},
+    labelFor = '',
+    children
+  }: Props = $props();
 </script>
 
 <style>
@@ -102,20 +118,20 @@
     for="{labelFor}"
     {...options}
   >
-    <slot />
+    {@render children?.()}
   </label>
 {:else if href === ''}
   <button
     class="btn-hollow btn-hollow-{color}
         {disabled ? 'disabled' : ''}
         {additionalClasses}"
-    on:click="{onClick}"
+    onclick={onClick}
     type="{type}"
     disabled="{disabled}"
     data-testid="{testid}"
     {...options}
   >
-    <slot />
+    {@render children?.()}
   </button>
 {:else}
   <a
@@ -124,6 +140,6 @@
     data-testid="{testid}"
     {...options}
   >
-    <slot />
+    {@render children?.()}
   </a>
 {/if}

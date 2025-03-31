@@ -9,15 +9,19 @@
   import Pagination from '../../components/global/Pagination.svelte';
   import BoxList from '../../components/BoxList.svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let router;
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+  }
+
+  let { xfetch, notifications, router }: Props = $props();
 
   const battlesPageLimit = 10;
-  let battleCount = 0;
-  let battlesPage = 1;
-  let battles = [];
-  let loading = true;
+  let battleCount = $state(0);
+  let battlesPage = $state(1);
+  let battles = $state([]);
+  let loading = $state(true);
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
@@ -66,16 +70,16 @@
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
       {#if battleCount > 0}
         <BoxList
-          items="{battles}"
+          items={battles}
           itemType="battle"
-          pageRoute="{appRoutes.game}"
-          joinBtnText="{$LL.battleJoin()}"
-          showOwner="{false}"
-          showOwnerName="{true}"
+          pageRoute={appRoutes.game}
+          joinBtnText={$LL.battleJoin()}
+          showOwner={false}
+          showOwnerName={true}
           ownerNameField="teamName"
-          showFacilitatorIcon="{true}"
+          showFacilitatorIcon={true}
           facilitatorsKey="leaders"
-          showCompletedStories="{true}"
+          showCompletedStories={true}
         />
       {:else if loading === false}
         <div
@@ -87,10 +91,10 @@
       {#if battleCount > battlesPageLimit}
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
-            bind:current="{battlesPage}"
-            num_items="{battleCount}"
-            per_page="{battlesPageLimit}"
-            on:navigate="{changePage}"
+            bind:current={battlesPage}
+            num_items={battleCount}
+            per_page={battlesPageLimit}
+            on:navigate={changePage}
           />
         </div>
       {/if}
@@ -106,9 +110,9 @@
           {$LL.createBattle()}
         </h2>
         <CreateBattle
-          notifications="{notifications}"
-          router="{router}"
-          xfetch="{xfetch}"
+          notifications={notifications}
+          router={router}
+          xfetch={xfetch}
         />
       </div>
     </div>

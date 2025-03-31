@@ -8,22 +8,42 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
 
-  export let toggleUpdate = () => {};
-  export let handleUpdate = () => {};
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix;
-  export let xfetch: any;
-  export let notifications: any;
 
-  export let scaleId = '';
-  export let name = '';
-  export let description = '';
-  export let scaleType = 'custom';
-  export let values: string[] = [];
-  export let isPublic = false;
-  export let defaultScale = false;
+  interface Props {
+    toggleUpdate?: any;
+    handleUpdate?: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix: any;
+    xfetch: any;
+    notifications: any;
+    scaleId?: string;
+    name?: string;
+    description?: string;
+    scaleType?: string;
+    values?: string[];
+    isPublic?: boolean;
+    defaultScale?: boolean;
+  }
+
+  let {
+    toggleUpdate = () => {},
+    handleUpdate = () => {},
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix,
+    xfetch,
+    notifications,
+    scaleId = '',
+    name = $bindable(''),
+    description = $bindable(''),
+    scaleType = $bindable('custom'),
+    values = $bindable([]),
+    isPublic = $bindable(false),
+    defaultScale = $bindable(false)
+  }: Props = $props();
 
   const scaleTypes = [
     'fibonacci',
@@ -93,12 +113,12 @@
     }
   }
 
-  $: updateDisabled = name === '' || scaleType === '' || values.length === 0;
-  $: isAdmin = validateUserIsAdmin($user);
+  let updateDisabled = $derived(name === '' || scaleType === '' || values.length === 0);
+  let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="updateEstimationScale">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={onSubmit} name="updateEstimationScale">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
@@ -107,8 +127,8 @@
         {$LL.name()}
       </label>
       <TextInput
-        bind:value="{name}"
-        placeholder="{$LL.estimationScaleNamePlaceholder()}"
+        bind:value={name}
+        placeholder={$LL.estimationScaleNamePlaceholder()}
         id="scaleName"
         name="scaleName"
         required
@@ -123,8 +143,8 @@
         {$LL.description()}
       </label>
       <TextInput
-        bind:value="{description}"
-        placeholder="{$LL.estimationScaleDescriptionPlaceholder()}"
+        bind:value={description}
+        placeholder={$LL.estimationScaleDescriptionPlaceholder()}
         id="scaleDescription"
         name="scaleDescription"
       />
@@ -145,7 +165,7 @@
             {$LL.estimationScaleTypePlaceholder()}
           </option>
           {#each scaleTypes as type}
-            <option value="{type}">{type}</option>
+            <option value={type}>{type}</option>
           {/each}
         </SelectInput>
       </div>
@@ -159,9 +179,9 @@
         {$LL.scaleValues()}
       </label>
       <TextInput
-        value="{values.join(', ')}"
-        on:input="{handleValuesChange}"
-        placeholder="{$LL.estimationScaleValuesPlaceholder()}"
+        value={values.join(', ')}
+        on:input={handleValuesChange}
+        placeholder={$LL.estimationScaleValuesPlaceholder()}
         id="scaleValues"
         name="scaleValues"
         required
@@ -174,26 +194,26 @@
     {#if isAdmin && !organizationId && !teamId}
       <div class="mb-4">
         <Checkbox
-          bind:checked="{isPublic}"
+          bind:checked={isPublic}
           id="isPublic"
           name="isPublic"
-          label="{$LL.estimationScaleIsPublic()}"
+          label={$LL.estimationScaleIsPublic()}
         />
       </div>
     {/if}
 
     <div class="mb-4">
       <Checkbox
-        bind:checked="{defaultScale}"
+        bind:checked={defaultScale}
         id="defaultScale"
         name="defaultScale"
-        label="{$LL.estimationScaleDefault()}"
+        label={$LL.estimationScaleDefault()}
       />
     </div>
 
     <div>
       <div class="text-right">
-        <SolidButton type="submit" disabled="{updateDisabled}">
+        <SolidButton type="submit" disabled={updateDisabled}>
           {$LL.estimationScaleSave()}
         </SolidButton>
       </div>

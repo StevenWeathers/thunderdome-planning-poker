@@ -22,7 +22,19 @@
     setLocale(locale);
   };
 
-  export let profile = {
+  interface Props {
+    profile?: any;
+    credential: any;
+    handleUpdate?: any;
+    toggleUpdatePassword: any;
+    notifications: any;
+    xfetch: any;
+    ldapEnabled: any;
+    headerAuthEnabled: any;
+  }
+
+  let {
+    profile = $bindable({
     id: '',
     rank: '',
     name: '',
@@ -35,14 +47,15 @@
     gravatarHash: '',
     verified: false,
     theme: 'auto',
-  };
-  export let credential;
-  export let handleUpdate = () => {};
-  export let toggleUpdatePassword;
-  export let notifications;
-  export let xfetch;
-  export let ldapEnabled;
-  export let headerAuthEnabled;
+  }),
+    credential = $bindable(),
+    handleUpdate = () => {},
+    toggleUpdatePassword,
+    notifications,
+    xfetch,
+    ldapEnabled,
+    headerAuthEnabled
+  }: Props = $props();
 
   const { AvatarService } = AppConfig;
 
@@ -80,7 +93,7 @@
     }
   }
 
-  let showMFASetup = false;
+  let showMFASetup = $state(false);
 
   function toggleMfaSetup() {
     showMFASetup = !showMFASetup;
@@ -91,7 +104,7 @@
     toggleMfaSetup();
   }
 
-  let showMfaRemove = false;
+  let showMfaRemove = $state(false);
 
   function toggleMfaRemove() {
     showMfaRemove = !showMfaRemove;
@@ -120,11 +133,11 @@
       });
   }
 
-  $: updateDisabled = profile.name === '';
-  $: userIsAdmin = validateUserIsAdmin($user);
+  let updateDisabled = $derived(profile.name === '');
+  let userIsAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
-<form on:submit="{handleSubmit}" name="updateProfile">
+<form onsubmit={handleSubmit} name="updateProfile">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -134,10 +147,10 @@
     </label>
     <TextInput
       bind:value="{profile.name}"
-      placeholder="{$LL.yourNamePlaceholder()}"
+      placeholder={$LL.yourNamePlaceholder()}
       id="yourName"
       name="yourName"
-      disabled="{ldapEnabled || headerAuthEnabled}"
+      disabled={ldapEnabled || headerAuthEnabled}
       required
     />
   </div>
@@ -163,7 +176,7 @@
           <button
             class="float-right inline-block align-baseline font-bold text-sm text-blue-500
                                         hover:text-blue-800"
-            on:click="{requestVerifyEmail}"
+            onclick={requestVerifyEmail}
             data-testid="request-verify"
             type="button"
             >{$LL.requestVerifyEmail()}
@@ -176,8 +189,8 @@
       id="yourEmail"
       name="yourEmail"
       type="email"
-      disabled="{!userIsAdmin}"
-      icon="{Mail}"
+      disabled={!userIsAdmin}
+      icon={Mail}
     />
   </div>
 
@@ -187,11 +200,11 @@
         {$LL.mfa2faLabel()}
       </p>
       {#if !credential.mfa_enabled}
-        <HollowButton color="teal" onClick="{toggleMfaSetup}"
+        <HollowButton color="teal" onClick={toggleMfaSetup}
           >{$LL.mfa2faSetup()}
         </HollowButton>
       {:else}
-        <HollowButton color="red" onClick="{toggleMfaRemove}"
+        <HollowButton color="red" onClick={toggleMfaRemove}
           >{$LL.mfa2faRemove()}
         </HollowButton>
       {/if}
@@ -227,7 +240,7 @@
       {$LL.locale()}
     </div>
     <LocaleSwitcher
-      selectedLocale="{$locale}"
+      selectedLocale={$locale}
       on:locale-changed="{e => setupI18n(e.detail)}"
     />
   </div>
@@ -241,10 +254,10 @@
     </label>
     <TextInput
       bind:value="{profile.company}"
-      placeholder="{$LL.companyPlaceholder()}"
+      placeholder={$LL.companyPlaceholder()}
       id="yourCompany"
       name="yourCompany"
-      icon="{Building}"
+      icon={Building}
     />
   </div>
 
@@ -257,7 +270,7 @@
     </label>
     <TextInput
       bind:value="{profile.jobTitle}"
-      placeholder="{$LL.jobTitlePlaceholder()}"
+      placeholder={$LL.jobTitlePlaceholder()}
       id="yourJobTitle"
       name="yourJobTitle"
     />
@@ -282,7 +295,7 @@
   <div class="mb-4">
     <Checkbox
       bind:checked="{profile.notificationsEnabled}"
-      label="{$LL.enableBattleNotifications()}"
+      label={$LL.enableBattleNotifications()}
     />
   </div>
 
@@ -314,11 +327,11 @@
         </div>
         <div class="shrink ms-4">
           <UserAvatar
-            warriorId="{profile.id}"
-            avatar="{profile.avatar}"
-            gravatarHash="{profile.gravatarHash}"
-            userName="{profile.name}"
-            width="48"
+            warriorId={profile.id}
+            avatar={profile.avatar}
+            gravatarHash={profile.gravatarHash}
+            userName={profile.name}
+            width={48}
             class="rounded-full"
           />
         </div>
@@ -334,14 +347,14 @@
             type="button"
             class="inline-block align-baseline font-bold
                                     text-sm text-blue-500 hover:text-blue-800 me-4"
-            on:click="{toggleUpdatePassword}"
+            onclick={toggleUpdatePassword}
             data-testid="toggle-updatepassword"
           >
             {$LL.updatePassword()}
           </button>
         {/if}
       {/if}
-      <SolidButton type="submit" disabled="{updateDisabled}">
+      <SolidButton type="submit" disabled={updateDisabled}>
         {$LL.updateProfile()}
       </SolidButton>
     </div>
@@ -350,18 +363,18 @@
 
 {#if showMFASetup}
   <SetupMFA
-    notifications="{notifications}"
-    xfetch="{xfetch}"
-    toggleSetup="{toggleMfaSetup}"
-    handleComplete="{handleMfaSetupCompletion}"
+    notifications={notifications}
+    xfetch={xfetch}
+    toggleSetup={toggleMfaSetup}
+    handleComplete={handleMfaSetupCompletion}
   />
 {/if}
 
 {#if showMfaRemove}
   <DeleteConfirmation
-    toggleDelete="{toggleMfaRemove}"
-    handleDelete="{handleMfaRemove}"
-    confirmText="{$LL.mfa2faRemoveText()}"
-    confirmBtnText="{$LL.remove()}"
+    toggleDelete={toggleMfaRemove}
+    handleDelete={handleMfaRemove}
+    confirmText={$LL.mfa2faRemoveText()}
+    confirmBtnText={$LL.remove()}
   />
 {/if}

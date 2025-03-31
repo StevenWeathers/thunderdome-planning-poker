@@ -7,11 +7,21 @@
   import Google from '../icons/Google.svelte';
   import TextInput from '../forms/TextInput.svelte';
 
-  export let registerLink = '';
-  export let targetPage = appRoutes.landing;
-  export let router;
-  export let xfetch = async (url, ...options) => {};
-  export let notifications = () => {};
+  interface Props {
+    registerLink?: string;
+    targetPage?: any;
+    router: any;
+    xfetch?: any;
+    notifications?: any;
+  }
+
+  let {
+    registerLink = '',
+    targetPage = appRoutes.landing,
+    router,
+    xfetch = async (url, ...options) => {},
+    notifications = () => {}
+  }: Props = $props();
 
   declare global {
     interface Window {
@@ -28,15 +38,15 @@
   } = AppConfig;
   const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth';
 
-  let email = '';
-  let password = '';
-  let forgotPassword = false;
-  let resetEmail = '';
+  let email = $state('');
+  let password = $state('');
+  let forgotPassword = $state(false);
+  let resetEmail = $state('');
 
-  let mfaRequired = false;
+  let mfaRequired = $state(false);
   let mfaUser = null;
   let mfaSessionId = null;
-  let mfaToken = '';
+  let mfaToken = $state('');
 
   function googleLogin() {
     window.location = `${PathPrefix}/oauth/google/login`;
@@ -133,7 +143,7 @@
 
 {#if OIDCAuthEnabled}
   <button
-    on:click="{oidcLogin}"
+    onclick={oidcLogin}
     data-testid="login"
     class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
   >
@@ -149,7 +159,7 @@
 
 {#if !OIDCAuthEnabled && !forgotPassword && !mfaRequired}
   <form
-    on:submit="{handleLoginSubmit}"
+    onsubmit={handleLoginSubmit}
     class="space-y-6"
     name="login"
     id="login"
@@ -157,16 +167,16 @@
     <TextInput
       id="email"
       data-testid="username"
-      placeholder="{$LL.enterYourEmail()}"
+      placeholder={$LL.enterYourEmail()}
       required
       bind:value="{email}"
-      icon="{Mail}"
+      icon={Mail}
       autocomplete="email"
     />
 
     <PasswordInput
       bind:value="{password}"
-      placeholder="{$LL.yourPasswordPlaceholder()}"
+      placeholder={$LL.yourPasswordPlaceholder()}
       id="password"
       name="password"
       data-testid="password"
@@ -188,7 +198,11 @@
       {#if !LdapEnabled}
         <a
           class="font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-all duration-300 cursor-pointer"
-          on:click="{toggleForgotPassword}"
+          onclick={(e) => { 
+            e.preventDefault();
+            toggleForgotPassword();
+          }}
+          href="/login"
         >
           {$LL.forgotPassword()}
         </a>
@@ -220,7 +234,7 @@
         <div class="flex-grow h-px bg-gray-300"></div>
       </div>
       <button
-        on:click="{googleLogin}"
+        onclick={googleLogin}
         class="inline-flex w-full items-center justify-center rounded-md border border-gray-600 dark:border-gray-400 hover:border-indigo-600 dark:hover:border-purple-400 px-4 py-2 shadow-sm disabled:cursor-wait disabled:opacity-50"
       >
         <span class="sr-only">Sign in with Google</span>
@@ -252,7 +266,7 @@
         >{$LL.createAccountTagline()}
         <a
           class="font-semibold text-indigo-600 dark:text-indigo-100"
-          href="{registerLink}">{$LL.createAccount()}</a
+          href={registerLink}>{$LL.createAccount()}</a
         >
       </span>
     </div>
@@ -261,7 +275,7 @@
 
 {#if forgotPassword}
   <form
-    on:submit="{sendPasswordReset}"
+    onsubmit={sendPasswordReset}
     class="space-y-6 max-w-md"
     name="resetPassword"
   >
@@ -278,20 +292,20 @@
 
     <TextInput
       data-testid="resetemail"
-      bind:value="{resetEmail}"
-      placeholder="{$LL.enterYourEmail()}"
+      bind:value={resetEmail}
+      placeholder={$LL.enterYourEmail()}
       id="yourResetEmail"
       name="yourResetEmail"
       type="email"
       required
-      icon="{Mail}"
+      icon={Mail}
     />
 
     <div class="flex justify-between items-center">
       <button
         type="button"
         class="font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-all duration-300"
-        on:click="{toggleForgotPassword}"
+        onclick={toggleForgotPassword}
       >
         {$LL.returnToLogin()}
       </button>
@@ -306,7 +320,7 @@
 {/if}
 
 {#if mfaRequired}
-  <form on:submit="{authMfa}" class="space-y-6" name="authMfa">
+  <form onsubmit={authMfa} class="space-y-6" name="authMfa">
     <div class="space-y-2">
       <label
         class="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -315,12 +329,12 @@
         {$LL.mfaTokenLabel()}
       </label>
       <TextInput
-        bind:value="{mfaToken}"
+        bind:value={mfaToken}
         placeholder="Enter code"
         id="mfaToken"
         name="mfaToken"
         required
-        icon="{Shield}"
+        icon={Shield}
         inputmode="numeric"
         pattern="[0-9]*"
         autocomplete="one-time-code"

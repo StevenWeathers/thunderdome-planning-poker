@@ -492,7 +492,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	a.registerOauthProviderEndpoints(router, prefix, authProviderConfigs)
 
 	// static assets
-	router.Handle(prefix+"/static/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	router.Handle(prefix+"/assets/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	router.Handle(prefix+"/img/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
 
 	// health check for load balancers, k8s, etc...

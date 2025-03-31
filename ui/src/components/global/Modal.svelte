@@ -1,8 +1,13 @@
 <script lang="ts">
   import { X } from 'lucide-svelte';
 
-  export let closeModal = () => {};
-  export let widthClasses = '';
+  interface Props {
+    closeModal?: any;
+    widthClasses?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { closeModal = () => {}, widthClasses = '', children }: Props = $props();
 </script>
 
 <div
@@ -21,7 +26,7 @@
         class="relative shadow-xl bg-white dark:bg-gray-800 rounded-lg p-4 xl:p-6 max-h-full"
       >
         <button
-          on:click="{closeModal}"
+          onclick={closeModal}
           aria-label="close"
           type="button"
           class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -30,7 +35,7 @@
           <span class="sr-only">Close modal</span>
         </button>
         <div>
-          <slot />
+          {@render children?.()}
         </div>
       </div>
     </div>

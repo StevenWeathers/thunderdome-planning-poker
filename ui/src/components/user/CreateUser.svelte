@@ -2,18 +2,22 @@
   import Modal from '../global/Modal.svelte';
   import UserRegisterForm from './UserRegisterForm.svelte';
 
-  export let notifications;
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
+  interface Props {
+    notifications: any;
+    toggleCreate?: any;
+    handleCreate?: any;
+  }
+
+  let { notifications, toggleCreate = () => {}, handleCreate = () => {} }: Props = $props();
 </script>
 
-<Modal closeModal="{toggleCreate}">
+<Modal closeModal={toggleCreate}>
   <div class="pt-10">
     <UserRegisterForm
-      handleFullAccountRegistration="{handleCreate}"
-      notifications="{notifications}"
-      fullOnly="{true}"
-      isAdmin="{true}"
+      handleFullAccountRegistration={handleCreate}
+      notifications={notifications}
+      fullOnly={true}
+      isAdmin={true}
     />
   </div>
 </Modal>

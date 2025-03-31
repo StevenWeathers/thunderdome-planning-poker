@@ -12,7 +12,7 @@
   import HeadCol from '../../components/table/HeadCol.svelte';
   import Table from '../../components/table/Table.svelte';
   import {
-    BarChart2,
+    ChartNoAxesColumn,
     CheckSquare,
     ChevronRight,
     LayoutDashboard,
@@ -35,41 +35,50 @@
   import MetricsDisplay from '../../components/global/MetricsDisplay.svelte';
   import {
     fetchAndUpdateMetrics,
-    MetricItem,
+    type MetricItem,
   } from '../../components/team/metrics';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
   import RetroTemplatesList from '../../components/retrotemplate/RetroTemplatesList.svelte';
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let organizationId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    organizationId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    organizationId
+  }: Props = $props();
 
   const departmentsPageLimit = 1000;
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
   const orgPrefix = `/api/organizations/${organizationId}`;
 
-  let invitesList;
-  let organization = {
+  let invitesList = $state();
+  let organization = $state({
     id: organizationId,
     name: '',
     createdDate: '',
     updateDate: '',
     subscribed: false,
-  };
-  let role = 'MEMBER';
-  let users = [];
-  let departments = [];
-  let teams = [];
+  });
+  let role = $state('MEMBER');
+  let users = $state([]);
+  let departments = $state([]);
+  let teams = $state([]);
   let invites = [];
-  let showCreateDepartment = false;
-  let showCreateTeam = false;
-  let showDeleteTeam = false;
-  let showDeleteDepartment = false;
-  let showDeleteOrganization = false;
+  let showCreateDepartment = $state(false);
+  let showCreateTeam = $state(false);
+  let showDeleteTeam = $state(false);
+  let showDeleteDepartment = $state(false);
+  let showDeleteOrganization = $state(false);
   let deleteTeamId = null;
   let deleteDeptId = null;
   let teamsPage = 1;
@@ -116,7 +125,7 @@
       });
   }
 
-  let organizationMetrics: MetricItem[] = [
+  let organizationMetrics: MetricItem[] = $state([
     {
       key: 'department_count',
       name: 'Departments',
@@ -143,7 +152,7 @@
       key: 'estimation_scale_count',
       name: 'Custom Estimation Scales',
       value: 0,
-      icon: BarChart2,
+      icon: ChartNoAxesColumn,
     },
     {
       key: 'retro_template_count',
@@ -151,7 +160,7 @@
       value: 0,
       icon: SquareDashedKanban,
     },
-  ];
+  ]);
 
   function getUsers() {
     const usersOffset = (usersPage - 1) * usersPageLimit;
@@ -271,8 +280,8 @@
     id: '',
     name: '',
   };
-  let selectedDepartment = { ...defaultDepartment };
-  let showDepartmentUpdate = false;
+  let selectedDepartment = $state({ ...defaultDepartment });
+  let showDepartmentUpdate = $state(false);
 
   function toggleUpdateDepartment(dept) {
     return () => {
@@ -285,8 +294,8 @@
     id: '',
     name: '',
   };
-  let selectedTeam = { ...defaultTeam };
-  let showTeamUpdate = false;
+  let selectedTeam = $state({ ...defaultTeam });
+  let showTeamUpdate = $state(false);
 
   function toggleUpdateTeam(team) {
     return () => {
@@ -336,9 +345,9 @@
   }
 
   const scalesPageLimit = 20;
-  let estimationScales = [];
+  let estimationScales = $state([]);
   let scaleCount = 0;
-  let scalesPage = 1;
+  let scalesPage = $state(1);
 
   const changeScalesPage = evt => {
     scalesPage = evt.detail;
@@ -366,9 +375,9 @@
   }
 
   const retroTemplatePageLimit = 20;
-  let retroTemplates = [];
+  let retroTemplates = $state([]);
   let retroTemplateCount = 0;
-  let retroTemplatesPage = 1;
+  let retroTemplatesPage = $state(1);
 
   const changeRetroTemplatesPage = evt => {
     retroTemplatesPage = evt.detail;
@@ -412,7 +421,7 @@
     }
   });
 
-  $: isAdmin = role === 'ADMIN';
+  let isAdmin = $derived(role === 'ADMIN');
 </script>
 
 <svelte:head>
@@ -427,63 +436,67 @@
   </h1>
 
   <div class="mb-8">
-    <MetricsDisplay metrics="{organizationMetrics}" />
+    <MetricsDisplay metrics={organizationMetrics} />
   </div>
 
   <div class="w-full mb-6 lg:mb-8">
     <TableContainer>
       <TableNav
-        title="{$LL.departments()}"
-        createBtnEnabled="{isAdmin}"
-        createBtnText="{$LL.departmentCreate()}"
-        createButtonHandler="{toggleCreateDepartment}"
+        title={$LL.departments()}
+        createBtnEnabled={isAdmin}
+        createBtnText={$LL.departmentCreate()}
+        createButtonHandler={toggleCreateDepartment}
         createBtnTestId="department-create"
       />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-          <HeadCol type="action">
-            <span class="sr-only">{$LL.actions()}</span>
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each departments as department, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.organization}/{organizationId}/department/{department.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {department.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(department.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(department.updatedDate).toLocaleString()}
-              </RowCol>
-              <RowCol type="action">
-                {#if isAdmin}
-                  <CrudActions
-                    editBtnClickHandler="{toggleUpdateDepartment(department)}"
-                    deleteBtnClickHandler="{toggleDeleteDepartment(
-                      department.id,
-                    )}"
-                  />
-                {/if}
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+            <HeadCol type="action">
+              <span class="sr-only">{$LL.actions()}</span>
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each departments as department, i}
+              <TableRow itemIndex={i}>
+                <RowCol>
+                  <a
+                    href="{appRoutes.organization}/{organizationId}/department/{department.id}"
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >
+                    {department.name}
+                  </a>
+                </RowCol>
+                <RowCol>
+                  {new Date(department.createdDate).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(department.updatedDate).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  {#if isAdmin}
+                    <CrudActions
+                      editBtnClickHandler={toggleUpdateDepartment(department)}
+                      deleteBtnClickHandler={toggleDeleteDepartment(
+                        department.id,
+                      )}
+                    />
+                  {/if}
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -491,55 +504,59 @@
   <div class="w-full mb-6 lg:mb-8">
     <TableContainer>
       <TableNav
-        title="{$LL.teams()}"
-        createBtnEnabled="{isAdmin}"
-        createBtnText="{$LL.teamCreate()}"
-        createButtonHandler="{toggleCreateTeam}"
+        title={$LL.teams()}
+        createBtnEnabled={isAdmin}
+        createBtnText={$LL.teamCreate()}
+        createButtonHandler={toggleCreateTeam}
         createBtnTestId="team-create"
       />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-          <HeadCol type="action">
-            <span class="sr-only">{$LL.actions()}</span>
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each teams as team, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.organization}/{organizationId}/team/{team.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {team.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(team.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(team.updatedDate).toLocaleString()}
-              </RowCol>
-              <RowCol type="action">
-                {#if isAdmin}
-                  <CrudActions
-                    editBtnClickHandler="{toggleUpdateTeam(team)}"
-                    deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
-                  />
-                {/if}
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+            <HeadCol type="action">
+              <span class="sr-only">{$LL.actions()}</span>
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each teams as team, i}
+              <TableRow itemIndex={i}>
+                <RowCol>
+                  <a
+                    href="{appRoutes.organization}/{organizationId}/team/{team.id}"
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >
+                    {team.name}
+                  </a>
+                </RowCol>
+                <RowCol>
+                  {new Date(team.createdDate).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(team.updatedDate).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  {#if isAdmin}
+                    <CrudActions
+                      editBtnClickHandler={toggleUpdateTeam(team)}
+                      deleteBtnClickHandler={toggleDeleteTeam(team.id)}
+                    />
+                  {/if}
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -547,38 +564,38 @@
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
         pageType="organization"
-        teamPrefix="{orgPrefix}"
+        teamPrefix={orgPrefix}
         bind:this="{invitesList}"
       />
     </div>
   {/if}
 
   <UsersList
-    users="{users}"
-    getUsers="{getUsers}"
-    xfetch="{xfetch}"
-    notifications="{notifications}"
-    isAdmin="{isAdmin}"
+    users={users}
+    getUsers={getUsers}
+    xfetch={xfetch}
+    notifications={notifications}
+    isAdmin={isAdmin}
     pageType="organization"
-    orgId="{organizationId}"
+    orgId={organizationId}
     teamPrefix="/api/organizations/{organizationId}"
-    on:user-invited="{() => {
+    on:user-invited={() => {
       invitesList.f('user-invited');
-    }}"
+    }}
   />
 
   {#if AppConfig.FeaturePoker}
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <PokerSettings
-          xfetch="{xfetch}"
-          notifications="{notifications}"
-          isEntityAdmin="{isAdmin}"
-          apiPrefix="{orgPrefix}"
-          organizationId="{organizationId}"
+          xfetch={xfetch}
+          notifications={notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={orgPrefix}
+          organizationId={organizationId}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -590,17 +607,17 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <EstimationScalesList
-          xfetch="{xfetch}"
-          notifications="{notifications}"
-          isEntityAdmin="{isAdmin}"
-          apiPrefix="{orgPrefix}"
-          organizationId="{organizationId}"
-          scales="{estimationScales}"
-          getScales="{getEstimationScales}"
-          scaleCount="{scaleCount}"
-          scalesPage="{scalesPage}"
-          scalesPageLimit="{scalesPageLimit}"
-          changePage="{changeScalesPage}"
+          xfetch={xfetch}
+          notifications={notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={orgPrefix}
+          organizationId={organizationId}
+          scales={estimationScales}
+          getScales={getEstimationScales}
+          scaleCount={scaleCount}
+          scalesPage={scalesPage}
+          scalesPageLimit={scalesPageLimit}
+          changePage={changeScalesPage}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -614,11 +631,11 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <RetroSettings
-          xfetch="{xfetch}"
-          notifications="{notifications}"
-          isEntityAdmin="{isAdmin}"
-          apiPrefix="{orgPrefix}"
-          organizationId="{organizationId}"
+          xfetch={xfetch}
+          notifications={notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={orgPrefix}
+          organizationId={organizationId}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -630,17 +647,17 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <RetroTemplatesList
-          xfetch="{xfetch}"
-          notifications="{notifications}"
-          isEntityAdmin="{isAdmin}"
-          apiPrefix="{orgPrefix}"
-          organizationId="{organizationId}"
-          templates="{retroTemplates}"
-          getTemplates="{getRetroTemplates}"
-          templateCount="{retroTemplateCount}"
-          templatesPage="{retroTemplatesPage}"
-          templatesPageLimit="{retroTemplatePageLimit}"
-          changePage="{changeRetroTemplatesPage}"
+          xfetch={xfetch}
+          notifications={notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={orgPrefix}
+          organizationId={organizationId}
+          templates={retroTemplates}
+          getTemplates={getRetroTemplates}
+          templateCount={retroTemplateCount}
+          templatesPage={retroTemplatesPage}
+          templatesPageLimit={retroTemplatePageLimit}
+          changePage={changeRetroTemplatesPage}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -652,7 +669,7 @@
 
   {#if isAdmin}
     <div class="w-full text-center mt-8">
-      <HollowButton onClick="{toggleDeleteOrganization}" color="red">
+      <HollowButton onClick={toggleDeleteOrganization} color="red">
         {$LL.deleteOrganization()}
       </HollowButton>
     </div>
@@ -660,58 +677,58 @@
 
   {#if showCreateDepartment}
     <CreateDepartment
-      toggleCreate="{toggleCreateDepartment}"
-      handleCreate="{createDepartmentHandler}"
+      toggleCreate={toggleCreateDepartment}
+      handleCreate={createDepartmentHandler}
     />
   {/if}
 
   {#if showDepartmentUpdate}
     <CreateDepartment
-      departmentName="{selectedDepartment.name}"
-      toggleCreate="{toggleUpdateDepartment(defaultDepartment)}"
-      handleCreate="{updateDepartmentHandler}"
+      departmentName={selectedDepartment.name}
+      toggleCreate={toggleUpdateDepartment(defaultDepartment)}
+      handleCreate={updateDepartmentHandler}
     />
   {/if}
 
   {#if showCreateTeam}
     <CreateTeam
-      toggleCreate="{toggleCreateTeam}"
-      handleCreate="{createTeamHandler}"
+      toggleCreate={toggleCreateTeam}
+      handleCreate={createTeamHandler}
     />
   {/if}
 
   {#if showTeamUpdate}
     <CreateTeam
-      teamName="{selectedTeam.name}"
-      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
-      handleCreate="{updateTeamHandler}"
+      teamName={selectedTeam.name}
+      toggleCreate={toggleUpdateTeam(defaultTeam)}
+      handleCreate={updateTeamHandler}
     />
   {/if}
 
   {#if showDeleteTeam}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteTeam(null)}"
-      handleDelete="{handleDeleteTeam}"
-      confirmText="{$LL.deleteTeamConfirmText()}"
-      confirmBtnText="{$LL.deleteTeam()}"
+      toggleDelete={toggleDeleteTeam(null)}
+      handleDelete={handleDeleteTeam}
+      confirmText={$LL.deleteTeamConfirmText()}
+      confirmBtnText={$LL.deleteTeam()}
     />
   {/if}
 
   {#if showDeleteDepartment}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteDepartment(null)}"
-      handleDelete="{handleDeleteDepartment}"
-      confirmText="{$LL.deleteDepartmentConfirmText()}"
-      confirmBtnText="{$LL.deleteDepartment()}"
+      toggleDelete={toggleDeleteDepartment(null)}
+      handleDelete={handleDeleteDepartment}
+      confirmText={$LL.deleteDepartmentConfirmText()}
+      confirmBtnText={$LL.deleteDepartment()}
     />
   {/if}
 
   {#if showDeleteOrganization}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteOrganization}"
-      handleDelete="{handleDeleteOrganization}"
-      confirmText="{$LL.deleteOrganizationConfirmText()}"
-      confirmBtnText="{$LL.deleteOrganization()}"
+      toggleDelete={toggleDeleteOrganization}
+      handleDelete={handleDeleteOrganization}
+      confirmText={$LL.deleteOrganizationConfirmText()}
+      confirmBtnText={$LL.deleteOrganization()}
     />
   {/if}
 </PageLayout>

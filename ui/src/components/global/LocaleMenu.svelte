@@ -60,7 +60,7 @@
       {#each supportedLocales as locale}
         <li
           class="flex cursor-pointer select-none items-center rounded-[0.625rem] p-1 text-slate-700
-                         dark:text-slate-300 text-slate-900 dark:hover:text-white hover:bg-slate-100
+                         dark:text-slate-300 text-slate-900 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100
                           dark:hover:bg-slate-900/40 {locale.value ===
           selectedLocale
             ? 'bg-indigo-600 text-white'

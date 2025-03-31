@@ -2,16 +2,20 @@
   import { onMount } from 'svelte';
   import { addTimeLeadZero, timeUnitsBetween } from '../../dateUtils';
 
-  export let currentStoryId: string = '';
-  export let votingLocked: boolean = true;
-  export let voteStartTime: Date = new Date();
+  interface Props {
+    currentStoryId?: string;
+    votingLocked?: boolean;
+    voteStartTime?: Date;
+  }
 
-  let currentTime: Date = new Date();
+  let { currentStoryId = '', votingLocked = true, voteStartTime = new Date() }: Props = $props();
 
-  $: voteDuration =
-    currentStoryId !== '' && votingLocked === false
+  let currentTime: Date = $state(new Date());
+
+  let voteDuration =
+    $derived(currentStoryId !== '' && votingLocked === false
       ? timeUnitsBetween(voteStartTime, currentTime)
-      : {};
+      : {});
 
   onMount(() => {
     const voteCounter = setInterval(() => {

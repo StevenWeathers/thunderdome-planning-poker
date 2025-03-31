@@ -3,16 +3,25 @@
   import Modal from '../global/Modal.svelte';
   import TextInput from '../forms/TextInput.svelte';
 
-  export let toggleEditPersona = () => () => {};
-  export let handlePersonaAdd = () => {};
-  export let handlePersonaRevision = () => {};
 
-  export let persona = {
+  interface Props {
+    toggleEditPersona?: any;
+    handlePersonaAdd?: any;
+    handlePersonaRevision?: any;
+    persona?: any;
+  }
+
+  let {
+    toggleEditPersona = () => () => {},
+    handlePersonaAdd = () => {},
+    handlePersonaRevision = () => {},
+    persona = $bindable({
     id: '',
     name: '',
     role: '',
     description: '',
-  };
+  })
+  }: Props = $props();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -30,8 +39,8 @@
   }
 </script>
 
-<Modal closeModal="{toggleEditPersona}">
-  <form on:submit="{handleSubmit}" name="addPersona">
+<Modal closeModal={toggleEditPersona}>
+  <form onsubmit={handleSubmit} name="addPersona">
     <div class="mb-4">
       <label
         class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"

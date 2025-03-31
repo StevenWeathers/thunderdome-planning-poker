@@ -12,10 +12,19 @@
   import DomeLogo from '../logos/DomeLogo.svelte';
   import DomeLogoLight from '../logos/DomeLogoLight.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let currentPage;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    currentPage: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    currentPage
+  }: Props = $props();
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
@@ -38,7 +47,7 @@
   const pageClass =
     'block lg:pt-6 lg:pb-4 px-4 border-b border-gray-200 lg:border-white dark:border-gray-600 lg:dark:border-gray-800 lg:border-b-4 text-gray-700 hover:border-indigo-600 dark:hover:border-yellow-thunder hover:text-indigo-700 dark:text-gray-300 dark:hover:text-yellow-thunder transition duration-300';
 
-  let showMobileMenu = false;
+  let showMobileMenu = $state(false);
 
   function toggleMobileMenu(e) {
     !!e && e.preventDefault();
@@ -92,26 +101,20 @@
         {#if !$user.id}
           <li>
             <LocaleMenu
-              xfetch="{xfetch}"
-              notifications="{notifications}"
-              router="{router}"
-              currentPage="{currentPage}"
-              selectedLocale="{$locale}"
-              on:locale-changed="{e => setupI18n(e.detail)}"
+              currentPage={currentPage}
+              selectedLocale={$locale}
+              on:locale-changed={e => setupI18n(e.detail)}
             />
           </li>
           <li class="flex">
             <ThemeSelector
-              xfetch="{xfetch}"
-              notifications="{notifications}"
-              router="{router}"
-              currentPage="{currentPage}"
+              currentPage={currentPage}
             />
           </li>
           <li>
             {#if HeaderAuthEnabled}
               <button
-                on:click="{headerLogin}"
+                onclick={headerLogin}
                 class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-102 flex items-center space-x-2 shadow-md hover:shadow-lg"
                 >{$LL.login()}
                 <ArrowRight class="h-4 w-4 ms-1 inline-block" />
@@ -129,16 +132,16 @@
         {#if $user.id}
           <li class="relative">
             <NavUserMenu
-              xfetch="{xfetch}"
-              notifications="{notifications}"
-              router="{router}"
-              currentPage="{currentPage}"
+              xfetch={xfetch}
+              notifications={notifications}
+              router={router}
+              currentPage={currentPage}
             />
           </li>
         {/if}
         <li>
           <button
-            on:click="{toggleMobileMenu}"
+            onclick={toggleMobileMenu}
             type="button"
             class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
           >

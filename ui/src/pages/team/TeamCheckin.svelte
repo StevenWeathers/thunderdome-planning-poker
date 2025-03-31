@@ -205,7 +205,6 @@
   function handleCheckinDelete(checkinId) {
     xfetch(`${teamPrefix}/checkins/${checkinId}`, { method: 'DELETE' })
       .then(res => res.json())
-      .then(function () {})
       .catch(function () {
         notifications.danger($LL.deleteCheckinError());
       });

@@ -1,3 +1,8 @@
+<script>
+  /** @type {{children?: import('svelte').Snippet}} */
+  let { children } = $props();
+</script>
+
 <div
   class="bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900 dark:to-indigo-900 rounded-2xl p-8 transform transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-purple-500 relative"
 >
@@ -6,5 +11,5 @@
   >
     RECOMMENDED
   </div>
-  <slot />
+  {@render children?.()}
 </div>

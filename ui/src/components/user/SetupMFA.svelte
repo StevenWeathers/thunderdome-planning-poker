@@ -6,14 +6,23 @@
   import TextInput from '../forms/TextInput.svelte';
   import { Shield } from 'lucide-svelte';
 
-  export let toggleSetup = () => {};
-  export let handleComplete = () => {};
-  export let xfetch;
-  export let notifications;
+  interface Props {
+    toggleSetup?: any;
+    handleComplete?: any;
+    xfetch: any;
+    notifications: any;
+  }
 
-  let qrCode = '';
-  let secret = '';
-  let passcode = '';
+  let {
+    toggleSetup = () => {},
+    handleComplete = () => {},
+    xfetch,
+    notifications
+  }: Props = $props();
+
+  let qrCode = $state('');
+  let secret = $state('');
+  let passcode = $state('');
 
   xfetch('/api/auth/mfa/setup/generate', { method: 'POST' })
     .then(res => res.json())
@@ -42,10 +51,10 @@
       });
   }
 
-  $: submitDisabled = passcode === '';
+  let submitDisabled = $derived(passcode === '');
 </script>
 
-<Modal closeModal="{toggleSetup}" widthClasses="md:w-2/3 lg:w-1/2">
+<Modal closeModal={toggleSetup} widthClasses="md:w-2/3 lg:w-1/2">
   <div class="pt-12">
     <div class="dark:text-gray-300 text-center">
       <p class="font-rajdhani text-lg mb-2">
@@ -63,7 +72,7 @@
         </p>
       {/if}
     </div>
-    <form on:submit="{onSubmit}" name="validateMFAPasscode" class="mt-8">
+    <form onsubmit={onSubmit} name="validateMFAPasscode" class="mt-8">
       <div class="mb-4">
         <label
           class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -73,18 +82,18 @@
         </label>
         <TextInput
           bind:value="{passcode}"
-          placeholder="{$LL.mfaTokenPlaceholder()}"
+          placeholder={$LL.mfaTokenPlaceholder()}
           id="mfaPasscode"
           name="mfaPasscode"
           type="password"
           required
-          icon="{Shield}"
+          icon={Shield}
         />
       </div>
 
       <div>
         <div class="text-right">
-          <SolidButton type="submit" disabled="{submitDisabled}">
+          <SolidButton type="submit" disabled={submitDisabled}>
             {$LL.mfaConfirmToken()}
           </SolidButton>
         </div>

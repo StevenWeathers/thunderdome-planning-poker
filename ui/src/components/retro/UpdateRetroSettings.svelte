@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import Modal from '../global/Modal.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import LL from '../../i18n/i18n-svelte';
@@ -8,15 +10,28 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  export let toggleClose = () => {};
-  export let xfetch;
-  export let notifications;
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix = '/api';
-  export let isEntityAdmin = false;
-  export let retroSettings = {
+  interface Props {
+    toggleClose?: any;
+    xfetch: any;
+    notifications: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    isEntityAdmin?: boolean;
+    retroSettings?: any;
+  }
+
+  let {
+    toggleClose = () => {},
+    xfetch,
+    notifications,
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    isEntityAdmin = false,
+    retroSettings = $bindable({
     id: '',
     maxVotes: 3,
     allowMultipleVotes: false,
@@ -27,7 +42,8 @@
     templateId: null,
     joinCode: '',
     facilitatorCode: '',
-  };
+  })
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
   const brainstormVisibilityOptions = [
@@ -86,8 +102,8 @@
   }
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit|preventDefault="{handleSubmit}" class="mt-6 space-y-6">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={preventDefault(handleSubmit)} class="mt-6 space-y-6">
     <div>
       <label
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
@@ -98,7 +114,7 @@
       <div class="control">
         <TextInput
           name="maxVotes"
-          bind:value="{retroSettings.maxVotes}"
+          bind:value={retroSettings.maxVotes}
           id="maxVotes"
           type="number"
           min="1"
@@ -110,10 +126,10 @@
 
     <div>
       <Checkbox
-        bind:checked="{retroSettings.allowCumulativeVoting}"
+        bind:checked={retroSettings.allowCumulativeVoting}
         id="allowCumulativeVoting"
         name="allowCumulativeVoting"
-        label="{$LL.allowCumulativeVotingLabel()}"
+        label={$LL.allowCumulativeVotingLabel()}
       />
     </div>
 
@@ -130,7 +146,7 @@
         name="brainstormVisibility"
       >
         {#each brainstormVisibilityOptions as item}
-          <option value="{item.value}">
+          <option value={item.value}>
             {item.label}
           </option>
         {/each}
@@ -147,11 +163,11 @@
       <div class="control">
         <TextInput
           name="phaseTimeLimitMin"
-          bind:value="{retroSettings.phaseTimeLimit}"
+          bind:value={retroSettings.phaseTimeLimit}
           id="phaseTimeLimitMin"
           type="number"
           min="0"
-          max="{maxPhaseTimeLimitMin}"
+          max={maxPhaseTimeLimitMin}
           required
         />
       </div>
@@ -162,7 +178,7 @@
         bind:checked="{retroSettings.phaseAutoAdvance}"
         id="phaseAutoAdvance"
         name="phaseAutoAdvance"
-        label="{$LL.phaseAutoAdvanceLabel()}"
+        label={$LL.phaseAutoAdvanceLabel()}
       />
     </div>
 
@@ -176,10 +192,10 @@
       <div class="control">
         <TextInput
           name="joinCode"
-          bind:value="{retroSettings.joinCode}"
-          placeholder="{$LL.joinCodePlaceholder()}"
+          bind:value={retroSettings.joinCode}
+          placeholder={$LL.joinCodePlaceholder()}
           id="joinCode"
-          icon="{Lock}"
+          icon={Lock}
         />
       </div>
     </div>
@@ -194,10 +210,10 @@
       <div class="control">
         <TextInput
           name="leaderCode"
-          bind:value="{retroSettings.facilitatorCode}"
-          placeholder="{$LL.facilitatorCodePlaceholder()}"
+          bind:value={retroSettings.facilitatorCode}
+          placeholder={$LL.facilitatorCodePlaceholder()}
           id="leaderCode"
-          icon="{Crown}"
+          icon={Crown}
         />
       </div>
     </div>

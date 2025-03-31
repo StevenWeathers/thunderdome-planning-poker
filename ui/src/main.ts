@@ -1,4 +1,5 @@
 import App from './App.svelte';
+import { mount } from 'svelte';
 
 declare global {
   interface Window {
@@ -6,7 +7,7 @@ declare global {
   }
 }
 
-const app = new App({
+const app = mount(App, {
   target: document.body,
 });
 window.app = app;

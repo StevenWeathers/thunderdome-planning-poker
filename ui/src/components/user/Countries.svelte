@@ -1,9 +1,13 @@
 <script lang="ts">
   import CountryFlag from './CountryFlag.svelte';
 
-  export let xfetch;
+  interface Props {
+    xfetch: any;
+  }
 
-  let activeCountries = [];
+  let { xfetch }: Props = $props();
+
+  let activeCountries = $state([]);
 
   xfetch('/api/active-countries')
     .then(res => res.json())
@@ -24,7 +28,7 @@
   <ul class="flex flex-wrap gap-3">
     {#each activeCountries as country}
       <li class="flex-none w-12">
-        <CountryFlag country="{country}" additionalClass="mx-auto" />
+        <CountryFlag country={country} additionalClass="mx-auto" />
       </li>
     {/each}
   </ul>

@@ -5,23 +5,33 @@
   import { user } from '../../stores';
   import { User } from 'lucide-svelte';
 
-  export let toggleComments = () => {};
-  export let item: any = {
+  interface Props {
+    toggleComments?: any;
+    item?: any;
+    users?: any;
+    isFacilitator?: boolean;
+    sendSocketEvent?: any;
+  }
+
+  let {
+    toggleComments = () => {},
+    item = {
     id: '',
     comments: [],
-  };
-  export let users = [];
-  export let isFacilitator = false;
-  export let sendSocketEvent = (event: string, value: any) => {};
+  },
+    users = [],
+    isFacilitator = false,
+    sendSocketEvent = (event: string, value: any) => {}
+  }: Props = $props();
 
   const userMap = users.reduce((prev, cur) => {
     prev[cur.id] = cur.name;
     return prev;
   }, {});
 
-  let userComment = '';
-  let selectedComment = null;
-  let selectedCommentContent = '';
+  let userComment = $state('');
+  let selectedComment = $state(null);
+  let selectedCommentContent = $state('');
 
   const toggleCommentEdit = comment => () => {
     selectedComment = comment;
@@ -62,7 +72,7 @@
   };
 </script>
 
-<Modal closeModal="{toggleComments}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal={toggleComments} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
   <div class="mt-12 dark:text-gray-300">
     <h3 class="text-xl pb-2 mb-4 border-b border-gray-600 dark:border-gray-400">
       Comments
@@ -83,15 +93,15 @@
               class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                             rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                             focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
-              bind:value="{selectedCommentContent}"></textarea>
+              bind:value={selectedCommentContent}></textarea>
             <div class="text-right">
-              <HollowButton color="blue" onClick="{toggleCommentEdit(null)}">
+              <HollowButton color="blue" onClick={toggleCommentEdit(null)}>
                 {$LL.cancel()}
               </HollowButton>
               <HollowButton
                 color="green"
-                onClick="{handleCommentEdit}"
-                disabled="{selectedCommentContent === ''}"
+                onClick={handleCommentEdit}
+                disabled={selectedCommentContent === ''}
               >
                 {$LL.updateComment()}
               </HollowButton>
@@ -106,13 +116,13 @@
           <div class="mb-2 text-right">
             <button
               class="text-blue-500 hover:text-blue-300 me-1"
-              on:click="{toggleCommentEdit(comment)}"
+              onclick={toggleCommentEdit(comment)}
             >
               {$LL.edit()}
             </button>
             <button
               class="text-red-500"
-              on:click="{handleCommentDelete(comment.id)}"
+              onclick={handleCommentDelete(comment.id)}
             >
               {$LL.delete()}
             </button>
@@ -129,13 +139,13 @@
         class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
-        placeholder="{$LL.writeCommentPlaceholder()}"
-        bind:value="{userComment}"></textarea>
+        placeholder={$LL.writeCommentPlaceholder()}
+        bind:value={userComment}></textarea>
       <div class="text-right">
         <HollowButton
           color="teal"
-          onClick="{handleCommentSubmit}"
-          disabled="{userComment === ''}"
+          onClick={handleCommentSubmit}
+          disabled={userComment === ''}
         >
           {$LL.postComment()}
         </HollowButton>

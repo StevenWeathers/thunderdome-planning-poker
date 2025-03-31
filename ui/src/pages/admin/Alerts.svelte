@@ -17,29 +17,33 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const alertsPageLimit = 25;
-  let alertCount = 0;
+  let alertCount = $state(0);
 
   const defaultAlert = {
     id: '',
     name: '',
     type: '',
     content: '',
-    active: '',
-    registeredOnly: '',
-    allowDismiss: '',
+    active: false,
+    registeredOnly: false,
+    allowDismiss: true,
   };
 
-  let alerts = [];
-  let alertsPage = 1;
-  let showAlertCreate = false;
-  let showAlertUpdate = false;
-  let showDeleteAlert = false;
-  let selectedAlert = { ...defaultAlert };
+  let alerts = $state([]);
+  let alertsPage = $state(1);
+  let showAlertCreate = $state(false);
+  let showAlertUpdate = $state(false);
+  let showDeleteAlert = $state(false);
+  let selectedAlert = $state({ ...defaultAlert });
   let deleteAlertId = null;
 
   function toggleCreateAlert() {
@@ -137,107 +141,110 @@
 <AdminPageLayout activePage="alerts">
   <TableContainer>
     <TableNav
-      title="{$LL.alerts()}"
-      createBtnText="{$LL.alertCreate()}"
-      createButtonHandler="{toggleCreateAlert}"
+      title={$LL.alerts()}
+      createBtnText={$LL.alertCreate()}
+      createButtonHandler={toggleCreateAlert}
       createBtnTestId="alert-create"
     />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.type()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.active()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.alertRegisteredOnly()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.alertAllowDismiss()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-        <HeadCol type="action">
-          <span class="sr-only">Actions</span>
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each alerts as alert, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              {alert.name}
-            </RowCol>
-            <RowCol>
-              {alert.type}
-            </RowCol>
-            <RowCol>
-              {#if alert.active}
-                <BooleanDisplay boolValue="{alert.active}" />
-              {/if}
-            </RowCol>
-            <RowCol>
-              {#if alert.registeredOnly}
-                <BooleanDisplay boolValue="{alert.registeredOnly}" />
-              {/if}
-            </RowCol>
-            <RowCol>
-              {#if alert.allowDismiss}
-                <BooleanDisplay boolValue="{alert.allowDismiss}" />
-              {/if}
-            </RowCol>
-            <RowCol>
-              {new Date(alert.updatedDate).toLocaleString()}
-            </RowCol>
-            <RowCol type="action">
-              <CrudActions
-                editBtnClickHandler="{toggleUpdateAlert(alert)}"
-                deleteBtnClickHandler="{toggleDeleteAlert(alert.id)}"
-              />
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.type()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.active()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.alertRegisteredOnly()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.alertAllowDismiss()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+          <HeadCol type="action">
+            <span class="sr-only">Actions</span>
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each alerts as alert, i}
+            <TableRow itemIndex={i}>
+              <RowCol>
+                {alert.name}
+              </RowCol>
+              <RowCol>
+                {alert.type}
+              </RowCol>
+              <RowCol>
+                {#if alert.active}
+                  <BooleanDisplay boolValue={alert.active} />
+                {/if}
+              </RowCol>
+              <RowCol>
+                {#if alert.registeredOnly}
+                  <BooleanDisplay boolValue={alert.registeredOnly} />
+                {/if}
+              </RowCol>
+              <RowCol>
+                {#if alert.allowDismiss}
+                  <BooleanDisplay boolValue={alert.allowDismiss} />
+                {/if}
+              </RowCol>
+              <RowCol>
+                {new Date(alert.updatedDate).toLocaleString()}
+              </RowCol>
+              <RowCol type="action">
+                <CrudActions
+                  editBtnClickHandler={toggleUpdateAlert(alert)}
+                  deleteBtnClickHandler={toggleDeleteAlert(alert.id)}
+                />
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
-      bind:current="{alertsPage}"
-      num_items="{alertCount}"
-      per_page="{alertsPageLimit}"
-      on:navigate="{changePage}"
+      bind:current={alertsPage}
+      num_items={alertCount}
+      per_page={alertsPageLimit}
+      on:navigate={changePage}
     />
   </TableContainer>
 
   {#if showAlertCreate}
     <CreateAlert
-      toggleCreate="{toggleCreateAlert}"
-      handleCreate="{createAlert}"
-      alerts="{alerts}"
+      toggleCreate={toggleCreateAlert}
+      handleCreate={createAlert}
     />
   {/if}
   {#if showAlertUpdate}
     <CreateAlert
-      toggleUpdate="{toggleUpdateAlert({ ...defaultAlert })}"
-      handleUpdate="{updateAlert}"
-      alertId="{selectedAlert.id}"
-      alertName="{selectedAlert.name}"
-      alertType="{selectedAlert.type}"
-      content="{selectedAlert.content}"
-      active="{selectedAlert.active}"
-      registeredOnly="{selectedAlert.registeredOnly}"
-      allowDismiss="{selectedAlert.allowDismiss}"
+      toggleUpdate={toggleUpdateAlert({ ...defaultAlert })}
+      handleUpdate={updateAlert}
+      alertId={selectedAlert.id}
+      alertName={selectedAlert.name}
+      alertType={selectedAlert.type}
+      content={selectedAlert.content}
+      active={selectedAlert.active}
+      registeredOnly={selectedAlert.registeredOnly}
+      allowDismiss={selectedAlert.allowDismiss}
     />
   {/if}
 
   {#if showDeleteAlert}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteAlert(null)}"
-      handleDelete="{handleDeleteAlert}"
-      confirmText="{$LL.alertDeleteConfirmation()}"
-      confirmBtnText="{$LL.alertDelete()}"
+      toggleDelete={toggleDeleteAlert(null)}
+      handleDelete={handleDeleteAlert}
+      confirmText={$LL.alertDeleteConfirmation()}
+      confirmBtnText={$LL.alertDelete()}
     />
   {/if}
 </AdminPageLayout>

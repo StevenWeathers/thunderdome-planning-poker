@@ -1,16 +1,25 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { createEventDispatcher } from 'svelte';
   import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
   const dispatch = createEventDispatcher();
 
-  export let current = 1;
-  export let num_items = 120;
-  export let per_page = 5;
+  interface Props {
+    current?: number;
+    num_items?: number;
+    per_page?: number;
+  }
 
-  $: num_pages = Math.ceil(num_items / per_page);
+  let { current = $bindable(1), num_items = 120, per_page = 5 }: Props = $props();
 
-  let arr_pages = [];
+  let num_pages: number = $state(0);
+  run(() => {
+    num_pages = Math.ceil(num_items / per_page);
+  });
+
+  let arr_pages = $state([]);
 
   function buildArr(c, n) {
     if (n <= 7) {
@@ -28,20 +37,26 @@
     arr_pages = buildArr(current, num_pages);
   }
 
-  $: if (current) {
-    setArrPages();
-  }
+  run(() => {
+    if (current) {
+      setArrPages();
+    }
+  });
 
-  $: if (per_page) {
-    setArrPages();
-    current = 1;
-  }
+  run(() => {
+    if (per_page) {
+      setArrPages();
+      current = 1;
+    }
+  });
 
-  $: if (num_items) {
-    num_pages = Math.ceil(num_items / per_page);
-    setArrPages();
-    current = current || 1;
-  }
+  run(() => {
+    if (num_items) {
+      num_pages = Math.ceil(num_items / per_page);
+      setArrPages();
+      current = current || 1;
+    }
+  });
 
   function setCurrent(i) {
     if (isNaN(i)) return;
@@ -57,8 +72,8 @@
       : 'text-gray-400 dark:text-gray-700'}"
     role="button"
     tabindex="0"
-    on:click="{() => current > 1 && setCurrent(current - 1)}"
-    on:keypress="{() => current > 1 && setCurrent(current - 1)}"
+    onclick={() => current > 1 && setCurrent(current - 1)}
+    onkeypress={() => current > 1 && setCurrent(current - 1)}
   >
     <ChevronLeft class="w-6 h-6 inline-block" />
   </div>
@@ -73,8 +88,8 @@
                 "
         role="button"
         tabindex="0"
-        on:click="{() => setCurrent(i)}"
-        on:keypress="{() => setCurrent(i)}"
+        onclick={() => setCurrent(i)}
+        onkeypress={() => setCurrent(i)}
       >
         {i}
       </div>
@@ -93,8 +108,8 @@
       : 'text-gray-400 dark:text-gray-700'}"
     role="button"
     tabindex="0"
-    on:click="{() => current < num_pages && setCurrent(current + 1)}"
-    on:keypress="{() => current < num_pages && setCurrent(current + 1)}"
+    onclick={() => current < num_pages && setCurrent(current + 1)}
+    onkeypress={() => current < num_pages && setCurrent(current + 1)}
   >
     <ChevronRight class="w-6 h-6 inline-block" />
   </div>

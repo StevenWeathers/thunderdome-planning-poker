@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token -->
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
@@ -113,8 +114,8 @@
                         <AssociatedOrganization
                           userId="{$user.id}"
                           organizationId="{sub.organization_id}"
-                          xfetch="{xfetch}"
-                          notifications="{notifications}"
+                          xfetch={xfetch}
+                          notifications={notifications}
                         />
                       {/if}
                     {:else}
@@ -131,8 +132,8 @@
                         <AssociatedTeam
                           userId="{$user.id}"
                           teamId="{sub.team_id}"
-                          xfetch="{xfetch}"
-                          notifications="{notifications}"
+                          xfetch={xfetch}
+                          notifications={notifications}
                         />
                       {/if}
                     {:else}
@@ -153,21 +154,21 @@
 
   {#if showAssociateTeam}
     <AssociateTeamForm
-      handleUpdate="{handleAssociate}"
-      toggleClose="{toggleAssociateTeam(null)}"
+      handleUpdate={handleAssociate}
+      toggleClose={toggleAssociateTeam(null)}
       subscriptionId="{selectedSubscriptionId}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 
   {#if showAssociateOrganization}
     <AssociateOrgForm
-      handleUpdate="{handleAssociate}"
-      toggleClose="{toggleAssociateOrganization(null)}"
+      handleUpdate={handleAssociate}
+      toggleClose={toggleAssociateOrganization(null)}
       subscriptionId="{selectedSubscriptionId}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 </div>

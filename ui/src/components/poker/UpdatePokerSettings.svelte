@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import Modal from '../global/Modal.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import LL from '../../i18n/i18n-svelte';
@@ -8,15 +10,28 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  export let toggleClose = () => {};
-  export let xfetch;
-  export let notifications;
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix = '/api';
-  export let isEntityAdmin = false;
-  export let pokerSettings = {
+  interface Props {
+    toggleClose?: any;
+    xfetch: any;
+    notifications: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    isEntityAdmin?: boolean;
+    pokerSettings?: any;
+  }
+
+  let {
+    toggleClose = () => {},
+    xfetch,
+    notifications,
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    isEntityAdmin = false,
+    pokerSettings = $bindable({
     id: '',
     autoFinishVoting: true,
     pointAverageRounding: 'ceil',
@@ -24,7 +39,8 @@
     estimationScaleId: null,
     joinCode: '',
     facilitatorCode: '',
-  };
+  })
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
   const allowedPointAverages = ['ceil', 'round', 'floor'];
@@ -71,8 +87,8 @@
   }
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit|preventDefault="{handleSubmit}" class="mt-6 space-y-6">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={preventDefault(handleSubmit)} class="mt-6 space-y-6">
     <div>
       <label
         for="pointAverageRounding"
@@ -98,7 +114,7 @@
         bind:checked="{pokerSettings.autoFinishVoting}"
         id="autoFinishVoting"
         name="autoFinishVoting"
-        label="{$LL.autoFinishVotingLabel()}"
+        label={$LL.autoFinishVotingLabel()}
       />
     </div>
 
@@ -107,7 +123,7 @@
         bind:checked="{pokerSettings.hideVoterIdentity}"
         id="hideVoterIdentity"
         name="hideVoterIdentity"
-        label="{$LL.hideVoterIdentity()}"
+        label={$LL.hideVoterIdentity()}
       />
     </div>
 
@@ -138,9 +154,9 @@
         <TextInput
           name="joinCode"
           bind:value="{pokerSettings.joinCode}"
-          placeholder="{$LL.optionalPasscodePlaceholder()}"
+          placeholder={$LL.optionalPasscodePlaceholder()}
           id="joinCode"
-          icon="{Lock}"
+          icon={Lock}
         />
       </div>
     </div>
@@ -156,9 +172,9 @@
         <TextInput
           name="leaderCode"
           bind:value="{pokerSettings.facilitatorCode}"
-          placeholder="{$LL.facilitatorCodePlaceholder()}"
+          placeholder={$LL.facilitatorCodePlaceholder()}
           id="leaderCode"
-          icon="{Crown}"
+          icon={Crown}
         />
       </div>
     </div>

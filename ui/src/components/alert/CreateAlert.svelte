@@ -6,17 +6,33 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
 
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
-  export let toggleUpdate = () => {};
-  export let handleUpdate = () => {};
-  export let alertId = '';
-  export let alertName = '';
-  export let alertType = '';
-  export let content = '';
-  export let active = true;
-  export let registeredOnly = false;
-  export let allowDismiss = true;
+  interface Props {
+    toggleCreate?: any;
+    handleCreate?: any;
+    toggleUpdate?: any;
+    handleUpdate?: any;
+    alertId?: string;
+    alertName?: string;
+    alertType?: string;
+    content?: string;
+    active?: boolean;
+    registeredOnly?: boolean;
+    allowDismiss?: boolean;
+  }
+
+  let {
+    toggleCreate = () => {},
+    handleCreate = () => {},
+    toggleUpdate = () => {},
+    handleUpdate = () => {},
+    alertId = '',
+    alertName = $bindable(''),
+    alertType = $bindable(''),
+    content = $bindable(''),
+    active = $bindable(true),
+    registeredOnly = $bindable(false),
+    allowDismiss = $bindable(true)
+  }: Props = $props();
 
   const alertTypes = ['ERROR', 'INFO', 'NEW', 'SUCCESS', 'WARNING'];
 
@@ -47,11 +63,11 @@
     }
   }
 
-  $: createDisabled = alertName === '' || alertType === '' || content === '';
+  let createDisabled = $derived(alertName === '' || alertType === '' || content === '');
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="createAlert">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={onSubmit} name="createAlert">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
@@ -60,8 +76,8 @@
         {$LL.name()}
       </label>
       <TextInput
-        bind:value="{alertName}"
-        placeholder="{$LL.alertNamePlaceholder()}"
+        bind:value={alertName}
+        placeholder={$LL.alertNamePlaceholder()}
         id="alertName"
         name="alertName"
         required
@@ -75,14 +91,14 @@
       <SelectInput
         name="alertType"
         id="alertType"
-        bind:value="{alertType}"
+        bind:value={alertType}
         required
       >
         <option value="" disabled>
           {$LL.alertTypePlaceholder()}
         </option>
         {#each alertTypes as aType}
-          <option value="{aType}">{aType}</option>
+          <option value={aType}>{aType}</option>
         {/each}
       </SelectInput>
     </div>
@@ -95,8 +111,8 @@
         {$LL.alertContent()}
       </label>
       <TextInput
-        bind:value="{content}"
-        placeholder="{$LL.alertContentPlaceholder()}"
+        bind:value={content}
+        placeholder={$LL.alertContentPlaceholder()}
         id="alertContent"
         name="alertContent"
         required
@@ -105,32 +121,32 @@
 
     <div class="mb-4">
       <Checkbox
-        bind:checked="{active}"
+        bind:checked={active}
         id="active"
         name="active"
-        label="{$LL.active()}"
+        label={$LL.active()}
       />
     </div>
     <div class="mb-4">
       <Checkbox
-        bind:checked="{registeredOnly}"
+        bind:checked={registeredOnly}
         id="registeredOnly"
         name="registeredOnly"
-        label="{$LL.alertRegisteredOnly()}"
+        label={$LL.alertRegisteredOnly()}
       />
     </div>
     <div class="mb-4">
       <Checkbox
-        bind:checked="{allowDismiss}"
+        bind:checked={allowDismiss}
         id="allowDismiss"
         name="allowDismiss"
-        label="{$LL.alertAllowDismiss()}"
+        label={$LL.alertAllowDismiss()}
       />
     </div>
 
     <div>
       <div class="text-right">
-        <SolidButton type="submit" disabled="{createDisabled}">
+        <SolidButton type="submit" disabled={createDisabled}>
           {$LL.alertSave()}
         </SolidButton>
       </div>

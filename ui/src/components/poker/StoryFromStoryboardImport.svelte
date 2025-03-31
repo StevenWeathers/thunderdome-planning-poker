@@ -5,17 +5,21 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { onMount } from 'svelte';
 
-  export let notifications;
-  export let xfetch;
-  export let handleImport;
+  interface Props {
+    notifications: any;
+    xfetch: any;
+    handleImport: any;
+  }
 
-  let selectedStoryboardIdx = '';
-  let storyboards = [];
-  let storyboard = {
+  let { notifications, xfetch, handleImport }: Props = $props();
+
+  let selectedStoryboardIdx = $state('');
+  let storyboards = $state([]);
+  let storyboard = $state({
     id: '',
     goals: [],
-  };
-  let selectedGoalIdx = '';
+  });
+  let selectedGoalIdx = $state('');
 
   function getStoryboards() {
     xfetch(`/api/users/${$user.id}/storyboards?limit=${9999}&offset=${0}`)
@@ -70,7 +74,6 @@
     bind:value="{selectedStoryboardIdx}"
     on:change="{getStoryboardStories}"
   >
-    >
     <option value="" disabled>Select storyboard to import from</option>
     {#each storyboards as storyboard, idx}
       <option value="{idx}">{storyboard.name}</option>
@@ -83,9 +86,8 @@
     id="selectedGoal"
     bind:value="{selectedGoalIdx}"
     on:change="{getStoryboardStories}"
-    disabled="{selectedStoryboardIdx === ''}"
+    disabled={selectedStoryboardIdx === ''}
   >
-    >
     <option value="" disabled>Select goal to import from</option>
     {#if selectedStoryboardIdx !== ''}
       {#each storyboard.goals as goal, idx}
@@ -107,7 +109,7 @@
               {story.name}
             </div>
             <div>
-              <SolidButton onClick="{importStory(cIdx, sIdx)}"
+              <SolidButton onClick={importStory(cIdx, sIdx)}
                 >Import
               </SolidButton>
             </div>

@@ -11,17 +11,29 @@
   import UpdateRetroSettings from './UpdateRetroSettings.svelte';
   import LL from '../../i18n/i18n-svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix = '/api';
-  export let isEntityAdmin = false;
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    isEntityAdmin?: boolean;
+  }
 
-  $: isAdmin = validateUserIsAdmin($user);
+  let {
+    xfetch,
+    notifications,
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    isEntityAdmin = false
+  }: Props = $props();
 
-  let defaultSettings = {
+  let isAdmin = $derived(validateUserIsAdmin($user));
+
+  let defaultSettings = $state({
     id: '',
     maxVotes: 0,
     brainstormVisibility: '',
@@ -31,9 +43,9 @@
     templateId: null,
     joinCode: '',
     facilitatorCode: '',
-  };
-  let showCreateDefaultSettings = false;
-  let showUpdateDefaultSettings = false;
+  });
+  let showCreateDefaultSettings = $state(false);
+  let showUpdateDefaultSettings = $state(false);
 
   function toggleCreateDefaultSettings() {
     showCreateDefaultSettings = !showCreateDefaultSettings;
@@ -67,87 +79,91 @@
   <TableContainer>
     <TableNav
       title="Default Retrospective Settings"
-      createBtnEnabled="{isAdmin || isEntityAdmin}"
+      createBtnEnabled={isAdmin || isEntityAdmin}
       createBtnText="{defaultSettings.id !== ''
         ? 'Update'
         : 'Create'} Default Settings"
-      createButtonHandler="{defaultSettings.id !== ''
+      createButtonHandler={defaultSettings.id !== ''
         ? toggleUpdateDefaultSettings
-        : toggleCreateDefaultSettings}"
+        : toggleCreateDefaultSettings}
       createBtnTestId="retro-settings-{defaultSettings.id !== ''
         ? 'update'
         : 'create'}-btn"
     />
     <Table>
-      <tr slot="header">
-        <HeadCol>{$LL.retroMaxVotesPerUserLabel()}</HeadCol>
-        <HeadCol>{$LL.brainstormPhaseFeedbackVisibility()}</HeadCol>
-        <HeadCol>{$LL.retroPhaseTimeLimitMinLabel()}</HeadCol>
-        <HeadCol>{$LL.phaseAutoAdvanceLabel()}</HeadCol>
-        <HeadCol>{$LL.allowCumulativeVotingLabel()}</HeadCol>
-        <!--                <HeadCol>TemplateId</HeadCol>-->
-        <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
-        <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
-      </tr>
-      <tbody slot="body">
-        {#if defaultSettings.id !== ''}
-          <TableRow>
-            <RowCol>
-              {defaultSettings.maxVotes}
-            </RowCol>
-            <RowCol>
-              {defaultSettings.brainstormVisibility}
-            </RowCol>
-            <RowCol>
-              {defaultSettings.phaseTimeLimit}
-            </RowCol>
-            <RowCol>
-              <BooleanDisplay boolValue="{defaultSettings.phaseAutoAdvance}" />
-            </RowCol>
-            <RowCol>
-              <BooleanDisplay
-                boolValue="{defaultSettings.allowCumulativeVoting}"
-              />
-            </RowCol>
-            <!--                    <RowCol>-->
-            <!--                        {defaultSettings.templateId}-->
-            <!--                    </RowCol>-->
-            <RowCol>
-              {defaultSettings.joinCode}
-            </RowCol>
-            <RowCol>
-              {defaultSettings.facilitatorCode}
-            </RowCol>
-          </TableRow>
-        {/if}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>{$LL.retroMaxVotesPerUserLabel()}</HeadCol>
+          <HeadCol>{$LL.brainstormPhaseFeedbackVisibility()}</HeadCol>
+          <HeadCol>{$LL.retroPhaseTimeLimitMinLabel()}</HeadCol>
+          <HeadCol>{$LL.phaseAutoAdvanceLabel()}</HeadCol>
+          <HeadCol>{$LL.allowCumulativeVotingLabel()}</HeadCol>
+          <!--                <HeadCol>TemplateId</HeadCol>-->
+          <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
+          <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body()}
+            <tbody >
+          {#if defaultSettings.id !== ''}
+            <TableRow>
+              <RowCol>
+                {defaultSettings.maxVotes}
+              </RowCol>
+              <RowCol>
+                {defaultSettings.brainstormVisibility}
+              </RowCol>
+              <RowCol>
+                {defaultSettings.phaseTimeLimit}
+              </RowCol>
+              <RowCol>
+                <BooleanDisplay boolValue={defaultSettings.phaseAutoAdvance} />
+              </RowCol>
+              <RowCol>
+                <BooleanDisplay
+                  boolValue={defaultSettings.allowCumulativeVoting}
+                />
+              </RowCol>
+              <!--                    <RowCol>-->
+              <!--                        {defaultSettings.templateId}-->
+              <!--                    </RowCol>-->
+              <RowCol>
+                {defaultSettings.joinCode}
+              </RowCol>
+              <RowCol>
+                {defaultSettings.facilitatorCode}
+              </RowCol>
+            </TableRow>
+          {/if}
+        </tbody>
+          {/snippet}
     </Table>
   </TableContainer>
 
   {#if showCreateDefaultSettings}
     <UpdateRetroSettings
-      toggleClose="{toggleCreateDefaultSettings}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
-      apiPrefix="{apiPrefix}"
-      organizationId="{organizationId}"
-      teamId="{teamId}"
-      departmentId="{departmentId}"
-      on:updateRetroSettings="{handleSettingsUpdate}"
+      toggleClose={toggleCreateDefaultSettings}
+      xfetch={xfetch}
+      notifications={notifications}
+      apiPrefix={apiPrefix}
+      organizationId={organizationId}
+      teamId={teamId}
+      departmentId={departmentId}
+      on:updateRetroSettings={handleSettingsUpdate}
     />
   {/if}
 
   {#if showUpdateDefaultSettings}
     <UpdateRetroSettings
-      toggleClose="{toggleUpdateDefaultSettings}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
-      retroSettings="{defaultSettings}"
-      apiPrefix="{apiPrefix}"
-      organizationId="{organizationId}"
-      teamId="{teamId}"
-      departmentId="{departmentId}"
-      on:updateRetroSettings="{handleSettingsUpdate}"
+      toggleClose={toggleUpdateDefaultSettings}
+      xfetch={xfetch}
+      notifications={notifications}
+      retroSettings={defaultSettings}
+      apiPrefix={apiPrefix}
+      organizationId={organizationId}
+      teamId={teamId}
+      departmentId={departmentId}
+      on:updateRetroSettings={handleSettingsUpdate}
     />
   {/if}
 </div>

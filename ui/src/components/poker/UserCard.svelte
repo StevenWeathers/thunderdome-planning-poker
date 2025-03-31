@@ -6,18 +6,31 @@
   import BecomeLeader from './BecomeFacilitator.svelte';
   import { CircleUser, Crown, Ghost, Vote } from 'lucide-svelte';
 
-  export let voted = false;
-  export let warrior = {};
-  export let isLeader = false;
-  export let autoFinishVoting = false;
-  export let leaders = [];
-  export let points = '';
-  export let sendSocketEvent = () => {};
-  export let notifications;
+  interface Props {
+    voted?: boolean;
+    warrior?: any;
+    isLeader?: boolean;
+    autoFinishVoting?: boolean;
+    leaders?: any;
+    points?: string;
+    sendSocketEvent?: any;
+    notifications: any;
+  }
+
+  let {
+    voted = false,
+    warrior = {},
+    isLeader = false,
+    autoFinishVoting = false,
+    leaders = [],
+    points = '',
+    sendSocketEvent = () => {},
+    notifications
+  }: Props = $props();
 
   const showRank = AppConfig.ShowWarriorRank;
   let nameStyleClass = showRank ? 'text-lg' : 'text-xl';
-  let showBecomeLeader = false;
+  let showBecomeLeader = $state(false);
 
   function promoteLeader() {
     sendSocketEvent('promote_leader', warrior.id);
@@ -62,12 +75,12 @@
 >
   <div class="w-1/4 me-2">
     <UserAvatar
-      warriorId="{warrior.id}"
-      avatar="{warrior.avatar}"
-      gravatarHash="{warrior.gravatarHash}"
-      userName="{warrior.name}"
+      warriorId={warrior.id}
+      avatar={warrior.avatar}
+      gravatarHash={warrior.gravatarHash}
+      userName={warrior.name}
       class="rounded-full"
-      width="68"
+      width={68}
     />
   </div>
   <div class="w-3/4">
@@ -104,7 +117,7 @@
             {#if isLeader}
               &nbsp;
               <button
-                on:click="{demoteLeader}"
+                onclick={demoteLeader}
                 class="inline text-sm text-red-500
                                 hover:text-red-800 bg-transparent
                                 border-transparent"
@@ -116,7 +129,7 @@
             {/if}
           {:else if isLeader}
             <button
-              on:click="{promoteLeader}"
+              onclick={promoteLeader}
               class="inline-block align-baseline text-sm
                           text-green-500 hover:text-green-800 bg-transparent
                           border-transparent"
@@ -128,7 +141,7 @@
           {#if isLeader && warrior.id !== $sessionUser.id && !warrior.spectator}
             &nbsp;|&nbsp;
             <button
-              on:click="{jabWarrior}"
+              onclick={jabWarrior}
               class="inline-block align-baseline text-sm
                             text-blue-500 hover:text-blue-800 bg-transparent
                             border-transparent"
@@ -141,7 +154,7 @@
         {#if warrior.id === $sessionUser.id}
           {#if !isLeader}
             <button
-              on:click="{toggleBecomeLeader}"
+              onclick={toggleBecomeLeader}
               class="inline-block align-baseline text-sm
                           text-blue-500 hover:text-blue-800 bg-transparent
                           border-transparent"
@@ -152,7 +165,7 @@
           {/if}
           {#if autoFinishVoting}
             <button
-              on:click="{toggleSpectator}"
+              onclick={toggleSpectator}
               class="inline-block align-baseline text-sm text-blue-500
                           hover:text-blue-800 bg-transparent border-transparent"
               data-testid="user-togglespectator"
@@ -186,8 +199,8 @@
 
   {#if showBecomeLeader}
     <BecomeLeader
-      handleBecomeLeader="{becomeLeader}"
-      toggleBecomeLeader="{toggleBecomeLeader}"
+      handleBecomeLeader={becomeLeader}
+      toggleBecomeLeader={toggleBecomeLeader}
     />
   {/if}
 </div>

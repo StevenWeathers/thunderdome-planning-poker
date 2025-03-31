@@ -1,14 +1,29 @@
 <script lang="ts">
-  export let title = '';
-  export let createBtnEnabled = true;
-  export let createBtnText = '';
-  export let createButtonHandler = () => {};
-  export let createBtnTestId = '';
-  export let searchEnabled = false;
-  export let searchPlaceholder = '';
-  export let searchHandler = term => {};
+  interface Props {
+    title?: string;
+    createBtnEnabled?: boolean;
+    createBtnText?: string;
+    createButtonHandler?: any;
+    createBtnTestId?: string;
+    searchEnabled?: boolean;
+    searchPlaceholder?: string;
+    searchHandler?: any;
+    children?: import('svelte').Snippet;
+  }
 
-  let searchTerm = '';
+  let {
+    title = '',
+    createBtnEnabled = true,
+    createBtnText = '',
+    createButtonHandler = () => {},
+    createBtnTestId = '',
+    searchEnabled = false,
+    searchPlaceholder = '',
+    searchHandler = term => {},
+    children
+  }: Props = $props();
+
+  let searchTerm = $state('');
 
   function onSearchSubmit(e) {
     e.preventDefault();
@@ -29,7 +44,7 @@
         >
       </h5>
       {#if searchEnabled}
-        <form class="flex items-center" on:submit="{onSearchSubmit}">
+        <form class="flex items-center" onsubmit={onSearchSubmit}>
           <div class="relative w-full">
             <div
               class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
@@ -62,11 +77,11 @@
   <div
     class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0"
   >
-    <slot />
+    {@render children?.()}
     {#if createBtnEnabled}
       <button
         type="button"
-        on:click="{createButtonHandler}"
+        onclick={createButtonHandler}
         data-testid="{createBtnTestId}"
         class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
       >

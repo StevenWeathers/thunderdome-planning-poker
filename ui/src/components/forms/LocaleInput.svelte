@@ -3,9 +3,13 @@
   import { locales } from '../../config';
   import SelectInput from './SelectInput.svelte';
 
-  export let selectedLocale = 'en';
-  let klass = '';
-  export { klass as class };
+  interface Props {
+    selectedLocale?: string;
+    class?: string;
+  }
+
+  let { selectedLocale = 'en', class: klass = '' }: Props = $props();
+  
   const supportedLocales = [];
 
   for (const [key, value] of Object.entries(locales)) {
@@ -27,8 +31,8 @@
 <div class="{klass} inline-block">
   <SelectInput
     name="locale"
-    on:change="{switchLocale}"
-    value="{selectedLocale}"
+    on:change={switchLocale}
+    value={selectedLocale}
   >
     {#each supportedLocales as locale}
       <option value="{locale.value}">{locale.name}</option>

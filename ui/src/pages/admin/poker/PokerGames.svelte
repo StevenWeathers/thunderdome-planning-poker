@@ -15,15 +15,19 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import Toggle from '../../../components/forms/Toggle.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const battlesPageLimit = 100;
-  let battleCount = 0;
-  let battles = [];
-  let battlesPage = 1;
-  let activeBattles = false;
+  let battleCount = $state(0);
+  let battles = $state([]);
+  let battlesPage = $state(1);
+  let activeBattles = $state(false);
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
@@ -73,60 +77,64 @@
 
 <AdminPageLayout activePage="battles">
   <TableContainer>
-    <TableNav title="{$LL.battles()}" createBtnEnabled="{false}">
+    <TableNav title={$LL.battles()} createBtnEnabled={false}>
       <Toggle
         name="activeBattles"
         id="activeBattles"
-        bind:checked="{activeBattles}"
-        changeHandler="{changeActiveBattlesToggle}"
-        label="{$LL.showActiveBattles()}"
+        bind:checked={activeBattles}
+        changeHandler={changeActiveBattlesToggle}
+        label={$LL.showActiveBattles()}
       />
     </TableNav>
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateCreated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-        <HeadCol type="action">
-          <span class="sr-only">{$LL.actions()}</span>
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each battles as battle, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <a
-                href="{appRoutes.adminPokerGames}/{battle.id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >{battle.name}</a
-              >
-            </RowCol>
-            <RowCol>
-              {new Date(battle.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(battle.updatedDate).toLocaleString()}
-            </RowCol>
-            <RowCol type="action">
-              <HollowButton href="{appRoutes.game}/{battle.id}">
-                {$LL.battleJoin()}
-              </HollowButton>
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateCreated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+          <HeadCol type="action">
+            <span class="sr-only">{$LL.actions()}</span>
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each battles as battle, i}
+            <TableRow itemIndex={i}>
+              <RowCol>
+                <a
+                  href="{appRoutes.adminPokerGames}/{battle.id}"
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >{battle.name}</a
+                >
+              </RowCol>
+              <RowCol>
+                {new Date(battle.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(battle.updatedDate).toLocaleString()}
+              </RowCol>
+              <RowCol type="action">
+                <HollowButton href="{appRoutes.game}/{battle.id}">
+                  {$LL.battleJoin()}
+                </HollowButton>
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
     <TableFooter
-      bind:current="{battlesPage}"
-      num_items="{battleCount}"
-      per_page="{battlesPageLimit}"
-      on:navigate="{changePage}"
+      bind:current={battlesPage}
+      num_items={battleCount}
+      per_page={battlesPageLimit}
+      on:navigate={changePage}
     />
   </TableContainer>
 </AdminPageLayout>

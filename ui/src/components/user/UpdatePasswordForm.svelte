@@ -5,14 +5,18 @@
   import SolidButton from '../global/SolidButton.svelte';
   import PasswordInput from '../forms/PasswordInput.svelte';
 
-  export let handleUpdate = () => {};
-  export let toggleForm = () => {};
-  export let notifications;
+  interface Props {
+    handleUpdate?: any;
+    toggleForm?: any;
+    notifications: any;
+  }
+
+  let { handleUpdate = () => {}, toggleForm = () => {}, notifications }: Props = $props();
 
   const { LdapEnabled, HeaderAuthEnabled } = AppConfig;
 
-  let password1 = '';
-  let password2 = '';
+  let password1 = $state('');
+  let password2 = $state('');
 
   function updatePassword(e) {
     e.preventDefault();
@@ -31,11 +35,11 @@
     }
   }
 
-  $: updatePasswordDisabled =
-    password1 === '' || password2 === '' || LdapEnabled || HeaderAuthEnabled;
+  let updatePasswordDisabled =
+    $derived(password1 === '' || password2 === '' || LdapEnabled || HeaderAuthEnabled);
 </script>
 
-<form on:submit="{updatePassword}" name="updatePassword">
+<form onsubmit={updatePassword} name="updatePassword">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -45,7 +49,7 @@
     </label>
     <PasswordInput
       bind:value="{password1}"
-      placeholder="{$LL.passwordPlaceholder()}"
+      placeholder={$LL.passwordPlaceholder()}
       id="yourPassword1"
       name="yourPassword1"
       required
@@ -61,7 +65,7 @@
     </label>
     <PasswordInput
       bind:value="{password2}"
-      placeholder="{$LL.confirmPasswordPlaceholder()}"
+      placeholder={$LL.confirmPasswordPlaceholder()}
       id="yourPassword2"
       name="yourPassword2"
       required
@@ -73,11 +77,11 @@
       type="button"
       class="inline-block align-baseline font-bold text-sm
             text-blue-500 hover:text-blue-800 me-4"
-      on:click="{toggleForm}"
+      onclick={toggleForm}
     >
       {$LL.cancel()}
     </button>
-    <SolidButton type="submit" disabled="{updatePasswordDisabled}">
+    <SolidButton type="submit" disabled={updatePasswordDisabled}>
       {$LL.update()}
     </SolidButton>
   </div>

@@ -1,9 +1,13 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import { RetroTemplateColumn, RetroTemplateFormat } from '../../types/retro';
+  import { type RetroTemplateColumn, type RetroTemplateFormat } from '../../types/retro';
   import { Angry, CircleHelp, Frown, Smile } from 'lucide-svelte';
 
-  export let format: RetroTemplateFormat;
+  interface Props {
+    format: RetroTemplateFormat;
+  }
+
+  let { format = $bindable() }: Props = $props();
 
   const dispatch = createEventDispatcher();
   const MIN_COLUMNS = 2;
@@ -26,15 +30,15 @@
     { name: 'Angry', value: 'angry', component: Angry },
   ];
 
-  let newColumn: RetroTemplateColumn = {
+  let newColumn: RetroTemplateColumn = $state({
     name: '',
     label: '',
     color: '',
     icon: '',
-  };
+  });
 
-  $: canAddColumn = format && format.columns.length < MAX_COLUMNS;
-  $: canRemoveColumn = format && format.columns.length > MIN_COLUMNS;
+  let canAddColumn = $derived(format && format.columns.length < MAX_COLUMNS);
+  let canRemoveColumn = $derived(format && format.columns.length > MIN_COLUMNS);
 
   function validateColumnName(name: string): string {
     return name
@@ -101,7 +105,7 @@
     <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
       <input
         bind:value="{column.name}"
-        on:input="{() => updateColumn(index, 'name', column.name)}"
+        oninput={() => updateColumn(index, 'name', column.name)}
         placeholder="Column name"
         maxlength="16"
         pattern="[a-z]+"
@@ -109,13 +113,13 @@
       />
       <input
         bind:value="{column.label}"
-        on:input="{() => updateColumn(index, 'label', column.label)}"
+        oninput={() => updateColumn(index, 'label', column.label)}
         placeholder="Column label"
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       />
       <select
         bind:value="{column.color}"
-        on:change="{() => updateColumn(index, 'color', column.color)}"
+        onchange={() => updateColumn(index, 'color', column.color)}
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       >
         <option value="">Select an optional color</option>
@@ -126,7 +130,7 @@
       <div class="flex items-center mb-2">
         <select
           bind:value="{column.icon}"
-          on:change="{() => updateColumn(index, 'icon', column.icon)}"
+          onchange={() => updateColumn(index, 'icon', column.icon)}
           class="flex-grow p-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
         >
           <option value="">Select an optional icon</option>
@@ -138,15 +142,15 @@
           class="ml-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600"
         >
           {#if column.icon}
-            <svelte:component
-              this="{getIconComponent(column.icon)}"
+            {@const SvelteComponent = getIconComponent(column.icon)}
+            <SvelteComponent
               class="w-6 h-6 text-gray-700 dark:text-white"
             />
           {/if}
         </div>
       </div>
       <button
-        on:click="{() => removeColumn(index)}"
+        onclick={() => removeColumn(index)}
         class="w-full p-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed dark:bg-red-700 dark:hover:bg-red-800 dark:disabled:bg-red-900"
         disabled="{!canRemoveColumn}"
       >
@@ -193,15 +197,15 @@
           class="ml-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600"
         >
           {#if newColumn.icon}
-            <svelte:component
-              this="{getIconComponent(newColumn.icon)}"
+            {@const SvelteComponent_1 = getIconComponent(newColumn.icon)}
+            <SvelteComponent_1
               class="w-6 h-6 text-gray-700 dark:text-white"
             />
           {/if}
         </div>
       </div>
       <button
-        on:click="{addColumn}"
+        onclick={addColumn}
         class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
       >
         Add Column

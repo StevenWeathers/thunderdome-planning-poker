@@ -1,12 +1,16 @@
 <script lang="ts">
-  import { RetroTemplateFormat } from '../../types/retro';
+  import { type RetroTemplateFormat } from '../../types/retro';
   import Modal from '../global/Modal.svelte';
 
-  export let format: RetroTemplateFormat;
-  export let toggleClose: (template) => void;
+  interface Props {
+    format: RetroTemplateFormat;
+    toggleClose: (template) => void;
+  }
+
+  let { format, toggleClose }: Props = $props();
 </script>
 
-<Modal closeModal="{() => toggleClose(null)}" widthClasses="w-full md:w-2/3">
+<Modal closeModal={() => toggleClose(null)} widthClasses="w-full md:w-2/3">
   <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
     {#each format.columns as column}
       <div

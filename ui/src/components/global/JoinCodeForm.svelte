@@ -3,10 +3,14 @@
   import SolidButton from './SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
 
-  export let handleSubmit: (passcode) => {};
-  export let submitText: string = 'Join';
+  interface Props {
+    handleSubmit: (passcode) => {};
+    submitText?: string;
+  }
 
-  let joinPasscode = '';
+  let { handleSubmit, submitText = 'Join' }: Props = $props();
+
+  let joinPasscode = $state('');
 
   function onSubmit(event) {
     event.preventDefault();
@@ -20,7 +24,7 @@
   <div class="flex justify-center items-center content-center h-full">
     <div class="w-full md:w-1/2 lg:w-1/3">
       <form
-        on:submit="{onSubmit}"
+        onsubmit={onSubmit}
         class="bg-white dark:bg-gray-800 border border-indigo-500 shadow-lg rounded-lg p-6 mb-4"
         name="joinPasscodeForm"
       >
@@ -33,7 +37,7 @@
           </label>
           <TextInput
             bind:value="{joinPasscode}"
-            placeholder="{$LL.enterPasscode()}"
+            placeholder={$LL.enterPasscode()}
             id="passCode"
             name="passCode"
             type="password"

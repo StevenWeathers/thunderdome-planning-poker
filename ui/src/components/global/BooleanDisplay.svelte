@@ -1,7 +1,11 @@
 <script lang="ts">
   import { Check, X } from 'lucide-svelte';
 
-  export let boolValue: boolean = false;
+  interface Props {
+    boolValue?: boolean;
+  }
+
+  let { boolValue = false }: Props = $props();
 </script>
 
 {#if boolValue}

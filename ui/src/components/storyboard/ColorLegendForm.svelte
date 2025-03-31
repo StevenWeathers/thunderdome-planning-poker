@@ -4,10 +4,14 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
 
-  export let handleLegendRevision = () => {};
-  export let toggleEditLegend = () => {};
 
-  export let colorLegend = [];
+  interface Props {
+    handleLegendRevision?: any;
+    toggleEditLegend?: any;
+    colorLegend?: any;
+  }
+
+  let { handleLegendRevision = () => {}, toggleEditLegend = () => {}, colorLegend = $bindable([]) }: Props = $props();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -59,15 +63,15 @@
   }
 </style>
 
-<Modal closeModal="{toggleEditLegend}">
-  <form on:submit="{handleSubmit}" name="colorLegend">
+<Modal closeModal={toggleEditLegend}>
+  <form onsubmit={handleSubmit} name="colorLegend">
     <div class="mt-8 mb-4">
       {#each colorLegend as color, i}
         <div class="mb-1 flex">
           <span class="p-4 inline-block colorcard-{color.color}"></span>
           <TextInput
             bind:value="{colorLegend[i].legend}"
-            placeholder="{$LL.legendRetroPlaceholder()}"
+            placeholder={$LL.legendRetroPlaceholder()}
             name="legend-{color.color}"
           />
         </div>

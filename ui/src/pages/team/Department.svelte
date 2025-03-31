@@ -19,35 +19,45 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let organizationId;
-  export let departmentId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    organizationId: any;
+    departmentId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    organizationId,
+    departmentId
+  }: Props = $props();
 
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
   const deptPrefix = `/api/organizations/${organizationId}/departments/${departmentId}`;
 
-  let invitesList;
-  let organization = {
+  let invitesList = $state();
+  let organization = $state({
     id: organizationId,
     name: '',
     createdDate: '',
     updateDate: '',
     subscribed: false,
-  };
-  let department = {
+  });
+  let department = $state({
     id: departmentId,
     name: '',
-  };
-  let departmentRole = '';
-  let organizationRole = '';
-  let teams = [];
-  let users = [];
+  });
+  let departmentRole = $state('');
+  let organizationRole = $state('');
+  let teams = $state([]);
+  let users = $state([]);
   let invites = [];
-  let showCreateTeam = false;
-  let showDeleteTeam = false;
+  let showCreateTeam = $state(false);
+  let showDeleteTeam = $state(false);
   let deleteTeamId = null;
   let teamsPage = 1;
   let usersPage = 1;
@@ -145,8 +155,8 @@
     id: '',
     name: '',
   };
-  let selectedTeam = { ...defaultTeam };
-  let showTeamUpdate = false;
+  let selectedTeam = $state({ ...defaultTeam });
+  let showTeamUpdate = $state(false);
 
   function toggleUpdateTeam(team) {
     return () => {
@@ -184,7 +194,7 @@
     getDepartment();
   });
 
-  $: isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN';
+  let isAdmin = $derived(organizationRole === 'ADMIN' || departmentRole === 'ADMIN');
 </script>
 
 <svelte:head>
@@ -213,55 +223,59 @@
   <div class="w-full mb-6 lg:mb-8">
     <TableContainer>
       <TableNav
-        title="{$LL.teams()}"
-        createBtnEnabled="{isAdmin}"
-        createBtnText="{$LL.teamCreate()}"
-        createButtonHandler="{toggleCreateTeam}"
+        title={$LL.teams()}
+        createBtnEnabled={isAdmin}
+        createBtnText={$LL.teamCreate()}
+        createButtonHandler={toggleCreateTeam}
         createBtnTestId="team-create"
       />
       <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-          <HeadCol type="action">
-            <span class="sr-only">{$LL.actions()}</span>
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each teams as team, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.organization}/{organizationId}/department/{departmentId}/team/{team.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {team.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(team.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(team.updatedDate).toLocaleString()}
-              </RowCol>
-              <RowCol type="action">
-                {#if isAdmin}
-                  <CrudActions
-                    editBtnClickHandler="{toggleUpdateTeam(team)}"
-                    deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
-                  />
-                {/if}
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
+        {#snippet header()}
+                <tr >
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+            <HeadCol type="action">
+              <span class="sr-only">{$LL.actions()}</span>
+            </HeadCol>
+          </tr>
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            {#each teams as team, i}
+              <TableRow itemIndex={i}>
+                <RowCol>
+                  <a
+                    href="{appRoutes.organization}/{organizationId}/department/{departmentId}/team/{team.id}"
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >
+                    {team.name}
+                  </a>
+                </RowCol>
+                <RowCol>
+                  {new Date(team.createdDate).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(team.updatedDate).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  {#if isAdmin}
+                    <CrudActions
+                      editBtnClickHandler={toggleUpdateTeam(team)}
+                      deleteBtnClickHandler={toggleDeleteTeam(team.id)}
+                    />
+                  {/if}
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+              {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -269,48 +283,48 @@
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
-        xfetch="{xfetch}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
         pageType="department"
-        teamPrefix="{deptPrefix}"
+        teamPrefix={deptPrefix}
         bind:this="{invitesList}"
       />
     </div>
   {/if}
 
   <UsersList
-    users="{users}"
-    getUsers="{getUsers}"
-    xfetch="{xfetch}"
-    notifications="{notifications}"
-    isAdmin="{isAdmin}"
+    users={users}
+    getUsers={getUsers}
+    xfetch={xfetch}
+    notifications={notifications}
+    isAdmin={isAdmin}
     pageType="department"
-    orgId="{organizationId}"
-    deptId="{departmentId}"
+    orgId={organizationId}
+    deptId={departmentId}
     teamPrefix="/api/organizations/{organizationId}/departments/{departmentId}"
   />
 
   {#if showCreateTeam}
     <CreateTeam
-      toggleCreate="{toggleCreateTeam}"
-      handleCreate="{createTeamHandler}"
+      toggleCreate={toggleCreateTeam}
+      handleCreate={createTeamHandler}
     />
   {/if}
 
   {#if showTeamUpdate}
     <CreateTeam
-      teamName="{selectedTeam.name}"
-      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
-      handleCreate="{updateTeamHandler}"
+      teamName={selectedTeam.name}
+      toggleCreate={toggleUpdateTeam(defaultTeam)}
+      handleCreate={updateTeamHandler}
     />
   {/if}
 
   {#if showDeleteTeam}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteTeam(null)}"
-      handleDelete="{handleDeleteTeam}"
-      confirmText="{$LL.deleteTeamConfirmText()}"
-      confirmBtnText="{$LL.deleteTeam()}"
+      toggleDelete={toggleDeleteTeam(null)}
+      handleDelete={handleDeleteTeam}
+      confirmText={$LL.deleteTeamConfirmText()}
+      confirmBtnText={$LL.deleteTeam()}
     />
   {/if}
 </PageLayout>

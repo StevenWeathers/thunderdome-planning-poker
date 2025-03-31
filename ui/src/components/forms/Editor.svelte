@@ -1,10 +1,19 @@
 <script lang="ts">
   import { quill } from '../../quill';
 
-  export let content = '';
-  export let placeholder = '';
-  export let handleTextChange = text => {};
-  export let id = '';
+  interface Props {
+    content?: string;
+    placeholder?: string;
+    handleTextChange?: any;
+    id?: string;
+  }
+
+  let {
+    content = '',
+    placeholder = '',
+    handleTextChange = text => {},
+    id = ''
+  }: Props = $props();
 
   function onTextChange(e) {
     handleTextChange(e.detail.html);
@@ -17,6 +26,6 @@
     placeholder: `${placeholder}`,
     content: content,
   }}"
-  on:text-change="{onTextChange}"
+  ontext-change={onTextChange}
   id="{id}"
 ></div>

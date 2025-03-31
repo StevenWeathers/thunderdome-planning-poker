@@ -1,20 +1,33 @@
 <script lang="ts">
   import ItemForm from './ItemForm.svelte';
 
-  export let phase: string = '';
-  export let sendSocketEvent: (event: string, data: any) => void;
-  export let isFacilitator: boolean = false;
-  export let items: any = [];
-  export let template: any = {
+  interface Props {
+    phase?: string;
+    sendSocketEvent: (event: string, data: any) => void;
+    isFacilitator?: boolean;
+    items?: any;
+    template?: any;
+    users?: any;
+    brainstormVisibility?: boolean;
+    columnColors?: any;
+  }
+
+  let {
+    phase = '',
+    sendSocketEvent,
+    isFacilitator = false,
+    items = [],
+    template = {
     format: {
       columns: [],
     },
-  };
-  export let users: any = [];
-  export let brainstormVisibility: boolean = false;
-  export let columnColors: any = {};
+  },
+    users = [],
+    brainstormVisibility = false,
+    columnColors = {}
+  }: Props = $props();
 
-  $: numCols = template.format.columns.length;
+  let numCols = $derived(template.format.columns.length);
 </script>
 
 <div
@@ -25,17 +38,17 @@
 >
   {#each template.format.columns as column}
     <ItemForm
-      sendSocketEvent="{sendSocketEvent}"
-      itemType="{column.name}"
+      sendSocketEvent={sendSocketEvent}
+      itemType={column.name}
       newItemPlaceholder="{column.label}..."
-      phase="{phase}"
-      isFacilitator="{isFacilitator}"
-      items="{items}"
-      users="{users}"
-      feedbackVisibility="{brainstormVisibility}"
-      color="{column.color}"
-      icon="{column.icon}"
-      columnColors="{columnColors}"
+      phase={phase}
+      isFacilitator={isFacilitator}
+      items={items}
+      users={users}
+      feedbackVisibility={brainstormVisibility}
+      color={column.color}
+      icon={column.icon}
+      columnColors={columnColors}
     />
   {/each}
 </div>
