@@ -57,10 +57,6 @@ app:
         value: 30
       - key: HTTP_READ_HEADER_TIMEOUT
         value: 2
-      - key: ANALYTICS_ENABLED
-        value: true
-      - key: ANALYTICS_ID
-        value: UA-140245309-1
       - key: CONFIG_POINTS_ALLOWED
         value: "0, 1/2, 1, 2, 3, 5, 8, 13, 20, 21, 34, 40, 55, 100, ?, ☕️"
       - key: CONFIG_POINTS_DEFAULT
