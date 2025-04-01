@@ -4,19 +4,37 @@
   import { user } from '../stores';
   import { Crown } from 'lucide-svelte';
 
-  export let items: Array<object> = [];
-  export let pageRoute: string = '';
-  export let joinBtnText: string = '';
-  export let itemType: string = '';
-  export let ownerField: string = 'owner_id';
-  export let ownerNameField: string = '';
-  export let isAdmin: boolean = false;
-  export let showOwner: boolean = true;
-  export let showOwnerName: boolean = false;
-  export let showFacilitatorIcon: boolean = false;
-  export let facilitatorsKey: string = 'facilitators';
-  export let showCompletedStories: boolean = false;
-  export let toggleRemove: Function = id => () => {};
+  interface Props {
+    items?: Array<object>;
+    pageRoute?: string;
+    joinBtnText?: string;
+    itemType?: string;
+    ownerField?: string;
+    ownerNameField?: string;
+    isAdmin?: boolean;
+    showOwner?: boolean;
+    showOwnerName?: boolean;
+    showFacilitatorIcon?: boolean;
+    facilitatorsKey?: string;
+    showCompletedStories?: boolean;
+    toggleRemove?: Function;
+  }
+
+  let {
+    items = [],
+    pageRoute = '',
+    joinBtnText = '',
+    itemType = '',
+    ownerField = 'owner_id',
+    ownerNameField = '',
+    isAdmin = false,
+    showOwner = true,
+    showOwnerName = false,
+    showFacilitatorIcon = false,
+    facilitatorsKey = 'facilitators',
+    showCompletedStories = false,
+    toggleRemove = id => () => {}
+  }: Props = $props();
 </script>
 
 {#each items as item}
@@ -66,7 +84,7 @@
       </div>
       <div class="w-full md:w-1/2 md:mb-0 md:text-right">
         {#if isAdmin}
-          <HollowButton onClick="{toggleRemove(item.id)}" color="red">
+          <HollowButton onClick={toggleRemove(item.id)} color="red">
             {$LL.remove()}
           </HollowButton>
         {/if}

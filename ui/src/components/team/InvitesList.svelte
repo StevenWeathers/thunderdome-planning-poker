@@ -10,20 +10,29 @@
   import { onMount } from 'svelte';
   import CrudActions from '../table/CrudActions.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let eventTag;
-  export let teamPrefix: String = '';
-  export let pageType: String = '';
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    teamPrefix?: String;
+    pageType?: String;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    teamPrefix = '',
+    pageType = ''
+  }: Props = $props();
   export const f = event => {
     if (event === 'user-invited') {
       getInvites();
     }
   };
 
-  let invites = [];
-  let showDeleteInvite = false;
+  let invites = $state([]);
+  let showDeleteInvite = $state(false);
   let deleteInviteId = '';
 
   const toggleDeleteInvite = inviteId => () => {
@@ -36,10 +45,8 @@
       .then(res => res.json())
       .then(function (result) {
         invites = result.data;
-        eventTag(`${pageType}_get_invites`, 'engagement', 'success');
       })
       .catch(function () {
-        eventTag(`${pageType}_get_invites`, 'engagement', 'failure');
         notifications.danger(`error getting ${pageType} invites`);
       });
   }
@@ -49,14 +56,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag(`${pageType}_delete_invite`, 'engagement', 'success');
         toggleDeleteInvite(null)();
         notifications.success('Successfully deleted user invite');
         getInvites();
       })
       .catch(function () {
         notifications.danger('Error deleting user invite');
-        eventTag(`${pageType}_delete_invite`, 'engagement', 'failure');
       });
   }
 
@@ -66,47 +71,51 @@
 </script>
 
 <TableContainer>
-  <TableNav title="{$LL.userInvites()}" createBtnEnabled="{false}" />
+  <TableNav title={$LL.userInvites()} createBtnEnabled={false} />
   <Table>
-    <tr slot="header">
-      <HeadCol>{$LL.email()}</HeadCol>
-      <HeadCol>{$LL.role()}</HeadCol>
-      <HeadCol>{$LL.dateCreated()}</HeadCol>
-      <HeadCol>{$LL.expireDate()}</HeadCol>
-      <HeadCol />
-    </tr>
-    <tbody slot="body" let:class="{className}" class="{className}">
-      {#each invites as item, i}
-        <TableRow itemIndex="{i}">
-          <RowCol>
-            <span data-testid="invite-user-email">{item.email}</span>
-          </RowCol>
-          <RowCol>
-            {item.role}
-          </RowCol>
-          <RowCol>
-            {new Date(item.created_date).toLocaleString()}
-          </RowCol>
-          <RowCol>
-            {new Date(item.expire_date).toLocaleString()}
-          </RowCol>
-          <RowCol type="action">
-            <CrudActions
-              editBtnEnabled="{false}"
-              deleteBtnClickHandler="{toggleDeleteInvite(item.invite_id)}"
-            />
-          </RowCol>
-        </TableRow>
-      {/each}
-    </tbody>
+    {#snippet header()}
+        <tr >
+        <HeadCol>{$LL.email()}</HeadCol>
+        <HeadCol>{$LL.role()}</HeadCol>
+        <HeadCol>{$LL.dateCreated()}</HeadCol>
+        <HeadCol>{$LL.expireDate()}</HeadCol>
+        <HeadCol />
+      </tr>
+      {/snippet}
+    {#snippet body({ class: className })}
+        <tbody   class="{className}">
+        {#each invites as item, i}
+          <TableRow itemIndex={i}>
+            <RowCol>
+              <span data-testid="invite-user-email">{item.email}</span>
+            </RowCol>
+            <RowCol>
+              {item.role}
+            </RowCol>
+            <RowCol>
+              {new Date(item.created_date).toLocaleString()}
+            </RowCol>
+            <RowCol>
+              {new Date(item.expire_date).toLocaleString()}
+            </RowCol>
+            <RowCol type="action">
+              <CrudActions
+                editBtnEnabled={false}
+                deleteBtnClickHandler={toggleDeleteInvite(item.invite_id)}
+              />
+            </RowCol>
+          </TableRow>
+        {/each}
+      </tbody>
+      {/snippet}
   </Table>
 </TableContainer>
 
 {#if showDeleteInvite}
   <DeleteConfirmation
-    toggleDelete="{toggleDeleteInvite(null)}"
-    handleDelete="{handleDeleteInvite}"
-    confirmText="{$LL.userInviteConfirmDelete()}"
-    confirmBtnText="{$LL.userInviteDelete()}"
+    toggleDelete={toggleDeleteInvite(null)}
+    handleDelete={handleDeleteInvite}
+    confirmText={$LL.userInviteConfirmDelete()}
+    confirmBtnText={$LL.userInviteDelete()}
   />
 {/if}

@@ -3,7 +3,11 @@
   import { user } from '../../stores';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
 
-  export let router;
+  interface Props {
+    router: any;
+  }
+
+  let { router }: Props = $props();
 
   const { RepoURL } = AppConfig;
 
@@ -64,7 +68,7 @@
       </h3>
       <img
         src="{PathPrefix}/img/header_user_profile_icon_preview.png"
-        alt="Preview image of the ninja user icon in the top navigation bar"
+        alt="Preview of the ninja user icon in the top navigation bar"
         class="max-w-full md:max-w-sm border border-2px solid border-dashed border-blue-500 dark:border-sky-400 p-2"
       />
     </div>
@@ -78,7 +82,7 @@
       </h3>
       <img
         src="{PathPrefix}/img/active_subs_preview.png"
-        alt="Preview image of the active subscriptions section on user profile page"
+        alt="Preview of the active subscriptions section on user profile page"
         class="max-w-full lg:max-w-2xl border border-2px solid border-dashed border-blue-500 dark:border-sky-400 p-2"
       />
     </div>
@@ -91,7 +95,7 @@
       </h3>
       <img
         src="{PathPrefix}/img/sub_associate_team_preview.png"
-        alt="Preview image of the associate team to subscription modal"
+        alt="Preview of the associate team to subscription modal"
         class="max-w-full lg:max-w-xl border border-2px solid border-dashed border-blue-500 dark:border-sky-400 p-2"
       />
     </div>

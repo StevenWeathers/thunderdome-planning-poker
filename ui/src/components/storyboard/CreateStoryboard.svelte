@@ -9,20 +9,28 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import { Crown, Lock } from 'lucide-svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let eventTag;
-  export let router;
-  export let apiPrefix = '/api';
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+    apiPrefix?: string;
+  }
 
-  let storyboardName = '';
-  let joinCode = '';
-  let facilitatorCode = '';
-  let selectedTeam = '';
-  let teams = [];
+  let {
+    xfetch,
+    notifications,
+    router,
+    apiPrefix = '/api'
+  }: Props = $props();
+
+  let storyboardName = $state('');
+  let joinCode = $state('');
+  let facilitatorCode = $state('');
+  let selectedTeam = $state('');
+  let teams = $state([]);
 
   /** @type {TextInput} */
-  let storyboardNameTextInput;
+  let storyboardNameTextInput = $state();
 
   function createStoryboard(e) {
     e.preventDefault();
@@ -40,9 +48,7 @@
     xfetch(endpoint, { body })
       .then(res => res.json())
       .then(function ({ data }) {
-        eventTag('create_storyboard', 'engagement', 'success', () => {
-          router.route(`${appRoutes.storyboard}/${data.id}`);
-        });
+        router.route(`${appRoutes.storyboard}/${data.id}`);
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -54,7 +60,6 @@
         } else {
           notifications.danger(`Error encountered creating storyboard`);
         }
-        eventTag('create_storyboard', 'engagement', 'failure');
       });
   }
 
@@ -80,7 +85,7 @@
   });
 </script>
 
-<form on:submit="{createStoryboard}" name="createStoryboard">
+<form onsubmit={createStoryboard} name="createStoryboard">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
@@ -93,7 +98,7 @@
         name="storyboardName"
         bind:value="{storyboardName}"
         bind:this="{storyboardNameTextInput}"
-        placeholder="{$LL.storyboardNamePlaceholder()}"
+        placeholder={$LL.storyboardNamePlaceholder()}
         id="storyboardName"
         required
       />
@@ -136,9 +141,9 @@
       <TextInput
         name="joinCode"
         bind:value="{joinCode}"
-        placeholder="{$LL.optionalPasscodePlaceholder()}"
+        placeholder={$LL.optionalPasscodePlaceholder()}
         id="joinCode"
-        icon="{Lock}"
+        icon={Lock}
       />
     </div>
   </div>
@@ -154,9 +159,9 @@
       <TextInput
         name="facilitatorCode"
         bind:value="{facilitatorCode}"
-        placeholder="{$LL.facilitatorCodePlaceholder()}"
+        placeholder={$LL.facilitatorCodePlaceholder()}
         id="facilitatorCode"
-        icon="{Crown}"
+        icon={Crown}
       />
     </div>
   </div>

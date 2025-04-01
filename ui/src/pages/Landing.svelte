@@ -8,8 +8,11 @@
   import BrowserMock from '../components/global/BrowserMock.svelte';
   import { onMount } from 'svelte';
 
-  export let xfetch;
-  export let eventTag;
+  interface Props {
+    xfetch: any;
+  }
+
+  let { xfetch }: Props = $props();
 
   const {
     ShowActiveCountries,
@@ -19,7 +22,7 @@
     RepoURL,
   } = AppConfig;
 
-  $: isRegisteredUser = $user && !!$user.id && validateUserIsRegistered($user);
+  let isRegisteredUser = $derived($user && !!$user.id && validateUserIsRegistered($user));
 
   const slogans = [
     'Empower Your Agile Teams',
@@ -32,7 +35,7 @@
     'Amplify Your Teams Agile Potential',
   ];
 
-  $: randomSlogan = slogans[Math.floor(Math.random() * slogans.length)];
+  let randomSlogan = $derived(slogans[Math.floor(Math.random() * slogans.length)]);
 
   onMount(() => window.scrollTo(0, 0));
 </script>
@@ -299,7 +302,7 @@
   {#if ShowActiveCountries}
     <section class="bg-slate-100 dark:bg-gray-900 py-20">
       <div class="container mx-auto px-4">
-        <Countries xfetch="{xfetch}" eventTag="{eventTag}" />
+        <Countries xfetch={xfetch} />
       </div>
     </section>
   {/if}

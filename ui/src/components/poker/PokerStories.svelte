@@ -15,13 +15,23 @@
   import ViewPlan from './ViewStory.svelte';
   import ImportModal from './ImportModal.svelte';
 
-  export let plans = [];
-  export let isLeader = false;
-  export let sendSocketEvent = (event: string, value: string) => {};
-  export let eventTag;
-  export let notifications;
-  export let xfetch;
-  export let gameId = '';
+  interface Props {
+    plans?: any;
+    isLeader?: boolean;
+    sendSocketEvent?: any;
+    notifications: any;
+    xfetch: any;
+    gameId?: string;
+  }
+
+  let {
+    plans = $bindable([]),
+    isLeader = false,
+    sendSocketEvent = (event: string, value: string) => {},
+    notifications,
+    xfetch,
+    gameId = ''
+  }: Props = $props();
 
   let defaultPlan = {
     id: '',
@@ -65,11 +75,11 @@
     },
   };
 
-  let showAddPlan = false;
-  let showViewPlan = false;
-  let selectedPlan = { ...defaultPlan };
-  let storysShow = 'unpointed';
-  let showImport = false;
+  let showAddPlan = $state(false);
+  let showViewPlan = $state(false);
+  let selectedPlan = $state({ ...defaultPlan });
+  let storysShow = $state('unpointed');
+  let showImport = $state(false);
 
   const toggleImport = () => {
     showImport = !showImport;
@@ -78,12 +88,8 @@
   const toggleAddPlan = planId => () => {
     if (planId) {
       selectedPlan = plans.find(p => p.id === planId);
-
-      eventTag('plan_show_edit', 'battle', ``);
     } else {
       selectedPlan = { ...defaultPlan };
-
-      eventTag('plan_show_add', 'battle', ``);
     }
     showAddPlan = !showAddPlan;
   };
@@ -91,47 +97,39 @@
   const togglePlanView = planId => () => {
     if (planId) {
       selectedPlan = plans.find(p => p.id === planId);
-      eventTag('plan_show_view', 'battle', ``);
     } else {
       selectedPlan = { ...defaultPlan };
-
-      eventTag('plan_unshow_view', 'battle', ``);
     }
     showViewPlan = !showViewPlan;
   };
 
   const handlePlanAdd = newPlan => {
     sendSocketEvent('add_plan', JSON.stringify(newPlan));
-    eventTag('plan_add', 'battle', '');
   };
 
   const activatePlan = id => () => {
     sendSocketEvent('activate_plan', id);
-    eventTag('plan_activate', 'battle', '');
   };
 
   const handlePlanRevision = updatedPlan => {
     sendSocketEvent('revise_plan', JSON.stringify(updatedPlan));
-    eventTag('plan_revise', 'battle', '');
   };
 
   const handlePlanDeletion = planId => () => {
     sendSocketEvent('burn_plan', planId);
-    eventTag('plan_burn', 'battle', '');
   };
 
   const toggleShow = show => () => {
     storysShow = show;
-    eventTag('plans_show', 'battle', `show: ${show}`);
   };
 
-  $: pointedPlans = plans.filter(p => p.points !== '');
-  $: totalPoints = pointedPlans.reduce((previousValue, currentValue) => {
+  let pointedPlans = $derived(plans.filter(p => p.points !== ''));
+  let totalPoints = $derived(pointedPlans.reduce((previousValue, currentValue) => {
     var currentPoints =
       currentValue.points === '1/2' ? 0.5 : parseInt(currentValue.points);
     return isNaN(currentPoints) ? previousValue : previousValue + currentPoints;
-  }, 0);
-  $: unpointedPlans = plans.filter(p => p.points === '');
+  }, 0));
+  let unpointedPlans = $derived(plans.filter(p => p.points === ''));
 
   // event handlers
   function handleDndConsider(e) {
@@ -158,7 +156,6 @@
           before_story_id: placeBefore,
         }),
       );
-      eventTag('story_arrange', 'battle', '');
     }
   }
 </script>
@@ -174,10 +171,10 @@
     </div>
     <div class="w-2/3 text-right">
       {#if isLeader}
-        <HollowButton onClick="{toggleImport}" color="blue">
+        <HollowButton onClick={toggleImport} color="blue">
           {$LL.importPlans()}
         </HollowButton>
-        <HollowButton onClick="{toggleAddPlan()}" testid="plans-add">
+        <HollowButton onClick={toggleAddPlan(null)} testid="plans-add">
           {$LL.planAdd()}
         </HollowButton>
       {/if}
@@ -193,7 +190,7 @@
           ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
           : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
                 bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
-        on:click="{toggleShow('unpointed')}"
+        onclick={toggleShow('unpointed')}
         data-testid="plans-unpointed"
       >
         {$LL.unpointed({ count: unpointedPlans.length })}
@@ -205,7 +202,7 @@
           ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
           : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
                 bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
-        on:click="{toggleShow('pointed')}"
+        onclick={toggleShow('pointed')}
         data-testid="plans-pointed"
       >
         {$LL.pointed({ count: pointedPlans.length })}
@@ -217,7 +214,7 @@
           ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
           : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
                   bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
-        on:click="{toggleShow('all')}"
+        onclick={toggleShow('all')}
         data-testid="plans-all"
       >
         {$LL.allStoryWithCount({ count: plans.length })}
@@ -238,8 +235,8 @@
       ],
       dragDisabled: !isLeader || storysShow !== 'all',
     }}"
-    on:consider="{handleDndConsider}"
-    on:finalize="{handleDndFinalize}"
+    onconsider={handleDndConsider}
+    onfinalize={handleDndFinalize}
   >
     {#each plans as plan (plan.id)}
       <div
@@ -274,8 +271,8 @@
           &nbsp;
           {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
           {#if priorities[plan.priority]}
-            <svelte:component
-              this="{priorities[plan.priority].icon}"
+            {@const SvelteComponent = priorities[plan.priority].icon}
+            <SvelteComponent
               class="inline-block w-6 h-6"
             />
           {/if}
@@ -293,7 +290,7 @@
           {/if}
           <HollowButton
             color="blue"
-            onClick="{togglePlanView(plan.id)}"
+            onClick={togglePlanView(plan.id)}
             testid="plan-view"
           >
             {$LL.view()}
@@ -302,7 +299,7 @@
             {#if !plan.active}
               <HollowButton
                 color="red"
-                onClick="{handlePlanDeletion(plan.id)}"
+                onClick={handlePlanDeletion(plan.id)}
                 testid="plan-delete"
               >
                 {$LL.delete()}
@@ -310,14 +307,14 @@
             {/if}
             <HollowButton
               color="purple"
-              onClick="{toggleAddPlan(plan.id)}"
+              onClick={toggleAddPlan(plan.id)}
               testid="plan-edit"
             >
               {$LL.edit()}
             </HollowButton>
             {#if !plan.active}
               <HollowButton
-                onClick="{activatePlan(plan.id)}"
+                onClick={activatePlan(plan.id)}
                 testid="plan-activate"
               >
                 {$LL.activate()}
@@ -327,6 +324,7 @@
         </div>
       </div>
       {#if plan[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+        {@const SvelteComponent_1 = priorities[plan.priority].icon}
         <div
           class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 cursor-pointer flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
           data-testid="plan"
@@ -352,8 +350,7 @@
             </div>
             &nbsp;
             {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-            <svelte:component
-              this="{priorities[plan.priority].icon}"
+            <SvelteComponent_1
               class="inline-block w-6 h-6"
             />
             <span data-testid="plan-name">{plan.name}</span>
@@ -370,7 +367,7 @@
             {/if}
             <HollowButton
               color="blue"
-              onClick="{togglePlanView(plan.id)}"
+              onClick={togglePlanView(plan.id)}
               testid="plan-view"
             >
               {$LL.view()}
@@ -379,7 +376,7 @@
               {#if !plan.active}
                 <HollowButton
                   color="red"
-                  onClick="{handlePlanDeletion(plan.id)}"
+                  onClick={handlePlanDeletion(plan.id)}
                   testid="plan-delete"
                 >
                   {$LL.delete()}
@@ -387,14 +384,14 @@
               {/if}
               <HollowButton
                 color="purple"
-                onClick="{toggleAddPlan(plan.id)}"
+                onClick={toggleAddPlan(plan.id)}
                 testid="plan-edit"
               >
                 {$LL.edit()}
               </HollowButton>
               {#if !plan.active}
                 <HollowButton
-                  onClick="{activatePlan(plan.id)}"
+                  onClick={activatePlan(plan.id)}
                   testid="plan-activate"
                 >
                   {$LL.activate()}
@@ -428,42 +425,40 @@
 
 {#if showAddPlan}
   <AddPlan
-    handlePlanAdd="{handlePlanAdd}"
-    toggleAddPlan="{toggleAddPlan()}"
-    handlePlanRevision="{handlePlanRevision}"
-    planId="{selectedPlan.id}"
-    planName="{selectedPlan.name}"
-    planType="{selectedPlan.type}"
-    referenceId="{selectedPlan.referenceId}"
-    planLink="{selectedPlan.link}"
-    description="{selectedPlan.description}"
-    acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
-    priority="{selectedPlan.priority}"
-    notifications="{notifications}"
-    eventTag="{eventTag}"
+    handlePlanAdd={handlePlanAdd}
+    toggleAddPlan={toggleAddPlan(null)}
+    handlePlanRevision={handlePlanRevision}
+    planId={selectedPlan.id}
+    planName={selectedPlan.name}
+    planType={selectedPlan.type}
+    referenceId={selectedPlan.referenceId}
+    planLink={selectedPlan.link}
+    description={selectedPlan.description}
+    acceptanceCriteria={selectedPlan.acceptanceCriteria}
+    priority={selectedPlan.priority}
+    notifications={notifications}
   />
 {/if}
 
 {#if showViewPlan}
   <ViewPlan
-    togglePlanView="{togglePlanView()}"
-    planName="{selectedPlan.name}"
-    planType="{selectedPlan.type}"
-    referenceId="{selectedPlan.referenceId}"
-    planLink="{selectedPlan.link}"
-    description="{selectedPlan.description}"
-    acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
-    priority="{selectedPlan.priority}"
+    togglePlanView={togglePlanView(null)}
+    planName={selectedPlan.name}
+    planType={selectedPlan.type}
+    referenceId={selectedPlan.referenceId}
+    planLink={selectedPlan.link}
+    description={selectedPlan.description}
+    acceptanceCriteria={selectedPlan.acceptanceCriteria}
+    priority={selectedPlan.priority}
   />
 {/if}
 
 {#if showImport}
   <ImportModal
-    notifications="{notifications}"
-    toggleImport="{toggleImport}"
-    handlePlanAdd="{handlePlanAdd}"
-    xfetch="{xfetch}"
-    eventTag="{eventTag}"
-    gameId="{gameId}"
+    notifications={notifications}
+    toggleImport={toggleImport}
+    handlePlanAdd={handlePlanAdd}
+    xfetch={xfetch}
+    gameId={gameId}
   />
 {/if}

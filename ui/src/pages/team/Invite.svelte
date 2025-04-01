@@ -6,24 +6,33 @@
   import SolidButton from '../../components/global/SolidButton.svelte';
   import { Check, TriangleAlert } from 'lucide-svelte';
 
-  export let router;
-  export let xfetch;
-  export let notifications;
-  export let eventTag;
-  export let inviteType;
-  export let inviteId;
+  interface Props {
+    router: any;
+    xfetch: any;
+    notifications: any;
+    inviteType: any;
+    inviteId: any;
+  }
 
-  let targetPage = '';
+  let {
+    router,
+    xfetch,
+    notifications,
+    inviteType,
+    inviteId
+  }: Props = $props();
 
-  let inviteDetails = {
+  let targetPage = $state('');
+
+  let inviteDetails = $state({
     id: '',
     name: '',
     role: '',
     organization_id: '',
     department_id: '',
-  };
-  let inviteProcessed = false;
-  let inviteErr = '';
+  });
+  let inviteProcessed = $state(false);
+  let inviteErr = $state('');
 
   function useInvite() {
     xfetch(`/api/users/${$user.id}/invite/${inviteType}/${inviteId}`, {
@@ -48,7 +57,6 @@
           targetPage = `${appRoutes.organization}`;
         }
         inviteProcessed = true;
-        eventTag(`invite_${inviteType}`, 'engagement', 'success');
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -60,7 +68,6 @@
           inviteErr = 'Internal Error';
           inviteProcessed = true;
         }
-        eventTag(`invite_${inviteType}`, 'engagement', 'failure');
       });
   }
 

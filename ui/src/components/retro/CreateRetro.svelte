@@ -12,24 +12,32 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { Crown, Lock } from 'lucide-svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let eventTag;
-  export let router;
-  export let apiPrefix = '/api';
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+    apiPrefix?: string;
+  }
+
+  let {
+    xfetch,
+    notifications,
+    router,
+    apiPrefix = '/api'
+  }: Props = $props();
 
   const maxPhaseTimeLimitMin = 59;
 
-  let teams = [];
-  let retroTemplates = [];
-  let publicTemplates = [];
-  let teamRetroTemplates = [];
-  let organizationRetroTemplates = [];
+  let teams = $state([]);
+  let retroTemplates = $state([]);
+  let publicTemplates = $state([]);
+  let teamRetroTemplates = $state([]);
+  let organizationRetroTemplates = $state([]);
   let defaultRetroSettings = {
     retroName: '',
-    maxVotes: '3',
+    maxVotes: 3,
     brainstormVisibility: 'visible',
-    phaseTimeLimitMin: '0',
+    phaseTimeLimit: 0,
     facilitatorCode: '',
     joinCode: '',
     selectedTeam: '',
@@ -37,13 +45,13 @@
     phaseAutoAdvance: true,
     allowCumulativeVoting: false,
   };
-  let retroSettings = { ...defaultRetroSettings };
-  let orgRetroSettings = {};
-  let departmentRetroSettings = {};
-  let teamRetroSettings = {};
+  let retroSettings = $state({ ...defaultRetroSettings });
+  let orgRetroSettings = $state({});
+  let departmentRetroSettings = $state({});
+  let teamRetroSettings = $state({});
 
   /** @type {TextInput} */
-  let retroNameTextInput;
+  let retroNameTextInput = $state();
 
   const brainstormVisibilityOptions = [
     {
@@ -69,9 +77,7 @@
       return;
     }
 
-    const phaseTimeLimitMin = parseInt(retroSettings.phaseTimeLimitMin, 10);
-
-    if (phaseTimeLimitMin > maxPhaseTimeLimitMin || phaseTimeLimitMin < 0) {
+    if (retroSettings.phaseTimeLimit > maxPhaseTimeLimitMin || retroSettings.phaseTimeLimit < 0) {
       notifications.danger('Phase Time Limit minutes must be between 0-59');
       return;
     }
@@ -80,9 +86,9 @@
       retroName: retroSettings.retroName,
       joinCode: retroSettings.joinCode,
       facilitatorCode: retroSettings.facilitatorCode,
-      maxVotes: parseInt(retroSettings.maxVotes, 10),
+      maxVotes: retroSettings.maxVotes,
       brainstormVisibility: retroSettings.brainstormVisibility,
-      phaseTimeLimitMin,
+      phaseTimeLimitMin: retroSettings.phaseTimeLimit,
       phaseAutoAdvance: retroSettings.phaseAutoAdvance,
       allowCumulativeVoting: retroSettings.allowCumulativeVoting,
       templateId: retroSettings.templateId,
@@ -95,9 +101,7 @@
     xfetch(endpoint, { body })
       .then(res => res.json())
       .then(function ({ data }) {
-        eventTag('create_retro', 'engagement', 'success', () => {
-          router.route(`${appRoutes.retro}/${data.id}`);
-        });
+        router.route(`${appRoutes.retro}/${data.id}`);
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -109,7 +113,6 @@
         } else {
           notifications.danger($LL.createRetroErrorMessage());
         }
-        eventTag('create_retro', 'engagement', 'failure');
       });
   }
 
@@ -304,7 +307,7 @@
   });
 </script>
 
-<form on:submit="{createRetro}" name="createRetro">
+<form onsubmit={createRetro} name="createRetro">
   <div class="mb-4">
     <label
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
@@ -315,9 +318,9 @@
     <div class="control">
       <TextInput
         name="retroName"
-        bind:value="{retroSettings.retroName}"
-        bind:this="{retroNameTextInput}"
-        placeholder="{$LL.retroNamePlaceholder()}"
+        bind:value={retroSettings.retroName}
+        bind:this={retroNameTextInput}
+        placeholder={$LL.retroNamePlaceholder()}
         id="retroName"
         required
       />
@@ -335,14 +338,14 @@
         {/if}
       </label>
       <SelectInput
-        bind:value="{retroSettings.selectedTeam}"
-        on:change="{teamSelected}"
+        bind:value={retroSettings.selectedTeam}
+        on:change={teamSelected}
         id="selectedTeam"
         name="selectedTeam"
       >
         <option value="" disabled>{$LL.selectTeam()}</option>
         {#each teams as team}
-          <option value="{team.id}">
+          <option value={team.id}>
             {team.name}
           </option>
         {/each}
@@ -357,10 +360,10 @@
       Retro Template
     </div>
     <SelectWithSubtext
-      on:change="{updateSelectedTemplate}"
-      items="{retroTemplates}"
+      on:change={updateSelectedTemplate}
+      items={retroTemplates}
       label="Select a retro template..."
-      selectedItemId="{retroSettings.templateId}"
+      selectedItemId={retroSettings.templateId}
       itemType="retro_template"
     />
   </div>
@@ -375,10 +378,10 @@
     <div class="control">
       <TextInput
         name="joinCode"
-        bind:value="{retroSettings.joinCode}"
-        placeholder="{$LL.joinCodePlaceholder()}"
+        bind:value={retroSettings.joinCode}
+        placeholder={$LL.joinCodePlaceholder()}
         id="joinCode"
-        icon="{Lock}"
+        icon={Lock}
       />
     </div>
   </div>
@@ -393,10 +396,10 @@
     <div class="control">
       <TextInput
         name="facilitatorCode"
-        bind:value="{retroSettings.facilitatorCode}"
-        placeholder="{$LL.facilitatorCodePlaceholder()}"
+        bind:value={retroSettings.facilitatorCode}
+        placeholder={$LL.facilitatorCodePlaceholder()}
         id="facilitatorCode"
-        icon="{Crown}"
+        icon={Crown}
       />
     </div>
   </div>
@@ -411,7 +414,7 @@
     <div class="control">
       <TextInput
         name="maxVotes"
-        bind:value="{retroSettings.maxVotes}"
+        bind:value={retroSettings.maxVotes}
         id="maxVotes"
         type="number"
         min="1"
@@ -423,10 +426,10 @@
 
   <div class="mb-4">
     <Checkbox
-      bind:checked="{retroSettings.allowCumulativeVoting}"
+      bind:checked={retroSettings.allowCumulativeVoting}
       id="allowCumulativeVoting"
       name="allowCumulativeVoting"
-      label="{$LL.allowCumulativeVotingLabel()}"
+      label={$LL.allowCumulativeVotingLabel()}
     />
   </div>
 
@@ -438,12 +441,12 @@
       {$LL.brainstormPhaseFeedbackVisibility()}
     </label>
     <SelectInput
-      bind:value="{retroSettings.brainstormVisibility}"
+      bind:value={retroSettings.brainstormVisibility}
       id="brainstormVisibility"
       name="brainstormVisibility"
     >
       {#each brainstormVisibilityOptions as item}
-        <option value="{item.value}">
+        <option value={item.value}>
           {item.label}
         </option>
       {/each}
@@ -460,11 +463,11 @@
     <div class="control">
       <TextInput
         name="phaseTimeLimitMin"
-        bind:value="{retroSettings.phaseTimeLimitMin}"
+        bind:value={retroSettings.phaseTimeLimit}
         id="phaseTimeLimitMin"
         type="number"
         min="0"
-        max="{maxPhaseTimeLimitMin}"
+        max={maxPhaseTimeLimitMin}
         required
       />
     </div>
@@ -472,10 +475,10 @@
 
   <div class="mb-4">
     <Checkbox
-      bind:checked="{retroSettings.phaseAutoAdvance}"
+      bind:checked={retroSettings.phaseAutoAdvance}
       id="phaseAutoAdvance"
       name="phaseAutoAdvance"
-      label="{$LL.phaseAutoAdvanceLabel()}"
+      label={$LL.phaseAutoAdvanceLabel()}
     />
   </div>
 

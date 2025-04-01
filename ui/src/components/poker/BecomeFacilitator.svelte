@@ -5,10 +5,14 @@
   import TextInput from '../forms/TextInput.svelte';
   import { Lock } from 'lucide-svelte';
 
-  export let toggleBecomeLeader = () => {};
-  export let handleBecomeLeader = () => {};
+  interface Props {
+    toggleBecomeLeader?: any;
+    handleBecomeLeader?: any;
+  }
 
-  let leaderCode = '';
+  let { toggleBecomeLeader = () => {}, handleBecomeLeader = () => {} }: Props = $props();
+
+  let leaderCode = $state('');
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -18,10 +22,10 @@
 </script>
 
 <Modal
-  closeModal="{toggleBecomeLeader}"
+  closeModal={toggleBecomeLeader}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
 >
-  <form on:submit="{handleSubmit}" name="becomeLeader">
+  <form onsubmit={handleSubmit} name="becomeLeader">
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -34,7 +38,7 @@
           name="leaderCode"
           bind:value="{leaderCode}"
           id="leaderCode"
-          icon="{Lock}"
+          icon={Lock}
         />
       </div>
     </div>

@@ -30,21 +30,24 @@
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
 
-  export let storyboardId;
-  export let notifications;
-  export let router;
-  export let eventTag;
+  interface Props {
+    storyboardId: any;
+    notifications: any;
+    router: any;
+  }
+
+  let { storyboardId, notifications, router }: Props = $props();
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
 
-  let isLoading = true;
-  let JoinPassRequired = false;
-  let socketError = false;
-  let socketReconnecting = false;
-  let storyboard = {
+  let isLoading = $state(true);
+  let JoinPassRequired = $state(false);
+  let socketError = $state(false);
+  let socketReconnecting = $state(false);
+  let storyboard = $state({
     goals: [],
     users: [],
     colorLegend: [],
@@ -52,17 +55,17 @@
     facilitators: [],
     facilitatorCode: '',
     joinCode: '',
-  };
-  let showUsers = false;
-  let showColorLegend = false;
-  let showColorLegendForm = false;
-  let showPersonas = false;
-  let showPersonasForm = null;
-  let editColumn = null;
-  let activeStory = null;
-  let showDeleteStoryboard = false;
-  let showEditStoryboard = false;
-  let collapseGoals = [];
+  });
+  let showUsers = $state(false);
+  let showColorLegend = $state(false);
+  let showColorLegendForm = $state(false);
+  let showPersonas = $state(false);
+  let showPersonasForm = $state(null);
+  let editColumn = $state(null);
+  let activeStory = $state(null);
+  let showDeleteStoryboard = $state(false);
+  let showEditStoryboard = $state(false);
+  let collapseGoals = $state([]);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -78,7 +81,6 @@
       case 'init':
         JoinPassRequired = false;
         storyboard = JSON.parse(parsedEvent.value);
-        eventTag('join', 'storyboard', '');
         break;
       case 'user_joined':
         storyboard.users = JSON.parse(parsedEvent.value);
@@ -180,49 +182,35 @@
       onmessage: onSocketMessage,
       onerror: () => {
         socketError = true;
-        eventTag('socket_error', 'storyboard', '');
       },
       onclose: e => {
         if (e.code === 4004) {
-          eventTag('not_found', 'storyboard', '', () => {
-            router.route(appRoutes.storyboards);
-          });
+          router.route(appRoutes.storyboards);
         } else if (e.code === 4001) {
-          eventTag('socket_unauthorized', 'storyboard', '', () => {
-            user.delete();
-            router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
-          });
+          user.delete();
+          router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
         } else if (e.code === 4003) {
-          eventTag('socket_duplicate', 'storyboard', '', () => {
-            notifications.danger($LL.duplicateStoryboardSession());
-            router.route(`${appRoutes.storyboards}`);
-          });
+          notifications.danger($LL.duplicateStoryboardSession());
+          router.route(`${appRoutes.storyboards}`);
         } else if (e.code === 4002) {
-          eventTag('storyboard_user_abandoned', 'storyboard', '', () => {
-            router.route(appRoutes.storyboards);
-          });
+          router.route(appRoutes.storyboards);
         } else {
           socketReconnecting = true;
-          eventTag('socket_close', 'storyboard', '');
         }
       },
       onopen: () => {
         isLoading = false;
         socketError = false;
         socketReconnecting = false;
-        eventTag('socket_open', 'storyboard', '');
       },
       onmaximum: () => {
         socketReconnecting = false;
-        eventTag('socket_error', 'storyboard', 'Socket Reconnect Max Reached');
       },
     },
   );
 
   onDestroy(() => {
-    eventTag('leave', 'storyboard', '', () => {
-      ws.close();
-    });
+    ws.close();
   });
 
   const sendSocketEvent = (type, value) => {
@@ -279,13 +267,11 @@
           placeBefore,
         }),
       );
-      eventTag('story_move', 'storyboard', '');
     }
   }
 
   function authStoryboard(joinPasscode) {
     sendSocketEvent('auth_storyboard', joinPasscode);
-    eventTag('auth_storyboard', 'storyboard', '');
   }
 
   const addStory = (goalId, columnId) => () => {
@@ -296,7 +282,6 @@
         columnId,
       }),
     );
-    eventTag('story_add', 'storyboard', '');
   };
 
   const addStoryColumn = goalId => () => {
@@ -306,12 +291,10 @@
         goalId,
       }),
     );
-    eventTag('column_add', 'storyboard', '');
   };
 
   const deleteColumn = columnId => () => {
     sendSocketEvent('delete_column', columnId);
-    eventTag('column_delete', 'storyboard', '');
     toggleColumnEdit()();
   };
 
@@ -339,36 +322,29 @@
   };
 
   function concedeStoryboard() {
-    eventTag('concede_storyboard', 'storyboard', '', () => {
-      sendSocketEvent('concede_storyboard', '');
-    });
+    sendSocketEvent('concede_storyboard', '');
   }
 
   function abandonStoryboard() {
-    eventTag('abandon_storyboard', 'storyboard', '', () => {
-      sendSocketEvent('abandon_storyboard', '');
-    });
+    sendSocketEvent('abandon_storyboard', '');
   }
 
   function toggleUsersPanel() {
     showColorLegend = false;
     showPersonas = false;
     showUsers = !showUsers;
-    eventTag('show_users', 'storyboard', `show: ${showUsers}`);
   }
 
   function toggleColorLegend() {
     showUsers = false;
     showPersonas = false;
     showColorLegend = !showColorLegend;
-    eventTag('show_colorlegend', 'storyboard', `show: ${showColorLegend}`);
   }
 
   function togglePersonas() {
     showUsers = false;
     showColorLegend = false;
     showPersonas = !showPersonas;
-    eventTag('show_personas', 'storyboard', `show: ${showPersonas}`);
   }
 
   function toggleColumnEdit(column) {
@@ -380,22 +356,20 @@
   function toggleEditLegend() {
     showColorLegend = false;
     showColorLegendForm = !showColorLegendForm;
-    eventTag('show_edit_legend', 'storyboard', `show: ${showColorLegendForm}`);
   }
 
   const toggleEditPersona = persona => () => {
     showPersonas = false;
     showPersonasForm = showPersonasForm != null ? null : persona;
-    eventTag('show_edit_personas', 'storyboard', `show: ${showPersonasForm}`);
   };
 
   const toggleDeleteStoryboard = () => {
     showDeleteStoryboard = !showDeleteStoryboard;
   };
 
-  let showAddGoal = false;
-  let reviseGoalId = '';
-  let reviseGoalName = '';
+  let showAddGoal = $state(false);
+  let reviseGoalId = $state('');
+  let reviseGoalName = $state('');
 
   const toggleAddGoal = goalId => () => {
     if (goalId) {
@@ -407,61 +381,49 @@
       reviseGoalName = '';
     }
     showAddGoal = !showAddGoal;
-    eventTag('show_goal_add', 'storyboard', `show: ${showAddGoal}`);
   };
 
   const handleGoalAdd = goalName => {
     sendSocketEvent('add_goal', goalName);
-    eventTag('goal_add', 'storyboard', '');
   };
 
   const handleGoalRevision = updatedGoal => {
     sendSocketEvent('revise_goal', JSON.stringify(updatedGoal));
-    eventTag('goal_edit_name', 'storyboard', '');
   };
 
   const handleGoalDeletion = goalId => () => {
     sendSocketEvent('delete_goal', goalId);
-    eventTag('goal_delete', 'storyboard', '');
   };
 
   const handleColumnRevision = column => {
     sendSocketEvent('revise_column', JSON.stringify(column));
-    eventTag('column_revise', 'storyboard', '');
   };
 
   const handleLegendRevision = legend => {
     sendSocketEvent('revise_color_legend', JSON.stringify(legend));
-    eventTag('color_legend_revise', 'storyboard', '');
   };
 
   const handlePersonaAdd = persona => {
     sendSocketEvent('add_persona', JSON.stringify(persona));
-    eventTag('persona_add', 'storyboard', '');
   };
 
   const handleColumnPersonaAdd = column_persona => {
     sendSocketEvent('column_persona_add', JSON.stringify(column_persona));
-    eventTag('column_persona_add', 'storyboard', '');
   };
   const handleColumnPersonaRemove = column_persona => () => {
     sendSocketEvent('column_persona_remove', JSON.stringify(column_persona));
-    eventTag('column_persona_remove', 'storyboard', '');
   };
 
   const handlePersonaRevision = persona => {
     sendSocketEvent('revise_persona', JSON.stringify(persona));
-    eventTag('persona_revise', 'storyboard', '');
   };
 
   const handleDeletePersona = personaId => () => {
     sendSocketEvent('delete_persona', personaId);
-    eventTag('persona_delete', 'storyboard', '');
   };
 
   function handleStoryboardEdit(revisedStoryboard) {
     sendSocketEvent('edit_storyboard', JSON.stringify(revisedStoryboard));
-    eventTag('edit_storyboard', 'storyboard', '');
     toggleEditStoryboard();
   }
 
@@ -485,21 +447,19 @@
     };
   }
 
-  let showBecomeFacilitator = false;
+  let showBecomeFacilitator = $state(false);
 
   function becomeFacilitator(facilitatorCode) {
     sendSocketEvent('facilitator_self', facilitatorCode);
-    eventTag('become_facilitator', 'retro', '');
     toggleBecomeFacilitator();
   }
 
   function toggleBecomeFacilitator() {
     showBecomeFacilitator = !showBecomeFacilitator;
-    eventTag('toggle_become_facilitator', 'retro', '');
   }
 
-  $: isFacilitator =
-    storyboard.facilitators && storyboard.facilitators.includes($user.id);
+  let isFacilitator =
+    $derived(storyboard.facilitators && storyboard.facilitators.includes($user.id));
 
   onMount(() => {
     if (!$user.id) {
@@ -649,7 +609,7 @@
         {#if isFacilitator}
           <HollowButton
             color="green"
-            onClick="{toggleAddGoal()}"
+            onClick={toggleAddGoal()}
             additionalClasses="me-2"
             testid="goal-add"
           >
@@ -657,14 +617,14 @@
           </HollowButton>
           <HollowButton
             color="blue"
-            onClick="{toggleEditStoryboard}"
+            onClick={toggleEditStoryboard}
             testid="storyboard-edit"
           >
             {$LL.editStoryboard()}
           </HollowButton>
           <HollowButton
             color="red"
-            onClick="{toggleDeleteStoryboard}"
+            onClick={toggleDeleteStoryboard}
             additionalClasses="me-2"
             testid="storyboard-delete"
           >
@@ -673,14 +633,14 @@
         {:else}
           <HollowButton
             color="blue"
-            onClick="{toggleBecomeFacilitator}"
+            onClick={toggleBecomeFacilitator}
             testid="become-facilitator"
           >
             {$LL.becomeFacilitator()}
           </HollowButton>
           <HollowButton
             color="red"
-            onClick="{abandonStoryboard}"
+            onClick={abandonStoryboard}
             testid="storyboard-leave"
           >
             {$LL.leaveStoryboard()}
@@ -690,7 +650,7 @@
           <HollowButton
             color="indigo"
             additionalClasses="transition ease-in-out duration-150"
-            onClick="{togglePersonas}"
+            onClick={togglePersonas}
             testid="personas-toggle"
           >
             {$LL.personas()}
@@ -714,7 +674,7 @@
                         {#if isFacilitator}
                           &nbsp;|&nbsp;
                           <button
-                            on:click="{toggleEditPersona(persona)}"
+                            onclick={toggleEditPersona(persona)}
                             class="text-orange-500
                                                         hover:text-orange-800"
                             data-testid="persona-edit"
@@ -723,7 +683,7 @@
                           </button>
                           &nbsp;|&nbsp;
                           <button
-                            on:click="{handleDeletePersona(persona.id)}"
+                            onclick={handleDeletePersona(persona.id)}
                             class="text-red-500
                                                         hover:text-red-800"
                             data-testid="persona-delete"
@@ -743,12 +703,12 @@
                   <div class="p-2 text-right">
                     <HollowButton
                       color="green"
-                      onClick="{toggleEditPersona({
+                      onClick={toggleEditPersona({
                         id: '',
                         name: '',
                         role: '',
                         description: '',
-                      })}"
+                      })}
                       testid="persona-add"
                     >
                       {$LL.addPersona()}
@@ -763,7 +723,7 @@
           <HollowButton
             color="teal"
             additionalClasses="transition ease-in-out duration-150"
-            onClick="{toggleColorLegend}"
+            onClick={toggleColorLegend}
             testid="colorlegend-toggle"
           >
             {$LL.colorLegend()}
@@ -799,7 +759,7 @@
                   <div class="p-2 text-right">
                     <HollowButton
                       color="orange"
-                      onClick="{toggleEditLegend}"
+                      onClick={toggleEditLegend}
                       testid="colorlegend-edit"
                     >
                       {$LL.editColorLegend()}
@@ -814,7 +774,7 @@
           <HollowButton
             color="orange"
             additionalClasses="transition ease-in-out duration-150"
-            onClick="{toggleUsersPanel}"
+            onClick={toggleUsersPanel}
             testid="users-toggle"
           >
             <Users class="me-1 inline-block" height="18" width="18" />
@@ -832,20 +792,19 @@
                 {#each storyboard.users as usr, index (usr.id)}
                   {#if usr.active}
                     <UserCard
-                      user="{usr}"
-                      sendSocketEvent="{sendSocketEvent}"
-                      showBorder="{index !== storyboard.users.length - 1}"
-                      facilitators="{storyboard.facilitators}"
-                      handleAddFacilitator="{handleAddFacilitator}"
-                      handleRemoveFacilitator="{handleRemoveFacilitator}"
+                      user={usr}
+                      showBorder={index !== storyboard.users.length - 1}
+                      facilitators={storyboard.facilitators}
+                      handleAddFacilitator={handleAddFacilitator}
+                      handleRemoveFacilitator={handleRemoveFacilitator}
                     />
                   {/if}
                 {/each}
 
                 <div class="p-2">
                   <InviteUser
-                    hostname="{hostname}"
-                    storyboardId="{storyboard.id}"
+                    hostname={hostname}
+                    storyboardId={storyboard.id}
                   />
                 </div>
               </div>
@@ -867,7 +826,7 @@
           <div class="font-bold dark:text-gray-200 text-xl">
             <h2 class="inline-block align-middle pt-1">
               <button
-                on:click="{toggleGoalCollapse(goal.id)}"
+                onclick={toggleGoalCollapse(goal.id)}
                 data-testid="goal-expand"
                 data-collapsed="{collapseGoals.includes(goal.id)}"
               >
@@ -877,7 +836,7 @@
                   <ChevronUp class="me-1 inline-block" />
                 {/if}
               </button>{goal.name}&nbsp;<GoalEstimate
-                columns="{goal.columns}"
+                columns={goal.columns}
               />
             </h2>
           </div>
@@ -886,7 +845,7 @@
           {#if isFacilitator}
             <HollowButton
               color="green"
-              onClick="{addStoryColumn(goal.id)}"
+              onClick={addStoryColumn(goal.id)}
               btnSize="small"
               testid="column-add"
             >
@@ -894,7 +853,7 @@
             </HollowButton>
             <HollowButton
               color="orange"
-              onClick="{toggleAddGoal(goal.id)}"
+              onClick={toggleAddGoal(goal.id)}
               btnSize="small"
               additionalClasses="ms-2"
               testid="goal-edit"
@@ -903,7 +862,7 @@
             </HollowButton>
             <HollowButton
               color="red"
-              onClick="{handleGoalDeletion(goal.id)}"
+              onClick={handleGoalDeletion(goal.id)}
               btnSize="small"
               additionalClasses="ms-2"
               testid="goal-delete"
@@ -951,7 +910,7 @@
                         {goalColumn.name}
                       </span>
                       <button
-                        on:click="{toggleColumnEdit(goalColumn)}"
+                        onclick={toggleColumnEdit(goalColumn)}
                         class="flex-none font-bold text-xl
                                         border-dashed border-2 border-gray-400 dark:border-gray-600
                                         hover:border-green-500 text-gray-600 dark:text-gray-400
@@ -966,7 +925,7 @@
                   <div class="w-full">
                     <div class="flex">
                       <button
-                        on:click="{addStory(goal.id, goalColumn.id)}"
+                        onclick={addStory(goal.id, goalColumn.id)}
                         class="flex-grow font-bold text-xl py-1
                                         px-2 border-dashed border-2
                                         border-gray-400 dark:border-gray-600 hover:border-green-500
@@ -998,8 +957,8 @@
                       'dark:outline-yellow-400',
                     ],
                   }}"
-                  on:consider="{handleDndConsider}"
-                  on:finalize="{handleDndFinalize}"
+                  onconsider={handleDndConsider}
+                  onfinalize={handleDndFinalize}
                 >
                   {#each goalColumn.stories as story (story.id)}
                     <div
@@ -1013,8 +972,8 @@
                       data-columnid="{goalColumn.id}"
                       data-storyid="{story.id}"
                       data-testid="column-story"
-                      on:click="{toggleStoryForm(story)}"
-                      on:keypress="{toggleStoryForm(story)}"
+                      onclick={toggleStoryForm(story)}
+                      onkeypress={toggleStoryForm(story)}
                     >
                       <div>
                         <div>
@@ -1077,8 +1036,8 @@
                           data-columnid="{goalColumn.id}"
                           data-storyid="{story.id}"
                           data-testid="column-story-shadowitem"
-                          on:click="{toggleStoryForm(story)}"
-                          on:keypress="{toggleStoryForm(story)}"
+                          onclick={toggleStoryForm(story)}
+                          onkeypress={toggleStoryForm(story)}
                         >
                           <div>
                             <div>
@@ -1147,76 +1106,75 @@
 
 {#if showAddGoal}
   <AddGoal
-    handleGoalAdd="{handleGoalAdd}"
-    toggleAddGoal="{toggleAddGoal()}"
-    handleGoalRevision="{handleGoalRevision}"
-    goalId="{reviseGoalId}"
-    goalName="{reviseGoalName}"
+    handleGoalAdd={handleGoalAdd}
+    toggleAddGoal={toggleAddGoal()}
+    handleGoalRevision={handleGoalRevision}
+    goalId={reviseGoalId}
+    goalName={reviseGoalName}
   />
 {/if}
 
 {#if editColumn}
   <ColumnForm
-    handleColumnRevision="{handleColumnRevision}"
-    toggleColumnEdit="{toggleColumnEdit()}"
-    column="{editColumn}"
-    personas="{storyboard.personas}"
-    handlePersonaAdd="{handleColumnPersonaAdd}"
-    handlePersonaRemove="{handleColumnPersonaRemove}"
-    deleteColumn="{deleteColumn}"
+    handleColumnRevision={handleColumnRevision}
+    toggleColumnEdit={toggleColumnEdit()}
+    column={editColumn}
+    personas={storyboard.personas}
+    handlePersonaAdd={handleColumnPersonaAdd}
+    handlePersonaRemove={handleColumnPersonaRemove}
+    deleteColumn={deleteColumn}
   />
 {/if}
 
 {#if activeStory}
   <StoryForm
-    toggleStoryForm="{toggleStoryForm()}"
-    story="{activeStory}"
-    sendSocketEvent="{sendSocketEvent}"
-    eventTag="{eventTag}"
-    notifications="{notifications}"
-    colorLegend="{storyboard.color_legend}"
-    users="{storyboard.users}"
+    toggleStoryForm={toggleStoryForm()}
+    story={activeStory}
+    sendSocketEvent={sendSocketEvent}
+    notifications={notifications}
+    colorLegend={storyboard.color_legend}
+    users={storyboard.users}
   />
 {/if}
 
 {#if showColorLegendForm}
   <ColorLegendForm
-    handleLegendRevision="{handleLegendRevision}"
-    toggleEditLegend="{toggleEditLegend}"
-    colorLegend="{storyboard.color_legend}"
+    handleLegendRevision={handleLegendRevision}
+    toggleEditLegend={toggleEditLegend}
+    colorLegend={storyboard.color_legend}
   />
 {/if}
 
 {#if showPersonasForm}
   <PersonasForm
-    toggleEditPersona="{toggleEditPersona()}"
-    persona="{showPersonasForm}"
-    handlePersonaAdd="{handlePersonaAdd}"
-    handlePersonaRevision="{handlePersonaRevision}"
+    toggleEditPersona={toggleEditPersona()}
+    persona={showPersonasForm}
+    handlePersonaAdd={handlePersonaAdd}
+    handlePersonaRevision={handlePersonaRevision}
   />
 {/if}
 
 {#if showEditStoryboard}
   <EditStoryboard
-    storyboardName="{storyboard.name}"
-    handleStoryboardEdit="{handleStoryboardEdit}"
-    toggleEditStoryboard="{toggleEditStoryboard}"
-    joinCode="{storyboard.joinCode}"
-    facilitatorCode="{storyboard.facilitatorCode}"
+    storyboardName={storyboard.name}
+    handleStoryboardEdit={handleStoryboardEdit}
+    toggleEditStoryboard={toggleEditStoryboard}
+    joinCode={storyboard.joinCode}
+    facilitatorCode={storyboard.facilitatorCode}
   />
 {/if}
 
 {#if showDeleteStoryboard}
   <DeleteStoryboard
-    toggleDelete="{toggleDeleteStoryboard}"
-    handleDelete="{concedeStoryboard}"
+    toggleDelete={toggleDeleteStoryboard}
+    handleDelete={concedeStoryboard}
   />
 {/if}
 
 {#if showBecomeFacilitator}
   <BecomeFacilitator
-    handleBecomeFacilitator="{becomeFacilitator}"
-    toggleBecomeFacilitator="{toggleBecomeFacilitator}"
+    handleBecomeFacilitator={becomeFacilitator}
+    toggleBecomeFacilitator={toggleBecomeFacilitator}
   />
 {/if}
 
@@ -1234,7 +1192,7 @@
   </FullpageLoader>
 {:else if JoinPassRequired}
   <JoinCodeForm
-    handleSubmit="{authStoryboard}"
-    submitText="{$LL.joinStoryboard()}"
+    handleSubmit={authStoryboard}
+    submitText={$LL.joinStoryboard()}
   />
 {/if}

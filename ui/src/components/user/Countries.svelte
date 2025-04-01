@@ -1,19 +1,20 @@
 <script lang="ts">
   import CountryFlag from './CountryFlag.svelte';
 
-  export let xfetch;
-  export let eventTag;
+  interface Props {
+    xfetch: any;
+  }
 
-  let activeCountries = [];
+  let { xfetch }: Props = $props();
+
+  let activeCountries = $state([]);
 
   xfetch('/api/active-countries')
     .then(res => res.json())
     .then(function (result) {
       activeCountries = result.data.sort();
     })
-    .catch(function () {
-      eventTag('get_active_countries', 'engagement', 'failure');
-    });
+    .catch(function () {});
 </script>
 
 <div class="text-center">
@@ -27,7 +28,7 @@
   <ul class="flex flex-wrap gap-3">
     {#each activeCountries as country}
       <li class="flex-none w-12">
-        <CountryFlag country="{country}" additionalClass="mx-auto" />
+        <CountryFlag country={country} additionalClass="mx-auto" />
       </li>
     {/each}
   </ul>

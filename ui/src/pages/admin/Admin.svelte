@@ -8,7 +8,7 @@
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
   import {
-    BarChart2,
+    ChartNoAxesColumn,
     Building,
     CircleUser,
     Columns2,
@@ -32,10 +32,13 @@
     Zap,
   } from 'lucide-svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let eventTag;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const {
     CleanupGuestsDaysOld,
@@ -49,7 +52,7 @@
     OrganizationsEnabled,
   } = AppConfig;
 
-  let appStats = {
+  let appStats = $state({
     unregisteredUserCount: 0,
     registeredUserCount: 0,
     battleCount: 0,
@@ -84,7 +87,7 @@
     retroTemplateCount: 0,
     organizationRetroTemplateCount: 0,
     teamRetroTemplateCount: 0,
-  };
+  });
 
   function getAppStats() {
     xfetch('/api/admin/stats')
@@ -100,52 +103,40 @@
   function cleanBattles() {
     xfetch('/api/maintenance/clean-battles', { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_clean_battles', 'engagement', 'success');
-
         getAppStats();
       })
       .catch(function () {
         notifications.danger($LL.oldBattleCleanError());
-        eventTag('admin_clean_battles', 'engagement', 'failure');
       });
   }
 
   function cleanRetros() {
     xfetch('/api/maintenance/clean-retros', { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_clean_retros', 'engagement', 'success');
-
         getAppStats();
       })
       .catch(function () {
         notifications.danger($LL.oldRetrosCleanError());
-        eventTag('admin_clean_retros', 'engagement', 'failure');
       });
   }
 
   function cleanStoryboards() {
     xfetch('/api/maintenance/clean-storyboards', { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_clean_storyboards', 'engagement', 'success');
-
         getAppStats();
       })
       .catch(function () {
         notifications.danger($LL.oldStoryboardsCleanError());
-        eventTag('admin_clean_storyboards', 'engagement', 'failure');
       });
   }
 
   function cleanGuests() {
     xfetch('/api/maintenance/clean-guests', { method: 'DELETE' })
       .then(function () {
-        eventTag('admin_clean_guests', 'engagement', 'success');
-
         getAppStats();
       })
       .catch(function () {
         notifications.danger($LL.oldGuestsCleanError());
-        eventTag('admin_clean_guests', 'engagement', 'failure');
       });
   }
 
@@ -162,7 +153,7 @@
     getAppStats();
   });
 
-  $: statGroups = [
+  let statGroups = $derived([
     {
       title: $LL.users(),
       active: true,
@@ -369,25 +360,25 @@
         {
           name: 'estimationScales',
           count: appStats.estimationScaleCount,
-          icon: BarChart2,
+          icon: ChartNoAxesColumn,
           active: FeaturePoker,
         },
         {
           name: 'publicEstimationScales',
           count: appStats.publicEstimationScaleCount,
-          icon: BarChart2,
+          icon: ChartNoAxesColumn,
           active: FeaturePoker,
         },
         {
           name: 'organizationEstimationScales',
           count: appStats.organizationEstimationScaleCount,
-          icon: BarChart2,
+          icon: ChartNoAxesColumn,
           active: FeaturePoker,
         },
         {
           name: 'teamEstimationScales',
           count: appStats.teamEstimationScaleCount,
-          icon: BarChart2,
+          icon: ChartNoAxesColumn,
           active: FeaturePoker,
         },
       ],
@@ -423,7 +414,7 @@
         },
       ],
     },
-  ];
+  ]);
 </script>
 
 <svelte:head>
@@ -453,8 +444,7 @@
                       <div
                         class="w-10 h-10 justify-center text-center content-center rounded-full {group.bgColor} text-white"
                       >
-                        <svelte:component
-                          this="{stat.icon}"
+                        <stat.icon
                           width="20"
                           height="20"
                           class="mx-auto"
@@ -499,7 +489,7 @@
                 daysOld: CleanupGuestsDaysOld,
               })}
             </h5>
-            <HollowButton onClick="{cleanGuests}" color="red">
+            <HollowButton onClick={cleanGuests} color="red">
               {$LL.execute()}
             </HollowButton>
           </div>
@@ -519,7 +509,7 @@
                   daysOld: CleanupBattlesDaysOld,
                 })}
               </h5>
-              <HollowButton onClick="{cleanBattles}" color="red">
+              <HollowButton onClick={cleanBattles} color="red">
                 {$LL.execute()}
               </HollowButton>
             </div>
@@ -539,7 +529,7 @@
                   daysOld: CleanupRetrosDaysOld,
                 })}
               </h5>
-              <HollowButton onClick="{cleanRetros}" color="red">
+              <HollowButton onClick={cleanRetros} color="red">
                 {$LL.execute()}
               </HollowButton>
             </div>
@@ -559,7 +549,7 @@
                   daysOld: CleanupStoryboardsDaysOld,
                 })}
               </h5>
-              <HollowButton onClick="{cleanStoryboards}" color="red">
+              <HollowButton onClick={cleanStoryboards} color="red">
                 {$LL.execute()}
               </HollowButton>
             </div>

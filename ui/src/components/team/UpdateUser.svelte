@@ -5,11 +5,21 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
 
-  export let toggleUpdate = () => {};
-  export let handleUpdate = () => {};
-  export let userId = '';
-  export let userEmail = '';
-  export let role = '';
+  interface Props {
+    toggleUpdate?: any;
+    handleUpdate?: any;
+    userId?: string;
+    userEmail?: string;
+    role?: string;
+  }
+
+  let {
+    toggleUpdate = () => {},
+    handleUpdate = () => {},
+    userId = '',
+    userEmail = '',
+    role = $bindable('')
+  }: Props = $props();
 
   const roles = ['ADMIN', 'MEMBER'];
 
@@ -19,11 +29,11 @@
     handleUpdate(userId, role);
   }
 
-  $: updateDisabled = role === '';
+  let updateDisabled = $derived(role === '');
 </script>
 
-<Modal closeModal="{toggleUpdate}">
-  <form on:submit="{onSubmit}" name="teamUpdateUser">
+<Modal closeModal={toggleUpdate}>
+  <form onsubmit={onSubmit} name="teamUpdateUser">
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 font-bold mb-2 disabled"
@@ -31,7 +41,7 @@
       >
         {$LL.userEmail()}
       </label>
-      <TextInput value="{userEmail}" id="userEmail" name="userEmail" disabled />
+      <TextInput value={userEmail} id="userEmail" name="userEmail" disabled />
     </div>
 
     <div class="mb-4">
@@ -52,7 +62,7 @@
       <div class="text-right">
         <SolidButton
           type="submit"
-          disabled="{updateDisabled}"
+          disabled={updateDisabled}
           testid="userupdate-confirm"
         >
           {$LL.userUpdate()}

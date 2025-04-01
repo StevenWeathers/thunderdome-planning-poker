@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"go.uber.org/zap"
-
-	"github.com/gorilla/mux"
 )
 
 // handleUserAPIKeys handles getting user API keys
@@ -26,8 +24,7 @@ func (s *Service) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -65,8 +62,8 @@ type apikeyGenerateRequestBody struct {
 //	@Router			/users/{userId}/apikeys [post]
 func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(userID, "required,uuid")
@@ -141,14 +138,13 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		keyID := vars["keyID"]
+		keyID := r.PathValue("keyID")
 		keyIDErr := validate.Var(keyID, "required")
 		if keyIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, keyIDErr.Error()))
@@ -204,14 +200,13 @@ func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		keyID := vars["keyID"]
+		keyID := r.PathValue("keyID")
 		keyIDErr := validate.Var(keyID, "required")
 		if keyIDErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, keyIDErr.Error()))

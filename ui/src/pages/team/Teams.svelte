@@ -17,10 +17,13 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let eventTag;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
+
+  let { xfetch, router, notifications }: Props = $props();
 
   const organizationsPageLimit = 1000;
   const teamsPageLimit = 1000;
@@ -31,10 +34,10 @@
     name: '',
   };
 
-  let organizations = [];
-  let teams = [];
-  let showCreateOrganization = false;
-  let showCreateTeam = false;
+  let organizations = $state([]);
+  let teams = $state([]);
+  let showCreateOrganization = $state(false);
+  let showCreateTeam = $state(false);
   let organizationsPage = 1;
   let teamsPage = 1;
 
@@ -42,8 +45,8 @@
     showCreateOrganization = !showCreateOrganization;
   }
 
-  let showOrganizationUpdate = false;
-  let selectedOrganization = { ...defaultOrganization };
+  let showOrganizationUpdate = $state(false);
+  let selectedOrganization = $state({ ...defaultOrganization });
 
   function toggleUpdateOrganization(selectedOrg) {
     return () => {
@@ -56,7 +59,7 @@
     showCreateTeam = !showCreateTeam;
   }
 
-  let showDeleteOrganization = false;
+  let showDeleteOrganization = $state(false);
   const toggleDeleteOrganization = selectedOrg => () => {
     selectedOrganization = selectedOrg;
     showDeleteOrganization = !showDeleteOrganization;
@@ -98,13 +101,10 @@
     xfetch(`/api/users/${$user.id}/organizations`, { body })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('create_organization', 'engagement', 'success', () => {
-          router.route(`${appRoutes.organization}/${result.data.id}`);
-        });
+        router.route(`${appRoutes.organization}/${result.data.id}`);
       })
       .catch(function () {
         notifications.danger($LL.createOrgError());
-        eventTag('create_organization', 'engagement', 'failure');
       });
   }
 
@@ -116,13 +116,10 @@
     xfetch(`/api/users/${$user.id}/teams`, { body })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('create_team', 'engagement', 'success', () => {
-          router.route(`${appRoutes.team}/${result.data.id}`);
-        });
+        router.route(`${appRoutes.team}/${result.data.id}`);
       })
       .catch(function () {
         notifications.danger($LL.teamCreateError());
-        eventTag('create_team', 'engagement', 'failure');
       });
   }
 
@@ -137,14 +134,12 @@
     })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('update_organization', 'engagement', 'success');
         notifications.success(`${$LL.orgUpdateSuccess()}`);
         getOrganizations();
         toggleUpdateOrganization(defaultOrganization)();
       })
       .catch(function () {
         notifications.danger(`${$LL.orgUpdateError()}`);
-        eventTag('update_organization', 'engagement', 'failure');
       });
   }
 
@@ -153,14 +148,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('organization_delete', 'engagement', 'success');
         getOrganizations();
         toggleDeleteOrganization(defaultOrganization)();
         notifications.success($LL.organizationDeleteSuccess());
       })
       .catch(function () {
         notifications.danger($LL.organizationDeleteError());
-        eventTag('organization_delete', 'engagement', 'failure');
       });
   }
 
@@ -168,8 +161,8 @@
     id: '',
     name: '',
   };
-  let selectedTeam = { ...defaultTeam };
-  let showTeamUpdate = false;
+  let selectedTeam = $state({ ...defaultTeam });
+  let showTeamUpdate = $state(false);
 
   function toggleUpdateTeam(team) {
     return () => {
@@ -178,7 +171,7 @@
     };
   }
 
-  let showDeleteTeam = false;
+  let showDeleteTeam = $state(false);
   const toggleDeleteTeam = team => () => {
     selectedTeam = team;
     showDeleteTeam = !showDeleteTeam;
@@ -195,14 +188,12 @@
     })
       .then(res => res.json())
       .then(function (result) {
-        eventTag('update_team', 'engagement', 'success');
         notifications.success(`${$LL.teamUpdateSuccess()}`);
         getTeams();
         toggleUpdateTeam(defaultTeam)();
       })
       .catch(function () {
         notifications.danger(`${$LL.teamUpdateError()}`);
-        eventTag('update_team', 'engagement', 'failure');
       });
   }
 
@@ -211,14 +202,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('team_delete', 'engagement', 'success');
         getTeams();
         toggleDeleteTeam(defaultTeam)();
         notifications.success($LL.teamDeleteSuccess());
       })
       .catch(function () {
         notifications.danger($LL.teamDeleteError());
-        eventTag('team_delete', 'engagement', 'failure');
       });
   }
 
@@ -244,56 +233,60 @@
     <div class="w-full mb-6 lg:mb-8">
       <TableContainer>
         <TableNav
-          title="{$LL.organizations()}"
-          createBtnText="{$LL.organizationCreate()}"
-          createButtonHandler="{toggleCreateOrganization}"
+          title={$LL.organizations()}
+          createBtnText={$LL.organizationCreate()}
+          createButtonHandler={toggleCreateOrganization}
           createBtnTestId="organization-create"
         />
         <Table>
-          <tr slot="header">
-            <HeadCol>
-              {$LL.name()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateCreated()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateUpdated()}
-            </HeadCol>
-            <HeadCol type="action" />
-          </tr>
-          <tbody slot="body" let:class="{className}" class="{className}">
-            {#each organizations as organization, i}
-              <TableRow itemIndex="{i}">
-                <RowCol>
-                  <a
-                    href="{appRoutes.organization}/{organization.id}"
-                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                  >
-                    {organization.name}
-                  </a>
-                </RowCol>
-                <RowCol>
-                  {new Date(organization.createdDate).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(organization.updatedDate).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  {#if organization.role === 'ADMIN'}
-                    <CrudActions
-                      editBtnClickHandler="{toggleUpdateOrganization(
-                        organization,
-                      )}"
-                      deleteBtnClickHandler="{toggleDeleteOrganization(
-                        organization,
-                      )}"
-                    />
-                  {/if}
-                </RowCol>
-              </TableRow>
-            {/each}
-          </tbody>
+          {#snippet header()}
+                    <tr >
+              <HeadCol>
+                {$LL.name()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateCreated()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateUpdated()}
+              </HeadCol>
+              <HeadCol type="action" />
+            </tr>
+                  {/snippet}
+          {#snippet body({ class: className })}
+                    <tbody   class="{className}">
+              {#each organizations as organization, i}
+                <TableRow itemIndex={i}>
+                  <RowCol>
+                    <a
+                      href="{appRoutes.organization}/{organization.id}"
+                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                    >
+                      {organization.name}
+                    </a>
+                  </RowCol>
+                  <RowCol>
+                    {new Date(organization.createdDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol>
+                    {new Date(organization.updatedDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol type="action">
+                    {#if organization.role === 'ADMIN'}
+                      <CrudActions
+                        editBtnClickHandler={toggleUpdateOrganization(
+                          organization,
+                        )}
+                        deleteBtnClickHandler={toggleDeleteOrganization(
+                          organization,
+                        )}
+                      />
+                    {/if}
+                  </RowCol>
+                </TableRow>
+              {/each}
+            </tbody>
+                  {/snippet}
         </Table>
       </TableContainer>
     </div>
@@ -301,100 +294,104 @@
 
   <TableContainer>
     <TableNav
-      title="{$LL.teams()}"
-      createBtnText="{$LL.teamCreate()}"
-      createButtonHandler="{toggleCreateTeam}"
+      title={$LL.teams()}
+      createBtnText={$LL.teamCreate()}
+      createButtonHandler={toggleCreateTeam}
       createBtnTestId="team-create"
     />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.name()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateCreated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-        <HeadCol type="action" />
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        {#each teams as team, i}
-          <TableRow itemIndex="{i}">
-            <RowCol>
-              <a
-                href="{appRoutes.team}/{team.id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-              >
-                {team.name}
-              </a>
-            </RowCol>
-            <RowCol>
-              {new Date(team.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(team.updatedDate).toLocaleString()}
-            </RowCol>
-            <RowCol type="action">
-              {#if team.role === 'ADMIN'}
-                <CrudActions
-                  editBtnClickHandler="{toggleUpdateTeam(team)}"
-                  deleteBtnClickHandler="{toggleDeleteTeam(team)}"
-                />
-              {/if}
-            </RowCol>
-          </TableRow>
-        {/each}
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.name()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateCreated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+          <HeadCol type="action" />
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          {#each teams as team, i}
+            <TableRow itemIndex={i}>
+              <RowCol>
+                <a
+                  href="{appRoutes.team}/{team.id}"
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                >
+                  {team.name}
+                </a>
+              </RowCol>
+              <RowCol>
+                {new Date(team.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(team.updatedDate).toLocaleString()}
+              </RowCol>
+              <RowCol type="action">
+                {#if team.role === 'ADMIN'}
+                  <CrudActions
+                    editBtnClickHandler={toggleUpdateTeam(team)}
+                    deleteBtnClickHandler={toggleDeleteTeam(team)}
+                  />
+                {/if}
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+          {/snippet}
     </Table>
   </TableContainer>
 
   {#if showCreateOrganization}
     <CreateOrganization
-      toggleCreate="{toggleCreateOrganization}"
-      handleCreate="{createOrganizationHandler}"
+      toggleCreate={toggleCreateOrganization}
+      handleCreate={createOrganizationHandler}
     />
   {/if}
 
   {#if showOrganizationUpdate}
     <CreateOrganization
-      toggleCreate="{toggleUpdateOrganization(defaultOrganization)}"
-      organizationName="{selectedOrganization.name}"
-      handleCreate="{updateOrganizationHandler}"
+      toggleCreate={toggleUpdateOrganization(defaultOrganization)}
+      organizationName={selectedOrganization.name}
+      handleCreate={updateOrganizationHandler}
     />
   {/if}
 
   {#if showDeleteOrganization}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteOrganization(defaultOrganization)}"
-      handleDelete="{handleDeleteOrganization}"
-      confirmText="{$LL.deleteOrganizationConfirmText()}"
-      confirmBtnText="{$LL.deleteOrganization()}"
+      toggleDelete={toggleDeleteOrganization(defaultOrganization)}
+      handleDelete={handleDeleteOrganization}
+      confirmText={$LL.deleteOrganizationConfirmText()}
+      confirmBtnText={$LL.deleteOrganization()}
     />
   {/if}
 
   {#if showCreateTeam}
     <CreateTeam
-      toggleCreate="{toggleCreateTeam}"
-      handleCreate="{createTeamHandler}"
+      toggleCreate={toggleCreateTeam}
+      handleCreate={createTeamHandler}
     />
   {/if}
 
   {#if showTeamUpdate}
     <CreateTeam
-      teamName="{selectedTeam.name}"
-      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
-      handleCreate="{updateTeamHandler}"
+      teamName={selectedTeam.name}
+      toggleCreate={toggleUpdateTeam(defaultTeam)}
+      handleCreate={updateTeamHandler}
     />
   {/if}
 
   {#if showDeleteTeam}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteTeam(defaultTeam)}"
-      handleDelete="{handleDeleteTeam}"
-      confirmText="{$LL.deleteTeamConfirmText()}"
-      confirmBtnText="{$LL.deleteTeam()}"
+      toggleDelete={toggleDeleteTeam(defaultTeam)}
+      handleDelete={handleDeleteTeam}
+      confirmText={$LL.deleteTeamConfirmText()}
+      confirmBtnText={$LL.deleteTeam()}
     />
   {/if}
 </PageLayout>

@@ -6,26 +6,38 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
-  import { RetroTemplateFormat } from '../../types/retro';
+  import { type RetroTemplateFormat } from '../../types/retro';
   import ColumnForm from './ColumnForm.svelte';
 
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix: string = '/api';
-  export let xfetch: any;
-  export let eventTag: any;
-  export let notifications: any;
+  interface Props {
+    toggleCreate?: any;
+    handleCreate?: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    xfetch: any;
+    notifications: any;
+  }
 
-  let name = '';
-  let description = '';
-  let isPublic = false;
-  let defaultTemplate = false;
-  let format: RetroTemplateFormat = {
+  let {
+    toggleCreate = () => {},
+    handleCreate = () => {},
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    xfetch,
+    notifications
+  }: Props = $props();
+
+  let name = $state('');
+  let description = $state('');
+  let isPublic = $state(false);
+  let defaultTemplate = $state(false);
+  let format: RetroTemplateFormat = $state({
     columns: [],
-  };
+  });
 
   function toggleClose() {
     toggleCreate();
@@ -58,13 +70,13 @@
       });
   }
 
-  $: createDisabled =
-    name === '' || format.columns.length < 2 || format.columns.length > 5;
-  $: isAdmin = validateUserIsAdmin($user);
+  let createDisabled =
+    $derived(name === '' || format.columns.length < 2 || format.columns.length > 5);
+  let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="createRetroTemplate">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={onSubmit} name="createRetroTemplate">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
@@ -74,7 +86,7 @@
       </label>
       <TextInput
         bind:value="{name}"
-        placeholder="{$LL.retroTemplateNamePlaceholder()}"
+        placeholder={$LL.retroTemplateNamePlaceholder()}
         id="templateName"
         name="templateName"
         required
@@ -90,7 +102,7 @@
       </label>
       <TextInput
         bind:value="{description}"
-        placeholder="{$LL.retroTemplateDescriptionPlaceholder()}"
+        placeholder={$LL.retroTemplateDescriptionPlaceholder()}
         id="templateDescription"
         name="templateDescription"
       />
@@ -104,7 +116,7 @@
           bind:checked="{isPublic}"
           id="isPublic"
           name="isPublic"
-          label="{$LL.retroTemplateIsPublic()}"
+          label={$LL.retroTemplateIsPublic()}
         />
       </div>
     {/if}
@@ -114,13 +126,13 @@
         bind:checked="{defaultTemplate}"
         id="defaultTemplate"
         name="defaultTemplate"
-        label="{$LL.retroTemplateDefault()}"
+        label={$LL.retroTemplateDefault()}
       />
     </div>
 
     <div>
       <div class="text-right">
-        <SolidButton type="submit" disabled="{createDisabled}">
+        <SolidButton type="submit" disabled={createDisabled}>
           {$LL.retroTemplateSave()}
         </SolidButton>
       </div>

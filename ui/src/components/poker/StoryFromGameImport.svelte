@@ -5,17 +5,25 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { onMount } from 'svelte';
 
-  export let eventTag;
-  export let notifications;
-  export let xfetch;
-  export let handleImport;
-  export let gameId = '';
+  interface Props {
+    notifications: any;
+    xfetch: any;
+    handleImport: any;
+    gameId?: string;
+  }
 
-  let selectedGameIdx = '';
-  let games = [];
-  let game = {
+  let {
+    notifications,
+    xfetch,
+    handleImport,
+    gameId = ''
+  }: Props = $props();
+
+  let selectedGameIdx = $state('');
+  let games = $state([]);
+  let game = $state({
     plans: [],
-  };
+  });
 
   function getGames() {
     xfetch(`/api/users/${$user.id}/battles?limit=${9999}&offset=${0}`)
@@ -25,7 +33,6 @@
       })
       .catch(function () {
         notifications.danger($LL.myBattlesError());
-        eventTag('fetch_games', 'engagement', 'failure');
       });
   }
 
@@ -42,7 +49,6 @@
       })
       .catch(function () {
         notifications.danger($LL.getBattleError());
-        eventTag('fetch_game', 'engagement', 'failure');
       });
   }
 
@@ -87,7 +93,7 @@
           >[{story.referenceId}] {story.name}
         </div>
         <div>
-          <SolidButton onClick="{importStory(idx)}">Import</SolidButton>
+          <SolidButton onClick={importStory(idx)}>Import</SolidButton>
         </div>
       </div>
     {/each}

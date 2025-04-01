@@ -11,16 +11,25 @@
   import StoryFromStoryboardImport from './StoryFromStoryboardImport.svelte';
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
-  export let notifications;
-  export let eventTag;
-  export let xfetch;
-  export let toggleImport = () => {};
-  export let handlePlanAdd = handleAdd => {};
-  export let gameId = '';
+  interface Props {
+    notifications: any;
+    xfetch: any;
+    toggleImport?: any;
+    handlePlanAdd?: any;
+    gameId?: string;
+  }
 
-  let showJiraCloudSearch = false;
-  let showGameImport = false;
-  let showStoryboardImport = false;
+  let {
+    notifications,
+    xfetch,
+    toggleImport = () => {},
+    handlePlanAdd = handleAdd => {},
+    gameId = ''
+  }: Props = $props();
+
+  let showJiraCloudSearch = $state(false);
+  let showGameImport = $state(false);
+  let showStoryboardImport = $state(false);
 
   const toggleGameImport = () => {
     showGameImport = !showGameImport;
@@ -47,7 +56,7 @@
   }
 </script>
 
-<Modal closeModal="{toggleImport}" widthClasses="md:w-full md:mx-4 lg:w-3/5">
+<Modal closeModal={toggleImport} widthClasses="md:w-full md:mx-4 lg:w-3/5">
   <div class="mt-8 mb-4">
     {#if !showJiraCloudSearch}
       <div class="mb-4 dark:text-gray-300">
@@ -58,10 +67,10 @@
           />
         {:else if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && $user.subscribed)}
           {#if !showGameImport && !showStoryboardImport}
-            <SolidButton color="indigo" onClick="{toggleGameImport}"
+            <SolidButton color="indigo" onClick={toggleGameImport}
               >Import from another Game
             </SolidButton>
-            <SolidButton color="blue" onClick="{toggleStoryboardImport}"
+            <SolidButton color="blue" onClick={toggleStoryboardImport}
               >Import from a Storyboard
             </SolidButton>
           {/if}
@@ -70,20 +79,18 @@
 
       {#if showGameImport}
         <StoryFromGameImport
-          notifications="{notifications}"
-          xfetch="{xfetch}"
-          eventTag="{eventTag}"
-          handleImport="{importStory}"
-          gameId="{gameId}"
+          notifications={notifications}
+          xfetch={xfetch}
+          handleImport={importStory}
+          gameId={gameId}
         />
       {/if}
 
       {#if showStoryboardImport}
         <StoryFromStoryboardImport
-          notifications="{notifications}"
-          xfetch="{xfetch}"
-          eventTag="{eventTag}"
-          handleImport="{importStory}"
+          notifications={notifications}
+          xfetch={xfetch}
+          handleImport={importStory}
         />
       {/if}
     {/if}
@@ -92,10 +99,9 @@
       <div class="mb-4 dark:text-gray-300">
         <h3 class="font-bold mb-2 text-xl">Import from Jira Cloud</h3>
         <JQLImport
-          notifications="{notifications}"
-          xfetch="{xfetch}"
-          eventTag="{eventTag}"
-          handleImport="{importStory}"
+          notifications={notifications}
+          xfetch={xfetch}
+          handleImport={importStory}
           on:instance_selected="{() => {
             showJiraCloudSearch = true;
           }}"
@@ -109,10 +115,8 @@
               {$LL.importJiraXML()}
             </h3>
             <JiraImport
-              handlePlanAdd="{handleAdd}"
-              notifications="{notifications}"
-              eventTag="{eventTag}"
-              testid="plans-importjira"
+              handlePlanAdd={handleAdd}
+              notifications={notifications}
             />
           </div>
           <div class="mb-4">
@@ -127,10 +131,8 @@
               Type,Title,ReferenceId,Link,Description,AcceptanceCriteria
             </div>
             <CsvImport
-              handlePlanAdd="{handleAdd}"
-              notifications="{notifications}"
-              eventTag="{eventTag}"
-              testid="plans-Csvimport"
+              handlePlanAdd={handleAdd}
+              notifications={notifications}
             />
           </div>
         </div>

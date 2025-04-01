@@ -7,29 +7,38 @@
   import Editor from '../forms/Editor.svelte';
   import { User } from 'lucide-svelte';
 
-  export let toggleStoryForm = () => {};
-  export let sendSocketEvent = () => {};
-  export let eventTag = () => {};
-  export let notifications;
 
-  export let story = {};
-  export let colorLegend = [];
-  export let users = [];
+  interface Props {
+    toggleStoryForm?: any;
+    sendSocketEvent?: any;
+    notifications: any;
+    story?: any;
+    colorLegend?: any;
+    users?: any;
+  }
+
+  let {
+    toggleStoryForm = () => {},
+    sendSocketEvent = () => {},
+    notifications,
+    story = $bindable({}),
+    colorLegend = [],
+    users = []
+  }: Props = $props();
 
   const isAbsolute = new RegExp('^([a-z]+://|//)', 'i');
 
-  let userComment = '';
-  let selectedComment = null;
-  let selectedCommentContent = '';
+  let userComment = $state('');
+  let selectedComment = $state(null);
+  let selectedCommentContent = $state('');
 
-  $: userMap = users.reduce((prev, usr) => {
+  let userMap = $derived(users.reduce((prev, usr) => {
     prev[usr.id] = usr.name;
     return prev;
-  }, {});
+  }, {}));
 
   function handleStoryDelete() {
     sendSocketEvent('delete_story', story.id);
-    eventTag('story_delete', 'storyboard', '');
     toggleStoryForm();
   }
 
@@ -41,7 +50,6 @@
         closed: true,
       }),
     );
-    eventTag('story_edit_closed', 'storyboard', 'true');
   }
 
   function markOpen() {
@@ -52,7 +60,6 @@
         closed: false,
       }),
     );
-    eventTag('story_edit_closed', 'storyboard', 'false');
   }
 
   const changeColor = color => () => {
@@ -63,7 +70,6 @@
         color,
       }),
     );
-    eventTag('story_edit_color', 'storyboard', color);
   };
 
   const updateName = evt => {
@@ -75,7 +81,6 @@
         name,
       }),
     );
-    eventTag('story_edit_name', 'storyboard', '');
   };
 
   const updateContent = () => {
@@ -86,7 +91,6 @@
         content: story.content,
       }),
     );
-    eventTag('story_edit_content', 'storyboard', '');
   };
 
   const updatePoints = evt => {
@@ -98,7 +102,6 @@
         points,
       }),
     );
-    eventTag('story_edit_points', 'storyboard', '');
   };
 
   const updateLink = evt => {
@@ -115,7 +118,6 @@
         link,
       }),
     );
-    eventTag('story_edit_link', 'storyboard', '');
   };
 
   const handleCommentSubmit = () => {
@@ -124,7 +126,6 @@
         'add_story_comment',
         JSON.stringify({ storyId: story.id, comment: userComment }),
       );
-      eventTag('story_add_comment', 'storyboard', '');
       userComment = '';
     }
   };
@@ -146,12 +147,10 @@
     );
     selectedComment = null;
     selectedCommentContent = '';
-    eventTag('story_edit_comment', 'storyboard', '');
   };
 
   const handleCommentDelete = commentId => () => {
     sendSocketEvent('delete_story_comment', JSON.stringify({ commentId }));
-    eventTag('story_delete_comment', 'storyboard', '');
   };
 </script>
 
@@ -237,7 +236,7 @@
   }
 </style>
 
-<Modal closeModal="{toggleStoryForm}" widthClasses="w-full md:w-2/3">
+<Modal closeModal={toggleStoryForm} widthClasses="w-full md:w-2/3">
   <div class="md:flex w-full md:gap-4 lg:gap-6">
     <div class="md:w-3/4">
       <div class="mb-4">
@@ -249,8 +248,8 @@
         </label>
         <TextInput
           id="storyName"
-          on:change="{updateName}"
-          value="{story.name}"
+          on:change={updateName}
+          value={story.name}
           placeholder="Enter a story name e.g. Ricky Bobby"
           name="storyName"
         />
@@ -264,8 +263,8 @@
         </label>
         <TextInput
           id="storyLink"
-          on:change="{updateLink}"
-          value="{story.link}"
+          on:change={updateLink}
+          value={story.link}
           placeholder="Enter a story link"
           name="storyLink"
         />
@@ -279,13 +278,13 @@
         </label>
         <div class="bg-white">
           <Editor
-            content="{story.content}"
+            content={story.content}
             placeholder="Enter story content"
             id="storyDescription"
-            handleTextChange="{c => {
+            handleTextChange={c => {
               story.content = c;
               updateContent();
-            }}"
+            }}
           />
         </div>
       </div>
@@ -315,14 +314,14 @@
                     <div class="text-right">
                       <HollowButton
                         color="blue"
-                        onClick="{toggleCommentEdit(null)}"
+                        onClick={toggleCommentEdit(null)}
                       >
                         {$LL.cancel()}
                       </HollowButton>
                       <HollowButton
                         color="green"
-                        onClick="{handleCommentEdit}"
-                        disabled="{selectedCommentContent === ''}"
+                        onClick={handleCommentEdit}
+                        disabled={selectedCommentContent === ''}
                       >
                         {$LL.updateComment()}
                       </HollowButton>
@@ -337,13 +336,13 @@
                   <div class="mb-2 text-right">
                     <button
                       class="text-blue-500 hover:text-blue-300 me-1"
-                      on:click="{toggleCommentEdit(comment)}"
+                      onclick={toggleCommentEdit(comment)}
                     >
                       {$LL.edit()}
                     </button>
                     <button
                       class="text-red-500 hover:text-red-300"
-                      on:click="{handleCommentDelete(comment.id)}"
+                      onclick={handleCommentDelete(comment.id)}
                     >
                       {$LL.delete()}
                     </button>
@@ -363,8 +362,8 @@
           <div class="text-right">
             <HollowButton
               color="teal"
-              onClick="{handleCommentSubmit}"
-              disabled="{userComment === ''}"
+              onClick={handleCommentSubmit}
+              disabled={userComment === ''}
             >
               Post comment
             </HollowButton>
@@ -389,7 +388,7 @@
           min="0"
           max="999"
           bind:value="{story.points}"
-          on:change="{updatePoints}"
+          onchange={updatePoints}
           placeholder="Enter story points e.g. 1, 2, 3, 5,
                         8"
           name="storyPoints"
@@ -402,7 +401,7 @@
         <div>
           {#each colorLegend as color}
             <button
-              on:click="{changeColor(color.color)}"
+              onclick={changeColor(color.color)}
               class="p-4 me-2 mb-2 colorcard-{color.color}
                                 border-2 border-solid {story.color ===
               color.color
@@ -410,23 +409,23 @@
                 : 'border-transparent'}"
               title="{color.color}{color.legend !== ''
                 ? ` - ${color.legend}`
-                : ''}"></button>
+                : ''}"><span class="hidden">change color</span></button>
           {/each}
         </div>
       </div>
       <div class="mb-4">
         {#if !story.closed}
-          <HollowButton color="orange" onClick="{markClosed}">
+          <HollowButton color="orange" onClick={markClosed}>
             Mark story as Closed
           </HollowButton>
         {:else}
-          <HollowButton color="green" onClick="{markOpen}"
+          <HollowButton color="green" onClick={markOpen}
             >Reopen story
           </HollowButton>
         {/if}
       </div>
       <div class="text-right">
-        <HollowButton color="red" onClick="{handleStoryDelete}">
+        <HollowButton color="red" onClick={handleStoryDelete}>
           Delete Story
         </HollowButton>
       </div>

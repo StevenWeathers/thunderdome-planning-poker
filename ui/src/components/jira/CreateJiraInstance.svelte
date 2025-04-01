@@ -6,24 +6,31 @@
   import TextInput from '../forms/TextInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
 
-  export let handleCreate = () => {};
-  export let toggleClose = () => {};
-  export let eventTag = () => {};
-  export let xfetch = () => {};
-  export let notifications;
+  interface Props {
+    handleCreate?: any;
+    toggleClose?: any;
+    xfetch?: any;
+    notifications: any;
+  }
 
-  let host = '';
-  let client_mail = '';
-  let access_token = '';
+  let {
+    handleCreate = () => {},
+    toggleClose = () => {},
+    xfetch = () => {},
+    notifications
+  }: Props = $props();
 
-  let jira_data_center = false;
+  let host = $state('');
+  let client_mail = $state('');
+  let access_token = $state('');
+
+  let jira_data_center = $state(false);
 
   function handleSubmit(event) {
     event.preventDefault();
 
     if (host === '') {
       notifications.danger('Host field required');
-      eventTag('create_jira_instance_host_invalid', 'engagement', 'failure');
       return false;
     }
 
@@ -31,27 +38,16 @@
       notifications.danger(
         'Host must contain protocol e.g. https:// or http://',
       );
-      eventTag('create_jira_instance_host_invalid', 'engagement', 'failure');
       return false;
     }
 
     if (client_mail === '') {
       notifications.danger('Host client_mail required');
-      eventTag(
-        'create_jira_instance_client_mail_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
     if (access_token === '') {
       notifications.danger('Host access_token required');
-      eventTag(
-        'create_jira_instance_access_token_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
@@ -67,7 +63,6 @@
       .then(function () {
         handleCreate();
         toggleClose();
-        eventTag('create_jira_instance', 'engagement', 'success');
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -93,13 +88,12 @@
         } else {
           notifications.danger('failed to create jira instance');
         }
-        eventTag('create_jira_instance', 'engagement', 'failure');
       });
   }
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit="{handleSubmit}" name="createjirainstance">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={handleSubmit} name="createjirainstance">
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="host">
         Host
@@ -120,7 +114,7 @@
         bind:checked="{jira_data_center}"
         id="jira_data_center"
         name="jira_data_center"
-        label="{$LL.jiradatacenterLabel()}"
+        label={$LL.jiradatacenterLabel()}
       />
     </div>
     <div class="mb-4">

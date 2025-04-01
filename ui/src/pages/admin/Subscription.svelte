@@ -15,11 +15,19 @@
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let subscriptionId;
-  export let eventTag;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    subscriptionId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    subscriptionId
+  }: Props = $props();
 
   let defaultSubscription = {
     id: subscriptionId,
@@ -34,9 +42,9 @@
     },
   };
 
-  let subscription = {
+  let subscription = $state({
     ...defaultSubscription,
-  };
+  });
 
   function getSubscription() {
     xfetch(`/api/subscriptions/${subscriptionId}`)
@@ -69,61 +77,65 @@
 
 <AdminPageLayout activePage="subscriptions">
   <TableContainer>
-    <TableNav title="Subscription" createBtnEnabled="{false}" />
+    <TableNav title="Subscription" createBtnEnabled={false} />
     <Table>
-      <tr slot="header">
-        <HeadCol>
-          {$LL.email()}
-        </HeadCol>
-        <HeadCol>Customer ID</HeadCol>
-        <HeadCol>Subscription ID</HeadCol>
-        <HeadCol>
-          {$LL.type()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.active()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateCreated()}
-        </HeadCol>
-        <HeadCol>
-          {$LL.dateUpdated()}
-        </HeadCol>
-        <HeadCol type="action">
-          <span class="sr-only">Actions</span>
-        </HeadCol>
-      </tr>
-      <tbody slot="body" let:class="{className}" class="{className}">
-        <TableRow>
-          <RowCol>
-            <a
-              href="{appRoutes.adminUsers}/{subscription.user_id}"
-              class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-            >
-              {subscription.user.name}
-            </a>
-          </RowCol>
-          <RowCol>
-            {subscription.customer_id}
-          </RowCol>
-          <RowCol>
-            {subscription.subscription_id}
-          </RowCol>
-          <RowCol>
-            {subscription.type}
-          </RowCol>
-          <RowCol>
-            <BooleanDisplay boolValue="{subscription.active}" />
-          </RowCol>
-          <RowCol>
-            {new Date(subscription.created_date).toLocaleString()}
-          </RowCol>
-          <RowCol>
-            {new Date(subscription.updated_date).toLocaleString()}
-          </RowCol>
-          <RowCol type="action" />
-        </TableRow>
-      </tbody>
+      {#snippet header()}
+            <tr >
+          <HeadCol>
+            {$LL.email()}
+          </HeadCol>
+          <HeadCol>Customer ID</HeadCol>
+          <HeadCol>Subscription ID</HeadCol>
+          <HeadCol>
+            {$LL.type()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.active()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateCreated()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.dateUpdated()}
+          </HeadCol>
+          <HeadCol type="action">
+            <span class="sr-only">Actions</span>
+          </HeadCol>
+        </tr>
+          {/snippet}
+      {#snippet body({ class: className })}
+            <tbody   class="{className}">
+          <TableRow>
+            <RowCol>
+              <a
+                href="{appRoutes.adminUsers}/{subscription.user_id}"
+                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+              >
+                {subscription.user.name}
+              </a>
+            </RowCol>
+            <RowCol>
+              {subscription.customer_id}
+            </RowCol>
+            <RowCol>
+              {subscription.subscription_id}
+            </RowCol>
+            <RowCol>
+              {subscription.type}
+            </RowCol>
+            <RowCol>
+              <BooleanDisplay boolValue={subscription.active} />
+            </RowCol>
+            <RowCol>
+              {new Date(subscription.created_date).toLocaleString()}
+            </RowCol>
+            <RowCol>
+              {new Date(subscription.updated_date).toLocaleString()}
+            </RowCol>
+            <RowCol type="action" />
+          </TableRow>
+        </tbody>
+          {/snippet}
     </Table>
   </TableContainer>
 </AdminPageLayout>

@@ -6,14 +6,22 @@
   import { appRoutes } from '../../config';
   import TextInput from '../../components/forms/TextInput.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let eventTag;
-  export let resetId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    resetId: any;
+  }
 
-  let warriorPassword1 = '';
-  let warriorPassword2 = '';
+  let {
+    xfetch,
+    router,
+    notifications,
+    resetId
+  }: Props = $props();
+
+  let warriorPassword1 = $state('');
+  let warriorPassword2 = $state('');
 
   function resetWarriorPassword(e) {
     e.preventDefault();
@@ -37,18 +45,15 @@
     if (noFormErrors) {
       xfetch('/api/auth/reset-password', { body, method: 'PATCH' })
         .then(function () {
-          eventTag('reset_password', 'engagement', 'success', () => {
-            router.route(appRoutes.login, true);
-          });
+          router.route(appRoutes.login, true);
         })
         .catch(function () {
           notifications.danger($LL.passwordResetError());
-          eventTag('reset_password', 'engagement', 'failure');
         });
     }
   }
 
-  $: resetDisabled = warriorPassword1 === '' || warriorPassword2 === '';
+  let resetDisabled = $derived(warriorPassword1 === '' || warriorPassword2 === '');
 </script>
 
 <svelte:head>
@@ -59,7 +64,7 @@
   <div class="flex justify-center">
     <div class="w-full md:w-1/2 lg:w-1/3">
       <form
-        on:submit="{resetWarriorPassword}"
+        onsubmit={resetWarriorPassword}
         class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
         name="resetWarriorPassword"
       >
@@ -79,7 +84,7 @@
           </label>
           <TextInput
             bind:value="{warriorPassword1}"
-            placeholder="{$LL.passwordPlaceholder()}"
+            placeholder={$LL.passwordPlaceholder()}
             id="yourPassword1"
             name="yourPassword1"
             type="password"
@@ -96,7 +101,7 @@
           </label>
           <TextInput
             bind:value="{warriorPassword2}"
-            placeholder="{$LL.confirmPasswordPlaceholder()}"
+            placeholder={$LL.confirmPasswordPlaceholder()}
             id="yourPassword2"
             name="yourPassword2"
             type="password"
@@ -105,7 +110,7 @@
         </div>
 
         <div class="text-right">
-          <SolidButton type="submit" disabled="{resetDisabled}">
+          <SolidButton type="submit" disabled={resetDisabled}>
             {$LL.reset()}
           </SolidButton>
         </div>

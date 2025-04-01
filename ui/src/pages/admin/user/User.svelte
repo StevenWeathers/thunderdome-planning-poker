@@ -20,17 +20,25 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import { BadgeCheck } from 'lucide-svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let eventTag;
-  export let userId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    userId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    userId
+  }: Props = $props();
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
-  let showUpdatePassword = false;
+  let showUpdatePassword = $state(false);
 
-  let userDetails = {
+  let userDetails = $state({
     id: '',
     name: '',
     email: '',
@@ -45,7 +53,7 @@
     createdDate: '',
     updatedDate: '',
     lastActive: '',
-  };
+  });
 
   function toggleUpdatePassword() {
     showUpdatePassword = !showUpdatePassword;
@@ -63,9 +71,9 @@
   }
 
   const battlesPageLimit = 100;
-  let battleCount = 0;
-  let battles = [];
-  let battlesPage = 1;
+  let battleCount = $state(0);
+  let battles = $state([]);
+  let battlesPage = $state(1);
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
@@ -88,9 +96,9 @@
   };
 
   const retrosPageLimit = 100;
-  let retroCount = 0;
-  let retros = [];
-  let retrosPage = 1;
+  let retroCount = $state(0);
+  let retros = $state([]);
+  let retrosPage = $state(1);
 
   function getRetros() {
     const offset = (retrosPage - 1) * retrosPageLimit;
@@ -113,9 +121,9 @@
   };
 
   const storyboardsPageLimit = 100;
-  let storyboardCount = 0;
-  let storyboards = [];
-  let storyboardsPage = 1;
+  let storyboardCount = $state(0);
+  let storyboards = $state([]);
+  let storyboardsPage = $state(1);
 
   function getStoryboards() {
     const offset = (storyboardsPage - 1) * storyboardsPageLimit;
@@ -147,11 +155,9 @@
       .then(function () {
         notifications.success($LL.passwordUpdated(), 1500);
         toggleUpdatePassword();
-        eventTag('update_password', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.passwordUpdateError());
-        eventTag('update_password', 'engagement', 'failure');
       });
   }
 
@@ -179,94 +185,23 @@
 <AdminPageLayout activePage="users">
   <div class="mb-6 lg:mb-8">
     <TableContainer>
-      <TableNav title="{userDetails.name}" createBtnEnabled="{false}">
-        <SolidButton onClick="{toggleUpdatePassword}"
+      <TableNav title={userDetails.name} createBtnEnabled={false}>
+        <SolidButton onClick={toggleUpdatePassword}
           >{$LL.updatePassword()}</SolidButton
         >
       </TableNav>
       <Table>
-        <tr slot="header">
-          <HeadCol />
-          <HeadCol>
-            {$LL.country()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.email()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.type()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.lastActive()}
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          <TableRow itemIndex="{0}">
-            <RowCol>
-              <div class="flex items-center flex-nowrap">
-                <div class="flex-shrink-0 h-10 w-10">
-                  <UserAvatar
-                    warriorId="{userDetails.id}"
-                    avatar="{userDetails.avatar}"
-                    gravatarHash="{userDetails.gravatarHash}"
-                    userName="{user.name}"
-                    width="48"
-                    class="h-10 w-10 rounded-full"
-                  />
-                </div>
-              </div>
-            </RowCol>
-            <RowCol>
-              {#if userDetails.country}
-                &nbsp;
-                <CountryFlag
-                  country="{userDetails.country}"
-                  additionalClass="inline-block"
-                  width="32"
-                  height="24"
-                />
-              {/if}
-            </RowCol>
-            <RowCol>
-              {userDetails.email}
-              {#if userDetails.verified}
-                <span class="text-green-600" title="{$LL.verified()}">
-                  <BadgeCheck class="inline-block" />
-                </span>
-              {/if}
-            </RowCol>
-            <RowCol>
-              {userDetails.rank}
-            </RowCol>
-            <RowCol>
-              {new Date(userDetails.createdDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(userDetails.updatedDate).toLocaleString()}
-            </RowCol>
-            <RowCol>
-              {new Date(userDetails.lastActive).toLocaleString()}
-            </RowCol>
-          </TableRow>
-        </tbody>
-      </Table>
-    </TableContainer>
-  </div>
-
-  {#if FeaturePoker}
-    <div class="mb-6 lg:mb-8">
-      <TableContainer>
-        <TableNav title="{$LL.battles()}" createBtnEnabled="{false}" />
-        <Table>
-          <tr slot="header">
+        {#snippet header()}
+                <tr >
+            <HeadCol />
             <HeadCol>
-              {$LL.name()}
+              {$LL.country()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.email()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.type()}
             </HeadCol>
             <HeadCol>
               {$LL.dateCreated()}
@@ -274,40 +209,119 @@
             <HeadCol>
               {$LL.dateUpdated()}
             </HeadCol>
-            <HeadCol type="action">
-              <span class="sr-only">{$LL.actions()}</span>
+            <HeadCol>
+              {$LL.lastActive()}
             </HeadCol>
           </tr>
-          <tbody slot="body" let:class="{className}" class="{className}">
-            {#each battles as battle, i}
-              <TableRow itemIndex="{i}">
-                <RowCol>
-                  <a
-                    href="{appRoutes.adminPokerGames}/{battle.id}"
-                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                    >{battle.name}</a
-                  >
-                </RowCol>
-                <RowCol>
-                  {new Date(battle.createdDate).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(battle.updatedDate).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  <HollowButton href="{appRoutes.game}/{battle.id}">
-                    {$LL.battleJoin()}
-                  </HollowButton>
-                </RowCol>
-              </TableRow>
-            {/each}
+              {/snippet}
+        {#snippet body({ class: className })}
+                <tbody   class="{className}">
+            <TableRow itemIndex={0}>
+              <RowCol>
+                <div class="flex items-center flex-nowrap">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <UserAvatar
+                      warriorId={userDetails.id}
+                      avatar={userDetails.avatar}
+                      gravatarHash={userDetails.gravatarHash}
+                      userName={user.name}
+                      width={48}
+                      class="h-10 w-10 rounded-full"
+                    />
+                  </div>
+                </div>
+              </RowCol>
+              <RowCol>
+                {#if userDetails.country}
+                  &nbsp;
+                  <CountryFlag
+                    country={userDetails.country}
+                    additionalClass="inline-block"
+                    width="32"
+                    height="24"
+                  />
+                {/if}
+              </RowCol>
+              <RowCol>
+                {userDetails.email}
+                {#if userDetails.verified}
+                  <span class="text-green-600" title={$LL.verified()}>
+                    <BadgeCheck class="inline-block" />
+                  </span>
+                {/if}
+              </RowCol>
+              <RowCol>
+                {userDetails.rank}
+              </RowCol>
+              <RowCol>
+                {new Date(userDetails.createdDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(userDetails.updatedDate).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(userDetails.lastActive).toLocaleString()}
+              </RowCol>
+            </TableRow>
           </tbody>
+              {/snippet}
+      </Table>
+    </TableContainer>
+  </div>
+
+  {#if FeaturePoker}
+    <div class="mb-6 lg:mb-8">
+      <TableContainer>
+        <TableNav title={$LL.battles()} createBtnEnabled={false} />
+        <Table>
+          {#snippet header()}
+                    <tr >
+              <HeadCol>
+                {$LL.name()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateCreated()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateUpdated()}
+              </HeadCol>
+              <HeadCol type="action">
+                <span class="sr-only">{$LL.actions()}</span>
+              </HeadCol>
+            </tr>
+                  {/snippet}
+          {#snippet body({ class: className })}
+                    <tbody   class="{className}">
+              {#each battles as battle, i}
+                <TableRow itemIndex={i}>
+                  <RowCol>
+                    <a
+                      href="{appRoutes.adminPokerGames}/{battle.id}"
+                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                      >{battle.name}</a
+                    >
+                  </RowCol>
+                  <RowCol>
+                    {new Date(battle.createdDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol>
+                    {new Date(battle.updatedDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol type="action">
+                    <HollowButton href="{appRoutes.game}/{battle.id}">
+                      {$LL.battleJoin()}
+                    </HollowButton>
+                  </RowCol>
+                </TableRow>
+              {/each}
+            </tbody>
+                  {/snippet}
         </Table>
         <TableFooter
-          bind:current="{battlesPage}"
-          num_items="{battleCount}"
-          per_page="{battlesPageLimit}"
-          on:navigate="{changeBattlesPage}"
+          bind:current={battlesPage}
+          num_items={battleCount}
+          per_page={battlesPageLimit}
+          on:navigate={changeBattlesPage}
         />
       </TableContainer>
     </div>
@@ -316,52 +330,56 @@
   {#if FeatureRetro}
     <div class="mb-6 lg:mb-8">
       <TableContainer>
-        <TableNav title="{$LL.retros()}" createBtnEnabled="{false}" />
+        <TableNav title={$LL.retros()} createBtnEnabled={false} />
         <Table>
-          <tr slot="header">
-            <HeadCol>
-              {$LL.name()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateCreated()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateUpdated()}
-            </HeadCol>
-            <HeadCol type="action">
-              <span class="sr-only">{$LL.actions()}</span>
-            </HeadCol>
-          </tr>
-          <tbody slot="body" let:class="{className}" class="{className}">
-            {#each retros as retro, i}
-              <TableRow itemIndex="{i}">
-                <RowCol>
-                  <a
-                    href="{appRoutes.adminRetros}/{retro.id}"
-                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                    >{retro.name}</a
-                  >
-                </RowCol>
-                <RowCol>
-                  {new Date(retro.createdDate).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(retro.updatedDate).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  <HollowButton href="{appRoutes.retro}/{retro.id}">
-                    {$LL.joinRetro()}
-                  </HollowButton>
-                </RowCol>
-              </TableRow>
-            {/each}
-          </tbody>
+          {#snippet header()}
+                    <tr >
+              <HeadCol>
+                {$LL.name()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateCreated()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateUpdated()}
+              </HeadCol>
+              <HeadCol type="action">
+                <span class="sr-only">{$LL.actions()}</span>
+              </HeadCol>
+            </tr>
+                  {/snippet}
+          {#snippet body({ class: className })}
+                    <tbody class="{className}">
+              {#each retros as retro, i}
+                <TableRow itemIndex={i}>
+                  <RowCol>
+                    <a
+                      href="{appRoutes.adminRetros}/{retro.id}"
+                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                      >{retro.name}</a
+                    >
+                  </RowCol>
+                  <RowCol>
+                    {new Date(retro.createdDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol>
+                    {new Date(retro.updatedDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol type="action">
+                    <HollowButton href="{appRoutes.retro}/{retro.id}">
+                      {$LL.joinRetro()}
+                    </HollowButton>
+                  </RowCol>
+                </TableRow>
+              {/each}
+            </tbody>
+                  {/snippet}
         </Table>
         <TableFooter
-          bind:current="{retrosPage}"
-          num_items="{retroCount}"
-          per_page="{retrosPageLimit}"
-          on:navigate="{changeRetrosPage}"
+          bind:current={retrosPage}
+          num_items={retroCount}
+          per_page={retrosPageLimit}
+          on:navigate={changeRetrosPage}
         />
       </TableContainer>
     </div>
@@ -370,63 +388,67 @@
   {#if FeatureStoryboard}
     <div class="mb-6 lg:mb-8">
       <TableContainer>
-        <TableNav title="{$LL.storyboards()}" createBtnEnabled="{false}" />
+        <TableNav title={$LL.storyboards()} createBtnEnabled={false} />
         <Table>
-          <tr slot="header">
-            <HeadCol>
-              {$LL.name()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateCreated()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateUpdated()}
-            </HeadCol>
-            <HeadCol type="action">
-              <span class="sr-only">{$LL.actions()}</span>
-            </HeadCol>
-          </tr>
-          <tbody slot="body" let:class="{className}" class="{className}">
-            {#each storyboards as storyboard, i}
-              <TableRow itemIndex="{i}">
-                <RowCol>
-                  <a
-                    href="{appRoutes.adminStoryboards}/{storyboard.id}"
-                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                    >{storyboard.name}</a
-                  >
-                </RowCol>
-                <RowCol>
-                  {new Date(storyboard.createdDate).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(storyboard.updatedDate).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  <HollowButton href="{appRoutes.storyboard}/{storyboard.id}">
-                    {$LL.joinStoryboard()}
-                  </HollowButton>
-                </RowCol>
-              </TableRow>
-            {/each}
-          </tbody>
+          {#snippet header()}
+                    <tr >
+              <HeadCol>
+                {$LL.name()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateCreated()}
+              </HeadCol>
+              <HeadCol>
+                {$LL.dateUpdated()}
+              </HeadCol>
+              <HeadCol type="action">
+                <span class="sr-only">{$LL.actions()}</span>
+              </HeadCol>
+            </tr>
+                  {/snippet}
+          {#snippet body({ class: className })}
+                    <tbody   class="{className}">
+              {#each storyboards as storyboard, i}
+                <TableRow itemIndex={i}>
+                  <RowCol>
+                    <a
+                      href="{appRoutes.adminStoryboards}/{storyboard.id}"
+                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                      >{storyboard.name}</a
+                    >
+                  </RowCol>
+                  <RowCol>
+                    {new Date(storyboard.createdDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol>
+                    {new Date(storyboard.updatedDate).toLocaleString()}
+                  </RowCol>
+                  <RowCol type="action">
+                    <HollowButton href="{appRoutes.storyboard}/{storyboard.id}">
+                      {$LL.joinStoryboard()}
+                    </HollowButton>
+                  </RowCol>
+                </TableRow>
+              {/each}
+            </tbody>
+                  {/snippet}
         </Table>
         <TableFooter
-          bind:current="{storyboardsPage}"
-          num_items="{storyboardCount}"
-          per_page="{storyboardsPageLimit}"
-          on:navigate="{changeStoryboardsPage}"
+          bind:current={storyboardsPage}
+          num_items={storyboardCount}
+          per_page={storyboardsPageLimit}
+          on:navigate={changeStoryboardsPage}
         />
       </TableContainer>
     </div>
   {/if}
 
   {#if showUpdatePassword}
-    <Modal closeModal="{toggleUpdatePassword}">
+    <Modal closeModal={toggleUpdatePassword}>
       <UpdatePasswordForm
-        handleUpdate="{updatePassword}"
-        toggleForm="{toggleUpdatePassword}"
-        notifications="{notifications}"
+        handleUpdate={updatePassword}
+        toggleForm={toggleUpdatePassword}
+        notifications={notifications}
       />
     </Modal>
   {/if}

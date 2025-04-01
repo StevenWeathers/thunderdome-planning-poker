@@ -3,16 +3,29 @@
   import LL from '../../i18n/i18n-svelte';
 
   const { PathPrefix, AvatarService } = AppConfig;
-  let klass = '';
 
-  export let pictureUrl = '';
-  export let warriorId = '';
-  export let gravatarHash = '';
-  export let avatar = '';
-  export let userName = '';
-  export let width = 48;
-  export { klass as class };
-  export let options = {};
+  
+  interface Props {
+    class?: string;
+    pictureUrl?: string;
+    warriorId?: string;
+    gravatarHash?: string;
+    avatar?: string;
+    userName?: string;
+    width?: number;
+    options?: any;
+  }
+
+  let {
+    class: klass = '',
+    pictureUrl = '',
+    warriorId = '',
+    gravatarHash = '',
+    avatar = '',
+    userName = '',
+    width = 48,
+    options = {}
+  }: Props = $props();
 </script>
 
 {#if pictureUrl !== ''}

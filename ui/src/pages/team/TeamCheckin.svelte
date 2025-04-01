@@ -26,7 +26,6 @@
   export let xfetch;
   export let router;
   export let notifications;
-  export let eventTag;
   export let organizationId;
   export let departmentId;
   export let teamId;
@@ -122,7 +121,6 @@
       })
       .catch(function () {
         notifications.danger($LL.teamGetError());
-        eventTag('team_checkin_team', 'engagement', 'failure');
       });
   }
 
@@ -135,7 +133,6 @@
       })
       .catch(function () {
         notifications.danger($LL.getCheckinsError());
-        eventTag('team_checkin_checkins', 'engagement', 'failure');
       });
   }
 
@@ -154,7 +151,6 @@
       })
       .catch(function () {
         notifications.danger($LL.teamGetUsersError());
-        eventTag('team_checkin_users', 'engagement', 'failure');
       });
   }
 
@@ -176,7 +172,6 @@
       .then(res => res.json())
       .then(function () {
         toggleCheckin();
-        eventTag('team_checkin_create', 'engagement', 'success');
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -190,7 +185,6 @@
         } else {
           notifications.danger($LL.checkinError());
         }
-        eventTag('team_checkin_create', 'engagement', 'failure');
       });
   }
 
@@ -202,23 +196,17 @@
       .then(res => res.json())
       .then(function () {
         toggleCheckin();
-        eventTag('team_checkin_edit', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.updateCheckinError());
-        eventTag('team_checkin_edit', 'engagement', 'failure');
       });
   }
 
   function handleCheckinDelete(checkinId) {
     xfetch(`${teamPrefix}/checkins/${checkinId}`, { method: 'DELETE' })
       .then(res => res.json())
-      .then(function () {
-        eventTag('team_checkin_delete', 'engagement', 'success');
-      })
       .catch(function () {
         notifications.danger($LL.deleteCheckinError());
-        eventTag('team_checkin_delete', 'engagement', 'failure');
       });
   }
 
@@ -229,9 +217,6 @@
 
     xfetch(`${teamPrefix}/checkins/${checkinId}/comments`, { body })
       .then(res => res.json())
-      .then(function () {
-        eventTag('team_checkin_comment', 'engagement', 'success');
-      })
       .catch(function (error) {
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
@@ -244,7 +229,6 @@
         } else {
           notifications.danger($LL.checkinCommentError());
         }
-        eventTag('team_checkin_comment', 'engagement', 'failure');
       });
   }
 
@@ -258,9 +242,6 @@
       method: 'PUT',
     })
       .then(res => res.json())
-      .then(function () {
-        eventTag('team_checkin_comment_edit', 'engagement', 'success');
-      })
       .catch(function (error) {
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
@@ -273,7 +254,6 @@
         } else {
           notifications.danger($LL.checkinCommentError());
         }
-        eventTag('team_checkin_comment_edit', 'engagement', 'failure');
       });
   }
 
@@ -282,12 +262,8 @@
       method: 'DELETE',
     })
       .then(res => res.json())
-      .then(function () {
-        eventTag('team_checkin_comment_delete', 'engagement', 'success');
-      })
       .catch(function () {
         notifications.danger($LL.checkinCommentDeleteError());
-        eventTag('team_checkin_comment_delete', 'engagement', 'failure');
       });
   };
 
@@ -315,32 +291,15 @@
       timeout: 2e3,
       maxAttempts: 15,
       onmessage: onSocketMessage,
-      onerror: () => {
-        eventTag('socket_error', 'checkin', '');
-      },
       onclose: e => {
         if (e.code === 4005) {
-          eventTag('not_team_user', 'checkin', '', () => {
-            ws.close();
-          });
+          ws.close();
         } else if (e.code === 4004) {
-          eventTag('not_found', 'checkin', '', () => {
-            router.route(appRoutes.teams);
-          });
+          router.route(appRoutes.teams);
         } else if (e.code === 4001) {
-          eventTag('socket_unauthorized', 'checkin', '', () => {
-            user.delete();
-            router.route(appRoutes.login);
-          });
-        } else {
-          eventTag('socket_close', 'checkin', '');
+          user.delete();
+          router.route(appRoutes.login);
         }
-      },
-      onopen: () => {
-        eventTag('socket_open', 'checkin', '');
-      },
-      onmaximum: () => {
-        eventTag('socket_error', 'retro', 'Socket Reconnect Max Reached');
       },
     },
   );
@@ -368,9 +327,7 @@
   });
 
   onDestroy(() => {
-    eventTag('leave', 'checkin', '', () => {
-      ws.close();
-    });
+    ws.close();
   });
 
   function calculateCheckinStats() {
@@ -740,7 +697,6 @@
         handleCheckin="{handleCheckin}"
         handleCheckinEdit="{handleCheckinEdit}"
         xfetch="{xfetch}"
-        eventTag="{eventTag}"
         notifications="{notifications}"
         teamPrefix="{teamPrefix}"
       />

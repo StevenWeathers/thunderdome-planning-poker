@@ -2,7 +2,11 @@
   import { Bell } from 'lucide-svelte';
   import { appRoutes } from '../../config';
 
-  export let salesPitch = '';
+  interface Props {
+    salesPitch?: string;
+  }
+
+  let { salesPitch = '' }: Props = $props();
 </script>
 
 <div

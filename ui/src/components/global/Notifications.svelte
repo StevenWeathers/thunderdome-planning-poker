@@ -3,7 +3,7 @@
 
   let count = 0;
   let defaultTimeout = AppConfig.ToastTimeout;
-  let toasts = [];
+  let toasts = $state([]);
   let themes = {
     danger: '#bb2124',
     success: '#22bb33',
@@ -161,7 +161,7 @@
       <div
         class="progress"
         style="animation-duration: {toast.timeout}ms;"
-        on:animationend="{() => removeToast(toast.id)}"
+        onanimationend={() => removeToast(toast.id)}
       ></div>
     </li>
   {/each}

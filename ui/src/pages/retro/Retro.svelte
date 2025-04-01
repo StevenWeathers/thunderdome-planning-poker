@@ -32,21 +32,29 @@
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
 
-  export let retroId;
-  export let notifications;
-  export let router;
-  export let eventTag;
-  export let xfetch;
+  interface Props {
+    retroId: any;
+    notifications: any;
+    router: any;
+    xfetch: any;
+  }
+
+  let {
+    retroId,
+    notifications,
+    router,
+    xfetch
+  }: Props = $props();
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
 
-  let isLoading = true;
-  let socketError = false;
-  let socketReconnecting = false;
-  let retro = {
+  let isLoading = $state(true);
+  let socketError = $state(false);
+  let socketReconnecting = $state(false);
+  let retro = $state({
     name: '',
     ownerId: '',
     teamId: '',
@@ -74,19 +82,19 @@
       },
     },
     allowCumulativeVoting: false,
-  };
-  let showDeleteRetro = false;
-  let actionItem = '';
-  let showExport = false;
-  let groupedItems = [];
-  let JoinPassRequired = false;
-  let voteLimitReached = false;
+  });
+  let showDeleteRetro = $state(false);
+  let actionItem = $state('');
+  let showExport = $state(false);
+  let groupedItems = $state([]);
+  let JoinPassRequired = $state(false);
+  let voteLimitReached = $state(false);
   let allUsersVoted = false;
-  let showEditRetro = false;
-  let phaseTimeStart = new Date();
-  let phaseTimeLimitMin = 0;
-  let team = null;
-  let columnColors = {};
+  let showEditRetro = $state(false);
+  let phaseTimeStart = $state(new Date());
+  let phaseTimeLimitMin = $state(0);
+  let team = $state(null);
+  let columnColors = $state({});
 
   function getAssociatedTeam() {
     if (retro.teamId) {
@@ -175,7 +183,6 @@
         }
         phaseTimeStart = new Date(retro.phase_time_start);
         phaseTimeLimitMin = retro.phase_time_limit_min;
-        eventTag('join', 'retro', '');
         getAssociatedTeam();
         break;
       case 'user_joined': {
@@ -303,52 +310,38 @@
     onmessage: onSocketMessage,
     onerror: () => {
       socketError = true;
-      eventTag('socket_error', 'retro', '');
     },
     onclose: e => {
       if (e.code === 4004) {
-        eventTag('not_found', 'retro', '', () => {
-          router.route(appRoutes.retros);
-        });
+        router.route(appRoutes.retros);
       } else if (e.code === 4001) {
-        eventTag('socket_unauthorized', 'retro', '', () => {
-          user.delete();
-          router.route(`${loginOrRegister}/retro/${retroId}`);
-        });
+        user.delete();
+        router.route(`${loginOrRegister}/retro/${retroId}`);
       } else if (e.code === 4003) {
-        eventTag('socket_duplicate', 'retro', '', () => {
-          notifications.danger($LL.duplicateRetroSession());
-          router.route(`${appRoutes.retros}`);
-        });
+        notifications.danger($LL.duplicateRetroSession());
+        router.route(`${appRoutes.retros}`);
       } else if (e.code === 4002) {
-        eventTag('retro_user_abandoned', 'retro', '', () => {
-          router.route(appRoutes.retros);
-        });
+        router.route(appRoutes.retros);
       } else {
         socketReconnecting = true;
-        eventTag('socket_close', 'retro', '');
       }
     },
     onopen: () => {
       isLoading = false;
       socketError = false;
       socketReconnecting = false;
-      eventTag('socket_open', 'retro', '');
     },
     onmaximum: () => {
       socketReconnecting = false;
-      eventTag('socket_error', 'retro', 'Socket Reconnect Max Reached');
     },
   });
 
   onDestroy(() => {
-    eventTag('leave', 'retro', '', () => {
-      ws.close();
-    });
+    ws.close();
   });
 
-  $: isFacilitator =
-    retro.facilitators && retro.facilitators.includes($user.id);
+  let isFacilitator =
+    $derived(retro.facilitators && retro.facilitators.includes($user.id));
 
   const sendSocketEvent = (type, value) => {
     ws.send(
@@ -360,15 +353,11 @@
   };
 
   function concedeRetro() {
-    eventTag('concede', 'retro', '', () => {
-      sendSocketEvent('concede_retro', '');
-    });
+    sendSocketEvent('concede_retro', '');
   }
 
   function abandonRetro() {
-    eventTag('abandon', 'retro', '', () => {
-      sendSocketEvent('abandon_retro', '');
-    });
+    sendSocketEvent('abandon_retro', '');
   }
 
   const toggleDeleteRetro = () => {
@@ -379,8 +368,8 @@
     showExport = !showExport;
   };
 
-  let showActionEdit = false;
-  let selectedAction = null;
+  let showActionEdit = $state(false);
+  let selectedAction = $state(null);
   const toggleActionEdit = id => () => {
     showActionEdit = !showActionEdit;
     selectedAction = retro.actionItems.find(r => r.id === id);
@@ -535,12 +524,10 @@
 
   function authRetro(joinPasscode) {
     sendSocketEvent('auth_retro', joinPasscode);
-    eventTag('auth_retro', 'retro', '');
   }
 
   function handleRetroEdit(revisedRetro) {
     sendSocketEvent('edit_retro', JSON.stringify(revisedRetro));
-    eventTag('edit_retro', 'retro', '');
     toggleEditRetro();
   }
 
@@ -548,11 +535,10 @@
     showEditRetro = !showEditRetro;
   }
 
-  let showBecomeFacilitator = false;
+  let showBecomeFacilitator = $state(false);
 
   function becomeFacilitator(facilitatorCode) {
     sendSocketEvent('self_facilitator', facilitatorCode);
-    eventTag('become_facilitator', 'retro', '');
     toggleBecomeFacilitator();
   }
 
@@ -564,7 +550,6 @@
           phase: 'group',
         }),
       );
-      eventTag('phase_time_ran_out', 'retro', '');
     }
   }
 
@@ -580,7 +565,6 @@
             phase: 'group',
           }),
         );
-        eventTag('phase_all_ready', 'retro', '');
       }
       if (retro.phase === 'vote' && allUsersVoted) {
         sendSocketEvent(
@@ -589,21 +573,18 @@
             phase: 'action',
           }),
         );
-        eventTag('phase_all_voted', 'retro', '');
       }
     }
   }
 
   function toggleBecomeFacilitator() {
     showBecomeFacilitator = !showBecomeFacilitator;
-    eventTag('toggle_become_facilitator', 'retro', '');
   }
 
-  let showOpenActionItems = false;
+  let showOpenActionItems = $state(false);
 
   function toggleReviewActionItems() {
     showOpenActionItems = !showOpenActionItems;
-    eventTag('open_action_items', 'retro', '');
   }
 
   onMount(() => {
@@ -642,7 +623,7 @@
         {#if retro.phase === 'completed'}
           <SolidButton
             color="green"
-            onClick="{toggleExport}"
+            onClick={toggleExport}
             testid="retro-export"
           >
             {#if showExport}
@@ -654,17 +635,17 @@
         {/if}
         {#if retro.phase === 'brainstorm' && phaseTimeLimitMin > 0}
           <PhaseTimer
-            retroId="{retro.id}"
-            timeLimitMin="{phaseTimeLimitMin}"
-            timeStart="{phaseTimeStart}"
-            on:ended="{phaseTimeRanOut}"
+            retroId={retro.id}
+            timeLimitMin={phaseTimeLimitMin}
+            timeStart={phaseTimeStart}
+            on:ended={phaseTimeRanOut}
           />
         {/if}
         {#if isFacilitator}
           {#if retro.phase !== 'completed'}
             <SolidButton
               color="green"
-              onClick="{setPhase(null)}"
+              onClick={setPhase(null)}
               testid="retro-nextphase"
             >
               {$LL.nextPhase()}
@@ -673,7 +654,7 @@
 
           <HollowButton
             color="blue"
-            onClick="{toggleEditRetro}"
+            onClick={toggleEditRetro}
             testid="retro-edit"
           >
             {$LL.editRetro()}
@@ -681,7 +662,7 @@
 
           <HollowButton
             color="red"
-            onClick="{toggleDeleteRetro}"
+            onClick={toggleDeleteRetro}
             class="me-2"
             testid="retro-delete"
           >
@@ -690,14 +671,14 @@
         {:else}
           <HollowButton
             color="blue"
-            onClick="{toggleBecomeFacilitator}"
+            onClick={toggleBecomeFacilitator}
             testid="become-facilitator"
           >
             {$LL.becomeFacilitator()}
           </HollowButton>
           <HollowButton
             color="red"
-            onClick="{abandonRetro}"
+            onClick={abandonRetro}
             testid="retro-leave"
           >
             {$LL.leaveRetro()}
@@ -715,7 +696,7 @@
           class="flex-initial px-1 {retro.phase === 'intro' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('intro')}">{$LL.primeDirective()}</button>
+          <button onclick={setPhase('intro')}>{$LL.primeDirective()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -724,7 +705,7 @@
           class="flex-initial px-1 {retro.phase === 'brainstorm' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('brainstorm')}">{$LL.brainstorm()}</button
+          <button onclick={setPhase('brainstorm')}>{$LL.brainstorm()}</button
           >
         </div>
         <div class="flex-initial px-1">
@@ -734,7 +715,7 @@
           class="flex-initial px-1 {retro.phase === 'group' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('group')}">{$LL.group()}</button>
+          <button onclick={setPhase('group')}>{$LL.group()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -743,7 +724,7 @@
           class="flex-initial px-1 {retro.phase === 'vote' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('vote')}">{$LL.vote()}</button>
+          <button onclick={setPhase('vote')}>{$LL.vote()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -752,7 +733,7 @@
           class="flex-initial px-1 {retro.phase === 'action' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('action')}">{$LL.actionItems()}</button>
+          <button onclick={setPhase('action')}>{$LL.actionItems()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -761,7 +742,7 @@
           class="flex-initial px-1 {retro.phase === 'completed' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button on:click="{setPhase('completed')}">{$LL.done()}</button>
+          <button onclick={setPhase('completed')}>{$LL.done()}</button>
         </div>
       </div>
     </div>
@@ -778,23 +759,22 @@
     </div>
   </div>
   {#if showExport}
-    <Export retro="{retro}" />
+    <Export retro={retro} />
   {/if}
   {#if !showExport}
     <div class="w-full p-4 flex flex-col flex-grow">
       {#if retro.phase === 'intro'}
         {#if showOpenActionItems}
           <RetroActionItemReview
-            team="{team}"
-            toggle="{toggleReviewActionItems}"
-            eventTag="{eventTag}"
-            xfetch="{xfetch}"
-            notifications="{notifications}"
+            team={team}
+            toggle={toggleReviewActionItems}
+            xfetch={xfetch}
+            notifications={notifications}
           />
           <div class="w-full text-center pt-4 md:pt-6">
             <HollowButton
               color="purple"
-              onClick="{toggleReviewActionItems}"
+              onClick={toggleReviewActionItems}
               testid="back-to-prime-directive"
               additionalClasses="py-4 px-6 text-lg"
               >Back to Prime Directive
@@ -806,7 +786,7 @@
               <div class="text-center pt-10">
                 <HollowButton
                   color="purple"
-                  onClick="{toggleReviewActionItems}"
+                  onClick={toggleReviewActionItems}
                   testid="review-action-items"
                   additionalClasses="py-4 px-6 text-lg"
                   >Review Open Action Items
@@ -847,27 +827,27 @@
       <div class="grow flex">
         {#if retro.phase === 'brainstorm'}
           <BrainstormPhase
-            items="{retro.items}"
-            phase="{retro.phase}"
-            isFacilitator="{isFacilitator}"
-            sendSocketEvent="{sendSocketEvent}"
-            template="{retro.template}"
-            users="{retro.users}"
-            brainstormVisibility="{retro.brainstormVisibility}"
-            columnColors="{columnColors}"
+            items={retro.items}
+            phase={retro.phase}
+            isFacilitator={isFacilitator}
+            sendSocketEvent={sendSocketEvent}
+            template={retro.template}
+            users={retro.users}
+            brainstormVisibility={retro.brainstormVisibility}
+            columnColors={columnColors}
           />
         {/if}
         {#if retro.phase === 'group'}
           <div class="w-full grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             <GroupPhase
-              phase="{retro.phase}"
-              groups="{groupedItems}"
-              handleItemChange="{handleItemGroupChange}"
-              handleGroupNameChange="{handleGroupNameChange}"
-              users="{retro.users}"
-              sendSocketEvent="{sendSocketEvent}"
-              isFacilitator="{isFacilitator}"
-              columnColors="{columnColors}"
+              phase={retro.phase}
+              groups={groupedItems}
+              handleItemChange={handleItemGroupChange}
+              handleGroupNameChange={handleGroupNameChange}
+              users={retro.users}
+              sendSocketEvent={sendSocketEvent}
+              isFacilitator={isFacilitator}
+              columnColors={columnColors}
             />
           </div>
         {/if}
@@ -875,16 +855,16 @@
           <div class="w-full">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
               <VotePhase
-                phase="{retro.phase}"
-                groups="{groupedItems}"
-                handleVote="{handleVote}"
-                handleVoteSubtract="{handleVoteSubtract}"
-                voteLimitReached="{voteLimitReached}"
-                allowCumulativeVoting="{retro.allowCumulativeVoting}"
-                users="{retro.users}"
-                sendSocketEvent="{sendSocketEvent}"
-                isFacilitator="{isFacilitator}"
-                columnColors="{columnColors}"
+                phase={retro.phase}
+                groups={groupedItems}
+                handleVote={handleVote}
+                handleVoteSubtract={handleVoteSubtract}
+                voteLimitReached={voteLimitReached}
+                allowCumulativeVoting={retro.allowCumulativeVoting}
+                users={retro.users}
+                sendSocketEvent={sendSocketEvent}
+                isFacilitator={isFacilitator}
+                columnColors={columnColors}
               />
             </div>
           </div>
@@ -893,12 +873,12 @@
           <div class="w-full md:w-2/3">
             <div class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
               <GroupedItems
-                phase="{retro.phase}"
-                groups="{groupedItems}"
-                users="{retro.users}"
-                sendSocketEvent="{sendSocketEvent}"
-                isFacilitator="{isFacilitator}"
-                columnColors="{columnColors}"
+                phase={retro.phase}
+                groups={groupedItems}
+                users={retro.users}
+                sendSocketEvent={sendSocketEvent}
+                isFacilitator={isFacilitator}
+                columnColors={columnColors}
               />
             </div>
           </div>
@@ -912,7 +892,7 @@
                     />
                   </div>
                   <div class="flex-grow">
-                    <form on:submit="{handleActionItem}">
+                    <form onsubmit={handleActionItem}>
                       <input
                         bind:value="{actionItem}"
                         placeholder="{$LL.actionItemPlaceholder()}"
@@ -924,7 +904,7 @@
                         type="text"
                         required
                       />
-                      <button type="submit" class="hidden"></button>
+                      <button type="submit" class="hidden">submit</button>
                     </form>
                   </div>
                 </div>
@@ -936,7 +916,7 @@
                   <div class="flex items-center">
                     <div class="flex-shrink">
                       <button
-                        on:click="{toggleActionEdit(item.id)}"
+                        onclick={toggleActionEdit(item.id)}
                         class="pe-2 pt-1 text-gray-500 dark:text-gray-400
                                                 hover:text-blue-500"
                       >
@@ -947,11 +927,11 @@
                       <div class="pe-2">
                         {#each item.assignees as assignee}
                           <UserAvatar
-                            warriorId="{assignee.id}"
-                            gravatarHash="{assignee.gravatarHash}"
-                            avatar="{assignee.avatar}"
-                            userName="{assignee.name}"
-                            width="24"
+                            warriorId={assignee.id}
+                            gravatarHash={assignee.gravatarHash}
+                            avatar={assignee.avatar}
+                            userName={assignee.name}
+                            width={24}
                             class="inline-block me-2"
                           />
                         {/each}
@@ -964,11 +944,11 @@
                         id="{i}Completed"
                         checked="{item.completed}"
                         class="opacity-0 absolute h-6 w-6"
-                        on:change="{handleActionUpdate(
+                        onchange={handleActionUpdate(
                           item.id,
                           item.completed,
                           item.content,
-                        )}"
+                        )}
                       />
                       <div
                         class="bg-white dark:bg-gray-800 border-2 rounded-md
@@ -995,16 +975,16 @@
           {#each retro.users as usr, index (usr.id)}
             {#if usr.active}
               <UserCard
-                user="{usr}"
-                votes="{retro.votes}"
-                maxVotes="{retro.maxVotes}"
-                facilitators="{retro.facilitators}"
-                readyUsers="{retro.readyUsers}"
-                handleAddFacilitator="{handleAddFacilitator}"
-                handleRemoveFacilitator="{handleRemoveFacilitator}"
-                handleUserReady="{handleUserReady}"
-                handleUserUnReady="{handleUserUnReady}"
-                phase="{retro.phase}"
+                user={usr}
+                votes={retro.votes}
+                maxVotes={retro.maxVotes}
+                facilitators={retro.facilitators}
+                readyUsers={retro.readyUsers}
+                handleAddFacilitator={handleAddFacilitator}
+                handleRemoveFacilitator={handleRemoveFacilitator}
+                handleUserReady={handleUserReady}
+                handleUserUnReady={handleUserUnReady}
+                phase={retro.phase}
               />
             {/if}
           {/each}
@@ -1014,7 +994,7 @@
             <div
               class="w-full md:w-1/2 lg:w-1/3 p-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg"
             >
-              <InviteUser hostname="{hostname}" retroId="{retro.id}" />
+              <InviteUser hostname={hostname} retroId={retro.id} />
             </div>
           </div>
         {/if}
@@ -1025,43 +1005,43 @@
 
 {#if showEditRetro}
   <EditRetro
-    retroName="{retro.name}"
-    handleRetroEdit="{handleRetroEdit}"
-    toggleEditRetro="{toggleEditRetro}"
-    joinCode="{retro.joinCode}"
-    facilitatorCode="{retro.facilitatorCode}"
-    maxVotes="{retro.maxVotes}"
-    brainstormVisibility="{retro.brainstormVisibility}"
-    phaseAutoAdvance="{retro.phase_auto_advance}"
+    retroName={retro.name}
+    handleRetroEdit={handleRetroEdit}
+    toggleEditRetro={toggleEditRetro}
+    joinCode={retro.joinCode}
+    facilitatorCode={retro.facilitatorCode}
+    maxVotes={retro.maxVotes}
+    brainstormVisibility={retro.brainstormVisibility}
+    phaseAutoAdvance={retro.phase_auto_advance}
   />
 {/if}
 
 {#if showDeleteRetro}
   <DeleteConfirmation
-    toggleDelete="{toggleDeleteRetro}"
-    handleDelete="{concedeRetro}"
-    confirmText="{$LL.confirmDeleteRetro()}"
-    confirmBtnText="{$LL.deleteRetro()}"
+    toggleDelete={toggleDeleteRetro}
+    handleDelete={concedeRetro}
+    confirmText={$LL.confirmDeleteRetro()}
+    confirmBtnText={$LL.deleteRetro()}
   />
 {/if}
 
 {#if showActionEdit}
   <EditActionItem
-    toggleEdit="{toggleActionEdit(null)}"
-    handleEdit="{handleActionEdit}"
-    handleDelete="{handleActionDelete}"
-    action="{selectedAction}"
-    assignableUsers="{retro.users}"
-    handleAssigneeAdd="{handleAssigneeAdd}"
-    handleAssigneeRemove="{handleAssigneeRemove}"
-    retroId="{retro.id}"
+    toggleEdit={toggleActionEdit(null)}
+    handleEdit={handleActionEdit}
+    handleDelete={handleActionDelete}
+    action={selectedAction}
+    assignableUsers={retro.users}
+    handleAssigneeAdd={handleAssigneeAdd}
+    handleAssigneeRemove={handleAssigneeRemove}
+    retroId={retro.id}
   />
 {/if}
 
 {#if showBecomeFacilitator}
   <BecomeFacilitator
-    handleBecomeFacilitator="{becomeFacilitator}"
-    toggleBecomeFacilitator="{toggleBecomeFacilitator}"
+    handleBecomeFacilitator={becomeFacilitator}
+    toggleBecomeFacilitator={toggleBecomeFacilitator}
   />
 {/if}
 
@@ -1078,5 +1058,5 @@
     {$LL.loadingRetro()}
   </FullpageLoader>
 {:else if JoinPassRequired}
-  <JoinCodeForm handleSubmit="{authRetro}" submitText="{$LL.joinRetro()}" />
+  <JoinCodeForm handleSubmit={authRetro} submitText={$LL.joinRetro()} />
 {/if}

@@ -5,16 +5,25 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import { user } from '../../stores';
 
-  export let handleUpdate = () => {};
-  export let toggleClose = () => {};
-  export let eventTag = (a, b, c) => {};
-  export let xfetch = async (url, ...options) => {};
-  export let notifications;
 
-  export let subscriptionId = '';
+  interface Props {
+    handleUpdate?: any;
+    toggleClose?: any;
+    xfetch?: any;
+    notifications: any;
+    subscriptionId?: string;
+  }
 
-  let organizations = [];
-  let selectedOrganization = '';
+  let {
+    handleUpdate = () => {},
+    toggleClose = () => {},
+    xfetch = async (url, ...options) => {},
+    notifications,
+    subscriptionId = ''
+  }: Props = $props();
+
+  let organizations = $state([]);
+  let selectedOrganization = $state('');
 
   xfetch(`/api/users/${$user.id}/organizations?limit=1000&offset=0`)
     .then(res => res.json())
@@ -30,11 +39,6 @@
 
     if (selectedOrganization === '') {
       notifications.danger('Select a organization field required');
-      eventTag(
-        'subscription_form_associated_organization_id_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
@@ -50,28 +54,17 @@
       .then(function () {
         handleUpdate();
         toggleClose();
-        eventTag(
-          'subscription_form_associate_organization',
-          'engagement',
-          'success',
-        );
       })
       .catch(function () {
         notifications.danger(
           'failed to associate organization to subscription',
         );
-
-        eventTag(
-          'subscription_form_associate_organization',
-          'engagement',
-          'failure',
-        );
       });
   }
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit="{handleSubmit}" name="associateOrganizationForm">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={handleSubmit} name="associateOrganizationForm">
     <div class="mb-4">
       <label
         class="block dark:text-gray-400 font-bold mb-2"

@@ -2,10 +2,19 @@
   import { countryMap } from '../../country';
   import LL from '../../i18n/i18n-svelte';
 
-  export let country = '';
-  export let additionalClass = '';
-  export let width = '48';
-  export let height = '36';
+  interface Props {
+    country?: string;
+    additionalClass?: string;
+    width?: string;
+    height?: string;
+  }
+
+  let {
+    country = '',
+    additionalClass = '',
+    width = '48',
+    height = '36'
+  }: Props = $props();
 </script>
 
 <img

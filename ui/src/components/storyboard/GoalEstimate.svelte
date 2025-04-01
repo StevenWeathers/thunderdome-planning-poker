@@ -1,5 +1,9 @@
 <script lang="ts">
-  export let columns = [];
+  interface Props {
+    columns?: any;
+  }
+
+  let { columns = [] }: Props = $props();
 
   type story = {
     points: number;

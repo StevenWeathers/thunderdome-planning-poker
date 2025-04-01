@@ -9,16 +9,19 @@
   import BoxList from '../../components/BoxList.svelte';
   import Pagination from '../../components/global/Pagination.svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let router;
-  export let eventTag;
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+  }
 
-  let storyboards = [];
+  let { xfetch, notifications, router }: Props = $props();
+
+  let storyboards = $state([]);
   const storyboardsPageLimit = 10;
-  let storyboardCount = 0;
-  let storyboardsPage = 1;
-  let loading = true;
+  let storyboardCount = $state(0);
+  let storyboardsPage = $state(1);
+  let loading = $state(true);
 
   function getStoryboards() {
     const retrosOffset = (storyboardsPage - 1) * storyboardsPageLimit;
@@ -34,7 +37,6 @@
       })
       .catch(function (error) {
         notifications.danger($LL.getStoryboardsErrorMessage());
-        eventTag('fetch_storyboards', 'engagement', 'failure');
         loading = false;
       });
   }
@@ -67,12 +69,12 @@
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
       {#if storyboardCount > 0}
         <BoxList
-          items="{storyboards}"
+          items={storyboards}
           itemType="storyboard"
-          showOwnerName="{true}"
+          showOwnerName={true}
           ownerNameField="teamName"
-          pageRoute="{appRoutes.storyboard}"
-          joinBtnText="{$LL.joinStoryboard()}"
+          pageRoute={appRoutes.storyboard}
+          joinBtnText={$LL.joinStoryboard()}
         />
       {:else if loading === false}
         <div
@@ -85,8 +87,8 @@
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
             bind:current="{storyboardsPage}"
-            num_items="{storyboardCount}"
-            per_page="{storyboardsPageLimit}"
+            num_items={storyboardCount}
+            per_page={storyboardsPageLimit}
             on:navigate="{changePage}"
           />
         </div>
@@ -103,10 +105,9 @@
           {$LL.createAStoryboard()}
         </h2>
         <CreateStoryboard
-          notifications="{notifications}"
-          router="{router}"
-          eventTag="{eventTag}"
-          xfetch="{xfetch}"
+          notifications={notifications}
+          router={router}
+          xfetch={xfetch}
         />
       </div>
     </div>

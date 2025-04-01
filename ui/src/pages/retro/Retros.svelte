@@ -9,16 +9,19 @@
   import BoxList from '../../components/BoxList.svelte';
   import Pagination from '../../components/global/Pagination.svelte';
 
-  export let xfetch;
-  export let notifications;
-  export let router;
-  export let eventTag;
+  interface Props {
+    xfetch: any;
+    notifications: any;
+    router: any;
+  }
 
-  let retros = [];
+  let { xfetch, notifications, router }: Props = $props();
+
+  let retros = $state([]);
   const retrosPageLimit = 10;
-  let retroCount = 0;
-  let retrosPage = 1;
-  let loading = true;
+  let retroCount = $state(0);
+  let retrosPage = $state(1);
+  let loading = $state(true);
 
   function getRetros() {
     const retrosOffset = (retrosPage - 1) * retrosPageLimit;
@@ -34,7 +37,6 @@
       })
       .catch(function () {
         notifications.danger($LL.getRetrosErrorMessage());
-        eventTag('fetch_retros', 'engagement', 'failure');
         loading = false;
       });
   }
@@ -67,13 +69,13 @@
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
       {#if retroCount > 0}
         <BoxList
-          items="{retros}"
+          items={retros}
           itemType="retro"
-          pageRoute="{appRoutes.retro}"
+          pageRoute={appRoutes.retro}
           ownerField="ownerId"
-          showOwnerName="{true}"
+          showOwnerName={true}
           ownerNameField="teamName"
-          joinBtnText="{$LL.joinRetro()}"
+          joinBtnText={$LL.joinRetro()}
         />
       {:else if loading === false}
         <div
@@ -86,8 +88,8 @@
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
             bind:current="{retrosPage}"
-            num_items="{retroCount}"
-            per_page="{retrosPageLimit}"
+            num_items={retroCount}
+            per_page={retrosPageLimit}
             on:navigate="{changePage}"
           />
         </div>
@@ -104,10 +106,9 @@
           {$LL.createARetro()}
         </h2>
         <CreateRetro
-          notifications="{notifications}"
-          router="{router}"
-          eventTag="{eventTag}"
-          xfetch="{xfetch}"
+          notifications={notifications}
+          router={router}
+          xfetch={xfetch}
         />
       </div>
     </div>

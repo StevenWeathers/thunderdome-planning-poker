@@ -2,18 +2,35 @@
   import { Angry, CircleHelp, Frown, Smile } from 'lucide-svelte';
   import RetroFeedbackItem from './RetroFeedbackItem.svelte';
 
-  export let sendSocketEvent = (event: string, value: any) => {};
-  export let itemType = '';
-  export let content = '';
-  export let newItemPlaceholder = '';
-  export let phase = 'brainstorm';
-  export let isFacilitator = false;
-  export let items = [];
-  export let users = [];
-  export let feedbackVisibility = 'visible';
-  export let icon = '';
-  export let color = 'blue';
-  export let columnColors: any = {};
+  interface Props {
+    sendSocketEvent?: any;
+    itemType?: string;
+    content?: string;
+    newItemPlaceholder?: string;
+    phase?: string;
+    isFacilitator?: boolean;
+    items?: any;
+    users?: any;
+    feedbackVisibility?: string;
+    icon?: string;
+    color?: string;
+    columnColors?: any;
+  }
+
+  let {
+    sendSocketEvent = (event: string, value: any) => {},
+    itemType = '',
+    content = $bindable(''),
+    newItemPlaceholder = '',
+    phase = 'brainstorm',
+    isFacilitator = false,
+    items = [],
+    users = [],
+    feedbackVisibility = 'visible',
+    icon = '',
+    color = 'blue',
+    columnColors = {}
+  }: Props = $props();
 
   const handleFormSubmit = evt => {
     evt.preventDefault();
@@ -63,7 +80,7 @@
       </div>
     {/if}
     <div class="flex-grow">
-      <form on:submit="{handleFormSubmit}" class="flex">
+      <form onsubmit={handleFormSubmit} class="flex">
         <input
           bind:value="{content}"
           placeholder="{newItemPlaceholder}"
@@ -75,20 +92,20 @@
           type="text"
           required
         />
-        <button type="submit" class="hidden"></button>
+        <button type="submit" class="hidden">submit</button>
       </form>
     </div>
   </div>
   <div>
     {#each items.filter(i => i.type === itemType) as item}
       <RetroFeedbackItem
-        item="{item}"
-        phase="{phase}"
-        users="{users}"
-        isFacilitator="{isFacilitator}"
-        sendSocketEvent="{sendSocketEvent}"
-        columnColors="{columnColors}"
-        feedbackVisibility="{feedbackVisibility}"
+        item={item}
+        phase={phase}
+        users={users}
+        isFacilitator={isFacilitator}
+        sendSocketEvent={sendSocketEvent}
+        columnColors={columnColors}
+        feedbackVisibility={feedbackVisibility}
       />
     {/each}
   </div>

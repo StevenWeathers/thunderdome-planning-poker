@@ -8,25 +8,38 @@
   import { onMount } from 'svelte';
   import { Mail } from 'lucide-svelte';
 
-  export let toggleAdd = () => {};
-  export let handleAdd = () => {};
-  export let handleInvite = () => {};
-  export let pageType = '';
-  export let orgId = '';
-  export let deptId = '';
-  export let notifications;
-  export let xfetch;
+  interface Props {
+    toggleAdd?: any;
+    handleAdd?: any;
+    handleInvite?: any;
+    pageType?: string;
+    orgId?: string;
+    deptId?: string;
+    notifications: any;
+    xfetch: any;
+  }
+
+  let {
+    toggleAdd = () => {},
+    handleAdd = () => {},
+    handleInvite = () => {},
+    pageType = '',
+    orgId = '',
+    deptId = '',
+    notifications,
+    xfetch
+  }: Props = $props();
 
   const roles = ['ADMIN', 'MEMBER'];
   const showDeptUsers = pageType === 'team' && deptId !== '';
   const showOrgUsers =
     pageType === 'department' || (pageType === 'team' && orgId !== '');
-  let userEmail = '';
-  let selectedUser = '';
-  let role = '';
+  let userEmail = $state('');
+  let selectedUser = $state('');
+  let role = $state('');
 
-  let organizationUsers = [];
-  let departmentUsers = [];
+  let organizationUsers = $state([]);
+  let departmentUsers = $state([]);
 
   function getOrganizationUsers() {
     if (orgId !== '') {
@@ -76,7 +89,7 @@
     }
   }
 
-  $: createDisabled = (userEmail === '' && selectedUser === '') || role === '';
+  let createDisabled = $derived((userEmail === '' && selectedUser === '') || role === '');
 
   onMount(() => {
     getOrganizationUsers();
@@ -84,8 +97,8 @@
   });
 </script>
 
-<Modal closeModal="{toggleAdd}">
-  <form on:submit="{onSubmit}" name="teamAddUser">
+<Modal closeModal={toggleAdd}>
+  <form onsubmit={onSubmit} name="teamAddUser">
     <div class="mb-4">
       <label
         class="text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -171,13 +184,13 @@
       </label>
       <TextInput
         bind:value="{userEmail}"
-        placeholder="{$LL.userEmailPlaceholder()}"
+        placeholder={$LL.userEmailPlaceholder()}
         id="userEmail"
         name="userEmail"
         type="email"
-        required="{selectedUser === ''}"
-        disabled="{selectedUser !== ''}"
-        icon="{Mail}"
+        required={selectedUser === ''}
+        disabled={selectedUser !== ''}
+        icon={Mail}
       />
     </div>
 
@@ -193,7 +206,7 @@
       <div class="text-right">
         <SolidButton
           type="submit"
-          disabled="{createDisabled}"
+          disabled={createDisabled}
           testid="useradd-confirm"
         >
           {$LL.userAdd()}

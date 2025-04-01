@@ -36,13 +36,23 @@
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let eventTag;
-  export let organizationId;
-  export let departmentId;
-  export let teamId;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+    organizationId: any;
+    departmentId: any;
+    teamId: any;
+  }
+
+  let {
+    xfetch,
+    router,
+    notifications,
+    organizationId,
+    departmentId,
+    teamId
+  }: Props = $props();
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -52,68 +62,68 @@
   const storyboardsPageLimit = 1000;
   const usersPageLimit = 1000;
 
-  let invitesList;
+  let invitesList = $state();
 
-  let team = {
+  let team = $state({
     id: teamId,
     name: '',
     subscribed: false,
-  };
-  let organization = {
+  });
+  let organization = $state({
     id: organizationId,
     name: '',
     subscribed: false,
-  };
-  let department = {
+  });
+  let department = $state({
     id: departmentId,
     name: '',
-  };
+  });
 
-  let users = [];
-  let battles = [];
-  let retros = [];
-  let retroActions = [];
-  let storyboards = [];
-  let estimationScales = [];
-  let showCreateBattle = false;
-  let showCreateRetro = false;
-  let showCreateStoryboard = false;
-  let showRemoveBattle = false;
-  let showRemoveRetro = false;
-  let showRemoveStoryboard = false;
-  let showDeleteTeam = false;
+  let users = $state([]);
+  let battles = $state([]);
+  let retros = $state([]);
+  let retroActions = $state([]);
+  let storyboards = $state([]);
+  let estimationScales = $state([]);
+  let showCreateBattle = $state(false);
+  let showCreateRetro = $state(false);
+  let showCreateStoryboard = $state(false);
+  let showRemoveBattle = $state(false);
+  let showRemoveRetro = $state(false);
+  let showRemoveStoryboard = $state(false);
+  let showDeleteTeam = $state(false);
   let removeBattleId = null;
   let removeRetroId = null;
   let removeStoryboardId = null;
   let usersPage = 1;
   let battlesPage = 1;
   let retrosPage = 1;
-  let retroActionsPage = 1;
+  let retroActionsPage = $state(1);
   let storyboardsPage = 1;
-  let totalRetroActions = 0;
-  let completedActionItems = false;
+  let totalRetroActions = $state(0);
+  let completedActionItems = $state(false);
 
   let organizationRole = '';
   let departmentRole = '';
   let teamRole = '';
-  let isAdmin = false;
-  let isTeamMember = false;
+  let isAdmin = $state(false);
+  let isTeamMember = $state(false);
 
   const apiPrefix = '/api';
-  $: orgPrefix = departmentId
+  let orgPrefix = $derived(departmentId
     ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
-    : `${apiPrefix}/organizations/${organizationId}`;
-  $: teamPrefix = organizationId
+    : `${apiPrefix}/organizations/${organizationId}`);
+  let teamPrefix = $derived(organizationId
     ? `${orgPrefix}/teams/${teamId}`
-    : `${apiPrefix}/teams/${teamId}`;
+    : `${apiPrefix}/teams/${teamId}`);
 
   const teamOnlyPrefix = `${apiPrefix}/teams/${teamId}`;
 
-  $: currentPageUrl = teamPrefix
+  let currentPageUrl = $derived(teamPrefix
     .replace('/api', '')
     .replace('organizations', 'organization')
     .replace('departments', 'department')
-    .replace('teams', 'team');
+    .replace('teams', 'team'));
 
   function toggleCreateBattle() {
     showCreateBattle = !showCreateBattle;
@@ -147,8 +157,8 @@
   };
 
   const scalesPageLimit = 20;
-  let scaleCount = 0;
-  let scalesPage = 1;
+  let scaleCount = $state(0);
+  let scalesPage = $state(1);
 
   const changeScalesPage = evt => {
     scalesPage = evt.detail;
@@ -178,9 +188,9 @@
   }
 
   const retroTemplatePageLimit = 20;
-  let retroTemplates = [];
+  let retroTemplates = $state([]);
   let retroTemplateCount = 0;
-  let retroTemplatesPage = 1;
+  let retroTemplatesPage = $state(1);
 
   const changeRetroTemplatesPage = evt => {
     retroTemplatesPage = evt.detail;
@@ -208,8 +218,8 @@
     }
   }
 
-  let showRetroActionComments = false;
-  let selectedRetroAction = null;
+  let showRetroActionComments = $state(false);
+  let selectedRetroAction = $state(null);
   const toggleRetroActionComments = id => () => {
     showRetroActionComments = !showRetroActionComments;
     selectedRetroAction = id;
@@ -337,28 +347,24 @@
   function handleBattleRemove() {
     xfetch(`${teamPrefix}/battles/${removeBattleId}`, { method: 'DELETE' })
       .then(function () {
-        eventTag('team_remove_battle', 'engagement', 'success');
         toggleRemoveBattle(null)();
         notifications.success($LL.battleRemoveSuccess());
         getBattles();
       })
       .catch(function () {
         notifications.danger($LL.battleRemoveError());
-        eventTag('team_remove_battle', 'engagement', 'failure');
       });
   }
 
   function handleRetroRemove() {
     xfetch(`${teamPrefix}/retros/${removeRetroId}`, { method: 'DELETE' })
       .then(function () {
-        eventTag('team_remove_retro', 'engagement', 'success');
         toggleRemoveRetro(null)();
         notifications.success($LL.retroRemoveSuccess());
         getRetros();
       })
       .catch(function () {
         notifications.danger($LL.retroRemoveError());
-        eventTag('team_remove_retro', 'engagement', 'failure');
       });
   }
 
@@ -367,14 +373,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('team_remove_storyboard', 'engagement', 'success');
         toggleRemoveStoryboard(null)();
         notifications.success($LL.storyboardRemoveSuccess());
         getStoryboards();
       })
       .catch(function () {
         notifications.danger($LL.storyboardRemoveError());
-        eventTag('team_remove_storyboard', 'engagement', 'failure');
       });
   }
 
@@ -383,14 +387,12 @@
       method: 'DELETE',
     })
       .then(function () {
-        eventTag('team_delete', 'engagement', 'success');
         toggleDeleteTeam();
         notifications.success($LL.teamDeleteSuccess());
         router.route(appRoutes.teams);
       })
       .catch(function () {
         notifications.danger($LL.teamDeleteError());
-        eventTag('team_delete', 'engagement', 'failure');
       });
   }
 
@@ -404,8 +406,8 @@
     getRetrosActions();
   };
 
-  let showRetroActionEdit = false;
-  let selectedAction = null;
+  let showRetroActionEdit = $state(false);
+  let selectedAction = $state(null);
   const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
     selectedAction =
@@ -424,11 +426,9 @@
         getRetrosActions();
         toggleRetroActionEdit(null)();
         notifications.success($LL.updateActionItemSuccess());
-        eventTag('team_action_update', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.updateActionItemError());
-        eventTag('team_action_update', 'engagement', 'failure');
       });
   }
 
@@ -441,11 +441,9 @@
           getRetrosActions();
           toggleRetroActionEdit(null)();
           notifications.success($LL.deleteActionItemSuccess());
-          eventTag('team_action_delete', 'engagement', 'success');
         })
         .catch(function () {
           notifications.danger($LL.deleteActionItemError());
-          eventTag('team_action_delete', 'engagement', 'failure');
         });
     };
   }
@@ -456,14 +454,9 @@
       body: {
         user_id: userId,
       },
-    })
-      .then(function () {
-        getRetrosActions();
-        eventTag('team_action_assignee_add', 'engagement', 'success');
-      })
-      .catch(function () {
-        eventTag('team_action_assignee_add', 'engagement', 'failure');
-      });
+    }).then(function () {
+      getRetrosActions();
+    });
   }
 
   function handleRetroActionAssigneeRemove(retroId, actionId, userId) {
@@ -473,14 +466,9 @@
         body: {
           user_id: userId,
         },
-      })
-        .then(function () {
-          getRetrosActions();
-          eventTag('team_action_assignee_remove', 'engagement', 'success');
-        })
-        .catch(function () {
-          eventTag('team_action_assignee_remove', 'engagement', 'failure');
-        });
+      }).then(function () {
+        getRetrosActions();
+      });
     };
   }
 
@@ -535,7 +523,7 @@
     <div class="flex-1 text-right">
       <SolidButton
         additionalClasses="font-rajdhani uppercase text-2xl"
-        href="{`${currentPageUrl}/checkin`}"
+        href={`${currentPageUrl}/checkin`}
         >{$LL.checkins()}
       </SolidButton>
     </div>
@@ -553,7 +541,7 @@
         </div>
         <div class="flex-1 text-right">
           {#if isTeamMember}
-            <SolidButton onClick="{toggleCreateBattle}"
+            <SolidButton onClick={toggleCreateBattle}
               >{$LL.battleCreate()}
             </SolidButton>
           {/if}
@@ -562,25 +550,23 @@
 
       <div class="flex flex-wrap">
         <BoxList
-          items="{battles}"
+          items={battles}
           itemType="battle"
-          pageRoute="{appRoutes.game}"
-          joinBtnText="{$LL.battleJoin()}"
-          isAdmin="{isAdmin}"
-          toggleRemove="{toggleRemoveBattle}"
+          pageRoute={appRoutes.game}
+          joinBtnText={$LL.battleJoin()}
+          isAdmin={isAdmin}
+          toggleRemove={toggleRemoveBattle}
         />
       </div>
     </div>
 
     {#if showCreateBattle}
-      <Modal closeModal="{toggleCreateBattle}">
+      <Modal closeModal={toggleCreateBattle}>
         <CreateBattle
-          apiPrefix="{teamPrefix}"
-          notifications="{notifications}"
-          router="{router}"
-          eventTag="{eventTag}"
-          xfetch="{xfetch}"
-          showOwner="{false}"
+          apiPrefix={teamPrefix}
+          notifications={notifications}
+          router={router}
+          xfetch={xfetch}
         />
       </Modal>
     {/if}
@@ -598,7 +584,7 @@
         </div>
         <div class="flex-1 text-right">
           {#if isTeamMember}
-            <SolidButton onClick="{toggleCreateRetro}"
+            <SolidButton onClick={toggleCreateRetro}
               >{$LL.createRetro()}</SolidButton
             >
           {/if}
@@ -607,13 +593,13 @@
 
       <div class="flex flex-wrap">
         <BoxList
-          items="{retros}"
+          items={retros}
           itemType="retro"
-          pageRoute="{appRoutes.retro}"
-          joinBtnText="{$LL.joinRetro()}"
-          isAdmin="{isAdmin}"
-          toggleRemove="{toggleRemoveRetro}"
-          showOwner="{false}"
+          pageRoute={appRoutes.retro}
+          joinBtnText={$LL.joinRetro()}
+          isAdmin={isAdmin}
+          toggleRemove={toggleRemoveRetro}
+          showOwner={false}
         />
       </div>
 
@@ -621,75 +607,79 @@
         <div class="w-full pt-4 px-4">
           <TableContainer>
             <TableNav
-              title="{$LL.retroActionItems()}"
-              createBtnEnabled="{false}"
+              title={$LL.retroActionItems()}
+              createBtnEnabled={false}
             >
               <Toggle
                 name="completedActionItems"
                 id="completedActionItems"
-                bind:checked="{completedActionItems}"
-                changeHandler="{changeRetroActionCompletedToggle}"
-                label="{$LL.showCompletedActionItems()}"
+                bind:checked={completedActionItems}
+                changeHandler={changeRetroActionCompletedToggle}
+                label={$LL.showCompletedActionItems()}
               />
             </TableNav>
             <Table>
-              <tr slot="header">
-                <HeadCol>{$LL.actionItem()}</HeadCol>
-                <HeadCol>{$LL.completed()}</HeadCol>
-                <HeadCol>{$LL.comments()}</HeadCol>
-                <HeadCol />
-              </tr>
-              <tbody slot="body">
-                {#each retroActions as item, i}
-                  <TableRow itemIndex="{i}">
-                    <RowCol>
-                      <div class="whitespace-pre-wrap">
-                        {#each item.assignees as assignee}
-                          <UserAvatar
-                            warriorId="{assignee.id}"
-                            gravatarHash="{assignee.gravatarHash}"
-                            avatar="{assignee.avatar}"
-                            userName="{assignee.name}"
-                            width="24"
-                            class="inline-block me-2"
-                          />
-                        {/each}{item.content}
-                      </div>
-                    </RowCol>
-                    <RowCol>
-                      <BooleanDisplay boolValue="{item.completed}" />
-                    </RowCol>
-                    <RowCol>
-                      <MessageSquareMore
-                        width="22"
-                        height="22"
-                        class="inline-block"
-                      />
-                      <button
-                        class="text-lg text-blue-400 dark:text-sky-400"
-                        on:click="{toggleRetroActionComments(item.id)}"
-                      >
-                        &nbsp;{item.comments.length}
-                      </button>
-                    </RowCol>
-                    <RowCol type="action">
-                      <CrudActions
-                        editBtnClickHandler="{toggleRetroActionEdit(
-                          item.retroId,
-                          item.id,
-                        )}"
-                        deleteBtnEnabled="{false}"
-                      />
-                    </RowCol>
-                  </TableRow>
-                {/each}
-              </tbody>
+              {#snippet header()}
+                            <tr >
+                  <HeadCol>{$LL.actionItem()}</HeadCol>
+                  <HeadCol>{$LL.completed()}</HeadCol>
+                  <HeadCol>{$LL.comments()}</HeadCol>
+                  <HeadCol />
+                </tr>
+                          {/snippet}
+              {#snippet body()}
+                            <tbody >
+                  {#each retroActions as item, i}
+                    <TableRow itemIndex={i}>
+                      <RowCol>
+                        <div class="whitespace-pre-wrap">
+                          {#each item.assignees as assignee}
+                            <UserAvatar
+                              warriorId={assignee.id}
+                              gravatarHash={assignee.gravatarHash}
+                              avatar={assignee.avatar}
+                              userName={assignee.name}
+                              width={24}
+                              class="inline-block me-2"
+                            />
+                          {/each}{item.content}
+                        </div>
+                      </RowCol>
+                      <RowCol>
+                        <BooleanDisplay boolValue={item.completed} />
+                      </RowCol>
+                      <RowCol>
+                        <MessageSquareMore
+                          width="22"
+                          height="22"
+                          class="inline-block"
+                        />
+                        <button
+                          class="text-lg text-blue-400 dark:text-sky-400"
+                          onclick={toggleRetroActionComments(item.id)}
+                        >
+                          &nbsp;{item.comments.length}
+                        </button>
+                      </RowCol>
+                      <RowCol type="action">
+                        <CrudActions
+                          editBtnClickHandler={toggleRetroActionEdit(
+                            item.retroId,
+                            item.id,
+                          )}
+                          deleteBtnEnabled={false}
+                        />
+                      </RowCol>
+                    </TableRow>
+                  {/each}
+                </tbody>
+                          {/snippet}
             </Table>
             <TableFooter
-              bind:current="{retroActionsPage}"
-              num_items="{totalRetroActions}"
-              per_page="{retroActionsPageLimit}"
-              on:navigate="{changeRetroActionPage}"
+              bind:current={retroActionsPage}
+              num_items={totalRetroActions}
+              per_page={retroActionsPageLimit}
+              on:navigate={changeRetroActionPage}
             />
           </TableContainer>
         </div>
@@ -697,13 +687,12 @@
     </div>
 
     {#if showCreateRetro}
-      <Modal closeModal="{toggleCreateRetro}">
+      <Modal closeModal={toggleCreateRetro}>
         <CreateRetro
-          apiPrefix="{teamPrefix}"
-          notifications="{notifications}"
-          router="{router}"
-          eventTag="{eventTag}"
-          xfetch="{xfetch}"
+          apiPrefix={teamPrefix}
+          notifications={notifications}
+          router={router}
+          xfetch={xfetch}
         />
       </Modal>
     {/if}
@@ -721,7 +710,7 @@
         </div>
         <div class="flex-1 text-right">
           {#if isTeamMember}
-            <SolidButton onClick="{toggleCreateStoryboard}"
+            <SolidButton onClick={toggleCreateStoryboard}
               >{$LL.createStoryboard()}
             </SolidButton>
           {/if}
@@ -730,25 +719,24 @@
 
       <div class="flex flex-wrap">
         <BoxList
-          items="{storyboards}"
+          items={storyboards}
           itemType="storyboard"
-          pageRoute="{appRoutes.storyboard}"
-          joinBtnText="{$LL.joinStoryboard()}"
-          isAdmin="{isAdmin}"
-          toggleRemove="{toggleRemoveStoryboard}"
-          showOwner="{false}"
+          pageRoute={appRoutes.storyboard}
+          joinBtnText={$LL.joinStoryboard()}
+          isAdmin={isAdmin}
+          toggleRemove={toggleRemoveStoryboard}
+          showOwner={false}
         />
       </div>
     </div>
 
     {#if showCreateStoryboard}
-      <Modal closeModal="{toggleCreateStoryboard}">
+      <Modal closeModal={toggleCreateStoryboard}>
         <CreateStoryboard
-          apiPrefix="{teamPrefix}"
-          notifications="{notifications}"
-          router="{router}"
-          eventTag="{eventTag}"
-          xfetch="{xfetch}"
+          apiPrefix={teamPrefix}
+          notifications={notifications}
+          router={router}
+          xfetch={xfetch}
         />
       </Modal>
     {/if}
@@ -757,42 +745,39 @@
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
       <InvitesList
-        xfetch="{xfetch}"
-        eventTag="{eventTag}"
-        notifications="{notifications}"
+        xfetch={xfetch}
+        notifications={notifications}
         pageType="team"
-        teamPrefix="{teamPrefix}"
+        teamPrefix={teamPrefix}
         bind:this="{invitesList}"
       />
     </div>
   {/if}
 
   <UsersList
-    users="{users}"
-    getUsers="{getUsers}"
-    xfetch="{xfetch}"
-    eventTag="{eventTag}"
-    notifications="{notifications}"
-    isAdmin="{isAdmin}"
+    users={users}
+    getUsers={getUsers}
+    xfetch={xfetch}
+    notifications={notifications}
+    isAdmin={isAdmin}
     pageType="team"
-    teamPrefix="{teamPrefix}"
-    orgId="{organizationId}"
-    deptId="{departmentId}"
-    on:user-invited="{() => {
+    teamPrefix={teamPrefix}
+    orgId={organizationId}
+    deptId={departmentId}
+    on:user-invited={() => {
       invitesList.f('user-invited');
-    }}"
+    }}
   />
 
   {#if FeaturePoker}
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <PokerSettings
-          xfetch="{xfetch}"
-          eventTag="{eventTag}"
-          notifications="{notifications}"
-          isEntityAdmin="{isAdmin}"
-          apiPrefix="{teamOnlyPrefix}"
-          organizationId="{organizationId}"
+          xfetch={xfetch}
+          notifications={notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={teamOnlyPrefix}
+          organizationId={organizationId}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -804,20 +789,19 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <EstimationScalesList
-          xfetch="{xfetch}"
-          eventTag="{eventTag}"
-          notifications="{notifications}"
-          isEntityAdmin="{isAdmin}"
-          apiPrefix="{teamPrefix}"
-          organizationId="{organizationId}"
-          departmentId="{departmentId}"
-          teamId="{teamId}"
-          scales="{estimationScales}"
-          getScales="{getEstimationScales}"
-          scaleCount="{scaleCount}"
-          scalesPage="{scalesPage}"
-          scalesPageLimit="{scalesPageLimit}"
-          changePage="{changeScalesPage}"
+          xfetch={xfetch}
+          notifications={notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={teamPrefix}
+          organizationId={organizationId}
+          departmentId={departmentId}
+          teamId={teamId}
+          scales={estimationScales}
+          getScales={getEstimationScales}
+          scaleCount={scaleCount}
+          scalesPage={scalesPage}
+          scalesPageLimit={scalesPageLimit}
+          changePage={changeScalesPage}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -831,12 +815,11 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <RetroSettings
-          xfetch="{xfetch}"
-          eventTag="{eventTag}"
-          notifications="{notifications}"
-          isEntityAdmin="{isAdmin}"
-          apiPrefix="{teamOnlyPrefix}"
-          organizationId="{organizationId}"
+          xfetch={xfetch}
+          notifications={notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={teamOnlyPrefix}
+          organizationId={organizationId}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -848,20 +831,19 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <RetroTemplatesList
-          xfetch="{xfetch}"
-          eventTag="{eventTag}"
-          notifications="{notifications}"
-          isEntityAdmin="{isAdmin}"
-          apiPrefix="{teamPrefix}"
-          organizationId="{organizationId}"
-          departmentId="{departmentId}"
-          teamId="{teamId}"
-          templates="{retroTemplates}"
-          getTemplates="{getRetroTemplates}"
-          templateCount="{retroTemplateCount}"
-          templatesPage="{retroTemplatesPage}"
-          templatesPageLimit="{retroTemplatePageLimit}"
-          changePage="{changeRetroTemplatesPage}"
+          xfetch={xfetch}
+          notifications={notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={teamPrefix}
+          organizationId={organizationId}
+          departmentId={departmentId}
+          teamId={teamId}
+          templates={retroTemplates}
+          getTemplates={getRetroTemplates}
+          templateCount={retroTemplateCount}
+          templatesPage={retroTemplatesPage}
+          templatesPageLimit={retroTemplatePageLimit}
+          changePage={changeRetroTemplatesPage}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -873,7 +855,7 @@
 
   {#if isAdmin && !organizationId && !departmentId}
     <div class="w-full text-center mt-8">
-      <HollowButton onClick="{toggleDeleteTeam}" color="red">
+      <HollowButton onClick={toggleDeleteTeam} color="red">
         {$LL.deleteTeam()}
       </HollowButton>
     </div>
@@ -881,66 +863,65 @@
 
   {#if showRemoveBattle}
     <DeleteConfirmation
-      toggleDelete="{toggleRemoveBattle(null)}"
-      handleDelete="{handleBattleRemove}"
-      permanent="{false}"
-      confirmText="{$LL.removeBattleConfirmText()}"
-      confirmBtnText="{$LL.removeBattle()}"
+      toggleDelete={toggleRemoveBattle(null)}
+      handleDelete={handleBattleRemove}
+      permanent={false}
+      confirmText={$LL.removeBattleConfirmText()}
+      confirmBtnText={$LL.removeBattle()}
     />
   {/if}
 
   {#if showRemoveRetro}
     <DeleteConfirmation
-      toggleDelete="{toggleRemoveRetro(null)}"
-      handleDelete="{handleRetroRemove}"
-      permanent="{false}"
-      confirmText="{$LL.removeRetroConfirmText()}"
-      confirmBtnText="{$LL.removeRetro()}"
+      toggleDelete={toggleRemoveRetro(null)}
+      handleDelete={handleRetroRemove}
+      permanent={false}
+      confirmText={$LL.removeRetroConfirmText()}
+      confirmBtnText={$LL.removeRetro()}
     />
   {/if}
 
   {#if showRemoveStoryboard}
     <DeleteConfirmation
-      toggleDelete="{toggleRemoveStoryboard(null)}"
-      handleDelete="{handleStoryboardRemove}"
-      permanent="{false}"
-      confirmText="{$LL.removeStoryboardConfirmText()}"
-      confirmBtnText="{$LL.removeStoryboard()}"
+      toggleDelete={toggleRemoveStoryboard(null)}
+      handleDelete={handleStoryboardRemove}
+      permanent={false}
+      confirmText={$LL.removeStoryboardConfirmText()}
+      confirmBtnText={$LL.removeStoryboard()}
     />
   {/if}
 
   {#if showDeleteTeam}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteTeam}"
-      handleDelete="{handleDeleteTeam}"
-      confirmText="{$LL.deleteTeamConfirmText()}"
-      confirmBtnText="{$LL.deleteTeam()}"
+      toggleDelete={toggleDeleteTeam}
+      handleDelete={handleDeleteTeam}
+      confirmText={$LL.deleteTeamConfirmText()}
+      confirmBtnText={$LL.deleteTeam()}
     />
   {/if}
 
   {#if showRetroActionEdit}
     <EditActionItem
-      toggleEdit="{toggleRetroActionEdit(null)}"
-      handleEdit="{handleRetroActionEdit}"
-      handleDelete="{handleRetroActionDelete}"
-      assignableUsers="{users}"
-      action="{selectedAction}"
-      handleAssigneeAdd="{handleRetroActionAssigneeAdd}"
-      handleAssigneeRemove="{handleRetroActionAssigneeRemove}"
+      toggleEdit={toggleRetroActionEdit(null)}
+      handleEdit={handleRetroActionEdit}
+      handleDelete={handleRetroActionDelete}
+      assignableUsers={users}
+      action={selectedAction}
+      handleAssigneeAdd={handleRetroActionAssigneeAdd}
+      handleAssigneeRemove={handleRetroActionAssigneeRemove}
     />
   {/if}
 
   {#if showRetroActionComments}
     <ActionComments
-      toggleComments="{toggleRetroActionComments(null)}"
-      actions="{retroActions}"
-      users="{users}"
-      selectedActionId="{selectedRetroAction}"
-      getRetrosActions="{getRetrosActions}"
-      xfetch="{xfetch}"
-      eventTag="{eventTag}"
-      notifications="{notifications}"
-      isAdmin="{isAdmin}"
+      toggleComments={toggleRetroActionComments(null)}
+      actions={retroActions}
+      users={users}
+      selectedActionId={selectedRetroAction}
+      getRetrosActions={getRetrosActions}
+      xfetch={xfetch}
+      notifications={notifications}
+      isAdmin={isAdmin}
     />
   {/if}
 </PageLayout>

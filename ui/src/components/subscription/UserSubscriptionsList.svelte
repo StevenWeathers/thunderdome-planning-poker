@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token -->
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
@@ -8,7 +9,6 @@
   import AssociateTeamForm from './AssociateTeamForm.svelte';
   import AssociateOrgForm from './AssociateOrgForm.svelte';
 
-  export let eventTag;
   export let notifications;
   export let xfetch = async (url: string, ...options: any) => {};
 
@@ -35,7 +35,6 @@
       })
       .catch(function () {
         notifications.danger('Error getting subscriptions');
-        eventTag('fetch_users_subscriptions', 'engagement', 'failure');
       });
   }
 
@@ -115,9 +114,8 @@
                         <AssociatedOrganization
                           userId="{$user.id}"
                           organizationId="{sub.organization_id}"
-                          xfetch="{xfetch}"
-                          eventTag="{eventTag}"
-                          notifications="{notifications}"
+                          xfetch={xfetch}
+                          notifications={notifications}
                         />
                       {/if}
                     {:else}
@@ -134,9 +132,8 @@
                         <AssociatedTeam
                           userId="{$user.id}"
                           teamId="{sub.team_id}"
-                          xfetch="{xfetch}"
-                          eventTag="{eventTag}"
-                          notifications="{notifications}"
+                          xfetch={xfetch}
+                          notifications={notifications}
                         />
                       {/if}
                     {:else}
@@ -157,23 +154,21 @@
 
   {#if showAssociateTeam}
     <AssociateTeamForm
-      handleUpdate="{handleAssociate}"
-      toggleClose="{toggleAssociateTeam(null)}"
+      handleUpdate={handleAssociate}
+      toggleClose={toggleAssociateTeam(null)}
       subscriptionId="{selectedSubscriptionId}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
-      eventTag="{eventTag}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 
   {#if showAssociateOrganization}
     <AssociateOrgForm
-      handleUpdate="{handleAssociate}"
-      toggleClose="{toggleAssociateOrganization(null)}"
+      handleUpdate={handleAssociate}
+      toggleClose={toggleAssociateOrganization(null)}
       subscriptionId="{selectedSubscriptionId}"
-      xfetch="{xfetch}"
-      notifications="{notifications}"
-      eventTag="{eventTag}"
+      xfetch={xfetch}
+      notifications={notifications}
     />
   {/if}
 </div>

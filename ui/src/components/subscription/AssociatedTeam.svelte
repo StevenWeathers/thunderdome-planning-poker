@@ -1,13 +1,21 @@
 <script lang="ts">
-  export let teamId = '';
-  export let userId = '';
-  export let xfetch = async () => {};
-  export let notifications;
-  export let eventTag;
+  interface Props {
+    teamId?: string;
+    userId?: string;
+    xfetch?: any;
+    notifications: any;
+  }
 
-  let team = {
+  let {
+    teamId = '',
+    userId = '',
+    xfetch = async () => {},
+    notifications
+  }: Props = $props();
+
+  let team = $state({
     name: '',
-  };
+  });
 
   xfetch(`/api/teams/${teamId}`)
     .then(res => res.json())
@@ -16,7 +24,6 @@
     })
     .catch(function () {
       notifications.danger('Error getting associated team');
-      eventTag('fetch_associated_team', 'engagement', 'failure');
     });
 </script>
 

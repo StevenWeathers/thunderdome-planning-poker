@@ -1,13 +1,21 @@
 <script lang="ts">
-  export let organizationId = '';
-  export let userId = '';
-  export let xfetch = async () => {};
-  export let notifications;
-  export let eventTag;
+  interface Props {
+    organizationId?: string;
+    userId?: string;
+    xfetch?: any;
+    notifications: any;
+  }
 
-  let organization = {
+  let {
+    organizationId = '',
+    userId = '',
+    xfetch = async () => {},
+    notifications
+  }: Props = $props();
+
+  let organization = $state({
     name: '',
-  };
+  });
 
   xfetch(`/api/organizations/${organizationId}`)
     .then(res => res.json())
@@ -16,7 +24,6 @@
     })
     .catch(function () {
       notifications.danger('Error getting associated organization');
-      eventTag('fetch_associated_organization', 'engagement', 'failure');
     });
 </script>
 

@@ -1,20 +1,25 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { scaleLinear } from 'd3-scale';
   import { TriangleAlert } from 'lucide-svelte';
   import { onMount } from 'svelte';
 
-  export let votes = [];
-  export let pointValues = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?'];
-  export let users = [];
-  export let averageRounding = 'ceil';
-  let chartData = [];
-  let consensusValue = '';
-  let consensusPercentage = 0;
-  let isNumeric = false;
-  let totalVoters = 0;
-  let userMap = {};
+  /** @type {{votes?: any, pointValues?: any, users?: any, averageRounding?: string}} */
+  let {
+    votes = [],
+    pointValues = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?'],
+    users = [],
+    averageRounding = 'ceil'
+  } = $props();
+  let chartData = $state([]);
+  let consensusValue = $state('');
+  let consensusPercentage = $state(0);
+  let isNumeric = $state(false);
+  let totalVoters = $state(0);
+  let userMap = $state({});
 
-  $: {
+  run(() => {
     userMap = users.reduce((prev, u) => {
       prev[u.id] = u.name;
       return prev;
@@ -40,7 +45,7 @@
     totalVoters = votes.length;
     consensusPercentage =
       totalVoters > 0 ? Math.round((modeData.count / totalVoters) * 100) : 0;
-  }
+  });
 
   function roundWithConfiguredAvg(middleIndex) {
     let average = 0;
@@ -108,14 +113,14 @@
     return count > 0 ? Math.max(scaledHeight, minHeight) : 0;
   }
 
-  $: averageOrMedian = getAverageOrMedian(votes, pointValues) || 'N/A';
+  let averageOrMedian = $derived(getAverageOrMedian(votes, pointValues) || 'N/A');
 </script>
 
 <div
   class="p-4 rounded-lg shadow-md bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
 >
   <div
-    class="flex items-end space-x-1 h-64 mb-8 bg-gray-700 rounded-lg overflow-hidden"
+    class="flex items-end space-x-1 h-64 mb-8 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden"
     data-testid="voteresult-graph"
   >
     {#each chartData as { value, count, users }}
@@ -133,7 +138,7 @@
             style="height: {getBarHeight(count)}%; min-height: 80px;"
           >
             <div
-              class="h-full flex items-center justify-center text-white font-bold text-lg"
+              class="h-full flex items-center justify-center font-bold text-lg {getBarHeight(count) > 10 ? 'text-white' : 'dark:text-white'}"
               data-testid="voteresult-graph-count"
             >
               {count > 0 ? count : ''}
@@ -152,7 +157,7 @@
                   count,
                 ) === 100
                   ? 'mb-0'
-                  : 'mb-2'} bg-gray-600 p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm whitespace-nowrap z-50"
+                  : 'mb-2'} bg-gray-600 text-white p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm whitespace-nowrap z-50"
               >
                 {users.join(', ')}
               </div>
@@ -161,7 +166,7 @@
         </div>
         <div class="absolute bottom-0 left-0 right-0 text-center pb-1">
           <span
-            class="font-semibold text-sm"
+            class="font-semibold text-sm {getBarHeight(count) > 5 ? 'text-white' : ''}"
             data-testid="voteresult-graph-value">{value}</span
           >
         </div>

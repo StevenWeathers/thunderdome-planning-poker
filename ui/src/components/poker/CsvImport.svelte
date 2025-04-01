@@ -3,9 +3,12 @@
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
 
-  export let notifications;
-  export let eventTag = () => {};
-  export let handlePlanAdd = () => {};
+  interface Props {
+    notifications: any;
+    handlePlanAdd?: any;
+  }
+
+  let { notifications, handlePlanAdd = () => {} }: Props = $props();
 
   const allowCsvImport = AppConfig.AllowCsvImport;
 
@@ -18,11 +21,6 @@
     }
     if (file.type !== 'text/csv') {
       notifications.danger($LL.importCsvFileBadFileTypeError());
-      eventTag(
-        'Csv_import_failed',
-        'battle',
-        `file.type not text/csv or application/vnd.ms-excel`,
-      );
       return;
     }
 
@@ -42,21 +40,14 @@
             plans.push(plan);
             handlePlanAdd(plan);
           }
-          eventTag(
-            'Csv_import_success',
-            'battle',
-            `total stories imported: ${totalItems}`,
-          );
         }
       } catch (e) {
         notifications.danger($LL.importCsvFileReadFileError());
-        eventTag('Csv_import_failed', 'battle', `error reading file`);
       }
     };
 
     reader.onerror = () => {
       notifications.danger($LL.importCsvFileReadFileError());
-      eventTag('Csv_import_failed', 'battle', `error reading file`);
     };
   }
 
@@ -99,7 +90,7 @@
     {$LL.selectFile()}
     <input
       type="file"
-      on:change="{uploadFile}"
+      onchange={uploadFile}
       class="hidden"
       id="csvimport"
       accept=".csv"

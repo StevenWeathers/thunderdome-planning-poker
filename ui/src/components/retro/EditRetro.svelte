@@ -7,14 +7,27 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import { Crown, Lock } from 'lucide-svelte';
 
-  export let toggleEditRetro = () => {};
-  export let handleRetroEdit = () => {};
-  export let retroName = '';
-  export let joinCode = '';
-  export let facilitatorCode = '';
-  export let maxVotes = '3';
-  export let brainstormVisibility = 'visible';
-  export let phaseAutoAdvance = true;
+  interface Props {
+    toggleEditRetro?: any;
+    handleRetroEdit?: any;
+    retroName?: string;
+    joinCode?: string;
+    facilitatorCode?: string;
+    maxVotes?: string;
+    brainstormVisibility?: string;
+    phaseAutoAdvance?: boolean;
+  }
+
+  let {
+    toggleEditRetro = () => {},
+    handleRetroEdit = () => {},
+    retroName = $bindable(''),
+    joinCode = $bindable(''),
+    facilitatorCode = $bindable(''),
+    maxVotes = $bindable('3'),
+    brainstormVisibility = $bindable('visible'),
+    phaseAutoAdvance = $bindable(true)
+  }: Props = $props();
 
   const brainstormVisibilityOptions = [
     {
@@ -47,8 +60,8 @@
   }
 </script>
 
-<Modal closeModal="{toggleEditRetro}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
-  <form on:submit="{saveRetro}" name="createRetro">
+<Modal closeModal={toggleEditRetro} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+  <form onsubmit={saveRetro} name="createRetro">
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
@@ -59,8 +72,8 @@
       <div class="control">
         <TextInput
           name="retroName"
-          bind:value="{retroName}"
-          placeholder="{$LL.retroNamePlaceholder()}"
+          bind:value={retroName}
+          placeholder={$LL.retroNamePlaceholder()}
           id="retroName"
           required
         />
@@ -77,10 +90,10 @@
       <div class="control">
         <TextInput
           name="joinCode"
-          bind:value="{joinCode}"
-          placeholder="{$LL.optionalPasscodePlaceholder()}"
+          bind:value={joinCode}
+          placeholder={$LL.optionalPasscodePlaceholder()}
           id="joinCode"
-          icon="{Lock}"
+          icon={Lock}
         />
       </div>
     </div>
@@ -95,10 +108,10 @@
       <div class="control">
         <TextInput
           name="facilitatorCode"
-          bind:value="{facilitatorCode}"
-          placeholder="{$LL.facilitatorCodePlaceholder()}"
+          bind:value={facilitatorCode}
+          placeholder={$LL.facilitatorCodePlaceholder()}
           id="facilitatorCode"
-          icon="{Crown}"
+          icon={Crown}
         />
       </div>
     </div>
@@ -113,7 +126,7 @@
       <div class="control">
         <TextInput
           name="retroName"
-          bind:value="{maxVotes}"
+          bind:value={maxVotes}
           id="maxVotes"
           type="number"
           min="1"
@@ -131,12 +144,12 @@
         {$LL.brainstormPhaseFeedbackVisibility()}
       </label>
       <SelectInput
-        bind:value="{brainstormVisibility}"
+        bind:value={brainstormVisibility}
         id="brainstormVisibility"
         name="brainstormVisibility"
       >
         {#each brainstormVisibilityOptions as item}
-          <option value="{item.value}">
+          <option value={item.value}>
             {item.label}
           </option>
         {/each}
@@ -145,10 +158,10 @@
 
     <div class="mb-4">
       <Checkbox
-        bind:checked="{phaseAutoAdvance}"
+        bind:checked={phaseAutoAdvance}
         id="phaseAutoAdvance"
         name="phaseAutoAdvance"
-        label="{$LL.phaseAutoAdvanceLabel()}"
+        label={$LL.phaseAutoAdvanceLabel()}
       />
     </div>
 

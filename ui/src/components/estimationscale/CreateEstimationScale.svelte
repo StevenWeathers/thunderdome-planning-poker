@@ -8,22 +8,34 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
 
-  export let toggleCreate = () => {};
-  export let handleCreate = () => {};
-  export let organizationId;
-  export let teamId;
-  export let departmentId;
-  export let apiPrefix: string = '/api';
-  export let xfetch: any;
-  export let eventTag: any;
-  export let notifications: any;
+  interface Props {
+    toggleCreate?: any;
+    handleCreate?: any;
+    organizationId: any;
+    teamId: any;
+    departmentId: any;
+    apiPrefix?: string;
+    xfetch: any;
+    notifications: any;
+  }
 
-  let name = '';
-  let description = '';
-  let scaleType = 'custom';
-  let values: string[] = [];
-  let isPublic = false;
-  let defaultScale = false;
+  let {
+    toggleCreate = () => {},
+    handleCreate = () => {},
+    organizationId,
+    teamId,
+    departmentId,
+    apiPrefix = '/api',
+    xfetch,
+    notifications
+  }: Props = $props();
+
+  let name = $state('');
+  let description = $state('');
+  let scaleType = $state('custom');
+  let values: string[] = $state([]);
+  let isPublic = $state(false);
+  let defaultScale = $state(false);
 
   const scaleTypes = [
     'fibonacci',
@@ -92,12 +104,12 @@
     }
   }
 
-  $: createDisabled = name === '' || scaleType === '' || values.length === 0;
-  $: isAdmin = validateUserIsAdmin($user);
+  let createDisabled = $derived(name === '' || scaleType === '' || values.length === 0);
+  let isAdmin = $derived(validateUserIsAdmin($user));
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit="{onSubmit}" name="createEstimationScale">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={onSubmit} name="createEstimationScale">
     <div class="mb-4">
       <label
         class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
@@ -106,8 +118,8 @@
         {$LL.name()}
       </label>
       <TextInput
-        bind:value="{name}"
-        placeholder="{$LL.estimationScaleNamePlaceholder()}"
+        bind:value={name}
+        placeholder={$LL.estimationScaleNamePlaceholder()}
         id="scaleName"
         name="scaleName"
         required
@@ -122,8 +134,8 @@
         {$LL.description()}
       </label>
       <TextInput
-        bind:value="{description}"
-        placeholder="{$LL.estimationScaleDescriptionPlaceholder()}"
+        bind:value={description}
+        placeholder={$LL.estimationScaleDescriptionPlaceholder()}
         id="scaleDescription"
         name="scaleDescription"
       />
@@ -144,7 +156,7 @@
             {$LL.estimationScaleTypePlaceholder()}
           </option>
           {#each scaleTypes as type}
-            <option value="{type}">{type}</option>
+            <option value={type}>{type}</option>
           {/each}
         </SelectInput>
       </div>
@@ -158,9 +170,9 @@
         {$LL.scaleValues()}
       </label>
       <TextInput
-        value="{values.join(', ')}"
-        on:input="{handleValuesChange}"
-        placeholder="{$LL.estimationScaleValuesPlaceholder()}"
+        value={values.join(', ')}
+        on:input={handleValuesChange}
+        placeholder={$LL.estimationScaleValuesPlaceholder()}
         id="scaleValues"
         name="scaleValues"
         required
@@ -173,26 +185,26 @@
     {#if isAdmin && !organizationId && !teamId}
       <div class="mb-4">
         <Checkbox
-          bind:checked="{isPublic}"
+          bind:checked={isPublic}
           id="isPublic"
           name="isPublic"
-          label="{$LL.estimationScaleIsPublic()}"
+          label={$LL.estimationScaleIsPublic()}
         />
       </div>
     {/if}
 
     <div class="mb-4">
       <Checkbox
-        bind:checked="{defaultScale}"
+        bind:checked={defaultScale}
         id="defaultScale"
         name="defaultScale"
-        label="{$LL.estimationScaleDefault()}"
+        label={$LL.estimationScaleDefault()}
       />
     </div>
 
     <div>
       <div class="text-right">
-        <SolidButton type="submit" disabled="{createDisabled}">
+        <SolidButton type="submit" disabled={createDisabled}>
           {$LL.estimationScaleSave()}
         </SolidButton>
       </div>

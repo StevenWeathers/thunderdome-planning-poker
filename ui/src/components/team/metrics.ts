@@ -1,6 +1,6 @@
 import type { ComponentType } from 'svelte';
 import {
-  BarChart2,
+  ChartNoAxesColumn,
   Briefcase,
   CheckSquare,
   FileText,
@@ -29,7 +29,7 @@ export const iconMap: { [key: string]: ComponentType } = {
   poker_count: Play,
   storyboard_count: Layout,
   team_checkin_count: CheckSquare,
-  estimation_scale_count: BarChart2,
+  estimation_scale_count: ChartNoAxesColumn,
   retro_template_count: FileText,
 };
 

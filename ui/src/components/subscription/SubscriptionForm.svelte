@@ -6,60 +6,64 @@
   import TextInput from '../forms/TextInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
 
-  export let handleUpdate = () => {};
-  export let toggleClose = () => {};
-  export let eventTag = (a, b, c) => {};
-  export let xfetch = async (url, options) => {};
-  export let notifications;
 
-  export let subscriptionId = '';
-  export let user_id = '';
-  export let team_id = '';
-  export let organization_id = '';
-  export let customer_id = '';
-  export let subscription_id = '';
-  export let type = 'user';
-  export let active = true;
-  export let expires = new Date().toISOString();
+  interface Props {
+    handleUpdate?: any;
+    toggleClose?: any;
+    xfetch?: any;
+    notifications: any;
+    subscriptionId?: string;
+    user_id?: string;
+    team_id?: string;
+    organization_id?: string;
+    customer_id?: string;
+    subscription_id?: string;
+    type?: string;
+    active?: boolean;
+    expires?: any;
+  }
+
+  let {
+    handleUpdate = () => {},
+    toggleClose = () => {},
+    xfetch = async (url, options) => {},
+    notifications,
+    subscriptionId = '',
+    user_id = $bindable(''),
+    team_id = $bindable(''),
+    organization_id = $bindable(''),
+    customer_id = $bindable(''),
+    subscription_id = $bindable(''),
+    type = $bindable('user'),
+    active = $bindable(true),
+    expires = $bindable(new Date().toISOString())
+  }: Props = $props();
 
   function handleSubmit(event) {
     event.preventDefault();
 
     if (user_id === '') {
       notifications.danger('user_id field required');
-      eventTag('subscription_form_user_id_invalid', 'engagement', 'failure');
       return false;
     }
 
     if (customer_id === '') {
       notifications.danger('customer_id field required');
-      eventTag(
-        'subscription_form_customer_id_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
     if (subscription_id === '') {
       notifications.danger('subscription_id field required');
-      eventTag(
-        'subscription_form_subscription_id_invalid',
-        'engagement',
-        'failure',
-      );
       return false;
     }
 
     if (type === '') {
       notifications.danger('type field required');
-      eventTag('subscription_form_type_invalid', 'engagement', 'failure');
       return false;
     }
 
     if (active === '') {
       notifications.danger('active field required');
-      eventTag('subscription_form_active_invalid', 'engagement', 'failure');
       return false;
     }
 
@@ -85,18 +89,15 @@
       .then(function () {
         handleUpdate();
         toggleClose();
-        eventTag('subscription_form', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger('failed to update subscription');
-
-        eventTag('subscription_form', 'engagement', 'failure');
       });
   }
 </script>
 
-<Modal closeModal="{toggleClose}">
-  <form on:submit="{handleSubmit}" name="subscriptionform">
+<Modal closeModal={toggleClose}>
+  <form onsubmit={handleSubmit} name="subscriptionform">
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="userId">
         Thunderdome User Id<span class="text-red-500 dark:text-red-400">*</span>
@@ -177,10 +178,10 @@
     </div>
     <div class="mb-4">
       <Checkbox
-        bind:checked="{active}"
+        bind:checked={active}
         id="active"
         name="active"
-        label="{$LL.active()}"
+        label={$LL.active()}
       />
     </div>
     <div class="mb-4">

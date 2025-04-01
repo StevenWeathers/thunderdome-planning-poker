@@ -8,28 +8,40 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import { Trash2 } from 'lucide-svelte';
 
-  export let toggleEdit = () => {};
-  export let handleEdit = action => {};
-  export let handleDelete = () => {};
-  export let handleAssigneeAdd = (retroId, actionId, userId) => {};
-  export let handleAssigneeRemove = (retroId, actionId, userId) => () => {};
-  export let assignableUsers = [];
-  export let action = {
+  interface Props {
+    toggleEdit?: any;
+    handleEdit?: any;
+    handleDelete?: any;
+    handleAssigneeAdd?: any;
+    handleAssigneeRemove?: any;
+    assignableUsers?: any;
+    action?: any;
+  }
+
+  let {
+    toggleEdit = () => {},
+    handleEdit = action => {},
+    handleDelete = () => {},
+    handleAssigneeAdd = (retroId, actionId, userId) => {},
+    handleAssigneeRemove = (retroId, actionId, userId) => () => {},
+    assignableUsers = [],
+    action = {
     id: '',
     retroId: '',
     content: '',
     completed: false,
     assignees: [],
-  };
+  }
+  }: Props = $props();
 
-  let selectedAssignee = '';
+  let selectedAssignee = $state('');
 
-  let editAction = {
+  let editAction = $state({
     id: action.id,
     retroId: action.retroId,
     content: action.content,
     completed: action.completed,
-  };
+  });
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -42,8 +54,8 @@
   };
 </script>
 
-<Modal closeModal="{toggleEdit}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
-  <form on:submit="{handleSubmit}">
+<Modal closeModal={toggleEdit} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+  <form onsubmit={handleSubmit}>
     <div class="mb-4">
       <label
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
@@ -53,8 +65,8 @@
       </label>
       <div class="control">
         <input
-          bind:value="{editAction.content}"
-          placeholder="{$LL.actionItemPlaceholder()}"
+          bind:value={editAction.content}
+          placeholder={$LL.actionItemPlaceholder()}
           class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
                 px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
                 focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
@@ -71,8 +83,8 @@
         <div class="flex-shrink">
           <Checkbox
             id="Completed"
-            bind:checked="{editAction.completed}"
-            label="{$LL.completed()}"
+            bind:checked={editAction.completed}
+            label={$LL.completed()}
           />
         </div>
       </div>
@@ -80,7 +92,7 @@
 
     <div class="flex w-full pt-4">
       <div class="w-1/2">
-        <HollowButton color="red" onClick="{handleDelete(editAction)}"
+        <HollowButton color="red" onClick={handleDelete(editAction)}
           >{$LL.delete()}</HollowButton
         >
       </div>
@@ -97,13 +109,13 @@
     <div class="flex w-full gap-4">
       <div class="w-2/3">
         <SelectInput
-          bind:value="{selectedAssignee}"
+          bind:value={selectedAssignee}
           id="assignee"
           name="assignee"
         >
           <option value="" disabled>{$LL.assigneeSelectPlaceholder()}</option>
           {#each assignableUsers as user}
-            <option value="{user.id}">
+            <option value={user.id}>
               {user.name}
             </option>
           {/each}
@@ -111,8 +123,8 @@
       </div>
       <div class="w-1/3">
         <HollowButton
-          onClick="{addAssignee}"
-          disabled="{selectedAssignee === ''}"
+          onClick={addAssignee}
+          disabled={selectedAssignee === ''}
         >
           {$LL.assigneeAdd()}
         </HollowButton>
@@ -124,10 +136,10 @@
           <div class="flex text-gray-700 dark:text-gray-400 mb-2">
             <div class="w-1/4">
               <UserAvatar
-                warriorId="{assignee.id}"
-                gravatarHash="{assignee.gravatarHash}"
-                avatar="{assignee.avatar}"
-                userName="{assignee.name}"
+                warriorId={assignee.id}
+                gravatarHash={assignee.gravatarHash}
+                avatar={assignee.avatar}
+                userName={assignee.name}
                 class="inline-block me-2"
               />
             </div>
@@ -135,11 +147,11 @@
             <div class="w-1/4 text-right">
               <HollowButton
                 color="red"
-                onClick="{handleAssigneeRemove(
+                onClick={handleAssigneeRemove(
                   action.retroId,
                   action.id,
                   assignee.id,
-                )}"
+                )}
               >
                 <Trash2 />
               </HollowButton>

@@ -2,11 +2,15 @@
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
 
-  export let handleDelete = () => {};
-  export let toggleDelete = () => {};
+  interface Props {
+    handleDelete?: any;
+    toggleDelete?: any;
+  }
+
+  let { handleDelete = () => {}, toggleDelete = () => {} }: Props = $props();
 </script>
 
-<Modal closeModal="{toggleDelete}">
+<Modal closeModal={toggleDelete}>
   <div class="mb-4">
     <p class="font-bold text-xl text-red-600">
       Are you sure you want to delete this Storyboard?
@@ -19,12 +23,12 @@
       type="button"
       class="inline-block align-baseline font-bold text-sm text-blue-500
             hover:text-blue-800 me-4"
-      on:click="{toggleDelete}"
+      onclick={toggleDelete}
       data-testid="confirm-cancel"
     >
       Cancel
     </button>
-    <SolidButton onClick="{handleDelete}" color="red" testid="confirm-confirm">
+    <SolidButton onClick={handleDelete} color="red" testid="confirm-confirm">
       Delete Storyboard
     </SolidButton>
   </div>

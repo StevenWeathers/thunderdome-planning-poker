@@ -7,19 +7,31 @@
   import LL from '../../i18n/i18n-svelte';
   import { Trash2, User } from 'lucide-svelte';
 
-  export let toggleColumnEdit = () => {};
-  export let handleColumnRevision = () => {};
-  export let deleteColumn = () => () => {};
-  export let handlePersonaRemove = () => () => {};
-  export let handlePersonaAdd = () => {};
-  export let personas = [];
-  export let column = {
+  interface Props {
+    toggleColumnEdit?: any;
+    handleColumnRevision?: any;
+    deleteColumn?: any;
+    handlePersonaRemove?: any;
+    handlePersonaAdd?: any;
+    personas?: any;
+    column?: any;
+  }
+
+  let {
+    toggleColumnEdit = () => {},
+    handleColumnRevision = () => {},
+    deleteColumn = () => () => {},
+    handlePersonaRemove = () => () => {},
+    handlePersonaAdd = () => {},
+    personas = [],
+    column = $bindable({
     id: '',
     name: '',
     personas: [],
-  };
+  })
+  }: Props = $props();
 
-  let selectedPersona = '';
+  let selectedPersona = $state('');
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -38,8 +50,8 @@
   }
 </script>
 
-<Modal closeModal="{toggleColumnEdit}">
-  <form on:submit="{handleSubmit}" name="addColumn">
+<Modal closeModal={toggleColumnEdit}>
+  <form onsubmit={handleSubmit} name="addColumn">
     <div class="mb-4">
       <label
         class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
@@ -56,7 +68,7 @@
     </div>
     <div class="flex">
       <div class="md:w-1/2 text-left">
-        <HollowButton color="red" onClick="{deleteColumn(column.id)}">
+        <HollowButton color="red" onClick={deleteColumn(column.id)}>
           Delete Column
         </HollowButton>
       </div>
@@ -83,8 +95,8 @@
       </div>
       <div class="w-1/3">
         <HollowButton
-          onClick="{addPersona}"
-          disabled="{selectedPersona === ''}"
+          onClick={addPersona}
+          disabled={selectedPersona === ''}
         >
           Add Persona
         </HollowButton>
@@ -101,10 +113,10 @@
             <div class="w-1/4 text-right">
               <HollowButton
                 color="red"
-                onClick="{handlePersonaRemove({
+                onClick={handlePersonaRemove({
                   column_id: column.id,
                   persona_id: persona.id,
-                })}"
+                })}
               >
                 <Trash2 />
               </HollowButton>

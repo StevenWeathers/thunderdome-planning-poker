@@ -5,9 +5,12 @@
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
 
-  export let notifications;
-  export let eventTag = () => {};
-  export let handlePlanAdd = () => {};
+  interface Props {
+    notifications: any;
+    handlePlanAdd?: any;
+  }
+
+  let { notifications, handlePlanAdd = () => {} }: Props = $props();
 
   const allowJiraImport = AppConfig.AllowJiraImport;
 
@@ -18,7 +21,6 @@
     }
     if (file.type !== 'text/xml') {
       notifications.danger($LL.importJiraXMLBadFileTypeError());
-      eventTag('jira_import_failed', 'battle', `file.type not text/xml`);
       return;
     }
 
@@ -69,21 +71,14 @@
             };
             handlePlanAdd(plan);
           }
-          eventTag(
-            'jira_import_success',
-            'battle',
-            `total stories imported: ${totalItems}`,
-          );
         }
       } catch (e) {
         notifications.danger($LL.importJiraXMLReadFileError());
-        eventTag('jira_import_failed', 'battle', `ferror reading file`);
       }
     };
 
     reader.onerror = () => {
       notifications.danger($LL.importJiraXMLReadFileError());
-      eventTag('jira_import_failed', 'battle', `ferror reading file`);
     };
   }
 </script>
@@ -98,7 +93,7 @@
     {$LL.selectFile()}
     <input
       type="file"
-      on:change="{uploadFile}"
+      onchange={uploadFile}
       class="hidden"
       id="jiraimport"
       accept=".xml"

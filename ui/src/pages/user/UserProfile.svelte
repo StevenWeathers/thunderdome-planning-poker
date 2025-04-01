@@ -16,19 +16,22 @@
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
 
-  export let xfetch;
-  export let router;
-  export let notifications;
-  export let eventTag;
+  interface Props {
+    xfetch: any;
+    router: any;
+    notifications: any;
+  }
 
-  let userProfile = {};
-  let userCredential = null;
-  let apiKeys = [];
-  let jiraInstances = [];
-  let showApiKeyCreate = false;
-  let showAccountDeletion = false;
+  let { xfetch, router, notifications }: Props = $props();
 
-  let updatePassword = false;
+  let userProfile = $state({});
+  let userCredential = $state(null);
+  let apiKeys = $state([]);
+  let jiraInstances = $state([]);
+  let showApiKeyCreate = $state(false);
+  let showAccountDeletion = $state(false);
+
+  let updatePassword = $state(false);
 
   const {
     ExternalAPIEnabled,
@@ -42,11 +45,6 @@
 
   function toggleUpdatePassword() {
     updatePassword = !updatePassword;
-    eventTag(
-      'update_password_toggle',
-      'engagement',
-      `update: ${updatePassword}`,
-    );
   }
 
   function getProfile() {
@@ -57,7 +55,6 @@
       })
       .catch(function () {
         notifications.danger($LL.profileErrorRetrieving());
-        eventTag('fetch_profile', 'engagement', 'failure');
       });
   }
 
@@ -69,7 +66,6 @@
       })
       .catch(function () {
         notifications.danger("Error retrieving user's credential");
-        eventTag('fetch_credential', 'engagement', 'failure');
       });
   }
 
@@ -99,11 +95,9 @@
         window.setTheme();
 
         notifications.success($LL.profileUpdateSuccess());
-        eventTag('update_profile', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.profileErrorUpdating());
-        eventTag('update_profile', 'engagement', 'failure');
       });
   }
 
@@ -117,11 +111,9 @@
       .then(function () {
         notifications.success($LL.passwordUpdated(), 1500);
         toggleUpdatePassword();
-        eventTag('update_password', 'engagement', 'success');
       })
       .catch(function () {
         notifications.danger($LL.passwordUpdateError());
-        eventTag('update_password', 'engagement', 'failure');
       });
   }
 
@@ -133,7 +125,6 @@
       })
       .catch(function () {
         notifications.danger($LL.apiKeysErrorRetrieving());
-        eventTag('fetch_profile_apikeys', 'engagement', 'failure');
       });
   }
 
@@ -167,7 +158,6 @@
         } else {
           notifications.danger('error getting jira instances');
         }
-        eventTag('fetch_profile_jira_instances', 'engagement', 'failure');
       });
   }
 
@@ -216,14 +206,10 @@
     xfetch(`/api/users/${$user.id}`, { method: 'DELETE' })
       .then(function () {
         user.delete();
-
-        eventTag('delete_warrior', 'engagement', 'success');
-
         router.route(appRoutes.landing);
       })
       .catch(function () {
         notifications.danger($LL.profileDeleteError());
-        eventTag('delete_warrior', 'engagement', 'failure');
       });
   }
 
@@ -231,7 +217,7 @@
     showAccountDeletion = !showAccountDeletion;
   }
 
-  let showJiraInstanceCreate = false;
+  let showJiraInstanceCreate = $state(false);
 
   function toggleCreateJiraInstance() {
     showJiraInstanceCreate = !showJiraInstanceCreate;
@@ -319,15 +305,14 @@
           class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
         >
           <ProfileForm
-            credential="{userCredential}"
-            profile="{userProfile}"
-            handleUpdate="{updateUserProfile}"
-            toggleUpdatePassword="{toggleUpdatePassword}"
-            xfetch="{xfetch}"
-            notifications="{notifications}"
-            eventTag="{eventTag}"
-            ldapEnabled="{LdapEnabled}"
-            headerAuthEnabled="{HeaderAuthEnabled}"
+            credential={userCredential}
+            profile={userProfile}
+            handleUpdate={updateUserProfile}
+            toggleUpdatePassword={toggleUpdatePassword}
+            xfetch={xfetch}
+            notifications={notifications}
+            ldapEnabled={LdapEnabled}
+            headerAuthEnabled={HeaderAuthEnabled}
           />
         </div>
       {/if}
@@ -342,9 +327,9 @@
           </div>
 
           <UpdatePasswordForm
-            handleUpdate="{updateUserPassword}"
-            toggleForm="{toggleUpdatePassword}"
-            notifications="{notifications}"
+            handleUpdate={updateUserPassword}
+            toggleForm={toggleUpdatePassword}
+            notifications={notifications}
           />
         </div>
       {/if}
@@ -366,8 +351,8 @@
                 {#if $user.subscribed}
                   <SolidButton
                     color="green"
-                    href="{Subscription.ManageLink}"
-                    options="{{ target: '_blank' }}"
+                    href={Subscription.ManageLink}
+                    options={{ target: '_blank' }}
                     >Manage subscriptions
                   </SolidButton>
                 {/if}
@@ -376,9 +361,8 @@
           </div>
           {#if $user.subscribed}
             <UserSubscriptionsList
-              xfetch="{xfetch}"
-              eventTag="{eventTag}"
-              notifications="{notifications}"
+              xfetch={xfetch}
+              notifications={notifications}
             />
           {:else}
             <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4">
@@ -405,13 +389,13 @@
               <div class="text-right">
                 <HollowButton
                   href="{PathPrefix}/swagger/index.html"
-                  options="{{ target: '_blank' }}"
+                  options={{ target: '_blank' }}
                   color="blue"
                 >
                   {$LL.apiDocumentation()}
                 </HollowButton>
                 <HollowButton
-                  onClick="{toggleCreateApiKey}"
+                  onClick={toggleCreateApiKey}
                   testid="apikey-create"
                 >
                   {$LL.apiKeyCreateButton()}
@@ -487,7 +471,7 @@
                             data-testid="apikey-active"
                             data-active="{apk.active}"
                           >
-                            <BooleanDisplay boolValue="{apk.active}" />
+                            <BooleanDisplay boolValue={apk.active} />
                           </td>
                           <td class="px-6 py-4 whitespace-nowrap">
                             {new Date(apk.updatedDate).toLocaleString()}
@@ -496,10 +480,10 @@
                             class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
                           >
                             <HollowButton
-                              onClick="{toggleApiKeyActiveStatus(
+                              onClick={toggleApiKeyActiveStatus(
                                 apk.id,
                                 apk.active,
-                              )}"
+                              )}
                               testid="apikey-activetoggle"
                             >
                               {#if !apk.active}
@@ -510,7 +494,7 @@
                             </HollowButton>
                             <HollowButton
                               color="red"
-                              onClick="{deleteApiKey(apk.id)}"
+                              onClick={deleteApiKey(apk.id)}
                               testid="apikey-delete"
                             >
                               {$LL.delete()}
@@ -540,7 +524,7 @@
             <div class="flex-1">
               <div class="text-right">
                 <HollowButton
-                  onClick="{toggleCreateJiraInstance}"
+                  onClick={toggleCreateJiraInstance}
                   testid="jirainstance-create"
                 >
                   Add Jira Instance
@@ -613,7 +597,7 @@
                           >
                             <HollowButton
                               color="red"
-                              onClick="{deleteJiraInstance(ji.id)}"
+                              onClick={deleteJiraInstance(ji.id)}
                               testid="jira-delete"
                             >
                               {$LL.delete()}
@@ -633,7 +617,7 @@
 
     {#if !OIDCAuthEnabled && !LdapEnabled && !HeaderAuthEnabled}
       <div class="w-full text-center mt-8">
-        <HollowButton onClick="{toggleDeleteAccount}" color="red">
+        <HollowButton onClick={toggleDeleteAccount} color="red">
           {$LL.deleteAccount()}
         </HollowButton>
       </div>
@@ -641,29 +625,27 @@
   </div>
   {#if showApiKeyCreate}
     <CreateApiKey
-      toggleCreateApiKey="{toggleCreateApiKey}"
-      handleApiKeyCreate="{getApiKeys}"
-      notifications="{notifications}"
-      xfetch="{xfetch}"
-      eventTag="{eventTag}"
+      toggleCreateApiKey={toggleCreateApiKey}
+      handleApiKeyCreate={getApiKeys}
+      notifications={notifications}
+      xfetch={xfetch}
     />
   {/if}
   {#if showJiraInstanceCreate}
     <CreateJiraInstance
-      toggleClose="{toggleCreateJiraInstance}"
-      handleCreate="{getJiraInstances}"
-      notifications="{notifications}"
-      xfetch="{xfetch}"
-      eventTag="{eventTag}"
+      toggleClose={toggleCreateJiraInstance}
+      handleCreate={getJiraInstances}
+      notifications={notifications}
+      xfetch={xfetch}
     />
   {/if}
 
   {#if showAccountDeletion}
     <DeleteConfirmation
-      toggleDelete="{toggleDeleteAccount}"
-      handleDelete="{handleDeleteAccount}"
-      confirmText="{$LL.deleteAccountWarningStatement()}"
-      confirmBtnText="{$LL.deleteConfirmButton()}"
+      toggleDelete={toggleDeleteAccount}
+      handleDelete={handleDeleteAccount}
+      confirmText={$LL.deleteAccountWarningStatement()}
+      confirmBtnText={$LL.deleteConfirmButton()}
     />
   {/if}
 </PageLayout>

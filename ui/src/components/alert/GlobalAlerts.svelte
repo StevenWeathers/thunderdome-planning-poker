@@ -2,10 +2,14 @@
   import { activeAlerts, dismissedAlerts } from '../../stores';
   import { X } from 'lucide-svelte';
 
-  export let registered = false;
+  interface Props {
+    registered?: boolean;
+  }
 
-  let alerts = [];
-  let dismissed = [];
+  let { registered = false }: Props = $props();
+
+  let alerts = $state([]);
+  let dismissed = $state([]);
 
   activeAlerts.subscribe(a => {
     alerts = a;
@@ -148,7 +152,7 @@
 
 {#each alerts as alert}
   {#if showAlert(dismissed, registered, alert)}
-    <div class="{alert.type}Alert">
+    <div class={`${alert.type}Alert`}>
       <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between flex-wrap" role="alert">
           <div class="w-0 flex-1 flex items-center">
@@ -166,7 +170,7 @@
             <div class="order-2 flex-shrink-0 sm:order-3 sm:ms-3">
               <button
                 type="button"
-                on:click="{dismissAlert(alert.id)}"
+                onclick={dismissAlert(alert.id)}
                 class="-me-1 sm:-me-2 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white"
               >
                 <X />

@@ -16,8 +16,6 @@ import (
 	"github.com/anthonynsimon/bild/transform"
 	"github.com/ipsn/go-adorable"
 	"github.com/o1egl/govatar"
-
-	"github.com/gorilla/mux"
 )
 
 // handleSessionUserProfile returns the users profile by session user ID
@@ -64,8 +62,8 @@ func (s *Service) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -114,8 +112,8 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 		sessionUserType := ctx.Value(contextKeyUserType).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -205,8 +203,8 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 //	@Router			/users/{userId} [delete]
 func (s *Service) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -259,8 +257,8 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -310,23 +308,21 @@ func (s *Service) handleGetActiveCountries() http.HandlerFunc {
 // handleUserAvatar creates an avatar for the given user by ID
 func (s *Service) handleUserAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 
-		width, _ := strconv.Atoi(vars["width"])
-		userID := vars["id"]
+		width, _ := strconv.Atoi(r.PathValue("width"))
+		userID := r.PathValue("id")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		avatarGender := govatar.MALE
-		userGender, ok := vars["avatar"]
-		if ok {
-			if userGender == "female" {
-				avatarGender = govatar.FEMALE
-			}
+		userGender := r.PathValue("avatar")
+		if userGender == "female" {
+			avatarGender = govatar.FEMALE
 		}
 
 		var avatar image.Image
@@ -379,14 +375,14 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		inviteID := vars["inviteId"]
+		inviteID := r.PathValue("inviteId")
 		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -463,14 +459,14 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		inviteID := vars["inviteId"]
+		inviteID := r.PathValue("inviteId")
 		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -568,14 +564,14 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		inviteID := vars["inviteId"]
+		inviteID := r.PathValue("inviteId")
 		idErr = validate.Var(inviteID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -710,8 +706,8 @@ func (s *Service) handleUserCredential() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
-		vars := mux.Vars(r)
-		userID := vars["userId"]
+
+		userID := r.PathValue("userId")
 		idErr := validate.Var(userID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
