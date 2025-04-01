@@ -8,7 +8,13 @@
   }
 
   let { closeModal = () => {}, widthClasses = '', children }: Props = $props();
+
+  const handle_keydown = (e) => {
+        if (e.key === 'Escape') return closeModal();
+    };
 </script>
+
+<svelte:window on:keydown|once={handle_keydown} />
 
 <div
   class="fixed inset-0 flex items-center z-40 max-h-screen overflow-y-scroll"
