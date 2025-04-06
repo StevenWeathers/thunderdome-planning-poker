@@ -435,9 +435,7 @@
     activeStory = activeStory != null ? null : story;
   };
 
-  function toggleGoalCollapse(goalId) {
-    console.log('toggleGoalCollapse', goalId);
-    
+  function toggleGoalCollapse(goalId) {    
     return () => {
       if (collapseGoals.includes(goalId)) {
         collapseGoals = collapseGoals.filter(g => g !== goalId);
