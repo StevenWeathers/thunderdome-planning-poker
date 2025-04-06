@@ -436,14 +436,14 @@
   };
 
   function toggleGoalCollapse(goalId) {
+    console.log('toggleGoalCollapse', goalId);
+    
     return () => {
-      const goalIndex = collapseGoals.indexOf(goalId);
-      if (goalIndex > -1) {
-        delete collapseGoals[goalIndex];
+      if (collapseGoals.includes(goalId)) {
+        collapseGoals = collapseGoals.filter(g => g !== goalId);
       } else {
         collapseGoals.push(goalId);
       }
-      collapseGoals = collapseGoals;
     };
   }
 
