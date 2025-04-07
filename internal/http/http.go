@@ -316,7 +316,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle("GET "+prefix+"/api/battles", a.userOnly(a.adminOnly(a.handleGetPokerGames())))
 		router.Handle("GET "+prefix+"/api/battles/{battleId}", a.userOnly(a.handleGetPokerGame()))
 		router.Handle("DELETE "+prefix+"/api/battles/{battleId}", a.userOnly(a.handlePokerDelete(pokerSvc)))
-		router.Handle("PUT "+prefix+"/api/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(pokerSvc)))
+		router.Handle("POST "+prefix+"/api/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(pokerSvc)))
 		router.Handle("PUT "+prefix+"/api/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryUpdate(pokerSvc)))
 		router.Handle("DELETE "+prefix+"/api/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryDelete(pokerSvc)))
 		router.Handle(prefix+"/api/arena/{battleId}", pokerSvc.ServeBattleWs())
