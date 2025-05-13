@@ -742,6 +742,11 @@ func (s *Service) handleUserCredential() http.HandlerFunc {
 //	@Router			/user/{userId}/email-change [get]
 func (s *Service) handleChangeEmailRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if s.ssoEnabled() {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "SSO_ENABLED"))
+			return
+		}
+
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(string)
 
@@ -795,6 +800,11 @@ type changeEmailRequestBody struct {
 //	@Router			/user/{userId}/email-change/{changeId} [post]
 func (s *Service) handleChangeEmailAction() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if s.ssoEnabled() {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "SSO_ENABLED"))
+			return
+		}
+
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(string)
 
