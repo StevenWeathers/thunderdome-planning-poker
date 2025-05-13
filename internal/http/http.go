@@ -163,6 +163,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	router.Handle("DELETE "+prefix+"/api/users/{userId}", a.userOnly(a.entityUserOnly(a.handleUserDelete())))
 	router.Handle("GET "+prefix+"/api/users/{userId}/credential", a.userOnly(a.entityUserOnly(a.handleUserCredential())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/request-verify", a.userOnly(a.entityUserOnly(a.handleVerifyRequest())))
+	router.Handle("GET "+prefix+"/api/users/{userId}/email-change", a.userOnly(a.entityUserOnly(a.handleChangeEmailRequest())))
+	router.Handle("POST "+prefix+"/api/users/{userId}/email-change/{changeId}", a.userOnly(a.entityUserOnly(a.handleChangeEmailAction())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/invite/team/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserTeamInvite())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/invite/organization/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserOrganizationInvite())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/invite/department/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserDepartmentInvite())))

@@ -324,6 +324,8 @@ type UserDataSvc interface {
 	CleanGuests(ctx context.Context, daysOld int) error
 	GetActiveCountries(ctx context.Context) ([]string, error)
 	GetUserCredentialByUserID(ctx context.Context, userID string) (*thunderdome.Credential, error)
+	RequestEmailChange(ctx context.Context, userId string) (string, error)
+	ConfirmEmailChange(ctx context.Context, userId string, token string, newEmail string) error
 }
 
 type PokerDataSvc interface {
@@ -600,4 +602,6 @@ type EmailService interface {
 	SendDepartmentInvite(organizationName string, departmentName string, userEmail string, inviteID string) error
 	// SendRetroOverview sends the retro overview (items, action items) email to attendees
 	SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, userName string, userEmail string) error
+	SendEmailChangeRequest(userName string, userEmail string, changeId string) error
+	SendEmailChangeConfirmation(userName string, userEmail string, newEmail string) error
 }

@@ -508,3 +508,92 @@ func (s *Service) SendDepartmentInvite(organizationName string, departmentName s
 
 	return nil
 }
+
+// SendEmailChangeRequest sends the email change request email to user
+// This is used when a user requests to change their email address
+func (s *Service) SendEmailChangeRequest(userName string, userEmail string, changeId string) error {
+	emailBody, err := s.generateBody(
+		hermes.Body{
+			Name: userName,
+			Intros: []string{
+				"Request to change your Thunderdome account email.",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Change your account email now, the following link will expire within an hour of the original request.",
+					Button: hermes.Button{
+						Text: "Change Email",
+						Link: s.Config.AppURL + "/profile/change-email/" + changeId,
+					},
+				},
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: s.Config.RepoURL,
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		s.Logger.Error("Error Generating Email Change Request Email HTML", zap.Error(err),
+			zap.String("user_email", userEmail))
+		return err
+	}
+
+	sendErr := s.send(
+		userName,
+		userEmail,
+		"Your Thunderdome account email change request",
+		emailBody,
+	)
+	if sendErr != nil {
+		s.Logger.Error("Error sending Email Change Request Email", zap.Error(sendErr),
+			zap.String("user_email", userEmail))
+		return sendErr
+	}
+
+	return nil
+}
+
+// SendEmailChangeConfirmation sends the email change confirmation email to user
+func (s *Service) SendEmailChangeConfirmation(userName string, userEmail string, newEmail string) error {
+	emailBody, err := s.generateBody(
+		hermes.Body{
+			Name: userName,
+			Intros: []string{
+				fmt.Sprintf("Your Thunderdome account email has been changed to %s", newEmail),
+				"If you did not request this change, please contact us immediately.",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: s.Config.RepoURL,
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		s.Logger.Error("Error Generating Email Change Confirmation Email HTML", zap.Error(err),
+			zap.String("user_email", userEmail))
+		return err
+	}
+
+	sendErr := s.send(
+		userName,
+		userEmail,
+		"Your Thunderdome account email was changed.",
+		emailBody,
+	)
+	if sendErr != nil {
+		s.Logger.Error("Error sending Email Change Confirmation Email", zap.Error(sendErr),
+			zap.String("user_email", userEmail))
+		return sendErr
+	}
+
+	return nil
+}

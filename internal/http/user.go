@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -724,5 +725,128 @@ func (s *Service) handleUserCredential() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, credential, nil)
+	}
+}
+
+// handleChangeEmailRequest attempts to send a change email Email
+//
+//	@Summary		Change Email Request
+//	@Description	Sends a change email request Email to user
+//	@Tags			auth
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/user/{userId}/email-change [get]
+func (s *Service) handleChangeEmailRequest() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(string)
+
+		userID := r.PathValue("userId")
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		u, userErr := s.UserDataSvc.GetUserByID(ctx, userID)
+		if userErr != nil {
+			s.Logger.Ctx(ctx).Error("handleChangeEmailRequest error", zap.Error(userErr),
+				zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
+			return
+		}
+
+		changeId, changeErr := s.UserDataSvc.RequestEmailChange(ctx, userID)
+		if changeErr == nil {
+			_ = s.Email.SendEmailChangeRequest(u.Name, u.Email, changeId)
+		} else {
+			s.Logger.Ctx(ctx).Error("handleChangeEmailRequest error", zap.Error(changeErr),
+				zap.String("user_email", sanitizeUserInputForLogs(u.Email)))
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+type changeEmailRequestBody struct {
+	Email string `json:"email" validate:"required,email"`
+}
+
+// handleChangeEmailAction attempts to change the users email
+//
+//	@Summary		Change Email Action
+//	@Description	Attempts to change the users email
+//	@Description	Requires a valid change ID
+//	@Tags			auth
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Param			changeId	path	string	true	"the change ID"
+//	@Param			user	body	changeEmailRequestBody	true	"the user object to update"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.User}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/user/{userId}/email-change/{changeId} [post]
+func (s *Service) handleChangeEmailAction() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID, _ := ctx.Value(contextKeyUserID).(string)
+
+		userID := r.PathValue("userId")
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		changeId := r.PathValue("changeId")
+		idErr = validate.Var(changeId, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		u, userErr := s.UserDataSvc.GetUserByID(ctx, userID)
+		if userErr != nil {
+			s.Logger.Ctx(ctx).Error("handleChangeEmailAction error", zap.Error(userErr),
+				zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
+			return
+		}
+
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var cr = changeEmailRequestBody{}
+		jsonErr := json.Unmarshal(body, &cr)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(cr)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		newEmail := strings.ToLower(cr.Email)
+
+		changeErr := s.UserDataSvc.ConfirmEmailChange(ctx, userID, changeId, newEmail)
+		if changeErr == nil {
+			_ = s.Email.SendEmailChangeConfirmation(u.Name, u.Email, newEmail)
+		} else {
+			s.Logger.Ctx(ctx).Error("handleChangeEmailAction error", zap.Error(changeErr),
+				zap.String("user_email", sanitizeUserInputForLogs(u.Email)))
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
