@@ -79,7 +79,7 @@ func (d *Service) ConfirmEmailChange(ctx context.Context, userId string, changeI
 	var emailCount int
 	err = tx.QueryRowContext(ctx, `
 		SELECT COUNT(*)
-		FROM thunderdome.user
+		FROM thunderdome.users
 		WHERE email = $1;
 		`,
 		sanitizedEmail,
@@ -93,7 +93,7 @@ func (d *Service) ConfirmEmailChange(ctx context.Context, userId string, changeI
 
 	// Update the user's email address
 	_, err = tx.ExecContext(ctx, `
-		UPDATE thunderdome.user
+		UPDATE thunderdome.users
 		SET email = $1
 		WHERE user_id = $2;
 		`,
