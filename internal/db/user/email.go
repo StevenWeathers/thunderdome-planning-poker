@@ -26,12 +26,15 @@ func (d *Service) RequestEmailChange(ctx context.Context, userId string) (string
 		`,
 		userId,
 	).Scan(&changeCount)
-	if err != nil || changeCount > 0 {
+	if err != nil {
 		return "", fmt.Errorf("insert user email change request query error: %v", err)
+	}
+	if changeCount > 0 {
+		return "", fmt.Errorf("email change request already made in the last 10 minutes")
 	}
 
 	err = tx.QueryRowContext(ctx, `
-		INSERT INTO thunderdome.user_email_change (user_id) VALUES (userId) RETURNING change_id INTO changeId;
+		INSERT INTO thunderdome.user_email_change (user_id) VALUES ($1) RETURNING change_id;
 		`,
 		userId,
 	).Scan(&changeId)
