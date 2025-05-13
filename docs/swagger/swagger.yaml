@@ -118,6 +118,13 @@ definitions:
     - pointAverageRounding
     - pointValuesAllowed
     type: object
+  http.changeEmailRequestBody:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
   http.checkinCommentRequestBody:
     properties:
       comment:
@@ -7972,6 +7979,82 @@ paths:
       summary: Create Storyboard
       tags:
       - storyboard
+  /user/{userId}/email-change:
+    get:
+      description: Sends a change email request Email to user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Change Email Request
+      tags:
+      - auth
+  /user/{userId}/email-change/{changeId}:
+    post:
+      description: |-
+        Attempts to change the users email
+        Requires a valid change ID
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the change ID
+        in: path
+        name: changeId
+        required: true
+        type: string
+      - description: the user object to update
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.changeEmailRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.User'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Change Email Action
+      tags:
+      - auth
   /users/{userId}:
     delete:
       description: Deletes a user

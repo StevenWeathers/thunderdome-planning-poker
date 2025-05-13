@@ -766,6 +766,8 @@ func (s *Service) handleChangeEmailRequest() http.HandlerFunc {
 		} else {
 			s.Logger.Ctx(ctx).Error("handleChangeEmailRequest error", zap.Error(changeErr),
 				zap.String("user_email", sanitizeUserInputForLogs(u.Email)))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
+			return
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
@@ -783,12 +785,12 @@ type changeEmailRequestBody struct {
 //	@Description	Requires a valid change ID
 //	@Tags			auth
 //	@Produce		json
-//	@Param			userId	path	string	true	"the user ID"
-//	@Param			changeId	path	string	true	"the change ID"
-//	@Param			user	body	changeEmailRequestBody	true	"the user object to update"
-//	@Success		200		object	standardJsonResponse{data=thunderdome.User}
-//	@Failure		403		object	standardJsonResponse{}
-//	@Failure		500		object	standardJsonResponse{}
+//	@Param			userId		path	string					true	"the user ID"
+//	@Param			changeId	path	string					true	"the change ID"
+//	@Param			user		body	changeEmailRequestBody	true	"the user object to update"
+//	@Success		200			object	standardJsonResponse{data=thunderdome.User}
+//	@Failure		403			object	standardJsonResponse{}
+//	@Failure		500			object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
 //	@Router			/user/{userId}/email-change/{changeId} [post]
 func (s *Service) handleChangeEmailAction() http.HandlerFunc {
@@ -845,8 +847,18 @@ func (s *Service) handleChangeEmailAction() http.HandlerFunc {
 		} else {
 			s.Logger.Ctx(ctx).Error("handleChangeEmailAction error", zap.Error(changeErr),
 				zap.String("user_email", sanitizeUserInputForLogs(u.Email)))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
+			return
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		updatedUser, userErr := s.UserDataSvc.GetUserByID(ctx, userID)
+		if userErr != nil {
+			s.Logger.Ctx(ctx).Error("handleChangeEmailAction error", zap.Error(userErr),
+				zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, userErr)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, updatedUser, nil)
 	}
 }
