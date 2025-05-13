@@ -138,10 +138,10 @@
     e.preventDefault();
     xfetch(`/api/users/${profile.id}/email-change`, { method: 'POST' })
       .then(function () {
-        notifications.success($LL.requestEmailChangeSuccess());
+        notifications.success($LL.requestEmailChangeSuccess(), 2500);
       })
       .catch(function () {
-        notifications.danger($LL.requestEmailChangeFailure());
+        notifications.danger($LL.requestEmailChangeError());
       });
   }
 
