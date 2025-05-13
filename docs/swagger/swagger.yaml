@@ -7980,7 +7980,7 @@ paths:
       tags:
       - storyboard
   /user/{userId}/email-change:
-    get:
+    post:
       description: Sends a change email request Email to user
       parameters:
       - description: the user ID

@@ -9574,7 +9574,7 @@ const docTemplate = `{
             }
         },
         "/user/{userId}/email-change": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "ApiKeyAuth": []

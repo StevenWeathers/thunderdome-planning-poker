@@ -739,7 +739,7 @@ func (s *Service) handleUserCredential() http.HandlerFunc {
 //	@Failure		403		object	standardJsonResponse{}
 //	@Failure		500		object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
-//	@Router			/user/{userId}/email-change [get]
+//	@Router			/user/{userId}/email-change [post]
 func (s *Service) handleChangeEmailRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if s.ssoEnabled() {
