@@ -98,7 +98,7 @@ func (d *Service) ConfirmEmailChange(ctx context.Context, userId string, changeI
 	_, err = tx.ExecContext(ctx, `
 		UPDATE thunderdome.users
 		SET email = $1
-		WHERE user_id = $2;
+		WHERE id = $2;
 		`,
 		sanitizedEmail, userId,
 	)
