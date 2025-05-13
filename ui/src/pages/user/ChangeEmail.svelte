@@ -26,23 +26,27 @@
         formDisabled = newEmail === '';
     });
 
-    async function changeUserEmail(event: Event) {
+    function changeUserEmail(event: Event) {
         event.preventDefault();
 
         if (formDisabled) return;
 
-        const response = await xfetch(`/api/users/${$user.id}/change-email/${changeId}`, {
+        xfetch(`/api/users/${$user.id}/email-change/${changeId}`, {
             method: 'POST',
-            body: JSON.stringify({
+            body: {
                 email: newEmail,
-            }),
-        });
-
-        if (response.status === 200) {
-            emailChanged = true;
-        } else {
-            notifications.error($LL.errorChangingEmail());
-        }
+            },
+        }).then(res => res.json())
+        .then(data => {
+                user.update({
+                    ...$user,
+                    email: data.email,
+                });
+                emailChanged = true;
+            })
+            .catch(() => {
+                notifications.danger($LL.errorChangingEmail());
+            });
     }
 
     onMount(() => {
