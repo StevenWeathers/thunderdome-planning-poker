@@ -653,6 +653,10 @@ const en: BaseTranslation = {
   retroTemplateDefault: 'Set as default template',
   jiradatacenterLabel: 'Jira DataCenter',
   loginWithSSO: 'Login with {provider}',
+  requestEmailChangeSuccess:
+    'Email change request sent, check your inbox for instructions',
+  requestEmailChangeError: 'Error encountered attempting to change email',
+  changeEmail: 'Change Email',
 };
 
 export default en;

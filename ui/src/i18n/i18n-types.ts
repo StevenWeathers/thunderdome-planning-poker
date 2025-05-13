@@ -2561,6 +2561,18 @@ type RootTranslation = {
    * @param {unknown} provider
    */
   loginWithSSO: RequiredParams<'provider'>;
+  /**
+   * E​m​a​i​l​ ​c​h​a​n​g​e​ ​r​e​q​u​e​s​t​ ​s​e​n​t​,​ ​c​h​e​c​k​ ​y​o​u​r​ ​i​n​b​o​x​ ​f​o​r​ ​i​n​s​t​r​u​c​t​i​o​n​s
+   */
+  requestEmailChangeSuccess: string;
+  /**
+   * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​c​h​a​n​g​e​ ​e​m​a​i​l
+   */
+  requestEmailChangeError: string;
+  /**
+   * C​h​a​n​g​e​ ​E​m​a​i​l
+   */
+  changeEmail: string;
 };
 
 export type TranslationFunctions = {
@@ -5100,6 +5112,18 @@ export type TranslationFunctions = {
    * Login with {provider}
    */
   loginWithSSO: (arg: { provider: unknown }) => LocalizedString;
+  /**
+   * Email change request sent, check your inbox for instructions
+   */
+  requestEmailChangeSuccess: () => LocalizedString;
+  /**
+   * Error encountered attempting to change email
+   */
+  requestEmailChangeError: () => LocalizedString;
+  /**
+   * Change Email
+   */
+  changeEmail: () => LocalizedString;
 };
 
 export type Formatters = {};
