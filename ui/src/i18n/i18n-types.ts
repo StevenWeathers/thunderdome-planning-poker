@@ -2573,6 +2573,26 @@ type RootTranslation = {
    * C​h​a​n​g​e​ ​E​m​a​i​l
    */
   changeEmail: string;
+  /**
+   * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​c​h​a​n​g​e​ ​e​m​a​i​l​,​ ​p​e​r​h​a​p​s​ ​t​h​i​s​ ​l​i​n​k​ ​e​x​p​i​r​e​d​ ​o​r​ ​w​a​s​ ​a​l​r​e​a​d​y​ ​u​s​e​d​.
+   */
+  errorChangingEmail: string;
+  /**
+   * E​m​a​i​l​ ​c​h​a​n​g​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  emailChanged: string;
+  /**
+   * F​r​o​m​ ​n​o​w​ ​o​n​,​ ​p​l​e​a​s​e​ ​u​s​e​ ​y​o​u​r​ ​n​e​w​ ​e​m​a​i​l​ ​t​o​ ​l​o​g​i​n​.
+   */
+  newEmailToLogin: string;
+  /**
+   * N​e​w​ ​E​m​a​i​l
+   */
+  newEmail: string;
+  /**
+   * E​n​t​e​r​ ​y​o​u​r​ ​n​e​w​ ​e​m​a​i​l
+   */
+  enterYourNewEmail: string;
 };
 
 export type TranslationFunctions = {
@@ -5124,6 +5144,26 @@ export type TranslationFunctions = {
    * Change Email
    */
   changeEmail: () => LocalizedString;
+  /**
+   * Error encountered attempting to change email, perhaps this link expired or was already used.
+   */
+  errorChangingEmail: () => LocalizedString;
+  /**
+   * Email changed successfully
+   */
+  emailChanged: () => LocalizedString;
+  /**
+   * From now on, please use your new email to login.
+   */
+  newEmailToLogin: () => LocalizedString;
+  /**
+   * New Email
+   */
+  newEmail: () => LocalizedString;
+  /**
+   * Enter your new email
+   */
+  enterYourNewEmail: () => LocalizedString;
 };
 
 export type Formatters = {};

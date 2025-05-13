@@ -657,6 +657,12 @@ const en: BaseTranslation = {
     'Email change request sent, check your inbox for instructions',
   requestEmailChangeError: 'Error encountered attempting to change email',
   changeEmail: 'Change Email',
+  errorChangingEmail:
+    'Error encountered attempting to change email, perhaps this link expired or was already used.',
+  emailChanged: 'Email changed successfully',
+  newEmailToLogin: 'From now on, please use your new email to login.',
+  newEmail: 'New Email',
+  enterYourNewEmail: 'Enter your new email',
 };
 
 export default en;
