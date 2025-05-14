@@ -37,10 +37,10 @@
                 email: newEmail,
             },
         }).then(res => res.json())
-        .then(data => {
+        .then(resp => {
                 user.update({
                     ...$user,
-                    email: data.email,
+                    email: resp.data.email,
                 });
                 emailChanged = true;
             })
@@ -65,9 +65,9 @@
   <div class="flex justify-center">
     <div class="w-full md:w-1/2 xl:w-1/3 py-4">
         {#if emailChanged}
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                <strong class="font-bold">{$LL.emailChanged()}</strong>
-                <span class="block sm:inline">{$LL.newEmailToLogin()}</span>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 text-center" role="alert">
+                <div class="font-bold mb-2 lg:mb-4">{$LL.emailChanged()}</div>
+                <div>{$LL.newEmailToLogin()}</div>
             </div>
         {:else}
             <form
