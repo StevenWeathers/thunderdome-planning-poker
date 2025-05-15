@@ -66,6 +66,7 @@
   import PokerLanding from './pages/poker/PokerLanding.svelte';
   import StoryboardLanding from './pages/storyboard/StoryboardLanding.svelte';
   import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
+  import ChangeEmail from './pages/user/ChangeEmail.svelte';
 
   const {
     FeaturePoker,
@@ -183,6 +184,13 @@
       route: WarriorProfile,
       params,
       name: 'profile',
+    };
+  });
+  router.on(`${appRoutes.profile}/change-email/:changeId`, params => {
+    currentPage = {
+      route: ChangeEmail,
+      params,
+      name: 'change-email',
     };
   });
   router.on(appRoutes.teams, () => {
