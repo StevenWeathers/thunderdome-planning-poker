@@ -97,7 +97,9 @@ func (d *Service) ConfirmEmailChange(ctx context.Context, userId string, changeI
 	// Update the user's email address
 	_, err = tx.ExecContext(ctx, `
 		UPDATE thunderdome.users
-		SET email = $1
+		SET email = $1,
+		last_active = NOW(),
+		updated_date = NOW()
 		WHERE id = $2;
 		`,
 		sanitizedEmail, userId,
@@ -109,7 +111,8 @@ func (d *Service) ConfirmEmailChange(ctx context.Context, userId string, changeI
 	// update the user's email in the auth_credential table
 	_, err = tx.ExecContext(ctx, `
 		UPDATE thunderdome.auth_credential
-		SET email = $1
+		SET email = $1,
+		updated_date = NOW()
 		WHERE user_id = $2;
 		`,
 		sanitizedEmail, userId,
