@@ -371,7 +371,16 @@ func (d *Service) UpdateUserAccount(ctx context.Context, userID string, userName
 	if theme == "" {
 		theme = "auto"
 	}
-	if _, err := d.DB.ExecContext(ctx,
+	sanitizedEmail := db.SanitizeEmail(email)
+
+	// Start a transaction
+	tx, err := d.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback() // Rollback if not committed
+
+	if _, err := tx.ExecContext(ctx,
 		`UPDATE thunderdome.users
 			SET
 				name = $2,
@@ -388,7 +397,7 @@ func (d *Service) UpdateUserAccount(ctx context.Context, userID string, userName
 			WHERE id = $1;`,
 		userID,
 		userName,
-		db.SanitizeEmail(email),
+		sanitizedEmail,
 		avatar,
 		notificationsEnabled,
 		country,
@@ -398,6 +407,24 @@ func (d *Service) UpdateUserAccount(ctx context.Context, userID string, userName
 		theme,
 	); err != nil {
 		return fmt.Errorf("update user account query error: %v", err)
+	}
+
+	// update the user's email in the auth_credential table
+	_, err = tx.ExecContext(ctx, `
+		UPDATE thunderdome.auth_credential
+		SET email = $1,
+		updated_date = NOW()
+		WHERE user_id = $2;
+		`,
+		sanitizedEmail, userID,
+	)
+	if err != nil {
+		return fmt.Errorf("update user email in auth_credential query error: %v", err)
+	}
+
+	// Commit the transaction
+	if err = tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return nil
