@@ -760,17 +760,27 @@ func (s *Service) handleChangeEmailRequest() http.HandlerFunc {
 		u, userErr := s.UserDataSvc.GetUserByID(ctx, userID)
 		if userErr != nil {
 			s.Logger.Ctx(ctx).Error("handleChangeEmailRequest error", zap.Error(userErr),
-				zap.String("session_user_id", sessionUserID))
+				zap.String("session_user_id", sessionUserID),
+				zap.String("user_id", userID))
 			s.Failure(w, r, http.StatusInternalServerError, userErr)
 			return
 		}
 
 		changeId, changeErr := s.UserDataSvc.RequestEmailChange(ctx, userID)
 		if changeErr == nil {
-			_ = s.Email.SendEmailChangeRequest(u.Name, u.Email, changeId)
+			emailErr := s.Email.SendEmailChangeRequest(u.Name, u.Email, changeId)
+
+			if emailErr != nil {
+				s.Logger.Ctx(ctx).Error("handleChangeEmailRequest error", zap.Error(emailErr),
+					zap.String("session_user_id", sessionUserID),
+					zap.String("user_id", userID))
+				s.Failure(w, r, http.StatusInternalServerError, emailErr)
+				return
+			}
 		} else {
 			s.Logger.Ctx(ctx).Error("handleChangeEmailRequest error", zap.Error(changeErr),
-				zap.String("user_email", sanitizeUserInputForLogs(u.Email)))
+				zap.String("session_user_id", sessionUserID),
+				zap.String("user_id", userID))
 			s.Failure(w, r, http.StatusInternalServerError, userErr)
 			return
 		}
@@ -853,7 +863,12 @@ func (s *Service) handleChangeEmailAction() http.HandlerFunc {
 
 		changeErr := s.UserDataSvc.ConfirmEmailChange(ctx, userID, changeId, newEmail)
 		if changeErr == nil {
-			_ = s.Email.SendEmailChangeConfirmation(u.Name, u.Email, newEmail)
+			emailErr := s.Email.SendEmailChangeConfirmation(u.Name, u.Email, newEmail)
+			if emailErr != nil {
+				s.Logger.Ctx(ctx).Error("handleChangeEmailAction error", zap.Error(emailErr),
+					zap.String("session_user_id", sessionUserID),
+					zap.String("user_id", userID))
+			}
 		} else {
 			s.Logger.Ctx(ctx).Error("handleChangeEmailAction error", zap.Error(changeErr),
 				zap.String("user_email", sanitizeUserInputForLogs(u.Email)))
