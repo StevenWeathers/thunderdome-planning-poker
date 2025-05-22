@@ -29,8 +29,6 @@
     toggleUpdatePassword: any;
     notifications: any;
     xfetch: any;
-    ldapEnabled: any;
-    headerAuthEnabled: any;
   }
 
   let {
@@ -53,11 +51,14 @@
     toggleUpdatePassword,
     notifications,
     xfetch,
-    ldapEnabled,
-    headerAuthEnabled
   }: Props = $props();
 
-  const { AvatarService } = AppConfig;
+  const {
+     AvatarService,
+     LdapEnabled,
+    HeaderAuthEnabled,
+    OIDCAuthEnabled, 
+  } = AppConfig;
 
   const themes = ['auto', 'light', 'dark'];
   const configurableAvatarServices = ['gravatar', 'robohash', 'govatar'];
@@ -133,6 +134,17 @@
       });
   }
 
+  function requestEmailChange(e) {
+    e.preventDefault();
+    xfetch(`/api/users/${profile.id}/email-change`, { method: 'POST' })
+      .then(function () {
+        notifications.success($LL.requestEmailChangeSuccess(), 2500);
+      })
+      .catch(function () {
+        notifications.danger($LL.requestEmailChangeError());
+      });
+  }
+
   let updateDisabled = $derived(profile.name === '');
   let userIsAdmin = $derived(validateUserIsAdmin($user));
 </script>
@@ -150,7 +162,7 @@
       placeholder={$LL.yourNamePlaceholder()}
       id="yourName"
       name="yourName"
-      disabled={ldapEnabled || headerAuthEnabled}
+      disabled={LdapEnabled || HeaderAuthEnabled || OIDCAuthEnabled}
       required
     />
   </div>
@@ -180,6 +192,17 @@
             data-testid="request-verify"
             type="button"
             >{$LL.requestVerifyEmail()}
+          </button>
+        {/if}
+
+        {#if !LdapEnabled && !HeaderAuthEnabled && !OIDCAuthEnabled}
+        <button
+            class="float-right inline-block align-baseline font-bold text-sm text-blue-500
+                                        hover:text-blue-800"
+            onclick={requestEmailChange}
+            data-testid="request-email-change"
+            type="button"
+            >{$LL.changeEmail()}
           </button>
         {/if}
       {/if}
@@ -342,7 +365,7 @@
   <div>
     <div class="text-right">
       {#if profile.rank && profile.rank !== 'GUEST'}
-        {#if !ldapEnabled && !headerAuthEnabled && toggleUpdatePassword}
+        {#if !LdapEnabled && !HeaderAuthEnabled && !OIDCAuthEnabled && toggleUpdatePassword}
           <button
             type="button"
             class="inline-block align-baseline font-bold

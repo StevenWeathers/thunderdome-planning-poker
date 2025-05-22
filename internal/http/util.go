@@ -383,3 +383,19 @@ func containsLink(input string) bool {
 
 	return re.MatchString(input)
 }
+
+// ssoEnabled checks if SSO is enabled based on the configuration
+// It checks if LDAP, Header Auth, or OIDC Auth is enabled
+// and returns true if any of them are enabled, otherwise false
+// This is used to determine if SSO is enabled for the application
+func (s *Service) ssoEnabled() bool {
+	if s.Config.LdapEnabled {
+		return true
+	} else if s.Config.HeaderAuthEnabled {
+		return true
+	} else if s.Config.OIDCAuth.Enabled {
+		return true
+	} else {
+		return false
+	}
+}

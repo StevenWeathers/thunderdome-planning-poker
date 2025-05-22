@@ -311,8 +311,6 @@
             toggleUpdatePassword={toggleUpdatePassword}
             xfetch={xfetch}
             notifications={notifications}
-            ldapEnabled={LdapEnabled}
-            headerAuthEnabled={HeaderAuthEnabled}
           />
         </div>
       {/if}

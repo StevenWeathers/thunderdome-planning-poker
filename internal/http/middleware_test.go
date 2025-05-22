@@ -1929,6 +1929,16 @@ func (m *MockUserDataService) GetUserCredentialByUserID(ctx context.Context, Use
 	panic("implement me")
 }
 
+func (m *MockUserDataService) RequestEmailChange(ctx context.Context, UserID string) (string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserDataService) ConfirmEmailChange(ctx context.Context, userId string, token string, newEmail string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (m *MockUserDataService) GetUserByID(ctx context.Context, userID string) (*thunderdome.User, error) {
 	args := m.Called(ctx, userID)
 	if args.Get(0) == nil {
