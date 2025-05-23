@@ -64,7 +64,7 @@ func (d *Service) TeamAddRetro(ctx context.Context, teamID string, retroID strin
 // TeamRemoveRetro removes a retro from a team
 func (d *Service) TeamRemoveRetro(ctx context.Context, teamID string, retroID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`UPDATE thunderdome.retro SET team_id = $1 WHERE id = $2;`,
+		`UPDATE thunderdome.retro SET team_id = null WHERE id = $2 AND team_id = $1;`,
 		teamID,
 		retroID,
 	)

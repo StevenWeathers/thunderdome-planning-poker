@@ -62,7 +62,7 @@ func (d *Service) TeamAddStoryboard(ctx context.Context, teamID string, storyboa
 // TeamRemoveStoryboard removes a storyboard from a team
 func (d *Service) TeamRemoveStoryboard(ctx context.Context, teamID string, storyboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`UPDATE thunderdome.storyboard SET team_id = $1 WHERE id = $2;`,
+		`UPDATE thunderdome.storyboard SET team_id = null WHERE id = $2 AND team_id = $1;`,
 		teamID,
 		storyboardID,
 	)
