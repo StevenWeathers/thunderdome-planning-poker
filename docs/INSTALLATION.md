@@ -12,25 +12,25 @@ This guide provides detailed instructions for installing and setting up Thunderd
 
 ## Installation Methods
 
-### 1. Docker Installation (Recommended)
+### 1. Docker Installation
 
 1. Pull the latest Docker image:
 ```bash
 docker pull stevenweathers/thunderdome-planning-poker
 ```
 
-2. Create a `.env` file with your configuration:
+2. Create an `.env` file with your configuration:
 ```properties
-THUNDERDOME_DB_HOST=your-db-host
-THUNDERDOME_DB_PORT=5432
-THUNDERDOME_DB_NAME=thunderdome
-THUNDERDOME_DB_USER=your-db-user
-THUNDERDOME_DB_PASSWORD=your-db-password
-THUNDERDOME_SMTP_HOST=your-smtp-host
-THUNDERDOME_SMTP_PORT=587
-THUNDERDOME_SMTP_USER=your-smtp-user
-THUNDERDOME_SMTP_PASSWORD=your-smtp-password
-THUNDERDOME_APP_HOST=your-domain.com
+DB_HOST=your-db-host
+DB_PORT=5432
+DB_NAME=thunderdome
+DB_USER=your-db-user
+DB_PASSWORD=your-db-password
+SMTP_HOST=your-smtp-host
+SMTP_PORT=587
+SMTP_USER=your-smtp-user
+SMTP_PASSWORD=your-smtp-password
+APP_HOST=your-domain.com
 ```
 
 3. Run the container:
