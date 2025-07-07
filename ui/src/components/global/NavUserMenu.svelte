@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { appRoutes } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import UserAvatar from '../user/UserAvatar.svelte';
@@ -110,7 +110,7 @@
         <span>{$LL.profile()}</span>
       </button>
     </li>
-    {#if $user.rank === 'GUEST'}
+    {#if $user.rank === 'GUEST' && !AppConfig.OIDCAuthEnabled}
       <li class="flex">
         <button
           class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
