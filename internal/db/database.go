@@ -3,6 +3,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"embed"
 	"fmt"
 	"time"
@@ -48,18 +49,14 @@ func New(adminEmail string, config *Config, logger *otelzap.Logger) *Service {
 		d.Config.SSLMode,
 	)
 
-	pdb, err := otelsql.Open("pgx", psqlInfo, otelsql.WithAttributes(
-		semconv.DBSystemPostgreSQL,
-	))
-	if err != nil {
-		d.Logger.Ctx(ctx).Fatal("error connecting to the database: ", zap.Error(err))
-	}
+	pdb := waitForDB(ctx, logger, psqlInfo)
+
 	d.DB = pdb
 	d.DB.SetMaxOpenConns(d.Config.MaxOpenConns)
 	d.DB.SetMaxIdleConns(d.Config.MaxIdleConns)
 	d.DB.SetConnMaxLifetime(time.Duration(d.Config.ConnMaxLifetime) * time.Minute)
 
-	err = otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
+	err := otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
 		semconv.DBSystemPostgreSQL,
 	))
 	if err != nil {
@@ -107,4 +104,36 @@ func New(adminEmail string, config *Config, logger *otelzap.Logger) *Service {
 	}
 
 	return d
+}
+
+// waitForDB attempts to open a database connection and ping it until successful.
+// This is to ensure that the database is ready before proceeding with application startup and migrations.
+// The function will retry every 2 seconds until a successful connection is made or the context is cancelled.
+func waitForDB(ctx context.Context, logger *otelzap.Logger, dsn string) *sql.DB {
+	var db *sql.DB
+	for {
+		var err error
+		db, err = otelsql.Open("pgx", dsn, otelsql.WithAttributes(
+			semconv.DBSystemPostgreSQL,
+		))
+		if err != nil {
+			logger.Ctx(ctx).Info("Waiting for DB open", zap.Error(err))
+			time.Sleep(2 * time.Second)
+			continue
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		err = db.PingContext(ctx)
+		cancel()
+		if err != nil {
+			logger.Ctx(ctx).Info("Waiting for DB ping", zap.Error(err))
+			db.Close()
+			time.Sleep(2 * time.Second)
+			continue
+		}
+
+		break
+	}
+	logger.Ctx(ctx).Info("Database connection established.")
+	return db
 }
