@@ -245,6 +245,7 @@ const de: Translation = {
   loadingRetro: 'Retro wird geladen...',
   loadingStoryboard: 'Storyboard wird geladen...',
   login: 'Anmelden',
+  loginWithSSO: 'Anmelden mit {provider}',
   loginForRetro:
     'oder {loginOpen}Anmelden{loginClose} um der Retro beizutreten',
   loginForStoryboard:
