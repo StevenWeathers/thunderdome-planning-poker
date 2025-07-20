@@ -91,6 +91,8 @@
       pictureUrl="{profile.picture}"
       gravatarHash="{profile.gravatarHash}"
       class="object-cover w-10 h-10 rounded-full"
+      userName="{$user.name}"
+      avatar="{profile.avatar}"
     />
   </button>
 </div>
