@@ -84,7 +84,7 @@
           bind:value="{passcode}"
           placeholder={$LL.mfaTokenPlaceholder()}
           id="mfaPasscode"
-          name="mfaPasscode"
+          name="twofactor_token"
           type="password"
           required
           icon={Shield}
