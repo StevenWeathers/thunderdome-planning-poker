@@ -65,8 +65,45 @@
     return items;
   }
 
+  function parseCsvLine(line: string): string[] {
+    const fields: string[] = [];
+    let field = '';
+    let inQuotes = false;
+    let i = 0;
+
+    while (i < line.length) {
+      const char = line[i];
+
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          // Escaped quote
+          field += '"';
+          i += 2;
+        } else {
+          // Toggle inQuotes
+          inQuotes = !inQuotes;
+          i++;
+        }
+      } else if (char === ',' && !inQuotes) {
+        // End of field
+        fields.push(field);
+        field = '';
+        i++;
+      } else {
+        // Regular character
+        field += char;
+        i++;
+      }
+    }
+
+    // Push the last field
+    fields.push(field);
+
+    return fields;
+  }
+
   function extractPlanData(item) {
-    const fields = item.split(',');
+    const fields = parseCsvLine(item);
     const plan = {
       type: fields[0].trim(),
       planName: fields[1].trim(),
