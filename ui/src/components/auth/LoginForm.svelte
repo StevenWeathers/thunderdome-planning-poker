@@ -332,7 +332,7 @@
         bind:value={mfaToken}
         placeholder="Enter code"
         id="mfaToken"
-        name="mfaToken"
+        name="twofactor_token"
         required
         icon={Shield}
         inputmode="numeric"
