@@ -296,7 +296,7 @@ func (s *Service) handleRetroActionUpdate(retroSvc *retro.Service) http.HandlerF
 		}
 		updatedActionJson, _ := json.Marshal(ra)
 
-		err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "update_action", string(updatedActionJson))
+		_, err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "update_action", string(updatedActionJson))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRetroActionUpdate error", zap.Error(err),
 				zap.String("retro_id", retroID), zap.String("session_user_id", sessionUserID),
@@ -345,7 +345,7 @@ func (s *Service) handleRetroActionDelete(retroSvc *retro.Service) http.HandlerF
 		}
 		deleteItem, _ := json.Marshal(actionItem{ActionID: actionID})
 
-		err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "delete_action", string(deleteItem))
+		_, err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "delete_action", string(deleteItem))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRetroActionDelete error", zap.Error(err),
 				zap.String("retro_id", retroID), zap.String("session_user_id", sessionUserID),
@@ -415,7 +415,7 @@ func (s *Service) handleRetroActionAssigneeAdd(retroSvc *retro.Service) http.Han
 		}
 		updatedActionJson, _ := json.Marshal(ra)
 
-		err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "action_assignee_add", string(updatedActionJson))
+		_, err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "action_assignee_add", string(updatedActionJson))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRetroActionAssigneeAdd error", zap.Error(err),
 				zap.String("retro_id", retroID), zap.String("session_user_id", sessionUserID),
@@ -485,7 +485,7 @@ func (s *Service) handleRetroActionAssigneeRemove(retroSvc *retro.Service) http.
 		}
 		updatedActionJson, _ := json.Marshal(ra)
 
-		err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "action_assignee_remove", string(updatedActionJson))
+		_, err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "action_assignee_remove", string(updatedActionJson))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRetroActionAssigneeRemove error", zap.Error(err),
 				zap.String("retro_id", retroID), zap.String("session_user_id", sessionUserID),
@@ -710,7 +710,7 @@ func (s *Service) handleRetroDelete(retroSvc *retro.Service) http.HandlerFunc {
 		}
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "concede_retro", "")
+		_, err := retroSvc.APIEvent(ctx, retroID, sessionUserID, "concede_retro", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRetroDelete error", zap.Error(err),
 				zap.String("retro_id", retroID), zap.String("session_user_id", sessionUserID))

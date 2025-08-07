@@ -6220,7 +6220,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.standardJsonResponse'
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.StoryboardColumn'
+              type: object
         "403":
           description: Forbidden
           schema:
@@ -6326,7 +6331,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.standardJsonResponse'
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.StoryboardGoal'
+              type: object
         "403":
           description: Forbidden
           schema:
@@ -6432,7 +6442,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.standardJsonResponse'
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.StoryboardStory'
+              type: object
         "403":
           description: Forbidden
           schema:

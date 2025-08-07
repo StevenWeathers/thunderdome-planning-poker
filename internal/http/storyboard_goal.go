@@ -22,7 +22,7 @@ type storyboardGoalAddRequestBody struct {
 //	@Param			storyboard		body	storyboardGoalAddRequestBody	false	"the goal to add"
 //	@Tags			storyboard
 //	@Produce		json
-//	@Success		200	object	standardJsonResponse{}
+//	@Success		200	object	standardJsonResponse{data=thunderdome.StoryboardGoal}
 //	@Success		403	object	standardJsonResponse{}
 //	@Success		500	object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
@@ -58,7 +58,7 @@ func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFu
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "add_goal", sbm.Name)
+		newGoal, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "add_goal", sbm.Name)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard goal add error",
 				zap.Error(err),
@@ -68,7 +68,7 @@ func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFu
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, newGoal, nil)
 	}
 }
 
@@ -141,7 +141,7 @@ func (s *Service) handleStoryboardGoalUpdate(sb *storyboard.Service) http.Handle
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "revise_goal", string(updateEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "revise_goal", string(updateEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard goal update error",
 				zap.Error(err),
@@ -187,7 +187,7 @@ func (s *Service) handleStoryboardGoalDelete(sb *storyboard.Service) http.Handle
 		}
 		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "delete_goal", goalID)
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "delete_goal", goalID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard goal delete error",
 				zap.Error(err),

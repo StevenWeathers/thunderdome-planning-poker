@@ -120,7 +120,7 @@ func New(
 		WriteWaitSec:       config.WriteWaitSec,
 		PongWaitSec:        config.PongWaitSec,
 		PingPeriodSec:      config.PingPeriodSec,
-	}, map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	}, map[string]func(context.Context, string, string, string) (any, []byte, error, bool){
 		"create_item":            rs.CreateItem,
 		"user_ready":             rs.UserMarkReady,
 		"user_unready":           rs.UserUnMarkReady,

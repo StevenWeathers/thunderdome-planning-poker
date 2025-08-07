@@ -18,7 +18,7 @@ func TestNewHub(t *testing.T) {
 		AppDomain:          "example.com",
 		WebsocketSubdomain: "ws",
 	}
-	eventHandlers := make(map[string]func(context.Context, string, string, string) ([]byte, error, bool))
+	eventHandlers := make(map[string]func(context.Context, string, string, string) (any, []byte, error, bool))
 	facilitatorOnlyOperations := make(map[string]struct{})
 	confirmFacilitator := func(roomId string, userId string) error { return nil }
 	retreatUser := func(roomId string, userId string) string { return "" }

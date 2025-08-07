@@ -23,7 +23,7 @@ type storyboardStoryAddRequestBody struct {
 //	@Param			storyboard		body	storyboardStoryAddRequestBody	false	"request body for adding a story"
 //	@Tags			storyboard
 //	@Produce		json
-//	@Success		200	object	standardJsonResponse{}
+//	@Success		200	object	standardJsonResponse{data=thunderdome.StoryboardStory}
 //	@Success		403	object	standardJsonResponse{}
 //	@Success		500	object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
@@ -65,7 +65,7 @@ func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerF
 			return
 		}
 
-		err = sb.APIEvent(ctx, storyboardID, sessionUserID, "add_story", string(eventValue))
+		newStory, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "add_story", string(eventValue))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story add error",
 				zap.Error(err),
@@ -75,7 +75,7 @@ func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerF
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, newStory, nil)
 	}
 }
 
@@ -148,7 +148,7 @@ func (s *Service) handleStoryboardStoryNameUpdate(sb *storyboard.Service) http.H
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_name", string(updateEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_name", string(updateEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story name update error",
 				zap.Error(err),
@@ -232,7 +232,7 @@ func (s *Service) handleStoryboardStoryContentUpdate(sb *storyboard.Service) htt
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_content", string(updateEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_content", string(updateEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story content update error",
 				zap.Error(err),
@@ -316,7 +316,7 @@ func (s *Service) handleStoryboardStoryColorUpdate(sb *storyboard.Service) http.
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_color", string(updateEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_color", string(updateEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story color update error",
 				zap.Error(err),
@@ -400,7 +400,7 @@ func (s *Service) handleStoryboardStoryPointsUpdate(sb *storyboard.Service) http
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_points", string(updateEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_points", string(updateEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story points update error",
 				zap.Error(err),
@@ -484,7 +484,7 @@ func (s *Service) handleStoryboardStoryClosedUpdate(sb *storyboard.Service) http
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_closed", string(updateEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_closed", string(updateEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story closed update error",
 				zap.Error(err),
@@ -568,7 +568,7 @@ func (s *Service) handleStoryboardStoryLinkUpdate(sb *storyboard.Service) http.H
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_link", string(updateEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "update_story_link", string(updateEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story link update error",
 				zap.Error(err),
@@ -658,7 +658,7 @@ func (s *Service) handleStoryboardStoryMove(sb *storyboard.Service) http.Handler
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "move_story", string(moveEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "move_story", string(moveEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story move error",
 				zap.Error(err),
@@ -704,7 +704,7 @@ func (s *Service) handleStoryboardStoryDelete(sb *storyboard.Service) http.Handl
 		}
 		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "delete_story", storyID)
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "delete_story", storyID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story delete error",
 				zap.Error(err),

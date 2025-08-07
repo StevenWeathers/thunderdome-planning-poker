@@ -340,7 +340,7 @@ func (s *Service) handlePokerStoryAdd(pokerSvc *poker.Service) http.HandlerFunc 
 			return
 		}
 
-		err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "add_plan", string(body))
+		_, err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "add_plan", string(body))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handlePokerStoryAdd error", zap.Error(err),
 				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID),
@@ -426,7 +426,7 @@ func (s *Service) handlePokerStoryUpdate(pokerSvc *poker.Service) http.HandlerFu
 			return
 		}
 
-		err = pokerSvc.APIEvent(ctx, gameID, sessionUserID, "revise_plan", string(updatedStory))
+		_, err = pokerSvc.APIEvent(ctx, gameID, sessionUserID, "revise_plan", string(updatedStory))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handlePokerStoryUpdate error", zap.Error(err),
 				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID),
@@ -470,7 +470,7 @@ func (s *Service) handlePokerStoryDelete(pokerSvc *poker.Service) http.HandlerFu
 		}
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "burn_plan", storyID)
+		_, err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "burn_plan", storyID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handlePokerStoryDelete error", zap.Error(err),
 				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID),
@@ -507,7 +507,7 @@ func (s *Service) handlePokerDelete(pokerSvc *poker.Service) http.HandlerFunc {
 		}
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "concede_battle", "")
+		_, err := pokerSvc.APIEvent(ctx, gameID, sessionUserID, "concede_battle", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handlePokerDelete error", zap.Error(err),
 				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID))

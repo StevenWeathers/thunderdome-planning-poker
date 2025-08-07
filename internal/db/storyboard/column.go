@@ -11,7 +11,7 @@ import (
 )
 
 // CreateStoryboardColumn adds a new column to a Storyboard
-func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, userID string) (*thunderdome.StoryboardColumn, error) {
 	var betweenAkey *string
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
@@ -59,11 +59,17 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 		return nil, errors.New("display order is nil")
 	}
 
-	if _, err := tx.Exec(
+	column := thunderdome.StoryboardColumn{
+		Personas:  make([]*thunderdome.StoryboardPersona, 0),
+		Stories:   make([]*thunderdome.StoryboardStory, 0),
+		SortOrder: *displayOrder,
+	}
+
+	if err := tx.QueryRow(
 		`INSERT INTO thunderdome.storyboard_column (storyboard_id, goal_id, display_order)
-		VALUES ($1, $2, $3);`,
+		VALUES ($1, $2, $3) RETURNING id;`,
 		storyboardID, goalID, displayOrder,
-	); err != nil {
+	).Scan(&column.ID); err != nil {
 		logger.Error("CreateStoryboardColumn error",
 			zap.Error(err),
 			zap.Stringp("display_order", displayOrder),
@@ -76,9 +82,7 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 		return nil, fmt.Errorf("failed to update storyboard story display_order: %v", commitErr)
 	}
 
-	goals := d.GetStoryboardGoals(storyboardID)
-
-	return goals, nil
+	return &column, nil
 }
 
 // ReviseStoryboardColumn revises a storyboard column

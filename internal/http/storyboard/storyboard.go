@@ -53,17 +53,18 @@ type StoryboardDataSvc interface {
 	UpdateStoryboardPersona(storyboardID string, userID string, personaID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
 	DeleteStoryboardPersona(storyboardID string, userID string, personaID string) ([]*thunderdome.StoryboardPersona, error)
 
-	CreateStoryboardGoal(storyboardID string, userID string, goalName string) ([]*thunderdome.StoryboardGoal, error)
+	CreateStoryboardGoal(storyboardID string, userID string, goalName string) (*thunderdome.StoryboardGoal, error)
 	ReviseGoalName(storyboardID string, userID string, goalID string, goalName string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardGoal(storyboardID string, userID string, goalID string) ([]*thunderdome.StoryboardGoal, error)
+	GetStoryboardGoals(storyboardID string) []*thunderdome.StoryboardGoal
 
-	CreateStoryboardColumn(storyboardID string, goalID string, userID string) ([]*thunderdome.StoryboardGoal, error)
+	CreateStoryboardColumn(storyboardID string, goalID string, userID string) (*thunderdome.StoryboardColumn, error)
 	ReviseStoryboardColumn(storyboardID string, userID string, columnID string, columnName string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardColumn(storyboardID string, userID string, columnID string) ([]*thunderdome.StoryboardGoal, error)
 	ColumnPersonaAdd(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error)
 	ColumnPersonaRemove(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error)
 
-	CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string) ([]*thunderdome.StoryboardGoal, error)
+	CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string) (*thunderdome.StoryboardStory, error)
 	ReviseStoryName(storyboardID string, userID string, storyID string, storyName string) ([]*thunderdome.StoryboardGoal, error)
 	ReviseStoryContent(storyboardID string, userID string, storyID string, storyContent string) ([]*thunderdome.StoryboardGoal, error)
 	ReviseStoryColor(storyboardID string, userID string, storyID string, storyColor string) ([]*thunderdome.StoryboardGoal, error)
@@ -114,7 +115,7 @@ func New(
 		WriteWaitSec:       config.WriteWaitSec,
 		PongWaitSec:        config.PongWaitSec,
 		PingPeriodSec:      config.PingPeriodSec,
-	}, map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	}, map[string]func(context.Context, string, string, string) (any, []byte, error, bool){
 		"add_goal":              sb.AddGoal,
 		"revise_goal":           sb.ReviseGoal,
 		"delete_goal":           sb.DeleteGoal,

@@ -32,7 +32,7 @@ type Hub struct {
 	roomExists                chan roomExistsRequest
 	logger                    *otelzap.Logger
 	config                    *Config
-	eventHandlers             map[string]func(context.Context, string, string, string) ([]byte, error, bool)
+	eventHandlers             map[string]func(context.Context, string, string, string) (any, []byte, error, bool)
 	facilitatorOnlyOperations map[string]struct{}
 	confirmFacilitator        func(roomId string, userId string) error
 	retreatUser               func(roomId string, userId string) string
@@ -42,7 +42,7 @@ type Hub struct {
 func NewHub(
 	logger *otelzap.Logger,
 	config Config,
-	eventHandlers map[string]func(context.Context, string, string, string) ([]byte, error, bool),
+	eventHandlers map[string]func(context.Context, string, string, string) (any, []byte, error, bool),
 	facilitatorOnlyOperations map[string]struct{},
 	confirmFacilitator func(roomID string, userID string) error,
 	retreatUser func(roomID string, userID string) string,

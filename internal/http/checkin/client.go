@@ -94,6 +94,6 @@ func (b *Service) ServeWs() http.HandlerFunc {
 }
 
 // APIEvent handles api driven events into the team checkin (if active)
-func (b *Service) APIEvent(ctx context.Context, teamID string, userID, eventType string, eventValue string) error {
+func (b *Service) APIEvent(ctx context.Context, teamID string, userID, eventType string, eventValue string) (any, error) {
 	return b.hub.ProcessAPIEventHandler(ctx, userID, teamID, eventType, eventValue)
 }

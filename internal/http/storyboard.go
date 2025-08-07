@@ -267,7 +267,7 @@ func (s *Service) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFun
 		}
 		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "concede_storyboard", "")
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "concede_storyboard", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleStoryboardDelete error", zap.Error(err), zap.String("storyboard_id", storyboardID),
 				zap.String("session_user_id", sessionUserID))

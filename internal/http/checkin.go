@@ -159,7 +159,7 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
-		err := tc.APIEvent(ctx, teamID, c.UserID, "checkin_create", string(body))
+		_, err := tc.APIEvent(ctx, teamID, c.UserID, "checkin_create", string(body))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -235,7 +235,7 @@ func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
-		err := tc.APIEvent(ctx, teamID, sessionUserID, "checkin_update", string(cu))
+		_, err := tc.APIEvent(ctx, teamID, sessionUserID, "checkin_update", string(cu))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleCheckinUpdate error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("session_user_id", sessionUserID), zap.String("checkin_id", checkinID))
@@ -289,7 +289,7 @@ func (s *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
-		err := tc.APIEvent(ctx, teamID, sessionUserID, "checkin_delete", string(cu))
+		_, err := tc.APIEvent(ctx, teamID, sessionUserID, "checkin_delete", string(cu))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleCheckinDelete error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("session_user_id", sessionUserID), zap.String("checkin_id", checkinID))
@@ -365,7 +365,7 @@ func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
-		err := tc.APIEvent(ctx, teamID, c.UserID, "comment_create", string(cu))
+		_, err := tc.APIEvent(ctx, teamID, c.UserID, "comment_create", string(cu))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -440,7 +440,7 @@ func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc
 			return
 		}
 
-		err := tc.APIEvent(ctx, teamID, c.UserID, "comment_update", string(cu))
+		_, err := tc.APIEvent(ctx, teamID, c.UserID, "comment_update", string(cu))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -497,7 +497,7 @@ func (s *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFu
 			return
 		}
 
-		err := tc.APIEvent(ctx, teamID, userID, "comment_delete", string(cu))
+		_, err := tc.APIEvent(ctx, teamID, userID, "comment_delete", string(cu))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleCheckinCommentDelete error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("session_user_id", userID), zap.String("comment_id", commentID))
