@@ -22,7 +22,7 @@ type storyboardColumnAddRequestBody struct {
 //	@Param			storyboard		body	storyboardColumnAddRequestBody	false	"request body for adding a column"
 //	@Tags			storyboard
 //	@Produce		json
-//	@Success		200	object	standardJsonResponse{}
+//	@Success		200	object	standardJsonResponse{data=thunderdome.StoryboardColumn}
 //	@Success		403	object	standardJsonResponse{}
 //	@Success		500	object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
@@ -64,7 +64,7 @@ func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.Handler
 			return
 		}
 
-		_, err = sb.APIEvent(ctx, storyboardID, sessionUserID, "add_column", string(eventValue))
+		newColumn, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "add_column", string(eventValue))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard column add error",
 				zap.Error(err),
@@ -74,7 +74,7 @@ func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.Handler
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, newColumn, nil)
 	}
 }
 

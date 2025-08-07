@@ -10,14 +10,15 @@ import (
 
 // AddGoal handles adding a goal to storyboard
 func (b *Service) AddGoal(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
-	goals, err := b.StoryboardService.CreateStoryboardGoal(storyboardID, userID, eventValue)
+	goal, err := b.StoryboardService.CreateStoryboardGoal(storyboardID, userID, eventValue)
 	if err != nil {
 		return nil, nil, err, false
 	}
+	goals := b.StoryboardService.GetStoryboardGoals(storyboardID)
 	updatedGoals, _ := json.Marshal(goals)
 	msg := wshub.CreateSocketEvent("goal_added", string(updatedGoals), "")
 
-	return nil, msg, nil, false
+	return goal, msg, nil, false
 }
 
 // ReviseGoal handles revising a storyboard goal
@@ -61,14 +62,15 @@ func (b *Service) AddColumn(ctx context.Context, storyboardID string, userID str
 	}
 	goalID := goalObj["goalId"]
 
-	goals, err := b.StoryboardService.CreateStoryboardColumn(storyboardID, goalID, userID)
+	column, err := b.StoryboardService.CreateStoryboardColumn(storyboardID, goalID, userID)
 	if err != nil {
 		return nil, nil, err, false
 	}
+	goals := b.StoryboardService.GetStoryboardGoals(storyboardID)
 	updatedGoals, _ := json.Marshal(goals)
 	msg := wshub.CreateSocketEvent("column_added", string(updatedGoals), "")
 
-	return nil, msg, nil, false
+	return column, msg, nil, false
 }
 
 // ReviseColumn handles revising a storyboard goal column
@@ -157,14 +159,15 @@ func (b *Service) AddStory(ctx context.Context, storyboardID string, userID stri
 		return nil, nil, err, false
 	}
 
-	goals, err := b.StoryboardService.CreateStoryboardStory(storyboardID, ns.GoalID, ns.ColumnID, userID)
+	story, err := b.StoryboardService.CreateStoryboardStory(storyboardID, ns.GoalID, ns.ColumnID, userID)
 	if err != nil {
 		return nil, nil, err, false
 	}
+	goals := b.StoryboardService.GetStoryboardGoals(storyboardID)
 	updatedGoals, _ := json.Marshal(goals)
 	msg := wshub.CreateSocketEvent("story_added", string(updatedGoals), "")
 
-	return nil, msg, nil, false
+	return story, msg, nil, false
 }
 
 // UpdateStoryName handles revising a storyboard story name

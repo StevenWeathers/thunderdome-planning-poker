@@ -23,7 +23,7 @@ type storyboardStoryAddRequestBody struct {
 //	@Param			storyboard		body	storyboardStoryAddRequestBody	false	"request body for adding a story"
 //	@Tags			storyboard
 //	@Produce		json
-//	@Success		200	object	standardJsonResponse{}
+//	@Success		200	object	standardJsonResponse{data=thunderdome.StoryboardStory}
 //	@Success		403	object	standardJsonResponse{}
 //	@Success		500	object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
@@ -65,7 +65,7 @@ func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerF
 			return
 		}
 
-		_, err = sb.APIEvent(ctx, storyboardID, sessionUserID, "add_story", string(eventValue))
+		newStory, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "add_story", string(eventValue))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard story add error",
 				zap.Error(err),
@@ -75,7 +75,7 @@ func (s *Service) handleStoryboardStoryAdd(sb *storyboard.Service) http.HandlerF
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, newStory, nil)
 	}
 }
 
