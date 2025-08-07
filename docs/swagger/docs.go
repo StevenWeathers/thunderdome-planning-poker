@@ -6680,6 +6680,118 @@ const docTemplate = `{
                 }
             }
         },
+        "/storyboards/{storyboardId}/columns/{columnId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a column in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Column Update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the column ID",
+                        "name": "columnId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "the column to update",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardColumnUpdateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete a column from a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Column Delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the column ID",
+                        "name": "columnId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/storyboards/{storyboardId}/goals": {
             "post": {
                 "security": [
@@ -6710,6 +6822,118 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/http.storyboardGoalAddRequestBody"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/goals/{goalId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a goal in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Goal Update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the goal ID",
+                        "name": "goalId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "the goal to update",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardGoalUpdateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete a goal from a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Goal Delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the goal ID",
+                        "name": "goalId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -6788,6 +7012,303 @@ const docTemplate = `{
                 }
             }
         },
+        "/storyboards/{storyboardId}/stories/{storyId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a story in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/closed": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a story closed in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story Closed Update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new story closed",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardStoryMoveRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/color": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a story color in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story Color Update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new story color",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardStoryMoveRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/content": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a story content in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story Content Update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new story content",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardStoryContentRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/link": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a story link in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story Link Update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new story link",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardStoryMoveRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/storyboards/{storyboardId}/stories/{storyId}/move": {
             "put": {
                 "security": [
@@ -6820,6 +7341,128 @@ const docTemplate = `{
                     },
                     {
                         "description": "target goal column and place before story",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardStoryMoveRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/name": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a story name in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story Name Update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new story name",
+                        "name": "storyboard",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/http.storyboardStoryMoveRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/points": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a story points in a storyboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Storyboard Story Points Update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "storyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new story points",
                         "name": "storyboard",
                         "in": "body",
                         "schema": {
@@ -12786,6 +13429,17 @@ const docTemplate = `{
                 }
             }
         },
+        "http.storyboardColumnUpdateRequestBody": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "http.storyboardCreateRequestBody": {
             "type": "object",
             "required": [
@@ -12815,6 +13469,18 @@ const docTemplate = `{
                 }
             }
         },
+        "http.storyboardGoalUpdateRequestBody": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
         "http.storyboardStoryAddRequestBody": {
             "type": "object",
             "required": [
@@ -12826,6 +13492,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "goalId": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.storyboardStoryContentRequestBody": {
+            "type": "object",
+            "required": [
+                "content"
+            ],
+            "properties": {
+                "content": {
                     "type": "string"
                 }
             }
