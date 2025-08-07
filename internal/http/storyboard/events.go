@@ -148,15 +148,16 @@ func (b *Service) ColumnPersonaRemove(ctx context.Context, storyboardID string, 
 
 // AddStory handles adding a story to storyboard
 func (b *Service) AddStory(ctx context.Context, storyboardID string, userID string, eventValue string) ([]byte, error, bool) {
-	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(eventValue), &goalObj)
+	var ns struct {
+		GoalID   string `json:"goalId"`
+		ColumnID string `json:"columnId"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &ns)
 	if err != nil {
 		return nil, err, false
 	}
-	goalID := goalObj["goalId"]
-	columnID := goalObj["columnId"]
 
-	goals, err := b.StoryboardService.CreateStoryboardStory(storyboardID, goalID, columnID, userID)
+	goals, err := b.StoryboardService.CreateStoryboardStory(storyboardID, ns.GoalID, ns.ColumnID, userID)
 	if err != nil {
 		return nil, err, false
 	}
