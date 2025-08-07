@@ -118,7 +118,7 @@ func (s *Subscription) ReadPump(
 
 		// find event handler and execute otherwise invalid event
 		if _, ok := hub.eventHandlers[eventType]; ok && !badEvent {
-			msg, eventErr, forceClosed = hub.eventHandlers[eventType](ctx, s.RoomID, s.UserID, eventValue)
+			_, msg, eventErr, forceClosed = hub.eventHandlers[eventType](ctx, s.RoomID, s.UserID, eventValue)
 			if eventErr != nil {
 				badEvent = true
 

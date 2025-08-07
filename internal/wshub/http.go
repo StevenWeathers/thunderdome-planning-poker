@@ -2,6 +2,7 @@ package wshub
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -69,7 +70,7 @@ func (h *Hub) WebSocketHandler(
 }
 
 // ProcessAPIEventHandler processes an event from the API through the websocket hub.
-func (h *Hub) ProcessAPIEventHandler(ctx context.Context, userID, roomID, eventType string, eventValue string) error {
+func (h *Hub) ProcessAPIEventHandler(ctx context.Context, userID, roomID, eventType string, eventValue string) (any, error) {
 	// find event handler and execute otherwise invalid event
 	if _, ok := h.eventHandlers[eventType]; ok {
 		// confirm leader for any operation that requires it
@@ -77,20 +78,22 @@ func (h *Hub) ProcessAPIEventHandler(ctx context.Context, userID, roomID, eventT
 			if _, ok := h.facilitatorOnlyOperations[eventType]; ok {
 				err := h.confirmFacilitator(roomID, userID)
 				if err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 
-		msg, eventErr, _ := h.eventHandlers[eventType](ctx, roomID, userID, eventValue)
+		result, msg, eventErr, _ := h.eventHandlers[eventType](ctx, roomID, userID, eventValue)
 		if eventErr != nil {
-			return eventErr
+			return nil, eventErr
 		}
 
 		if h.RoomExists(roomID) {
 			h.Broadcast(Message{Data: msg, Room: roomID})
 		}
+
+		return result, nil
 	}
 
-	return nil
+	return nil, fmt.Errorf("invalid event type")
 }

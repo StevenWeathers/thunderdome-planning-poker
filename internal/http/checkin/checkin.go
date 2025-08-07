@@ -89,7 +89,7 @@ func New(
 		WriteWaitSec:       config.WriteWaitSec,
 		PongWaitSec:        config.PongWaitSec,
 		PingPeriodSec:      config.PingPeriodSec,
-	}, map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	}, map[string]func(context.Context, string, string, string) (any, []byte, error, bool){
 		"checkin_create": c.CheckinCreate,
 		"checkin_update": c.CheckinUpdate,
 		"checkin_delete": c.CheckinDelete,

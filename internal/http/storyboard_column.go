@@ -64,7 +64,7 @@ func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.Handler
 			return
 		}
 
-		err = sb.APIEvent(ctx, storyboardID, sessionUserID, "add_column", string(eventValue))
+		_, err = sb.APIEvent(ctx, storyboardID, sessionUserID, "add_column", string(eventValue))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard column add error",
 				zap.Error(err),
@@ -147,7 +147,7 @@ func (s *Service) handleStoryboardColumnUpdate(sb *storyboard.Service) http.Hand
 			return
 		}
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "revise_column", string(updateEventJSON))
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "revise_column", string(updateEventJSON))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard column update error",
 				zap.Error(err),
@@ -193,7 +193,7 @@ func (s *Service) handleStoryboardColumnDelete(sb *storyboard.Service) http.Hand
 		}
 		sessionUserID := r.Context().Value(contextKeyUserID).(string)
 
-		err := sb.APIEvent(ctx, storyboardID, sessionUserID, "delete_column", columnID)
+		_, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "delete_column", columnID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard column delete error",
 				zap.Error(err),

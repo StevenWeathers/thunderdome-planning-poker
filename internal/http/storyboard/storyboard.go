@@ -114,7 +114,7 @@ func New(
 		WriteWaitSec:       config.WriteWaitSec,
 		PongWaitSec:        config.PongWaitSec,
 		PingPeriodSec:      config.PingPeriodSec,
-	}, map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	}, map[string]func(context.Context, string, string, string) (any, []byte, error, bool){
 		"add_goal":              sb.AddGoal,
 		"revise_goal":           sb.ReviseGoal,
 		"delete_goal":           sb.DeleteGoal,

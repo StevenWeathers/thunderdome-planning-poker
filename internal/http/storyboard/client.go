@@ -149,6 +149,6 @@ func (b *Service) RetreatUser(roomID string, userID string) string {
 }
 
 // APIEvent handles api driven events into the storyboard (if active)
-func (b *Service) APIEvent(ctx context.Context, storyboardID string, userID, eventType string, eventValue string) error {
+func (b *Service) APIEvent(ctx context.Context, storyboardID string, userID, eventType string, eventValue string) (any, error) {
 	return b.hub.ProcessAPIEventHandler(ctx, userID, storyboardID, eventType, eventValue)
 }

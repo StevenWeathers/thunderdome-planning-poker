@@ -151,6 +151,6 @@ func (b *Service) RetreatUser(roomID string, userID string) string {
 }
 
 // APIEvent handles api driven events into the poker game (if active)
-func (b *Service) APIEvent(ctx context.Context, pokerID string, userID, eventType string, eventValue string) error {
+func (b *Service) APIEvent(ctx context.Context, pokerID string, userID, eventType string, eventValue string) (any, error) {
 	return b.hub.ProcessAPIEventHandler(ctx, userID, pokerID, eventType, eventValue)
 }
