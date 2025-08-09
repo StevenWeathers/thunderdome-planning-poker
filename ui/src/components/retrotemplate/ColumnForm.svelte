@@ -139,7 +139,7 @@
           {/each}
         </select>
         <div
-          class="ml-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600"
+          class="ms-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600"
         >
           {#if column.icon}
             {@const SvelteComponent = getIconComponent(column.icon)}
@@ -194,7 +194,7 @@
           {/each}
         </select>
         <div
-          class="ml-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600"
+          class="ms-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600"
         >
           {#if newColumn.icon}
             {@const SvelteComponent_1 = getIconComponent(newColumn.icon)}

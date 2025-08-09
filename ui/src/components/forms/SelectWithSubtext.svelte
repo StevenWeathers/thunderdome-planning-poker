@@ -37,14 +37,14 @@
     class="w-full flex justify-between px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
   >
     <span class="flex">
-      <Check class="w-6 h-6 mr-2 inline-block" />
+      <Check class="w-6 h-6 me-2 inline-block" />
       <span data-testid="{itemType}_item-selected"
         >{selectedItemIdx > -1
           ? items[selectedItemIdx][nameField]
           : label}</span
       >
     </span>
-    <ChevronDown class="w-6 h-6 ml-2 inline-block" />
+    <ChevronDown class="w-6 h-6 ms-2 inline-block" />
   </button>
 
   {#if isOpen}
@@ -59,7 +59,7 @@
             class="flex content-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:text-gray-100 dark:hover:bg-gray-700"
           >
             <Check
-              class="flex-none w-6 h-6 mr-2 {selectedItemIdx === idx
+              class="flex-none w-6 h-6 me-2 {selectedItemIdx === idx
                 ? 'text-indigo-600 dark:text-indigo-400'
                 : 'invisible'}"
             />

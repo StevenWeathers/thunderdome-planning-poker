@@ -17,7 +17,7 @@
         class="p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow"
       >
         <h2 class="text-xl font-bold mb-2">column</h2>
-        <ul class="list-none pl-4">
+        <ul class="list-none ps-4">
           <li><strong>name:</strong> {column.name}</li>
           <li><strong>label:</strong> {column.label}</li>
           <li><strong>color:</strong> {column.color}</li>

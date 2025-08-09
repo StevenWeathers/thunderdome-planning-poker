@@ -39,7 +39,7 @@
       collaboratively estimate the effort required for user stories or tasks. By
       using Thunderdome's Poker Planning tool, teams can:
     </p>
-    <ul class="list-disc pl-8 mb-6 space-y-2">
+    <ul class="list-disc ps-8 mb-6 space-y-2">
       <li>Encourage team participation and engagement</li>
       <li>Reduce influence bias in estimations</li>
       <li>Promote discussion and alignment on project scope</li>
@@ -55,7 +55,7 @@
 
   <div class="space-y-24">
     <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -64,7 +64,7 @@
             Custom Estimation Scales
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
             Choose from predefined scales like Fibonacci or create your own
             custom estimation scales
@@ -96,7 +96,7 @@
     </section>
 
     <section class="flex flex-col md:flex-row-reverse items-center">
-      <div class="md:w-1/2 md:pl-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -105,7 +105,7 @@
             Real-time Collaboration
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
             Conduct poker planning sessions with your team in real-time,
             regardless of location
@@ -129,7 +129,7 @@
     </section>
 
     <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -138,7 +138,7 @@
             Voting Visibility Control
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
             Choose whether to show or hide voter identities to reduce bias
           </li>
@@ -167,7 +167,7 @@
     </section>
 
     <!--        <section class="flex flex-col md:flex-row-reverse items-center">-->
-    <!--            <div class="md:w-1/2 md:pl-8 mb-8 md:mb-0">-->
+    <!--            <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">-->
     <!--                <div class="mb-4">-->
     <!--                    <div class="title-line bg-yellow-thunder"></div>-->
     <!--                    <h3-->
@@ -176,7 +176,7 @@
     <!--                        Integration with Projects-->
     <!--                    </h3>-->
     <!--                </div>-->
-    <!--                <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">-->
+    <!--                <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">-->
     <!--                    <li>-->
     <!--                        Seamlessly integrate poker planning sessions with your existing-->
     <!--                        projects in Thunderdome-->

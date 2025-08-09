@@ -18,7 +18,7 @@
       <span class="font-semibold">New:</span>
       {salesPitch}
       <a
-        class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer ml-1 underline"
+        class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer ms-1 underline"
         href="{appRoutes.subscriptionPricing}"
         target="_blank"
       >

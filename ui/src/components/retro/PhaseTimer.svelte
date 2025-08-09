@@ -46,10 +46,10 @@
 </script>
 
 <div
-  class="inline-block mr-2 font-semibold dark:text-gray-200 md:text-lg"
+  class="inline-block me-2 font-semibold dark:text-gray-200 md:text-lg"
   data-testid="phase-timer"
 >
   {#each Object.entries({ m, s }) as [key, value], i}
-    <span class="mr-2">{padValue(value)}{key}</span>
+    <span class="me-2">{padValue(value)}{key}</span>
   {/each}
 </div>

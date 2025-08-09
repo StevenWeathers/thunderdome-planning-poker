@@ -8,7 +8,7 @@
 </script>
 
 <div class="flex items-center">
-  <div class="relative inline-block mr-2">
+  <div class="relative inline-block me-2">
     <input
       type="checkbox"
       id="{id}"
@@ -36,7 +36,7 @@
           </svg>
         {/if}
       </div>
-      <span class="ml-2 font-medium text-gray-700 dark:text-gray-300"
+      <span class="ms-2 font-medium text-gray-700 dark:text-gray-300"
         >{label}</span
       >
     </label>

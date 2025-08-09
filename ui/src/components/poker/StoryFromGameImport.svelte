@@ -86,7 +86,7 @@
         <div>
           <span
             class="inline-block text-sm text-gray-500 dark:text-gray-300
-                  border-gray-300 border px-1 rounded mr-1.5"
+                  border-gray-300 border px-1 rounded me-1.5"
             data-testid="plan-type"
           >
             {story.type}</span
