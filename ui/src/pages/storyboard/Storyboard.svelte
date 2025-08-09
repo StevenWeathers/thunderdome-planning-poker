@@ -21,6 +21,7 @@
   import {
     ChevronDown,
     ChevronUp,
+    Link,
     MessageSquareMore,
     Pencil,
     User,
@@ -968,9 +969,7 @@
                 >
                   {#each goalColumn.stories as story (story.id)}
                     <div
-                      class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
-                                    story-{story.color} border my-4
-                                    cursor-pointer"
+                      class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4 cursor-pointer"
                       style="list-style: none;"
                       role="button"
                       tabindex="0"
@@ -984,43 +983,37 @@
                       <div>
                         <div>
                           <div
-                            class="h-20 p-1 text-sm
-                                                overflow-hidden {story.closed
-                              ? 'line-through'
-                              : ''}"
+                            class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
                             title="{story.name}"
                             data-testid="story-name"
                           >
                             {story.name}
                           </div>
-                          <div class="h-8">
+                          <div class="h-10">
                             <div
-                              class="flex content-center
-                                                    p-1 text-sm"
-                            >
+                              class="flex content-center p-2 text-sm">
                               <div
-                                class="w-1/2
-                                                        text-gray-600 dark:text-gray-300"
-                              >
+                                class="w-1/2 text-gray-600 dark:text-gray-300">
                                 {#if story.comments.length > 0}
                                   <span
-                                    class="inline-block
-                                                                align-middle"
+                                    class="inline-block align-middle"
                                     data-testid="story-comments"
+                                    title="Story has {story.comments.length} {story.comments.length ? 'comments' : 'comment'}"
                                   >
                                     {story.comments.length}
                                     <MessageSquareMore class="inline-block" />
                                   </span>
                                 {/if}
                               </div>
-                              <div class="w-1/2 text-right">
+                              <div class="w-1/2 flex space-x-2 justify-end">
+                                {#if story.link !== ""}
+                                  <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
+                                {/if}
                                 {#if story.points > 0}
                                   <span
-                                    class="px-2
-                                                                bg-gray-300 dark:bg-gray-500
-                                                                inline-block
-                                                                align-middle"
+                                    class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
                                     data-testid="story-points"
+                                    title="Story points"
                                   >
                                     {story.points}
                                   </span>
@@ -1048,52 +1041,44 @@
                           <div>
                             <div>
                               <div
-                                class="h-20 p-1 text-sm
-                                                overflow-hidden {story.closed
-                                  ? 'line-through'
-                                  : ''}"
+                                class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
                                 title="{story.name}"
                                 data-testid="shadow-story-name"
                               >
                                 {story.name}
                               </div>
-                              <div class="h-8">
-                                <div
-                                  class="flex content-center
-                                                    p-1 text-sm"
-                                >
-                                  <div
-                                    class="w-1/2
-                                                        text-gray-600"
+                              <div class="h-10">
+                            <div
+                              class="flex content-center p-2 text-sm">
+                              <div
+                                class="w-1/2 text-gray-600 dark:text-gray-300">
+                                {#if story.comments.length > 0}
+                                  <span
+                                    class="inline-block align-middle"
+                                    data-testid="story-comments"
+                                    title="Story has {story.comments.length} {story.comments.length ? 'comments' : 'comment'}"
                                   >
-                                    {#if story.comments.length > 0}
-                                      <span
-                                        class="inline-block
-                                                                align-middle"
-                                        data-testid="shadow-story-comments"
-                                      >
-                                        {story.comments.length}
-                                        <MessageSquareMore
-                                          class="inline-block"
-                                        />
-                                      </span>
-                                    {/if}
-                                  </div>
-                                  <div class="w-1/2 text-right">
-                                    {#if story.points > 0}
-                                      <span
-                                        class="px-2
-                                                                bg-gray-300
-                                                                inline-block
-                                                                align-middle"
-                                        data-testid="shadow-story-points"
-                                      >
-                                        {story.points}
-                                      </span>
-                                    {/if}
-                                  </div>
-                                </div>
+                                    {story.comments.length}
+                                    <MessageSquareMore class="inline-block" />
+                                  </span>
+                                {/if}
                               </div>
+                              <div class="w-1/2 flex space-x-2 justify-end">
+                                {#if story.link !== ""}
+                                  <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
+                                {/if}
+                                {#if story.points > 0}
+                                  <span
+                                    class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
+                                    data-testid="story-points"
+                                    title="Story points"
+                                  >
+                                    {story.points}
+                                  </span>
+                                {/if}
+                              </div>
+                            </div>
+                          </div>
                             </div>
                           </div>
                         </div>
