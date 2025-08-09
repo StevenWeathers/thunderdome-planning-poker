@@ -250,7 +250,7 @@
         data-testid="plan"
         data-storyid="{plan.id}"
       >
-        <div class="flex-grow font-bold align-middle dark:text-white mr-1">
+        <div class="flex-grow font-bold align-middle dark:text-white me-1">
           {#if plan.link !== ''}
             <a
               href="{plan.link}"

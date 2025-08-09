@@ -126,7 +126,7 @@
           id="apiKey"
           readonly
         />
-        <div class="invisible md:visible md:flex md:-mr-px">
+        <div class="invisible md:visible md:flex md:-me-px">
           <SolidButton
             color="blue-copy"
             onClick={copyKey}

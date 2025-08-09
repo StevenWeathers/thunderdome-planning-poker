@@ -25,7 +25,7 @@
   {#each metrics as { key, name, value, icon }}
     {@const SvelteComponent = icon || HelpCircle}
     <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex items-center">
-      <div class="mr-4">
+      <div class="me-4">
         <SvelteComponent
           class="w-8 h-8 text-blue-500 dark:text-blue-400"
         />

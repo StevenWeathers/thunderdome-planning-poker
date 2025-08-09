@@ -552,6 +552,13 @@ definitions:
     required:
     - goalId
     type: object
+  http.storyboardColumnUpdateRequestBody:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
   http.storyboardCreateRequestBody:
     properties:
       facilitatorCode:
@@ -571,6 +578,14 @@ definitions:
     required:
     - name
     type: object
+  http.storyboardGoalUpdateRequestBody:
+    properties:
+      name:
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
   http.storyboardStoryAddRequestBody:
     properties:
       columnId:
@@ -580,6 +595,13 @@ definitions:
     required:
     - columnId
     - goalId
+    type: object
+  http.storyboardStoryContentRequestBody:
+    properties:
+      content:
+        type: string
+    required:
+    - content
     type: object
   http.storyboardStoryMoveRequestBody:
     properties:
@@ -6198,7 +6220,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.standardJsonResponse'
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.StoryboardColumn'
+              type: object
         "403":
           description: Forbidden
           schema:
@@ -6210,6 +6237,78 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Storyboard Column Add
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/columns/{columnId}:
+    delete:
+      description: Delete a column from a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the column ID
+        in: path
+        name: columnId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Column Delete
+      tags:
+      - storyboard
+    put:
+      description: Update a column in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the column ID
+        in: path
+        name: columnId
+        required: true
+        type: string
+      - description: the column to update
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardColumnUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Column Update
       tags:
       - storyboard
   /storyboards/{storyboardId}/goals:
@@ -6232,7 +6331,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.standardJsonResponse'
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.StoryboardGoal'
+              type: object
         "403":
           description: Forbidden
           schema:
@@ -6244,6 +6348,78 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Storyboard Goal Add
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/goals/{goalId}:
+    delete:
+      description: Delete a goal from a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the goal ID
+        in: path
+        name: goalId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Goal Delete
+      tags:
+      - storyboard
+    put:
+      description: Update a goal in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the goal ID
+        in: path
+        name: goalId
+        required: true
+        type: string
+      - description: the goal to update
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardGoalUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Goal Update
       tags:
       - storyboard
   /storyboards/{storyboardId}/stories:
@@ -6266,7 +6442,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.standardJsonResponse'
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.StoryboardStory'
+              type: object
         "403":
           description: Forbidden
           schema:
@@ -6278,6 +6459,196 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Storyboard Story Add
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories/{storyId}:
+    delete:
+      description: Deletes a story in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: storyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story delete
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories/{storyId}/closed:
+    put:
+      description: Updates a story closed in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: storyId
+        required: true
+        type: string
+      - description: new story closed
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardStoryMoveRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story Closed Update
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories/{storyId}/color:
+    put:
+      description: Updates a story color in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: storyId
+        required: true
+        type: string
+      - description: new story color
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardStoryMoveRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story Color Update
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories/{storyId}/content:
+    put:
+      description: Updates a story content in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: storyId
+        required: true
+        type: string
+      - description: new story content
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardStoryContentRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story Content Update
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories/{storyId}/link:
+    put:
+      description: Updates a story link in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: storyId
+        required: true
+        type: string
+      - description: new story link
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardStoryMoveRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story Link Update
       tags:
       - storyboard
   /storyboards/{storyboardId}/stories/{storyId}/move:
@@ -6317,6 +6688,84 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Storyboard Story Move
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories/{storyId}/name:
+    put:
+      description: Updates a story name in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: storyId
+        required: true
+        type: string
+      - description: new story name
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardStoryMoveRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story Name Update
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/stories/{storyId}/points:
+    put:
+      description: Updates a story points in a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: storyId
+        required: true
+        type: string
+      - description: new story points
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardStoryMoveRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Story Points Update
       tags:
       - storyboard
   /subscriptions:

@@ -115,7 +115,7 @@ func New(
 		WriteWaitSec:       config.WriteWaitSec,
 		PongWaitSec:        config.PongWaitSec,
 		PingPeriodSec:      config.PingPeriodSec,
-	}, map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	}, map[string]func(context.Context, string, string, string) (any, []byte, error, bool){
 		"jab_warrior":      b.UserNudge,
 		"vote":             b.UserVote,
 		"retract_vote":     b.UserVoteRetract,

@@ -134,7 +134,7 @@
     <!--            <select-->
     <!--                    id="estimationScaleId"-->
     <!--                    bind:value={pokerSettings.estimationScaleId}-->
-    <!--                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"-->
+    <!--                    class="mt-1 block w-full ps-3 pe-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"-->
     <!--            >-->
     <!--                <option value="">Select a scale</option>-->
     <!--                {#each estimationScales as scale}-->
