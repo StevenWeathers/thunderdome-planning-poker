@@ -30,7 +30,7 @@
     id="RetrospectiveLink"
     readonly
   />
-  <div class="flex -mr-px">
+  <div class="flex -me-px">
     <SolidButton
       color="blue-copy"
       onClick={copyRetrospectiveLink}

@@ -191,7 +191,7 @@
         <!--                              type="checkbox"-->
         <!--                              class="h-4 w-4 rounded focus:ring-2 focus:ring-offset-2 transition-all duration-300 bg-purple-100 dark:bg-purple-900 border-purple-300 dark:border-purple-700 focus:ring-purple-500 dark:focus:ring-purple-400"-->
         <!--                      />-->
-        <!--                      <label for="remember_me" class="ml-2 text-gray-700 dark:text-gray-300">-->
+        <!--                      <label for="remember_me" class="ms-2 text-gray-700 dark:text-gray-300">-->
         <!--                          {$LL.rememberMe()}-->
         <!--                      </label>-->
       </div>
@@ -214,7 +214,7 @@
       type="submit"
       class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+      <span class="absolute left-0 inset-y-0 flex items-center ps-3">
         <Lock
           class="h-5 w-5 text-purple-300 group-hover:text-purple-200"
           aria-hidden="true"
@@ -346,7 +346,7 @@
         type="submit"
         class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+        <span class="absolute left-0 inset-y-0 flex items-center ps-3">
           <Shield
             class="h-5 w-5 text-purple-300 group-hover:text-purple-200"
             aria-hidden="true"

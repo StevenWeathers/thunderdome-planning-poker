@@ -41,7 +41,7 @@
                 item.name.toLowerCase().replace(' ', '-')}"
               title="{item.label}"
             >
-              <span class="mr-3">
+              <span class="me-3">
                 <item.icon size={24} />
               </span>
               <span class:hidden="{isCollapsed}">{item.label}</span>

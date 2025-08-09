@@ -212,7 +212,7 @@
       class="mt-4 text-center text-yellow-800 dark:text-yellow-400"
       data-testid="voteresult-discussion"
     >
-      <span class="text-2xl mr-2"><TriangleAlert class="inline-block" /></span> Low
+      <span class="text-2xl me-2"><TriangleAlert class="inline-block" /></span> Low
       consensus. Further discussion recommended.
     </div>
   {/if}

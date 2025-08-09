@@ -38,7 +38,7 @@
       user journey, identify gaps in the product backlog, and prioritize
       development efforts. With Thunderdome's Story Mapping tool, teams can:
     </p>
-    <ul class="list-disc pl-8 mb-6 space-y-2">
+    <ul class="list-disc ps-8 mb-6 space-y-2">
       <li>Create a shared understanding of the user experience</li>
       <li>Identify and prioritize features based on user value</li>
       <li>Plan releases and sprints more effectively</li>
@@ -54,7 +54,7 @@
 
   <div class="space-y-24">
     <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -63,7 +63,7 @@
             Intuitive Visual Interface
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>Drag-and-drop interface for easy story organization</li>
           <li>
             Customizable columns and swimlanes to represent user activities and
@@ -87,7 +87,7 @@
     </section>
 
     <section class="flex flex-col md:flex-row-reverse items-center">
-      <div class="md:w-1/2 md:pl-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -96,7 +96,7 @@
             Collaborative Mapping
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>Real-time collaboration for distributed teams</li>
           <li>Multi-user editing with instant updates</li>
           <li>In-context commenting and discussions</li>
@@ -117,7 +117,7 @@
     </section>
 
     <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -126,7 +126,7 @@
             Flexible Story Management
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>Create, edit, and prioritize user stories within the map</li>
           <li>Add descriptions, acceptance criteria, and story points</li>
         </ul>
@@ -146,7 +146,7 @@
     </section>
 
     <!--        <section class="flex flex-col md:flex-row-reverse items-center">-->
-    <!--            <div class="md:w-1/2 md:pl-8 mb-8 md:mb-0">-->
+    <!--            <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">-->
     <!--                <div class="mb-4">-->
     <!--                    <div class="title-line bg-yellow-thunder"></div>-->
     <!--                    <h3-->
@@ -155,7 +155,7 @@
     <!--                        Release Planning-->
     <!--                    </h3>-->
     <!--                </div>-->
-    <!--                <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">-->
+    <!--                <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">-->
     <!--                    <li>Define and visualize release boundaries on the story map</li>-->
     <!--                    <li>Easily reorder and reprioritize stories across releases</li>-->
     <!--                    <li>Track progress and completion status for each release</li>-->
@@ -172,7 +172,7 @@
     <!--        </section>-->
 
     <!--        <section class="flex flex-col md:flex-row items-center">-->
-    <!--            <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">-->
+    <!--            <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">-->
     <!--                <div class="mb-4">-->
     <!--                    <div class="title-line bg-yellow-thunder"></div>-->
     <!--                    <h3-->
@@ -181,7 +181,7 @@
     <!--                        Integration & Export-->
     <!--                    </h3>-->
     <!--                </div>-->
-    <!--                <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">-->
+    <!--                <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">-->
     <!--                    <li>-->
     <!--                        Seamless integration with Thunderdome's other project management-->
     <!--                        tools-->

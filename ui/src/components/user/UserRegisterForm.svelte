@@ -151,7 +151,7 @@
         disabled="{submitDisabled}"
         class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+        <span class="absolute left-0 inset-y-0 flex items-center ps-3">
           <User
             class="h-5 w-5 text-purple-300 group-hover:text-purple-200"
             aria-hidden="true"

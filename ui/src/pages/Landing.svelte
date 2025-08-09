@@ -69,7 +69,7 @@
   <section class="bg-white dark:bg-gray-800 py-20">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row items-center justify-between">
-        <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+        <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
           <div class="title-line bg-yellow-thunder"></div>
           <h2
             class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
@@ -77,7 +77,7 @@
             Agile Poker Planning
           </h2>
           <ul
-            class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
+            class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
           >
             <li>Streamline sprint planning with collaborative estimation</li>
             <li>Customize estimation scales to fit your team's needs</li>
@@ -85,7 +85,7 @@
           </ul>
           <a
             href="{appRoutes.games}"
-            class="group relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
+            class="group relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
             <span
               class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
@@ -117,7 +117,7 @@
       <div
         class="flex flex-col md:flex-row-reverse items-center justify-between"
       >
-        <div class="md:w-1/2 md:pl-8 mb-8 md:mb-0">
+        <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
           <div class="title-line bg-yellow-thunder"></div>
           <h2
             class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
@@ -125,7 +125,7 @@
             Sprint Retrospectives
           </h2>
           <ul
-            class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
+            class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
           >
             <li>Facilitate engaging and productive retrospectives</li>
             <li>Choose from customizable templates or create your own</li>
@@ -133,7 +133,7 @@
           </ul>
           <a
             href="{appRoutes.retros}"
-            class="group relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
+            class="group relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
             <span
               class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
@@ -163,7 +163,7 @@
   <section class="bg-white dark:bg-gray-800 py-20">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row items-center justify-between">
-        <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+        <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
           <div class="title-line bg-yellow-thunder"></div>
           <h2
             class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
@@ -171,7 +171,7 @@
             Story Mapping
           </h2>
           <ul
-            class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
+            class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
           >
             <li>Drag-and-drop interface for easy story organization</li>
             <li>
@@ -183,7 +183,7 @@
           </ul>
           <a
             href="{appRoutes.storyboards}"
-            class="group relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
+            class="group relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
             <span
               class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
@@ -215,7 +215,7 @@
       <div
         class="flex flex-col md:flex-row-reverse items-center justify-between"
       >
-        <div class="md:w-1/2 md:pl-8 mb-8 md:mb-0">
+        <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
           <div class="title-line bg-yellow-thunder"></div>
           <h2
             class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"

@@ -38,7 +38,7 @@
       adapt. Thunderdome's Retrospective tool transforms this essential practice
       into an engaging and actionable experience, helping teams to:
     </p>
-    <ul class="list-disc pl-8 mb-6 space-y-2">
+    <ul class="list-disc ps-8 mb-6 space-y-2">
       <li>Identify and address challenges quickly</li>
       <li>Celebrate successes and boost team morale</li>
       <li>Foster a culture of open communication</li>
@@ -49,7 +49,7 @@
 
   <div class="space-y-24">
     <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -58,7 +58,7 @@
             Customizable Retro Formats
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
             Choose from popular templates like Start/Stop/Continue, 4Ls, and
             Mad/Sad/Glad
@@ -92,7 +92,7 @@
     </section>
 
     <section class="flex flex-col md:flex-row-reverse items-center">
-      <div class="md:w-1/2 md:pl-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -101,7 +101,7 @@
             Real-time Collaboration
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
             Enable seamless participation for both co-located and distributed
             teams
@@ -130,7 +130,7 @@
     </section>
 
     <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
         <div class="mb-4">
           <div class="title-line bg-yellow-thunder"></div>
           <h3
@@ -139,7 +139,7 @@
             Action Item Tracking
           </h3>
         </div>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
             Create and assign action items directly from retro discussions
           </li>
