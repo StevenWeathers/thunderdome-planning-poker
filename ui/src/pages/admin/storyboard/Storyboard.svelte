@@ -12,10 +12,10 @@
   import TableRow from '../../../components/table/TableRow.svelte';
   import HollowButton from '../../../components/global/HollowButton.svelte';
   import AdminPageLayout from '../../../components/admin/AdminPageLayout.svelte';
-  import DeleteStoryboard from '../../../components/storyboard/DeleteStoryboard.svelte';
   import TableNav from '../../../components/table/TableNav.svelte';
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
+  import DeleteConfirmation from '../../../components/global/DeleteConfirmation.svelte';
 
   interface Props {
     xfetch: any;
@@ -200,9 +200,11 @@
   </div>
 
   {#if showDeleteStoryboard}
-    <DeleteStoryboard
+    <DeleteConfirmation
       toggleDelete={toggleDeleteStoryboard}
       handleDelete={deleteStoryboard}
+      confirmText={"Are you sure you want to delete this Storyboard?"}
+      confirmBtnText={"Delete Storyboard"}
     />
   {/if}
 </AdminPageLayout>

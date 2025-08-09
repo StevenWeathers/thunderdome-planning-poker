@@ -11,13 +11,13 @@
   import ColorLegendForm from '../../components/storyboard/ColorLegendForm.svelte';
   import PersonasForm from '../../components/storyboard/PersonasForm.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import DeleteStoryboard from '../../components/storyboard/DeleteStoryboard.svelte';
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import {
     ChevronDown,
     ChevronUp,
@@ -66,6 +66,8 @@
   let showDeleteStoryboard = $state(false);
   let showEditStoryboard = $state(false);
   let collapseGoals = $state([]);
+  let showGoalDelete = $state(false);
+  let selectedGoalId = $state('');
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -391,8 +393,14 @@
     sendSocketEvent('revise_goal', JSON.stringify(updatedGoal));
   };
 
-  const handleGoalDeletion = goalId => () => {
-    sendSocketEvent('delete_goal', goalId);
+  const toggleGoalDeletion = (goalId:String) => () => {
+    showGoalDelete = !showGoalDelete;
+    selectedGoalId = goalId;
+  }
+
+  const handleGoalDeletion = () => {
+    sendSocketEvent('delete_goal', selectedGoalId);
+    toggleGoalDeletion('')();
   };
 
   const handleColumnRevision = column => {
@@ -860,7 +868,7 @@
             </HollowButton>
             <HollowButton
               color="red"
-              onClick={handleGoalDeletion(goal.id)}
+              onClick={toggleGoalDeletion(goal.id)}
               btnSize="small"
               additionalClasses="ms-2"
               testid="goal-delete"
@@ -1163,10 +1171,21 @@
 {/if}
 
 {#if showDeleteStoryboard}
-  <DeleteStoryboard
-    toggleDelete={toggleDeleteStoryboard}
-    handleDelete={concedeStoryboard}
-  />
+  <DeleteConfirmation
+      toggleDelete={toggleDeleteStoryboard}
+      handleDelete={concedeStoryboard}
+      confirmText={"Are you sure you want to delete this Storyboard?"}
+      confirmBtnText={"Delete Storyboard"}
+    />
+{/if}
+
+{#if showGoalDelete}
+  <DeleteConfirmation
+      toggleDelete={toggleGoalDeletion('')}
+      handleDelete={handleGoalDeletion}
+      confirmText={"Are you sure you want to delete this goal?"}
+      confirmBtnText={"Delete Goal"}
+    />
 {/if}
 
 {#if showBecomeFacilitator}
