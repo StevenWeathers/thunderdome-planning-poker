@@ -271,7 +271,7 @@
       <div class="space-y-6">
           <!-- Story Name (Full Width) -->
           <div>
-              <label for="storyName" class="block text-gray-700 dark:text-gray-300 mb-2">
+              <label for="storyName" class="block text-gray-700 dark:text-gray-300 mb-2 text-lg">
                   Story Name <span class="text-red-500">*</span>
               </label>
               <!-- <input 
@@ -292,7 +292,7 @@
 
           <!-- Story Points and Color -->
           <div>
-              <div class="block text-gray-700 dark:text-gray-300 mb-2">Story Color</div>
+              <div class="block text-gray-700 dark:text-gray-300 mb-2 text-lg">Story Color</div>
               <div class="flex space-x-2 pt-1">
               {#each colorLegend as color}
                 <button
@@ -311,7 +311,7 @@
 
           <!-- Story Content -->
           <div>
-              <label for="story-content" class="block text-gray-700 dark:text-gray-300 mb-2">
+              <label for="story-content" class="block text-gray-700 dark:text-gray-300 mb-2 text-lg">
                   Story Description
               </label>
               <div class="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
@@ -339,7 +339,7 @@
           <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
               <button 
                   id="more-actions-toggle"
-                  class="flex items-center space-x-2 font-bold text-gray-800 dark:text-gray-200 hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
+                  class="flex items-center space-x-2 font-bold text-lg lg:text-xl text-gray-800 dark:text-gray-200 hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
                   onclick={toggleMoreActions}
 
               >
@@ -351,10 +351,10 @@
                   <span>Additional Details</span>
               </button>
               
-              <div id="more-actions-content" class="{actionsHidden ? 'hidden' : ''} mt-4 space-y-4 pl-6 border-l-2 border-gray-100 dark:border-gray-700">
+              <div id="more-actions-content" class="{actionsHidden ? 'hidden' : ''} mt-4 space-y-4 ps-6 border-l-2 border-gray-100 dark:border-gray-700">
                   <!-- Story Points -->
                   <div>
-                      <label for="storyPoints" class="block text-gray-700 dark:text-gray-300 mb-2">
+                      <label for="storyPoints" class="block text-gray-700 dark:text-gray-300 mb-2 text-lg">
                           Story Points
                       </label>
                       <!-- <select class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
@@ -385,9 +385,9 @@
                   
                   <!-- Story Link -->
                   <div>
-                      <label for="storyLink" class="block text-gray-700 dark:text-gray-300 mb-2">
+                      <label for="storyLink" class="block text-gray-700 dark:text-gray-300 mb-2 text-lg">
                           Story Link
-                          <span class="text-gray-500 dark:text-gray-400 font-normal ml-1">(Optional)</span>
+                          <span class="text-gray-500 dark:text-gray-400 font-normal ms-1 text-lg">(Optional)</span>
                       </label>
                       <div class="relative">
                         <TextInput
@@ -397,10 +397,10 @@
                           placeholder="https://jira.company.com/browse/PROJ-123"
                           name="storyLink"
                           type="url"
-                          class="pl-10"
+                          class="ps-10"
                         />
                           <!-- <input 
-                              class="w-full px-4 py-3 pl-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                              class="w-full px-4 py-3 ps-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                           > -->
                           <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
@@ -411,12 +411,12 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Story Status-->
                     <div>
-                      <div class="text-gray-700 dark:text-gray-300 mb-3">
+                      <div class="text-gray-700 dark:text-gray-300 mb-3 text-lg">
                         Story Status
                       </div>
                       {#if !story.closed}
                         <HollowButton color="orange" onClick={markClosed}>
-                          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg class="w-4 h-4 inline me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                           </svg> Mark as Closed
                         </HollowButton>
@@ -429,15 +429,15 @@
 
                     <!-- Delete Story-->
                     <div>
-                      <h4 class="text-red-800 dark:text-red-400 mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <h4 class="text-red-800 dark:text-red-400 mb-3 flex items-center text-lg">
+                            <svg class="w-5 h-5 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.966-.833-2.736 0L3.478 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                             </svg>
                             Danger Zone
                       </h4>
                       <div class="flex space-x-3">
                           <HollowButton color="red" onClick={handleStoryDelete}>
-                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 inline me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16"></path>
                               </svg> Delete Story
                           </HollowButton>
@@ -456,7 +456,7 @@
                     onclick={toggleDiscussion}
 
                 >
-                    {#if actionsHidden}
+                    {#if discussionHidden}
                       <ChevronRight class="inline-block w-5 h-5" />
                     {:else}
                       <ChevronDown class="inline-block w-5 h-5" />
@@ -465,7 +465,7 @@
                 </button>
                 
                   
-                  <span class="text-normal ml-auto bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full">{story.comments ? `${story.comments.length}` : ''}</span>
+                  <span class="text-normal ms-auto bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 leading-none py-2 {story.comments.length > 9 ? 'px-2' : 'px-3'} rounded-full">{story.comments ? `${story.comments.length}` : ''}</span>
               </h3>
 
               <div class="{discussionHidden ? 'hidden' : ''}">
