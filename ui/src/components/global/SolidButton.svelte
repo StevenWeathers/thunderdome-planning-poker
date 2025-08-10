@@ -46,9 +46,9 @@
   }
 
   .btn-gray {
-    @apply bg-gray-500;
+    @apply bg-gray-400;
     @apply focus:ring-gray-300;
-    @apply hover:bg-gray-600;
+    @apply hover:bg-gray-500;
   }
 
   :global(.dark) .btn-gray {
