@@ -622,7 +622,7 @@
       >
         <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
       </SolidButton>
-      <SubMenu label="Settings" icon={Settings} testId="storyboard-settings">
+      <SubMenu label="Storyboard Settings" icon={Settings} testId="storyboard-settings">
         {#snippet children({ toggleSubmenu })}
           <SubMenuItem
             onClickHandler={togglePersonas(toggleSubmenu)}

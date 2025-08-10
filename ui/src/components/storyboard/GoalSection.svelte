@@ -82,7 +82,7 @@
           <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddColumn()}
         </SolidButton>
         
-        <SubMenu label="Settings" icon={Settings} testId="goal-settings">
+        <SubMenu label="Goal Settings" icon={Settings} testId="goal-settings">
           {#snippet children({ toggleSubmenu })}
             <SubMenuItem
               onClickHandler={handleToggleEdit(toggleSubmenu)}
