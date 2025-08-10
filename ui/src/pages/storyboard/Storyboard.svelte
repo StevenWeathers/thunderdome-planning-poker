@@ -75,8 +75,6 @@
   let activeStory = $state(null);
   let showDeleteStoryboard = $state(false);
   let showEditStoryboard = $state(false);
-  let collapseGoals = $state([]);
-  let showSettings = $state(false);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -336,8 +334,11 @@
     sendSocketEvent('concede_storyboard', '');
   }
 
-  function abandonStoryboard() {
-    sendSocketEvent('abandon_storyboard', '');
+  function abandonStoryboard(toggleSubmenu?: () => void) {
+    return () => {
+      sendSocketEvent('abandon_storyboard', '');
+      toggleSubmenu?.();
+    }
   }
 
   function toggleUsersPanel() {
@@ -346,16 +347,13 @@
     showUsers = !showUsers;
   }
 
-  function toggleColorLegend() {
-    showUsers = false;
-    showPersonas = false;
-    showColorLegend = !showColorLegend;
-  }
-
-  function togglePersonas() {
-    showUsers = false;
-    showColorLegend = false;
-    showPersonas = !showPersonas;
+  function togglePersonas(toggleSubmenu?: () => void) {
+    return () => {
+      showUsers = false;
+      showColorLegend = false;
+      showPersonas = !showPersonas;
+      toggleSubmenu?.();
+    }
   }
 
   function toggleColumnEdit(column) {
@@ -364,9 +362,12 @@
     };
   }
 
-  function toggleEditLegend() {
-    showColorLegend = false;
-    showColorLegendForm = !showColorLegendForm;
+  function toggleEditLegend(toggleSubmenu?: () => void) {
+    return () => {
+      showColorLegend = false;
+      showColorLegendForm = !showColorLegendForm;
+      toggleSubmenu?.();
+    }
   }
 
   const toggleEditPersona = persona => () => {
@@ -374,8 +375,11 @@
     showPersonasForm = showPersonasForm != null ? null : persona;
   };
 
-  const toggleDeleteStoryboard = () => {
-    showDeleteStoryboard = !showDeleteStoryboard;
+  const toggleDeleteStoryboard = (toggleSubmenu?: () => void) => {
+    return () => {
+      showDeleteStoryboard = !showDeleteStoryboard;
+      toggleSubmenu?.();
+    }
   };
 
   let showAddGoal = $state(false);
@@ -438,23 +442,16 @@
     toggleEditStoryboard();
   }
 
-  function toggleEditStoryboard() {
-    showEditStoryboard = !showEditStoryboard;
+  function toggleEditStoryboard(toggleSubmenu?: () => void) {
+    return () => {
+      showEditStoryboard = !showEditStoryboard;
+      toggleSubmenu?.();
+    }
   }
 
   const toggleStoryForm = story => () => {
     activeStory = activeStory != null ? null : story;
   };
-
-  function toggleGoalCollapse(goalId) {    
-    return () => {
-      if (collapseGoals.includes(goalId)) {
-        collapseGoals = collapseGoals.filter(g => g !== goalId);
-      } else {
-        collapseGoals.push(goalId);
-      }
-    };
-  }
 
   let showBecomeFacilitator = $state(false);
 
@@ -463,12 +460,11 @@
     toggleBecomeFacilitator();
   }
 
-  function toggleBecomeFacilitator() {
-    showBecomeFacilitator = !showBecomeFacilitator;
-  }
-
-  function toggleSettings() {
-    showSettings = !showSettings;
+  function toggleBecomeFacilitator(toggleSubmenu?: () => void) {
+    return () => {
+      showBecomeFacilitator = !showBecomeFacilitator;
+      toggleSubmenu?.();
+    }
   }
 
   let isFacilitator =
@@ -626,54 +622,47 @@
       >
         <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
       </SolidButton>
-      <div class="inline-block relative">
-        <SolidButton onClick={toggleSettings} color="blue" testid="storyboard-settings">
-          <Settings class="inline-block h-3.5 w-3.5 me-1.5 -ms-1" />Settings
-        </SolidButton>
-        {#if showSettings}
-          <SubMenu>
+      <SubMenu label="Settings" icon={Settings} testId="storyboard-settings">
+        {#snippet children({ toggleSubmenu })}
+          <SubMenuItem
+            onClickHandler={togglePersonas(toggleSubmenu)}
+            testId="personas-toggle"
+            icon={Users}
+            label={$LL.personas()}
+          />
+          <SubMenuItem
+            onClickHandler={toggleEditLegend(toggleSubmenu)}
+            testId="colorlegend"
+            icon={SwatchBook}
+            label={$LL.colorLegend()}
+          />
+          {#if isFacilitator}
             <SubMenuItem
-              onClickHandler={togglePersonas}
-              testId="personas-toggle"
-            >
-              <Users class="h-5 w-5 me-2 inline-block" />{$LL.personas()}
-            </SubMenuItem>
+              onClickHandler={toggleEditStoryboard(toggleSubmenu)}
+              testId="storyboard-edit"
+              icon={Pencil}
+              label={$LL.editStoryboard()}
+            />
             <SubMenuItem
-              onClickHandler={toggleEditLegend}
-              testId="colorlegend"
-            >
-              <SwatchBook class="h-5 w-5 me-2 inline-block" />{$LL.colorLegend()}
-            </SubMenuItem>
-            {#if isFacilitator}
-              <SubMenuItem
-                onClickHandler={toggleEditStoryboard}
-                testId="storyboard-edit"
-              >
-                <PencilIcon class="h-5 w-5 me-2 inline-block" />{$LL.editStoryboard()}
-              </SubMenuItem>
-              <SubMenuItem
-                onClickHandler={toggleDeleteStoryboard}
-                testId="storyboard-delete"
-              >
-                <Trash class="h-5 w-5 me-2 inline-block" />{$LL.deleteStoryboard()}
-              </SubMenuItem>
-            {:else}
-              <SubMenuItem
-                onClickHandler={toggleBecomeFacilitator}
-                testId="become-facilitator"
-              >
-                {$LL.becomeFacilitator()}
-              </SubMenuItem>
-              <SubMenuItem
-                onClickHandler={abandonStoryboard}
-                testId="storyboard-leave"
-              >
-                {$LL.leaveStoryboard()}
-              </SubMenuItem>
-            {/if}
-          </SubMenu>
-        {/if}
-      </div>
+              onClickHandler={toggleDeleteStoryboard(toggleSubmenu)}
+              testId="storyboard-delete"
+              icon={Trash}
+              label={$LL.deleteStoryboard()}
+            />
+          {:else}
+            <SubMenuItem
+              onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
+              testId="become-facilitator"
+              label={$LL.becomeFacilitator()}
+            />
+            <SubMenuItem
+              onClickHandler={abandonStoryboard(toggleSubmenu)}
+              testId="storyboard-leave"
+              label={$LL.leaveStoryboard()}
+            />
+          {/if}
+        {/snippet}
+      </SubMenu>
       <SolidButton
         color="gray"
         onClick={toggleUsersPanel}
@@ -969,7 +958,7 @@
 {#if showColorLegendForm}
   <ColorLegendForm
     handleLegendRevision={handleLegendRevision}
-    toggleEditLegend={toggleEditLegend}
+    toggleEditLegend={toggleEditLegend()}
     colorLegend={storyboard.color_legend}
     isFacilitator={isFacilitator}
   />
@@ -988,7 +977,7 @@
   <EditStoryboard
     storyboardName={storyboard.name}
     handleStoryboardEdit={handleStoryboardEdit}
-    toggleEditStoryboard={toggleEditStoryboard}
+    toggleEditStoryboard={toggleEditStoryboard()}
     joinCode={storyboard.joinCode}
     facilitatorCode={storyboard.facilitatorCode}
   />
@@ -996,7 +985,7 @@
 
 {#if showDeleteStoryboard}
   <DeleteConfirmation
-      toggleDelete={toggleDeleteStoryboard}
+      toggleDelete={toggleDeleteStoryboard()}
       handleDelete={concedeStoryboard}
       confirmText={"Are you sure you want to delete this Storyboard?"}
       confirmBtnText={"Delete Storyboard"}
@@ -1006,14 +995,14 @@
 {#if showBecomeFacilitator}
   <BecomeFacilitator
     handleBecomeFacilitator={becomeFacilitator}
-    toggleBecomeFacilitator={toggleBecomeFacilitator}
+    toggleBecomeFacilitator={toggleBecomeFacilitator()}
   />
 {/if}
 
 {#if showPersonas}
   <Personas
     personas={storyboard.personas}
-    toggle={togglePersonas}
+    toggle={togglePersonas()}
     handleDelete={handleDeletePersona}
     handleAdd={handlePersonaAdd}
     handleEdit={handlePersonaRevision}

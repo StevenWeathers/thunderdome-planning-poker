@@ -130,7 +130,7 @@
           </li>
         {/if}
         {#if $user.id}
-          <li class="relative">
+          <li>
             <NavUserMenu
               xfetch={xfetch}
               notifications={notifications}

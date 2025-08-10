@@ -27,28 +27,24 @@
   let { children, toggleEdit = (goalId: String) => () => {}, handleDelete = (goalId: String) => {}, handleColumnAdd = (goalId: String) => {}, goal = { id: "", columns: [] }, goalIndex = 0, isFacilitator = false  }: Props = $props();
 
   let collapsed = $state(false);
-  let showSettings = $state(false);
   let showDeleteConfirmation = $state(false);
 
   const toggleCollapse = () => {
     collapsed = !collapsed;
   };
 
-  const toggleSettings = () => {
-    showSettings = !showSettings;
-  };
-
-  const toggleDeleteConfirmation = () => {
+  const toggleDeleteConfirmation = (toggleSubmenu?: () => void) => () => {
     showDeleteConfirmation = !showDeleteConfirmation;
+    toggleSubmenu?.();
   };
 
   const handleDeletion = () => {
     handleDelete(goal.id);
   };
 
-  const handleToggleEdit = () => {
+  const handleToggleEdit = (toggleSubmenu?: () => void) => () => {
     toggleEdit(goal.id)();
-    toggleSettings();
+    toggleSubmenu?.();
   };
 
   const handleColAdd = () => {
@@ -57,12 +53,7 @@
 </script>
 
 <div data-goalid={goal.id} data-testid="storyboard-goal">
-  <div
-    class="flex px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex >
-    0
-      ? 'border-t-2'
-      : ''}"
-  >
+  <div class="flex px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex > 0 ? 'border-t-2' : ''}">
     <div class="w-3/4 relative">
       <div class="font-bold dark:text-gray-200 text-xl">
         <h2 class="inline-block align-middle pt-1">
@@ -76,7 +67,8 @@
             {:else}
               <ChevronUp class="me-1 inline-block" />
             {/if}
-          </button>{goal.name}&nbsp;<GoalEstimate columns={goal.columns} />
+            <span class="text-2xl text-gray-700 dark:text-gray-400">Goal</span> {goal.name} <GoalEstimate columns={goal.columns} />
+          </button>
         </h2>
       </div>
     </div>
@@ -89,29 +81,23 @@
         >
           <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddColumn()}
         </SolidButton>
-        <div class="inline-block relative">
-          <SolidButton onClick={toggleSettings} color="blue">
-            <Settings class="inline-block h-3.5 w-3.5 me-1.5 -ms-1" />Settings
-          </SolidButton>
-          {#if showSettings}
-            <SubMenu>
-              <SubMenuItem
-                onClickHandler={handleToggleEdit}
-                testId="goal-edit"
-              >
-                <Pencil class="h-5 w-5 me-2 inline-block" />{$LL.edit()}
-              </SubMenuItem>
-              <SubMenuItem
-                onClickHandler={toggleDeleteConfirmation}
-                testId="goal-delete"
-              >
-                <Trash
-                  class="h-5 w-5 me-2 inline-block"
-                />{$LL.delete()}
-              </SubMenuItem>
-            </SubMenu>
-          {/if}
-        </div>
+        
+        <SubMenu label="Settings" icon={Settings} testId="goal-settings">
+          {#snippet children({ toggleSubmenu })}
+            <SubMenuItem
+              onClickHandler={handleToggleEdit(toggleSubmenu)}
+              testId="goal-edit"
+              icon={Pencil}
+              label={$LL.edit()}
+            />
+            <SubMenuItem
+              onClickHandler={toggleDeleteConfirmation(toggleSubmenu)}
+              testId="goal-delete"
+              icon={Trash}
+              label={$LL.delete()}
+            />
+          {/snippet}
+        </SubMenu>
       {/if}
     </div>
   </div>
@@ -123,7 +109,7 @@
 
   {#if showDeleteConfirmation}
     <DeleteConfirmation
-        toggleDelete={toggleDeleteConfirmation}
+        toggleDelete={toggleDeleteConfirmation()}
         handleDelete={handleDeletion}
         confirmText={"Are you sure you want to delete this goal?"}
         confirmBtnText={"Delete Goal"}
