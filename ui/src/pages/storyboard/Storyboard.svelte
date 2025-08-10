@@ -4,8 +4,6 @@
   import { onDestroy, onMount } from 'svelte';
 
   import AddGoal from '../../components/storyboard/AddGoal.svelte';
-  import UserCard from '../../components/storyboard/UserCard.svelte';
-  import InviteUser from '../../components/storyboard/InviteUser.svelte';
   import ColumnForm from '../../components/storyboard/ColumnForm.svelte';
   import StoryForm from '../../components/storyboard/StoryForm.svelte';
   import ColorLegendForm from '../../components/storyboard/ColorLegendForm.svelte';
@@ -36,6 +34,7 @@
   import Personas from '../../components/storyboard/Personas.svelte';
   import GoalSection from '../../components/storyboard/GoalSection.svelte';
   import type { StoryboardPersona } from '../../types/storyboard';
+  import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
 
   interface Props {
     storyboardId: any;
@@ -303,7 +302,7 @@
     toggleColumnEdit()();
   };
 
-  const handleAddFacilitator = userId => () => {
+  const handleAddFacilitator = userId => {
     sendSocketEvent(
       'facilitator_add',
       JSON.stringify({
@@ -312,7 +311,7 @@
     );
   };
 
-  const handleRemoveFacilitator = userId => () => {
+  const handleRemoveFacilitator = userId => {
     if (storyboard.facilitators.length === 1) {
       notifications.danger($LL.removeOnlyFacilitatorError());
       return;
@@ -430,7 +429,7 @@
 
   function handleStoryboardEdit(revisedStoryboard) {
     sendSocketEvent('edit_storyboard', JSON.stringify(revisedStoryboard));
-    toggleEditStoryboard();
+    toggleEditStoryboard()();
   }
 
   function toggleEditStoryboard(toggleSubmenu?: () => void) {
@@ -667,30 +666,14 @@
     </div>
   </div>
   {#if showUsers}
-    <div>
-      <div
-        class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex flex-wrap">
-        <div class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs">
-          {#each storyboard.users as usr, index (usr.id)}
-            {#if usr.active}
-              <UserCard
-                user={usr}
-                showBorder={index !== storyboard.users.length - 1}
-                facilitators={storyboard.facilitators}
-                handleAddFacilitator={handleAddFacilitator}
-                handleRemoveFacilitator={handleRemoveFacilitator}
-              />
-            {/if}
-          {/each}
-        </div>
-      </div>
-      <div class="p-2">
-        <InviteUser
-          hostname={hostname}
-          storyboardId={storyboard.id}
-        />
-      </div>
-    </div>
+    <ActiveUsers
+      users={storyboard.users}
+      facilitatorIds={storyboard.facilitators}
+      isFacilitator={isFacilitator}
+      inviteUrl="{hostname}{appRoutes.storyboard}/{storyboard.id}"
+      onAddFacilitator={handleAddFacilitator}
+      onRemoveFacilitator={handleRemoveFacilitator}
+    />
   {/if}
   {#each storyboard.goals as goal, goalIndex (goal.id)}
     <GoalSection
