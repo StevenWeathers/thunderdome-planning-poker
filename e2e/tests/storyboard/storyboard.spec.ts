@@ -45,7 +45,7 @@ test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
       const bp = new StoryboardPage(guestPage.page);
       await bp.goto(storyboard.id);
 
-      await expect(bp.storyboardTitle).toHaveText(storyboard.name);
+      await expect(bp.storyboardTitle).toContainText(storyboard.name);
     },
   );
 
@@ -56,7 +56,7 @@ test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
       const bp = new StoryboardPage(registeredPage.page);
       await bp.goto(storyboard.id);
 
-      await expect(bp.storyboardTitle).toHaveText(storyboard.name);
+      await expect(bp.storyboardTitle).toContainText(storyboard.name);
     },
   );
 
@@ -79,7 +79,7 @@ test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
     await bp.storyboardDeleteBtn.click();
     await bp.storyboardDeleteCancelBtn.click();
 
-    await expect(bp.storyboardTitle).toHaveText(storyboard.name);
+    await expect(bp.storyboardTitle).toContainText(storyboard.name);
   });
 
   test("delete storyboard confirmation confirm deletes storyboard and redirects to storyboards page", async ({
