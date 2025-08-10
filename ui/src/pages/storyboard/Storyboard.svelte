@@ -9,22 +9,18 @@
   import ColumnForm from '../../components/storyboard/ColumnForm.svelte';
   import StoryForm from '../../components/storyboard/StoryForm.svelte';
   import ColorLegendForm from '../../components/storyboard/ColorLegendForm.svelte';
-  import PersonasForm from '../../components/storyboard/PersonasForm.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
-  import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import {
     ChevronDown,
-    ChevronUp,
     Link,
     MessageSquareMore,
     Pencil,
-    PencilIcon,
     Plus,
     Settings,
     SwatchBook,
@@ -39,6 +35,7 @@
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import Personas from '../../components/storyboard/Personas.svelte';
   import GoalSection from '../../components/storyboard/GoalSection.svelte';
+  import type { StoryboardPersona } from '../../types/storyboard';
 
   interface Props {
     storyboardId: any;
@@ -48,7 +45,7 @@
 
   let { storyboardId, notifications, router }: Props = $props();
 
-  const { AllowRegistration, AllowGuests } = AppConfig;
+  const { AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
@@ -70,7 +67,6 @@
   let showColorLegend = $state(false);
   let showColorLegendForm = $state(false);
   let showPersonas = $state(false);
-  let showPersonasForm = $state(null);
   let editColumn = $state(null);
   let activeStory = $state(null);
   let showDeleteStoryboard = $state(false);
@@ -370,11 +366,6 @@
     }
   }
 
-  const toggleEditPersona = persona => () => {
-    showPersonas = false;
-    showPersonasForm = showPersonasForm != null ? null : persona;
-  };
-
   const toggleDeleteStoryboard = (toggleSubmenu?: () => void) => {
     return () => {
       showDeleteStoryboard = !showDeleteStoryboard;
@@ -429,8 +420,8 @@
     sendSocketEvent('column_persona_remove', JSON.stringify(column_persona));
   };
 
-  const handlePersonaRevision = persona => {
-    sendSocketEvent('revise_persona', JSON.stringify(persona));
+  const handlePersonaRevision = (persona: StoryboardPersona) => {
+    sendSocketEvent('update_persona', JSON.stringify(persona));
   };
 
   const handleDeletePersona = personaId => () => {
@@ -964,15 +955,6 @@
   />
 {/if}
 
-{#if showPersonasForm}
-  <PersonasForm
-    toggleEditPersona={toggleEditPersona()}
-    persona={showPersonasForm}
-    handlePersonaAdd={handlePersonaAdd}
-    handlePersonaRevision={handlePersonaRevision}
-  />
-{/if}
-
 {#if showEditStoryboard}
   <EditStoryboard
     storyboardName={storyboard.name}
@@ -1002,10 +984,10 @@
 {#if showPersonas}
   <Personas
     personas={storyboard.personas}
-    toggle={togglePersonas()}
-    handleDelete={handleDeletePersona}
-    handleAdd={handlePersonaAdd}
-    handleEdit={handlePersonaRevision}
+    closeModal={togglePersonas()}
+    onDelete={handleDeletePersona}
+    onAdd={handlePersonaAdd}
+    onUpdate={handlePersonaRevision}
     isFacilitator={isFacilitator}
   />
 {/if}

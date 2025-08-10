@@ -34,10 +34,10 @@ export type StoryboardGoal = {
 };
 
 export type StoryboardPersona = {
-  description: string;
   id: string;
   name: string;
-  role: string;
+  role?: string;
+  description?: string;
 };
 
 export type StoryComment = {
