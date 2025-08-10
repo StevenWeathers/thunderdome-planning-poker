@@ -669,7 +669,7 @@
         testid="users-toggle"
       >
         <Users class="inline-block w-4 h-4 me-2" />
-        {$LL.users()}&nbsp;<span class="rounded-full bg-gray-500 dark:bg-gray-800 text-white dark:bg-gray-300 dark:text-gray-800 text-sm { storyboard.users.filter(u => u.active).length > 9 ? 'px-1' : 'px-2'}"
+        {$LL.users()}&nbsp;<span class="rounded-full bg-gray-500 text-white dark:bg-gray-300 dark:text-gray-800 text-sm { storyboard.users.filter(u => u.active).length > 9 ? 'px-1' : 'px-2'}"
         >{storyboard.users.filter(u => u.active).length}</span>
         <ChevronDown class="ms-1 inline-block w-4 h-4" />
       </SolidButton>
