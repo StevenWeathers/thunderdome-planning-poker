@@ -64,6 +64,7 @@ test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
     const bp = new StoryboardPage(registeredPage.page);
     await bp.goto(storyboardLeave.id);
 
+    await bp.page.click('[data-testid="storyboard-settings"]');
     await bp.page.click('[data-testid="storyboard-leave"]');
     await expect(bp.page.locator("h1")).toHaveText("My Storyboards");
   });
@@ -74,6 +75,7 @@ test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
     const bp = new StoryboardPage(registeredPage.page);
     await bp.goto(storyboardCancelDelete.id);
 
+    await bp.page.click('[data-testid="storyboard-settings"]');
     await bp.storyboardDeleteBtn.click();
     await bp.storyboardDeleteCancelBtn.click();
 
@@ -86,6 +88,7 @@ test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
     const bp = new StoryboardPage(registeredPage.page);
     await bp.goto(storyboardDelete.id);
 
+    await bp.page.click('[data-testid="storyboard-settings"]');
     await bp.storyboardDeleteBtn.click();
     await bp.storyboardDeleteConfirmBtn.click();
 

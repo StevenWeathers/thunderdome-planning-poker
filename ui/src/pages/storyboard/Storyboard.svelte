@@ -627,7 +627,7 @@
         <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
       </SolidButton>
       <div class="inline-block relative">
-        <SolidButton onClick={toggleSettings} color="blue">
+        <SolidButton onClick={toggleSettings} color="blue" testid="storyboard-settings">
           <Settings class="inline-block h-3.5 w-3.5 me-1.5 -ms-1" />Settings
         </SolidButton>
         {#if showSettings}
