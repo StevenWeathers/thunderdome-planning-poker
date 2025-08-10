@@ -249,10 +249,13 @@
         {/if}
       </div>
     {:else}
-      <div class="text-center py-8 text-gray-600 dark:text-gray-400 font-bold">
-        <Users class="w-12 h-12 mx-auto mb-4" />
-        <p class="text-xl text-gray-900 dark:text-gray-100">No personas yet</p>
-        <p class="text-lg">Add your first persona to get started</p>
+      <div class="py-8 text-gray-600 dark:text-gray-300 font-bold">
+        <div class="text-center">
+            <Users class="w-12 h-12 mx-auto mb-4" />
+            <p class="text-xl text-gray-900 dark:text-white">No personas yet</p>
+            <p class="text-lg mb-4">Add your first persona to get started</p>
+        </div>
+        <p class="rounded-lg text-left font-italic bg-gray-300 dark:bg-gray-700 p-3">User personas in agile story mapping represent different user types whose unique goals and needs help organize story columns by ensuring each vertical slice addresses specific user journeys and priorities.</p>
       </div>
     {/each}
       </div>
