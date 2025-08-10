@@ -255,7 +255,7 @@
             <p class="text-xl text-gray-900 dark:text-white">No personas yet</p>
             <p class="text-lg mb-4">Add your first persona to get started</p>
         </div>
-        <p class="rounded-lg text-left font-italic bg-gray-300 dark:bg-gray-700 p-3">User personas in agile story mapping represent different user types whose unique goals and needs help organize story columns by ensuring each vertical slice addresses specific user journeys and priorities.</p>
+        <p class="rounded-lg text-left bg-gray-200 dark:bg-gray-700 p-3">User personas in agile story mapping represent different user types whose unique goals and needs help organize story columns by ensuring each vertical slice addresses specific user journeys and priorities.</p>
       </div>
     {/each}
       </div>
