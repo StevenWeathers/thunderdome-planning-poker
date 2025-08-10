@@ -35,7 +35,7 @@
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import Personas from '../../components/storyboard/Personas.svelte';
   import GoalSection from '../../components/storyboard/GoalSection.svelte';
-  import type { StoryboardPersona } from '../../types/storyboard';
+  import type { StoryboardPersona, StoryboardUser } from '../../types/storyboard';
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
 
   interface Props {
@@ -72,6 +72,7 @@
   let activeStory = $state(null);
   let showDeleteStoryboard = $state(false);
   let showEditStoryboard = $state(false);
+  let activeUserCount = $state(0);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -90,16 +91,18 @@
         break;
       case 'user_joined':
         storyboard.users = JSON.parse(parsedEvent.value);
+        updateActiveUserCount();
         const joinedUser = storyboard.users.find(
           w => w.id === parsedEvent.userId,
         );
         notifications.success(`${joinedUser.name} joined.`);
         break;
-      case 'user_retreated':
+      case 'user_left':
         const leftUser = storyboard.users.find(
           w => w.id === parsedEvent.userId,
         );
         storyboard.users = JSON.parse(parsedEvent.value);
+        updateActiveUserCount();
 
         notifications.danger(`${leftUser.name} left.`);
         break;
@@ -459,6 +462,10 @@
     }
   }
 
+  function updateActiveUserCount() {
+    activeUserCount = storyboard.users.filter((u: StoryboardUser) => u.active).length;
+  }
+
   let isFacilitator =
     $derived(storyboard.facilitators && storyboard.facilitators.includes($user.id));
 
@@ -663,8 +670,8 @@
         testid="users-toggle"
       >
         <Users class="inline-block w-4 h-4 me-2" />
-        {$LL.users()}&nbsp;<span class="rounded-full bg-gray-500 text-white dark:bg-gray-300 dark:text-gray-800 text-sm { storyboard.users.filter(u => u.active).length > 9 ? 'px-1' : 'px-2'}"
-        >{storyboard.users.filter(u => u.active).length}</span>
+        {$LL.users()}&nbsp;<span class="rounded-full bg-gray-500 text-white dark:bg-gray-300 dark:text-gray-800 text-sm { activeUserCount > 9 ? 'px-1' : 'px-2'}"
+        >{activeUserCount}</span>
         <ChevronDown class="ms-1 inline-block w-4 h-4" />
       </SolidButton>
     </div>
