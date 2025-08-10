@@ -16,7 +16,9 @@
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import {
     ChevronDown,
+    Crown,
     Link,
+    LogOut,
     MessageSquareMore,
     Pencil,
     Plus,
@@ -643,11 +645,13 @@
             <SubMenuItem
               onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
               testId="become-facilitator"
+              icon={Crown}
               label={$LL.becomeFacilitator()}
             />
             <SubMenuItem
               onClickHandler={abandonStoryboard(toggleSubmenu)}
               testId="storyboard-leave"
+              icon={LogOut}
               label={$LL.leaveStoryboard()}
             />
           {/if}
