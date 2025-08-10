@@ -9,9 +9,10 @@
     handleLegendRevision?: any;
     toggleEditLegend?: any;
     colorLegend?: any;
+    isFacilitator?: boolean;
   }
 
-  let { handleLegendRevision = () => {}, toggleEditLegend = () => {}, colorLegend = $bindable([]) }: Props = $props();
+  let { handleLegendRevision = () => {}, toggleEditLegend = () => {}, colorLegend = $bindable([]), isFacilitator = false }: Props = $props();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -73,6 +74,7 @@
             bind:value="{colorLegend[i].legend}"
             placeholder={$LL.legendRetroPlaceholder()}
             name="legend-{color.color}"
+            disabled={!isFacilitator}
           />
         </div>
       {/each}

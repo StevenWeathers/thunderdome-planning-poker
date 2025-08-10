@@ -6,7 +6,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import Editor from '../forms/Editor.svelte';
   import { User, MessageCircleMore, ChevronRight, ChevronDown } from 'lucide-svelte';
-
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleStoryForm?: any;
@@ -33,6 +33,7 @@
   let selectedCommentContent = $state('');
   let actionsHidden = $state(true);
   let discussionHidden = $state(true);
+  let focusInput: any;
 
   let userMap = $derived(users.reduce((prev, usr) => {
     prev[usr.id] = usr.name;
@@ -162,6 +163,10 @@
   const toggleDiscussion = () => {
     discussionHidden = !discussionHidden;
   }
+
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <style>
@@ -287,6 +292,7 @@
                 value={story.name}
                 placeholder="e.g. User Authentication System"
                 name="storyName"
+                bind:this={focusInput}
               />
           </div>
 

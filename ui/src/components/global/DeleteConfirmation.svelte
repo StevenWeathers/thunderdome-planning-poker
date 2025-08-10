@@ -32,7 +32,7 @@
     >
       {confirmText}
     </div>
-    <div class="text-center text-red-400 dark:text-[#fdba8c]">
+    <div class="text-xl text-center text-red-400 dark:text-[#fdba8c]">
       {#if permanent}
         {$LL.cannotBeUndone()}
       {/if}

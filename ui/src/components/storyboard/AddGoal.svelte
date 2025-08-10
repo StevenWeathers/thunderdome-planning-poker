@@ -3,6 +3,7 @@
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
+  import { onMount } from 'svelte';
 
 
   interface Props {
@@ -21,6 +22,8 @@
     goalName = $bindable('')
   }: Props = $props();
 
+  let focusInput: any;
+
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -34,13 +37,17 @@
     }
     toggleAddGoal();
   }
+
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleAddGoal}>
   <form onsubmit={handleSubmit} name="addGoal">
     <div class="mb-4">
       <label
-        class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
+        class="block text-lg text-gray-700 dark:text-gray-300 font-bold mb-2"
         for="goalName"
       >
         {$LL.storyboardGoalName()}
@@ -50,6 +57,7 @@
         bind:value="{goalName}"
         placeholder={$LL.storyboardGoalNamePlaceholder()}
         name="goalName"
+        bind:this={focusInput}
       />
     </div>
     <div class="text-right">

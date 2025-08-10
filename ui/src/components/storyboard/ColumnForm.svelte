@@ -6,6 +6,7 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { Trash2, User } from 'lucide-svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleColumnEdit?: any;
@@ -32,6 +33,7 @@
   }: Props = $props();
 
   let selectedPersona = $state('');
+  let focusInput: any;
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -48,6 +50,10 @@
   function addPersona() {
     handlePersonaAdd({ column_id: column.id, persona_id: selectedPersona });
   }
+
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleColumnEdit}>
@@ -64,6 +70,7 @@
         bind:value="{column.name}"
         placeholder="Enter a column name"
         name="columnName"
+        bind:this={focusInput}
       />
     </div>
     <div class="flex">
