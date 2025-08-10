@@ -19,13 +19,13 @@
 
 <SubMenu relativeClass="z-10">
   {#snippet button({ toggleSubmenu })}
-    <span class="sr-only">Theme</span>
     <button
       class="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700"
       aria-label="Theme"
       type="button"
       onclick="{toggleSubmenu}"
     >
+      <span class="sr-only">Theme</span>
       <Sun class="dark:hidden h-5 w-5" />
       <MoonStar class="hidden h-5 w-5 dark:block" />
     </button>
