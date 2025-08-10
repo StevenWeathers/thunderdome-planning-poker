@@ -65,24 +65,29 @@
 </style>
 
 <Modal closeModal={toggleEditLegend}>
-  <form onsubmit={handleSubmit} name="colorLegend">
-    <div class="mt-8 mb-4">
+  <form onsubmit={handleSubmit} name="colorLegend" class="space-y-4 pt-6">
+    <h2 class="text-xl font-bold dark:text-gray-300">Story Color Legend</h2>
+    <div class="space-y-2">
       {#each colorLegend as color, i}
-        <div class="mb-1 flex">
-          <span class="p-4 inline-block colorcard-{color.color}"></span>
-          <TextInput
-            bind:value="{colorLegend[i].legend}"
-            placeholder={$LL.legendRetroPlaceholder()}
-            name="legend-{color.color}"
-            disabled={!isFacilitator}
-          />
+        <div class="group">                
+          <label class="flex-1 min-w-0">
+            <span class="sr-only">Color legend for {color.color}</span>
+            <TextInput
+              placeholder={$LL.legendRetroPlaceholder()}
+              name="legend-{color.color}"
+              disabled={!isFacilitator}
+              value={colorLegend[i].legend}
+            >
+              {#snippet startElement()}
+                <div class="w-6 h-6 rounded bg-gray-400 colorcard-{color.color}"></div>
+              {/snippet}
+            </TextInput>
+          </label>
         </div>
       {/each}
     </div>
-    <div class="text-right">
-      <div>
-        <SolidButton type="submit">{$LL.save()}</SolidButton>
-      </div>
+    <div class="flex justify-end">
+      <SolidButton type="submit">{$LL.save()}</SolidButton>
     </div>
   </form>
 </Modal>
