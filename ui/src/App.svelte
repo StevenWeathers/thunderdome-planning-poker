@@ -18,8 +18,8 @@
   import GlobalAlerts from './components/alert/GlobalAlerts.svelte';
   import GlobalFooter from './components/global/GlobalFooter.svelte';
   import Landing from './pages/Landing.svelte';
-  import Battle from './pages/poker/PokerGame.svelte';
-  import Battles from './pages/poker/PokerGames.svelte';
+  import PokerGame from './pages/poker/PokerGame.svelte';
+  import PokerGames from './pages/poker/PokerGames.svelte';
   import Retros from './pages/retro/Retros.svelte';
   import Retro from './pages/retro/Retro.svelte';
   import Storyboards from './pages/storyboard/Storyboards.svelte';
@@ -44,8 +44,8 @@
   import AdminTeam from './pages/admin/team/Team.svelte';
   import AdminApikeys from './pages/admin/user/ApiKeys.svelte';
   import AdminAlerts from './pages/admin/Alerts.svelte';
-  import AdminBattles from './pages/admin/poker/PokerGames.svelte';
-  import AdminBattle from './pages/admin/poker/PokerGame.svelte';
+  import AdminPokerGames from './pages/admin/poker/PokerGames.svelte';
+  import AdminPokerGame from './pages/admin/poker/PokerGame.svelte';
   import AdminRetros from './pages/admin/retro/Retros.svelte';
   import AdminRetro from './pages/admin/retro/Retro.svelte';
   import AdminStoryboards from './pages/admin/storyboard/Storyboards.svelte';
@@ -430,28 +430,28 @@
     });
     router.on(appRoutes.games, () => {
       currentPage = {
-        route: $user.id ? Battles : PokerLanding,
+        route: $user.id ? PokerGames : PokerLanding,
         params: {},
         name: 'battles',
       };
     });
     router.on(`${appRoutes.game}/:battleId`, params => {
       currentPage = {
-        route: Battle,
+        route: PokerGame,
         params,
         name: 'battle',
       };
     });
     router.on(`${appRoutes.adminPokerGames}`, () => {
       currentPage = {
-        route: AdminBattles,
+        route: AdminPokerGames,
         params: {},
         name: 'admin-games',
       };
     });
     router.on(`${appRoutes.adminPokerGames}/:battleId`, params => {
       currentPage = {
-        route: AdminBattle,
+        route: AdminPokerGame,
         params: params,
         name: 'admin-poker',
       };
