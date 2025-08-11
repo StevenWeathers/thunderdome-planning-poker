@@ -56,9 +56,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		Directives: map[string][]string{
 			cspbuilder.DefaultSrc: {"'self'", fmt.Sprintf("*.%s", a.Config.AppDomain)},
 			//	@TODO	- remove inline styles in svelte components to improve security by using nonce
-			cspbuilder.StyleSrc: {"'self'", "'unsafe-inline'", "https://fonts.googleapis.com"},
-			// Allow nonce-bearing inline loader and same-origin dynamic imports
-			cspbuilder.ScriptSrc:   {"$NONCE", "'self'", "'strict-dynamic'"},
+			cspbuilder.StyleSrc:    {"'self'", "'unsafe-inline'", "https://fonts.googleapis.com"},
+			cspbuilder.ScriptSrc:   {"$NONCE"},
 			cspbuilder.FontSrc:     {"'self'", "https://fonts.gstatic.com"},
 			cspbuilder.ImgSrc:      {"data:", "*"},
 			cspbuilder.ConnectSrc:  connectSrcCsp,
