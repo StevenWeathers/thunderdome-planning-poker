@@ -294,7 +294,7 @@ const es: Translation = {
   participation: 'Participación',
   passCode: 'Código',
   passCodeRequired: 'Código de acceso obligatorio',
-  personas: "Persona's",
+  personas: 'Personas',
   planAcceptanceCriteria: 'Criterios de aceptación',
   planAcceptanceCriteriaPlaceholder: 'Introducir criterios de aceptación',
   planAdd: 'Añadir historias',
