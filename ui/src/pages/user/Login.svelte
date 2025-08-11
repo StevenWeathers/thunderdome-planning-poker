@@ -32,46 +32,56 @@
   const { AllowRegistration } = AppConfig;
 
   let registerLink = $state(AllowRegistration ? appRoutes.register : '');
-  if (AllowRegistration) {
+  $effect(() => {
+    if (!AllowRegistration) {
+      registerLink = '';
+      return;
+    }
+    let base = appRoutes.register;
     if (teamInviteId) {
-      registerLink = `${registerLink}/team/${teamInviteId}`;
+      base = `${base}/team/${teamInviteId}`;
     }
     if (orgInviteId) {
-      registerLink = `${registerLink}/organization/${orgInviteId}`;
+      base = `${base}/organization/${orgInviteId}`;
     }
     if (battleId) {
-      registerLink = `${registerLink}/battle/${battleId}`;
+      base = `${base}/battle/${battleId}`;
     }
     if (retroId) {
-      registerLink = `${registerLink}/retro/${retroId}`;
+      base = `${base}/retro/${retroId}`;
     }
     if (storyboardId) {
-      registerLink = `${registerLink}/storyboard/${storyboardId}`;
+      base = `${base}/storyboard/${storyboardId}`;
     }
     if (subscription) {
-      registerLink = `${registerLink}/subscription`;
+      base = `${base}/subscription`;
     }
-  }
+    registerLink = base;
+  });
 
   let targetPage = $state(appRoutes.games);
-  if (teamInviteId) {
-    targetPage = `${appRoutes.invite}/team/${teamInviteId}`;
-  }
-  if (orgInviteId) {
-    targetPage = `${appRoutes.invite}/organization/${orgInviteId}`;
-  }
-  if (subscription) {
-    targetPage = `${appRoutes.subscriptionPricing}`;
-  }
-  if (battleId) {
-    targetPage = `${appRoutes.game}/${battleId}`;
-  }
-  if (retroId) {
-    targetPage = `${appRoutes.retro}/${retroId}`;
-  }
-  if (storyboardId) {
-    targetPage = `${appRoutes.storyboard}/${storyboardId}`;
-  }
+  $effect(() => {
+    let next = appRoutes.games;
+    if (teamInviteId) {
+      next = `${appRoutes.invite}/team/${teamInviteId}`;
+    }
+    if (orgInviteId) {
+      next = `${appRoutes.invite}/organization/${orgInviteId}`;
+    }
+    if (subscription) {
+      next = `${appRoutes.subscriptionPricing}`;
+    }
+    if (battleId) {
+      next = `${appRoutes.game}/${battleId}`;
+    }
+    if (retroId) {
+      next = `${appRoutes.retro}/${retroId}`;
+    }
+    if (storyboardId) {
+      next = `${appRoutes.storyboard}/${storyboardId}`;
+    }
+    targetPage = next;
+  });
 </script>
 
 <svelte:head>
