@@ -40,8 +40,6 @@
   import type { NotificationService } from '../../types/notifications';
 
   interface Props {
-    storyboardId: any;
-    notifications: any;
     router: any;
     storyboardId: string;
     notifications: NotificationService;
