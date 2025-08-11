@@ -5,9 +5,11 @@
   import { user } from '../../stores';
   import { User } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     toggleComments?: any;
     getRetrosActions?: any;
     actions?: any;

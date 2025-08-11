@@ -2,8 +2,10 @@
   import Modal from '../global/Modal.svelte';
   import UserRegisterForm from './UserRegisterForm.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
-    notifications: any;
+    notifications: NotificationService;
     toggleCreate?: any;
     handleCreate?: any;
   }

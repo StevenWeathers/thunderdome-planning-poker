@@ -17,9 +17,11 @@
   import BooleanDisplay from '../global/BooleanDisplay.svelte';
   import TableFooter from '../table/TableFooter.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     organizationId: any;
     teamId: any;
     departmentId: any;

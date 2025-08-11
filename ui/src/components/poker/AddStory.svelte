@@ -15,6 +15,7 @@
   import Editor from '../forms/Editor.svelte';
   import { onMount } from 'svelte';
 
+  import type { NotificationService } from '../../types/notifications';
 
   // going by common Jira issue types for now
   const planTypes = [
@@ -48,7 +49,7 @@
     handlePlanAdd?: any;
     toggleAddPlan?: any;
     handlePlanRevision?: any;
-    notifications: any;
+    notifications: NotificationService;
     planId?: string;
     planName?: string;
     planType?: any;

@@ -4,8 +4,10 @@
   import { appRoutes } from '../../config';
   import { ClipboardCopy } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
-    notifications: any;
+    notifications: NotificationService;
     hostname?: string;
     battleId?: string;
     joinCode?: string;

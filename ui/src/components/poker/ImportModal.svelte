@@ -11,8 +11,10 @@
   import StoryFromStoryboardImport from './StoryFromStoryboardImport.svelte';
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
-    notifications: any;
+    notifications: NotificationService;
     xfetch: any;
     toggleImport?: any;
     handlePlanAdd?: any;

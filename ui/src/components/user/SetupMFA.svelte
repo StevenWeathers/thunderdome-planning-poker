@@ -6,11 +6,13 @@
   import TextInput from '../forms/TextInput.svelte';
   import { Shield } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     toggleSetup?: any;
     handleComplete?: any;
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let {

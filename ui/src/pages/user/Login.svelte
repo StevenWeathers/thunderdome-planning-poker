@@ -3,10 +3,12 @@
   import LL from '../../i18n/i18n-svelte';
   import LoginForm from '../../components/auth/LoginForm.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     router: any;
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     battleId: any;
     retroId: any;
     storyboardId: any;

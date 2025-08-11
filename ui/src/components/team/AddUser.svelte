@@ -8,6 +8,8 @@
   import { onMount } from 'svelte';
   import { Mail } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     toggleAdd?: any;
     handleAdd?: any;
@@ -15,7 +17,7 @@
     pageType?: string;
     orgId?: string;
     deptId?: string;
-    notifications: any;
+    notifications: NotificationService;
     xfetch: any;
   }
 

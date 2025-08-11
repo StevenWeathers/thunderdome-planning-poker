@@ -6,6 +6,8 @@
   import BecomeLeader from './BecomeFacilitator.svelte';
   import { CircleUser, Crown, Ghost, Vote } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     voted?: boolean;
     warrior?: any;
@@ -14,7 +16,7 @@
     leaders?: any;
     points?: string;
     sendSocketEvent?: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let {

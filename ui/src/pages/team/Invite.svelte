@@ -6,10 +6,12 @@
   import SolidButton from '../../components/global/SolidButton.svelte';
   import { Check, TriangleAlert } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     router: any;
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     inviteType: any;
     inviteId: any;
   }

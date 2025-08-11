@@ -9,6 +9,8 @@
   import { type RetroTemplateFormat } from '../../types/retro';
   import ColumnForm from './ColumnForm.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     toggleCreate?: any;
     handleCreate?: any;
@@ -17,7 +19,7 @@
     departmentId: any;
     apiPrefix?: string;
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let {

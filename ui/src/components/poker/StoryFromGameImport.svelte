@@ -5,8 +5,10 @@
   import SolidButton from '../global/SolidButton.svelte';
   import { onMount } from 'svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
-    notifications: any;
+    notifications: NotificationService;
     xfetch: any;
     handleImport: any;
     gameId?: string;

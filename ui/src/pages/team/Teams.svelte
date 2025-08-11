@@ -17,10 +17,12 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let { xfetch, router, notifications }: Props = $props();

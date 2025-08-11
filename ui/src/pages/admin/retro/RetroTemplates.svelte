@@ -7,10 +7,12 @@
   import AdminPageLayout from '../../../components/admin/AdminPageLayout.svelte';
   import RetroTemplatesList from '../../../components/retrotemplate/RetroTemplatesList.svelte';
 
+  import type { NotificationService } from '../../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let { xfetch, router, notifications }: Props = $props();

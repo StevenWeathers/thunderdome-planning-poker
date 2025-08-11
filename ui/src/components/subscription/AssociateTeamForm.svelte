@@ -5,12 +5,13 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import { user } from '../../stores';
 
+  import type { NotificationService } from '../../types/notifications';
 
   interface Props {
     handleUpdate?: any;
     toggleClose?: any;
     xfetch?: any;
-    notifications: any;
+    notifications: NotificationService;
     subscriptionId?: string;
   }
 

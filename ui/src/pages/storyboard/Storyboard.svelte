@@ -37,11 +37,14 @@
   import GoalSection from '../../components/storyboard/GoalSection.svelte';
   import type { StoryboardPersona, StoryboardUser } from '../../types/storyboard';
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
+  import type { NotificationService } from '../../types/notifications';
 
   interface Props {
     storyboardId: any;
     notifications: any;
     router: any;
+    storyboardId: string;
+    notifications: NotificationService;
   }
 
   let { storyboardId, notifications, router }: Props = $props();

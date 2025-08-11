@@ -32,9 +32,11 @@
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     retroId: any;
-    notifications: any;
+    notifications: NotificationService;
     router: any;
     xfetch: any;
   }

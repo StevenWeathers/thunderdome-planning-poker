@@ -6,11 +6,13 @@
   import TextInput from '../forms/TextInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     handleCreate?: any;
     toggleClose?: any;
     xfetch?: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let {

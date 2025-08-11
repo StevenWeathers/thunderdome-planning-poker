@@ -22,9 +22,11 @@
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     battleId: string;
-    notifications: any;
+    notifications: NotificationService;
     router: any;
     xfetch: any;
   }

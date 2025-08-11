@@ -17,10 +17,12 @@
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
   import DeleteConfirmation from '../../../components/global/DeleteConfirmation.svelte';
 
+  import type { NotificationService } from '../../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     storyboardId: any;
   }
 

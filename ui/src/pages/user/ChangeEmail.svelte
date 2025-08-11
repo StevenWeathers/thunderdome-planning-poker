@@ -8,10 +8,12 @@
     import TextInput from '../../components/forms/TextInput.svelte';
     import SolidButton from '../../components/global/SolidButton.svelte';
 
+    import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
     verifyId: any;
-    notifications: any;
+    notifications: NotificationService;
     router: any;
     changeId: string;
   }

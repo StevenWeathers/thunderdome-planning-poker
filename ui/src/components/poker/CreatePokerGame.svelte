@@ -14,8 +14,10 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { Crown, Lock } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
-    notifications: any;
+    notifications: NotificationService;
     router: any;
     xfetch: any;
     apiPrefix?: string;

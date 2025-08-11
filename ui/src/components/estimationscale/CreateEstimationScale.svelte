@@ -8,6 +8,8 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     toggleCreate?: any;
     handleCreate?: any;
@@ -16,7 +18,7 @@
     departmentId: any;
     apiPrefix?: string;
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let {

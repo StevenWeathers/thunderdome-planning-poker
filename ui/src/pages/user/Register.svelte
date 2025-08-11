@@ -5,10 +5,12 @@
   import UserRegisterForm from '../../components/user/UserRegisterForm.svelte';
   import { onMount } from 'svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     router: any;
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     battleId: any;
     retroId: any;
     storyboardId: any;

@@ -6,11 +6,13 @@
   import TextInput from '../forms/TextInput.svelte';
   import { ClipboardCopy } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     handleApiKeyCreate?: any;
     toggleCreateApiKey?: any;
     xfetch?: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let {

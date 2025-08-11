@@ -9,9 +9,11 @@
   import Pagination from '../../components/global/Pagination.svelte';
   import BoxList from '../../components/BoxList.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     router: any;
   }
 

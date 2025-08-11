@@ -15,9 +15,11 @@
   import CrudActions from '../table/CrudActions.svelte';
   import { createEventDispatcher } from 'svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     orgId?: string;
     deptId?: string;
     teamPrefix?: string;
