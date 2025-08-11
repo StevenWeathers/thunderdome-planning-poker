@@ -15,11 +15,12 @@
   import { Crown, Lock } from 'lucide-svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     notifications: NotificationService;
     router: any;
-    xfetch: any;
+    xfetch: ApiClient;
     apiPrefix?: string;
   }
 

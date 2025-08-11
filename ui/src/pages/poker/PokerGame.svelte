@@ -23,12 +23,13 @@
   import { getWebsocketAddress } from '../../websocketUtil';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     battleId: string;
     notifications: NotificationService;
     router: any;
-    xfetch: any;
+    xfetch: ApiClient;
   }
 
   let {

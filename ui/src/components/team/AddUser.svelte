@@ -9,6 +9,7 @@
   import { Mail } from 'lucide-svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     toggleAdd?: any;
@@ -18,7 +19,7 @@
     orgId?: string;
     deptId?: string;
     notifications: NotificationService;
-    xfetch: any;
+    xfetch: ApiClient;
   }
 
   let {

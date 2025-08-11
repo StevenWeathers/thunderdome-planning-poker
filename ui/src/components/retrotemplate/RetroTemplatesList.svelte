@@ -20,9 +20,10 @@
   import ViewFormat from './ViewFormat.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     notifications: NotificationService;
     organizationId: any;
     teamId: any;

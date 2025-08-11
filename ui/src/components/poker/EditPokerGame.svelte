@@ -11,6 +11,7 @@
   import { ChevronDown, Crown, Lock } from 'lucide-svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
@@ -28,7 +29,7 @@
     hideVoterIdentity?: boolean;
     teamId?: string;
     notifications: NotificationService;
-    xfetch: any;
+    xfetch: ApiClient;
   }
 
   let {

@@ -16,9 +16,10 @@
   import Table from '../table/Table.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     notifications: NotificationService;
     toggle?: any;
     team?: any;

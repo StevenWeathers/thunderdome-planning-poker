@@ -37,9 +37,10 @@
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     router: any;
     notifications: NotificationService;
     organizationId: any;

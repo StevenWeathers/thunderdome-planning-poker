@@ -11,10 +11,11 @@
   import { createEventDispatcher } from 'svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     toggleClose?: any;
-    xfetch: any;
+    xfetch: ApiClient;
     notifications: NotificationService;
     organizationId: any;
     teamId: any;

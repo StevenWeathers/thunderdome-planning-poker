@@ -17,10 +17,11 @@
   import TableNav from '../../../components/table/TableNav.svelte';
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
 
-  import type { NotificationService } from '../../../types/notifications';
+  import type { NotificationService } from '../../../types/notifications'; 
+  import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     router: any;
     notifications: NotificationService;
     retroId: any;

@@ -14,11 +14,12 @@
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     router: any;
     notifications: NotificationService;
     subscriptionId: any;

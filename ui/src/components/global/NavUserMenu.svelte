@@ -9,12 +9,13 @@
   import SubMenuItem from './SubMenuItem.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     currentPage: any;
     notifications: NotificationService;
     router: any;
-    xfetch: any;
+    xfetch: ApiClient;
   }
 
   let { currentPage, notifications, router, xfetch }: Props = $props();

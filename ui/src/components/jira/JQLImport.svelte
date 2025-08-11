@@ -8,13 +8,14 @@
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   const dispatch = createEventDispatcher();
 
   interface Props {
     handleImport?: any;
     notifications: NotificationService;
-    xfetch: any;
+    xfetch: ApiClient;
   }
 
   let { handleImport = story => {}, notifications, xfetch }: Props = $props();

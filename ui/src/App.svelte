@@ -11,6 +11,7 @@
 
   import { AppConfig, appRoutes } from './config';
   import apiclient from './apiclient';
+  import type { ApiClient } from './types/apiclient';
   import { dir, user } from './stores';
 
   import Notifications from './components/global/Notifications.svelte';
@@ -601,7 +602,7 @@
 
   router.listen();
 
-  const xfetch = apiclient(handle401);
+  const xfetch: ApiClient = apiclient(handle401);
 
   function handle401(skipRedirect) {
     user.delete();

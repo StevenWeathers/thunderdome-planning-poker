@@ -9,6 +9,7 @@
   import { user } from '../../stores';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     toggleUpdate?: any;
@@ -17,7 +18,7 @@
     teamId: any;
     departmentId: any;
     apiPrefix: any;
-    xfetch: any;
+    xfetch: ApiClient;
     notifications: NotificationService;
     scaleId?: string;
     name?: string;

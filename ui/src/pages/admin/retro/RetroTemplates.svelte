@@ -7,10 +7,11 @@
   import AdminPageLayout from '../../../components/admin/AdminPageLayout.svelte';
   import RetroTemplatesList from '../../../components/retrotemplate/RetroTemplatesList.svelte';
 
-  import type { NotificationService } from '../../../types/notifications';
+  import type { NotificationService } from '../../../types/notifications'; 
+  import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     router: any;
     notifications: NotificationService;
   }

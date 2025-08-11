@@ -18,6 +18,7 @@
   import { BadgeCheck, Building, Mail } from 'lucide-svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
@@ -30,7 +31,7 @@
     handleUpdate?: any;
     toggleUpdatePassword: any;
     notifications: NotificationService;
-    xfetch: any;
+    xfetch: ApiClient;
   }
 
   let {
