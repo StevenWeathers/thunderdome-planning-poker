@@ -1125,7 +1125,7 @@ type RootTranslation = {
    */
   passCodeRequired: string;
   /**
-   * P​e​r​s​o​n​a​'​s
+   * P​e​r​s​o​n​a​s
    */
   personas: string;
   /**
@@ -3705,7 +3705,7 @@ export type TranslationFunctions = {
    */
   passCodeRequired: () => LocalizedString;
   /**
-   * Persona's
+   * Personas
    */
   personas: () => LocalizedString;
   /**

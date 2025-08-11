@@ -293,7 +293,7 @@ const pt: Translation = {
   participation: 'Participação',
   passCode: 'Código de acesso',
   passCodeRequired: 'Código de acesso necessário para participar',
-  personas: "Persona's",
+  personas: 'Personas',
   planAcceptanceCriteria: 'Critérios de Aceitação',
   planAcceptanceCriteriaPlaceholder: 'Insira os critérios de aceitação',
   planAdd: 'Adicionar história',
