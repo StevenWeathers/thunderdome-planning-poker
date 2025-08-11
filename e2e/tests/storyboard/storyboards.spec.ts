@@ -31,7 +31,7 @@ test.describe("Storyboards page", { tag: ["@storyboard"] }, () => {
       await storyboardsPage.createStoryboard({ name: storyboardName });
 
       const storyboardTitle = storyboardsPage.page.locator("h1");
-      await expect(storyboardTitle).toHaveText(storyboardName);
+      await expect(storyboardTitle).toContainText(storyboardName);
     });
 
     test("should display storyboards", async ({ guestPage }) => {
@@ -43,7 +43,7 @@ test.describe("Storyboards page", { tag: ["@storyboard"] }, () => {
       await storyboardsPage.createStoryboard({ name: storyboardName });
 
       const storyboardTitle = storyboardsPage.page.locator("h1");
-      await expect(storyboardTitle).toHaveText(storyboardName);
+      await expect(storyboardTitle).toContainText(storyboardName);
 
       await storyboardsPage.goto();
 
@@ -70,7 +70,7 @@ test.describe("Storyboards page", { tag: ["@storyboard"] }, () => {
       await storyboardsPage.createStoryboard({ name: storyboardName });
 
       const storyboardTitle = storyboardsPage.page.locator("h1");
-      await expect(storyboardTitle).toHaveText(storyboardName);
+      await expect(storyboardTitle).toContainText(storyboardName);
     });
 
     test("should display storyboards", async ({ registeredPage }) => {
@@ -82,7 +82,7 @@ test.describe("Storyboards page", { tag: ["@storyboard"] }, () => {
       await storyboardsPage.createStoryboard({ name: storyboardName });
 
       const storyboardTitle = storyboardsPage.page.locator("h1");
-      await expect(storyboardTitle).toHaveText(storyboardName);
+      await expect(storyboardTitle).toContainText(storyboardName);
 
       await storyboardsPage.goto();
 

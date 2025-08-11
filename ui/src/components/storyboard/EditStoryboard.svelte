@@ -4,6 +4,7 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import { Crown, Lock } from 'lucide-svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleEditStoryboard?: any;
@@ -21,6 +22,8 @@
     facilitatorCode = $bindable('')
   }: Props = $props();
 
+  let focusInput: any;
+
   function saveStoryboard(e) {
     e.preventDefault();
 
@@ -32,6 +35,10 @@
 
     handleStoryboardEdit(storyboard);
   }
+
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal
@@ -52,6 +59,7 @@
           bind:value="{storyboardName}"
           placeholder={$LL.storyboardNamePlaceholder()}
           id="storyboardName"
+          bind:this={focusInput}
           required
         />
       </div>

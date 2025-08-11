@@ -32,12 +32,9 @@
   };
 
   const {
-    AllowRegistration,
-    PathPrefix,
     FeaturePoker,
     FeatureRetro,
     FeatureStoryboard,
-    OrganizationsEnabled,
     HeaderAuthEnabled,
     SubscriptionsEnabled,
   } = AppConfig;
@@ -72,7 +69,7 @@
         setupI18n(newUser.locale);
         router.route(appRoutes.games, true);
       })
-      .catch(function (err) {
+      .catch(function () {
         notifications.danger($LL.authError());
       });
   }
@@ -101,15 +98,12 @@
         {#if !$user.id}
           <li>
             <LocaleMenu
-              currentPage={currentPage}
               selectedLocale={$locale}
-              on:locale-changed={e => setupI18n(e.detail)}
+              update={(l:Locales) => setupI18n(l)}
             />
           </li>
-          <li class="flex">
-            <ThemeSelector
-              currentPage={currentPage}
-            />
+          <li>
+            <ThemeSelector />
           </li>
           <li>
             {#if HeaderAuthEnabled}
@@ -130,7 +124,7 @@
           </li>
         {/if}
         {#if $user.id}
-          <li class="relative">
+          <li>
             <NavUserMenu
               xfetch={xfetch}
               notifications={notifications}

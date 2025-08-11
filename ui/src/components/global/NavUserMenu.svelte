@@ -5,38 +5,39 @@
   import UserAvatar from '../user/UserAvatar.svelte';
   import { onMount } from 'svelte';
   import { Lock, LogOut, User, Vote } from 'lucide-svelte';
+  import SubMenu from './SubMenu.svelte';
+  import SubMenuItem from './SubMenuItem.svelte';
 
-  export let currentPage;
-  export let notifications;
-  export let router;
-  export let xfetch;
-
-  let showMenu = false;
-  let profile = {};
-
-  function toggleMenu() {
-    showMenu = !showMenu;
+  interface Props {
+    currentPage: any;
+    notifications: any;
+    router: any;
+    xfetch: any;
   }
 
-  function pageChangeHandler() {
-    if (showMenu === true) {
-      toggleMenu();
+  let { currentPage, notifications, router, xfetch }: Props = $props();
+
+  let profile = $state({});
+
+  function goToProfile(toggleSubmenu?: () => void) {
+    return () => {
+      toggleSubmenu?.();
+      router.route(appRoutes.profile, true);
     }
   }
 
-  function goToProfile() {
-    toggleMenu();
-    router.route(appRoutes.profile, true);
+  function goToRegister(toggleSubmenu?: () => void) {
+    return () => {
+      toggleSubmenu?.();
+      router.route(appRoutes.register, true);
+    }
   }
 
-  function goToRegister() {
-    toggleMenu();
-    router.route(appRoutes.register, true);
-  }
-
-  function goToLogin() {
-    toggleMenu();
-    router.route(appRoutes.login, true);
+  function goToLogin(toggleSubmenu?: () => void) {
+    return () => {
+      toggleSubmenu?.();
+      router.route(appRoutes.login, true);
+    }
   }
 
   function getProfile() {
@@ -50,22 +51,19 @@
       });
   }
 
-  function logoutUser() {
-    xfetch('/api/auth/logout', { method: 'DELETE' })
-      .then(function () {
-        user.delete();
-        localStorage.removeItem('theme');
-        window.setTheme();
-        router.route(appRoutes.landing, true);
-      })
-      .catch(function () {
-        notifications.danger($LL.logoutError());
-      });
-  }
-
-  $: {
-    if (typeof currentPage !== 'undefined') {
-      pageChangeHandler();
+  function logoutUser(toggleSubmenu?: () => void) {
+    return () => {
+      xfetch('/api/auth/logout', { method: 'DELETE' })
+        .then(function () {
+          user.delete();
+          localStorage.removeItem('theme');
+          window.setTheme();
+          toggleSubmenu?.();
+          router.route(appRoutes.landing, true);
+        })
+        .catch(function () {
+          notifications.danger($LL.logoutError());
+        });
     }
   }
 
@@ -74,76 +72,61 @@
   });
 </script>
 
-<div>
-  <span
-    data-testid="usernav-name"
-    class="text-gray-600 dark:text-gray-300 font-semibold me-2"
-    >{$user.name}</span
-  >
-  <button
-    class="align-middle rounded-full focus:ring focus:outline-none focus:ring-indigo-600"
-    aria-label="Account"
-    aria-haspopup="true"
-    on:click="{toggleMenu}"
-  >
-    <UserAvatar
-      warriorId="{$user.id}"
-      pictureUrl="{profile.picture}"
-      gravatarHash="{profile.gravatarHash}"
-      class="object-cover w-10 h-10 rounded-full"
-      userName="{$user.name}"
-      avatar="{profile.avatar}"
-    />
-  </button>
-</div>
+<SubMenu relativeClass="z-10">
+  {#snippet button({ toggleSubmenu })}
+    <span
+      data-testid="usernav-name"
+      class="text-gray-600 dark:text-gray-300 font-semibold me-2"
+      >{$user.name}</span
+    >
+    <button
+      class="align-middle rounded-full focus:ring focus:outline-none focus:ring-indigo-600"
+      aria-label="Account"
+      aria-haspopup="true"
+      on:click="{toggleSubmenu}"
+    >
+      <UserAvatar
+        warriorId="{$user.id}"
+        pictureUrl="{profile.picture}"
+        gravatarHash="{profile.gravatarHash}"
+        class="object-cover w-10 h-10 rounded-full"
+        userName="{$user.name}"
+        avatar="{profile.avatar}"
+      />
+    </button>
+  {/snippet}
 
-{#if showMenu}
-  <ul
-    class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:border-gray-700 dark:text-gray-300 dark:bg-gray-700"
-    aria-label="submenu"
-  >
-    <li class="flex">
-      <button
-        class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-        data-testid="userprofile-link"
-        on:click="{goToProfile}"
-      >
-        <User class="h-6 w-6 me-3 inline-block" />
-        <span>{$LL.profile()}</span>
-      </button>
-    </li>
+  {#snippet children({ toggleSubmenu })}
+    <SubMenuItem
+      onClickHandler={goToProfile(toggleSubmenu)}
+      testId="userprofile-link"
+      icon={User}
+      label={$LL.profile()}
+      active={currentPage === 'profile'}
+    />
+
     {#if $user.rank === 'GUEST' && !AppConfig.OIDCAuthEnabled}
-      <li class="flex">
-        <button
-          class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-          data-testid="create-account-link"
-          on:click="{goToRegister}"
-        >
-          <Vote class="w-6 h-6 me-3 inline-block" />
-          <span>{$LL.createAccount()}</span>
-        </button>
-      </li>
-      <li class="flex">
-        <button
-          class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-          data-testid="login-link"
-          on:click="{goToLogin}"
-        >
-          <Lock class="w-6 h-6 me-3 inline-block" />
-          <span>{$LL.login()}</span>
-        </button>
-      </li>
+      <SubMenuItem
+        onClickHandler={goToRegister(toggleSubmenu)}
+        testId="create-account-link"
+        icon={Vote}
+        label={$LL.createAccount()}
+        active={currentPage === 'register'}
+      />
+      <SubMenuItem
+        onClickHandler={goToLogin(toggleSubmenu)}
+        testId="login-link"
+        icon={Lock}
+        label={$LL.login()}
+        active={currentPage === 'login'}
+      />
     {:else}
-      <li class="flex">
-        <button
-          class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-          data-testid="logout-link"
-          on:click="{logoutUser}"
-        >
-          <LogOut class="inline-block w-6 h-6 me-3" />
-          <span>{$LL.logout()}</span>
-        </button>
-      </li>
+      <SubMenuItem
+        onClickHandler={logoutUser(toggleSubmenu)}
+        testId="logout-link"
+        icon={LogOut}
+        label={$LL.logout()}
+      />
     {/if}
-  </ul>
-{/if}
+  {/snippet}
+</SubMenu>
