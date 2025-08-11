@@ -7,11 +7,13 @@
   import Editor from '../forms/Editor.svelte';
   import { User, MessageCircleMore, ChevronRight, ChevronDown } from 'lucide-svelte';
   import { onMount } from 'svelte';
+  
+  import type { NotificationService } from '../../types/notifications';
 
   interface Props {
     toggleStoryForm?: any;
     sendSocketEvent?: any;
-    notifications: any;
+    notifications: NotificationService;
     story?: any;
     colorLegend?: any;
     users?: any;

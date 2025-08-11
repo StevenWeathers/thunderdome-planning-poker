@@ -1,14 +1,14 @@
 <script lang="ts">
   interface Props {
     organizationId?: string;
-    userId?: string;
     xfetch?: any;
-    notifications: any;
+    notifications: NotificationService;
   }
+
+  import type { NotificationService } from '../../types/notifications';
 
   let {
     organizationId = '',
-    userId = '',
     xfetch = async () => {},
     notifications
   }: Props = $props();

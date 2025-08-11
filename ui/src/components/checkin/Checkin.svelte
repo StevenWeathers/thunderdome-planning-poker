@@ -9,6 +9,8 @@
   import { onMount } from 'svelte';
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     toggleCheckin?: any;
     handleCheckin?: any;
@@ -20,7 +22,7 @@
     blockers?: string;
     discuss?: string;
     goalsMet?: boolean;
-    notifications: any;
+    notifications: NotificationService;
     xfetch: any;
     teamPrefix?: string;
   }

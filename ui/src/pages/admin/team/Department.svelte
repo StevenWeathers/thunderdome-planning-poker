@@ -18,10 +18,12 @@
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import CrudActions from '../../../components/table/CrudActions.svelte';
 
+  import type { NotificationService } from '../../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     organizationId: any;
     departmentId: any;
   }

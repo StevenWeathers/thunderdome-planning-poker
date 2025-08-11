@@ -9,9 +9,11 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import { Crown, Lock } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     router: any;
     apiPrefix?: string;
   }

@@ -32,10 +32,12 @@
     Zap,
   } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let { xfetch, router, notifications }: Props = $props();

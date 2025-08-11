@@ -36,10 +36,12 @@
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     organizationId: any;
     departmentId: any;
     teamId: any;

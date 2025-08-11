@@ -5,10 +5,12 @@
   import SolidButton from '../global/SolidButton.svelte';
   import PasswordInput from '../forms/PasswordInput.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     handleUpdate?: any;
     toggleForm?: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let { handleUpdate = () => {}, toggleForm = () => {}, notifications }: Props = $props();

@@ -11,9 +11,11 @@
   import UpdatePokerSettings from './UpdatePokerSettings.svelte';
   import LL from '../../i18n/i18n-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     organizationId: any;
     teamId: any;
     departmentId: any;

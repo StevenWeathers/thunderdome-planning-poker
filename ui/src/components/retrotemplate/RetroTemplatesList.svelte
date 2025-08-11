@@ -19,9 +19,11 @@
   import { Eye } from 'lucide-svelte';
   import ViewFormat from './ViewFormat.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     organizationId: any;
     teamId: any;
     departmentId: any;

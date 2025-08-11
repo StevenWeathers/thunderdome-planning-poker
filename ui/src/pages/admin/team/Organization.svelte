@@ -19,10 +19,12 @@
   import TableNav from '../../../components/table/TableNav.svelte';
   import CrudActions from '../../../components/table/CrudActions.svelte';
 
+  import type { NotificationService } from '../../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     organizationId: any;
   }
 

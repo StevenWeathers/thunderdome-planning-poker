@@ -8,6 +8,7 @@
   import { user } from '../../stores';
   import ColumnForm from './ColumnForm.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
 
   interface Props {
     toggleUpdate?: any;
@@ -17,7 +18,7 @@
     departmentId: any;
     apiPrefix: any;
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     templateId?: string;
     name?: string;
     description?: string;

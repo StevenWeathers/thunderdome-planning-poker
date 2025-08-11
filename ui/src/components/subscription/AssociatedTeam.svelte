@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type { NotificationService } from '../../types/notifications';
+  
   interface Props {
     teamId?: string;
     userId?: string;
     xfetch?: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let {

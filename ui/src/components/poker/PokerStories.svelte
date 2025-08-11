@@ -15,11 +15,13 @@
   import ViewPlan from './ViewStory.svelte';
   import ImportModal from './ImportModal.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     plans?: any;
     isLeader?: boolean;
     sendSocketEvent?: any;
-    notifications: any;
+    notifications: NotificationService;
     xfetch: any;
     gameId?: string;
   }

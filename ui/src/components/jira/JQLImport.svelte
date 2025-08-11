@@ -7,11 +7,13 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   const dispatch = createEventDispatcher();
 
   interface Props {
     handleImport?: any;
-    notifications: any;
+    notifications: NotificationService;
     xfetch: any;
   }
 

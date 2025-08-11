@@ -13,12 +13,14 @@
   import TableContainer from '../../components/table/TableContainer.svelte';
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     subscriptionId: any;
   }
 

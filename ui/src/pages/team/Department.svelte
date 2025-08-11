@@ -19,10 +19,12 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     organizationId: any;
     departmentId: any;
   }

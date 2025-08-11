@@ -10,10 +10,12 @@
   import { onMount } from 'svelte';
   import CrudActions from '../table/CrudActions.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     teamPrefix?: String;
     pageType?: String;
   }

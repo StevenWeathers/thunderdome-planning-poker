@@ -16,10 +16,12 @@
   import CrudActions from '../../../components/table/CrudActions.svelte';
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
 
+  import type { NotificationService } from '../../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let { xfetch, router, notifications }: Props = $props();

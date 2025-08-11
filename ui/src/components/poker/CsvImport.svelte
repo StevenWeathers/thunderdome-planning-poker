@@ -3,8 +3,10 @@
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
-    notifications: any;
+    notifications: NotificationService;
     handlePlanAdd?: any;
   }
 

@@ -17,6 +17,8 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import { BadgeCheck, Building, Mail } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
     setLocale(locale);
@@ -27,7 +29,7 @@
     credential: any;
     handleUpdate?: any;
     toggleUpdatePassword: any;
-    notifications: any;
+    notifications: NotificationService;
     xfetch: any;
   }
 

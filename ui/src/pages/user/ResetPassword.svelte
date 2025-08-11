@@ -6,10 +6,12 @@
   import { appRoutes } from '../../config';
   import TextInput from '../../components/forms/TextInput.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     resetId: any;
   }
 

@@ -8,6 +8,7 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
 
+  import type { NotificationService } from '../../types/notifications';
 
   interface Props {
     toggleUpdate?: any;
@@ -17,7 +18,7 @@
     departmentId: any;
     apiPrefix: any;
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     scaleId?: string;
     name?: string;
     description?: string;

@@ -10,6 +10,8 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import { ChevronDown, Crown, Lock } from 'lucide-svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
 
@@ -25,7 +27,7 @@
     leaderCode?: string;
     hideVoterIdentity?: boolean;
     teamId?: string;
-    notifications: any;
+    notifications: NotificationService;
     xfetch: any;
   }
 

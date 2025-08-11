@@ -8,9 +8,11 @@
   import SubMenu from './SubMenu.svelte';
   import SubMenuItem from './SubMenuItem.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     currentPage: any;
-    notifications: any;
+    notifications: NotificationService;
     router: any;
     xfetch: any;
   }

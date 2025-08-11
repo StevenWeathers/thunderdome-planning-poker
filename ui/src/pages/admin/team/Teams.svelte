@@ -13,10 +13,12 @@
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import TableFooter from '../../../components/table/TableFooter.svelte';
 
+  import type { NotificationService } from '../../../types/notifications';
+
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
   }
 
   let { xfetch, router, notifications }: Props = $props();

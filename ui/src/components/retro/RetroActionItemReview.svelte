@@ -15,9 +15,11 @@
   import ActionComments from './ActionComments.svelte';
   import Table from '../table/Table.svelte';
 
+  import type { NotificationService } from '../../types/notifications';
+
   interface Props {
     xfetch: any;
-    notifications: any;
+    notifications: NotificationService;
     toggle?: any;
     team?: any;
   }

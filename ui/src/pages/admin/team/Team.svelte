@@ -19,12 +19,14 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import Toggle from '../../../components/forms/Toggle.svelte';
 
+  import type { NotificationService } from '../../../types/notifications';
+
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
   interface Props {
     xfetch: any;
     router: any;
-    notifications: any;
+    notifications: NotificationService;
     organizationId: any;
     departmentId: any;
     teamId: any;
