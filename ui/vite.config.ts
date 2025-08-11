@@ -20,6 +20,10 @@ export default defineConfig({
               '<script type="module" nonce="{{.Nonce}}" src="{{.UIConfig.AppConfig.PathPrefix}}',
             )
             .replace(
+              /<link rel="modulepreload" crossorigin href="/g,
+              '<link rel="modulepreload" nonce="{{.Nonce}}" href="{{.UIConfig.AppConfig.PathPrefix}}',
+            )
+            .replace(
               /<link rel="stylesheet" crossorigin href="/g,
               '<link rel="stylesheet" nonce="{{.Nonce}}" href="{{.UIConfig.AppConfig.PathPrefix}}',
             );
