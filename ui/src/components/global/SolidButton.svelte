@@ -132,11 +132,11 @@
     @apply focus:ring-sky-500;
   }
 
-  [dir='ltr'] .btn-blue-copy {
+  :global([dir='ltr']) .btn-blue-copy {
     @apply rounded-l-none;
   }
 
-  [dir='rtl'] .btn-blue-copy {
+  :global([dir='ltr']) .btn-blue-copy {
     @apply rounded-r-none;
   }
 
