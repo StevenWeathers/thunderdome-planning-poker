@@ -283,7 +283,7 @@ const en: BaseTranslation = {
   participation: 'Participation',
   passCode: 'Passcode',
   passCodeRequired: 'Passcode required to join',
-  personas: "Persona's",
+  personas: 'Personas',
   planAcceptanceCriteria: 'Acceptance Criteria',
   planAcceptanceCriteriaPlaceholder: 'Enter acceptance criteria',
   planAdd: 'Add Stories',

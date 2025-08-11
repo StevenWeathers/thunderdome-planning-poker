@@ -283,7 +283,7 @@ const ru: Translation = {
   participation: 'Participation',
   passCode: 'Passcode',
   passCodeRequired: 'Passcode required to join',
-  personas: "Persona's",
+  personas: 'Personas',
   planAcceptanceCriteria: 'Критерии выполнения',
   planAcceptanceCriteriaPlaceholder: 'Введите критерии выполнения задачи',
   planAdd: 'Add Stories',
