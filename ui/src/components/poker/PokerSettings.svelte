@@ -12,9 +12,10 @@
   import LL from '../../i18n/i18n-svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     notifications: NotificationService;
     organizationId: any;
     teamId: any;

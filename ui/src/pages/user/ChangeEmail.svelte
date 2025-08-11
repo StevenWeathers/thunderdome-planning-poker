@@ -9,9 +9,10 @@
     import SolidButton from '../../components/global/SolidButton.svelte';
 
     import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     verifyId: any;
     notifications: NotificationService;
     router: any;

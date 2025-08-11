@@ -1,8 +1,9 @@
 <script lang="ts">
   import CountryFlag from './CountryFlag.svelte';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
   }
 
   let { xfetch }: Props = $props();

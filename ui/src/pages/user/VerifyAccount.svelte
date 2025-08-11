@@ -1,9 +1,10 @@
 <script lang="ts">
   import PageLayout from '../../components/PageLayout.svelte';
   import LL from '../../i18n/i18n-svelte';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     verifyId: any;
   }
 

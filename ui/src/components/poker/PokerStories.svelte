@@ -16,13 +16,14 @@
   import ImportModal from './ImportModal.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     plans?: any;
     isLeader?: boolean;
     sendSocketEvent?: any;
     notifications: NotificationService;
-    xfetch: any;
+    xfetch: ApiClient;
     gameId?: string;
   }
 

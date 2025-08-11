@@ -16,10 +16,11 @@
   import CrudActions from '../../../components/table/CrudActions.svelte';
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
 
-  import type { NotificationService } from '../../../types/notifications';
+  import type { NotificationService } from '../../../types/notifications'; 
+  import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     router: any;
     notifications: NotificationService;
   }

@@ -7,9 +7,10 @@
   import Countries from '../components/user/Countries.svelte';
   import BrowserMock from '../components/global/BrowserMock.svelte';
   import { onMount } from 'svelte';
+  import type { ApiClient } from '../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
   }
 
   let { xfetch }: Props = $props();

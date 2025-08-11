@@ -7,11 +7,12 @@
   import { Shield } from 'lucide-svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     toggleSetup?: any;
     handleComplete?: any;
-    xfetch: any;
+    xfetch: ApiClient;
     notifications: NotificationService;
   }
 

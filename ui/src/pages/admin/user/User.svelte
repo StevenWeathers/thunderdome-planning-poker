@@ -20,10 +20,11 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import { BadgeCheck } from 'lucide-svelte';
 
-  import type { NotificationService } from '../../../types/notifications';
+  import type { NotificationService } from '../../../types/notifications'; 
+  import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     router: any;
     notifications: NotificationService;
     userId: any;

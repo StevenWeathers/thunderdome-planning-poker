@@ -10,6 +10,7 @@
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     toggleCheckin?: any;
@@ -23,7 +24,7 @@
     discuss?: string;
     goalsMet?: boolean;
     notifications: NotificationService;
-    xfetch: any;
+    xfetch: ApiClient;
     teamPrefix?: string;
   }
 

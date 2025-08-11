@@ -12,10 +12,11 @@
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     notifications: NotificationService;
-    xfetch: any;
+    xfetch: ApiClient;
     toggleImport?: any;
     handlePlanAdd?: any;
     gameId?: string;

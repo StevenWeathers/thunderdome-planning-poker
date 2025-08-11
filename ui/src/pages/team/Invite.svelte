@@ -7,10 +7,11 @@
   import { Check, TriangleAlert } from 'lucide-svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     router: any;
-    xfetch: any;
+    xfetch: ApiClient;
     notifications: NotificationService;
     inviteType: any;
     inviteId: any;

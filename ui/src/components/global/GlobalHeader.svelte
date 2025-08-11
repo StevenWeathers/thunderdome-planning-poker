@@ -13,9 +13,10 @@
   import DomeLogoLight from '../logos/DomeLogoLight.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
-    xfetch: any;
+    xfetch: ApiClient;
     router: any;
     notifications: NotificationService;
     currentPage: any;
@@ -48,7 +49,7 @@
 
   let showMobileMenu = $state(false);
 
-  function toggleMobileMenu(e) {
+  function toggleMobileMenu(e?: Event) {
     !!e && e.preventDefault();
     showMobileMenu = !showMobileMenu;
   }

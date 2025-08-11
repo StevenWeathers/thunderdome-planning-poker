@@ -6,10 +6,11 @@
   import { onMount } from 'svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     router: any;
-    xfetch: any;
+    xfetch: ApiClient;
     notifications: NotificationService;
     battleId: any;
     retroId: any;
