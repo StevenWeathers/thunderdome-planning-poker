@@ -85,15 +85,15 @@
       class="align-middle rounded-full focus:ring focus:outline-none focus:ring-indigo-600"
       aria-label="Account"
       aria-haspopup="true"
-      on:click="{toggleSubmenu}"
+      onclick={toggleSubmenu}
     >
       <UserAvatar
-        warriorId="{$user.id}"
-        pictureUrl="{profile.picture}"
-        gravatarHash="{profile.gravatarHash}"
+        warriorId={$user.id}
+        pictureUrl={profile.picture}
+        gravatarHash={profile.gravatarHash}
         class="object-cover w-10 h-10 rounded-full"
-        userName="{$user.name}"
-        avatar="{profile.avatar}"
+        userName={$user.name}
+        avatar={profile.avatar}
       />
     </button>
   {/snippet}
