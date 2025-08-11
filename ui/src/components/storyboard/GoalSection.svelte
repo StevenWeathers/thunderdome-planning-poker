@@ -24,7 +24,15 @@
     toggleEdit: any;
   }
 
-  let { children, toggleEdit = (goalId: String) => () => {}, handleDelete = (goalId: String) => {}, handleColumnAdd = (goalId: String) => {}, goal = { id: "", columns: [] }, goalIndex = 0, isFacilitator = false  }: Props = $props();
+  let {
+    children,
+    toggleEdit = (goalId: String) => () => {},
+    handleDelete = (goalId: String) => {},
+    handleColumnAdd = (goalId: String) => {},
+    goal = { id: "", columns: [] },
+    goalIndex = 0,
+    isFacilitator = false
+  }: Props = $props();
 
   let collapsed = $state(false);
   let showDeleteConfirmation = $state(false);
@@ -53,8 +61,8 @@
 </script>
 
 <div data-goalid={goal.id} data-testid="storyboard-goal">
-  <div class="flex px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex > 0 ? 'border-t-2' : ''}">
-    <div class="w-3/4 relative">
+  <div class="flex flex-wrap gap-y-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex > 0 ? 'border-t-2' : ''}">
+    <div class="grow">
       <div class="font-bold dark:text-gray-200 text-xl">
         <h2 class="inline-block align-middle pt-1">
           <button
@@ -72,7 +80,7 @@
         </h2>
       </div>
     </div>
-    <div class="w-1/4 flex justify-end space-x-2">
+    <div class="flex justify-end space-x-2">
       {#if isFacilitator}
         <SolidButton
           color="green"

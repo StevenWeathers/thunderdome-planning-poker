@@ -608,15 +608,15 @@
 <div class="w-full">
   <div
     class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
-        flex-wrap"
+        flex-wrap gap-y-2"
   >
 
-    <div class="w-1/3">
+    <div class="grow">
       <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
         <span class="text-2xl text-gray-700 dark:text-gray-400">{$LL.storyboard()}</span> {storyboard.name}
       </h1>
     </div>
-    <div class="w-2/3 flex justify-end space-x-2">
+    <div class="flex justify-end space-x-2">
       <SolidButton
         color="green"
         onClick={toggleAddGoal()}
