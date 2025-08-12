@@ -70,7 +70,7 @@
   }
 </style>
 
-<Modal closeModal={toggleEditLegend}>
+<Modal closeModal={toggleEditLegend} ariaLabel={$LL.modalStoryboardColorLegend()}>
   <form onsubmit={handleSubmit} name="colorLegend" class="space-y-4 pt-6">
     <h2 class="text-xl font-bold dark:text-gray-300">Story Color Legend</h2>
     <div class="space-y-2">

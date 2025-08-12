@@ -110,7 +110,7 @@
   });
 </script>
 
-<Modal closeModal={toggleClose}>
+<Modal closeModal={toggleClose} ariaLabel={$LL.modalUpdateRetroSettings()}>
   <form onsubmit={preventDefault(handleSubmit)} class="mt-6 space-y-6">
     <div>
       <label

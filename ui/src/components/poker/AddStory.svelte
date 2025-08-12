@@ -119,7 +119,7 @@
   });
 </script>
 
-<Modal closeModal={toggleAddPlan} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal={toggleAddPlan} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabel={$LL.modalAddPokerStory()}>
   <form onsubmit={handleSubmit} name="addPlan">
     <div class="mb-4">
       <label class="block font-bold mb-2 dark:text-gray-400" for="planType">

@@ -44,6 +44,7 @@
 <Modal
   closeModal={toggleEditStoryboard}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
+  ariaLabel={$LL.modalEditStoryboard()}
 >
   <form onsubmit={saveStoryboard} name="createStoryboard">
     <div class="mb-4">

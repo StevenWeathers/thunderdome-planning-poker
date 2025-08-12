@@ -45,7 +45,7 @@
     }
   }
 
-  function onSubmit(e) {
+  function onSubmit(e: Event) {
     e.preventDefault();
 
     const body = {
@@ -72,7 +72,7 @@
   });
 </script>
 
-<Modal closeModal={toggleClose}>
+<Modal closeModal={toggleClose} ariaLabel={$LL.modalCreateAlert()}>
   <form onsubmit={onSubmit} name="createAlert">
     <div class="mb-4">
       <label

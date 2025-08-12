@@ -91,7 +91,7 @@
   });
 </script>
 
-<Modal closeModal={toggleCreateApiKey}>
+<Modal closeModal={toggleCreateApiKey} ariaLabel={$LL.modalCreateApiKey()}>
   {#if apiKey === ''}
     <form onsubmit={handleSubmit} name="createApiKey">
       <div class="mb-4">

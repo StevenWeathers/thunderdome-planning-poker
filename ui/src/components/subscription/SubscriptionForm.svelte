@@ -103,7 +103,7 @@
   });
 </script>
 
-<Modal closeModal={toggleClose}>
+<Modal closeModal={toggleClose} ariaLabel={$LL.modalSubscriptionForm()}>
   <form onsubmit={handleSubmit} name="subscriptionform">
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="userId">

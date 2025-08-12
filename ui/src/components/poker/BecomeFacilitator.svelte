@@ -30,6 +30,7 @@
 <Modal
   closeModal={toggleBecomeLeader}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
+  ariaLabel={$LL.becomeFacilitator()}
 >
   <form onsubmit={handleSubmit} name="becomeLeader">
     <div class="mb-4">

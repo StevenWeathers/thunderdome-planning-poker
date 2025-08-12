@@ -84,7 +84,7 @@
   });
 </script>
 
-<Modal closeModal={toggleClose}>
+<Modal closeModal={toggleClose} ariaLabel={$LL.modalCreateRetroTemplate()}>
   <form onsubmit={onSubmit} name="createRetroTemplate">
     <div class="mb-4">
       <label

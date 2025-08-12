@@ -32,6 +32,7 @@
   "dependencies": {
     "compute-scroll-into-view": "^3.1.0",
     "d3-scale": "^4.0.2",
+    "focus-trap": "^7.6.5",
     "he": "^1.2.0",
     "js-cookie": "^3.0.5",
     "lucide-svelte": "^0.439.0",

@@ -38,7 +38,7 @@
   });
 </script>
 
-<Modal closeModal={toggleUpdate}>
+<Modal closeModal={toggleUpdate} ariaLabel={$LL.modalTeamUpdateUser()}>
   <form onsubmit={onSubmit} name="teamUpdateUser">
     <div class="mb-4">
       <label

@@ -125,7 +125,7 @@
   });
 </script>
 
-<Modal closeModal={toggleClose}>
+<Modal closeModal={toggleClose} ariaLabel={$LL.modalUpdateEstimationScale()}>
   <form onsubmit={onSubmit} name="updateEstimationScale">
     <div class="mb-4">
       <label

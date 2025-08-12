@@ -56,7 +56,7 @@
   });
 </script>
 
-<Modal closeModal={toggleColumnEdit}>
+<Modal closeModal={toggleColumnEdit} ariaLabel={$LL.modalStoryboardColumnSettings()}>
   <form onsubmit={handleSubmit} name="addColumn">
     <div class="mb-4">
       <label
