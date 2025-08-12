@@ -663,6 +663,7 @@ const en: BaseTranslation = {
   newEmailToLogin: 'From now on, please use your new email to login.',
   newEmail: 'New Email',
   enterYourNewEmail: 'Enter your new email',
+  retroSettings: 'Retro Settings',
 };
 
 export default en;

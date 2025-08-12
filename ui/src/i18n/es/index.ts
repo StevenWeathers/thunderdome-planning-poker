@@ -672,6 +672,7 @@ const es: Translation = {
     '¿Estás seguro de que deseas eliminar esta plantilla de retrospectiva?',
   removeRetroTemplate: 'Eliminar Plantilla de Retrospectiva',
   retroTemplateDefault: 'Establecer como plantilla predeterminada',
+  retroSettings: 'Retro Settings',
 };
 
 export default es;

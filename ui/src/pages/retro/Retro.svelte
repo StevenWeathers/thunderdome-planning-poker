@@ -5,9 +5,13 @@
   import {
     Check,
     ChevronRight,
+    Crown,
     ExternalLink,
+    LogOut,
     Pencil,
+    Settings,
     SquareCheckBig,
+    Trash,
   } from 'lucide-svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
@@ -34,6 +38,8 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import SubMenu from '../../components/global/SubMenu.svelte';
+  import SubMenuItem from '../../components/global/SubMenuItem.svelte';
 
   interface Props {
     retroId: any;
@@ -359,12 +365,16 @@
     sendSocketEvent('concede_retro', '');
   }
 
-  function abandonRetro() {
-    sendSocketEvent('abandon_retro', '');
-  }
+  function abandonRetro(toggleSubmenu?: () => void) {
+    return () => {
+      sendSocketEvent('abandon_retro', '');
+      toggleSubmenu?.();
+    };
+  };
 
-  const toggleDeleteRetro = () => {
+  const toggleDeleteRetro = (toggleSubmenu?: () => void) => () => {
     showDeleteRetro = !showDeleteRetro;
+    toggleSubmenu?.();
   };
 
   const toggleExport = () => {
@@ -534,8 +544,11 @@
     toggleEditRetro();
   }
 
-  function toggleEditRetro() {
-    showEditRetro = !showEditRetro;
+  function toggleEditRetro(toggleSubmenu?: () => void) {
+    return () => {
+      showEditRetro = !showEditRetro;
+      toggleSubmenu?.();
+    }
   }
 
   let showBecomeFacilitator = $state(false);
@@ -580,9 +593,12 @@
     }
   }
 
-  function toggleBecomeFacilitator() {
-    showBecomeFacilitator = !showBecomeFacilitator;
-  }
+  function toggleBecomeFacilitator(toggleSubmenu?: () => void) {
+    return () => {
+      showBecomeFacilitator = !showBecomeFacilitator;
+      toggleSubmenu?.();
+    };
+  };
 
   let showOpenActionItems = $state(false);
 
@@ -613,15 +629,15 @@
 
 <div class="flex flex-col flex-grow w-full">
   <div
-    class="flex-none px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
-        flex-wrap"
+    class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
+        flex-wrap gap-y-2"
   >
-    <div class="w-1/4">
+    <div class="grow">
       <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
         {retro.name}
       </h1>
     </div>
-    <div class="w-3/4 text-right">
+    <div class="flex justify-end space-x-2">
       <div>
         {#if retro.phase === 'completed'}
           <SolidButton
@@ -644,6 +660,7 @@
             on:ended={phaseTimeRanOut}
           />
         {/if}
+
         {#if isFacilitator}
           {#if retro.phase !== 'completed'}
             <SolidButton
@@ -654,46 +671,45 @@
               {$LL.nextPhase()}
             </SolidButton>
           {/if}
-
-          <HollowButton
-            color="blue"
-            onClick={toggleEditRetro}
-            testid="retro-edit"
-          >
-            {$LL.editRetro()}
-          </HollowButton>
-
-          <HollowButton
-            color="red"
-            onClick={toggleDeleteRetro}
-            class="me-2"
-            testid="retro-delete"
-          >
-            {$LL.deleteRetro()}
-          </HollowButton>
-        {:else}
-          <HollowButton
-            color="blue"
-            onClick={toggleBecomeFacilitator}
-            testid="become-facilitator"
-          >
-            {$LL.becomeFacilitator()}
-          </HollowButton>
-          <HollowButton
-            color="red"
-            onClick={abandonRetro}
-            testid="retro-leave"
-          >
-            {$LL.leaveRetro()}
-          </HollowButton>
         {/if}
+        <SubMenu label={$LL.retroSettings()} icon={Settings} testId="retro-settings">
+            {#snippet children({ toggleSubmenu })}
+              {#if isFacilitator}
+                <SubMenuItem
+                  onClickHandler={toggleEditRetro(toggleSubmenu)}
+                  testId="retro-edit"
+                  icon={Pencil}
+                  label={$LL.editRetro()}
+                />
+                <SubMenuItem
+                  onClickHandler={toggleDeleteRetro(toggleSubmenu)}
+                  testId="retro-delete"
+                  icon={Trash}
+                  label={$LL.deleteRetro()}
+                />
+              {:else}
+                <SubMenuItem
+                  onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
+                  testId="become-facilitator"
+                  icon={Crown}
+                  label={$LL.becomeFacilitator()}
+                />
+                <SubMenuItem
+                  onClickHandler={abandonRetro(toggleSubmenu)}
+                  testId="retro-leave"
+                  icon={LogOut}
+                  label={$LL.leaveRetro()}
+                />
+              {/if}
+            {/snippet}
+        </SubMenu>
       </div>
     </div>
   </div>
   <div
-    class="flex-none px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-gray-400 dark:border-gray-700 flex flex-wrap"
+    class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-gray-400 dark:border-gray-700 flex flex-wrap gap-y-2"
   >
-    <div class="w-1/2">
+    <div class="grow">
       <div class="flex items-center text-gray-500 dark:text-gray-300">
         <div
           class="flex-initial px-1 {retro.phase === 'intro' &&
@@ -749,7 +765,7 @@
         </div>
       </div>
     </div>
-    <div class="w-1/2 text-right text-gray-600 dark:text-gray-400">
+    <div class="flex justify-end text-gray-600 dark:text-gray-400">
       {#if retro.phase === 'brainstorm'}
         {$LL.brainstormPhaseDescription()}
       {:else if retro.phase === 'group'}
@@ -1010,7 +1026,7 @@
   <EditRetro
     retroName={retro.name}
     handleRetroEdit={handleRetroEdit}
-    toggleEditRetro={toggleEditRetro}
+    toggleEditRetro={toggleEditRetro()}
     joinCode={retro.joinCode}
     facilitatorCode={retro.facilitatorCode}
     maxVotes={retro.maxVotes}
@@ -1021,7 +1037,7 @@
 
 {#if showDeleteRetro}
   <DeleteConfirmation
-    toggleDelete={toggleDeleteRetro}
+    toggleDelete={toggleDeleteRetro()}
     handleDelete={concedeRetro}
     confirmText={$LL.confirmDeleteRetro()}
     confirmBtnText={$LL.deleteRetro()}
@@ -1044,7 +1060,7 @@
 {#if showBecomeFacilitator}
   <BecomeFacilitator
     handleBecomeFacilitator={becomeFacilitator}
-    toggleBecomeFacilitator={toggleBecomeFacilitator}
+    toggleBecomeFacilitator={toggleBecomeFacilitator()}
   />
 {/if}
 

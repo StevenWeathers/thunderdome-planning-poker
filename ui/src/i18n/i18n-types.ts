@@ -2593,6 +2593,10 @@ type RootTranslation = {
    * E​n​t​e​r​ ​y​o​u​r​ ​n​e​w​ ​e​m​a​i​l
    */
   enterYourNewEmail: string;
+  /**
+   * R​e​t​r​o​ ​S​e​t​t​i​n​g​s
+   */
+  retroSettings: string;
 };
 
 export type TranslationFunctions = {
@@ -5164,6 +5168,10 @@ export type TranslationFunctions = {
    * Enter your new email
    */
   enterYourNewEmail: () => LocalizedString;
+  /**
+   * Retro Settings
+   */
+  retroSettings: () => LocalizedString;
 };
 
 export type Formatters = {};
