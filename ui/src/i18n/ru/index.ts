@@ -647,6 +647,18 @@ const ru: Translation = {
     'Are you sure you want to remove this retrospective template?',
   removeRetroTemplate: 'Remove Retrospective Template',
   retroTemplateDefault: 'Set as default template',
+  jiradatacenterLabel: 'Jira DataCenter',
+  loginWithSSO: 'Войти через {provider}',
+  requestEmailChangeSuccess:
+    'Запрос на изменение электронной почты отправлен, проверьте свой почтовый ящик для получения инструкций',
+  requestEmailChangeError: 'Ошибка при попытке изменить электронную почту',
+  changeEmail: 'Изменить электронную почту',
+  errorChangingEmail:
+    'Ошибка при попытке изменить электронную почту, возможно, эта ссылка истекла или уже была использована.',
+  emailChanged: 'Электронная почта успешно изменена',
+  newEmailToLogin: 'Отныне используйте новую электронную почту для входа.',
+  newEmail: 'Новая электронная почта',
+  enterYourNewEmail: 'Введите новую электронную почту',
   retroSettings: 'Retro Settings',
   enterFacilitatorCode: 'Enter the Facilitator Code',
   // Modal ariaLabels

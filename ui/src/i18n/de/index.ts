@@ -688,6 +688,18 @@ const de: Translation = {
     'Wollen Sie diese Retrovorlage wirklich löschen?',
   removeRetroTemplate: 'Retrovorlage löschen',
   retroTemplateDefault: 'Als Standardvorlage setzten',
+  jiradatacenterLabel: 'Jira DataCenter',
+  requestEmailChangeSuccess:
+    'E-Mail-Änderungsanfrage gesendet, überprüfen Sie Ihren Posteingang für Anweisungen',
+  requestEmailChangeError: 'Fehler beim Versuch, die E-Mail zu ändern',
+  changeEmail: 'E-Mail ändern',
+  errorChangingEmail:
+    'Fehler beim Versuch, die E-Mail zu ändern, möglicherweise ist dieser Link abgelaufen oder wurde bereits verwendet.',
+  emailChanged: 'E-Mail erfolgreich geändert',
+  newEmailToLogin:
+    'Von jetzt an verwenden Sie bitte Ihre neue E-Mail für die Anmeldung.',
+  newEmail: 'Neue E-Mail',
+  enterYourNewEmail: 'Geben Sie Ihre neue E-Mail ein',
   retroSettings: 'Retro Settings',
   enterFacilitatorCode: 'Enter the Facilitator Code',
   // Modal ariaLabels

@@ -705,8 +705,21 @@ const fr: Translation = {
     'Êtes-vous sûr de vouloir supprimer ce modèle de rétrospective ?',
   removeRetroTemplate: 'Supprimer le modèle de rétrospective',
   retroTemplateDefault: 'Définir comme modèle par défaut',
-  retroSettings: 'Retro Settings',
-  enterFacilitatorCode: 'Enter the Facilitator Code',
+  jiradatacenterLabel: 'Jira DataCenter',
+  loginWithSSO: 'Se connecter avec {provider}',
+  requestEmailChangeSuccess:
+    'Demande de changement de mail envoyée, vérifiez votre boîte de réception pour les instructions',
+  requestEmailChangeError: 'Erreur lors de la tentative de changement de mail',
+  changeEmail: 'Changer le mail',
+  errorChangingEmail:
+    'Erreur lors de la tentative de changement de mail, peut-être que ce lien a expiré ou a déjà été utilisé.',
+  emailChanged: 'Mail changé avec succès',
+  newEmailToLogin:
+    'À partir de maintenant, utilisez votre nouveau mail pour vous connecter.',
+  newEmail: 'Nouveau mail',
+  enterYourNewEmail: 'Entrez votre nouveau mail',
+  retroSettings: 'Paramètres de rétro',
+  enterFacilitatorCode: 'Entrez le code facilitateur',
   // Modal ariaLabels
   modalCreateAlert: 'Créer une alerte',
   modalUpdateEstimationScale: "Mettre à jour l'échelle d'estimation",

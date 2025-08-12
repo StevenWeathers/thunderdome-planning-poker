@@ -676,6 +676,18 @@ const it: Translation = {
     'Are you sure you want to remove this retrospective template?',
   removeRetroTemplate: 'Remove Retrospective Template',
   retroTemplateDefault: 'Set as default template',
+  jiradatacenterLabel: 'Jira DataCenter',
+  loginWithSSO: 'Accedi con {provider}',
+  requestEmailChangeSuccess:
+    'Richiesta di cambio email inviata, controlla la tua casella di posta per le istruzioni',
+  requestEmailChangeError: 'Errore durante il tentativo di cambio email',
+  changeEmail: 'Cambia Email',
+  errorChangingEmail:
+    'Errore durante il tentativo di cambio email, forse questo link è scaduto o è già stato utilizzato.',
+  emailChanged: 'Email cambiata con successo',
+  newEmailToLogin: 'Da ora in poi, usa la tua nuova email per accedere.',
+  newEmail: 'Nuova Email',
+  enterYourNewEmail: 'Inserisci la tua nuova email',
   retroSettings: 'Retro Settings',
   enterFacilitatorCode: 'Enter the Facilitator Code',
   // Modal ariaLabels

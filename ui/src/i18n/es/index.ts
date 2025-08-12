@@ -220,7 +220,7 @@ const es: Translation = {
   joinStoryboard: 'Únete al Storyboard',
   joinStoryboardError:
     'Error al unirse al storyboard, actualice e inténtelo de nuevo.',
-  landingCountries: 'Usuarios en más de {contar} países',
+  landingCountries: 'Usuarios en más de {count} países',
   landingFeatureOpenSourceText:
     'Echa un vistazo al {repoOpen}Repositorio Github{repoClose} para solicitar o aportar mejoras, traducciones a otros idiomas y correcciones de errores o para {donateOpen}Donar{donateClose}.',
   landingFeatureOpenSourceTitle: 'Código abierto',
@@ -669,6 +669,19 @@ const es: Translation = {
     '¿Estás seguro de que deseas eliminar esta plantilla de retrospectiva?',
   removeRetroTemplate: 'Eliminar Plantilla de Retrospectiva',
   retroTemplateDefault: 'Establecer como plantilla predeterminada',
+  jiradatacenterLabel: 'Jira DataCenter',
+  loginWithSSO: 'Iniciar sesión con {provider}',
+  requestEmailChangeSuccess:
+    'Solicitud de cambio de correo electrónico enviada, revise su bandeja de entrada para obtener instrucciones',
+  requestEmailChangeError: 'Error al intentar cambiar el correo electrónico',
+  changeEmail: 'Cambiar Correo Electrónico',
+  errorChangingEmail:
+    'Error al intentar cambiar el correo electrónico, tal vez este enlace expiró o ya fue utilizado.',
+  emailChanged: 'Correo electrónico cambiado exitosamente',
+  newEmailToLogin:
+    'A partir de ahora, use su nuevo correo electrónico para iniciar sesión.',
+  newEmail: 'Nuevo Correo Electrónico',
+  enterYourNewEmail: 'Ingrese su nuevo correo electrónico',
   retroSettings: 'Retro Settings',
   enterFacilitatorCode: 'Enter the Facilitator Code',
   // Modal ariaLabels
