@@ -78,7 +78,6 @@ const de: Translation = {
   battlesActive: 'Aktive Partien',
   battlesActiveUsers: 'Aktive Benutzer in der Partie',
   becomeFacilitator: 'Moderator werden',
-  becomeLeader: 'Anführer werden',
   becomeParticipant: 'Teilnehmer werden',
   becomeSpectator: 'Zuschauer werden',
   blocked: 'Blockiert',
@@ -237,8 +236,6 @@ const de: Translation = {
     'Remote-Team-Zusammenarbeit mit agiler Story-Punktbewertung, Sprint-Retrospektive, Story-Mapping und asynchronem Team-Check-In.',
   landingTitle: 'Thunderdome ist eine Agile Planning Poker App',
   lastActive: 'Zuletzt aktiv',
-  leader: 'Anführer',
-  leaderPasscode: 'Anführer Passcode',
   leaveRetro: 'Retro verlassen',
   leaveStoryboard: 'Storyboard verlassen',
   legendRetroPlaceholder: 'Geben Sie eine Farblegende ein',
@@ -692,6 +689,7 @@ const de: Translation = {
   removeRetroTemplate: 'Retrovorlage löschen',
   retroTemplateDefault: 'Als Standardvorlage setzten',
   retroSettings: 'Retro Settings',
+  enterFacilitatorCode: 'Enter the Facilitator Code',
 };
 
 export default de;

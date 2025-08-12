@@ -73,7 +73,6 @@ const ru: Translation = {
   battlesActive: 'Active Games',
   battlesActiveUsers: 'Active Game Users',
   becomeFacilitator: 'Become Facilitator',
-  becomeLeader: 'Become Leader',
   becomeParticipant: 'Become Participant',
   becomeSpectator: 'Become Spectator',
   blocked: 'Blocked',
@@ -223,8 +222,6 @@ const ru: Translation = {
     'Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.',
   landingTitle: 'Thunderdome is an Agile Planning Poker app',
   lastActive: 'Last Active',
-  leader: 'Создатель',
-  leaderPasscode: 'Leader code',
   leaveRetro: 'Leave Retro',
   leaveStoryboard: 'Leave Storyboard',
   legendRetroPlaceholder: 'Enter a color legend',
@@ -651,6 +648,7 @@ const ru: Translation = {
   removeRetroTemplate: 'Remove Retrospective Template',
   retroTemplateDefault: 'Set as default template',
   retroSettings: 'Retro Settings',
+  enterFacilitatorCode: 'Enter the Facilitator Code',
 };
 
 export default ru;

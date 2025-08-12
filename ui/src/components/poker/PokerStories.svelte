@@ -20,7 +20,7 @@
 
   interface Props {
     plans?: any;
-    isLeader?: boolean;
+    isFacilitator?: boolean;
     sendSocketEvent?: any;
     notifications: NotificationService;
     xfetch: ApiClient;
@@ -29,7 +29,7 @@
 
   let {
     plans = $bindable([]),
-    isLeader = false,
+    isFacilitator = false,
     sendSocketEvent = (event: string, value: string) => {},
     notifications,
     xfetch,
@@ -173,7 +173,7 @@
       </h3>
     </div>
     <div class="w-2/3 text-right">
-      {#if isLeader}
+      {#if isFacilitator}
         <HollowButton onClick={toggleImport} color="blue">
           {$LL.importPlans()}
         </HollowButton>
@@ -236,14 +236,14 @@
         'outline-indigo-500',
         'dark:outline-yellow-400',
       ],
-      dragDisabled: !isLeader || storysShow !== 'all',
+      dragDisabled: !isFacilitator || storysShow !== 'all',
     }}"
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
   >
     {#each plans as plan (plan.id)}
       <div
-        class="relative flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800{isLeader &&
+        class="relative flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800{isFacilitator &&
         storysShow === 'all'
           ? ' cursor-pointer'
           : ''}{(plan.points === '' && storysShow === 'pointed') ||
@@ -298,7 +298,7 @@
           >
             {$LL.view()}
           </HollowButton>
-          {#if isLeader}
+          {#if isFacilitator}
             {#if !plan.active}
               <HollowButton
                 color="red"
@@ -375,7 +375,7 @@
             >
               {$LL.view()}
             </HollowButton>
-            {#if isLeader}
+            {#if isFacilitator}
               {#if !plan.active}
                 <HollowButton
                   color="red"

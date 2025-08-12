@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import UserAvatar from '../user/UserAvatar.svelte';
   import { Check, CopyIcon, Minus, Plus, Users } from 'lucide-svelte';
+  import Badge from '../global/Badge.svelte';
+  import LL from '../../i18n/i18n-svelte';
 
   // TypeScript interfaces
   interface User {
@@ -150,13 +151,9 @@
             <!-- Role Badge -->
             <div class="mt-2">
               {#if isUserFacilitator(user.id)}
-                <span class="inline-flex items-center px-3 py-1 rounded-full font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                  Facilitator
-                </span>
+                <Badge label={$LL.facilitator()} color="blue" />
               {:else}
-                <span class="inline-flex items-center px-3 py-1 rounded-full font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                  Participant
-                </span>
+                <Badge label="Participant" />
               {/if}
             </div>
 

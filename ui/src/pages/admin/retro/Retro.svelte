@@ -134,7 +134,7 @@
             {$LL.abandoned()}
           </HeadCol>
           <HeadCol>
-            {$LL.leader()}
+            {$LL.facilitator()}
           </HeadCol>
         </tr>
           {/snippet}
