@@ -651,6 +651,7 @@ const fa: Translation = {
     'Are you sure you want to remove this retrospective template?',
   removeRetroTemplate: 'Remove Retrospective Template',
   retroTemplateDefault: 'Set as default template',
+  retroSettings: 'Retro Settings',
 };
 
 export default fa;

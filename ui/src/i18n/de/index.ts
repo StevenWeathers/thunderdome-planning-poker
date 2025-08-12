@@ -691,6 +691,7 @@ const de: Translation = {
     'Wollen Sie diese Retrovorlage wirklich löschen?',
   removeRetroTemplate: 'Retrovorlage löschen',
   retroTemplateDefault: 'Als Standardvorlage setzten',
+  retroSettings: 'Retro Settings',
 };
 
 export default de;

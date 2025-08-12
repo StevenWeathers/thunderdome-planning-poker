@@ -80,6 +80,7 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     const bp = new RetroPage(registeredPage.page);
     await bp.goto(retroLeave.id);
 
+    await bp.page.click('[data-testid="retro-settings"]');
     await bp.page.click('[data-testid="retro-leave"]');
     await expect(bp.page.locator("h1")).toHaveText("My Retros");
   });
@@ -90,6 +91,7 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     const bp = new RetroPage(registeredPage.page);
     await bp.goto(retroCancelDelete.id);
 
+    await bp.page.click('[data-testid="retro-settings"]');
     await bp.retroDeleteBtn.click();
     await bp.retroDeleteCancelBtn.click();
 
@@ -102,6 +104,7 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     const bp = new RetroPage(registeredPage.page);
     await bp.goto(retroDelete.id);
 
+    await bp.page.click('[data-testid="retro-settings"]');
     await bp.retroDeleteBtn.click();
     await bp.retroDeleteConfirmBtn.click();
 

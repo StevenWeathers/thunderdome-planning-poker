@@ -708,6 +708,7 @@ const fr: Translation = {
     'Êtes-vous sûr de vouloir supprimer ce modèle de rétrospective ?',
   removeRetroTemplate: 'Supprimer le modèle de rétrospective',
   retroTemplateDefault: 'Définir comme modèle par défaut',
+  retroSettings: 'Retro Settings',
 };
 
 export default fr;
