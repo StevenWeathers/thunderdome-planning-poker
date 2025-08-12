@@ -7,6 +7,7 @@
   import { ClipboardCopy } from 'lucide-svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import { onMount } from 'svelte';
 
   interface Props {
     handleApiKeyCreate?: any;
@@ -83,6 +84,11 @@
         });
     }
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleCreateApiKey}>
@@ -96,6 +102,7 @@
           id="keyName"
           name="keyName"
           bind:value="{keyName}"
+          bind:this={focusInput}
           placeholder={$LL.apiKeyNamePlaceholder()}
           required
         />

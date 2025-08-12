@@ -7,6 +7,7 @@
   import Checkbox from '../forms/Checkbox.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import { onMount } from 'svelte';
 
   interface Props {
     handleUpdate?: any;
@@ -95,6 +96,11 @@
         notifications.danger('failed to update subscription');
       });
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleClose}>
@@ -107,6 +113,7 @@
         id="userId"
         name="userId"
         bind:value="{user_id}"
+        bind:this={focusInput}
         placeholder="Enter the User Id..."
         required
       />

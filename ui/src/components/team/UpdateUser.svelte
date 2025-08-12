@@ -4,6 +4,7 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleUpdate?: any;
@@ -30,6 +31,11 @@
   }
 
   let updateDisabled = $derived(role === '');
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleUpdate}>
@@ -41,7 +47,7 @@
       >
         {$LL.userEmail()}
       </label>
-      <TextInput value={userEmail} id="userEmail" name="userEmail" disabled />
+      <TextInput bind:this={focusInput} value={userEmail} id="userEmail" name="userEmail" disabled />
     </div>
 
     <div class="mb-4">

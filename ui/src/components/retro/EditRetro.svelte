@@ -6,6 +6,7 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
   import { Crown, Lock } from 'lucide-svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleEditRetro?: any;
@@ -58,6 +59,11 @@
 
     handleRetroEdit(retro);
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleEditRetro} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
@@ -73,6 +79,7 @@
         <TextInput
           name="retroName"
           bind:value={retroName}
+          bind:this={focusInput}
           placeholder={$LL.retroNamePlaceholder()}
           id="retroName"
           required

@@ -3,6 +3,7 @@
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
+  import { onMount } from 'svelte';
 
 
   interface Props {
@@ -20,6 +21,11 @@
   }
 
   let createDisabled = $derived(organizationName === '');
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleCreate}>
@@ -33,6 +39,7 @@
       </label>
       <TextInput
         bind:value="{organizationName}"
+        bind:this={focusInput}
         placeholder={$LL.organizationNamePlaceholder()}
         id="organizationName"
         name="organizationName"

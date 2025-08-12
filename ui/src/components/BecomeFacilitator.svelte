@@ -3,6 +3,8 @@
   import LL from '../i18n/i18n-svelte';
   import SolidButton from './global/SolidButton.svelte';
   import TextInput from './forms/TextInput.svelte';
+  import { onMount } from 'svelte';
+  import { Crown } from 'lucide-svelte';
 
   interface Props {
     toggleBecomeFacilitator?: any;
@@ -18,6 +20,11 @@
 
     handleBecomeFacilitator(facilitatorCode);
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal
@@ -37,6 +44,8 @@
           name="facilitatorCode"
           bind:value="{facilitatorCode}"
           id="facilitatorCode"
+          bind:this={focusInput}
+          icon={Crown}
         />
       </div>
     </div>

@@ -7,6 +7,7 @@
   import Checkbox from '../forms/Checkbox.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import { onMount } from 'svelte';
 
   interface Props {
     handleCreate?: any;
@@ -92,6 +93,11 @@
         }
       });
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleClose}>
@@ -104,6 +110,7 @@
         id="host"
         name="host"
         bind:value="{host}"
+        bind:this={focusInput}
         placeholder="Enter the Jira Hostname..."
         required
       />

@@ -8,7 +8,7 @@
   import { Crown, Lock } from 'lucide-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
@@ -103,6 +103,11 @@
       );
     }
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleClose}>
@@ -118,6 +123,7 @@
         <TextInput
           name="maxVotes"
           bind:value={retroSettings.maxVotes}
+          bind:this={focusInput}
           id="maxVotes"
           type="number"
           min="1"

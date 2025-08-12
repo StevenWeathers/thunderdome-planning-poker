@@ -10,6 +10,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleUpdate?: any;
@@ -117,6 +118,11 @@
 
   let updateDisabled = $derived(name === '' || scaleType === '' || values.length === 0);
   let isAdmin = $derived(validateUserIsAdmin($user));
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleClose}>
@@ -130,6 +136,7 @@
       </label>
       <TextInput
         bind:value={name}
+        bind:this={focusInput}
         placeholder={$LL.estimationScaleNamePlaceholder()}
         id="scaleName"
         name="scaleName"

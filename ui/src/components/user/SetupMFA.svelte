@@ -8,6 +8,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleSetup?: any;
@@ -55,6 +56,11 @@
   }
 
   let submitDisabled = $derived(passcode === '');
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleSetup} widthClasses="md:w-2/3 lg:w-1/2">
@@ -85,6 +91,7 @@
         </label>
         <TextInput
           bind:value="{passcode}"
+          bind:this={focusInput}
           placeholder={$LL.mfaTokenPlaceholder()}
           id="mfaPasscode"
           name="mfaPasscode"

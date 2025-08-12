@@ -5,6 +5,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleCreate?: any;
@@ -64,6 +65,11 @@
   }
 
   let createDisabled = $derived(alertName === '' || alertType === '' || content === '');
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleClose}>
@@ -77,6 +83,7 @@
       </label>
       <TextInput
         bind:value={alertName}
+        bind:this={focusInput}
         placeholder={$LL.alertNamePlaceholder()}
         id="alertName"
         name="alertName"

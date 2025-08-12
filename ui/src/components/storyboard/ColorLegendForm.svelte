@@ -3,6 +3,7 @@
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
+  import { onMount } from 'svelte';
 
 
   interface Props {
@@ -20,6 +21,11 @@
     handleLegendRevision(colorLegend);
     toggleEditLegend();
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <style>
@@ -72,16 +78,30 @@
         <div class="group">                
           <label class="flex-1 min-w-0">
             <span class="sr-only">Color legend for {color.color}</span>
-            <TextInput
-              placeholder={$LL.legendRetroPlaceholder()}
-              name="legend-{color.color}"
-              disabled={!isFacilitator}
-              value={colorLegend[i].legend}
-            >
-              {#snippet startElement()}
-                <div class="w-6 h-6 rounded bg-gray-400 colorcard-{color.color}"></div>
-              {/snippet}
-            </TextInput>
+            {#if i === 0}
+              <TextInput
+                bind:this={focusInput}
+                placeholder={$LL.legendRetroPlaceholder()}
+                name="legend-{color.color}"
+                disabled={!isFacilitator}
+                value={colorLegend[i].legend}
+              >
+                {#snippet startElement()}
+                  <div class="w-6 h-6 rounded bg-gray-400 colorcard-{color.color}"></div>
+                {/snippet}
+              </TextInput>
+            {:else}
+              <TextInput
+                placeholder={$LL.legendRetroPlaceholder()}
+                name="legend-{color.color}"
+                disabled={!isFacilitator}
+                value={colorLegend[i].legend}
+              >
+                {#snippet startElement()}
+                  <div class="w-6 h-6 rounded bg-gray-400 colorcard-{color.color}"></div>
+                {/snippet}
+              </TextInput>
+            {/if}
           </label>
         </div>
       {/each}
