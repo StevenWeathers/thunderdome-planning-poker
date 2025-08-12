@@ -441,7 +441,7 @@
   let showVotingResults =
     $derived(pokerGame.activePlanId !== '' && pokerGame.votingLocked === true);
 
-  let isLeader = $derived(pokerGame.leaders.includes($user.id));
+  let isFacilitator = $derived(pokerGame.leaders.includes($user.id));
 
   function concedeGame() {
     sendSocketEvent('concede_battle', '');
@@ -565,7 +565,7 @@
 
       <PokerStories
         plans={pokerGame.plans}
-        isLeader={isLeader}
+        isFacilitator={isFacilitator}
         sendSocketEvent={sendSocketEvent}
         notifications={notifications}
         xfetch={xfetch}
@@ -588,7 +588,7 @@
             <UserCard
               warrior={war}
               leaders={pokerGame.leaders}
-              isLeader={isLeader}
+              isFacilitator={isFacilitator}
               voted={didVote(war.id)}
               points={showVote(war.id)}
               autoFinishVoting={pokerGame.autoFinishVoting}
@@ -598,7 +598,7 @@
           {/if}
         {/each}
 
-        {#if isLeader}
+        {#if isFacilitator}
           <VotingControls
             points={points}
             planId={pokerGame.activePlanId}
@@ -616,7 +616,7 @@
           joinCode={pokerGame.joinCode}
           notifications={notifications}
         />
-        {#if isLeader}
+        {#if isFacilitator}
           <div class="mt-4 text-right">
             <HollowButton
               color="blue"

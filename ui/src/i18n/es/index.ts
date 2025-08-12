@@ -75,7 +75,6 @@ const es: Translation = {
   battlesActive: 'Juegos Activos',
   battlesActiveUsers: 'Usuarios Activos del Juego',
   becomeFacilitator: 'Conviértase en Facilitador',
-  becomeLeader: 'Convertirse en Líder',
   becomeParticipant: 'Convertirse en Participante',
   becomeSpectator: 'Conviértase en Espectador',
   blocked: 'Bloqueado',
@@ -230,8 +229,6 @@ const es: Translation = {
   landingTitle:
     'TThunderdome es una aplicación de póquer de planificación ágil',
   lastActive: 'Último activo',
-  leader: 'Líder',
-  leaderPasscode: 'Código Leader',
   leaveRetro: 'Abandonar Retro',
   leaveStoryboard: 'Abandonar Storyboard',
   legendRetroPlaceholder: 'Introduzca una leyenda de color',
@@ -673,6 +670,7 @@ const es: Translation = {
   removeRetroTemplate: 'Eliminar Plantilla de Retrospectiva',
   retroTemplateDefault: 'Establecer como plantilla predeterminada',
   retroSettings: 'Retro Settings',
+  enterFacilitatorCode: 'Enter the Facilitator Code',
 };
 
 export default es;

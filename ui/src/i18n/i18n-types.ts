@@ -300,10 +300,6 @@ type RootTranslation = {
    */
   becomeFacilitator: string;
   /**
-   * B​e​c​o​m​e​ ​L​e​a​d​e​r
-   */
-  becomeLeader: string;
-  /**
    * B​e​c​o​m​e​ ​P​a​r​t​i​c​i​p​a​n​t
    */
   becomeParticipant: string;
@@ -884,14 +880,6 @@ type RootTranslation = {
    * L​a​s​t​ ​A​c​t​i​v​e
    */
   lastActive: string;
-  /**
-   * L​e​a​d​e​r
-   */
-  leader: string;
-  /**
-   * L​e​a​d​e​r​ ​c​o​d​e
-   */
-  leaderPasscode: string;
   /**
    * L​e​a​v​e​ ​R​e​t​r​o
    */
@@ -2597,6 +2585,10 @@ type RootTranslation = {
    * R​e​t​r​o​ ​S​e​t​t​i​n​g​s
    */
   retroSettings: string;
+  /**
+   * E​n​t​e​r​ ​t​h​e​ ​F​a​c​i​l​i​t​a​t​o​r​ ​C​o​d​e
+   */
+  enterFacilitatorCode: string;
 };
 
 export type TranslationFunctions = {
@@ -2880,10 +2872,6 @@ export type TranslationFunctions = {
    * Become Facilitator
    */
   becomeFacilitator: () => LocalizedString;
-  /**
-   * Become Leader
-   */
-  becomeLeader: () => LocalizedString;
   /**
    * Become Participant
    */
@@ -3466,14 +3454,6 @@ export type TranslationFunctions = {
    * Last Active
    */
   lastActive: () => LocalizedString;
-  /**
-   * Leader
-   */
-  leader: () => LocalizedString;
-  /**
-   * Leader code
-   */
-  leaderPasscode: () => LocalizedString;
   /**
    * Leave Retro
    */
@@ -5172,6 +5152,10 @@ export type TranslationFunctions = {
    * Retro Settings
    */
   retroSettings: () => LocalizedString;
+  /**
+   * Enter the Facilitator Code
+   */
+  enterFacilitatorCode: () => LocalizedString;
 };
 
 export type Formatters = {};

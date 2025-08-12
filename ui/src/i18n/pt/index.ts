@@ -76,7 +76,6 @@ const pt: Translation = {
   battlesActive: 'Jogos ativos',
   battlesActiveUsers: 'Usuários ativos do jogo',
   becomeFacilitator: 'Tornar-se Facilitador',
-  becomeLeader: 'Tornar-se líder',
   becomeParticipant: 'Tornar-se Participante',
   becomeSpectator: 'Tornar-se Espectador',
   blocked: 'Bloqueado',
@@ -232,8 +231,6 @@ const pt: Translation = {
   landingTitle:
     'Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido',
   lastActive: 'Ativo pela última vez',
-  leader: 'Líder',
-  leaderPasscode: 'Código de acesso de Líder',
   leaveRetro: 'Sair da Retro',
   leaveStoryboard: 'Sair do Storyboard',
   legendRetroPlaceholder: 'Digite a legenda para a cor',
@@ -668,6 +665,7 @@ const pt: Translation = {
   removeRetroTemplate: 'Remove Retrospective Template',
   retroTemplateDefault: 'Set as default template',
   retroSettings: 'Retro Settings',
+  enterFacilitatorCode: 'Enter the Facilitator Code',
 };
 
 export default pt;

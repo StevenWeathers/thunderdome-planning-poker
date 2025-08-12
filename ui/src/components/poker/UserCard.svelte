@@ -3,7 +3,7 @@
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import { user as sessionUser } from '../../stores';
-  import BecomeLeader from './BecomeFacilitator.svelte';
+  import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
   import { CircleUser, Crown, Ghost, Vote } from 'lucide-svelte';
 
   import type { NotificationService } from '../../types/notifications';
@@ -11,7 +11,7 @@
   interface Props {
     voted?: boolean;
     warrior?: any;
-    isLeader?: boolean;
+    isFacilitator?: boolean;
     autoFinishVoting?: boolean;
     leaders?: any;
     points?: string;
@@ -22,7 +22,7 @@
   let {
     voted = false,
     warrior = {},
-    isLeader = false,
+    isFacilitator = false,
     autoFinishVoting = false,
     leaders = [],
     points = '',
@@ -32,7 +32,7 @@
 
   const showRank = AppConfig.ShowWarriorRank;
   let nameStyleClass = showRank ? 'text-lg' : 'text-xl';
-  let showBecomeLeader = $state(false);
+  let showBecomeFacilitator = $state(false);
 
   function promoteLeader() {
     sendSocketEvent('promote_leader', warrior.id);
@@ -50,13 +50,13 @@
     sendSocketEvent('jab_warrior', warrior.id);
   }
 
-  function becomeLeader(leaderCode) {
+  function becomeFacilitator(leaderCode) {
     sendSocketEvent('become_leader', leaderCode);
-    toggleBecomeLeader();
+    toggleBecomeFacilitator();
   }
 
-  function toggleBecomeLeader() {
-    showBecomeLeader = !showBecomeLeader;
+  function toggleBecomeFacilitator() {
+    showBecomeFacilitator = !showBecomeFacilitator;
   }
 
   function toggleSpectator() {
@@ -113,10 +113,10 @@
             <span data-testid="user-name">{warrior.name}</span>
           {/if}
         </p>
-        <p class="text-l text-gray-700 leading-tight">
+        <p class="text-l text-gray-700 dark:text-gray-400 leading-tight">
           {#if leaders.includes(warrior.id)}
             <Crown class="inline-block text-yellow-500" />
-            {#if isLeader}
+            {#if isFacilitator}
               &nbsp;
               <button
                 onclick={demoteLeader}
@@ -127,9 +127,9 @@
               >
                 {$LL.demote()}
               </button>
-            {:else}&nbsp;{$LL.leader()}
+            {:else}&nbsp;{$LL.facilitator()}
             {/if}
-          {:else if isLeader}
+          {:else if isFacilitator}
             <button
               onclick={promoteLeader}
               class="inline-block align-baseline text-sm
@@ -140,7 +140,7 @@
               {$LL.promote()}
             </button>
           {/if}
-          {#if isLeader && warrior.id !== $sessionUser.id && !warrior.spectator}
+          {#if isFacilitator && warrior.id !== $sessionUser.id && !warrior.spectator}
             &nbsp;|&nbsp;
             <button
               onclick={jabWarrior}
@@ -154,15 +154,15 @@
           {/if}
         </p>
         {#if warrior.id === $sessionUser.id}
-          {#if !isLeader}
+          {#if !isFacilitator}
             <button
-              onclick={toggleBecomeLeader}
+              onclick={toggleBecomeFacilitator}
               class="inline-block align-baseline text-sm
                           text-blue-500 hover:text-blue-800 bg-transparent
                           border-transparent"
-              data-testid="user-becomeleader"
+              data-testid="user-becomefacilitator"
             >
-              {$LL.becomeLeader()}
+              {$LL.becomeFacilitator()}
             </button>
           {/if}
           {#if autoFinishVoting}
@@ -199,10 +199,10 @@
     </div>
   </div>
 
-  {#if showBecomeLeader}
-    <BecomeLeader
-      handleBecomeLeader={becomeLeader}
-      toggleBecomeLeader={toggleBecomeLeader}
+  {#if showBecomeFacilitator}
+    <BecomeFacilitator
+      handleBecomeFacilitator={becomeFacilitator}
+      toggleBecomeFacilitator={toggleBecomeFacilitator}
     />
   {/if}
 </div>
