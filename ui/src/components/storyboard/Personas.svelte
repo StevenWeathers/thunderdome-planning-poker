@@ -106,7 +106,7 @@
   }
 </script>
 
-<Modal closeModal={closeModal}>
+<Modal closeModal={closeModal} ariaLabel={$LL.modalStoryboardPersonas()}>
   <div class="persona-list pt-6">
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">

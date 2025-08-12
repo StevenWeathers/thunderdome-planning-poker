@@ -20,7 +20,7 @@
   }: Props = $props();
 </script>
 
-<Modal closeModal={toggleDelete}>
+<Modal closeModal={toggleDelete} ariaLabel={$LL.modalDeleteConfirmation()}>
   <div class="mb-4">
     <div
       class="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 p-2 flex items-center justify-center mx-auto mb-3.5"

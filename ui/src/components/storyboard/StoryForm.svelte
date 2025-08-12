@@ -273,7 +273,7 @@
   }
 </style>
 
-<Modal closeModal={toggleStoryForm} widthClasses="w-full md:w-3/4 xl:1/2 2xl:w-2/5">
+<Modal closeModal={toggleStoryForm} widthClasses="w-full md:w-3/4 xl:1/2 2xl:w-2/5" ariaLabel={$LL.modalStoryboardStory()}>
   <div class="p-6 overflow-y-auto h-full">
       <div class="space-y-6">
           <!-- Story Name (Full Width) -->

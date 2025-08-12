@@ -97,6 +97,7 @@
 <Modal
   closeModal={toggleEditBattle}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
+  ariaLabel={$LL.modalEditPokerGame()}
 >
   <form onsubmit={saveBattle} name="createBattle">
     <div class="mb-4">

@@ -2589,6 +2589,150 @@ type RootTranslation = {
    * E​n​t​e​r​ ​t​h​e​ ​F​a​c​i​l​i​t​a​t​o​r​ ​C​o​d​e
    */
   enterFacilitatorCode: string;
+  /**
+   * C​r​e​a​t​e​ ​A​l​e​r​t
+   */
+  modalCreateAlert: string;
+  /**
+   * U​p​d​a​t​e​ ​E​s​t​i​m​a​t​i​o​n​ ​S​c​a​l​e
+   */
+  modalUpdateEstimationScale: string;
+  /**
+   * D​e​l​e​t​e​ ​C​o​n​f​i​r​m​a​t​i​o​n
+   */
+  modalDeleteConfirmation: string;
+  /**
+   * C​r​e​a​t​e​ ​E​s​t​i​m​a​t​i​o​n​ ​S​c​a​l​e
+   */
+  modalCreateEstimationScale: string;
+  /**
+   * T​e​a​m​ ​C​h​e​c​k​i​n
+   */
+  modalTeamCheckin: string;
+  /**
+   * A​d​d​ ​P​o​k​e​r​ ​S​t​o​r​y
+   */
+  modalAddPokerStory: string;
+  /**
+   * C​r​e​a​t​e​ ​U​s​e​r
+   */
+  modalCreateUser: string;
+  /**
+   * C​r​e​a​t​e​ ​A​P​I​ ​K​e​y
+   */
+  modalCreateApiKey: string;
+  /**
+   * I​m​p​o​r​t​ ​P​o​k​e​r​ ​S​t​o​r​i​e​s
+   */
+  modalImportPokerStories: string;
+  /**
+   * S​e​t​u​p​ ​M​u​l​t​i​f​a​c​t​o​r​ ​A​u​t​h
+   */
+  modalSetupMultifactorAuth: string;
+  /**
+   * E​d​i​t​ ​P​o​k​e​r​ ​G​a​m​e
+   */
+  modalEditPokerGame: string;
+  /**
+   * C​r​e​a​t​e​ ​J​i​r​a​ ​I​n​s​t​a​n​c​e
+   */
+  modalCreateJiraInstance: string;
+  /**
+   * U​p​d​a​t​e​ ​P​o​k​e​r​ ​S​e​t​t​i​n​g​s
+   */
+  modalUpdatePokerSettings: string;
+  /**
+   * A​d​d​ ​S​t​o​r​y​b​o​a​r​d​ ​G​o​a​l
+   */
+  modalAddStoryboardGoal: string;
+  /**
+   * V​i​e​w​ ​P​o​k​e​r​ ​S​t​o​r​y
+   */
+  modalViewPokerStory: string;
+  /**
+   * S​t​o​r​y​b​o​a​r​d​ ​C​o​l​u​m​n​ ​S​e​t​t​i​n​g​s
+   */
+  modalStoryboardColumnSettings: string;
+  /**
+   * E​d​i​t​ ​S​t​o​r​y​b​o​a​r​d
+   */
+  modalEditStoryboard: string;
+  /**
+   * S​t​o​r​y​b​o​a​r​d​ ​C​o​l​o​r​ ​L​e​g​e​n​d
+   */
+  modalStoryboardColorLegend: string;
+  /**
+   * S​t​o​r​y​b​o​a​r​d​ ​P​e​r​s​o​n​a​s
+   */
+  modalStoryboardPersonas: string;
+  /**
+   * R​e​t​r​o​ ​A​c​t​i​o​n​ ​C​o​m​m​e​n​t​s
+   */
+  modalRetroActionComments: string;
+  /**
+   * S​t​o​r​y​b​o​a​r​d​ ​S​t​o​r​y
+   */
+  modalStoryboardStory: string;
+  /**
+   * T​e​a​m​ ​A​d​d​ ​U​s​e​r
+   */
+  modalTeamAddUser: string;
+  /**
+   * C​r​e​a​t​e​ ​D​e​p​a​r​t​m​e​n​t
+   */
+  modalCreateDepartment: string;
+  /**
+   * C​r​e​a​t​e​ ​T​e​a​m
+   */
+  modalCreateTeam: string;
+  /**
+   * C​r​e​a​t​e​ ​O​r​g​a​n​i​z​a​t​i​o​n
+   */
+  modalCreateOrganization: string;
+  /**
+   * C​r​e​a​t​e​ ​R​e​t​r​o​ ​T​e​m​p​l​a​t​e
+   */
+  modalCreateRetroTemplate: string;
+  /**
+   * V​i​e​w​ ​R​e​t​r​o​ ​T​e​m​p​l​a​t​e​ ​F​o​r​m​a​t
+   */
+  modalViewRetroTemplateFormat: string;
+  /**
+   * U​p​d​a​t​e​ ​R​e​t​r​o​ ​T​e​m​p​l​a​t​e
+   */
+  modalUpdateRetroTemplate: string;
+  /**
+   * A​s​s​o​c​i​a​t​e​ ​T​e​a​m​ ​t​o​ ​S​u​b​s​c​r​i​p​t​i​o​n
+   */
+  modalAssociateTeamToSubscription: string;
+  /**
+   * A​s​s​o​c​i​a​t​e​ ​O​r​g​a​n​i​z​a​t​i​o​n​ ​t​o​ ​S​u​b​s​c​r​i​p​t​i​o​n
+   */
+  modalAssociateOrganizationToSubscription: string;
+  /**
+   * T​e​a​m​ ​U​p​d​a​t​e​ ​U​s​e​r
+   */
+  modalTeamUpdateUser: string;
+  /**
+   * S​u​b​s​c​r​i​p​t​i​o​n​ ​F​o​r​m
+   */
+  modalSubscriptionForm: string;
+  /**
+   * E​d​i​t​ ​R​e​t​r​o
+   */
+  modalEditRetro: string;
+  /**
+   * E​d​i​t​ ​R​e​t​r​o​ ​A​c​t​i​o​n​ ​I​t​e​m
+   */
+  modalEditRetroActionItem: string;
+  /**
+   * R​e​t​r​o​ ​I​t​e​m​ ​C​o​m​m​e​n​t​s
+   */
+  modalRetroItemComments: string;
+  /**
+   * U​p​d​a​t​e​ ​R​e​t​r​o​ ​S​e​t​t​i​n​g​s
+   */
+  modalUpdateRetroSettings: string;
 };
 
 export type TranslationFunctions = {
@@ -5156,6 +5300,150 @@ export type TranslationFunctions = {
    * Enter the Facilitator Code
    */
   enterFacilitatorCode: () => LocalizedString;
+  /**
+   * Create Alert
+   */
+  modalCreateAlert: () => LocalizedString;
+  /**
+   * Update Estimation Scale
+   */
+  modalUpdateEstimationScale: () => LocalizedString;
+  /**
+   * Delete Confirmation
+   */
+  modalDeleteConfirmation: () => LocalizedString;
+  /**
+   * Create Estimation Scale
+   */
+  modalCreateEstimationScale: () => LocalizedString;
+  /**
+   * Team Checkin
+   */
+  modalTeamCheckin: () => LocalizedString;
+  /**
+   * Add Poker Story
+   */
+  modalAddPokerStory: () => LocalizedString;
+  /**
+   * Create User
+   */
+  modalCreateUser: () => LocalizedString;
+  /**
+   * Create API Key
+   */
+  modalCreateApiKey: () => LocalizedString;
+  /**
+   * Import Poker Stories
+   */
+  modalImportPokerStories: () => LocalizedString;
+  /**
+   * Setup Multifactor Auth
+   */
+  modalSetupMultifactorAuth: () => LocalizedString;
+  /**
+   * Edit Poker Game
+   */
+  modalEditPokerGame: () => LocalizedString;
+  /**
+   * Create Jira Instance
+   */
+  modalCreateJiraInstance: () => LocalizedString;
+  /**
+   * Update Poker Settings
+   */
+  modalUpdatePokerSettings: () => LocalizedString;
+  /**
+   * Add Storyboard Goal
+   */
+  modalAddStoryboardGoal: () => LocalizedString;
+  /**
+   * View Poker Story
+   */
+  modalViewPokerStory: () => LocalizedString;
+  /**
+   * Storyboard Column Settings
+   */
+  modalStoryboardColumnSettings: () => LocalizedString;
+  /**
+   * Edit Storyboard
+   */
+  modalEditStoryboard: () => LocalizedString;
+  /**
+   * Storyboard Color Legend
+   */
+  modalStoryboardColorLegend: () => LocalizedString;
+  /**
+   * Storyboard Personas
+   */
+  modalStoryboardPersonas: () => LocalizedString;
+  /**
+   * Retro Action Comments
+   */
+  modalRetroActionComments: () => LocalizedString;
+  /**
+   * Storyboard Story
+   */
+  modalStoryboardStory: () => LocalizedString;
+  /**
+   * Team Add User
+   */
+  modalTeamAddUser: () => LocalizedString;
+  /**
+   * Create Department
+   */
+  modalCreateDepartment: () => LocalizedString;
+  /**
+   * Create Team
+   */
+  modalCreateTeam: () => LocalizedString;
+  /**
+   * Create Organization
+   */
+  modalCreateOrganization: () => LocalizedString;
+  /**
+   * Create Retro Template
+   */
+  modalCreateRetroTemplate: () => LocalizedString;
+  /**
+   * View Retro Template Format
+   */
+  modalViewRetroTemplateFormat: () => LocalizedString;
+  /**
+   * Update Retro Template
+   */
+  modalUpdateRetroTemplate: () => LocalizedString;
+  /**
+   * Associate Team to Subscription
+   */
+  modalAssociateTeamToSubscription: () => LocalizedString;
+  /**
+   * Associate Organization to Subscription
+   */
+  modalAssociateOrganizationToSubscription: () => LocalizedString;
+  /**
+   * Team Update User
+   */
+  modalTeamUpdateUser: () => LocalizedString;
+  /**
+   * Subscription Form
+   */
+  modalSubscriptionForm: () => LocalizedString;
+  /**
+   * Edit Retro
+   */
+  modalEditRetro: () => LocalizedString;
+  /**
+   * Edit Retro Action Item
+   */
+  modalEditRetroActionItem: () => LocalizedString;
+  /**
+   * Retro Item Comments
+   */
+  modalRetroItemComments: () => LocalizedString;
+  /**
+   * Update Retro Settings
+   */
+  modalUpdateRetroSettings: () => LocalizedString;
 };
 
 export type Formatters = {};

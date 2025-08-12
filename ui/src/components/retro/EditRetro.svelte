@@ -66,7 +66,7 @@
   });
 </script>
 
-<Modal closeModal={toggleEditRetro} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal={toggleEditRetro} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabel={$LL.modalEditRetro()}>
   <form onsubmit={saveRetro} name="createRetro">
     <div class="mb-4">
       <label

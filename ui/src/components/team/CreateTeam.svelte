@@ -28,7 +28,7 @@
   });
 </script>
 
-<Modal closeModal={toggleCreate}>
+<Modal closeModal={toggleCreate} ariaLabel={$LL.modalCreateTeam()}>
   <form onsubmit={onSubmit} name="createTeam">
     <div class="mb-4">
       <label

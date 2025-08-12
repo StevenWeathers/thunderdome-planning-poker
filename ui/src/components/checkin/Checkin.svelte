@@ -105,7 +105,7 @@
   });
 </script>
 
-<Modal closeModal={toggleCheckin} widthClasses="md:w-2/3">
+<Modal closeModal={toggleCheckin} widthClasses="md:w-2/3" ariaLabel={$LL.modalTeamCheckin()}>
   <form onsubmit={onSubmit} name="teamCheckin" class="flex flex-wrap mt-8">
     {#if userSubscribed}
       {#if lastCheckin.id !== ''}

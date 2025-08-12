@@ -72,7 +72,7 @@
   };
 </script>
 
-<Modal closeModal={toggleComments} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal={toggleComments} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabel={$LL.modalRetroItemComments()}>
   <div class="mt-12 dark:text-gray-300">
     <h3 class="text-xl pb-2 mb-4 border-b border-gray-600 dark:border-gray-400">
       Comments

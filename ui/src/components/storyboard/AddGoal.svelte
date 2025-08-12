@@ -24,7 +24,7 @@
 
   let focusInput: any;
 
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (goalId === '') {
@@ -43,7 +43,7 @@
   });
 </script>
 
-<Modal closeModal={toggleAddGoal}>
+<Modal closeModal={toggleAddGoal} ariaLabel={$LL.modalAddStoryboardGoal()}>
   <form onsubmit={handleSubmit} name="addGoal">
     <div class="mb-4">
       <label

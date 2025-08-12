@@ -102,7 +102,7 @@
   });
 </script>
 
-<Modal closeModal={toggleAdd}>
+<Modal closeModal={toggleAdd} ariaLabel={$LL.modalTeamAddUser()}>
   <form onsubmit={onSubmit} name="teamAddUser">
     <div class="mb-4">
       <label

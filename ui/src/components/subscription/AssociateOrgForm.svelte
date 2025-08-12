@@ -70,7 +70,7 @@
   });
 </script>
 
-<Modal closeModal={toggleClose}>
+<Modal closeModal={toggleClose} ariaLabel={$LL.modalAssociateOrganizationToSubscription()}>
   <form onsubmit={handleSubmit} name="associateOrganizationForm">
     <div class="mb-4">
       <label

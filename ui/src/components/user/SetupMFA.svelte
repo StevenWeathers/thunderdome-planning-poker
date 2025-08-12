@@ -63,10 +63,10 @@
   });
 </script>
 
-<Modal closeModal={toggleSetup} widthClasses="md:w-2/3 lg:w-1/2">
+<Modal closeModal={toggleSetup} widthClasses="md:w-2/3 lg:w-1/2" ariaLabel={$LL.modalSetupMultifactorAuth()} ariaDescribedby="mfaIntro">
   <div class="pt-12">
     <div class="dark:text-gray-300 text-center">
-      <p class="font-rajdhani text-lg mb-2">
+      <p class="font-rajdhani text-lg mb-2" id="mfaIntro">
         {$LL.mfaSetupIntro()}
       </p>
       {#if qrCode !== ''}

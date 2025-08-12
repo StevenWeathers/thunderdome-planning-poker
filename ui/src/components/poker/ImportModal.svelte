@@ -59,7 +59,7 @@
   }
 </script>
 
-<Modal closeModal={toggleImport} widthClasses="md:w-full md:mx-4 lg:w-3/5">
+<Modal closeModal={toggleImport} widthClasses="md:w-full md:mx-4 lg:w-3/5" ariaLabel={$LL.modalImportPokerStories()}>
   <div class="mt-8 mb-4">
     {#if !showJiraCloudSearch}
       <div class="mb-4 dark:text-gray-300">

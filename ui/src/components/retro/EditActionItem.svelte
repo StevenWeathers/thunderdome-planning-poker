@@ -60,7 +60,7 @@
   });
 </script>
 
-<Modal closeModal={toggleEdit} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal={toggleEdit} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabel={$LL.modalEditRetroActionItem()}>
   <form onsubmit={handleSubmit}>
     <div class="mb-4">
       <label

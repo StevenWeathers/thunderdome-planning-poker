@@ -30,9 +30,10 @@
 <Modal
   closeModal={toggleBecomeFacilitator}
   widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
+  ariaLabelledby="modalTitle"
 >
   <form onsubmit={handleSubmit} name="becomeFacilitator" class="space-y-4">
-    <h2 class="text-xl font-bold dark:text-gray-300">{$LL.becomeFacilitator()}</h2>
+    <h2 class="text-xl font-bold dark:text-gray-300" id="modalTitle">{$LL.becomeFacilitator()}</h2>
 
     <div>
       <label

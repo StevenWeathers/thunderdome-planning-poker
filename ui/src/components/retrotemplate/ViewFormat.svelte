@@ -1,6 +1,7 @@
 <script lang="ts">
   import { type RetroTemplateFormat } from '../../types/retro';
   import Modal from '../global/Modal.svelte';
+  import LL from '../../i18n/i18n-svelte';
 
   interface Props {
     format: RetroTemplateFormat;
@@ -10,7 +11,7 @@
   let { format, toggleClose }: Props = $props();
 </script>
 
-<Modal closeModal={() => toggleClose(null)} widthClasses="w-full md:w-2/3">
+<Modal closeModal={() => toggleClose(null)} widthClasses="w-full md:w-2/3" ariaLabel={$LL.modalViewRetroTemplateFormat()}>
   <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
     {#each format.columns as column}
       <div
