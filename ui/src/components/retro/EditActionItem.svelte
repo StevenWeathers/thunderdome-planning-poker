@@ -7,6 +7,7 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
   import { Trash2 } from 'lucide-svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleEdit?: any;
@@ -52,6 +53,11 @@
     handleAssigneeAdd(action.retroId, action.id, selectedAssignee);
     selectedAssignee = '';
   };
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleEdit} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
@@ -66,6 +72,7 @@
       <div class="control">
         <input
           bind:value={editAction.content}
+          bind:this={focusInput}
           placeholder={$LL.actionItemPlaceholder()}
           class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
                 px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none

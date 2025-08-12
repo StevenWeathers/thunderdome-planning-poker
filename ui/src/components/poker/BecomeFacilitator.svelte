@@ -4,6 +4,7 @@
   import SolidButton from '../global/SolidButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
   import { Lock } from 'lucide-svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleBecomeLeader?: any;
@@ -19,6 +20,11 @@
 
     handleBecomeLeader(leaderCode);
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal
@@ -39,6 +45,7 @@
           bind:value="{leaderCode}"
           id="leaderCode"
           icon={Lock}
+          bind:this={focusInput}
         />
       </div>
     </div>

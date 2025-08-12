@@ -94,9 +94,11 @@
 
   let createDisabled = $derived((userEmail === '' && selectedUser === '') || role === '');
 
+  let focusInput: any;
   onMount(() => {
     getOrganizationUsers();
     getDepartmentUsers();
+    focusInput?.focus();
   });
 </script>
 

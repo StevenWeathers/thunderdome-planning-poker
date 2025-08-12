@@ -6,6 +6,7 @@
   import { user } from '../../stores';
 
   import type { NotificationService } from '../../types/notifications';
+  import { onMount } from 'svelte';
 
   interface Props {
     handleUpdate?: any;
@@ -62,6 +63,11 @@
         );
       });
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleClose}>
@@ -75,6 +81,7 @@
       </label>
       <SelectInput
         bind:value="{selectedOrganization}"
+        bind:this={focusInput}
         id="selectedOrganization"
         name="selectedOrganization"
       >

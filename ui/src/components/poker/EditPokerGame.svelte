@@ -87,8 +87,10 @@
     handleBattleEdit(battle);
   }
 
+  let focusInput: any;
   onMount(() => {
     getTeams();
+    focusInput?.focus();
   });
 </script>
 
@@ -108,6 +110,7 @@
         <TextInput
           name="battleName"
           bind:value="{battleName}"
+          bind:this={focusInput}
           placeholder={$LL.battleNamePlaceholder()}
           id="battleName"
           required

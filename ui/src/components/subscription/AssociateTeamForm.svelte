@@ -6,6 +6,7 @@
   import { user } from '../../stores';
 
   import type { NotificationService } from '../../types/notifications';
+  import { onMount } from 'svelte';
 
   interface Props {
     handleUpdate?: any;
@@ -60,6 +61,11 @@
         notifications.danger('failed to associate team to subscription');
       });
   }
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleClose}>
@@ -70,6 +76,7 @@
       </label>
       <SelectInput
         bind:value="{selectedTeam}"
+        bind:this={focusInput}
         id="selectedTeam"
         name="selectedTeam"
       >

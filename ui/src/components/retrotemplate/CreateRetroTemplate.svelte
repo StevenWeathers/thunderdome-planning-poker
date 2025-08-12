@@ -11,6 +11,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import { onMount } from 'svelte';
 
   interface Props {
     toggleCreate?: any;
@@ -76,6 +77,11 @@
   let createDisabled =
     $derived(name === '' || format.columns.length < 2 || format.columns.length > 5);
   let isAdmin = $derived(validateUserIsAdmin($user));
+
+  let focusInput: any;
+  onMount(() => {
+    focusInput?.focus();
+  });
 </script>
 
 <Modal closeModal={toggleClose}>
@@ -89,6 +95,7 @@
       </label>
       <TextInput
         bind:value="{name}"
+        bind:this={focusInput}
         placeholder={$LL.retroTemplateNamePlaceholder()}
         id="templateName"
         name="templateName"
