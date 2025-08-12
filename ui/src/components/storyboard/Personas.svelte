@@ -4,6 +4,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import Modal from '../global/Modal.svelte';
   import type { StoryboardPersona } from '../../types/storyboard';
+  import LL from '../../i18n/i18n-svelte';
   
   interface Props {
     personas?: StoryboardPersona[];
