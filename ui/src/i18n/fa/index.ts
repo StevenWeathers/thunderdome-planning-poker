@@ -54,7 +54,7 @@ const fa: Translation = {
   appName: 'Thunderdome',
   appPreviewAlt: 'Preview of Thunderdome, Agile Planning Poker UI Experience',
   appSubtitle: 'Open Source Agile Planning Poker app',
-  appVersion: 'Version {version}',
+  appVersion: 'version {version}',
   associateTeam: 'Associate Team',
   authError: 'Error encountered attempting to authenticate user',
   autoFinishVoting: 'Auto Finish Voting',
@@ -171,9 +171,7 @@ const fa: Translation = {
   finalPoints: 'Final Points',
   flag: 'Flag',
   footerAuthoredBy:
-    'is designed and developed by {authorOpen}Steven Weathers{authorClose}.',
-  footerLicense:
-    'The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.',
+    'ساخته شده با ❤️ توسط {authorOpen}Steven Weathers{authorClose}',
   forgotPassword: 'Forgot Your Password?',
   forgotPasswordSubtext: `Don't fret! Just enter your email and we will send you instructions to reset your password.`,
   returnToLogin: 'Return to Login',
@@ -699,6 +697,7 @@ const fa: Translation = {
   modalEditRetroActionItem: 'ویرایش آیتم اقدام رترو',
   modalRetroItemComments: 'نظرات آیتم رترو',
   modalUpdateRetroSettings: 'به‌روزرسانی تنظیمات رترو',
+  githubRepository: 'مخزن گیت‌هاب',
 };
 
 export default fa;

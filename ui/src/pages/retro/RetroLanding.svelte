@@ -1,197 +1,119 @@
 <script>
-  import { appRoutes } from '../../config';
   import { onMount } from 'svelte';
+  import HeroSection from '../../components/landing/HeroSection.svelte';
+  import ProblemSolutionSection from '../../components/landing/ProblemSolutionSection.svelte';
+  import FeatureSection from '../../components/landing/FeatureSection.svelte';
+  import BenefitsSection from '../../components/landing/BenefitsSection.svelte';
+  import FinalCTA from '../../components/landing/FinalCTA.svelte';
 
   onMount(() => window.scrollTo(0, 0));
+
+  const heroData = {
+    title: `Turn Retrospectives into Real Progress with <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500">Thunderdome</span>`,
+    subtitle: "Stop going through the motions. Start building teams that learn, adapt, and continuously improve with every sprint.",
+    primaryCta: "Start Your First Retro",
+    secondaryCta: "See It In Action"
+  };
+
+  const problemSolutionData = {
+    title: "Why Most Retrospectives Don't Work",
+    subtitle: "And how to build a culture of continuous improvement instead.",
+    problemTitle: "Typical Retro Problems",
+    problemItems: [
+      "Same issues discussed every sprint",
+      "Action items that never get done",
+      "Uncomfortable silence or blame",
+      "Generic formats that feel stale"
+    ],
+    solutionTitle: "With Thunderdome Retrospectives",
+    solutionItems: [
+      "Fresh insights every retrospective",
+      "Trackable action items with follow-through",
+      "Safe space for honest feedback",
+      "Dynamic formats that energize teams"
+    ],
+    conclusion: "<strong>The difference?</strong> Retrospectives become the engine of improvement, not just another meeting on the calendar."
+  };
+
+  const features = [
+    {
+      title: "Formats That Actually Engage",
+      description: "Move beyond boring retrospectives. Use proven formats that spark meaningful discussions and fresh perspectives.",
+      features: [
+        "<strong>Battle-tested templates:</strong> Start/Stop/Continue, 4Ls, Mad/Sad/Glad, and more",
+        "<strong>Create custom templates:</strong> Design and save your own retrospective formats tailored to your team's needs",
+        "<strong>Mix it up easily:</strong> Switch formats to keep retrospectives energizing and insightful",
+        "<strong>Flexible structure:</strong> Adapt any template to your team's unique challenges and wins"
+      ],
+      imageDark: "/img/previews/retro_template_preview.png",
+      imageLight: "/img/previews/retro_template_light_preview.png",
+      imageAlt: "Multiple retrospective formats and templates"
+    },
+    {
+      title: "Everyone's Voice Gets Heard",
+      description: "Create psychological safety where introverts contribute as much as extroverts, and honest feedback flows freely.",
+      features: [
+        "<strong>Remote-friendly participation:</strong> Equal engagement whether you're in-person or distributed",
+        "<strong>Anonymous feedback options:</strong> Share sensitive insights without fear of judgment",
+        "<strong>Democratic prioritization:</strong> Vote on what matters most to focus discussion time",
+        "<strong>Guided facilitation:</strong> Built-in tools to keep discussions productive and inclusive"
+      ],
+      imageDark: "/img/previews/retro.png",
+      imageLight: "/img/previews/retro_light.png",
+      imageAlt: "Real-time collaborative retrospective session"
+    },
+    {
+      title: "Follow Through, Not Follow Up",
+      description: "Turn insights into action with accountability that actually works. No more forgotten commitments or repeated discussions.",
+      features: [
+        "<strong>Seamless action creation:</strong> Convert discussion points into trackable commitments instantly",
+        "<strong>Cross-sprint visibility:</strong> See progress on improvements from previous retrospectives"
+      ],
+      imageDark: "/img/previews/action_items.png",
+      imageLight: "/img/previews/action_items_light.png",
+      imageAlt: "Action item tracking and progress monitoring"
+    }
+  ];
+
+  const benefitsData = {
+    title: "Transform Your Team's Continuous Improvement",
+    description: "Agile teams using Thunderdome retrospectives report stronger team bonds, faster problem-solving, and measurable process improvements.",
+    benefits: [
+      {
+        title: "Psychological Safety",
+        description: "Create an environment where team members feel safe to share honest feedback"
+      },
+      {
+        title: "Actionable Insights",
+        description: "Move beyond venting to identifying concrete improvements you can implement"
+      },
+      {
+        title: "Sustained Change",
+        description: "Track improvements over time and build momentum for lasting team growth"
+      }
+    ]
+  };
+
+  const finalCtaData = {
+    title: "Ready to Make Every Retrospective Count?",
+    description: "Stop wasting time on retrospectives that don't drive change. Start building a culture of continuous improvement that makes your team stronger every sprint.",
+    primaryCta: "Run Your First Effective Retro",
+    secondaryCta: "Sign In to Continue"
+  };
 </script>
 
-<section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-  <div class="container mx-auto px-4 py-12">
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-        Sprint Retrospectives with <span
-          class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500"
-        >
-          Thunderdome
-        </span>
-      </h1>
-      <p class="text-xl sm:text-2xl text-blue-100">
-        Elevate your team's performance with powerful, insightful retrospective
-        tools.
-      </p>
-    </div>
-  </div>
-</section>
+<HeroSection {...heroData} />
 
 <div class="py-16 mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-  <section class="mb-20 text-gray-700 dark:text-gray-300">
-    <div class="mb-4">
-      <div class="title-line bg-yellow-thunder"></div>
-      <h2
-        class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-      >
-        Empower Your Team's Continuous Improvement
-      </h2>
-    </div>
-    <p class="mb-4">
-      Sprint retrospectives are crucial for agile teams to reflect, learn, and
-      adapt. Thunderdome's Retrospective tool transforms this essential practice
-      into an engaging and actionable experience, helping teams to:
-    </p>
-    <ul class="list-disc ps-8 mb-6 space-y-2">
-      <li>Identify and address challenges quickly</li>
-      <li>Celebrate successes and boost team morale</li>
-      <li>Foster a culture of open communication</li>
-      <li>Track progress on improvement initiatives</li>
-      <li>Drive continuous enhancement of processes and practices</li>
-    </ul>
-  </section>
+  <ProblemSolutionSection {...problemSolutionData} />
 
-  <div class="space-y-24">
-    <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
-        <div class="mb-4">
-          <div class="title-line bg-yellow-thunder"></div>
-          <h3
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-          >
-            Customizable Retro Formats
-          </h3>
-        </div>
-        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            Choose from popular templates like Start/Stop/Continue, 4Ls, and
-            Mad/Sad/Glad
-            <!--          </li>-->
-            <!--          <li>-->
-            <!--            Create and save custom retro templates tailored to your team's needs-->
-            <!--          </li>-->
-          </li>
-          <li>
-            Easily switch between formats to keep retrospectives fresh and
-            engaging
-          </li>
-          <li>
-            Flexible column structure adapts to different retrospective
-            approaches
-          </li>
-        </ul>
-      </div>
-      <div class="md:w-1/2">
-        <img
-          src="{appConfig.PathPrefix}/img/previews/retro_template.png"
-          alt="Customizable Retro Formats Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
-        />
-        <img
-          src="{appConfig.PathPrefix}/img/previews/retro_template_light.png"
-          alt="Customizable Retro Formats Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
-        />
-      </div>
-    </section>
-
-    <section class="flex flex-col md:flex-row-reverse items-center">
-      <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
-        <div class="mb-4">
-          <div class="title-line bg-yellow-thunder"></div>
-          <h3
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-          >
-            Real-time Collaboration
-          </h3>
-        </div>
-        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            Enable seamless participation for both co-located and distributed
-            teams
-          </li>
-          <li>
-            Facilitate discussions with built-in commenting and voting features
-          </li>
-          <li>
-            Assign facilitator roles to guide the retro process effectively
-          </li>
-          <li>Use anonymity options to encourage open and honest feedback</li>
-        </ul>
-      </div>
-      <div class="md:w-1/2">
-        <img
-          src="{appConfig.PathPrefix}/img/previews/retro.png"
-          alt="Real-time Collaboration Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
-        />
-        <img
-          src="{appConfig.PathPrefix}/img/previews/retro_light.png"
-          alt="Real-time Collaboration Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
-        />
-      </div>
-    </section>
-
-    <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
-        <div class="mb-4">
-          <div class="title-line bg-yellow-thunder"></div>
-          <h3
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-          >
-            Action Item Tracking
-          </h3>
-        </div>
-        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            Create and assign action items directly from retro discussions
-          </li>
-          <li>Track progress on action items across multiple sprints</li>
-        </ul>
-      </div>
-      <div class="md:w-1/2">
-        <img
-          src="{appConfig.PathPrefix}/img/previews/action_items.png"
-          alt="Action Item Tracking Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
-        />
-        <img
-          src="{appConfig.PathPrefix}/img/previews/action_items_light.png"
-          alt="Action Item Tracking Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
-        />
-      </div>
-    </section>
+  <div id="features" class="space-y-24">
+    {#each features as feature, index}
+      <FeatureSection {...feature} {index} />
+    {/each}
   </div>
+
+  <BenefitsSection {...benefitsData} />
 </div>
 
-<div class="bg-indigo-600 py-12">
-  <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
-    <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-      Ready to supercharge your retrospectives?
-    </h2>
-    <p class="mt-6 text-lg leading-8 text-indigo-100">
-      Join thousands of agile teams using Thunderdome's Retrospective tool to
-      drive continuous improvement and team excellence.
-    </p>
-    <div class="mt-10 flex items-center justify-center gap-x-6">
-      <div class="text-center">
-        <div
-          class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4"
-        >
-          <a
-            href="{appRoutes.login}"
-            class="bg-white bg-indigo-600 hover:bg-gray-100 font-semibold py-2 px-6 rounded-full transition duration-300"
-          >
-            Login
-          </a>
-          <div class="text-white font-medium">or</div>
-          <a
-            href="{appRoutes.register}"
-            class="bg-transparent text-white hover:bg-white/10 border border-white font-semibold py-2 px-6 rounded-full transition duration-300"
-          >
-            Register
-          </a>
-        </div>
-        <p class="text-white mt-2">to get started</p>
-      </div>
-    </div>
-  </div>
-</div>
+<FinalCTA {...finalCtaData} />

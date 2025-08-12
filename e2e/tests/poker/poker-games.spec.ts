@@ -11,7 +11,9 @@ test.describe("Poker Games page", { tag: "@poker" }, () => {
       await battlesPage.goto();
 
       const title = battlesPage.page.locator("h1");
-      await expect(title).toHaveText("Agile Poker Planning with Thunderdome");
+      await expect(title).toHaveText(
+        "Turn Estimation Chaos into Team Consensus with Thunderdome Planning Poker",
+      );
     });
   });
 

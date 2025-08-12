@@ -418,7 +418,7 @@ test.describe("User Profile page", { tag: ["@user"] }, () => {
 
       // should be on landing page and no longer authenticated
       await expect(profilePage.page.locator("h1 + p")).toHaveText(
-        "Elevate your agile practices, foster seamless collaboration, and unlock your team's full potential with our innovative suite of tools.",
+        "Transform your agile ceremonies from time-wasters into team-builders. Get the tools that make planning poker, retrospectives, and story mapping actually work for remote and in-person teams.",
       );
       await expect(
         profilePage.page.locator("data-testid=usernav-name"),
@@ -446,7 +446,7 @@ test.describe("User Profile page", { tag: ["@user"] }, () => {
 
       // should be on landing page and no longer authenticated
       await expect(profilePage.page.locator("h1 + p")).toHaveText(
-        "Elevate your agile practices, foster seamless collaboration, and unlock your team's full potential with our innovative suite of tools.",
+        "Transform your agile ceremonies from time-wasters into team-builders. Get the tools that make planning poker, retrospectives, and story mapping actually work for remote and in-person teams.",
       );
       await expect(
         profilePage.page.locator("data-testid=usernav-name"),
