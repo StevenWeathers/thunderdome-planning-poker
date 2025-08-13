@@ -9,6 +9,7 @@
     ChevronsUp,
     ChevronUp,
     ExternalLink,
+    Grip
   } from 'lucide-svelte';
   import Bars2 from '../icons/Bars2.svelte';
   import AddPlan from './AddStory.svelte';
@@ -236,7 +237,6 @@
         'outline-indigo-500',
         'dark:outline-yellow-400',
       ],
-      dragDisabled: !isFacilitator || storysShow !== 'all',
     }}"
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
@@ -252,8 +252,11 @@
           : ''}"
         data-testid="plan"
         data-storyid="{plan.id}"
+        draggable="true"
       >
         <div class="flex-grow font-bold align-middle dark:text-white me-1">
+          <span><Grip class="inline-block"/></span>
+          &nbsp;
           {#if plan.link !== ''}
             <a
               href="{plan.link}"
