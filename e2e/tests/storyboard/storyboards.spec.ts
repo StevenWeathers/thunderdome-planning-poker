@@ -11,7 +11,9 @@ test.describe("Storyboards page", { tag: ["@storyboard"] }, () => {
       await storyboardsPage.goto();
 
       const title = storyboardsPage.page.locator("h1");
-      await expect(title).toHaveText("Story Mapping with Thunderdome");
+      await expect(title).toHaveText(
+        "Transform Ideas into Impact with Thunderdome Story Mapping",
+      );
     });
   });
 

@@ -170,10 +170,7 @@ const ru: Translation = {
   facilitatorCodePlaceholder: 'Enter an optional facilitator code',
   finalPoints: 'Итого голосов',
   flag: 'Flag',
-  footerAuthoredBy:
-    'is designed and developed by {authorOpen}Steven Weathers{authorClose}.',
-  footerLicense:
-    'The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.',
+  footerAuthoredBy: 'Создано с ❤️ {authorOpen}Steven Weathers{authorClose}',
   forgotPassword: 'Forgot Your Password?',
   forgotPasswordSubtext: `Don't fret! Just enter your email and we will send you instructions to reset your password.`,
   returnToLogin: 'Return to Login',
@@ -698,6 +695,7 @@ const ru: Translation = {
   modalEditRetroActionItem: 'Редактировать элемент действия ретро',
   modalRetroItemComments: 'Комментарии элемента ретро',
   modalUpdateRetroSettings: 'Обновить настройки ретро',
+  githubRepository: 'Репозиторий GitHub',
 };
 
 export default ru;

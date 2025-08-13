@@ -1,236 +1,119 @@
 <script>
-  import { appRoutes } from '../../config';
   import { onMount } from 'svelte';
+  import HeroSection from '../../components/landing/HeroSection.svelte';
+  import ProblemSolutionSection from '../../components/landing/ProblemSolutionSection.svelte';
+  import FeatureSection from '../../components/landing/FeatureSection.svelte';
+  import BenefitsSection from '../../components/landing/BenefitsSection.svelte';
+  import FinalCTA from '../../components/landing/FinalCTA.svelte';
 
   onMount(() => window.scrollTo(0, 0));
+
+  const heroData = {
+    title: `Turn Estimation Chaos into Team Consensus with <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500">Thunderdome</span> Planning Poker`,
+    subtitle: "Transform wild guesses and estimation bias into data-driven story points. Build accurate backlogs that help your team plan realistic sprints.",
+    primaryCta: "Start Estimating Smart",
+    secondaryCta: "See How It Works"
+  };
+
+  const problemSolutionData = {
+    title: "Why Traditional Estimation Fails Teams",
+    subtitle: "Move from wild guesses and endless debates to data-driven consensus that actually works.",
+    problemTitle: "Traditional Estimation Problems",
+    problemItems: [
+      "Loudest voice wins the estimate",
+      "Anchoring bias skews all estimates", 
+      "Unrealistic commitments lead to burnout",
+      "Team members afraid to disagree"
+    ],
+    solutionTitle: "With Thunderdome Planning Poker",
+    solutionItems: [
+      "Every team member's input counts equally",
+      "Independent thinking before consensus",
+      "Realistic estimates based on team wisdom",
+      "Safe space for honest complexity assessment"
+    ],
+    conclusion: "<strong>The result?</strong> Accurate story points that help your team make realistic sprint commitments and improve velocity predictions over time."
+  };
+
+  const features = [
+    {
+      title: "Scales That Match Your Reality",
+      description: "Stop forcing your team into estimation scales that don't fit. Use proven scales or create your own that reflect how your team actually thinks about work.",
+      features: [
+        "<strong>Classic scales ready to go:</strong> Fibonacci, T-shirt sizes, and other proven estimation approaches",
+        "<strong>Build custom scales:</strong> Create estimation ranges that match your team's workflow and complexity levels",
+        "<strong>Special situation cards:</strong> Handle unknowns with \"?\" cards or infinite complexity with \"∞\" options",
+        "<strong>Switch scales easily:</strong> Use different approaches for different project types or team preferences"
+      ],
+      imageDark: "/img/previews/estimation_scales_20250812_dark.png",
+      imageLight: "/img/previews/estimation_scales_20250812_light.png",
+      imageAlt: "Customizable estimation scales including Fibonacci and custom options"
+    },
+    {
+      title: "Estimate Together, Anywhere",
+      description: "Whether your team is in the same room or spread across time zones, everyone participates equally in the estimation process.",
+      features: [
+        "<strong>Real-time synchronization:</strong> See who's voted and when, with instant updates across all devices",
+        "<strong>Seamless remote participation:</strong> No difference between in-person and distributed team members",
+        "<strong>Multi-user sessions:</strong> Handle large teams without technical hiccups or coordination issues"
+      ],
+      imageDark: "/img/previews/poker_players_20250812_dark.png",
+      imageLight: "/img/previews/poker_players_20250812_light.png",
+      imageAlt: "Real-time collaborative planning poker session"
+    },
+    {
+      title: "Unbiased Estimation Made Easy",
+      description: "Eliminate estimation bias and anchoring effects. Get the true wisdom of your team, not just the opinion of whoever speaks first.",
+      features: [
+        "<strong>Anonymous voting options:</strong> Remove personality and hierarchy bias from the estimation process",
+        "<strong>Simultaneous reveals:</strong> Everyone thinks independently before seeing others' estimates",
+        "<strong>Outlier identification:</strong> Quickly spot estimation differences that need discussion and alignment"
+      ],
+      imageDark: "/img/previews/voting_anon.png",
+      imageLight: "/img/previews/voting_anon_light.png",
+      imageAlt: "Anonymous voting interface showing unbiased estimation process"
+    }
+  ];
+
+  const benefitsData = {
+    title: "Build Accurate Story Points Your Team Can Trust",
+    description: "Teams using Thunderdome Planning Poker report more consistent story pointing, better velocity tracking, and improved sprint planning confidence.",
+    benefits: [
+      {
+        title: "Story Point Accuracy",
+        description: "Leverage collective team intelligence for more reliable and consistent story point estimates"
+      },
+      {
+        title: "Team Consensus", 
+        description: "Build shared understanding of story complexity and effort before pointing stories"
+      },
+      {
+        title: "Velocity Tracking",
+        description: "Improve sprint planning with consistent story points that reflect true team capacity"
+      }
+    ]
+  };
+
+  const finalCtaData = {
+    title: "Ready to Point Stories Like a Pro?",
+    description: "Stop guessing story complexity and start measuring it accurately. Build consistent story points that improve your team's velocity tracking and sprint planning.",
+    primaryCta: "Start Pointing Stories",
+    secondaryCta: "Sign In to Continue"
+  };
 </script>
 
-<section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-  <div class="container mx-auto px-4 py-12">
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-        Agile Poker Planning with <span
-          class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500"
-        >
-          Thunderdome
-        </span>
-      </h1>
-      <p class="text-xl sm:text-2xl text-blue-100">
-        Streamline your sprint planning process with our intuitive and powerful
-        poker planning tool.
-      </p>
-    </div>
-  </div>
-</section>
+<HeroSection {...heroData} />
 
 <div class="py-16 mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-  <section class="mb-20 text-gray-700 dark:text-gray-300">
-    <div class="mb-4">
-      <div class="title-line bg-yellow-thunder"></div>
-      <h2
-        class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-      >
-        Elevate Your Estimations
-      </h2>
-    </div>
-    <p class="mb-4">
-      Agile Poker Planning is a consensus-based estimation technique used in
-      agile software development. It's a powerful method that helps teams
-      collaboratively estimate the effort required for user stories or tasks. By
-      using Thunderdome's Poker Planning tool, teams can:
-    </p>
-    <ul class="list-disc ps-8 mb-6 space-y-2">
-      <li>Encourage team participation and engagement</li>
-      <li>Reduce influence bias in estimations</li>
-      <li>Promote discussion and alignment on project scope</li>
-      <li>Improve estimation accuracy over time</li>
-      <li>Streamline the sprint planning process</li>
-    </ul>
-    <p>
-      Thunderdome's Poker Planning tool transforms this essential practice into
-      a seamless, engaging, and actionable experience for agile teams of all
-      sizes and industries.
-    </p>
-  </section>
+  <ProblemSolutionSection {...problemSolutionData} />
 
-  <div class="space-y-24">
-    <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
-        <div class="mb-4">
-          <div class="title-line bg-yellow-thunder"></div>
-          <h3
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-          >
-            Custom Estimation Scales
-          </h3>
-        </div>
-        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            Choose from predefined scales like Fibonacci or create your own
-            custom estimation scales
-          </li>
-          <li>
-            Tailor scales to fit your team's unique needs and project
-            requirements
-          </li>
-          <li>
-            Easily switch between different scales for various project types
-          </li>
-          <li>
-            Include special cards like "?" or "∞" for handling uncertainties
-          </li>
-        </ul>
-      </div>
-      <div class="md:w-1/2">
-        <img
-          src="{appConfig.PathPrefix}/img/previews/estimation_scales.png"
-          alt="Custom Estimation Scales Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
-        />
-        <img
-          src="{appConfig.PathPrefix}/img/previews/estimation_scales_light.png"
-          alt="Custom Estimation Scales Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
-        />
-      </div>
-    </section>
-
-    <section class="flex flex-col md:flex-row-reverse items-center">
-      <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
-        <div class="mb-4">
-          <div class="title-line bg-yellow-thunder"></div>
-          <h3
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-          >
-            Real-time Collaboration
-          </h3>
-        </div>
-        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            Conduct poker planning sessions with your team in real-time,
-            regardless of location
-          </li>
-          <li>Seamless multi-user participation with instant updates</li>
-          <li>Suitable for both co-located and distributed agile teams</li>
-        </ul>
-      </div>
-      <div class="md:w-1/2">
-        <img
-          src="{appConfig.PathPrefix}/img/previews/voting_interactive.png"
-          alt="Real-time Collaboration Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
-        />
-        <img
-          src="{appConfig.PathPrefix}/img/previews/voting_interactive_light.png"
-          alt="Real-time Collaboration Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
-        />
-      </div>
-    </section>
-
-    <section class="flex flex-col md:flex-row items-center">
-      <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
-        <div class="mb-4">
-          <div class="title-line bg-yellow-thunder"></div>
-          <h3
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-          >
-            Voting Visibility Control
-          </h3>
-        </div>
-        <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            Choose whether to show or hide voter identities to reduce bias
-          </li>
-          <li>
-            Reveal all estimates simultaneously to encourage independent
-            thinking
-          </li>
-          <li>
-            Easily identify outliers and facilitate discussions on estimate
-            differences
-          </li>
-        </ul>
-      </div>
-      <div class="md:w-1/2">
-        <img
-          src="{appConfig.PathPrefix}/img/previews/voting_anon.png"
-          alt="Voting Visibility Control Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto hidden dark:block"
-        />
-        <img
-          src="{appConfig.PathPrefix}/img/previews/voting_anon_light.png"
-          alt="Voting Visibility Control Screenshot"
-          class="rounded-lg shadow-lg max-h-64 max-w-64 mx-auto dark:hidden"
-        />
-      </div>
-    </section>
-
-    <!--        <section class="flex flex-col md:flex-row-reverse items-center">-->
-    <!--            <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">-->
-    <!--                <div class="mb-4">-->
-    <!--                    <div class="title-line bg-yellow-thunder"></div>-->
-    <!--                    <h3-->
-    <!--                            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"-->
-    <!--                    >-->
-    <!--                        Integration with Projects-->
-    <!--                    </h3>-->
-    <!--                </div>-->
-    <!--                <ul class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300">-->
-    <!--                    <li>-->
-    <!--                        Seamlessly integrate poker planning sessions with your existing-->
-    <!--                        projects in Thunderdome-->
-    <!--                    </li>-->
-    <!--                    <li>Import user stories directly from your project backlog</li>-->
-    <!--                    <li>-->
-    <!--                        Automatically update story points in your project management tool-->
-    <!--                    </li>-->
-    <!--                    <li>-->
-    <!--                        Link estimation results to sprints for better planning and tracking-->
-    <!--                    </li>-->
-    <!--                </ul>-->
-    <!--            </div>-->
-    <!--            <div class="md:w-1/2">-->
-    <!--                <img-->
-    <!--                        src="/api/placeholder/800/600"-->
-    <!--                        alt="Project Integration Screenshot"-->
-    <!--                        class="rounded-lg shadow-lg"-->
-    <!--                />-->
-    <!--            </div>-->
-    <!--        </section>-->
+  <div id="features" class="space-y-24">
+    {#each features as feature, index}
+      <FeatureSection {...feature} {index} />
+    {/each}
   </div>
+
+  <BenefitsSection {...benefitsData} />
 </div>
 
-<div class="bg-indigo-600 py-12">
-  <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
-    <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-      Ready to revolutionize your sprint planning?
-    </h2>
-    <p class="mt-6 text-lg leading-8 text-indigo-100">
-      Join thousands of agile teams using Thunderdome's Poker Planning tool to
-      streamline their estimation process and boost productivity.
-    </p>
-    <div class="mt-10 flex items-center justify-center gap-x-6">
-      <div class="text-center">
-        <div
-          class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4"
-        >
-          <a
-            href="{appRoutes.login}"
-            class="bg-white bg-indigo-600 hover:bg-gray-100 font-semibold py-2 px-6 rounded-full transition duration-300"
-          >
-            Login
-          </a>
-          <div class="text-white font-medium">or</div>
-          <a
-            href="{appRoutes.register}"
-            class="bg-transparent text-white hover:bg-white/10 border border-white font-semibold py-2 px-6 rounded-full transition duration-300"
-          >
-            Register
-          </a>
-        </div>
-        <p class="text-white mt-2">to get started</p>
-      </div>
-    </div>
-  </div>
-</div>
+<FinalCTA {...finalCtaData} />

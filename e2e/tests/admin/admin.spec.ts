@@ -21,7 +21,7 @@ test.describe("Admin page", { tag: ["@administration"] }, () => {
 
       const title = adminPage.page.locator("h1 + p");
       await expect(title).toHaveText(
-        "Elevate your agile practices, foster seamless collaboration, and unlock your team's full potential with our innovative suite of tools.",
+        "Transform your agile ceremonies from time-wasters into team-builders. Get the tools that make planning poker, retrospectives, and story mapping actually work for remote and in-person teams.",
       );
     });
   });
@@ -34,7 +34,7 @@ test.describe("Admin page", { tag: ["@administration"] }, () => {
 
       const title = adminPage.page.locator("h1 + p");
       await expect(title).toHaveText(
-        "Elevate your agile practices, foster seamless collaboration, and unlock your team's full potential with our innovative suite of tools.",
+        "Transform your agile ceremonies from time-wasters into team-builders. Get the tools that make planning poker, retrospectives, and story mapping actually work for remote and in-person teams.",
       );
     });
   });

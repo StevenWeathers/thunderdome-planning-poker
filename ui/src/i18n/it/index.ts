@@ -56,7 +56,7 @@ const it: Translation = {
   appName: 'Thunderdome',
   appPreviewAlt: 'Anteprima di Thunderdome, Esperienza UI Agile Planning Poker',
   appSubtitle: 'App Open Source Agile Planning Poker',
-  appVersion: 'Versione {version}',
+  appVersion: 'versione {version}',
   associateTeam: 'Associa Team',
   authError: "Errore durante l'autenticazione del giocatore",
   autoFinishVoting: 'Votazione Automatica',
@@ -180,9 +180,7 @@ const it: Translation = {
   finalPoints: 'Punti finali',
   flag: 'Segnalazione',
   footerAuthoredBy:
-    'è progettato e sviluppato da {authorOpen}Steven Weathers{authorClose}.',
-  footerLicense:
-    'Il codice sorgente è concesso in licenza {licenseOpen}Apache 2.0{licenseClose}.',
+    'Realizzato con ❤️ da {authorOpen}Steven Weathers{authorClose}',
   forgotPassword: 'Forgot Your Password?',
   forgotPasswordSubtext: `Don't fret! Just enter your email and we will send you instructions to reset your password.`,
   returnToLogin: 'Return to Login',
@@ -728,6 +726,7 @@ const it: Translation = {
   modalEditRetroActionItem: 'Modifica Elemento Azione Retro',
   modalRetroItemComments: 'Commenti Elemento Retro',
   modalUpdateRetroSettings: 'Aggiorna Impostazioni Retro',
+  githubRepository: 'Repository GitHub',
 };
 
 export default it;

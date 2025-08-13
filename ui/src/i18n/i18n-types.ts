@@ -223,7 +223,7 @@ type RootTranslation = {
    */
   appSubtitle: string;
   /**
-   * V​e​r​s​i​o​n​ ​{​v​e​r​s​i​o​n​}
+   * v​e​r​s​i​o​n​ ​{​v​e​r​s​i​o​n​}
    * @param {unknown} version
    */
   appVersion: RequiredParams<'version'>;
@@ -680,17 +680,11 @@ type RootTranslation = {
    */
   flag: string;
   /**
-   * i​s​ ​d​e​s​i​g​n​e​d​ ​a​n​d​ ​d​e​v​e​l​o​p​e​d​ ​b​y​ ​{​a​u​t​h​o​r​O​p​e​n​}​S​t​e​v​e​n​ ​W​e​a​t​h​e​r​s​{​a​u​t​h​o​r​C​l​o​s​e​}​.
+   * B​u​i​l​t​ ​w​i​t​h​ ​❤​️​ ​b​y​ ​{​a​u​t​h​o​r​O​p​e​n​}​S​t​e​v​e​n​ ​W​e​a​t​h​e​r​s​{​a​u​t​h​o​r​C​l​o​s​e​}
    * @param {unknown} authorClose
    * @param {unknown} authorOpen
    */
   footerAuthoredBy: RequiredParams<'authorClose' | 'authorOpen'>;
-  /**
-   * T​h​e​ ​s​o​u​r​c​e​ ​c​o​d​e​ ​i​s​ ​l​i​c​e​n​s​e​d​ ​{​l​i​c​e​n​s​e​O​p​e​n​}​A​p​a​c​h​e​ ​2​.​0​{​l​i​c​e​n​s​e​C​l​o​s​e​}​.
-   * @param {unknown} licenseClose
-   * @param {unknown} licenseOpen
-   */
-  footerLicense: RequiredParams<'licenseClose' | 'licenseOpen'>;
   /**
    * F​o​r​g​o​t​ ​Y​o​u​r​ ​P​a​s​s​w​o​r​d​?
    */
@@ -2733,6 +2727,10 @@ type RootTranslation = {
    * U​p​d​a​t​e​ ​R​e​t​r​o​ ​S​e​t​t​i​n​g​s
    */
   modalUpdateRetroSettings: string;
+  /**
+   * G​i​t​H​u​b​ ​R​e​p​o​s​i​t​o​r​y
+   */
+  githubRepository: string;
 };
 
 export type TranslationFunctions = {
@@ -2941,7 +2939,7 @@ export type TranslationFunctions = {
    */
   appSubtitle: () => LocalizedString;
   /**
-   * Version {version}
+   * version {version}
    */
   appVersion: (arg: { version: unknown }) => LocalizedString;
   /**
@@ -3397,18 +3395,11 @@ export type TranslationFunctions = {
    */
   flag: () => LocalizedString;
   /**
-   * is designed and developed by {authorOpen}Steven Weathers{authorClose}.
+   * Built with ❤️ by {authorOpen}Steven Weathers{authorClose}
    */
   footerAuthoredBy: (arg: {
     authorClose: unknown;
     authorOpen: unknown;
-  }) => LocalizedString;
-  /**
-   * The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.
-   */
-  footerLicense: (arg: {
-    licenseClose: unknown;
-    licenseOpen: unknown;
   }) => LocalizedString;
   /**
    * Forgot Your Password?
@@ -5444,6 +5435,10 @@ export type TranslationFunctions = {
    * Update Retro Settings
    */
   modalUpdateRetroSettings: () => LocalizedString;
+  /**
+   * GitHub Repository
+   */
+  githubRepository: () => LocalizedString;
 };
 
 export type Formatters = {};

@@ -59,15 +59,37 @@
           </span>
           {randomSlogan}
         </h1>
-        <p class="max-w-4xl mx-auto text-xl sm:text-2xl text-blue-100">
-          Elevate your agile practices, foster seamless collaboration, and
-          unlock your team's full potential with our innovative suite of tools.
+        <p class="max-w-4xl mx-auto text-xl sm:text-2xl text-blue-100 mb-8">
+          Transform your agile ceremonies from time-wasters into team-builders. Get the tools that make planning poker, retrospectives, and story mapping actually work for remote and in-person teams.
         </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+          {#if $user.id}
+            <a
+              href="{appRoutes.games}"
+              class="bg-white text-indigo-700 hover:bg-gray-100 font-semibold py-3 px-8 rounded-full transition duration-300 shadow-lg"
+            >
+              Start Planning
+            </a>
+          {:else}
+            <a
+              href="{appRoutes.register}"
+              class="bg-white text-indigo-700 hover:bg-gray-100 font-semibold py-3 px-8 rounded-full transition duration-300 shadow-lg"
+            >
+              Get Started Free
+            </a>
+          {/if}
+          <a
+            href="#features"
+            class="bg-transparent text-white hover:bg-white/10 border border-white font-semibold py-3 px-8 rounded-full transition duration-300"
+          >
+            Explore Features
+          </a>
+        </div>
       </div>
     </div>
   </header>
 
-  <section class="bg-white dark:bg-gray-800 py-20">
+  <section id="features" class="bg-white dark:bg-gray-800 py-20">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row items-center justify-between">
         <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
@@ -75,14 +97,26 @@
           <h2
             class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
           >
-            Agile Poker Planning
+            Planning Poker That Gets Consensus
           </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+            Stop letting the loudest voice win your estimations. Get accurate story points from your whole team with bias-free voting.
+          </p>
           <ul
-            class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
+            class="space-y-3 text-gray-700 dark:text-gray-300 mb-8"
           >
-            <li>Streamline sprint planning with collaborative estimation</li>
-            <li>Customize estimation scales to fit your team's needs</li>
-            <li>Real-time voting and result visualization</li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Eliminate estimation bias:</strong> Anonymous voting prevents anchoring and groupthink</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Flexible scales:</strong> Use Fibonacci, T-shirt sizes, or create custom ranges that fit your workflow</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Remote-first design:</strong> Equal participation whether you're in-person or distributed</span>
+            </li>
           </ul>
           <a
             href="{appRoutes.games}"
@@ -91,7 +125,7 @@
             <span
               class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
             >
-              {$user.id ? $LL.battleCreate() : 'Learn More'}
+              {$user.id ? $LL.battleCreate() : 'Try Planning Poker'}
             </span>
           </a>
         </div>
@@ -99,12 +133,12 @@
           <BrowserMock>
             <img
               class="rounded-b-lg hidden dark:block"
-              src="{PathPrefix}/img/previews/poker_game.png"
+              src="{PathPrefix}/img/previews/planning_poker_20250812_dark.png"
               alt="{$LL.appPreviewAlt()}"
             />
             <img
               class="rounded-b-lg dark:hidden"
-              src="{PathPrefix}/img/previews/poker_game_light.png"
+              src="{PathPrefix}/img/previews/planning_poker_20250812_light.png"
               alt="{$LL.appPreviewAlt()}"
             />
           </BrowserMock>
@@ -123,14 +157,26 @@
           <h2
             class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
           >
-            Sprint Retrospectives
+            Retrospectives That Drive Change
           </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+            Move beyond the same old "what went well" discussions. Create psychological safety where real improvements happen.
+          </p>
           <ul
-            class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
+            class="space-y-3 text-gray-700 dark:text-gray-300 mb-8"
           >
-            <li>Facilitate engaging and productive retrospectives</li>
-            <li>Choose from customizable templates or create your own</li>
-            <li>Track action items and improvement initiatives</li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Battle-tested formats:</strong> Start/Stop/Continue, 4Ls, Mad/Sad/Glad, plus custom templates</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Safe space for honesty:</strong> Anonymous feedback removes fear of judgment or retaliation</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Accountability that works:</strong> Convert insights into trackable action items with follow-through</span>
+            </li>
           </ul>
           <a
             href="{appRoutes.retros}"
@@ -139,7 +185,7 @@
             <span
               class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
             >
-              {$user.id ? 'Create Retro' : 'Learn More'}
+              {$user.id ? 'Start a Retrospective' : 'Try Retrospectives'}
             </span>
           </a>
         </div>
@@ -147,12 +193,12 @@
           <BrowserMock>
             <img
               class="rounded-b-lg hidden dark:block"
-              src="{PathPrefix}/img/previews/retro.png"
+              src="{PathPrefix}/img/previews/retro_20250812_dark.png"
               alt="Sprint Retrospectives Preview"
             />
             <img
               class="rounded-b-lg dark:hidden"
-              src="{PathPrefix}/img/previews/retro_light.png"
+              src="{PathPrefix}/img/previews/retro_20250812_light.png"
               alt="Sprint Retrospectives Preview"
             />
           </BrowserMock>
@@ -169,18 +215,26 @@
           <h2
             class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
           >
-            Story Mapping
+            Story Maps That Tell the Real Story
           </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+            Stop building features in isolation. Visualize the complete user journey and prioritize what actually matters to your users.
+          </p>
           <ul
-            class="list-disc ps-5 space-y-2 text-gray-700 dark:text-gray-300 mb-8"
+            class="space-y-3 text-gray-700 dark:text-gray-300 mb-8"
           >
-            <li>Drag-and-drop interface for easy story organization</li>
-            <li>
-              Customizable columns and swimlanes for user activities and
-              iterations
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Visual user journeys:</strong> Drag-and-drop interface transforms complex backlogs into clear story flows</span>
             </li>
-            <li>Create, edit, and prioritize user stories within the map</li>
-            <li>Color-coding and tagging for improved story categorization</li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Real-time team alignment:</strong> Live collaboration keeps distributed product teams in sync</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>User-value prioritization:</strong> Stop building random features and focus on what users actually need</span>
+            </li>
           </ul>
           <a
             href="{appRoutes.storyboards}"
@@ -189,7 +243,7 @@
             <span
               class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
             >
-              {$user.id ? 'Create Storyboard' : 'Learn More'}
+              {$user.id ? 'Create Story Map' : 'Try Story Mapping'}
             </span>
           </a>
         </div>
@@ -197,12 +251,12 @@
           <BrowserMock>
             <img
               class="rounded-b-lg hidden dark:block"
-              src="{PathPrefix}/img/previews/storyboard.png"
+              src="{PathPrefix}/img/previews/storyboard_20250812_dark.png"
               alt="Story Mapping Preview"
             />
             <img
               class="rounded-b-lg dark:hidden"
-              src="{PathPrefix}/img/previews/storyboard_light.png"
+              src="{PathPrefix}/img/previews/storyboard_20250812_light.png"
               alt="Story Mapping Preview"
             />
           </BrowserMock>
@@ -223,20 +277,18 @@
           >
             Team Checkins
           </h2>
-          <p class="text-lg dark:text-gray-300 mb-8">
-            Streamline your team's agile stand-up. Focus on blockers and
-            critical details instead of spending time discussing yesterday's and
-            today's tasks.
+          <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            Skip the status updates everyone already knows. Focus your daily standups on blockers, dependencies, and what actually needs team discussion.
           </p>
         </div>
         <div class="md:w-1/2">
           <img
-            class="rounded-b-lg hidden dark:block"
+            class="rounded-lg shadow-lg hidden dark:block"
             src="{PathPrefix}/img/previews/checkin.png"
             alt="Team Checkins Preview"
           />
           <img
-            class="rounded-b-lg dark:hidden"
+            class="rounded-lg shadow-lg dark:hidden"
             src="{PathPrefix}/img/previews/checkin_light.png"
             alt="Team Checkins Preview"
           />
@@ -257,10 +309,9 @@
           <div class="text-indigo-500 text-4xl mb-4">
             <Zap class="h-12 w-12 mx-auto" />
           </div>
-          <h3 class="text-xl font-semibold mb-2">Boost Productivity</h3>
+          <h3 class="text-xl font-semibold mb-2">Built for Remote Teams</h3>
           <p>
-            Streamline your agile processes and eliminate bottlenecks to deliver
-            value faster.
+            Every feature works seamlessly whether your team is in the same room or spread across continents. No more "remote-friendly" compromises.
           </p>
         </div>
         <div
@@ -269,10 +320,9 @@
           <div class="text-indigo-500 text-4xl mb-4">
             <Users class="h-12 w-12 mx-auto" />
           </div>
-          <h3 class="text-xl font-semibold mb-2">Enhanced Collaboration</h3>
+          <h3 class="text-xl font-semibold mb-2">Psychological Safety First</h3>
           <p>
-            Foster teamwork and communication with our suite of collaborative
-            tools.
+            Anonymous options, inclusive facilitation, and bias reduction tools help every team member contribute their best thinking.
           </p>
         </div>
         <div
@@ -282,18 +332,15 @@
             <Github class="h-12 w-12 mx-auto" />
           </div>
           <h3 class="text-xl font-semibold mb-2">Open Source</h3>
-          <p>
-            Choose between our <a
+          <p><a
               href="{appRoutes.subscriptionPricing}"
-              class="text-indigo-500 dark:text-indigo-400 hover:underline"
-              >premium</a
-            >
-            hosted solution or
-            <a
+              class="text-indigo-400 dark:text-indigo-300 hover:text-yellow-thunder dark:hover:text-yellow-thunder font-bold"
+              >Premium cloud-hosted</a
+            > convenience or <a
               href="{RepoURL}/blob/main/docs/INSTALLATION.md"
-              class="text-indigo-500 dark:text-indigo-400 hover:underline"
-              >self-host Thunderdome</a
-            >.
+              target="_blank"
+              class="text-indigo-400 dark:text-indigo-300 hover:text-yellow-thunder dark:hover:text-yellow-thunder font-bold"
+              >self-hosted</a> sovereignty. The choice is entirely yours.
           </p>
         </div>
       </div>

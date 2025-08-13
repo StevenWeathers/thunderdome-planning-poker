@@ -1,10 +1,10 @@
 <script lang="ts">
   interface Props {
     width?: number;
-    klass?: string;
+    class?: string;
   }
 
-  let { width = 16, klass = '' }: Props = $props();
+  let { width = 16, class: klass = '' }: Props = $props();
 </script>
 
 <svg
