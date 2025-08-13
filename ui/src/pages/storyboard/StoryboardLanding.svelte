@@ -44,8 +44,8 @@
         "<strong>Smart organization:</strong> Custom swimlanes that adapt to your team's workflow",
         "<strong>Visual clarity:</strong> Color-coding and tags that make complex backlogs instantly understandable"
       ],
-      imageDark: "/img/previews/storyboard.png",
-      imageLight: "/img/previews/storyboard_light.png",
+      imageDark: "/img/previews/storyboard_20250812_dark.png",
+      imageLight: "/img/previews/storyboard_20250812_light.png",
       imageAlt: "Visual story mapping interface showing drag-and-drop functionality"
     },
     {
@@ -56,8 +56,8 @@
         "<strong>Seamless multi-user editing:</strong> Multiple people, zero conflicts",
         "<strong>Contextual discussions:</strong> Have conversations right where the work happens"
       ],
-      imageDark: "/img/previews/storyboard_users.png",
-      imageLight: "/img/previews/storyboard_users_light.png",
+      imageDark: "/img/previews/storyboard_users_20250812_dark.png",
+      imageLight: "/img/previews/storyboard_users_20250812_light.png",
       imageAlt: "Team collaboration in real-time on story maps"
     },
     {
@@ -67,8 +67,8 @@
         "<strong>Rich story details:</strong> Descriptions, acceptance criteria, and estimates all in one place",
         "<strong>Priority-driven organization:</strong> Focus on what matters most to your users"
       ],
-      imageDark: "/img/previews/storyboard_story.png",
-      imageLight: "/img/previews/storyboard_story_light.png",
+      imageDark: "/img/previews/storyboard_story_20250812_dark.png",
+      imageLight: "/img/previews/storyboard_story_20250812_light.png",
       imageAlt: "Detailed story management with descriptions and acceptance criteria"
     }
   ];

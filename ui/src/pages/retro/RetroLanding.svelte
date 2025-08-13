@@ -45,8 +45,8 @@
         "<strong>Mix it up easily:</strong> Switch formats to keep retrospectives energizing and insightful",
         "<strong>Flexible structure:</strong> Adapt any template to your team's unique challenges and wins"
       ],
-      imageDark: "/img/previews/retro_template_preview.png",
-      imageLight: "/img/previews/retro_template_light_preview.png",
+      imageDark: "/img/previews/retro_template_20250812_dark.png",
+      imageLight: "/img/previews/retro_template_20250812_light.png",
       imageAlt: "Multiple retrospective formats and templates"
     },
     {
@@ -58,8 +58,8 @@
         "<strong>Democratic prioritization:</strong> Vote on what matters most to focus discussion time",
         "<strong>Guided facilitation:</strong> Built-in tools to keep discussions productive and inclusive"
       ],
-      imageDark: "/img/previews/retro.png",
-      imageLight: "/img/previews/retro_light.png",
+      imageDark: "/img/previews/retro_20250812_dark.png",
+      imageLight: "/img/previews/retro_20250812_light.png",
       imageAlt: "Real-time collaborative retrospective session"
     },
     {

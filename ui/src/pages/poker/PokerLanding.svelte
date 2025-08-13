@@ -45,8 +45,8 @@
         "<strong>Special situation cards:</strong> Handle unknowns with \"?\" cards or infinite complexity with \"∞\" options",
         "<strong>Switch scales easily:</strong> Use different approaches for different project types or team preferences"
       ],
-      imageDark: "/img/previews/estimation_scales.png",
-      imageLight: "/img/previews/estimation_scales_light.png",
+      imageDark: "/img/previews/estimation_scales_20250812_dark.png",
+      imageLight: "/img/previews/estimation_scales_20250812_light.png",
       imageAlt: "Customizable estimation scales including Fibonacci and custom options"
     },
     {
@@ -57,8 +57,8 @@
         "<strong>Seamless remote participation:</strong> No difference between in-person and distributed team members",
         "<strong>Multi-user sessions:</strong> Handle large teams without technical hiccups or coordination issues"
       ],
-      imageDark: "/img/previews/voting_interactive.png",
-      imageLight: "/img/previews/voting_interactive_light.png",
+      imageDark: "/img/previews/poker_players_20250812_dark.png",
+      imageLight: "/img/previews/poker_players_20250812_light.png",
       imageAlt: "Real-time collaborative planning poker session"
     },
     {

@@ -133,12 +133,12 @@
           <BrowserMock>
             <img
               class="rounded-b-lg hidden dark:block"
-              src="{PathPrefix}/img/previews/poker_game.png"
+              src="{PathPrefix}/img/previews/planning_poker_20250812_dark.png"
               alt="{$LL.appPreviewAlt()}"
             />
             <img
               class="rounded-b-lg dark:hidden"
-              src="{PathPrefix}/img/previews/poker_game_light.png"
+              src="{PathPrefix}/img/previews/planning_poker_20250812_light.png"
               alt="{$LL.appPreviewAlt()}"
             />
           </BrowserMock>
@@ -193,12 +193,12 @@
           <BrowserMock>
             <img
               class="rounded-b-lg hidden dark:block"
-              src="{PathPrefix}/img/previews/retro.png"
+              src="{PathPrefix}/img/previews/retro_20250812_dark.png"
               alt="Sprint Retrospectives Preview"
             />
             <img
               class="rounded-b-lg dark:hidden"
-              src="{PathPrefix}/img/previews/retro_light.png"
+              src="{PathPrefix}/img/previews/retro_20250812_light.png"
               alt="Sprint Retrospectives Preview"
             />
           </BrowserMock>
@@ -251,12 +251,12 @@
           <BrowserMock>
             <img
               class="rounded-b-lg hidden dark:block"
-              src="{PathPrefix}/img/previews/storyboard.png"
+              src="{PathPrefix}/img/previews/storyboard_20250812_dark.png"
               alt="Story Mapping Preview"
             />
             <img
               class="rounded-b-lg dark:hidden"
-              src="{PathPrefix}/img/previews/storyboard_light.png"
+              src="{PathPrefix}/img/previews/storyboard_20250812_light.png"
               alt="Story Mapping Preview"
             />
           </BrowserMock>
