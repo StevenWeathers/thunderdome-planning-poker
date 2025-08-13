@@ -7,7 +7,7 @@
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
   import ThemeSelector from './ThemeSelector.svelte';
   import NavUserMenu from './NavUserMenu.svelte';
-  import { ArrowRight } from 'lucide-svelte';
+  import { ArrowRight, Menu, X } from 'lucide-svelte';
   import LocaleMenu from './LocaleMenu.svelte';
   import DomeLogo from '../logos/DomeLogo.svelte';
   import DomeLogoLight from '../logos/DomeLogoLight.svelte';
@@ -43,9 +43,16 @@
   } = AppConfig;
 
   const activePageClass =
-    'block lg:pt-6 lg:pb-4 px-4 border-b lg:border-b-4 lg:dark:bg-gray-800 text-indigo-600 border-indigo-600 dark:text-yellow-thunder dark:border-yellow-thunder transition duration-300';
+    'relative flex items-center px-4 py-3 lg:py-6 text-indigo-600 dark:text-yellow-thunder font-semibold transition-all duration-300 after:absolute after:bottom-0 after:start-0 after:w-full after:h-1 after:bg-indigo-600 after:dark:bg-yellow-thunder lg:after:h-1 after:rounded-t-md';
+  
   const pageClass =
-    'block lg:pt-6 lg:pb-4 px-4 border-b border-gray-200 lg:border-white dark:border-gray-600 lg:dark:border-gray-800 lg:border-b-4 text-gray-700 hover:border-indigo-600 dark:hover:border-yellow-thunder hover:text-indigo-700 dark:text-gray-300 dark:hover:text-yellow-thunder transition duration-300';
+    'relative flex items-center px-4 py-3 lg:py-6 text-gray-700 dark:text-gray-300 font-medium hover:text-indigo-600 dark:hover:text-yellow-thunder transition-all duration-300 after:absolute after:bottom-0 after:start-0 after:w-0 after:h-1 after:bg-indigo-600 after:dark:bg-yellow-thunder hover:after:w-full after:transition-all after:duration-300 after:rounded-t-md';
+
+  const mobileActiveClass = 
+    'block px-4 py-3 text-indigo-600 dark:text-yellow-thunder font-semibold bg-indigo-50 dark:bg-indigo-900/20 border-s-4 border-indigo-600 dark:border-yellow-thunder transition-all duration-300';
+  
+  const mobilePageClass = 
+    'block px-4 py-3 text-gray-700 dark:text-gray-300 font-medium hover:text-indigo-600 dark:hover:text-yellow-thunder hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300';
 
   let showMobileMenu = $state(false);
 
@@ -76,164 +83,242 @@
         notifications.danger($LL.authError());
       });
   }
+
+  function clickOutsideMobileMenu(node: HTMLElement) {
+    function handleClick(event: MouseEvent) {
+      if (showMobileMenu && !node.contains(event.target as Node)) {
+        toggleMobileMenu();
+      }
+    }
+
+    document.addEventListener('click', handleClick, true);
+
+    return {
+      destroy() {
+        document.removeEventListener('click', handleClick, true);
+      }
+    };
+  };
 </script>
 
-<header>
-  <nav
-    class="bg-white dark:bg-gray-800 px-4 lg:px-6"
-    aria-label="main navigation"
-  >
-    <div class="flex flex-wrap justify-between mx-auto max-w-screen-2xl">
-      <div class="py-2 lg:py-3">
-        <a href="{appRoutes.landing}">
-          <span
-            ><DomeLogo class="hidden dark:inline-block h-8 md:h-12 lg:h-14" />
-            <DomeLogoLight
-              class="inline-block dark:hidden h-8 md:h-12 lg:h-14"
-            />
-          </span>
+<header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
+  <nav class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8" aria-label="main navigation">
+    <div class="flex h-16 lg:h-20 items-center justify-between">
+      
+      <!-- Logo Section -->
+      <div class="flex items-center">
+        <a 
+          href="{appRoutes.landing}" 
+          class="group flex items-center transition-transform duration-300 hover:scale-105"
+        >
+          <DomeLogo class="hidden dark:inline-block h-8 md:h-10 lg:h-12 transition-all duration-300 group-hover:drop-shadow-lg" />
+          <DomeLogoLight class="inline-block dark:hidden h-8 md:h-10 lg:h-12 transition-all duration-300 group-hover:drop-shadow-lg" />
         </a>
       </div>
 
-      <ul
-        class="flex items-center flex-shrink-0 space-x-2 rtl:space-x-reverse lg:order-2"
-      >
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex lg:items-center lg:space-x-1 font-rajdhani uppercase text-lg tracking-wide">
+        {#if FeaturePoker}
+          <a
+            href="{appRoutes.games}"
+            class="{currentPage === 'battles' ? activePageClass : pageClass}"
+          >
+            {$LL.battles()}
+          </a>
+        {/if}
+        {#if FeatureRetro}
+          <a
+            href="{appRoutes.retros}"
+            class="{currentPage === 'retros' ? activePageClass : pageClass}"
+          >
+            {$LL.retros()}
+          </a>
+        {/if}
+        {#if FeatureStoryboard}
+          <a
+            href="{appRoutes.storyboards}"
+            class="{currentPage === 'storyboards' ? activePageClass : pageClass}"
+          >
+            {$LL.storyboards()}
+          </a>
+        {/if}
+        {#if $user.name && $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
+          <a
+            href="{appRoutes.teams}"
+            class="{currentPage === 'teams' ? activePageClass : pageClass}"
+          >
+            {$LL.teams()}
+          </a>
+        {/if}
+        {#if SubscriptionsEnabled && !$user.subscribed}
+          <a
+            href="{appRoutes.subscriptionPricing}"
+            class="{currentPage === 'pricing' ? activePageClass : pageClass}"
+          >
+            Pricing
+          </a>
+        {/if}
+        {#if $user.name && validateUserIsAdmin($user)}
+          <a
+            href="{appRoutes.admin}"
+            class="{currentPage === 'admin' ? activePageClass : pageClass}"
+          >
+            {$LL.admin()}
+          </a>
+        {/if}
+      </div>
+
+      <!-- Right Side Actions -->
+      <div class="flex items-center space-x-3 rtl:space-x-reverse">
         {#if !$user.id}
-          <li>
+          <!-- Guest User Controls -->
+          <div class="hidden sm:flex items-center space-x-3 rtl:space-x-reverse">
             <LocaleMenu
               selectedLocale={$locale}
               update={(l:Locales) => setupI18n(l)}
             />
-          </li>
-          <li>
             <ThemeSelector />
-          </li>
-          <li>
             {#if HeaderAuthEnabled}
               <button
                 onclick={headerLogin}
-                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-102 flex items-center space-x-2 shadow-md hover:shadow-lg"
-                >{$LL.login()}
-                <ArrowRight class="h-4 w-4 ms-1 inline-block" />
+                class="group bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 rtl:space-x-reverse shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              >
+                <span>{$LL.login()}</span>
+                <ArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </button>
             {:else}
               <a
                 href="{appRoutes.login}"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-102 flex items-center space-x-2 shadow-md hover:shadow-lg"
-                >{$LL.login()}
-                <ArrowRight class="h-4 w-4 ms-1 inline-block" />
+                class="group bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 rtl:space-x-reverse shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              >
+                <span>{$LL.login()}</span>
+                <ArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </a>
             {/if}
-          </li>
+          </div>
         {/if}
+        
         {#if $user.id}
-          <li>
-            <NavUserMenu
-              xfetch={xfetch}
-              notifications={notifications}
-              router={router}
-              currentPage={currentPage}
-            />
-          </li>
+          <!-- Authenticated User Controls -->
+          <NavUserMenu
+            xfetch={xfetch}
+            notifications={notifications}
+            router={router}
+            currentPage={currentPage}
+          />
         {/if}
-        <li>
-          <button
-            onclick={toggleMobileMenu}
-            type="button"
-            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-          >
-            <span class="sr-only">Open main menu</span>
-            <svg
-              class="w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                clip-rule="evenodd"></path>
-            </svg>
-          </button>
-        </li>
-      </ul>
 
-      <div
-        class="{showMobileMenu
-          ? ''
-          : 'hidden'} justify-between items-center w-full lg:flex lg:w-auto lg:order-1 font-semibold font-rajdhani uppercase text-lg lg:text-xl"
-      >
-        <ul
-          class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-1 lg:mt-0 pb-2 lg:pb-0 rtl:space-x-reverse"
+        <!-- Mobile Menu Button -->
+        <button
+          onclick={toggleMobileMenu}
+          type="button"
+          class="lg:hidden relative inline-flex items-center justify-center p-2 text-gray-500 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors duration-300"
         >
-          {#if FeaturePoker}
-            <li>
-              <a
-                href="{appRoutes.games}"
-                class="{currentPage === 'battles'
-                  ? activePageClass
-                  : pageClass}"
-              >
-                {$LL.battles()}
-              </a>
-            </li>
+          <span class="sr-only">
+            {showMobileMenu ? 'Close main menu' : 'Open main menu'}
+          </span>
+          {#if showMobileMenu}
+            <X class="h-6 w-6 transition-transform duration-300 rotate-0" />
+          {:else}
+            <Menu class="h-6 w-6 transition-transform duration-300 rotate-0" />
           {/if}
-          {#if FeatureRetro}
-            <li>
-              <a
-                href="{appRoutes.retros}"
-                class="{currentPage === 'retros' ? activePageClass : pageClass}"
-              >
-                {$LL.retros()}
-              </a>
-            </li>
-          {/if}
-          {#if FeatureStoryboard}
-            <li>
-              <a
-                href="{appRoutes.storyboards}"
-                class="{currentPage === 'storyboards'
-                  ? activePageClass
-                  : pageClass}"
-              >
-                {$LL.storyboards()}
-              </a>
-            </li>
-          {/if}
-          {#if $user.name && $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
-            <li>
-              <a
-                href="{appRoutes.teams}"
-                class="{currentPage === 'teams' ? activePageClass : pageClass}"
-              >
-                {$LL.teams()}
-              </a>
-            </li>
-          {/if}
-          {#if SubscriptionsEnabled && !$user.subscribed}
-            <li>
-              <a
-                href="{appRoutes.subscriptionPricing}"
-                class="{currentPage === 'pricing'
-                  ? activePageClass
-                  : pageClass}"
-              >
-                Pricing
-              </a>
-            </li>
-          {/if}
-          {#if $user.name && validateUserIsAdmin($user)}
-            <li>
-              <a
-                href="{appRoutes.admin}"
-                class="{currentPage === 'admin' ? activePageClass : pageClass}"
-              >
-                {$LL.admin()}
-              </a>
-            </li>
-          {/if}
-        </ul>
+        </button>
       </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="lg:hidden {showMobileMenu ? 'block' : 'hidden'}" inert={!showMobileMenu} use:clickOutsideMobileMenu>
+      <!-- Mobile Navigation Links -->
+      <div class="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+        {#if FeaturePoker}
+          <a
+            href="{appRoutes.games}"
+            class="{currentPage === 'battles' ? mobileActiveClass : mobilePageClass} font-rajdhani uppercase tracking-wide"
+            onclick={() => showMobileMenu = false}
+          >
+            {$LL.battles()}
+          </a>
+        {/if}
+        {#if FeatureRetro}
+          <a
+            href="{appRoutes.retros}"
+            class="{currentPage === 'retros' ? mobileActiveClass : mobilePageClass} font-rajdhani uppercase tracking-wide"
+            onclick={() => showMobileMenu = false}
+          >
+            {$LL.retros()}
+          </a>
+        {/if}
+        {#if FeatureStoryboard}
+          <a
+            href="{appRoutes.storyboards}"
+            class="{currentPage === 'storyboards' ? mobileActiveClass : mobilePageClass} font-rajdhani uppercase tracking-wide"
+            onclick={() => showMobileMenu = false}
+          >
+            {$LL.storyboards()}
+          </a>
+        {/if}
+        {#if $user.name && $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
+          <a
+            href="{appRoutes.teams}"
+            class="{currentPage === 'teams' ? mobileActiveClass : mobilePageClass} font-rajdhani uppercase tracking-wide"
+            onclick={() => showMobileMenu = false}
+          >
+            {$LL.teams()}
+          </a>
+        {/if}
+        {#if SubscriptionsEnabled && !$user.subscribed}
+          <a
+            href="{appRoutes.subscriptionPricing}"
+            class="{currentPage === 'pricing' ? mobileActiveClass : mobilePageClass} font-rajdhani uppercase tracking-wide"
+            onclick={() => showMobileMenu = false}
+          >
+            Pricing
+          </a>
+        {/if}
+        {#if $user.name && validateUserIsAdmin($user)}
+          <a
+            href="{appRoutes.admin}"
+            class="{currentPage === 'admin' ? mobileActiveClass : mobilePageClass} font-rajdhani uppercase tracking-wide"
+            onclick={() => showMobileMenu = false}
+          >
+            {$LL.admin()}
+          </a>
+        {/if}
+      </div>
+
+      <!-- Mobile User Controls (for guests) -->
+      {#if !$user.id}
+        <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 space-y-3 sm:hidden">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Language & Theme</span>
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <LocaleMenu
+                selectedLocale={$locale}
+                update={(l:Locales) => setupI18n(l)}
+              />
+              <ThemeSelector />
+            </div>
+          </div>
+          {#if HeaderAuthEnabled}
+            <button
+              onclick={() => { headerLogin(); showMobileMenu = false; }}
+              class="w-full group bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse shadow-md hover:shadow-lg"
+            >
+              <span>{$LL.login()}</span>
+              <ArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+            </button>
+          {:else}
+            <a
+              href="{appRoutes.login}"
+              class="w-full group bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse shadow-md hover:shadow-lg"
+              onclick={() => showMobileMenu = false}
+            >
+              <span>{$LL.login()}</span>
+              <ArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+            </a>
+          {/if}
+        </div>
+      {/if}
     </div>
   </nav>
 </header>

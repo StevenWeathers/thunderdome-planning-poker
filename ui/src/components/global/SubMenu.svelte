@@ -33,7 +33,6 @@
       }
     };
   };
-  1
 </script>
 
 <div class="inline-block relative {relativeClass}" use:clickOutsideSubmenu>
