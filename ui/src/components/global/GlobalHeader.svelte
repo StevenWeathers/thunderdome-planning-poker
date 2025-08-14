@@ -101,7 +101,7 @@
   };
 </script>
 
-<header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
+<header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
   <nav class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8" aria-label="main navigation">
     <div class="flex h-16 lg:h-20 items-center justify-between">
       
