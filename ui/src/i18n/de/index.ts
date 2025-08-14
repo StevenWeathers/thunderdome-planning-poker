@@ -739,6 +739,16 @@ const de: Translation = {
   modalRetroItemComments: 'Retro-Element-Kommentare',
   modalUpdateRetroSettings: 'Retro-Einstellungen aktualisieren',
   githubRepository: 'GitHub-Repository',
+  projects: 'Projekte',
+  projectCreate: 'Projekt erstellen',
+  projectKey: 'Projekt-Schlüssel',
+  scope: 'Bereich',
+  createdAt: 'Erstellt am',
+  projectRemoveSuccess: 'Projekt erfolgreich entfernt',
+  projectRemoveError: 'Fehler beim Entfernen des Projekts',
+  removeProjectConfirmText:
+    'Sind Sie sicher, dass Sie dieses Projekt entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+  removeProject: 'Projekt entfernen',
 };
 
 export default de;

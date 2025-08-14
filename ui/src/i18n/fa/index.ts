@@ -698,6 +698,16 @@ const fa: Translation = {
   modalRetroItemComments: 'نظرات آیتم رترو',
   modalUpdateRetroSettings: 'به‌روزرسانی تنظیمات رترو',
   githubRepository: 'مخزن گیت‌هاب',
+  projects: 'پروژه‌ها',
+  projectCreate: 'ایجاد پروژه',
+  projectKey: 'کلید پروژه',
+  scope: 'حوزه',
+  createdAt: 'ایجاد شده در',
+  projectRemoveSuccess: 'پروژه با موفقیت حذف شد',
+  projectRemoveError: 'خطا در حذف پروژه',
+  removeProjectConfirmText:
+    'آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟ این عمل قابل بازگشت نیست.',
+  removeProject: 'حذف پروژه',
 };
 
 export default fa;

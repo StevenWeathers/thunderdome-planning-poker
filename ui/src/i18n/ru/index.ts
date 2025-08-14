@@ -696,6 +696,16 @@ const ru: Translation = {
   modalRetroItemComments: 'Комментарии элемента ретро',
   modalUpdateRetroSettings: 'Обновить настройки ретро',
   githubRepository: 'Репозиторий GitHub',
+  projects: 'Проекты',
+  projectCreate: 'Создать проект',
+  projectKey: 'Ключ проекта',
+  scope: 'Область',
+  createdAt: 'Создано',
+  projectRemoveSuccess: 'Проект успешно удален',
+  projectRemoveError: 'Ошибка удаления проекта',
+  removeProjectConfirmText:
+    'Вы уверены, что хотите удалить этот проект? Это действие нельзя отменить.',
+  removeProject: 'Удалить проект',
 };
 
 export default ru;

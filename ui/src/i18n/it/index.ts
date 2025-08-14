@@ -727,6 +727,16 @@ const it: Translation = {
   modalRetroItemComments: 'Commenti Elemento Retro',
   modalUpdateRetroSettings: 'Aggiorna Impostazioni Retro',
   githubRepository: 'Repository GitHub',
+  projects: 'Progetti',
+  projectCreate: 'Crea progetto',
+  projectKey: 'Chiave progetto',
+  scope: 'Ambito',
+  createdAt: 'Creato il',
+  projectRemoveSuccess: 'Progetto rimosso con successo',
+  projectRemoveError: 'Errore nella rimozione del progetto',
+  removeProjectConfirmText:
+    'Sei sicuro di voler rimuovere questo progetto? Questa azione non può essere annullata.',
+  removeProject: 'Rimuovi progetto',
 };
 
 export default it;

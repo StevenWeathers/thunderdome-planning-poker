@@ -15,6 +15,7 @@
     SquareDashedKanban,
     User,
     Users,
+    Package,
   } from 'lucide-svelte';
 
   interface Props {
@@ -29,6 +30,7 @@
     FeaturePoker,
     FeatureRetro,
     FeatureStoryboard,
+    FeatureProject,
     OrganizationsEnabled,
     SubscriptionsEnabled,
   } = AppConfig;
@@ -47,6 +49,13 @@
       label: $LL.adminPageAlerts(),
       path: appRoutes.adminAlerts,
       enabled: true,
+    },
+    {
+      name: 'Projects',
+      icon: Package,
+      label: $LL.projects(),
+      path: appRoutes.adminProjects,
+      enabled: FeatureProject,
     },
     {
       name: 'Battles',

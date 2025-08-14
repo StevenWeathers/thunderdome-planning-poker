@@ -698,6 +698,16 @@ const en: BaseTranslation = {
   modalRetroItemComments: 'Retro Item Comments',
   modalUpdateRetroSettings: 'Update Retro Settings',
   githubRepository: 'GitHub Repository',
+  projects: 'Projects',
+  projectCreate: 'Create Project',
+  projectKey: 'Project Key',
+  scope: 'Scope',
+  createdAt: 'Created At',
+  projectRemoveSuccess: 'Project removed successfully',
+  projectRemoveError: 'Failed to remove project',
+  removeProjectConfirmText:
+    'Are you sure you want to remove this project? This action cannot be undone.',
+  removeProject: 'Remove Project',
 };
 
 export default en;

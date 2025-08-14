@@ -36,4 +36,5 @@ type ApplicationStats struct {
 	OrganizationRetroTemplateCount   int `json:"organizationRetroTemplateCount"`
 	TeamRetroTemplateCount           int `json:"teamRetroTemplateCount"`
 	PublicRetroTemplateCount         int `json:"publicRetroTemplateCount"`
+	ProjectCount                     int `json:"projectCount"`
 }

@@ -68,11 +68,13 @@
   import StoryboardLanding from './pages/storyboard/StoryboardLanding.svelte';
   import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
   import ChangeEmail from './pages/user/ChangeEmail.svelte';
+  import Projects from './pages/admin/project/Projects.svelte';
 
   const {
     FeaturePoker,
     FeatureRetro,
     FeatureStoryboard,
+    FeatureProject,
     SubscriptionsEnabled,
     DefaultLocale,
   } = AppConfig;
@@ -579,6 +581,16 @@
         route: Login,
         params,
         name: 'login',
+      };
+    });
+  }
+
+  if (FeatureProject) {
+    router.on(`${appRoutes.adminProjects}`, () => {
+      currentPage = {
+        route: Projects,
+        params: {},
+        name: 'admin-projects',
       };
     });
   }

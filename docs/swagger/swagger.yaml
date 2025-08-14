@@ -905,6 +905,8 @@ definitions:
         type: integer
       planCount:
         type: integer
+      projectCount:
+        type: integer
       publicEstimationScaleCount:
         type: integer
       publicRetroTemplateCount:

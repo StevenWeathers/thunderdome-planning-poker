@@ -54,7 +54,8 @@ func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStat
     (SELECT COUNT(*) FROM thunderdome.retro_template) AS retro_template_count,
     (SELECT COUNT(*) FROM thunderdome.retro_template WHERE retro_template.is_public IS TRUE) AS public_retro_template_count,
     (SELECT COUNT(*) FROM thunderdome.retro_template WHERE organization_id IS NOT NULL) AS organization_retro_template_count,
-    (SELECT COUNT(*) FROM thunderdome.retro_template WHERE team_id IS NOT NULL) AS team_retro_template_count
+    (SELECT COUNT(*) FROM thunderdome.retro_template WHERE team_id IS NOT NULL) AS team_retro_template_count,
+	(SELECT COUNT(*) FROM thunderdome.project) AS project_count
 		;`,
 	).Scan(
 		&appStats.UnregisteredCount,
@@ -91,6 +92,7 @@ func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStat
 		&appStats.PublicRetroTemplateCount,
 		&appStats.OrganizationRetroTemplateCount,
 		&appStats.TeamRetroTemplateCount,
+		&appStats.ProjectCount,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get application stats: %v", err)

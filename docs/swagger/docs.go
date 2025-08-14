@@ -15049,6 +15049,9 @@ const docTemplate = `{
                 "planCount": {
                     "type": "integer"
                 },
+                "projectCount": {
+                    "type": "integer"
+                },
                 "publicEstimationScaleCount": {
                     "type": "integer"
                 },
