@@ -116,7 +116,7 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("feature.poker", true)
 	viper.SetDefault("feature.retro", true)
 	viper.SetDefault("feature.storyboard", true)
-	viper.SetDefault("feature.project", true)
+	viper.SetDefault("feature.project", false) // work-in-progress
 
 	viper.SetDefault("auth.method", "normal")
 	viper.SetDefault("auth.ldap.url", "")

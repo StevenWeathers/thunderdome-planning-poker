@@ -1,6 +1,6 @@
 import { expect, test } from "@fixtures/test-setup";
 
-test.describe("Project API", { tag: ["@api", "@project"] }, () => {
+test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
   // Admin Project Operations
   test.describe("GET /admin/projects", () => {
     test("returns paginated list of projects for Global Admin", async ({
