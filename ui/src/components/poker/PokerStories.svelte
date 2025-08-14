@@ -18,6 +18,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import Badge from '../global/Badge.svelte';
 
   interface Props {
     plans?: any;
@@ -162,6 +163,8 @@
       );
     }
   }
+
+  let hasAnyLinks = $derived(plans.some(p => p.link !== ''));
 </script>
 
 <div class="shadow-lg mb-4">
@@ -227,63 +230,62 @@
   </ul>
 
   <div
+    class="relative"
     use:dndzone="{{
       items: plans,
       type: 'story',
-      dropTargetStyle: '',
+      dropTargetStyle: {},
       dropTargetClasses: [
         'outline',
         'outline-2',
         'outline-indigo-500',
         'dark:outline-yellow-400',
       ],
+      dragDisabled: !isFacilitator,
     }}"
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
   >
     {#each plans as plan (plan.id)}
       <div
-        class="relative flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800{isFacilitator &&
-        storysShow === 'all'
-          ? ' cursor-pointer'
-          : ''}{(plan.points === '' && storysShow === 'pointed') ||
+        class="flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 {(plan.points === '' && storysShow === 'pointed') ||
         (plan.points !== '' && storysShow === 'unpointed')
           ? ' hidden'
           : ''}"
         data-testid="plan"
         data-storyid="{plan.id}"
-        draggable="true"
+        draggable={isFacilitator}
       >
         <div class="flex-grow font-bold align-middle dark:text-white me-1">
-          <span><Grip class="inline-block"/></span>
-          &nbsp;
-          {#if plan.link !== ''}
-            <a
-              href="{plan.link}"
-              target="_blank"
-              class="text-blue-800 dark:text-sky-400"
-            >
-              <ExternalLink class="inline-block" />
-            </a>
-            &nbsp;
-          {/if}
-          <div
-            class="inline-block text-sm text-gray-500 dark:text-gray-300
-                      border-gray-300 border px-1 rounded"
-            data-testid="plan-type"
-          >
-            {plan.type}
+          <div class="flex items-center gap-2">
+            {#if isFacilitator}
+              <span><Grip class="inline-block text-gray-400 dark:text-gray-500"/></span>
+            {/if}
+            
+            {#if hasAnyLinks}
+              <div class="w-5 flex-shrink-0 flex justify-center">
+                {#if plan.link !== ''}
+                  <a href="{plan.link}" target="_blank" class="text-blue-800 dark:text-sky-400">
+                    <ExternalLink class="inline-block" />
+                  </a>
+                {/if}
+              </div>
+            {/if}
+            
+            <Badge label={plan.type} testId="plan-type" />
+            
+            <div class="flex items-center gap-1">
+              {#if plan.referenceId}[{plan.referenceId}]{/if}
+              {#if priorities[plan.priority]}
+                {@const SvelteComponent = priorities[plan.priority].icon}
+                <SvelteComponent class="inline-block w-6 h-6" />
+              {/if}
+            </div>
+            
+            <span data-testid="plan-name" class="flex-1">{plan.name}</span>
           </div>
-          &nbsp;
-          {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-          {#if priorities[plan.priority]}
-            {@const SvelteComponent = priorities[plan.priority].icon}
-            <SvelteComponent
-              class="inline-block w-6 h-6"
-            />
-          {/if}
-          <span data-testid="plan-name">{plan.name}</span>
         </div>
+
         <div class="lg:flex-none text-right">
           {#if plan.points !== ''}
             <div
