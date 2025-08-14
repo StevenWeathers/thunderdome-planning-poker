@@ -31,7 +31,7 @@ CREATE TABLE thunderdome.item_type (
     color thunderdome.color_type, -- color from enum type
     is_active BOOLEAN DEFAULT true,
     organization_id UUID REFERENCES thunderdome.organization(id), -- NULL for global types
-    department_id UUID REFERENCES thunderdome.department(id), -- NULL for global/org types
+    department_id UUID REFERENCES thunderdome.organization_department(id), -- NULL for global/org types
     team_id UUID REFERENCES thunderdome.team(id), -- NULL for global/org/dept types
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -59,7 +59,7 @@ CREATE TABLE thunderdome.item_status (
     is_active BOOLEAN DEFAULT true,
     sort_order INTEGER DEFAULT 0,
     organization_id UUID REFERENCES thunderdome.organization(id), -- NULL for global statuses
-    department_id UUID REFERENCES thunderdome.department(id), -- NULL for global/org statuses
+    department_id UUID REFERENCES thunderdome.organization_department(id), -- NULL for global/org statuses
     team_id UUID REFERENCES thunderdome.team(id), -- NULL for global/org/dept statuses
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -83,7 +83,7 @@ CREATE TABLE thunderdome.item_priority (
     priority_level INTEGER NOT NULL, -- numeric value for sorting (lower = higher priority)
     is_active BOOLEAN DEFAULT true,
     organization_id UUID REFERENCES thunderdome.organization(id), -- NULL for global priorities
-    department_id UUID REFERENCES thunderdome.department(id), -- NULL for global/org priorities
+    department_id UUID REFERENCES thunderdome.organization_department(id), -- NULL for global/org priorities
     team_id UUID REFERENCES thunderdome.team(id), -- NULL for global/org/dept priorities
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
