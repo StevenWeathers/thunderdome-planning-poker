@@ -24,6 +24,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import Badge from '../../components/global/Badge.svelte';
 
   interface Props {
     battleId: string;
@@ -488,7 +489,7 @@
   <div class="mb-6 flex flex-wrap">
     <div class="w-full text-center md:w-2/3 md:text-left">
       <h1
-        class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center"
+        class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center flex-wrap gap-2"
       >
         {#if currentStory.link}
           <a
@@ -501,22 +502,18 @@
           </a>
         {/if}
         {#if currentStory.type}
-          &nbsp;<span
-            class="inline-block text-lg text-gray-500
-                            border-gray-300 border px-1 rounded dark:text-gray-300 dark:border-gray-500"
-            data-testid="currentplan-type"
-          >
-            {currentStory.type}
-          </span>
+          <Badge label={currentStory.type} testId="currentplan-type" class="text-lg" />
         {/if}
         {#if currentStory.referenceId}
-          &nbsp;<span data-testid="currentplan-refid"
-            >[{currentStory.referenceId}]</span
-          >
+          <span data-testid="currentplan-refid">[{currentStory.referenceId}]</span>
         {/if}
-        <span data-testid="currentplan-name"
-          >{#if currentStory.name === ''}[{$LL.votingNotStarted()}]{:else}&nbsp;{currentStory.name}{/if}</span
-        >
+        <span data-testid="currentplan-name">
+          {#if currentStory.name === ''}
+            [{$LL.votingNotStarted()}]
+          {:else}
+            {currentStory.name}
+          {/if}
+        </span>
       </h1>
       <h2
         class="text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"

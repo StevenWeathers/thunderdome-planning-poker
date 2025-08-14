@@ -139,6 +139,7 @@ func New(
 			"add_plan":       {},
 			"revise_plan":    {},
 			"burn_plan":      {},
+			"story_arrange":  {},
 			"activate_plan":  {},
 			"skip_plan":      {},
 			"end_voting":     {},
