@@ -290,7 +290,7 @@
               > -->
               <TextInput
                 id="storyName"
-                on:change={updateName}
+                onchange={updateName}
                 value={story.name}
                 placeholder="e.g. User Authentication System"
                 name="storyName"
