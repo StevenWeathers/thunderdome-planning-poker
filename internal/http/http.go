@@ -492,6 +492,34 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle(""+prefix+"/api/storyboard/{storyboardId}", storyboardSvc.ServeWs())
 	}
 
+	if a.Config.FeatureProject {
+		// Projects
+		// Organization projects
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/projects", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationProjects()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/projects", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationProjectCreate()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/projects/{projectId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationProjectUpdate()))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/projects/{projectId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationProjectDelete()))))
+
+		// Department projects (nested under organization)
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/projects", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetDepartmentProjects()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/projects", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentProjectCreate()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/projects/{projectId}", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentProjectUpdate()))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/projects/{projectId}", a.userOnly(a.subscribedOrgOnly(a.departmentAdminOnly(a.handleDepartmentProjectDelete()))))
+
+		// Team projects (direct team routes only)
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/projects", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamProjects()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/projects", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamProjectCreate())))))
+		router.Handle("PUT "+prefix+"/api/teams/{teamId}/projects/{projectId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamProjectUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/projects/{projectId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamProjectDelete())))))
+
+		// General project operations (admin)
+		router.Handle("GET "+prefix+"/api/admin/projects", a.userOnly(a.adminOnly(a.handleGetProjects())))
+		router.Handle("GET "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleGetProjectByID())))
+		router.Handle("POST "+prefix+"/api/admin/projects", a.userOnly(a.adminOnly(a.handleProjectCreate())))
+		router.Handle("PUT "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleProjectUpdate())))
+		router.Handle("DELETE "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleProjectDelete())))
+	}
+
 	// user avatar generation
 	if a.Config.AvatarService == "goadorable" || a.Config.AvatarService == "govatar" {
 		router.Handle("GET "+prefix+"/avatar/{width}/{id}/{avatar}", a.handleUserAvatar())

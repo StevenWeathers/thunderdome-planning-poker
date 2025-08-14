@@ -109,6 +109,7 @@ type Feature struct {
 	Poker      bool
 	Retro      bool
 	Storyboard bool
+	Project    bool
 }
 
 // Google is the application Google OAuth2 configuration

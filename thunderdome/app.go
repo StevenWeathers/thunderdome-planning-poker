@@ -47,6 +47,7 @@ type AppConfig struct {
 	FeaturePoker                bool
 	FeatureRetro                bool
 	FeatureStoryboard           bool
+	FeatureProject              bool
 	RequireTeams                bool
 	RepoURL                     string
 	SubscriptionsEnabled        bool

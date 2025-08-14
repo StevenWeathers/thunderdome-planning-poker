@@ -69,6 +69,8 @@ type Config struct {
 	FeatureRetro bool
 	// Feature flag for Storyboards
 	FeatureStoryboard bool
+	// Feature flag for Projects
+	FeatureProject bool
 	// Whether Organizations (and Departments) feature is enabled
 	OrganizationsEnabled bool
 	// Which avatar service is utilized
@@ -124,6 +126,7 @@ type Service struct {
 	SubscriptionDataSvc  SubscriptionDataSvc
 	RetroTemplateDataSvc RetroTemplateDataSvc
 	SubscriptionSvc      *subscription.Service
+	ProjectDataSvc       ProjectDataSvc
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -604,4 +607,29 @@ type EmailService interface {
 	SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, userName string, userEmail string) error
 	SendEmailChangeRequest(userName string, userEmail string, changeId string) error
 	SendEmailChangeConfirmation(userName string, userEmail string, newEmail string) error
+}
+
+// ProjectDataSvc represents the interface for project data operations
+type ProjectDataSvc interface {
+	// Basic CRUD operations
+	CreateProject(ctx context.Context, project *thunderdome.Project) error
+	GetProjectByID(ctx context.Context, projectID string) (*thunderdome.Project, error)
+	UpdateProject(ctx context.Context, project *thunderdome.Project) error
+	DeleteProject(ctx context.Context, projectID string) error
+	ListProjects(ctx context.Context, limit int, offset int) ([]*thunderdome.Project, int, error)
+
+	// Organization-scoped operations
+	GetProjectsByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.Project, error)
+	UpdateOrganizationProject(ctx context.Context, project *thunderdome.Project) error
+	DeleteOrganizationProject(ctx context.Context, orgID string, projectID string) error
+
+	// Department-scoped operations
+	GetProjectsByDepartment(ctx context.Context, departmentID string) ([]*thunderdome.Project, error)
+	UpdateDepartmentProject(ctx context.Context, project *thunderdome.Project) error
+	DeleteDepartmentProject(ctx context.Context, deptID string, projectID string) error
+
+	// Team-scoped operations
+	GetProjectsByTeam(ctx context.Context, teamID string) ([]*thunderdome.Project, error)
+	UpdateTeamProject(ctx context.Context, project *thunderdome.Project) error
+	DeleteTeamProject(ctx context.Context, teamID string, projectID string) error
 }

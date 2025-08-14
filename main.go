@@ -6,6 +6,7 @@ import (
 	"os"
 
 	jiraData "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/jira"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/project"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
 
@@ -113,6 +114,8 @@ func main() {
 	subscriptionDataSvc := &subscriptionData.Service{DB: d.DB, Logger: logger}
 	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
 	retroTemplateDataSvc := &retrotemplate.Service{DB: d.DB, Logger: logger}
+	projectDataSvc := &project.Service{DB: d.DB, Logger: logger}
+
 	cook := cookie.New(cookie.Config{
 		AppDomain:           c.Http.Domain,
 		PathPrefix:          c.Http.PathPrefix,
@@ -162,6 +165,7 @@ func main() {
 			FeaturePoker:              c.Feature.Poker,
 			FeatureRetro:              c.Feature.Retro,
 			FeatureStoryboard:         c.Feature.Storyboard,
+			FeatureProject:            c.Feature.Project,
 			OrganizationsEnabled:      c.Config.OrganizationsEnabled,
 			AvatarService:             c.Config.AvatarService,
 			EmbedUseOS:                embedUseOS,
@@ -228,6 +232,7 @@ func main() {
 		JiraDataSvc:          jiraDataSvc,
 		RetroTemplateDataSvc: retroTemplateDataSvc,
 		SubscriptionSvc:      subscriptionService,
+		ProjectDataSvc:       projectDataSvc,
 		UIConfig: thunderdome.UIConfig{
 			AppConfig: thunderdome.AppConfig{
 				AllowedPointValues:          c.Config.AllowedPointValues,
@@ -259,6 +264,7 @@ func main() {
 				FeaturePoker:                c.Feature.Poker,
 				FeatureRetro:                c.Feature.Retro,
 				FeatureStoryboard:           c.Feature.Storyboard,
+				FeatureProject:              c.Feature.Project,
 				RequireTeams:                c.Config.RequireTeams,
 				SubscriptionsEnabled:        c.Config.SubscriptionsEnabled,
 				Subscription:                c.Subscription,

@@ -376,6 +376,28 @@ definitions:
     - format
     - name
     type: object
+  http.projectRequestBody:
+    properties:
+      departmentId:
+        type: string
+      description:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      organizationId:
+        type: string
+      projectKey:
+        maxLength: 10
+        minLength: 2
+        type: string
+      teamId:
+        type: string
+    required:
+    - name
+    - projectKey
+    type: object
   http.resetPasswordRequestBody:
     properties:
       password1:
@@ -516,6 +538,22 @@ definitions:
     required:
     - format
     - name
+    type: object
+  http.scopedProjectRequestBody:
+    properties:
+      description:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      projectKey:
+        maxLength: 10
+        minLength: 2
+        type: string
+    required:
+    - name
+    - projectKey
     type: object
   http.standardJsonResponse:
     properties:
@@ -1186,6 +1224,27 @@ definitions:
         type: string
       spectator:
         type: boolean
+    type: object
+  thunderdome.Project:
+    properties:
+      createdAt:
+        type: string
+      departmentId:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      organizationId:
+        type: string
+      projectKey:
+        type: string
+      teamId:
+        type: string
+      updatedAt:
+        type: string
     type: object
   thunderdome.Retro:
     properties:
@@ -2426,6 +2485,177 @@ paths:
       tags:
       - admin
       - poker-settings
+  /admin/projects:
+    get:
+      description: get list of projects
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Project'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Projects
+      tags:
+      - project
+    post:
+      description: Creates a project
+      parameters:
+      - description: new project object
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/http.projectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Project
+      tags:
+      - project
+  /admin/projects/{projectId}:
+    delete:
+      description: Deletes a Project
+      parameters:
+      - description: the project ID to delete
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Project
+      tags:
+      - project
+    get:
+      description: get a specific project by its ID
+      parameters:
+      - description: the project ID
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Project by ID
+      tags:
+      - project
+    put:
+      description: Updates a Project
+      parameters:
+      - description: the project ID to update
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: project object to update
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/http.projectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Project
+      tags:
+      - project
   /admin/retro-settings/{id}:
     delete:
       description: Deletes retro settings for an organization, department, or team
@@ -4394,6 +4624,179 @@ paths:
       summary: Delete Department User Invite
       tags:
       - organization
+  /organizations/{orgId}/departments/{departmentId}/projects:
+    get:
+      description: get list of projects for a department
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: Department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Department Projects
+      tags:
+      - project
+    post:
+      description: Creates a Department project
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: new project object
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/http.scopedProjectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Department Project
+      tags:
+      - project
+  /organizations/{orgId}/departments/{departmentId}/projects/{projectId}:
+    delete:
+      description: Deletes a Department Project
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: the project ID to delete
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Department Project
+      tags:
+      - project
+    put:
+      description: Updates a Department Project
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: the project ID to update
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: project object to update
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/http.scopedProjectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department Project
+      tags:
+      - project
   /organizations/{orgId}/departments/{departmentId}/retro-settings:
     post:
       description: Creates new retro settings for a department
@@ -5220,6 +5623,159 @@ paths:
       summary: Update Organization Poker Settings
       tags:
       - poker-settings
+  /organizations/{orgId}/projects:
+    get:
+      description: get list of projects for an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Projects
+      tags:
+      - project
+    post:
+      description: Creates an Organization project
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new project object
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/http.scopedProjectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Project
+      tags:
+      - project
+  /organizations/{orgId}/projects/{projectId}:
+    delete:
+      description: Deletes an Organization Project
+      parameters:
+      - description: the Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the project ID to delete
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Organization Project
+      tags:
+      - project
+    put:
+      description: Updates an Organization Project
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the project ID to update
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: project object to update
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/http.scopedProjectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Project
+      tags:
+      - project
   /organizations/{orgId}/retro-settings:
     get:
       description: get retro settings for a specific organization
@@ -7769,6 +8325,159 @@ paths:
       summary: Update Team Poker Settings
       tags:
       - poker-settings
+  /teams/{teamId}/projects:
+    get:
+      description: get list of projects for a team via direct team route
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Projects
+      tags:
+      - project
+    post:
+      description: Creates a Team project via direct team route
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new project object
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/http.scopedProjectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Project
+      tags:
+      - project
+  /teams/{teamId}/projects/{projectId}:
+    delete:
+      description: Deletes a Team Project via direct team route
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the project ID to delete
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Project
+      tags:
+      - project
+    put:
+      description: Updates a Team Project via direct team route
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the project ID to update
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: project object to update
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/http.scopedProjectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Project
+      tags:
+      - project
   /teams/{teamId}/retro-actions:
     get:
       description: get list of retro actions
