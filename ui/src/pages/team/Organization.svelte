@@ -44,6 +44,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import ProjectsList from '../../components/project/ProjectsList.svelte';
 
   interface Props {
     xfetch: ApiClient;
@@ -62,6 +63,7 @@
   const departmentsPageLimit = 1000;
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
+  const projectsPageLimit = 10;
   const orgPrefix = `/api/organizations/${organizationId}`;
 
   let invitesList = $state();
@@ -76,17 +78,19 @@
   let users = $state([]);
   let departments = $state([]);
   let teams = $state([]);
-  let invites = [];
   let showCreateDepartment = $state(false);
   let showCreateTeam = $state(false);
   let showDeleteTeam = $state(false);
   let showDeleteDepartment = $state(false);
   let showDeleteOrganization = $state(false);
-  let deleteTeamId = null;
-  let deleteDeptId = null;
-  let teamsPage = 1;
-  let departmentsPage = 1;
-  let usersPage = 1;
+  let deleteTeamId = $state(null);
+  let deleteDeptId = $state(null);
+  let teamsPage = $state(1);
+  let departmentsPage = $state(1);
+  let usersPage = $state(1);
+  let projectCount = $state(0);
+  let projectsPage = $state(1);
+  let projects = $state([]);
 
   function toggleCreateDepartment() {
     showCreateDepartment = !showCreateDepartment;
@@ -122,6 +126,7 @@
         getUsers();
         getEstimationScales();
         getRetroTemplates();
+        getProjects();
       })
       .catch(function () {
         notifications.danger($LL.organizationGetError());
@@ -202,6 +207,26 @@
         notifications.danger($LL.organizationGetTeamsError());
       });
   }
+
+  function getProjects() {
+    const projectsOffset = (projectsPage - 1) * projectsPageLimit;
+    xfetch(
+      `${orgPrefix}/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`,
+    )
+      .then(res => res.json())
+      .then(function (result) {
+        projects = result.data;
+        projectCount = result.meta.count;
+      })
+      .catch(function () {
+        notifications.danger('Failed to fetch projects');
+      });
+  }
+
+  const changeProjectsPage = evt => {
+    projectsPage = evt.detail;
+    getProjects();
+  };
 
   function createDepartmentHandler(name) {
     const body = {
@@ -665,6 +690,30 @@
       {:else}
         <FeatureSubscribeBanner
           salesPitch="Tailor your Organization's reflection process with custom retrospective templates."
+        />
+      {/if}
+    </div>
+  {/if}
+
+  {#if AppConfig.FeatureProject}
+    <div class="mt-8">
+        {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <ProjectsList
+          xfetch={xfetch}
+          notifications={notifications}
+          projects={projects}
+          apiPrefix={orgPrefix}
+          getProjects={getProjects}
+          changePage={changeProjectsPage}
+          projectCount={projectCount}
+          projectsPage={projectsPage}
+          projectsPageLimit={projectsPageLimit}
+          organizationId={organizationId}
+        />
+      {:else}
+        <FeatureSubscribeBanner
+          isNew={true}
+          salesPitch="Streamline your team's workflow with organized Projects that keep everything connected."
         />
       {/if}
     </div>

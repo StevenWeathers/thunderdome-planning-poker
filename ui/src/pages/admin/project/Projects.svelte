@@ -75,5 +75,6 @@
     projectCount={projectCount}
     projectsPage={projectsPage}
     projectsPageLimit={projectsPageLimit}
+    isAdminPage={true}
   />
 </AdminPageLayout>

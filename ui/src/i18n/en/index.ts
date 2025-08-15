@@ -708,6 +708,19 @@ const en: BaseTranslation = {
   removeProjectConfirmText:
     'Are you sure you want to remove this project? This action cannot be undone.',
   removeProject: 'Remove Project',
+  modalCreateProject: "Create Project",
+  modalUpdateProject: "Update Project", 
+  projectKeyPlaceholder: "Enter project key (e.g., PROJ)",
+  projectNamePlaceholder: "Enter project name",
+  projectDescriptionPlaceholder: "Enter project description (optional)",
+  projectKeyValidationError: "Project key must be 2-10 alphanumeric characters",
+  projectKeyHelp: "2-10 characters, letters and numbers only",
+  projectScope: "Project Scope",
+  projectUpdate: "Update Project",
+  projectCreateSuccess: "Project created successfully",
+  projectUpdateSuccess: "Project updated successfully",
+  projectCreateError: "Failed to create project",
+  projectUpdateError: "Failed to update project",
 };
 
 export default en;

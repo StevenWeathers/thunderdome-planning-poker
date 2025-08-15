@@ -708,6 +708,19 @@ const fa: Translation = {
   removeProjectConfirmText:
     'آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟ این عمل قابل بازگشت نیست.',
   removeProject: 'حذف پروژه',
+  modalCreateProject: "ایجاد پروژه",
+  modalUpdateProject: "به‌روزرسانی پروژه",
+  projectKeyPlaceholder: "کلید پروژه را وارد کنید (مثال: PROJ)",
+  projectNamePlaceholder: "نام پروژه را وارد کنید",
+  projectDescriptionPlaceholder: "توضیحات پروژه را وارد کنید (اختیاری)",
+  projectKeyValidationError: "کلید پروژه باید ۲-۱۰ کاراکتر حروف و اعداد باشد",
+  projectKeyHelp: "۲-۱۰ کاراکتر، فقط حروف و اعداد",
+  projectScope: "محدوده پروژه",
+  projectUpdate: "به‌روزرسانی پروژه",
+  projectCreateSuccess: "پروژه با موفقیت ایجاد شد",
+  projectUpdateSuccess: "پروژه با موفقیت به‌روزرسانی شد",
+  projectCreateError: "ایجاد پروژه با شکست مواجه شد",
+  projectUpdateError: "به‌روزرسانی پروژه با شکست مواجه شد",
 };
 
 export default fa;

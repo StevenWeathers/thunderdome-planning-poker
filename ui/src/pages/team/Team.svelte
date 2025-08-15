@@ -38,6 +38,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import ProjectsList from '../../components/project/ProjectsList.svelte';
 
   interface Props {
     xfetch: ApiClient;
@@ -64,6 +65,7 @@
   const retroActionsPageLimit = 5;
   const storyboardsPageLimit = 1000;
   const usersPageLimit = 1000;
+  const projectsPageLimit = 10;
 
   let invitesList = $state();
 
@@ -95,20 +97,23 @@
   let showRemoveRetro = $state(false);
   let showRemoveStoryboard = $state(false);
   let showDeleteTeam = $state(false);
-  let removeBattleId = null;
-  let removeRetroId = null;
-  let removeStoryboardId = null;
-  let usersPage = 1;
-  let battlesPage = 1;
-  let retrosPage = 1;
+  let removeBattleId = $state(null);
+  let removeRetroId = $state(null);
+  let removeStoryboardId = $state(null);
+  let usersPage = $state(1);
+  let battlesPage = $state(1);
+  let retrosPage = $state(1);
   let retroActionsPage = $state(1);
-  let storyboardsPage = 1;
+  let storyboardsPage = $state(1);
   let totalRetroActions = $state(0);
   let completedActionItems = $state(false);
+  let projectCount = $state(0);
+  let projectsPage = $state(1);
+  let projects = $state([]);
 
-  let organizationRole = '';
-  let departmentRole = '';
-  let teamRole = '';
+  let organizationRole = $state('');
+  let departmentRole = $state('');
+  let teamRole = $state('');
   let isAdmin = $state(false);
   let isTeamMember = $state(false);
 
@@ -260,6 +265,7 @@
         getUsers();
         getEstimationScales();
         getRetroTemplates();
+        getProjects();
       })
       .catch(function () {
         notifications.danger($LL.teamGetError());
@@ -346,6 +352,26 @@
         });
     }
   }
+
+  function getProjects() {
+    const projectsOffset = (projectsPage - 1) * projectsPageLimit;
+    xfetch(
+      `${teamPrefix}/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`,
+    )
+      .then(res => res.json())
+      .then(function (result) {
+        projects = result.data;
+        projectCount = result.meta.count;
+      })
+      .catch(function () {
+        notifications.danger('Failed to fetch projects');
+      });
+  }
+
+  const changeProjectsPage = evt => {
+    projectsPage = evt.detail;
+    getProjects();
+  };
 
   function handleBattleRemove() {
     xfetch(`${teamPrefix}/battles/${removeBattleId}`, { method: 'DELETE' })
@@ -855,6 +881,33 @@
       {/if}
     </div>
   {/if}
+
+  {#if AppConfig.FeatureProject}
+    <div class="mt-8">
+        {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <ProjectsList
+          xfetch={xfetch}
+          notifications={notifications}
+          projects={projects}
+          apiPrefix={teamPrefix}
+          getProjects={getProjects}
+          changePage={changeProjectsPage}
+          projectCount={projectCount}
+          projectsPage={projectsPage}
+          projectsPageLimit={projectsPageLimit}
+          organizationId={organizationId}
+          departmentId={departmentId}
+          teamId={teamId}
+        />
+      {:else}
+        <FeatureSubscribeBanner
+          isNew={true}
+          salesPitch="Streamline your team's workflow with organized Projects that keep everything connected."
+        />
+      {/if}
+    </div>
+  {/if}
+
 
   {#if isAdmin && !organizationId && !departmentId}
     <div class="w-full text-center mt-8">

@@ -706,6 +706,19 @@ const ru: Translation = {
   removeProjectConfirmText:
     'Вы уверены, что хотите удалить этот проект? Это действие нельзя отменить.',
   removeProject: 'Удалить проект',
+  modalCreateProject: "Создать Проект",
+  modalUpdateProject: "Обновить Проект",
+  projectKeyPlaceholder: "Введите ключ проекта (напр. PROJ)",
+  projectNamePlaceholder: "Введите название проекта",
+  projectDescriptionPlaceholder: "Введите описание проекта (необязательно)",
+  projectKeyValidationError: "Ключ проекта должен содержать 2-10 буквенно-цифровых символов",
+  projectKeyHelp: "2-10 символов, только буквы и цифры",
+  projectScope: "Область Проекта",
+  projectUpdate: "Обновить Проект",
+  projectCreateSuccess: "Проект успешно создан",
+  projectUpdateSuccess: "Проект успешно обновлен",
+  projectCreateError: "Не удалось создать проект",
+  projectUpdateError: "Не удалось обновить проект",
 };
 
 export default ru;

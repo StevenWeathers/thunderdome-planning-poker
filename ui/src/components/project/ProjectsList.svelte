@@ -9,13 +9,11 @@
   import TableContainer from '../table/TableContainer.svelte';
   import TableNav from '../table/TableNav.svelte';
   import CrudActions from '../table/CrudActions.svelte';
-  import { createEventDispatcher } from 'svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
-//   import CreateProject from './CreateProject.svelte';
-//   import UpdateProject from './UpdateProject.svelte';
+  import CreateProject from './CreateProject.svelte';
   import TableFooter from '../table/TableFooter.svelte';
-  import { ExternalLink } from 'lucide-svelte';
+  import { appRoutes } from '../../config';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
@@ -23,17 +21,29 @@
   interface Props {
     xfetch: ApiClient;
     notifications: NotificationService;
-    organizationId?: any;
-    teamId?: any;
-    departmentId?: any;
+    organizationId?: string;
+    teamId?: string;
+    departmentId?: string;
     isEntityAdmin?: boolean;
-    projects?: any;
+    projects?: Project[];
     apiPrefix?: string;
+    isAdminPage?: boolean;
     projectCount?: number;
     projectsPage?: number;
     projectsPageLimit?: number;
-    changePage?: any;
-    getProjects?: any;
+    changePage?: (page: number) => void;
+    getProjects?: () => void;
+  }
+
+  interface Project {
+    id: string;
+    projectKey: string;
+    name: string;
+    description?: string;
+    organizationId?: string;
+    departmentId?: string;
+    teamId?: string;
+    createdAt: string;
   }
 
   let {
@@ -45,6 +55,7 @@
     isEntityAdmin = false,
     projects = [],
     apiPrefix = '/api',
+    isAdminPage = false,
     projectCount = 0,
     projectsPage = $bindable(1),
     projectsPageLimit = 10,
@@ -52,13 +63,11 @@
     getProjects = () => {}
   }: Props = $props();
 
-  const dispatch = createEventDispatcher();
-
   let showAddProject = $state(false);
   let showUpdateProject = $state(false);
-  let updateProject = $state({});
+  let updateProject = $state<Project>({} as Project);
   let showRemoveProject = $state(false);
-  let removeProjectId = null;
+  let removeProjectId: string | null = null;
 
   function handleCreateProject() {
     getProjects();
@@ -88,26 +97,50 @@
     showAddProject = !showAddProject;
   }
 
-  const toggleUpdateProject = project => () => {
+  const toggleUpdateProject = (project: Project) => () => {
     updateProject = project;
     showUpdateProject = !showUpdateProject;
   };
 
-  const toggleRemoveProject = projectId => () => {
+  const toggleRemoveProject = (projectId: string | null) => () => {
     showRemoveProject = !showRemoveProject;
     removeProjectId = projectId;
   };
 
   let isAdmin = $derived(validateUserIsAdmin($user));
+  
+  // Check if a scope is set (not global)
+  let hasScopeSet = $derived(
+    Boolean(organizationId?.trim()) || 
+    Boolean(teamId?.trim()) || 
+    Boolean(departmentId?.trim())
+  );
+  
+  // Only allow create button if user has permissions AND a scope is set
+  let canCreateProject = $derived((isAdmin || isEntityAdmin) && hasScopeSet);
 
-  function getProjectScope(project) {
+  function getProjectScope(project: Project): string {
     if (project.teamId) return 'Team';
     if (project.departmentId) return 'Department';
     if (project.organizationId) return 'Organization';
     return 'Global';
   }
 
-  function formatDate(dateString) {
+  function getScopeLink(project: Project): string | null {
+    if (isAdminPage) {
+      if (project.teamId) return `${appRoutes.adminTeams}/${project.teamId}`;
+      if (project.departmentId) return `${appRoutes.adminOrganizations}/${project.organizationId}/department/${project.departmentId}`;
+      if (project.organizationId) return `${appRoutes.adminOrganizations}/${project.organizationId}`;
+    } else {
+      if (project.teamId) return `${appRoutes.teams}/${project.teamId}`;
+      if (project.departmentId) return `${appRoutes.organization}/${project.organizationId}/department/${project.departmentId}`;
+      if (project.organizationId) return `${appRoutes.organization}/${project.organizationId}`;
+    }
+    
+    return null;
+  }
+
+  function formatDate(dateString: string): string {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString();
   }
@@ -117,7 +150,7 @@
   <TableContainer>
     <TableNav
       title={$LL.projects()}
-      createBtnEnabled={isAdmin || isEntityAdmin}
+      createBtnEnabled={canCreateProject}
       createBtnText={$LL.projectCreate()}
       createButtonHandler={toggleCreateProject}
       createBtnTestId="project-create"
@@ -160,9 +193,19 @@
               </RowCol>
               {#if isAdmin && !teamId && !organizationId && !departmentId}
                 <RowCol>
-                  <span data-testid="project-scope" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                    {getProjectScope(project)}
-                  </span>
+                  {#if getScopeLink(project)}
+                    <a 
+                      href={getScopeLink(project)}
+                      data-testid="project-scope"
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-150"
+                    >
+                      {getProjectScope(project)}
+                    </a>
+                  {:else}
+                    <span data-testid="project-scope" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+                      {getProjectScope(project)}
+                    </span>
+                  {/if}
                 </RowCol>
               {/if}
               <RowCol>
@@ -191,7 +234,7 @@
     />
   </TableContainer>
 
-  <!-- {#if showAddProject}
+  {#if showAddProject}
     <CreateProject
       toggleCreate={toggleCreateProject}
       handleCreate={handleCreateProject}
@@ -205,12 +248,12 @@
   {/if}
 
   {#if showUpdateProject}
-    <UpdateProject
-      toggleUpdate={toggleUpdateProject({})}
+    <CreateProject
+      toggleUpdate={toggleUpdateProject({} as Project)}
       handleUpdate={handleProjectUpdate}
       projectId={updateProject.id}
       projectKey={updateProject.projectKey}
-      name={updateProject.name}
+      projectName={updateProject.name}
       description={updateProject.description}
       organizationId={updateProject.organizationId || organizationId}
       departmentId={updateProject.departmentId || departmentId}
@@ -220,7 +263,7 @@
       notifications={notifications}
     />
   {/if}
- -->
+
   {#if showRemoveProject}
     <DeleteConfirmation
       toggleDelete={toggleRemoveProject(null)}

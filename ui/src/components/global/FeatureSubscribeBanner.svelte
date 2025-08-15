@@ -4,9 +4,10 @@
 
   interface Props {
     salesPitch?: string;
+    isNew?: boolean;
   }
 
-  let { salesPitch = '' }: Props = $props();
+  let { isNew = false, salesPitch = '' }: Props = $props();
 </script>
 
 <div
@@ -15,7 +16,7 @@
   <div class="flex items-center space-x-3 text-gray-700 dark:text-gray-200">
     <Bell class="w-5 h-5 text-blue-500 dark:text-blue-400 animate-pulse" />
     <p class="text-sm sm:text-base">
-      <span class="font-semibold">New:</span>
+      {#if isNew}<span class="font-semibold">New:</span>{/if}
       {salesPitch}
       <a
         class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer ms-1 underline"
