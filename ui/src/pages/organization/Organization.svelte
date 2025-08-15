@@ -214,7 +214,7 @@
   <title>{$LL.organization()} {organization.name} | {$LL.appName()}</title>
 </svelte:head>
 
-<OrgPageLayout activePage="overview" {organizationId}>
+<OrgPageLayout activePage="organization" {organizationId}>
   <h1 class="mb-4 text-3xl font-semibold font-rajdhani dark:text-white">
     <span class="uppercase">{$LL.organization()}</span>
     <ChevronRight class="w-8 h-8 inline-block" />

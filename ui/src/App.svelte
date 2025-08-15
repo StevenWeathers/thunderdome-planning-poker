@@ -26,8 +26,8 @@
   import Storyboards from './pages/storyboard/Storyboards.svelte';
   import Storyboard from './pages/storyboard/Storyboard.svelte';
   import Teams from './pages/team/Teams.svelte';
-  import Organization from './pages/team/Organization.svelte';
-  import Department from './pages/team/Department.svelte';
+  import Organization from './pages/organization/Organization.svelte';
+  import Department from './pages/department/Department.svelte';
   import Team from './pages/team/Team.svelte';
   import TeamCheckin from './pages/team/TeamCheckin.svelte';
   import Register from './pages/user/Register.svelte';
@@ -73,6 +73,8 @@
   import OrganizationDepartments from './pages/organization/OrganizationDepartments.svelte';
   import OrganizationTeams from './pages/organization/OrganizationTeams.svelte';
   import OrganizationUsers from './pages/organization/OrganizationUsers.svelte';
+  import TeamUsers from './pages/team/TeamUsers.svelte';
+  import TeamProjects from './pages/team/TeamProjects.svelte';
 
   const {
     FeaturePoker,
@@ -346,6 +348,20 @@
       route: Team,
       params,
       name: 'team',
+    };
+  });
+  router.on(`${appRoutes.team}/:teamId/users`, params => {
+    currentPage = {
+      route: TeamUsers,
+      params,
+      name: 'team-users',
+    };
+  });
+  router.on(`${appRoutes.team}/:teamId/projects`, params => {
+    currentPage = {
+      route: TeamProjects,
+      params,
+      name: 'team-projects',
     };
   });
   router.on(`${appRoutes.team}/:teamId/checkin`, params => {

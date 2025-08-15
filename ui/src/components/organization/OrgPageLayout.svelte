@@ -16,7 +16,7 @@
     organizationId: string;
   }
 
-  let { activePage = 'Overview', children, organizationId }: Props = $props();
+  let { activePage = 'Organization', children, organizationId }: Props = $props();
 
   const {
     FeatureProject,
@@ -25,7 +25,7 @@
    // Organization pages configuration
   let organizationPages: PageItem[] = $derived($LL ? [
     {
-      name: 'Overview',
+      name: 'Organization',
       label: $LL.organization(),
       path: `${appRoutes.organization}/${organizationId}`,
       icon: Building,
