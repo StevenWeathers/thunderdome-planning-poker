@@ -737,19 +737,21 @@ const it: Translation = {
   removeProjectConfirmText:
     'Sei sicuro di voler rimuovere questo progetto? Questa azione non può essere annullata.',
   removeProject: 'Rimuovi progetto',
-  modalCreateProject: "Crea Progetto",
-  modalUpdateProject: "Aggiorna Progetto",
-  projectKeyPlaceholder: "Inserisci la chiave del progetto (es. PROJ)",
-  projectNamePlaceholder: "Inserisci il nome del progetto",
-  projectDescriptionPlaceholder: "Inserisci la descrizione del progetto (opzionale)",
-  projectKeyValidationError: "La chiave del progetto deve essere di 2-10 caratteri alfanumerici",
-  projectKeyHelp: "2-10 caratteri, solo lettere e numeri",
-  projectScope: "Ambito del Progetto",
-  projectUpdate: "Aggiorna Progetto",
-  projectCreateSuccess: "Progetto creato con successo",
-  projectUpdateSuccess: "Progetto aggiornato con successo",
-  projectCreateError: "Impossibile creare il progetto",
-  projectUpdateError: "Impossibile aggiornare il progetto",
+  modalCreateProject: 'Crea Progetto',
+  modalUpdateProject: 'Aggiorna Progetto',
+  projectKeyPlaceholder: 'Inserisci la chiave del progetto (es. PROJ)',
+  projectNamePlaceholder: 'Inserisci il nome del progetto',
+  projectDescriptionPlaceholder:
+    'Inserisci la descrizione del progetto (opzionale)',
+  projectKeyValidationError:
+    'La chiave del progetto deve essere di 2-10 caratteri alfanumerici',
+  projectKeyHelp: '2-10 caratteri, solo lettere e numeri',
+  projectScope: 'Ambito del Progetto',
+  projectUpdate: 'Aggiorna Progetto',
+  projectCreateSuccess: 'Progetto creato con successo',
+  projectUpdateSuccess: 'Progetto aggiornato con successo',
+  projectCreateError: 'Impossibile creare il progetto',
+  projectUpdateError: 'Impossibile aggiornare il progetto',
 };
 
 export default it;

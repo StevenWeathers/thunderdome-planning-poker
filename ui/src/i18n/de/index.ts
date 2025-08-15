@@ -749,19 +749,20 @@ const de: Translation = {
   removeProjectConfirmText:
     'Sind Sie sicher, dass Sie dieses Projekt entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
   removeProject: 'Projekt entfernen',
-  modalCreateProject: "Projekt erstellen",
-  modalUpdateProject: "Projekt aktualisieren",
-  projectKeyPlaceholder: "Projektschlüssel eingeben (z.B. PROJ)",
-  projectNamePlaceholder: "Projektname eingeben",
-  projectDescriptionPlaceholder: "Projektbeschreibung eingeben (optional)",
-  projectKeyValidationError: "Projektschlüssel muss 2-10 alphanumerische Zeichen haben",
-  projectKeyHelp: "2-10 Zeichen, nur Buchstaben und Zahlen",
-  projectScope: "Projektumfang",
-  projectUpdate: "Projekt aktualisieren",
-  projectCreateSuccess: "Projekt erfolgreich erstellt",
-  projectUpdateSuccess: "Projekt erfolgreich aktualisiert",
-  projectCreateError: "Projekt konnte nicht erstellt werden",
-  projectUpdateError: "Projekt konnte nicht aktualisiert werden",
+  modalCreateProject: 'Projekt erstellen',
+  modalUpdateProject: 'Projekt aktualisieren',
+  projectKeyPlaceholder: 'Projektschlüssel eingeben (z.B. PROJ)',
+  projectNamePlaceholder: 'Projektname eingeben',
+  projectDescriptionPlaceholder: 'Projektbeschreibung eingeben (optional)',
+  projectKeyValidationError:
+    'Projektschlüssel muss 2-10 alphanumerische Zeichen haben',
+  projectKeyHelp: '2-10 Zeichen, nur Buchstaben und Zahlen',
+  projectScope: 'Projektumfang',
+  projectUpdate: 'Projekt aktualisieren',
+  projectCreateSuccess: 'Projekt erfolgreich erstellt',
+  projectUpdateSuccess: 'Projekt erfolgreich aktualisiert',
+  projectCreateError: 'Projekt konnte nicht erstellt werden',
+  projectUpdateError: 'Projekt konnte nicht aktualisiert werden',
 };
 
 export default de;

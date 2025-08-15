@@ -1,15 +1,16 @@
 <script lang="ts">
   import { Menu, X } from 'lucide-svelte';
 
-  let isCollapsed = $state(true);
-
   interface Props {
     menuItems?: any;
     activePage?: string;
     menuType?: string;
+    expanded?: boolean;
   }
 
-  let { menuItems = [], activePage = '', menuType = '' }: Props = $props();
+  let { menuItems = [], activePage = '', menuType = '', expanded = false }: Props = $props();
+
+  let isCollapsed = $state(!expanded);
 </script>
 
 <div

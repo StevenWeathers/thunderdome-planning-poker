@@ -1,16 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/PageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import RowCol from '../../components/table/RowCol.svelte';
-  import TableRow from '../../components/table/TableRow.svelte';
-  import HeadCol from '../../components/table/HeadCol.svelte';
-  import Table from '../../components/table/Table.svelte';
   import {
     ChartNoAxesColumn,
     CheckSquare,
@@ -23,14 +18,7 @@
     Users,
     Vote,
   } from 'lucide-svelte';
-  import CreateDepartment from '../../components/team/CreateDepartment.svelte';
-  import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
-  import UsersList from '../../components/team/UsersList.svelte';
-  import TableContainer from '../../components/table/TableContainer.svelte';
-  import TableNav from '../../components/table/TableNav.svelte';
-  import CrudActions from '../../components/table/CrudActions.svelte';
-  import InvitesList from '../../components/team/InvitesList.svelte';
   import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
   import MetricsDisplay from '../../components/global/MetricsDisplay.svelte';
   import {
@@ -44,7 +32,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
-  import ProjectsList from '../../components/project/ProjectsList.svelte';
+  import OrgPageLayout from '../../components/organization/OrgPageLayout.svelte';
 
   interface Props {
     xfetch: ApiClient;
@@ -60,13 +48,8 @@
     organizationId
   }: Props = $props();
 
-  const departmentsPageLimit = 1000;
-  const teamsPageLimit = 1000;
-  const usersPageLimit = 1000;
-  const projectsPageLimit = 10;
   const orgPrefix = `/api/organizations/${organizationId}`;
 
-  let invitesList = $state();
   let organization = $state({
     id: organizationId,
     name: '',
@@ -75,40 +58,7 @@
     subscribed: false,
   });
   let role = $state('MEMBER');
-  let users = $state([]);
-  let departments = $state([]);
-  let teams = $state([]);
-  let showCreateDepartment = $state(false);
-  let showCreateTeam = $state(false);
-  let showDeleteTeam = $state(false);
-  let showDeleteDepartment = $state(false);
   let showDeleteOrganization = $state(false);
-  let deleteTeamId = $state(null);
-  let deleteDeptId = $state(null);
-  let teamsPage = $state(1);
-  let departmentsPage = $state(1);
-  let usersPage = $state(1);
-  let projectCount = $state(0);
-  let projectsPage = $state(1);
-  let projects = $state([]);
-
-  function toggleCreateDepartment() {
-    showCreateDepartment = !showCreateDepartment;
-  }
-
-  function toggleCreateTeam() {
-    showCreateTeam = !showCreateTeam;
-  }
-
-  const toggleDeleteTeam = teamId => () => {
-    showDeleteTeam = !showDeleteTeam;
-    deleteTeamId = teamId;
-  };
-
-  const toggleDeleteDepartment = deptId => () => {
-    showDeleteDepartment = !showDeleteDepartment;
-    deleteDeptId = deptId;
-  };
 
   const toggleDeleteOrganization = () => {
     showDeleteOrganization = !showDeleteOrganization;
@@ -121,12 +71,8 @@
         organization = result.data.organization;
         role = result.data.role;
 
-        getDepartments();
-        getTeams();
-        getUsers();
         getEstimationScales();
         getRetroTemplates();
-        getProjects();
       })
       .catch(function () {
         notifications.danger($LL.organizationGetError());
@@ -170,205 +116,17 @@
     },
   ]);
 
-  function getUsers() {
-    const usersOffset = (usersPage - 1) * usersPageLimit;
-    xfetch(`${orgPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`)
-      .then(res => res.json())
-      .then(function (result) {
-        users = result.data;
-      })
-      .catch(function () {
-        notifications.danger($LL.teamGetUsersError());
-      });
-  }
-
-  function getDepartments() {
-    const departmentsOffset = (departmentsPage - 1) * departmentsPageLimit;
-    xfetch(
-      `${orgPrefix}/departments?limit=${departmentsPageLimit}&offset=${departmentsOffset}`,
-    )
-      .then(res => res.json())
-      .then(function (result) {
-        departments = result.data;
-      })
-      .catch(function () {
-        notifications.danger($LL.organizationGetDepartmentsError());
-      });
-  }
-
-  function getTeams() {
-    const teamsOffset = (teamsPage - 1) * teamsPageLimit;
-    xfetch(`${orgPrefix}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`)
-      .then(res => res.json())
-      .then(function (result) {
-        teams = result.data;
-      })
-      .catch(function () {
-        notifications.danger($LL.organizationGetTeamsError());
-      });
-  }
-
-  function getProjects() {
-    const projectsOffset = (projectsPage - 1) * projectsPageLimit;
-    xfetch(
-      `${orgPrefix}/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`,
-    )
-      .then(res => res.json())
-      .then(function (result) {
-        projects = result.data;
-        projectCount = result.meta.count;
-      })
-      .catch(function () {
-        notifications.danger('Failed to fetch projects');
-      });
-  }
-
-  const changeProjectsPage = evt => {
-    projectsPage = evt.detail;
-    getProjects();
-  };
-
-  function createDepartmentHandler(name) {
-    const body = {
-      name,
-    };
-
-    xfetch(`${orgPrefix}/departments`, { body })
-      .then(res => res.json())
-      .then(function (result) {
-        router.route(
-          `${appRoutes.organization}/${organizationId}/department/${result.data.id}`,
-        );
-      })
-      .catch(function () {
-        notifications.danger($LL.departmentCreateError());
-      });
-  }
-
-  function createTeamHandler(name) {
-    const body = {
-      name,
-    };
-
-    xfetch(`${orgPrefix}/teams`, { body })
-      .then(res => res.json())
-      .then(function () {
-        toggleCreateTeam();
-        notifications.success($LL.teamCreateSuccess());
-        getTeams();
-      })
-      .catch(function () {
-        notifications.danger($LL.teamCreateError());
-      });
-  }
-
-  function handleDeleteTeam() {
-    xfetch(`${orgPrefix}/teams/${deleteTeamId}`, {
-      method: 'DELETE',
-    })
-      .then(function () {
-        toggleDeleteTeam(null)();
-        notifications.success($LL.teamDeleteSuccess());
-        getTeams();
-      })
-      .catch(function () {
-        notifications.danger($LL.teamDeleteError());
-      });
-  }
-
-  function handleDeleteDepartment() {
-    xfetch(`${orgPrefix}/departments/${deleteDeptId}`, {
-      method: 'DELETE',
-    })
-      .then(function () {
-        toggleDeleteDepartment(null)();
-        notifications.success($LL.departmentDeleteSuccess());
-        getDepartments();
-      })
-      .catch(function () {
-        notifications.danger($LL.departmentDeleteError());
-      });
-  }
-
   function handleDeleteOrganization() {
     xfetch(`${orgPrefix}`, {
       method: 'DELETE',
     })
       .then(function () {
-        toggleDeleteTeam();
+        toggleDeleteOrganization();
         notifications.success($LL.organizationDeleteSuccess());
         router.route(appRoutes.teams);
       })
       .catch(function () {
         notifications.danger($LL.organizationDeleteError());
-      });
-  }
-
-  let defaultDepartment = {
-    id: '',
-    name: '',
-  };
-  let selectedDepartment = $state({ ...defaultDepartment });
-  let showDepartmentUpdate = $state(false);
-
-  function toggleUpdateDepartment(dept) {
-    return () => {
-      selectedDepartment = dept;
-      showDepartmentUpdate = !showDepartmentUpdate;
-    };
-  }
-
-  let defaultTeam = {
-    id: '',
-    name: '',
-  };
-  let selectedTeam = $state({ ...defaultTeam });
-  let showTeamUpdate = $state(false);
-
-  function toggleUpdateTeam(team) {
-    return () => {
-      selectedTeam = team;
-      showTeamUpdate = !showTeamUpdate;
-    };
-  }
-
-  function updateDepartmentHandler(name) {
-    const body = {
-      name,
-    };
-
-    xfetch(
-      `/api/organizations/${organizationId}/departments/${selectedDepartment.id}`,
-      { body, method: 'PUT' },
-    )
-      .then(res => res.json())
-      .then(function (result) {
-        getDepartments();
-        toggleUpdateDepartment(defaultDepartment)();
-        notifications.success(`${$LL.deptUpdateSuccess()}`);
-      })
-      .catch(function () {
-        notifications.danger(`${$LL.deptUpdateError()}`);
-      });
-  }
-
-  function updateTeamHandler(name) {
-    const body = {
-      name,
-    };
-
-    xfetch(`/api/organizations/${organizationId}/teams/${selectedTeam.id}`, {
-      body,
-      method: 'PUT',
-    })
-      .then(res => res.json())
-      .then(function () {
-        toggleUpdateTeam(defaultTeam)();
-        getTeams();
-        notifications.success(`${$LL.teamUpdateSuccess()}`);
-      })
-      .catch(function () {
-        notifications.danger(`${$LL.teamUpdateError()}`);
       });
   }
 
@@ -456,7 +214,7 @@
   <title>{$LL.organization()} {organization.name} | {$LL.appName()}</title>
 </svelte:head>
 
-<PageLayout>
+<OrgPageLayout activePage="overview" {organizationId}>
   <h1 class="mb-4 text-3xl font-semibold font-rajdhani dark:text-white">
     <span class="uppercase">{$LL.organization()}</span>
     <ChevronRight class="w-8 h-8 inline-block" />
@@ -466,154 +224,6 @@
   <div class="mb-8">
     <MetricsDisplay metrics={organizationMetrics} />
   </div>
-
-  <div class="w-full mb-6 lg:mb-8">
-    <TableContainer>
-      <TableNav
-        title={$LL.departments()}
-        createBtnEnabled={isAdmin}
-        createBtnText={$LL.departmentCreate()}
-        createButtonHandler={toggleCreateDepartment}
-        createBtnTestId="department-create"
-      />
-      <Table>
-        {#snippet header()}
-                <tr >
-            <HeadCol>
-              {$LL.name()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateCreated()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateUpdated()}
-            </HeadCol>
-            <HeadCol type="action">
-              <span class="sr-only">{$LL.actions()}</span>
-            </HeadCol>
-          </tr>
-              {/snippet}
-        {#snippet body({ class: className })}
-                <tbody   class="{className}">
-            {#each departments as department, i}
-              <TableRow itemIndex={i}>
-                <RowCol>
-                  <a
-                    href="{appRoutes.organization}/{organizationId}/department/{department.id}"
-                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                  >
-                    {department.name}
-                  </a>
-                </RowCol>
-                <RowCol>
-                  {new Date(department.createdDate).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(department.updatedDate).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  {#if isAdmin}
-                    <CrudActions
-                      editBtnClickHandler={toggleUpdateDepartment(department)}
-                      deleteBtnClickHandler={toggleDeleteDepartment(
-                        department.id,
-                      )}
-                    />
-                  {/if}
-                </RowCol>
-              </TableRow>
-            {/each}
-          </tbody>
-              {/snippet}
-      </Table>
-    </TableContainer>
-  </div>
-
-  <div class="w-full mb-6 lg:mb-8">
-    <TableContainer>
-      <TableNav
-        title={$LL.teams()}
-        createBtnEnabled={isAdmin}
-        createBtnText={$LL.teamCreate()}
-        createButtonHandler={toggleCreateTeam}
-        createBtnTestId="team-create"
-      />
-      <Table>
-        {#snippet header()}
-                <tr >
-            <HeadCol>
-              {$LL.name()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateCreated()}
-            </HeadCol>
-            <HeadCol>
-              {$LL.dateUpdated()}
-            </HeadCol>
-            <HeadCol type="action">
-              <span class="sr-only">{$LL.actions()}</span>
-            </HeadCol>
-          </tr>
-              {/snippet}
-        {#snippet body({ class: className })}
-                <tbody   class="{className}">
-            {#each teams as team, i}
-              <TableRow itemIndex={i}>
-                <RowCol>
-                  <a
-                    href="{appRoutes.organization}/{organizationId}/team/{team.id}"
-                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                  >
-                    {team.name}
-                  </a>
-                </RowCol>
-                <RowCol>
-                  {new Date(team.createdDate).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(team.updatedDate).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  {#if isAdmin}
-                    <CrudActions
-                      editBtnClickHandler={toggleUpdateTeam(team)}
-                      deleteBtnClickHandler={toggleDeleteTeam(team.id)}
-                    />
-                  {/if}
-                </RowCol>
-              </TableRow>
-            {/each}
-          </tbody>
-              {/snippet}
-      </Table>
-    </TableContainer>
-  </div>
-
-  {#if isAdmin}
-    <div class="w-full mb-6 lg:mb-8">
-      <InvitesList
-        xfetch={xfetch}
-        notifications={notifications}
-        pageType="organization"
-        teamPrefix={orgPrefix}
-        bind:this="{invitesList}"
-      />
-    </div>
-  {/if}
-
-  <UsersList
-    users={users}
-    getUsers={getUsers}
-    xfetch={xfetch}
-    notifications={notifications}
-    isAdmin={isAdmin}
-    pageType="organization"
-    orgId={organizationId}
-    teamPrefix="/api/organizations/{organizationId}"
-    on:user-invited={() => {
-      invitesList.f('user-invited');
-    }}
-  />
 
   {#if AppConfig.FeaturePoker}
     <div class="mt-8">
@@ -695,84 +305,12 @@
     </div>
   {/if}
 
-  {#if AppConfig.FeatureProject}
-    <div class="mt-8">
-        {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
-        <ProjectsList
-          xfetch={xfetch}
-          notifications={notifications}
-          projects={projects}
-          apiPrefix={orgPrefix}
-          getProjects={getProjects}
-          changePage={changeProjectsPage}
-          projectCount={projectCount}
-          projectsPage={projectsPage}
-          projectsPageLimit={projectsPageLimit}
-          organizationId={organizationId}
-        />
-      {:else}
-        <FeatureSubscribeBanner
-          isNew={true}
-          salesPitch="Streamline your team's workflow with organized Projects that keep everything connected."
-        />
-      {/if}
-    </div>
-  {/if}
-
   {#if isAdmin}
     <div class="w-full text-center mt-8">
       <HollowButton onClick={toggleDeleteOrganization} color="red">
         {$LL.deleteOrganization()}
       </HollowButton>
     </div>
-  {/if}
-
-  {#if showCreateDepartment}
-    <CreateDepartment
-      toggleCreate={toggleCreateDepartment}
-      handleCreate={createDepartmentHandler}
-    />
-  {/if}
-
-  {#if showDepartmentUpdate}
-    <CreateDepartment
-      departmentName={selectedDepartment.name}
-      toggleCreate={toggleUpdateDepartment(defaultDepartment)}
-      handleCreate={updateDepartmentHandler}
-    />
-  {/if}
-
-  {#if showCreateTeam}
-    <CreateTeam
-      toggleCreate={toggleCreateTeam}
-      handleCreate={createTeamHandler}
-    />
-  {/if}
-
-  {#if showTeamUpdate}
-    <CreateTeam
-      teamName={selectedTeam.name}
-      toggleCreate={toggleUpdateTeam(defaultTeam)}
-      handleCreate={updateTeamHandler}
-    />
-  {/if}
-
-  {#if showDeleteTeam}
-    <DeleteConfirmation
-      toggleDelete={toggleDeleteTeam(null)}
-      handleDelete={handleDeleteTeam}
-      confirmText={$LL.deleteTeamConfirmText()}
-      confirmBtnText={$LL.deleteTeam()}
-    />
-  {/if}
-
-  {#if showDeleteDepartment}
-    <DeleteConfirmation
-      toggleDelete={toggleDeleteDepartment(null)}
-      handleDelete={handleDeleteDepartment}
-      confirmText={$LL.deleteDepartmentConfirmText()}
-      confirmBtnText={$LL.deleteDepartment()}
-    />
   {/if}
 
   {#if showDeleteOrganization}
@@ -783,4 +321,4 @@
       confirmBtnText={$LL.deleteOrganization()}
     />
   {/if}
-</PageLayout>
+</OrgPageLayout>

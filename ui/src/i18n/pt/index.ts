@@ -723,19 +723,20 @@ const pt: Translation = {
   removeProjectConfirmText:
     'Tem certeza de que deseja remover este projeto? Esta ação não pode ser desfeita.',
   removeProject: 'Remover Projeto',
-  modalCreateProject: "Criar Projeto",
-  modalUpdateProject: "Atualizar Projeto",
-  projectKeyPlaceholder: "Digite a chave do projeto (ex. PROJ)",
-  projectNamePlaceholder: "Digite o nome do projeto",
-  projectDescriptionPlaceholder: "Digite a descrição do projeto (opcional)",
-  projectKeyValidationError: "A chave do projeto deve ter 2-10 caracteres alfanuméricos",
-  projectKeyHelp: "2-10 caracteres, apenas letras e números",
-  projectScope: "Escopo do Projeto",
-  projectUpdate: "Atualizar Projeto",
-  projectCreateSuccess: "Projeto criado com sucesso",
-  projectUpdateSuccess: "Projeto atualizado com sucesso",
-  projectCreateError: "Falha ao criar projeto",
-  projectUpdateError: "Falha ao atualizar projeto",
+  modalCreateProject: 'Criar Projeto',
+  modalUpdateProject: 'Atualizar Projeto',
+  projectKeyPlaceholder: 'Digite a chave do projeto (ex. PROJ)',
+  projectNamePlaceholder: 'Digite o nome do projeto',
+  projectDescriptionPlaceholder: 'Digite a descrição do projeto (opcional)',
+  projectKeyValidationError:
+    'A chave do projeto deve ter 2-10 caracteres alfanuméricos',
+  projectKeyHelp: '2-10 caracteres, apenas letras e números',
+  projectScope: 'Escopo do Projeto',
+  projectUpdate: 'Atualizar Projeto',
+  projectCreateSuccess: 'Projeto criado com sucesso',
+  projectUpdateSuccess: 'Projeto atualizado com sucesso',
+  projectCreateError: 'Falha ao criar projeto',
+  projectUpdateError: 'Falha ao atualizar projeto',
 };
 
 export default pt;

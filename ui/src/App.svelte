@@ -69,6 +69,10 @@
   import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
   import ChangeEmail from './pages/user/ChangeEmail.svelte';
   import Projects from './pages/admin/project/Projects.svelte';
+  import OrganizationProjects from './pages/organization/OrganizationProjects.svelte';
+  import OrganizationDepartments from './pages/organization/OrganizationDepartments.svelte';
+  import OrganizationTeams from './pages/organization/OrganizationTeams.svelte';
+  import OrganizationUsers from './pages/organization/OrganizationUsers.svelte';
 
   const {
     FeaturePoker,
@@ -266,6 +270,20 @@
       name: 'organization',
     };
   });
+  router.on(`${appRoutes.organization}/:organizationId/users`, params => {
+    currentPage = {
+      route: OrganizationUsers,
+      params,
+      name: 'organization-users',
+    };
+  });
+  router.on(`${appRoutes.organization}/:organizationId/teams`, params => {
+    currentPage = {
+      route: OrganizationTeams,
+      params,
+      name: 'organization-teams',
+    };
+  });
   router.on(
     `${appRoutes.organization}/:organizationId/team/:teamId`,
     params => {
@@ -286,6 +304,13 @@
       };
     },
   );
+  router.on(`${appRoutes.organization}/:organizationId/departments`, params => {
+    currentPage = {
+      route: OrganizationDepartments,
+      params,
+      name: 'organization-departments',
+    };
+  });
   router.on(
     `${appRoutes.organization}/:organizationId/department/:departmentId`,
     params => {
@@ -591,6 +616,13 @@
         route: Projects,
         params: {},
         name: 'admin-projects',
+      };
+    });
+    router.on(`${appRoutes.organization}/:organizationId/projects`, params => {
+      currentPage = {
+        route: OrganizationProjects,
+        params,
+        name: 'organization-projects',
       };
     });
   }
