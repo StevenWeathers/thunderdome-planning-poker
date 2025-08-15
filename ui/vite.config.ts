@@ -56,7 +56,12 @@ export default defineConfig({
           if (path.includes('/src/pages/retro/')) return 'retro';
           if (path.includes('/src/pages/storyboard/')) return 'storyboard';
           if (path.includes('/src/pages/admin/')) return 'admin';
-          if (path.includes('/src/pages/team/')) return 'team';
+          if (
+            path.includes('/src/pages/organization/') ||
+            path.includes('/src/pages/department/') ||
+            path.includes('/src/pages/team/')
+          )
+            return 'team';
           if (path.includes('/src/pages/user/')) return 'user';
           if (path.includes('/src/pages/subscription/')) return 'subscription';
           if (path.includes('/src/pages/support/')) return 'support';

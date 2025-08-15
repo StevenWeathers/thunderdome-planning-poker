@@ -38,6 +38,8 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import ProjectsList from '../../components/project/ProjectsList.svelte';
+  import TeamPageLayout from '../../components/team/TeamPageLayout.svelte';
 
   interface Props {
     xfetch: ApiClient;
@@ -64,8 +66,6 @@
   const retroActionsPageLimit = 5;
   const storyboardsPageLimit = 1000;
   const usersPageLimit = 1000;
-
-  let invitesList = $state();
 
   let team = $state({
     id: teamId,
@@ -95,20 +95,20 @@
   let showRemoveRetro = $state(false);
   let showRemoveStoryboard = $state(false);
   let showDeleteTeam = $state(false);
-  let removeBattleId = null;
-  let removeRetroId = null;
-  let removeStoryboardId = null;
-  let usersPage = 1;
-  let battlesPage = 1;
-  let retrosPage = 1;
+  let removeBattleId = $state(null);
+  let removeRetroId = $state(null);
+  let removeStoryboardId = $state(null);
+  let usersPage = $state(1);
+  let battlesPage = $state(1);
+  let retrosPage = $state(1);
   let retroActionsPage = $state(1);
-  let storyboardsPage = 1;
+  let storyboardsPage = $state(1);
   let totalRetroActions = $state(0);
   let completedActionItems = $state(false);
 
-  let organizationRole = '';
-  let departmentRole = '';
-  let teamRole = '';
+  let organizationRole = $state('');
+  let departmentRole = $state('');
+  let teamRole = $state('');
   let isAdmin = $state(false);
   let isTeamMember = $state(false);
 
@@ -489,7 +489,7 @@
   <title>{$LL.team()} {team.name} | {$LL.appName()}</title>
 </svelte:head>
 
-<PageLayout>
+<TeamPageLayout activePage="team" {teamId}>
   <div class="flex mb-6 lg:mb-8">
     <div class="flex-1">
       <h1 class="text-3xl font-semibold font-rajdhani dark:text-white">
@@ -745,33 +745,6 @@
     {/if}
   {/if}
 
-  {#if isAdmin}
-    <div class="w-full mb-6 lg:mb-8">
-      <InvitesList
-        xfetch={xfetch}
-        notifications={notifications}
-        pageType="team"
-        teamPrefix={teamPrefix}
-        bind:this="{invitesList}"
-      />
-    </div>
-  {/if}
-
-  <UsersList
-    users={users}
-    getUsers={getUsers}
-    xfetch={xfetch}
-    notifications={notifications}
-    isAdmin={isAdmin}
-    pageType="team"
-    teamPrefix={teamPrefix}
-    orgId={organizationId}
-    deptId={departmentId}
-    on:user-invited={() => {
-      invitesList.f('user-invited');
-    }}
-  />
-
   {#if FeaturePoker}
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
@@ -856,6 +829,7 @@
     </div>
   {/if}
 
+
   {#if isAdmin && !organizationId && !departmentId}
     <div class="w-full text-center mt-8">
       <HollowButton onClick={toggleDeleteTeam} color="red">
@@ -927,4 +901,4 @@
       isAdmin={isAdmin}
     />
   {/if}
-</PageLayout>
+</TeamPageLayout>

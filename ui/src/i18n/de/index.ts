@@ -739,6 +739,30 @@ const de: Translation = {
   modalRetroItemComments: 'Retro-Element-Kommentare',
   modalUpdateRetroSettings: 'Retro-Einstellungen aktualisieren',
   githubRepository: 'GitHub-Repository',
+  projects: 'Projekte',
+  projectCreate: 'Projekt erstellen',
+  projectKey: 'Projekt-Schlüssel',
+  scope: 'Bereich',
+  createdAt: 'Erstellt am',
+  projectRemoveSuccess: 'Projekt erfolgreich entfernt',
+  projectRemoveError: 'Fehler beim Entfernen des Projekts',
+  removeProjectConfirmText:
+    'Sind Sie sicher, dass Sie dieses Projekt entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+  removeProject: 'Projekt entfernen',
+  modalCreateProject: 'Projekt erstellen',
+  modalUpdateProject: 'Projekt aktualisieren',
+  projectKeyPlaceholder: 'Projektschlüssel eingeben (z.B. PROJ)',
+  projectNamePlaceholder: 'Projektname eingeben',
+  projectDescriptionPlaceholder: 'Projektbeschreibung eingeben (optional)',
+  projectKeyValidationError:
+    'Projektschlüssel muss 2-10 alphanumerische Zeichen haben',
+  projectKeyHelp: '2-10 Zeichen, nur Buchstaben und Zahlen',
+  projectScope: 'Projektumfang',
+  projectUpdate: 'Projekt aktualisieren',
+  projectCreateSuccess: 'Projekt erfolgreich erstellt',
+  projectUpdateSuccess: 'Projekt erfolgreich aktualisiert',
+  projectCreateError: 'Projekt konnte nicht erstellt werden',
+  projectUpdateError: 'Projekt konnte nicht aktualisiert werden',
 };
 
 export default de;

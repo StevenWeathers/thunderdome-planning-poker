@@ -26,8 +26,8 @@
   import Storyboards from './pages/storyboard/Storyboards.svelte';
   import Storyboard from './pages/storyboard/Storyboard.svelte';
   import Teams from './pages/team/Teams.svelte';
-  import Organization from './pages/team/Organization.svelte';
-  import Department from './pages/team/Department.svelte';
+  import Organization from './pages/organization/Organization.svelte';
+  import Department from './pages/department/Department.svelte';
   import Team from './pages/team/Team.svelte';
   import TeamCheckin from './pages/team/TeamCheckin.svelte';
   import Register from './pages/user/Register.svelte';
@@ -68,11 +68,19 @@
   import StoryboardLanding from './pages/storyboard/StoryboardLanding.svelte';
   import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
   import ChangeEmail from './pages/user/ChangeEmail.svelte';
+  import Projects from './pages/admin/project/Projects.svelte';
+  import OrganizationProjects from './pages/organization/OrganizationProjects.svelte';
+  import OrganizationDepartments from './pages/organization/OrganizationDepartments.svelte';
+  import OrganizationTeams from './pages/organization/OrganizationTeams.svelte';
+  import OrganizationUsers from './pages/organization/OrganizationUsers.svelte';
+  import TeamUsers from './pages/team/TeamUsers.svelte';
+  import TeamProjects from './pages/team/TeamProjects.svelte';
 
   const {
     FeaturePoker,
     FeatureRetro,
     FeatureStoryboard,
+    FeatureProject,
     SubscriptionsEnabled,
     DefaultLocale,
   } = AppConfig;
@@ -264,6 +272,20 @@
       name: 'organization',
     };
   });
+  router.on(`${appRoutes.organization}/:organizationId/users`, params => {
+    currentPage = {
+      route: OrganizationUsers,
+      params,
+      name: 'organization-users',
+    };
+  });
+  router.on(`${appRoutes.organization}/:organizationId/teams`, params => {
+    currentPage = {
+      route: OrganizationTeams,
+      params,
+      name: 'organization-teams',
+    };
+  });
   router.on(
     `${appRoutes.organization}/:organizationId/team/:teamId`,
     params => {
@@ -284,6 +306,13 @@
       };
     },
   );
+  router.on(`${appRoutes.organization}/:organizationId/departments`, params => {
+    currentPage = {
+      route: OrganizationDepartments,
+      params,
+      name: 'organization-departments',
+    };
+  });
   router.on(
     `${appRoutes.organization}/:organizationId/department/:departmentId`,
     params => {
@@ -319,6 +348,20 @@
       route: Team,
       params,
       name: 'team',
+    };
+  });
+  router.on(`${appRoutes.team}/:teamId/users`, params => {
+    currentPage = {
+      route: TeamUsers,
+      params,
+      name: 'team-users',
+    };
+  });
+  router.on(`${appRoutes.team}/:teamId/projects`, params => {
+    currentPage = {
+      route: TeamProjects,
+      params,
+      name: 'team-projects',
     };
   });
   router.on(`${appRoutes.team}/:teamId/checkin`, params => {
@@ -579,6 +622,23 @@
         route: Login,
         params,
         name: 'login',
+      };
+    });
+  }
+
+  if (FeatureProject) {
+    router.on(`${appRoutes.adminProjects}`, () => {
+      currentPage = {
+        route: Projects,
+        params: {},
+        name: 'admin-projects',
+      };
+    });
+    router.on(`${appRoutes.organization}/:organizationId/projects`, params => {
+      currentPage = {
+        route: OrganizationProjects,
+        params,
+        name: 'organization-projects',
       };
     });
   }

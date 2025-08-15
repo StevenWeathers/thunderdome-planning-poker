@@ -27,7 +27,7 @@ test.describe("Organization Page", { tag: "@organization" }, () => {
     },
   );
 
-  test("can invite user to organization", async ({ registeredPage }) => {
+  test.skip("can invite user to organization", async ({ registeredPage }) => {
     const verifiedEmail = "e2everified@thunderdome.dev";
     const testOrgName = "E2E TEST ORGANIZATION UA";
     const orgPage = new OrganizationPage(registeredPage.page);

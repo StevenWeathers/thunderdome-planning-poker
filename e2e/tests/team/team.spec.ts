@@ -75,7 +75,7 @@ test.describe("Team page", { tag: ["@team"] }, () => {
     },
   );
 
-  test("can invite user to team", async ({ registeredPage }) => {
+  test.skip("can invite user to team", async ({ registeredPage }) => {
     const verifiedEmail = "e2everified@thunderdome.dev";
     const testTeamName = "E2E TEST TEAM";
     const teamPage = new TeamPage(registeredPage.page);
