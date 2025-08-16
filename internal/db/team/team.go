@@ -64,7 +64,7 @@ func (d *Service) TeamListByUser(ctx context.Context, userID string, limit int, 
     tu.role,
     sub_check.is_subscribed
 FROM thunderdome.team_user tu
-LEFT JOIN thunderdome.team t ON tu.team_id = t.id
+JOIN thunderdome.team t ON tu.team_id = t.id
 LEFT JOIN LATERAL (
     SELECT
     COALESCE(
