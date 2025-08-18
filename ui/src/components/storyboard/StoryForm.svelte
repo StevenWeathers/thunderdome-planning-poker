@@ -400,7 +400,7 @@
                       <div class="relative">
                         <TextInput
                           id="storyLink"
-                          on:change={updateLink}
+                          onchange={updateLink}
                           value={story.link}
                           placeholder="https://jira.company.com/browse/PROJ-123"
                           name="storyLink"
