@@ -6,7 +6,6 @@ require (
 	github.com/XSAM/otelsql v0.37.0
 	github.com/anthonynsimon/bild v0.14.0
 	github.com/coreos/go-oidc/v3 v3.12.0
-	github.com/ctreminiom/go-atlassian v1.6.1
 	github.com/go-ldap/ldap/v3 v3.4.10
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
 	github.com/go-openapi/spec v0.21.0 // indirect
@@ -36,7 +35,8 @@ require (
 )
 
 require (
-	github.com/stretchr/testify v1.10.0
+	github.com/ctreminiom/go-atlassian/v2 v2.8.0
+	github.com/stretchr/testify v1.11.1
 	github.com/stripe/stripe-go/v81 v81.4.0
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/unrolled/secure v1.17.0
@@ -99,7 +99,7 @@ require (
 )
 
 require (
-	dario.cat/mergo v1.0.1 // indirect
+	dario.cat/mergo v1.0.2 // indirect
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect

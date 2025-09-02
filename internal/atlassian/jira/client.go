@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	jira "github.com/ctreminiom/go-atlassian/jira/v3"
+	jira "github.com/ctreminiom/go-atlassian/v2/jira/v3"
 )
 
 // New creates a new JIRA client
