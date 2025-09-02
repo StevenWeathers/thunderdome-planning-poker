@@ -1,8 +1,8 @@
 package jira
 
 import (
-	jira "github.com/ctreminiom/go-atlassian/jira/v3"
-	"github.com/ctreminiom/go-atlassian/pkg/infra/models"
+	jira "github.com/ctreminiom/go-atlassian/v2/jira/v3"
+	"github.com/ctreminiom/go-atlassian/v2/pkg/infra/models"
 )
 
 // Config is the configuration for the Jira client
