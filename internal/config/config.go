@@ -136,6 +136,8 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("auth.oidc.provider_url", "")
 	viper.SetDefault("auth.oidc.client_id", "")
 	viper.SetDefault("auth.oidc.client_secret", "")
+	viper.SetDefault("auth.oidc.requestedScopes", []string{"openid", "profile", "email"})
+	viper.SetDefault("auth.oidc.requestedIDTokenClaims", []string{})
 
 	// automatically load matching envs
 	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))
