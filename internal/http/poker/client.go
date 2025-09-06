@@ -74,6 +74,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 
 		// check users battle active status
 		userErr := b.PokerService.GetUserActiveStatus(roomID, user.ID)
+		userAllowed := userErr == nil
 		if userErr != nil && !errors.Is(userErr, sql.ErrNoRows) {
 			usrErrMsg := userErr.Error()
 			var authErr wshub.AuthError
@@ -116,6 +117,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 
 				if keyVal["type"] == "auth_game" && keyVal["value"] == battle.JoinCode {
 					// join code is valid, continue to room
+					userAllowed = true
 					break
 				} else if keyVal["type"] == "auth_game" {
 					authIncorrect := wshub.CreateSocketEvent("join_code_incorrect", "", user.ID)
@@ -124,20 +126,22 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			}
 		}
 
-		sub := b.hub.NewSubscriber(c.Ws, user.ID, roomID)
+		if userAllowed {
+			sub := b.hub.NewSubscriber(c.Ws, user.ID, roomID)
 
-		users, _ := b.PokerService.AddUser(roomID, user.ID)
-		updatedUsers, _ := json.Marshal(users)
+			users, _ := b.PokerService.AddUser(roomID, user.ID)
+			updatedUsers, _ := json.Marshal(users)
 
-		Battle, _ := json.Marshal(battle)
-		initEvent := wshub.CreateSocketEvent("init", string(Battle), user.ID)
-		_ = sub.Conn.Write(websocket.TextMessage, initEvent)
+			Battle, _ := json.Marshal(battle)
+			initEvent := wshub.CreateSocketEvent("init", string(Battle), user.ID)
+			_ = sub.Conn.Write(websocket.TextMessage, initEvent)
 
-		userJoinedEvent := wshub.CreateSocketEvent("user_joined", string(updatedUsers), user.ID)
-		b.hub.Broadcast(wshub.Message{Data: userJoinedEvent, Room: roomID})
+			userJoinedEvent := wshub.CreateSocketEvent("user_joined", string(updatedUsers), user.ID)
+			b.hub.Broadcast(wshub.Message{Data: userJoinedEvent, Room: roomID})
 
-		go sub.WritePump()
-		go sub.ReadPump(ctx, b.hub)
+			go sub.WritePump()
+			go sub.ReadPump(ctx, b.hub)
+		}
 
 		return nil
 	})

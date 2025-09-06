@@ -73,6 +73,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		// check users storyboard active status
 		userErr := b.StoryboardService.GetStoryboardUserActiveStatus(roomID, user.ID)
+		userAllowed := userErr == nil
 		if userErr != nil && !errors.Is(userErr, sql.ErrNoRows) {
 			usrErrMsg := userErr.Error()
 			var authErr wshub.AuthError
@@ -114,6 +115,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 				if keyVal["type"] == "auth_storyboard" && keyVal["value"] == storyboard.JoinCode {
 					// join code is valid, continue to room
+					userAllowed = true
 					break
 				} else if keyVal["type"] == "auth_storyboard" {
 					authIncorrect := wshub.CreateSocketEvent("join_code_incorrect", "", user.ID)
@@ -122,20 +124,22 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 		}
 
-		sub := b.hub.NewSubscriber(c.Ws, user.ID, roomID)
+		if userAllowed {
+			sub := b.hub.NewSubscriber(c.Ws, user.ID, roomID)
 
-		users, _ := b.StoryboardService.AddUserToStoryboard(roomID, user.ID)
-		updatedUsers, _ := json.Marshal(users)
+			users, _ := b.StoryboardService.AddUserToStoryboard(roomID, user.ID)
+			updatedUsers, _ := json.Marshal(users)
 
-		Storyboard, _ := json.Marshal(storyboard)
-		initEvent := wshub.CreateSocketEvent("init", string(Storyboard), user.ID)
-		_ = sub.Conn.Write(websocket.TextMessage, initEvent)
+			Storyboard, _ := json.Marshal(storyboard)
+			initEvent := wshub.CreateSocketEvent("init", string(Storyboard), user.ID)
+			_ = sub.Conn.Write(websocket.TextMessage, initEvent)
 
-		userJoinedEvent := wshub.CreateSocketEvent("user_joined", string(updatedUsers), user.ID)
-		b.hub.Broadcast(wshub.Message{Data: userJoinedEvent, Room: roomID})
+			userJoinedEvent := wshub.CreateSocketEvent("user_joined", string(updatedUsers), user.ID)
+			b.hub.Broadcast(wshub.Message{Data: userJoinedEvent, Room: roomID})
 
-		go sub.WritePump()
-		go sub.ReadPump(ctx, b.hub)
+			go sub.WritePump()
+			go sub.ReadPump(ctx, b.hub)
+		}
 
 		return nil
 	})
