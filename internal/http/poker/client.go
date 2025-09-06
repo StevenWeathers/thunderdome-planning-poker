@@ -74,7 +74,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 
 		// check users battle active status
 		userErr := b.PokerService.GetUserActiveStatus(roomID, user.ID)
-		userAllowed := userErr == nil
+		userAllowed := userErr == nil || (errors.Is(userErr, sql.ErrNoRows) && battle.JoinCode == "")
 		if userErr != nil && !errors.Is(userErr, sql.ErrNoRows) {
 			usrErrMsg := userErr.Error()
 			var authErr wshub.AuthError
@@ -124,8 +124,6 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 					_ = c.Write(websocket.TextMessage, authIncorrect)
 				}
 			}
-		} else {
-			userAllowed = true
 		}
 
 		if userAllowed {

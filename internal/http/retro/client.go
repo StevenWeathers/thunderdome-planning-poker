@@ -73,7 +73,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		// check users retro active status
 		userErr := b.RetroService.GetRetroUserActiveStatus(roomID, user.ID)
-		userAllowed := userErr == nil
+		userAllowed := userErr == nil || (errors.Is(userErr, sql.ErrNoRows) && retro.JoinCode == "")
 		if userErr != nil && !errors.Is(userErr, sql.ErrNoRows) {
 			usrErrMsg := userErr.Error()
 			var authErr wshub.AuthError
@@ -122,8 +122,6 @@ func (b *Service) ServeWs() http.HandlerFunc {
 					_ = c.Write(websocket.TextMessage, authIncorrect)
 				}
 			}
-		} else {
-			userAllowed = true
 		}
 
 		if userAllowed {
