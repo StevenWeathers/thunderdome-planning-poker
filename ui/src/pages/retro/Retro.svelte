@@ -541,7 +541,7 @@
 
   function handleRetroEdit(revisedRetro) {
     sendSocketEvent('edit_retro', JSON.stringify(revisedRetro));
-    toggleEditRetro();
+    toggleEditRetro()();
   }
 
   function toggleEditRetro(toggleSubmenu?: () => void) {

@@ -1,13 +1,15 @@
 <script lang="ts">
   import { user } from '../../stores';
+  import type { RetroGroup } from '../../types/retro';
   import RetroFeedbackGroup from './RetroFeedbackGroup.svelte';
 
   interface Props {
     phase?: string;
-    groups?: any;
+    groups?: Array<RetroGroup>;
     handleVote?: any;
     handleVoteSubtract?: any;
     voteLimitReached?: boolean;
+    voteLimit?: number;
     columns?: any;
     allowCumulativeVoting?: boolean;
     isFacilitator?: boolean;
@@ -18,10 +20,11 @@
 
   let {
     phase = 'vote',
-    groups = [],
+    groups = [] as RetroGroup[],
     handleVote = () => {},
     handleVoteSubtract = () => {},
     voteLimitReached = false,
+    voteLimit = 3,
     columns = [],
     allowCumulativeVoting = false,
     isFacilitator = false,
@@ -30,30 +33,40 @@
     sendSocketEvent = (event: string, value: any) => {}
   }: Props = $props();
 
-  const handleVoteAction = group => {
-    const userVoted = group.votes.find(v => v.userId === $user.id);
-    if (
-      (userVoted && !allowCumulativeVoting) ||
-      (allowCumulativeVoting && voteLimitReached)
-    ) {
-      handleVoteSubtract(group.id);
-    } else {
-      handleVote(group.id);
-    }
+  // Calculate total votes used by current user across all groups
+  const userVotesUsed = $derived(
+    groups.reduce((acc, group) => {
+      const userVotes = group.votes?.find(v => v.userId === $user.id)?.count || 0;
+      return acc + userVotes;
+    }, 0)
+  );
+
+  // Get user votes for a specific group
+  const getUserVotesOnGroup = (group: RetroGroup) => {
+    return group.votes?.find(v => v.userId === $user.id)?.count || 0;
   };
 </script>
 
-{#each groups as group, i (group.id)}
-  {#if group.items.length > 0}
+{#each groups as group, _ (group.id)}
+  {#if (group.items ?? []).length > 0}
+    {@const userVotesOnThisGroup = getUserVotesOnGroup(group)}
+    
     <RetroFeedbackGroup
-      phase={phase}
-      group={group}
-      handleVoteAction={handleVoteAction}
-      voteLimitReached={voteLimitReached}
-      users={users}
-      isFacilitator={isFacilitator}
-      sendSocketEvent={sendSocketEvent}
-      columnColors={columnColors}
+      {phase}
+      group={{
+        ...group,
+      }}
+      {handleVote}
+      {handleVoteSubtract}
+      {allowCumulativeVoting}
+      {voteLimitReached}
+      {voteLimit}
+      {userVotesOnThisGroup}
+      {userVotesUsed}
+      {users}
+      {isFacilitator}
+      {sendSocketEvent}
+      {columnColors}
     />
   {/if}
 {/each}
