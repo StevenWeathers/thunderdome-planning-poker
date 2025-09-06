@@ -32,7 +32,11 @@
 
     reader.onload = () => {
       try {
-        const content = reader.result;
+        if (reader.result == null) {
+          notifications.danger($LL.importCsvFileReadFileError());
+          return;
+        }
+        const content = typeof reader.result === 'string' ? reader.result : new TextDecoder().decode(reader.result as ArrayBuffer);
         const items = parseCsvFile(content);
         if (items) {
           const totalItems = items.length;
@@ -53,8 +57,10 @@
     };
   }
 
-  function parseCsvFile(content) {
-    const lines = content.split('\n');
+  function parseCsvFile(content: string): string[] {
+    // Remove potential UTF-8 BOM then split lines
+    const normalized = content.replace(/^\uFEFF/, '');
+    const lines = normalized.split('\n');
     const items = [];
 
     for (let i = 0; i < lines.length; i++) {
@@ -64,7 +70,33 @@
       }
     }
 
+    // Detect and remove header row if present (case-insensitive)
+    if (items.length) {
+      const first = items[0];
+      if (isHeaderLine(first)) {
+        items.shift();
+      }
+    }
+
     return items;
+  }
+
+  const expectedHeader = [
+    'type',
+    'title',
+    'referenceid',
+    'link',
+    'description',
+    'acceptancecriteria',
+  ];
+
+  function isHeaderLine(line: string): boolean {
+    const fields = parseCsvLine(line).map((f) => f.trim().toLowerCase());
+    if (fields.length < expectedHeader.length) return false;
+    for (let i = 0; i < expectedHeader.length; i++) {
+      if (fields[i] !== expectedHeader[i]) return false;
+    }
+    return true;
   }
 
   function parseCsvLine(line: string): string[] {
@@ -104,7 +136,16 @@
     return fields;
   }
 
-  function extractPlanData(item) {
+  interface PlanImportRecord {
+    type: string;
+    planName: string;
+    referenceId: string;
+    link: string;
+    description: string;
+    acceptanceCriteria: string;
+  }
+
+  function extractPlanData(item: string): PlanImportRecord {
     const fields = parseCsvLine(item);
     const plan = {
       type: fields[0].trim(),
@@ -123,6 +164,8 @@
   <HollowButton
     type="label"
     additionalClasses="me-2"
+    fullWidth={true}
+    size="large"
     color="purple"
     labelFor="csvimport"
   >
