@@ -122,6 +122,8 @@ func (b *Service) ServeWs() http.HandlerFunc {
 					_ = c.Write(websocket.TextMessage, authIncorrect)
 				}
 			}
+		} else {
+			userAllowed = true
 		}
 
 		if userAllowed {
