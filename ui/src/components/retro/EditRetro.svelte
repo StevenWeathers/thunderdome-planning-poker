@@ -17,6 +17,7 @@
     maxVotes?: string;
     brainstormVisibility?: string;
     phaseAutoAdvance?: boolean;
+    hideVotesDuringVoting?: boolean;
   }
 
   let {
@@ -27,7 +28,8 @@
     facilitatorCode = $bindable(''),
     maxVotes = $bindable('3'),
     brainstormVisibility = $bindable('visible'),
-    phaseAutoAdvance = $bindable(true)
+    phaseAutoAdvance = $bindable(true),
+    hideVotesDuringVoting = $bindable(false)
   }: Props = $props();
 
   const brainstormVisibilityOptions = [
@@ -55,6 +57,7 @@
       maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
       phase_auto_advance: phaseAutoAdvance,
+      hideVotesDuringVoting
     };
 
     handleRetroEdit(retro);
@@ -169,6 +172,15 @@
         id="phaseAutoAdvance"
         name="phaseAutoAdvance"
         label={$LL.phaseAutoAdvanceLabel()}
+      />
+    </div>
+
+    <div class="mb-4">
+      <Checkbox
+        bind:checked={hideVotesDuringVoting}
+        id="hideVotesDuringVoting"
+        name="hideVotesDuringVoting"
+        label={`Hide Votes During Voting Phase`}
       />
     </div>
 

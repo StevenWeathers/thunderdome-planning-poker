@@ -4,7 +4,7 @@
   import LL from '../../i18n/i18n-svelte';
 
   interface Props {
-    handleSubmit: (passcode) => {};
+    handleSubmit: (passcode: string) => void;
     submitText?: string;
   }
 
@@ -12,7 +12,7 @@
 
   let joinPasscode = $state('');
 
-  function onSubmit(event) {
+  function onSubmit(event: Event) {
     event.preventDefault();
     handleSubmit(joinPasscode);
   }

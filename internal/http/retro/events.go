@@ -478,12 +478,13 @@ func (b *Service) FacilitatorSelf(ctx context.Context, RetroID string, UserID st
 // EditRetro handles editing the retro settings
 func (b *Service) EditRetro(ctx context.Context, RetroID string, UserID string, EventValue string) (any, []byte, error, bool) {
 	var rb struct {
-		Name                 string `json:"retroName"`
-		JoinCode             string `json:"joinCode"`
-		FacilitatorCode      string `json:"facilitatorCode"`
-		MaxVotes             int    `json:"maxVotes"`
-		BrainstormVisibility string `json:"brainstormVisibility"`
-		PhaseAutoAdvance     bool   `json:"phase_auto_advance"`
+		Name                  string `json:"retroName"`
+		JoinCode              string `json:"joinCode"`
+		FacilitatorCode       string `json:"facilitatorCode"`
+		MaxVotes              int    `json:"maxVotes"`
+		BrainstormVisibility  string `json:"brainstormVisibility"`
+		PhaseAutoAdvance      bool   `json:"phase_auto_advance"`
+		HideVotesDuringVoting bool   `json:"hideVotesDuringVoting"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &rb)
 	if err != nil {
@@ -498,6 +499,7 @@ func (b *Service) EditRetro(ctx context.Context, RetroID string, UserID string, 
 		rb.MaxVotes,
 		rb.BrainstormVisibility,
 		rb.PhaseAutoAdvance,
+		rb.HideVotesDuringVoting,
 	)
 	if err != nil {
 		return nil, nil, err, false

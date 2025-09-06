@@ -449,8 +449,8 @@ type PokerDataSvc interface {
 }
 
 type RetroDataSvc interface {
-	CreateRetro(ctx context.Context, ownerID, teamID string, retroName, joinCode, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int, phaseAutoAdvance bool, allowCumulativeVoting bool, templateID string) (*thunderdome.Retro, error)
-	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
+	CreateRetro(ctx context.Context, ownerID, teamID string, retroName, joinCode, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int, phaseAutoAdvance bool, allowCumulativeVoting bool, hideVotesDuringVoting bool, templateID string) (*thunderdome.Retro, error)
+	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool, hideVotesDuringVoting bool) error
 	RetroGetByID(retroID string, userID string) (*thunderdome.Retro, error)
 	RetroGetByUser(userID string, limit int, offset int) ([]*thunderdome.Retro, int, error)
 	RetroConfirmFacilitator(retroID string, userID string) error

@@ -16,6 +16,7 @@
     userVotesUsed?: number;
     allowCumulativeVoting?: boolean;
     userVotesOnThisGroup?: number;
+    hideVotesDuringVoting?: boolean;
   }
 
   let {
@@ -34,7 +35,8 @@
     voteLimit = 3,
     userVotesUsed = 0,
     allowCumulativeVoting = false,
-    userVotesOnThisGroup = 0
+    userVotesOnThisGroup = 0,
+    hideVotesDuringVoting = false
   }: Props = $props();
 
   let showTooltip = $state(false);
@@ -222,17 +224,19 @@
         </div>
 
         <!-- Vote count with better visual hierarchy -->
-        <div class="flex items-center gap-1">
-          <span 
-            class="font-bold text-lg md:text-xl text-green-600 dark:text-green-400 tabular-nums"
-            aria-label="{group.voteCount} votes"
-          >
-            {group.voteCount}
-          </span>
-          <span class="text-sm text-gray-600 dark:text-gray-400 hidden sm:inline">
-            {group.voteCount === 1 ? 'vote' : 'votes'}
-          </span>
-        </div>
+        {#if !hideVotesDuringVoting}
+          <div class="flex items-center gap-1">
+            <span 
+              class="font-bold text-lg md:text-xl text-green-600 dark:text-green-400 tabular-nums"
+              aria-label="{group.voteCount} votes"
+            >
+              {group.voteCount}
+            </span>
+            <span class="text-sm text-gray-600 dark:text-gray-400 hidden sm:inline">
+              {group.voteCount === 1 ? 'vote' : 'votes'}
+            </span>
+          </div>
+        {/if}
       {:else}
         <!-- Non-voting phase display -->
         <div class="flex items-center gap-3">

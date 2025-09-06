@@ -21,6 +21,7 @@ type retroCreateRequestBody struct {
 	PhaseTimeLimitMin     int     `json:"phaseTimeLimitMin" validate:"min=0,max=59" example:"10"`
 	PhaseAutoAdvance      bool    `json:"phaseAutoAdvance"`
 	AllowCumulativeVoting bool    `json:"allowCumulativeVoting"`
+	HideVotesDuringVoting bool    `json:"hideVotesDuringVoting"`
 	TemplateID            *string `json:"templateId"`
 }
 
@@ -100,7 +101,7 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		newRetro, err = s.RetroDataSvc.CreateRetro(ctx, userID, teamID, nr.RetroName, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility, nr.PhaseTimeLimitMin, nr.PhaseAutoAdvance, nr.AllowCumulativeVoting, *nr.TemplateID)
+		newRetro, err = s.RetroDataSvc.CreateRetro(ctx, userID, teamID, nr.RetroName, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility, nr.PhaseTimeLimitMin, nr.PhaseAutoAdvance, nr.AllowCumulativeVoting, nr.HideVotesDuringVoting, *nr.TemplateID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRetroCreate error", zap.Error(err),
 				zap.String("entity_user_id", userID),

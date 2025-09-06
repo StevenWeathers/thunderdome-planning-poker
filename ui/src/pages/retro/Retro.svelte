@@ -91,6 +91,7 @@
       },
     },
     allowCumulativeVoting: false,
+    hideVotesDuringVoting: false,
   });
   let showDeleteRetro = $state(false);
   let actionItem = $state('');
@@ -884,6 +885,7 @@
                 sendSocketEvent={sendSocketEvent}
                 isFacilitator={isFacilitator}
                 columnColors={columnColors}
+                hideVotesDuringVoting={retro.hideVotesDuringVoting}
               />
             </div>
           </div>
@@ -997,6 +999,7 @@
                 user={usr}
                 votes={retro.votes}
                 maxVotes={retro.maxVotes}
+                hideVotesDuringVoting={retro.hideVotesDuringVoting}
                 facilitators={retro.facilitators}
                 readyUsers={retro.readyUsers}
                 handleAddFacilitator={handleAddFacilitator}
@@ -1029,9 +1032,10 @@
     toggleEditRetro={toggleEditRetro()}
     joinCode={retro.joinCode}
     facilitatorCode={retro.facilitatorCode}
-    maxVotes={retro.maxVotes}
+    maxVotes={`${retro.maxVotes}`}
     brainstormVisibility={retro.brainstormVisibility}
     phaseAutoAdvance={retro.phase_auto_advance}
+    hideVotesDuringVoting={retro.hideVotesDuringVoting}
   />
 {/if}
 
@@ -1053,7 +1057,6 @@
     assignableUsers={retro.users}
     handleAssigneeAdd={handleAssigneeAdd}
     handleAssigneeRemove={handleAssigneeRemove}
-    retroId={retro.id}
   />
 {/if}
 
