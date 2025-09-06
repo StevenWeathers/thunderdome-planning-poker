@@ -127,18 +127,22 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle("GET "+prefix+"/api/auth", a.handleHeaderLogin())
 	} else if a.Config.OIDCAuth.Enabled {
 		authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
-			ProviderName: a.Config.OIDCAuth.ProviderName,
-			ProviderURL:  a.Config.OIDCAuth.ProviderURL,
-			ClientID:     a.Config.OIDCAuth.ClientID,
-			ClientSecret: a.Config.OIDCAuth.ClientSecret,
+			ProviderName:           a.Config.OIDCAuth.ProviderName,
+			ProviderURL:            a.Config.OIDCAuth.ProviderURL,
+			ClientID:               a.Config.OIDCAuth.ClientID,
+			ClientSecret:           a.Config.OIDCAuth.ClientSecret,
+			RequestedScopes:        a.Config.OIDCAuth.RequestedScopes,
+			RequestedIDTokenClaims: a.Config.OIDCAuth.RequestedIDTokenClaims,
 		})
 	} else {
 		if a.Config.GoogleAuth.Enabled {
 			authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
-				ProviderName: a.Config.GoogleAuth.ProviderName,
-				ProviderURL:  a.Config.GoogleAuth.ProviderURL,
-				ClientID:     a.Config.GoogleAuth.ClientID,
-				ClientSecret: a.Config.GoogleAuth.ClientSecret,
+				ProviderName:           a.Config.GoogleAuth.ProviderName,
+				ProviderURL:            a.Config.GoogleAuth.ProviderURL,
+				ClientID:               a.Config.GoogleAuth.ClientID,
+				ClientSecret:           a.Config.GoogleAuth.ClientSecret,
+				RequestedScopes:        a.Config.GoogleAuth.RequestedScopes,
+				RequestedIDTokenClaims: a.Config.GoogleAuth.RequestedIDTokenClaims,
 			})
 		}
 		router.Handle("POST "+prefix+"/api/auth", a.handleLogin())

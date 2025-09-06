@@ -192,19 +192,23 @@ func main() {
 			GoogleAuth: http.AuthProvider{
 				Enabled: c.Auth.Google.Enabled,
 				AuthProviderConfig: thunderdome.AuthProviderConfig{
-					ProviderName: "google",
-					ProviderURL:  "https://accounts.google.com",
-					ClientID:     c.Auth.Google.ClientID,
-					ClientSecret: c.Auth.Google.ClientSecret,
+					ProviderName:           "google",
+					ProviderURL:            "https://accounts.google.com",
+					ClientID:               c.Auth.Google.ClientID,
+					ClientSecret:           c.Auth.Google.ClientSecret,
+					RequestedScopes:        c.Auth.OIDC.RequestedScopes,
+					RequestedIDTokenClaims: c.Auth.OIDC.RequestedIDTokenClaims,
 				},
 			},
 			OIDCAuth: http.AuthProvider{
 				Enabled: oidcAuthEnabled,
 				AuthProviderConfig: thunderdome.AuthProviderConfig{
-					ProviderName: c.Auth.OIDC.ProviderName,
-					ProviderURL:  c.Auth.OIDC.ProviderURL,
-					ClientID:     c.Auth.OIDC.ClientID,
-					ClientSecret: c.Auth.OIDC.ClientSecret,
+					ProviderName:           c.Auth.OIDC.ProviderName,
+					ProviderURL:            c.Auth.OIDC.ProviderURL,
+					ClientID:               c.Auth.OIDC.ClientID,
+					ClientSecret:           c.Auth.OIDC.ClientSecret,
+					RequestedScopes:        c.Auth.OIDC.RequestedScopes,
+					RequestedIDTokenClaims: c.Auth.OIDC.RequestedIDTokenClaims,
 				},
 			},
 			WebsocketConfig: http.WebsocketConfig{

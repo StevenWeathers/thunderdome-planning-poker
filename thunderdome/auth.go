@@ -5,10 +5,12 @@ import (
 )
 
 type AuthProviderConfig struct {
-	ProviderName string `mapstructure:"provider_name"`
-	ProviderURL  string `mapstructure:"provider_url"`
-	ClientID     string `mapstructure:"client_id"`
-	ClientSecret string `mapstructure:"client_secret"`
+	ProviderName           string   `mapstructure:"provider_name"`
+	ProviderURL            string   `mapstructure:"provider_url"`
+	ClientID               string   `mapstructure:"client_id"`
+	ClientSecret           string   `mapstructure:"client_secret"`
+	RequestedScopes        []string `mapstructure:"requestedScopes"`
+	RequestedIDTokenClaims []string `mapstructure:"requestedIDTokenClaims"`
 }
 
 type Credential struct {

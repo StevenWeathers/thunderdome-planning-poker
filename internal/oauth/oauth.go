@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -44,7 +45,7 @@ func New(
 		Endpoint: provider.Endpoint(),
 
 		// "openid" is a required scope for OpenID Connect flows.
-		Scopes: []string{oidc.ScopeOpenID, "profile", "email"},
+		Scopes: config.AuthProviderConfig.RequestedScopes,
 	}
 
 	s.verifier = provider.VerifierContext(ctx, &oidc.Config{ClientID: config.ClientID})
@@ -76,7 +77,29 @@ func (s *Service) HandleOAuth2Redirect() http.HandlerFunc {
 			return
 		}
 
-		http.Redirect(w, r, s.oauth2Config.AuthCodeURL(stateString, oidc.Nonce(nonce)), http.StatusSeeOther)
+		// build URL options
+		var opts []oauth2.AuthCodeOption
+		opts = append(opts, oidc.Nonce(nonce))
+
+		// add requested id token claims to url
+		claims := make(map[string]*Claim)
+		for _, rs := range s.config.RequestedIDTokenClaims {
+			claim := Claim{
+				Essential: true,
+			}
+			claims[rs] = &claim
+		}
+		if len(claims) != 0 {
+			claimsRequest := ClaimsRequest{IDToken: claims}
+			claimsRequestRAW, err := json.Marshal(claimsRequest)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			opts = append(opts, oauth2.SetAuthURLParam("claims", string(claimsRequestRAW)))
+		}
+
+		http.Redirect(w, r, s.oauth2Config.AuthCodeURL(stateString, opts...), http.StatusSeeOther)
 	}
 }
 

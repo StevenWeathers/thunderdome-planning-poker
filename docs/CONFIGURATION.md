@@ -122,6 +122,8 @@ If `auth.method` is set to `oidc`, then the Create Account function is disabled 
 | `auth.oidc.provider_url`  | AUTH_OIDC_PROVIDER_URL  | OpenID Connect OAuth2 Provider URL  |               |
 | `auth.oidc.client_id`     | AUTH_OIDC_CLIENT_ID     | OpenID Connect OAuth2 Client ID     |               |
 | `auth.oidc.client_secret` | AUTH_OIDC_CLIENT_SECRET | OpenID Connect OAuth2 Client Secret |               |
+| `auth.oidc.requestedScopes` | AUTH_OIDC_REQUESTEDSCOPES | OpenID Connect OAuth2 Requested Scopes | openid profile email |
+| `auth.oidc.requestedIDTokenClaims` | AUTH_OIDC_REQUESTEDIDTOKENCLAIMS | OpenID Connect OAuth2 Requested claims to put into the ID token |   |
 
 The OIDC redirect URI is constructed as `/oauth/<auth.oidc.provider_name>/callback` which will be added to the end of your normal hosting URL.
 

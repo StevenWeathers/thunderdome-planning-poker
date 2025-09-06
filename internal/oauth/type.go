@@ -57,3 +57,15 @@ type Service struct {
 	authDataSvc         AuthDataSvc
 	subscriptionDataSvc SubscriptionDataSvc
 }
+
+// ClaimsRequest represents claims request in login url
+type ClaimsRequest struct {
+	IDToken map[string]*Claim `json:"id_token"`
+}
+
+// Claim represents a claim in an ID token
+type Claim struct {
+	Essential bool     `json:"essential,omitempty"`
+	Value     string   `json:"value,omitempty"`
+	Values    []string `json:"values,omitempty"`
+}
