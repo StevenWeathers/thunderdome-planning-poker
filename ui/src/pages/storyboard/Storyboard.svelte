@@ -9,6 +9,7 @@
   import ColorLegendForm from '../../components/storyboard/ColorLegendForm.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
+  import ExportStoryboard from '../../components/storyboard/ExportStoryboard.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
@@ -17,6 +18,7 @@
   import {
     ChevronDown,
     Crown,
+    Download,
     Link,
     LogOut,
     MessageSquareMore,
@@ -35,7 +37,7 @@
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import Personas from '../../components/storyboard/Personas.svelte';
   import GoalSection from '../../components/storyboard/GoalSection.svelte';
-  import type { StoryboardPersona, StoryboardUser } from '../../types/storyboard';
+  import type { StoryboardPersona, StoryboardUser, Storyboard, ColorLegend, StoryboardGoal } from '../../types/storyboard';
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
   import type { NotificationService } from '../../types/notifications';
 
@@ -56,14 +58,17 @@
   let JoinPassRequired = $state(false);
   let socketError = $state(false);
   let socketReconnecting = $state(false);
-  let storyboard = $state({
-    goals: [],
-    users: [],
-    colorLegend: [],
-    personas: [],
-    facilitators: [],
+  let storyboard: Storyboard = $state({
+    id: '',
+    name: '',
+    goals: [] as StoryboardGoal[],
+    users: [] as StoryboardUser[],
+    color_legend: [] as ColorLegend[],
+    personas: [] as StoryboardPersona[],
+    facilitators: [] as string[],
     facilitatorCode: '',
     joinCode: '',
+    owner_id: '',
   });
   let showUsers = $state(false);
   let showColorLegend = $state(false);
@@ -73,6 +78,7 @@
   let activeStory = $state(null);
   let showDeleteStoryboard = $state(false);
   let showEditStoryboard = $state(false);
+  let showExportStoryboard = $state(false);
   let activeUserCount = $state(0);
 
   const onSocketMessage = function (evt) {
@@ -378,6 +384,13 @@
     }
   };
 
+  const toggleExportStoryboard = (toggleSubmenu?: () => void) => {
+    return () => {
+      showExportStoryboard = !showExportStoryboard;
+      toggleSubmenu?.();
+    }
+  }
+
   let showAddGoal = $state(false);
   let reviseGoalId = $state('');
   let reviseGoalName = $state('');
@@ -467,8 +480,7 @@
     activeUserCount = storyboard.users.filter((u: StoryboardUser) => u.active).length;
   }
 
-  let isFacilitator =
-    $derived(storyboard.facilitators && storyboard.facilitators.includes($user.id));
+  let isFacilitator = $derived(storyboard.facilitators.length && storyboard.facilitators.includes($user.id));
 
   onMount(() => {
     if (!$user.id) {
@@ -635,6 +647,12 @@
             testId="colorlegend"
             icon={SwatchBook}
             label={$LL.colorLegend()}
+          />
+          <SubMenuItem
+            onClickHandler={toggleExportStoryboard(toggleSubmenu)}
+            testId="storyboard-export"
+            icon={Download}
+            label={$LL.export()}
           />
           {#if isFacilitator}
             <SubMenuItem
@@ -958,6 +976,10 @@
     joinCode={storyboard.joinCode}
     facilitatorCode={storyboard.facilitatorCode}
   />
+{/if}
+
+{#if showExportStoryboard}
+  <ExportStoryboard storyboard={storyboard} closeModal={toggleExportStoryboard()} />
 {/if}
 
 {#if showDeleteStoryboard}

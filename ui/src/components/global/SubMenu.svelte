@@ -35,7 +35,7 @@
   };
 </script>
 
-<div class="inline-block relative {relativeClass}" use:clickOutsideSubmenu>
+<div class="inline-block relative z-10 {relativeClass}" use:clickOutsideSubmenu>
   {#if button}
     {@render button({ toggleSubmenu })}
   {:else}

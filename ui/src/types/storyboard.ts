@@ -4,7 +4,7 @@ export type StoryboardColor = {
 };
 export type Storyboard = {
   color_legend: Array<StoryboardColor>;
-  createdDate: Date;
+  createdDate?: Date;
   facilitatorCode: string;
   facilitators: Array<string>;
   goals: Array<StoryboardGoal>;
@@ -13,8 +13,10 @@ export type Storyboard = {
   name: string;
   owner_id: string;
   personas: Array<StoryboardPersona>;
-  updatedDate: Date;
+  updatedDate?: Date;
   users: Array<StoryboardUser>;
+  teamId?: string;
+  teamName?: string;
 };
 
 export type StoryboardColumn = {
