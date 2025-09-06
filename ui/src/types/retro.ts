@@ -39,6 +39,8 @@ export type RetroActionComment = {
 export type RetroGroup = {
   id: string;
   name: string;
+  votes?: Array<RetroVote>;
+  items?: Array<RetroItem>;
 };
 
 export type RetroItem = {
@@ -60,6 +62,7 @@ export type RetroUser = {
 export type RetroVote = {
   groupId: string;
   userId: string;
+  count: number;
 };
 
 export type RetroTemplateColumn = {
