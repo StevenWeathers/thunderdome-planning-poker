@@ -43,7 +43,7 @@
   let projectsPage = $state(1);
   let projects = $state([]);
   let role = $state('MEMBER');
-  let isAdmin = $derived(role === 'ADMIN');
+  let isEntityAdmin = $state(false);
 
   function getOrganization() {
     xfetch(orgPrefix)
@@ -51,6 +51,10 @@
       .then(function (result) {
         organization = result.data.organization;
         role = result.data.role;
+
+        if (role === 'ADMIN') {
+          isEntityAdmin = true;
+        }
 
         getProjects();
       })
@@ -104,17 +108,17 @@
     <div class="mt-8">
         {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <ProjectsList
-          xfetch={xfetch}
-          notifications={notifications}
-          projects={projects}
+          {xfetch}
+          {notifications}
+          {projects}
           apiPrefix={orgPrefix}
-          isEntityAdmin={isAdmin}
-          getProjects={getProjects}
+          {getProjects}
           changePage={changeProjectsPage}
-          projectCount={projectCount}
-          projectsPage={projectsPage}
-          projectsPageLimit={projectsPageLimit}
-          organizationId={organizationId}
+          {projectCount}
+          {projectsPage}
+          {projectsPageLimit}
+          {organizationId}
+          {isEntityAdmin}
         />
       {:else}
         <FeatureSubscribeBanner

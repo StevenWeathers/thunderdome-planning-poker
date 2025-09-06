@@ -55,7 +55,7 @@
   let organizationRole = $state('');
   let departmentRole = $state('');
   let teamRole = $state('');
-  let isAdmin = $state(false);
+  let isEntityAdmin = $state(false);
   let isTeamMember = $state(false);
 
   const apiPrefix = '/api';
@@ -82,7 +82,7 @@
           organizationRole = result.data.organizationRole;
         }
 
-        isAdmin =
+        isEntityAdmin =
           organizationRole === 'ADMIN' ||
           departmentRole === 'ADMIN' ||
           teamRole === 'ADMIN';
@@ -172,18 +172,19 @@
     <div class="mt-8">
         {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <ProjectsList
-          xfetch={xfetch}
-          notifications={notifications}
-          projects={projects}
+          {xfetch}
+          {notifications}
+          {projects}
           apiPrefix={teamPrefix}
           getProjects={getProjects}
           changePage={changeProjectsPage}
-          projectCount={projectCount}
-          projectsPage={projectsPage}
+          {projectCount}
+          {projectsPage}
           projectsPageLimit={projectsPageLimit}
-          organizationId={organizationId}
-          departmentId={departmentId}
-          teamId={teamId}
+          {organizationId}
+          {departmentId}
+          {teamId}
+          {isEntityAdmin}
         />
       {:else}
         <FeatureSubscribeBanner
