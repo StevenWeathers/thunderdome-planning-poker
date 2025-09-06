@@ -125,8 +125,8 @@ type OIDC struct {
 	ProviderURL            string   `mapstructure:"provider_url"`
 	ClientID               string   `mapstructure:"client_id"`
 	ClientSecret           string   `mapstructure:"client_secret"`
-	RequestedScopes        []string `mapstructure:"requestedScopes"`
-	RequestedIDTokenClaims []string `mapstructure:"requestedIDTokenClaims"`
+	RequestedScopes        []string `mapstructure:"requested_scopes"`
+	RequestedIDTokenClaims []string `mapstructure:"requested_id_token_claims"`
 }
 
 // Auth is the application authentication configuration

@@ -132,12 +132,14 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("auth.google.enabled", false)
 	viper.SetDefault("auth.google.client_id", "")
 	viper.SetDefault("auth.google.client_secret", "")
+
+	// OIDC auth
 	viper.SetDefault("auth.oidc.provider_name", "")
 	viper.SetDefault("auth.oidc.provider_url", "")
 	viper.SetDefault("auth.oidc.client_id", "")
 	viper.SetDefault("auth.oidc.client_secret", "")
-	viper.SetDefault("auth.oidc.requestedScopes", []string{"openid", "profile", "email"})
-	viper.SetDefault("auth.oidc.requestedIDTokenClaims", []string{})
+	viper.SetDefault("auth.oidc.requested_scopes", []string{"openid", "profile", "email"})
+	viper.SetDefault("auth.oidc.requested_id_token_claims", []string{})
 
 	// automatically load matching envs
 	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))
