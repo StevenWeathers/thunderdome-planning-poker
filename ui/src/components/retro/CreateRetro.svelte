@@ -47,6 +47,7 @@
     templateId: '',
     phaseAutoAdvance: true,
     allowCumulativeVoting: false,
+    hideVotesDuringVoting: false
   };
   let retroSettings = $state({ ...defaultRetroSettings });
   let orgRetroSettings = $state({});
@@ -95,6 +96,7 @@
       phaseAutoAdvance: retroSettings.phaseAutoAdvance,
       allowCumulativeVoting: retroSettings.allowCumulativeVoting,
       templateId: retroSettings.templateId,
+      hideVotesDuringVoting: retroSettings.hideVotesDuringVoting
     };
 
     if (retroSettings.selectedTeam !== '') {
@@ -482,6 +484,15 @@
       id="phaseAutoAdvance"
       name="phaseAutoAdvance"
       label={$LL.phaseAutoAdvanceLabel()}
+    />
+  </div>
+
+  <div class="mb-4">
+    <Checkbox
+      bind:checked={retroSettings.hideVotesDuringVoting}
+      id="hideVotesDuringVoting"
+      name="hideVotesDuringVoting"
+      label={`Hide Votes During Voting Phase`}
     />
   </div>
 

@@ -21,7 +21,10 @@ type Service struct {
 	AESHashKey string
 }
 
-func (d *Service) CreateRetro(ctx context.Context, ownerID, teamID string, retroName, joinCode, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int, phaseAutoAdvance bool, allowCumulativeVoting bool, templateID string) (*thunderdome.Retro, error) {
+func (d *Service) CreateRetro(
+	ctx context.Context, ownerID, teamID string, retroName, joinCode,
+	facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int,
+	phaseAutoAdvance bool, allowCumulativeVoting bool, hideVotesDuringVoting bool, templateID string) (*thunderdome.Retro, error) {
 	var encryptedFacilitatorCode string
 	var encryptedJoinCode string
 	var retro = &thunderdome.Retro{
@@ -38,6 +41,7 @@ func (d *Service) CreateRetro(ctx context.Context, ownerID, teamID string, retro
 		MaxVotes:              maxVotes,
 		TemplateID:            templateID,
 		AllowCumulativeVoting: allowCumulativeVoting,
+		HideVotesDuringVoting: hideVotesDuringVoting,
 	}
 
 	if joinCode != "" {
@@ -67,12 +71,12 @@ func (d *Service) CreateRetro(ctx context.Context, ownerID, teamID string, retro
 		INSERT INTO thunderdome.retro (
 			owner_id, team_id, name, join_code, facilitator_code,
 			max_votes, brainstorm_visibility, phase_time_limit_min, phase_auto_advance,
-			allow_cumulative_voting, template_id
+			allow_cumulative_voting, hide_votes_during_voting, template_id
 		)
-		VALUES ($1, NULLIF($2::text, '')::uuid, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		VALUES ($1, NULLIF($2::text, '')::uuid, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 		RETURNING id, created_date, updated_date;
 	`, ownerID, teamID, retroName, encryptedJoinCode, encryptedFacilitatorCode, maxVotes, brainstormVisibility,
-		phaseTimeLimitMin, phaseAutoAdvance, allowCumulativeVoting, templateID).Scan(
+		phaseTimeLimitMin, phaseAutoAdvance, allowCumulativeVoting, hideVotesDuringVoting, templateID).Scan(
 		&retro.ID, &retro.CreatedDate, &retro.UpdatedDate,
 	)
 
@@ -111,7 +115,9 @@ func (d *Service) CreateRetro(ctx context.Context, ownerID, teamID string, retro
 }
 
 // EditRetro updates the retro by ID
-func (d *Service) EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error {
+func (d *Service) EditRetro(
+	retroID string, retroName string, joinCode string, facilitatorCode string,
+	maxVotes int, brainstormVisibility string, phaseAutoAdvance bool, hideVotesDuringVoting bool) error {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -133,10 +139,10 @@ func (d *Service) EditRetro(retroID string, retroName string, joinCode string, f
 
 	if _, err := d.DB.Exec(`UPDATE thunderdome.retro
     SET name = $2, join_code = $3, facilitator_code = $4, max_votes = $5,
-        brainstorm_visibility = $6, phase_auto_advance = $7, updated_date = NOW()
+        brainstorm_visibility = $6, phase_auto_advance = $7, hide_votes_during_voting = $8, updated_date = NOW()
     WHERE id = $1;`,
 		retroID, retroName, encryptedJoinCode, encryptedFacilitatorCode,
-		maxVotes, brainstormVisibility, phaseAutoAdvance,
+		maxVotes, brainstormVisibility, phaseAutoAdvance, hideVotesDuringVoting,
 	); err != nil {
 		return fmt.Errorf("edit retro query error: %v", err)
 	}
@@ -169,6 +175,7 @@ func (d *Service) RetroGetByID(retroID string, userID string) (*thunderdome.Retr
 			 COALESCE(r.join_code, ''), COALESCE(r.facilitator_code, ''), r.allow_cumulative_voting,
 			r.max_votes, r.brainstorm_visibility, r.ready_users, r.created_date, r.updated_date, r.template_id,
 			CASE WHEN COUNT(rf) = 0 THEN '[]'::json ELSE array_to_json(array_agg(rf.user_id)) END AS facilitators,
+			hide_votes_during_voting,
 			(SELECT row_to_json(t.*) as template FROM thunderdome.retro_template t WHERE t.id = r.template_id) AS template
 		FROM thunderdome.retro r
 		LEFT JOIN thunderdome.retro_facilitator rf ON r.id = rf.retro_id
@@ -194,6 +201,7 @@ func (d *Service) RetroGetByID(retroID string, userID string) (*thunderdome.Retr
 		&b.UpdatedDate,
 		&b.TemplateID,
 		&facilitators,
+		&b.HideVotesDuringVoting,
 		&template,
 	)
 	if err != nil {
@@ -291,6 +299,7 @@ func (d *Service) RetroGetByUser(userID string, limit int, offset int) ([]*thund
 		SELECT r.id, r.name, r.owner_id, COALESCE(r.team_id::TEXT, ''), r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.template_id,
 		 r.allow_cumulative_voting, r.created_date, r.updated_date,
 		  MIN(COALESCE(t.name, '')) as teamName,
+		  hide_votes_during_voting,
 		  (SELECT row_to_json(t.*) as template FROM thunderdome.retro_template t WHERE t.id = r.template_id) AS template
 		FROM thunderdome.retro r
 		LEFT JOIN user_teams t ON t.id = r.team_id
@@ -321,6 +330,7 @@ func (d *Service) RetroGetByUser(userID string, limit int, offset int) ([]*thund
 			&b.CreatedDate,
 			&b.UpdatedDate,
 			&b.TeamName,
+			&b.HideVotesDuringVoting,
 			&Template,
 		); err != nil {
 			d.Logger.Error("get retro by user error", zap.Error(err))
@@ -341,14 +351,50 @@ func (d *Service) RetroGetByUser(userID string, limit int, offset int) ([]*thund
 // RetroAdvancePhase sets the phase for the retro
 func (d *Service) RetroAdvancePhase(retroID string, phase string) (*thunderdome.Retro, error) {
 	var b thunderdome.Retro
-	err := d.DB.QueryRow(
+
+	// Start a transaction
+	tx, err := d.DB.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback() // Rollback if not committed
+
+	// Get previous retro phase
+	var previousPhase string
+	err = tx.QueryRow(
+		`SELECT phase FROM thunderdome.retro WHERE id = $1;`,
+		retroID,
+	).Scan(&previousPhase)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get previous retro phase: %w", err)
+	}
+
+	// Update the retro phase
+	err = tx.QueryRow(
 		`UPDATE thunderdome.retro
 			SET updated_date = NOW(), phase = $2, phase_time_start = NOW(), ready_users = '[]'::jsonb
-			WHERE id = $1 RETURNING name, phase_time_start, template_id;`,
+			WHERE id = $1 RETURNING name, phase_time_start, hide_votes_during_voting, template_id;`,
 		retroID, phase,
-	).Scan(&b.Name, &b.PhaseTimeStart, &b.TemplateID)
+	).Scan(&b.Name, &b.PhaseTimeStart, &b.HideVotesDuringVoting, &b.TemplateID)
 	if err != nil {
 		return nil, fmt.Errorf("retro advance phase query error: %v", err)
+	}
+
+	// Delete any existing user votes for the retro if advancing to voting phase from grouping phase
+	if previousPhase == "group" && phase == "vote" {
+		_, err := tx.Exec(`
+            DELETE FROM thunderdome.retro_group_vote
+            WHERE retro_id = $1;
+        `, retroID)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to update vote: %w", err)
+		}
+	}
+
+	// Commit the transaction
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	b.ID = retroID
@@ -387,7 +433,7 @@ func (d *Service) GetRetros(limit int, offset int) ([]*thunderdome.Retro, int, e
 
 	rows, retrosErr := d.DB.Query(`
 		SELECT r.id, COALESCE(r.team_id::TEXT, ''), r.name, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.allow_cumulative_voting,
-		 r.created_date, r.updated_date, r.template_id,
+		 r.created_date, r.updated_date, r.hide_votes_during_voting, r.template_id,
 		 (SELECT row_to_json(t.*) as template FROM thunderdome.retro_template t WHERE t.id = r.template_id) AS template
 		FROM thunderdome.retro r
 		GROUP BY r.id ORDER BY r.created_date DESC
@@ -413,6 +459,7 @@ func (d *Service) GetRetros(limit int, offset int) ([]*thunderdome.Retro, int, e
 			&b.AllowCumulativeVoting,
 			&b.CreatedDate,
 			&b.UpdatedDate,
+			&b.HideVotesDuringVoting,
 			&b.TemplateID,
 			&template,
 		); err != nil {
@@ -446,7 +493,8 @@ func (d *Service) GetActiveRetros(limit int, offset int) ([]*thunderdome.Retro, 
 	}
 
 	rows, retrosErr := d.DB.Query(`
-		SELECT r.id, COALESCE(r.team_id::TEXT, ''), r.name, r.phase, r.phase_time_limit_min, r.phase_auto_advance, r.allow_cumulative_voting,
+		SELECT r.id, COALESCE(r.team_id::TEXT, ''), r.name, r.phase, r.phase_time_limit_min, r.phase_auto_advance,
+		 r.allow_cumulative_voting, r.hide_votes_during_voting,
 		r.created_date, r.updated_date,
 		r.template_id, (SELECT row_to_json(t.*) as template FROM thunderdome.retro_template t WHERE t.id = r.template_id) AS template
 		FROM thunderdome.retro_user ru
@@ -472,6 +520,7 @@ func (d *Service) GetActiveRetros(limit int, offset int) ([]*thunderdome.Retro, 
 			&b.PhaseTimeLimitMin,
 			&b.PhaseAutoAdvance,
 			&b.AllowCumulativeVoting,
+			&b.HideVotesDuringVoting,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 			&b.TemplateID,

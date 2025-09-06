@@ -14351,6 +14351,9 @@
                     "type": "string",
                     "example": "likeaboss"
                 },
+                "hideVotesDuringVoting": {
+                    "type": "boolean"
+                },
                 "joinCode": {
                     "type": "string",
                     "example": "iammadmax"
@@ -15595,6 +15598,9 @@
                     "items": {
                         "$ref": "#/definitions/thunderdome.RetroGroup"
                     }
+                },
+                "hideVotesDuringVoting": {
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "string"

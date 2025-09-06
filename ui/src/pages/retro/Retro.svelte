@@ -91,13 +91,13 @@
       },
     },
     allowCumulativeVoting: false,
+    hideVotesDuringVoting: false,
   });
   let showDeleteRetro = $state(false);
   let actionItem = $state('');
   let showExport = $state(false);
   let groupedItems = $state([]);
   let JoinPassRequired = $state(false);
-  let voteLimitReached = $state(false);
   let allUsersVoted = false;
   let showEditRetro = $state(false);
   let phaseTimeStart = $state(new Date());
@@ -150,7 +150,6 @@
       }
     });
 
-    voteLimitReached = userVoteCount === retro.maxVotes;
     allUsersVoted = voteCount === playerCount * retro.maxVotes;
     phaseReadyCheck();
 
@@ -878,12 +877,12 @@
                 groups={groupedItems}
                 handleVote={handleVote}
                 handleVoteSubtract={handleVoteSubtract}
-                voteLimitReached={voteLimitReached}
                 allowCumulativeVoting={retro.allowCumulativeVoting}
                 users={retro.users}
                 sendSocketEvent={sendSocketEvent}
                 isFacilitator={isFacilitator}
                 columnColors={columnColors}
+                hideVotesDuringVoting={retro.hideVotesDuringVoting}
               />
             </div>
           </div>
@@ -997,6 +996,7 @@
                 user={usr}
                 votes={retro.votes}
                 maxVotes={retro.maxVotes}
+                hideVotesDuringVoting={retro.hideVotesDuringVoting}
                 facilitators={retro.facilitators}
                 readyUsers={retro.readyUsers}
                 handleAddFacilitator={handleAddFacilitator}
@@ -1029,9 +1029,10 @@
     toggleEditRetro={toggleEditRetro()}
     joinCode={retro.joinCode}
     facilitatorCode={retro.facilitatorCode}
-    maxVotes={retro.maxVotes}
+    maxVotes={`${retro.maxVotes}`}
     brainstormVisibility={retro.brainstormVisibility}
     phaseAutoAdvance={retro.phase_auto_advance}
+    hideVotesDuringVoting={retro.hideVotesDuringVoting}
   />
 {/if}
 
@@ -1053,7 +1054,6 @@
     assignableUsers={retro.users}
     handleAssigneeAdd={handleAssigneeAdd}
     handleAssigneeRemove={handleAssigneeRemove}
-    retroId={retro.id}
   />
 {/if}
 
