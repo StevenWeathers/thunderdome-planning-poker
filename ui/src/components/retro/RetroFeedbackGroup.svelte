@@ -7,7 +7,6 @@
     group?: any;
     handleVote: (group: any) => void;
     handleVoteSubtract: (group: any) => void;
-    voteLimitReached: boolean;
     isFacilitator?: boolean;
     users?: any;
     columnColors?: any;
@@ -27,7 +26,6 @@
     },
     handleVote,
     handleVoteSubtract,
-    voteLimitReached,
     isFacilitator = false,
     users = [],
     columnColors = {},
@@ -41,11 +39,12 @@
 
   let showTooltip = $state(false);
   let tooltipTimeout: NodeJS.Timeout;
+  let voteLimitReached = $derived(() => userVotesUsed === voteLimit);
 
   const handleVoteUpClick = () => {
     if (allowCumulativeVoting) {
       // Cumulative voting: add vote if not at limit
-      if (voteLimitReached) {
+      if (voteLimitReached()) {
         showTooltip = true;
         clearTimeout(tooltipTimeout);
         tooltipTimeout = setTimeout(() => {
@@ -56,7 +55,7 @@
       handleVote(group.id);
     } else {
       // Non-cumulative voting: add vote if user hasn't voted on this group and not at limit
-      if (voteLimitReached && userVotesOnThisGroup === 0) {
+      if (voteLimitReached() && userVotesOnThisGroup === 0) {
         showTooltip = true;
         clearTimeout(tooltipTimeout);
         tooltipTimeout = setTimeout(() => {
@@ -81,9 +80,9 @@
 
   const canVoteUp = () => {
     if (allowCumulativeVoting) {
-      return !voteLimitReached;
+      return !voteLimitReached();
     } else {
-      return userVotesOnThisGroup === 0 && !voteLimitReached;
+      return userVotesOnThisGroup === 0 && !voteLimitReached();
     }
   };
 
@@ -201,7 +200,7 @@
               />
               
               <!-- Vote limit indicator -->
-              {#if !canVoteUp() && (voteLimitReached || (!allowCumulativeVoting && userVotesOnThisGroup > 0))}
+              {#if !canVoteUp() && (voteLimitReached() || (!allowCumulativeVoting && userVotesOnThisGroup > 0))}
                 <AlertCircle 
                   class="w-3 h-3 absolute -top-1 -end-1 text-red-500 dark:text-red-400" 
                   aria-hidden="true"
@@ -263,7 +262,7 @@
   </header>
 
   <!-- Vote status info (mobile-friendly) -->
-  {#if phase === 'vote' && (voteLimitReached || userVotesUsed > 0)}
+  {#if phase === 'vote' && (voteLimitReached() || userVotesUsed > 0)}
     <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
       <div class="flex items-start gap-2">
         <Info class="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
@@ -275,7 +274,7 @@
                 {userVotesOnThisGroup} vote{userVotesOnThisGroup === 1 ? '' : 's'} on this group
               </span>
             {/if}
-            {#if voteLimitReached}
+            {#if voteLimitReached()}
               <br><span class="text-amber-600 dark:text-amber-400 font-medium">
                 Vote limit reached
                 {#if userVotesOnThisGroup > 0}

@@ -8,7 +8,6 @@
     groups?: Array<RetroGroup>;
     handleVote?: any;
     handleVoteSubtract?: any;
-    voteLimitReached?: boolean;
     voteLimit?: number;
     columns?: any;
     allowCumulativeVoting?: boolean;
@@ -24,7 +23,6 @@
     groups = [] as RetroGroup[],
     handleVote = () => {},
     handleVoteSubtract = () => {},
-    voteLimitReached = false,
     voteLimit = 3,
     columns = [],
     allowCumulativeVoting = false,
@@ -61,7 +59,6 @@
       {handleVote}
       {handleVoteSubtract}
       {allowCumulativeVoting}
-      {voteLimitReached}
       {voteLimit}
       {userVotesOnThisGroup}
       {userVotesUsed}

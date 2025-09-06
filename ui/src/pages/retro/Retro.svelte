@@ -98,7 +98,6 @@
   let showExport = $state(false);
   let groupedItems = $state([]);
   let JoinPassRequired = $state(false);
-  let voteLimitReached = $state(false);
   let allUsersVoted = false;
   let showEditRetro = $state(false);
   let phaseTimeStart = $state(new Date());
@@ -151,7 +150,6 @@
       }
     });
 
-    voteLimitReached = userVoteCount === retro.maxVotes;
     allUsersVoted = voteCount === playerCount * retro.maxVotes;
     phaseReadyCheck();
 
@@ -879,7 +877,6 @@
                 groups={groupedItems}
                 handleVote={handleVote}
                 handleVoteSubtract={handleVoteSubtract}
-                voteLimitReached={voteLimitReached}
                 allowCumulativeVoting={retro.allowCumulativeVoting}
                 users={retro.users}
                 sendSocketEvent={sendSocketEvent}

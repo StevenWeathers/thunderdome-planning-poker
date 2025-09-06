@@ -351,7 +351,26 @@ func (d *Service) RetroGetByUser(userID string, limit int, offset int) ([]*thund
 // RetroAdvancePhase sets the phase for the retro
 func (d *Service) RetroAdvancePhase(retroID string, phase string) (*thunderdome.Retro, error) {
 	var b thunderdome.Retro
-	err := d.DB.QueryRow(
+
+	// Start a transaction
+	tx, err := d.DB.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback() // Rollback if not committed
+
+	// Get previous retro phase
+	var previousPhase string
+	err = tx.QueryRow(
+		`SELECT phase FROM thunderdome.retro WHERE id = $1;`,
+		retroID,
+	).Scan(&previousPhase)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get previous retro phase: %w", err)
+	}
+
+	// Update the retro phase
+	err = tx.QueryRow(
 		`UPDATE thunderdome.retro
 			SET updated_date = NOW(), phase = $2, phase_time_start = NOW(), ready_users = '[]'::jsonb
 			WHERE id = $1 RETURNING name, phase_time_start, hide_votes_during_voting, template_id;`,
@@ -359,6 +378,23 @@ func (d *Service) RetroAdvancePhase(retroID string, phase string) (*thunderdome.
 	).Scan(&b.Name, &b.PhaseTimeStart, &b.HideVotesDuringVoting, &b.TemplateID)
 	if err != nil {
 		return nil, fmt.Errorf("retro advance phase query error: %v", err)
+	}
+
+	// Delete any existing user votes for the retro if advancing to voting phase from grouping phase
+	if previousPhase == "group" && phase == "vote" {
+		_, err := tx.Exec(`
+            DELETE FROM thunderdome.retro_group_vote
+            WHERE retro_id = $1;
+        `, retroID)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to update vote: %w", err)
+		}
+	}
+
+	// Commit the transaction
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	b.ID = retroID
