@@ -89,6 +89,8 @@
   <HollowButton
     type="label"
     additionalClasses="me-2"
+    fullWidth={true}
+    size="large"
     color="blue"
     labelFor="jiraimport"
   >
