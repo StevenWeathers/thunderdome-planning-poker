@@ -428,6 +428,8 @@ definitions:
       facilitatorCode:
         example: likeaboss
         type: string
+      hideVotesDuringVoting:
+        type: boolean
       joinCode:
         example: iammadmax
         type: string
@@ -1270,6 +1272,8 @@ definitions:
         items:
           $ref: '#/definitions/thunderdome.RetroGroup'
         type: array
+      hideVotesDuringVoting:
+        type: boolean
       id:
         type: string
       items:

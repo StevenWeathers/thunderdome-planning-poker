@@ -8,6 +8,7 @@
     user?: any;
     votes?: any;
     maxVotes?: number;
+    hideVotesDuringVoting?: boolean;
     facilitators?: any;
     readyUsers?: any;
     phase?: string;
@@ -21,6 +22,7 @@
     user = { id: '' },
     votes = [],
     maxVotes = 3,
+    hideVotesDuringVoting = false,
     facilitators = [],
     readyUsers = [],
     phase = '',
@@ -119,7 +121,11 @@
         </div>
       {:else}
         <div class="text-blue-600 dark:text-blue-400">
-          {voteTally.votesLeft} votes left
+          {#if hideVotesDuringVoting}
+            Voting...
+          {:else}
+            {voteTally.votesLeft} votes left
+          {/if}
         </div>
       {/if}
     {/if}

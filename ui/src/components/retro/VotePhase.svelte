@@ -16,6 +16,7 @@
     users?: any;
     columnColors?: any;
     sendSocketEvent?: any;
+    hideVotesDuringVoting?: boolean;
   }
 
   let {
@@ -30,6 +31,7 @@
     isFacilitator = false,
     users = [],
     columnColors = {},
+    hideVotesDuringVoting = false,
     sendSocketEvent = (event: string, value: any) => {}
   }: Props = $props();
 
@@ -67,6 +69,7 @@
       {isFacilitator}
       {sendSocketEvent}
       {columnColors}
+      {hideVotesDuringVoting}
     />
   {/if}
 {/each}

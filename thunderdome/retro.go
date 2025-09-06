@@ -43,6 +43,7 @@ type Retro struct {
 	MaxVotes              int            `json:"maxVotes" db:"max_votes"`
 	BrainstormVisibility  string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
 	AllowCumulativeVoting bool           `json:"allowCumulativeVoting" db:"allow_cumulative_voting"`
+	HideVotesDuringVoting bool           `json:"hideVotesDuringVoting" db:"hide_votes_during_voting"`
 	Template              RetroTemplate  `json:"template"`
 	TeamID                string         `json:"teamId" db:"team_id"`
 	TeamName              string         `json:"teamName"`

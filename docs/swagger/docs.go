@@ -14359,6 +14359,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "likeaboss"
                 },
+                "hideVotesDuringVoting": {
+                    "type": "boolean"
+                },
                 "joinCode": {
                     "type": "string",
                     "example": "iammadmax"
@@ -15603,6 +15606,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/thunderdome.RetroGroup"
                     }
+                },
+                "hideVotesDuringVoting": {
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "string"
