@@ -721,6 +721,7 @@ const en: BaseTranslation = {
   projectUpdateSuccess: 'Project updated successfully',
   projectCreateError: 'Failed to create project',
   projectUpdateError: 'Failed to update project',
+  project: 'Project',
 };
 
 export default en;

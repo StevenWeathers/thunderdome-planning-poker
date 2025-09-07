@@ -720,6 +720,7 @@ const ru: Translation = {
   projectUpdateSuccess: 'Проект успешно обновлен',
   projectCreateError: 'Не удалось создать проект',
   projectUpdateError: 'Не удалось обновить проект',
+  project: 'Проект',
 };
 
 export default ru;

@@ -216,6 +216,8 @@
               <RowCol type="action">
                 {#if isAdmin || isEntityAdmin}
                   <CrudActions
+                    detailsLink={isAdminPage ? `${appRoutes.adminProjects}/${project.id}` : `${appRoutes.projects}/${project.id}`}
+                    detailsLinkText="View Project"
                     editBtnClickHandler={toggleUpdateProject(project)}
                     deleteBtnClickHandler={toggleRemoveProject(project.id)}
                   />

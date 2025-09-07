@@ -763,6 +763,7 @@ const de: Translation = {
   projectUpdateSuccess: 'Projekt erfolgreich aktualisiert',
   projectCreateError: 'Projekt konnte nicht erstellt werden',
   projectUpdateError: 'Projekt konnte nicht aktualisiert werden',
+  project: 'Projekt',
 };
 
 export default de;
