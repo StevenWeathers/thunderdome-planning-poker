@@ -569,31 +569,31 @@ func (s *Service) projectUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *Service) projectAdminOnly(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+// func (s *Service) projectAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
 
-		ctx := r.Context()
-		userType := ctx.Value(contextKeyUserType).(string)
-		projectID := r.PathValue("projectId")
-		idErr := validate.Var(projectID, "required,uuid")
-		if idErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
-			return
-		}
-		userID := ctx.Value(contextKeyUserID).(string)
+// 		ctx := r.Context()
+// 		userType := ctx.Value(contextKeyUserType).(string)
+// 		projectID := r.PathValue("projectId")
+// 		idErr := validate.Var(projectID, "required,uuid")
+// 		if idErr != nil {
+// 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+// 			return
+// 		}
+// 		userID := ctx.Value(contextKeyUserID).(string)
 
-		if userType != thunderdome.AdminUserType {
-			isMember, role, err := s.ProjectDataSvc.IsUserProjectMember(ctx, userID, projectID)
-			if err != nil || !isMember {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "PROJECT_MEMBERSHIP_REQUIRED"))
-				return
-			}
-			if role != thunderdome.AdminUserType {
-				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "PROJECT_ADMIN_REQUIRED"))
-				return
-			}
-		}
+// 		if userType != thunderdome.AdminUserType {
+// 			isMember, role, err := s.ProjectDataSvc.IsUserProjectMember(ctx, userID, projectID)
+// 			if err != nil || !isMember {
+// 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "PROJECT_MEMBERSHIP_REQUIRED"))
+// 				return
+// 			}
+// 			if role != thunderdome.AdminUserType {
+// 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "PROJECT_ADMIN_REQUIRED"))
+// 				return
+// 			}
+// 		}
 
-		h(w, r.WithContext(ctx))
-	}
-}
+// 		h(w, r.WithContext(ctx))
+// 	}
+// }
