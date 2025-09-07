@@ -43,6 +43,7 @@ func (s *Service) CheckActiveSubscriber(ctx context.Context, userID string) erro
 	return nil
 }
 
+// GetActiveSubscriptionsByUserID retrieves all active subscriptions for a user.
 func (s *Service) GetActiveSubscriptionsByUserID(ctx context.Context, userID string) ([]thunderdome.Subscription, error) {
 	subs := make([]thunderdome.Subscription, 0)
 
@@ -85,6 +86,7 @@ func (s *Service) GetActiveSubscriptionsByUserID(ctx context.Context, userID str
 	return subs, nil
 }
 
+// GetSubscriptionByID retrieves a subscription by its ID.
 func (s *Service) GetSubscriptionByID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
@@ -110,6 +112,7 @@ func (s *Service) GetSubscriptionByID(ctx context.Context, subscriptionID string
 	return sub, nil
 }
 
+// GetSubscriptionBySubscriptionID retrieves a subscription by its subscription ID.
 func (s *Service) GetSubscriptionBySubscriptionID(ctx context.Context, subscriptionID string) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
@@ -132,6 +135,7 @@ func (s *Service) GetSubscriptionBySubscriptionID(ctx context.Context, subscript
 	return sub, nil
 }
 
+// CreateSubscription creates a new subscription in the database.
 func (s *Service) CreateSubscription(ctx context.Context, subscription thunderdome.Subscription) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
@@ -154,6 +158,7 @@ func (s *Service) CreateSubscription(ctx context.Context, subscription thunderdo
 	return sub, nil
 }
 
+// UpdateSubscription updates an existing subscription in the database.
 func (s *Service) UpdateSubscription(ctx context.Context, subscriptionID string, subscription thunderdome.Subscription) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
@@ -236,6 +241,7 @@ func (s *Service) GetSubscriptions(ctx context.Context, limit int, offset int) (
 	return subs, count, nil
 }
 
+// DeleteSubscription removes a subscription from the database.
 func (s *Service) DeleteSubscription(ctx context.Context, id string) error {
 	if _, err := s.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.subscription WHERE id = $1;`,
@@ -244,4 +250,49 @@ func (s *Service) DeleteSubscription(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+// ProjectIsSubscribed checks if a project is subscribed to any active subscriptions.
+func (s *Service) ProjectIsSubscribed(ctx context.Context, projectID string) (bool, error) {
+	var subscribed bool
+
+	// Project subscription resolution order:
+	// 1. Direct team subscription if project has a team_id.
+	// 2. Organization subscription via either:
+	//    a. Direct organization_id on project
+	//    b. Organization owning the department if project has department_id
+	// (There is currently no department-level subscription, departments inherit org subscription.)
+	err := s.DB.QueryRowContext(ctx,
+		`SELECT COALESCE((
+			SELECT TRUE FROM (
+					-- Team subscription
+					SELECT TRUE FROM thunderdome.subscription s
+					JOIN thunderdome.project p ON p.team_id = s.team_id
+					WHERE p.id = $1
+						AND s.active = TRUE
+						AND s.expires > CURRENT_TIMESTAMP
+					UNION ALL
+					-- Organization subscription direct
+					SELECT TRUE FROM thunderdome.subscription s
+					JOIN thunderdome.project p ON p.organization_id = s.organization_id
+					WHERE p.id = $1
+						AND p.organization_id IS NOT NULL
+						AND s.active = TRUE
+						AND s.expires > CURRENT_TIMESTAMP
+					UNION ALL
+					-- Organization subscription via department
+					SELECT TRUE FROM thunderdome.subscription s
+					JOIN thunderdome.project p ON p.id = $1 AND p.department_id IS NOT NULL
+					JOIN thunderdome.organization_department od ON p.department_id = od.id AND s.organization_id = od.organization_id
+					WHERE s.active = TRUE
+						AND s.expires > CURRENT_TIMESTAMP
+			) sub LIMIT 1), FALSE
+		) AS is_subscribed;`,
+		projectID,
+	).Scan(&subscribed)
+	if err != nil {
+		return false, fmt.Errorf("error getting project subscription: %v", err)
+	}
+
+	return subscribed, nil
 }

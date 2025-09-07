@@ -66,6 +66,7 @@ const appRoutes = {
   termsConditions: `${PathPrefix}/terms-conditions`,
   support: `${PathPrefix}/support`,
   invite: `${PathPrefix}/invite`,
+  projects: `${PathPrefix}/projects`,
 };
 
 export {

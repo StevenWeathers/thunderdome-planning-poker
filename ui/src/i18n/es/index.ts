@@ -746,6 +746,7 @@ const es: Translation = {
   projectUpdateSuccess: 'Proyecto actualizado exitosamente',
   projectCreateError: 'Error al crear el proyecto',
   projectUpdateError: 'Error al actualizar el proyecto',
+  project: 'Proyecto',
 };
 
 export default es;

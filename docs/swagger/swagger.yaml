@@ -113,6 +113,10 @@ definitions:
         items:
           type: string
         type: array
+      projectIds:
+        items:
+          type: string
+        type: array
     required:
     - name
     - pointAverageRounding
@@ -444,6 +448,10 @@ definitions:
         maximum: 59
         minimum: 0
         type: integer
+      projectIds:
+        items:
+          type: string
+        type: array
       retroName:
         example: sprint 10 retro
         type: string
@@ -605,6 +613,10 @@ definitions:
         type: string
       joinCode:
         type: string
+      projectIds:
+        items:
+          type: string
+        type: array
       storyboardName:
         type: string
     required:
@@ -2527,6 +2539,7 @@ paths:
       summary: Get Projects
       tags:
       - project
+      - admin
     post:
       description: Creates a project
       parameters:
@@ -2561,6 +2574,7 @@ paths:
       summary: Create Project
       tags:
       - project
+      - admin
   /admin/projects/{projectId}:
     delete:
       description: Deletes a Project
@@ -2590,6 +2604,7 @@ paths:
       summary: Delete Project
       tags:
       - project
+      - admin
     get:
       description: get a specific project by its ID
       parameters:
@@ -2623,6 +2638,7 @@ paths:
       summary: Get Project by ID
       tags:
       - project
+      - admin
     put:
       description: Updates a Project
       parameters:
@@ -2662,6 +2678,7 @@ paths:
       summary: Update Project
       tags:
       - project
+      - admin
   /admin/retro-settings/{id}:
     delete:
       description: Deletes retro settings for an organization, department, or team
@@ -6259,6 +6276,175 @@ paths:
       summary: Update Org User
       tags:
       - organization
+  /projects/{projectId}:
+    get:
+      description: get a specific project by its ID
+      parameters:
+      - description: the project ID
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Project'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Project by ID
+      tags:
+      - project
+  /projects/{projectId}/poker:
+    get:
+      description: Retrieve poker games for a specific project
+      parameters:
+      - description: the project ID to get pokergames for
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Poker'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Project Pokers
+      tags:
+      - poker
+  /projects/{projectId}/retros:
+    get:
+      description: Retrieve retros for a specific project
+      parameters:
+      - description: the project ID to get retros for
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Retro'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Project Retros
+      tags:
+      - retros
+  /projects/{projectId}/storyboards:
+    get:
+      description: Retrieve storyboards for a specific project
+      parameters:
+      - description: the project ID to get storyboards for
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Storyboard'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Project Storyboards
+      tags:
+      - storyboards
   /retro-templates/public:
     get:
       description: get list of public retro templates

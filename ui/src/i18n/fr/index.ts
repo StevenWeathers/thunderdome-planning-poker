@@ -781,6 +781,7 @@ const fr: Translation = {
   projectUpdateSuccess: 'Projet mis à jour avec succès',
   projectCreateError: 'Échec de la création du projet',
   projectUpdateError: 'Échec de la mise à jour du projet',
+  project: 'Projet',
 };
 
 export default fr;

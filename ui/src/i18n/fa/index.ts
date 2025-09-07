@@ -732,6 +732,7 @@ const fa: Translation = {
   projectUpdateSuccess: 'پروژه با موفقیت به‌روزرسانی شد',
   projectCreateError: 'ایجاد پروژه با شکست مواجه شد',
   projectUpdateError: 'به‌روزرسانی پروژه با شکست مواجه شد',
+  project: 'پروژه',
 };
 
 export default fa;

@@ -19,11 +19,11 @@ type projectRequestBody struct {
 	TeamID         *string `json:"teamId"`
 }
 
-// handleGetProjects gets a list of projects
+// handleAdminGetProjects gets a list of projects
 //
 //	@Summary		Get Projects
 //	@Description	get list of projects
-//	@Tags			project
+//	@Tags			project, admin
 //	@Produce		json
 //	@Param			limit	query	int	false	"Max number of results to return"
 //	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
@@ -31,7 +31,7 @@ type projectRequestBody struct {
 //	@Failure		500		object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
 //	@Router			/admin/projects [get]
-func (s *Service) handleGetProjects() http.HandlerFunc {
+func (s *Service) handleAdminGetProjects() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
@@ -55,11 +55,11 @@ func (s *Service) handleGetProjects() http.HandlerFunc {
 	}
 }
 
-// handleProjectCreate creates a new project
+// handleAdminProjectCreate creates a new project
 //
 //	@Summary		Create Project
 //	@Description	Creates a project
-//	@Tags			project
+//	@Tags			project, admin
 //	@Produce		json
 //	@Param			project	body	projectRequestBody	true	"new project object"
 //	@Success		200		object	standardJsonResponse{data=thunderdome.Project}
@@ -67,7 +67,7 @@ func (s *Service) handleGetProjects() http.HandlerFunc {
 //	@Failure		500		object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
 //	@Router			/admin/projects [post]
-func (s *Service) handleProjectCreate() http.HandlerFunc {
+func (s *Service) handleAdminProjectCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
@@ -118,11 +118,11 @@ func (s *Service) handleProjectCreate() http.HandlerFunc {
 	}
 }
 
-// handleProjectUpdate updates a project
+// handleAdminProjectUpdate updates a project
 //
 //	@Summary		Update Project
 //	@Description	Updates a Project
-//	@Tags			project
+//	@Tags			project, admin
 //	@Produce		json
 //	@Param			projectId	path	string				true	"the project ID to update"
 //	@Param			project		body	projectRequestBody	true	"project object to update"
@@ -131,7 +131,7 @@ func (s *Service) handleProjectCreate() http.HandlerFunc {
 //	@Failure		500			object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
 //	@Router			/admin/projects/{projectId} [put]
-func (s *Service) handleProjectUpdate() http.HandlerFunc {
+func (s *Service) handleAdminProjectUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
@@ -190,11 +190,11 @@ func (s *Service) handleProjectUpdate() http.HandlerFunc {
 	}
 }
 
-// handleProjectDelete handles deleting a project
+// handleAdminProjectDelete handles deleting a project
 //
 //	@Summary		Delete Project
 //	@Description	Deletes a Project
-//	@Tags			project
+//	@Tags			project, admin
 //	@Produce		json
 //	@Param			projectId	path	string	true	"the project ID to delete"
 //	@Success		200			object	standardJsonResponse{}
@@ -202,7 +202,7 @@ func (s *Service) handleProjectUpdate() http.HandlerFunc {
 //	@Failure		500			object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
 //	@Router			/admin/projects/{projectId} [delete]
-func (s *Service) handleProjectDelete() http.HandlerFunc {
+func (s *Service) handleAdminProjectDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID := ctx.Value(contextKeyUserID).(string)
@@ -226,11 +226,11 @@ func (s *Service) handleProjectDelete() http.HandlerFunc {
 	}
 }
 
-// handleGetProjectByID gets a specific project by ID
+// handleAdminGetProjectByID gets a specific project by ID
 //
 //	@Summary		Get Project by ID
 //	@Description	get a specific project by its ID
-//	@Tags			project
+//	@Tags			project, admin
 //	@Produce		json
 //	@Param			projectId	path	string	true	"the project ID"
 //	@Success		200			object	standardJsonResponse{data=thunderdome.Project}
@@ -238,7 +238,7 @@ func (s *Service) handleProjectDelete() http.HandlerFunc {
 //	@Failure		500			object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
 //	@Router			/admin/projects/{projectId} [get]
-func (s *Service) handleGetProjectByID() http.HandlerFunc {
+func (s *Service) handleAdminGetProjectByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)

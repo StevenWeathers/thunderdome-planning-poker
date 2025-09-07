@@ -75,6 +75,7 @@
   import OrganizationUsers from './pages/organization/OrganizationUsers.svelte';
   import TeamUsers from './pages/team/TeamUsers.svelte';
   import TeamProjects from './pages/team/TeamProjects.svelte';
+  import Project from './pages/project/Project.svelte';
 
   const {
     FeaturePoker,
@@ -639,6 +640,13 @@
         route: OrganizationProjects,
         params,
         name: 'organization-projects',
+      };
+    });
+    router.on(`${appRoutes.projects}/:projectId`, params => {
+      currentPage = {
+        route: Project,
+        params,
+        name: 'project',
       };
     });
   }

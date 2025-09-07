@@ -524,6 +524,112 @@ func TestSubscribedTeamOnly(t *testing.T) {
 	}
 }
 
+func TestSubscribedProjectOnly(t *testing.T) {
+	tests := []struct {
+		name                 string
+		userType             string
+		projectID            string
+		subscriptionsEnabled bool
+		expectedStatusCode   int
+		setupMocks           func(*MockSubscriptionDataService)
+	}{
+		{
+			name:                 "Admin user bypasses subscription check",
+			userType:             thunderdome.AdminUserType,
+			projectID:            "6c4c4bf7-5c6f-4d3b-b1c9-9f9b4c8f5b11",
+			subscriptionsEnabled: true,
+			expectedStatusCode:   http.StatusOK,
+		},
+		{
+			name:                 "Subscribed project allowed",
+			userType:             thunderdome.EntityMemberUserType,
+			projectID:            "2c5a083a-2ec3-4b0f-9c5b-0e2c4a5d7f90",
+			subscriptionsEnabled: true,
+			expectedStatusCode:   http.StatusOK,
+			setupMocks: func(mockSubDataSvc *MockSubscriptionDataService) {
+				mockSubDataSvc.On(
+					"ProjectIsSubscribed",
+					mock.Anything,
+					"2c5a083a-2ec3-4b0f-9c5b-0e2c4a5d7f90",
+				).Return(true, nil).Once()
+			},
+		},
+		{
+			name:                 "Unsubscribed project forbidden",
+			userType:             thunderdome.EntityMemberUserType,
+			projectID:            "9b1f6a77-9e5b-4c5e-8d2d-6a0e4f7b2c11",
+			subscriptionsEnabled: true,
+			expectedStatusCode:   http.StatusForbidden,
+			setupMocks: func(mockSubDataSvc *MockSubscriptionDataService) {
+				mockSubDataSvc.On(
+					"ProjectIsSubscribed",
+					mock.Anything,
+					"9b1f6a77-9e5b-4c5e-8d2d-6a0e4f7b2c11",
+				).Return(false, nil).Once()
+			},
+		},
+		{
+			name:               "Invalid projectID",
+			userType:           thunderdome.EntityMemberUserType,
+			projectID:          "invalid-uuid",
+			expectedStatusCode: http.StatusBadRequest,
+		},
+		{
+			name:                 "Subscriptions disabled",
+			userType:             thunderdome.EntityMemberUserType,
+			projectID:            "5d3f2a8e-9d4b-4c2e-8f1a-7b6c5d4e3a2b",
+			subscriptionsEnabled: false,
+			expectedStatusCode:   http.StatusOK,
+		},
+		{
+			name:                 "Error checking subscription treated as forbidden",
+			userType:             thunderdome.EntityMemberUserType,
+			projectID:            "1e2d3c4b-5a6f-7081-92ab-b3c4d5e6f7a8",
+			subscriptionsEnabled: true,
+			expectedStatusCode:   http.StatusForbidden,
+			setupMocks: func(mockSubDataSvc *MockSubscriptionDataService) {
+				mockSubDataSvc.On(
+					"ProjectIsSubscribed",
+					mock.Anything,
+					"1e2d3c4b-5a6f-7081-92ab-b3c4d5e6f7a8",
+				).Return(false, errors.New("db error")).Once()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockSubDataSvc := new(MockSubscriptionDataService)
+			mockConfig := &Config{SubscriptionsEnabled: true}
+			service := &Service{
+				SubscriptionDataSvc: mockSubDataSvc,
+				Config:              mockConfig,
+			}
+
+			mockConfig.SubscriptionsEnabled = tt.subscriptionsEnabled
+
+			if tt.setupMocks != nil {
+				tt.setupMocks(mockSubDataSvc)
+			}
+
+			handler := service.subscribedProjectOnly(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			req := httptest.NewRequest("GET", "/projects/"+tt.projectID+"/test", nil)
+			req.SetPathValue("projectId", tt.projectID)
+			req = req.WithContext(context.WithValue(req.Context(), contextKeyUserType, tt.userType))
+
+			rr := httptest.NewRecorder()
+			handler.ServeHTTP(rr, req)
+
+			assert.Equal(t, tt.expectedStatusCode, rr.Code)
+
+			mockSubDataSvc.AssertExpectations(t)
+		})
+	}
+}
+
 type MockOrganizationDataService struct {
 	mock.Mock
 }
@@ -1666,6 +1772,162 @@ func (m *MockSubscriptionDataService) DeleteSubscription(ctx context.Context, id
 func (m *MockSubscriptionDataService) CheckActiveSubscriber(ctx context.Context, userID string) error {
 	args := m.Called(ctx, userID)
 	return args.Error(0)
+}
+
+func (m *MockSubscriptionDataService) ProjectIsSubscribed(ctx context.Context, projectId string) (bool, error) {
+	args := m.Called(ctx, projectId)
+	return args.Bool(0), args.Error(1)
+}
+
+// MockProjectDataSvc is a mock of ProjectDataSvc
+type MockProjectDataSvc struct{ mock.Mock }
+
+func (m *MockProjectDataSvc) CreateProject(ctx context.Context, project *thunderdome.Project) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) GetProjectByID(ctx context.Context, projectID string) (*thunderdome.Project, error) {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) UpdateProject(ctx context.Context, project *thunderdome.Project) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) DeleteProject(ctx context.Context, projectID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) ListProjects(ctx context.Context, limit int, offset int) ([]*thunderdome.Project, int, error) {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) IsUserProjectMember(ctx context.Context, userID, projectID string) (bool, string, error) {
+	args := m.Called(ctx, userID, projectID)
+	return args.Bool(0), args.String(1), args.Error(2)
+}
+func (m *MockProjectDataSvc) GetProjectsByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.Project, error) {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) UpdateOrganizationProject(ctx context.Context, project *thunderdome.Project) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) DeleteOrganizationProject(ctx context.Context, orgID string, projectID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) GetProjectsByDepartment(ctx context.Context, departmentID string) ([]*thunderdome.Project, error) {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) UpdateDepartmentProject(ctx context.Context, project *thunderdome.Project) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) DeleteDepartmentProject(ctx context.Context, deptID string, projectID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) GetProjectsByTeam(ctx context.Context, teamID string) ([]*thunderdome.Project, error) {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) UpdateTeamProject(ctx context.Context, project *thunderdome.Project) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) DeleteTeamProject(ctx context.Context, teamID string, projectID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) AssociateStoryboard(ctx context.Context, projectID string, storyboardID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) ListStoryboards(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Storyboard, error) {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) AssociateRetro(ctx context.Context, projectID string, retroID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) ListRetros(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Retro, error) {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) AssociatePoker(ctx context.Context, projectID string, pokerID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) ListPokerGames(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Poker, error) {
+	panic("implement me")
+}
+
+func TestProjectUserOnly(t *testing.T) {
+	tests := []struct {
+		name           string
+		userType       string
+		userID         string
+		projectID      string
+		expectedStatus int
+		setupMocks     func(*MockProjectDataSvc)
+	}{
+		{
+			name:           "Admin user bypasses membership check",
+			userType:       thunderdome.AdminUserType,
+			userID:         "11111111-1111-1111-1111-111111111111",
+			projectID:      "aaaaaaaa-bbbb-cccc-dddd-eeeeffffffff",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Project member allowed",
+			userType:       thunderdome.RegisteredUserType,
+			userID:         "22222222-2222-2222-2222-222222222222",
+			projectID:      "123e4567-e89b-12d3-a456-426614174111",
+			expectedStatus: http.StatusOK,
+			setupMocks: func(m *MockProjectDataSvc) {
+				m.On("IsUserProjectMember", mock.Anything, "22222222-2222-2222-2222-222222222222", "123e4567-e89b-12d3-a456-426614174111").Return(true, "member", nil).Once()
+			},
+		},
+		{
+			name:           "Non-member forbidden",
+			userType:       thunderdome.RegisteredUserType,
+			userID:         "33333333-3333-3333-3333-333333333333",
+			projectID:      "123e4567-e89b-12d3-a456-426614174222",
+			expectedStatus: http.StatusForbidden,
+			setupMocks: func(m *MockProjectDataSvc) {
+				m.On("IsUserProjectMember", mock.Anything, "33333333-3333-3333-3333-333333333333", "123e4567-e89b-12d3-a456-426614174222").Return(false, "", nil).Once()
+			},
+		},
+		{
+			name:           "Service error treated as forbidden",
+			userType:       thunderdome.RegisteredUserType,
+			userID:         "44444444-4444-4444-4444-444444444444",
+			projectID:      "123e4567-e89b-12d3-a456-426614174333",
+			expectedStatus: http.StatusForbidden,
+			setupMocks: func(m *MockProjectDataSvc) {
+				m.On("IsUserProjectMember", mock.Anything, "44444444-4444-4444-4444-444444444444", "123e4567-e89b-12d3-a456-426614174333").Return(false, "", errors.New("db error")).Once()
+			},
+		},
+		{
+			name:           "Invalid project ID",
+			userType:       thunderdome.RegisteredUserType,
+			userID:         "55555555-5555-5555-5555-555555555555",
+			projectID:      "not-a-uuid",
+			expectedStatus: http.StatusBadRequest,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockProjSvc := new(MockProjectDataSvc)
+			if tt.setupMocks != nil && tt.expectedStatus != http.StatusBadRequest { // skip mock setup for invalid UUID case
+				tt.setupMocks(mockProjSvc)
+			}
+
+			svc := &Service{ProjectDataSvc: mockProjSvc}
+
+			handler := svc.projectUserOnly(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			})
+
+			req := httptest.NewRequest("GET", "/projects/"+tt.projectID+"/resource", nil)
+			req.SetPathValue("projectId", tt.projectID)
+			ctx := context.WithValue(req.Context(), contextKeyUserType, tt.userType)
+			ctx = context.WithValue(ctx, contextKeyUserID, tt.userID)
+			req = req.WithContext(ctx)
+
+			rr := httptest.NewRecorder()
+			handler.ServeHTTP(rr, req)
+
+			assert.Equal(t, tt.expectedStatus, rr.Code)
+			mockProjSvc.AssertExpectations(t)
+		})
+	}
 }
 
 func TestVerifiedUserOnly(t *testing.T) {

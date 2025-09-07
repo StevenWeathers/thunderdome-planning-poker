@@ -516,12 +516,30 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle("PUT "+prefix+"/api/teams/{teamId}/projects/{projectId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamProjectUpdate())))))
 		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/projects/{projectId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamProjectDelete())))))
 
+		// Project operations
+		router.Handle("GET "+prefix+"/api/projects/{projectId}", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleGetProjectByID()))))
+
+		// Project storyboards
+		if a.Config.FeatureStoryboard {
+			router.Handle("GET "+prefix+"/api/projects/{projectId}/storyboards", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleGetProjectStoryboards()))))
+		}
+
+		// Project retros
+		if a.Config.FeatureRetro {
+			router.Handle("GET "+prefix+"/api/projects/{projectId}/retros", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleGetProjectRetros()))))
+		}
+
+		// Project poker games
+		if a.Config.FeaturePoker {
+			router.Handle("GET "+prefix+"/api/projects/{projectId}/poker", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleGetProjectPokerGames()))))
+		}
+
 		// General project operations (admin)
-		router.Handle("GET "+prefix+"/api/admin/projects", a.userOnly(a.adminOnly(a.handleGetProjects())))
-		router.Handle("GET "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleGetProjectByID())))
-		router.Handle("POST "+prefix+"/api/admin/projects", a.userOnly(a.adminOnly(a.handleProjectCreate())))
-		router.Handle("PUT "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleProjectUpdate())))
-		router.Handle("DELETE "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleProjectDelete())))
+		router.Handle("GET "+prefix+"/api/admin/projects", a.userOnly(a.adminOnly(a.handleAdminGetProjects())))
+		router.Handle("GET "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleAdminGetProjectByID())))
+		router.Handle("POST "+prefix+"/api/admin/projects", a.userOnly(a.adminOnly(a.handleAdminProjectCreate())))
+		router.Handle("PUT "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleAdminProjectUpdate())))
+		router.Handle("DELETE "+prefix+"/api/admin/projects/{projectId}", a.userOnly(a.adminOnly(a.handleAdminProjectDelete())))
 	}
 
 	// user avatar generation

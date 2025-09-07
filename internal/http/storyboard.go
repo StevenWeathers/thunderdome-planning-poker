@@ -13,9 +13,10 @@ import (
 )
 
 type storyboardCreateRequestBody struct {
-	StoryboardName  string `json:"storyboardName" validate:"required"`
-	JoinCode        string `json:"joinCode"`
-	FacilitatorCode string `json:"facilitatorCode"`
+	StoryboardName  string   `json:"storyboardName" validate:"required"`
+	JoinCode        string   `json:"joinCode"`
+	FacilitatorCode string   `json:"facilitatorCode"`
+	ProjectIds      []string `json:"projectIds"`
 }
 
 // handleStoryboardCreate handles creating a storyboard (arena)
@@ -99,6 +100,21 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 					zap.String("storyboard_name", sb.StoryboardName))
 				s.Failure(w, r, http.StatusInternalServerError, err)
 				return
+			}
+		}
+
+		// Associate the storyboard with projects if provided
+		if len(sb.ProjectIds) > 0 {
+			for _, projectID := range sb.ProjectIds {
+				err := s.ProjectDataSvc.AssociateStoryboard(ctx, projectID, newStoryboard.ID)
+				if err != nil {
+					s.Logger.Ctx(ctx).Error("handleStoryboardCreate associate storyboard with project error", zap.Error(err),
+						zap.String("storyboard_id", newStoryboard.ID),
+						zap.String("project_id", projectID),
+						zap.String("session_user_id", sessionUserID))
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
 			}
 		}
 

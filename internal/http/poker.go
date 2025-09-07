@@ -66,6 +66,7 @@ type battleRequestBody struct {
 	Facilitators         []string             `json:"battleLeaders"`
 	JoinCode             string               `json:"joinCode"`
 	FacilitatorCode      string               `json:"leaderCode"`
+	ProjectIds           []string             `json:"projectIds"`
 }
 
 // handlePokerCreate handles creating a poker game
@@ -177,6 +178,21 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 					zap.String("session_user_id", sessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, err)
 				return
+			}
+		}
+
+		// Associate the poker game with the projects if provided
+		if len(b.ProjectIds) > 0 {
+			for _, projectID := range b.ProjectIds {
+				err := s.ProjectDataSvc.AssociatePoker(ctx, projectID, newGame.ID)
+				if err != nil {
+					s.Logger.Ctx(ctx).Error("handlePokerCreate associate poker with project error", zap.Error(err),
+						zap.String("poker_id", newGame.ID),
+						zap.String("project_id", projectID),
+						zap.String("session_user_id", sessionUserID))
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
 			}
 		}
 
