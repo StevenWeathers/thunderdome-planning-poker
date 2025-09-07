@@ -10,6 +10,7 @@
     deleteBtnEnabled?: boolean;
     deleteBtnClickHandler?: any;
     deleteBtnTestId?: string;
+    detailsLinkText?: string;
     children?: import('svelte').Snippet;
   }
 
@@ -21,6 +22,7 @@
     deleteBtnEnabled = true,
     deleteBtnClickHandler = () => {},
     deleteBtnTestId = 'delete',
+    detailsLinkText = 'View Details',
     children
   }: Props = $props();
 </script>
@@ -28,9 +30,9 @@
 <div class="flex gap-2 justify-end items-center">
   {@render children?.()}
   {#if detailsLink !== ''}
-    <a href="{detailsLink}" class="hover:text-blue-500">
+    <a href="{detailsLink}" class="hover:text-blue-500" title={detailsLinkText}>
       <Eye />
-      <span class="sr-only">View Details</span>
+      <span class="sr-only">{detailsLinkText}</span>
     </a>
   {/if}
   {#if editBtnEnabled}
