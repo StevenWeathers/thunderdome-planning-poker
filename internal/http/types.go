@@ -305,6 +305,7 @@ type SubscriptionDataSvc interface {
 	UpdateSubscription(ctx context.Context, subscriptionID string, subscription thunderdome.Subscription) (thunderdome.Subscription, error)
 	GetSubscriptions(ctx context.Context, limit int, offset int) ([]thunderdome.Subscription, int, error)
 	DeleteSubscription(ctx context.Context, subscriptionID string) error
+	ProjectIsSubscribed(ctx context.Context, projectID string) (bool, error)
 }
 
 type UserDataSvc interface {
@@ -618,6 +619,9 @@ type ProjectDataSvc interface {
 	DeleteProject(ctx context.Context, projectID string) error
 	ListProjects(ctx context.Context, limit int, offset int) ([]*thunderdome.Project, int, error)
 
+	// Member-related operations
+	IsUserProjectMember(ctx context.Context, userID, projectID string) (bool, string, error)
+
 	// Organization-scoped operations
 	GetProjectsByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.Project, error)
 	UpdateOrganizationProject(ctx context.Context, project *thunderdome.Project) error
@@ -632,4 +636,16 @@ type ProjectDataSvc interface {
 	GetProjectsByTeam(ctx context.Context, teamID string) ([]*thunderdome.Project, error)
 	UpdateTeamProject(ctx context.Context, project *thunderdome.Project) error
 	DeleteTeamProject(ctx context.Context, teamID string, projectID string) error
+
+	// Team associated Storyboards
+	AssociateStoryboard(ctx context.Context, projectID string, storyboardID string) error
+	ListStoryboards(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Storyboard, error)
+
+	// Team associated Retros
+	AssociateRetro(ctx context.Context, projectID string, retroID string) error
+	ListRetros(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Retro, error)
+
+	// Team associated Poker Games
+	AssociatePoker(ctx context.Context, projectID string, pokerID string) error
+	ListPokerGames(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Poker, error)
 }

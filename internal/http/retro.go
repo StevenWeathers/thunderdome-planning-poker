@@ -13,16 +13,17 @@ import (
 )
 
 type retroCreateRequestBody struct {
-	RetroName             string  `json:"retroName" example:"sprint 10 retro" validate:"required"`
-	JoinCode              string  `json:"joinCode" example:"iammadmax"`
-	FacilitatorCode       string  `json:"facilitatorCode" example:"likeaboss"`
-	MaxVotes              int     `json:"maxVotes" validate:"required,min=1,max=9"`
-	BrainstormVisibility  string  `json:"brainstormVisibility" validate:"required,oneof=visible concealed hidden"`
-	PhaseTimeLimitMin     int     `json:"phaseTimeLimitMin" validate:"min=0,max=59" example:"10"`
-	PhaseAutoAdvance      bool    `json:"phaseAutoAdvance"`
-	AllowCumulativeVoting bool    `json:"allowCumulativeVoting"`
-	HideVotesDuringVoting bool    `json:"hideVotesDuringVoting"`
-	TemplateID            *string `json:"templateId"`
+	RetroName             string   `json:"retroName" example:"sprint 10 retro" validate:"required"`
+	JoinCode              string   `json:"joinCode" example:"iammadmax"`
+	FacilitatorCode       string   `json:"facilitatorCode" example:"likeaboss"`
+	MaxVotes              int      `json:"maxVotes" validate:"required,min=1,max=9"`
+	BrainstormVisibility  string   `json:"brainstormVisibility" validate:"required,oneof=visible concealed hidden"`
+	PhaseTimeLimitMin     int      `json:"phaseTimeLimitMin" validate:"min=0,max=59" example:"10"`
+	PhaseAutoAdvance      bool     `json:"phaseAutoAdvance"`
+	AllowCumulativeVoting bool     `json:"allowCumulativeVoting"`
+	HideVotesDuringVoting bool     `json:"hideVotesDuringVoting"`
+	TemplateID            *string  `json:"templateId"`
+	ProjectIds            []string `json:"projectIds"`
 }
 
 // handleRetroCreate handles creating a retro
@@ -110,6 +111,21 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 				zap.String("team_id", teamID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
+		}
+
+		// Associate the retro with projects if provided
+		if len(nr.ProjectIds) > 0 {
+			for _, projectID := range nr.ProjectIds {
+				err := s.ProjectDataSvc.AssociateRetro(ctx, projectID, newRetro.ID)
+				if err != nil {
+					s.Logger.Ctx(ctx).Error("handleRetroCreate associate retro with project error", zap.Error(err),
+						zap.String("retro_id", newRetro.ID),
+						zap.String("project_id", projectID),
+						zap.String("session_user_id", sessionUserID))
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			}
 		}
 
 		s.Success(w, r, http.StatusOK, newRetro, nil)

@@ -514,3 +514,86 @@ func (s *Service) subscribedTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 		h(w, r.WithContext(ctx))
 	}
 }
+
+func (s *Service) subscribedProjectOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		ctx := r.Context()
+		userType := ctx.Value(contextKeyUserType).(string)
+		projectID := r.PathValue("projectId")
+		idErr := validate.Var(projectID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		if !s.Config.SubscriptionsEnabled {
+			h(w, r)
+			return
+		}
+
+		if userType != thunderdome.AdminUserType {
+			subscribed, err := s.SubscriptionDataSvc.ProjectIsSubscribed(ctx, projectID)
+			if err != nil || !subscribed {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_OR_TEAM_SUBSCRIPTION_REQUIRED"))
+				return
+			}
+		}
+
+		h(w, r.WithContext(ctx))
+	}
+}
+
+func (s *Service) projectUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		ctx := r.Context()
+		userType := ctx.Value(contextKeyUserType).(string)
+		projectID := r.PathValue("projectId")
+		idErr := validate.Var(projectID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		userID := ctx.Value(contextKeyUserID).(string)
+
+		if userType != thunderdome.AdminUserType {
+			isMember, _, err := s.ProjectDataSvc.IsUserProjectMember(ctx, userID, projectID)
+			if err != nil || !isMember {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "PROJECT_MEMBERSHIP_REQUIRED"))
+				return
+			}
+		}
+
+		h(w, r.WithContext(ctx))
+	}
+}
+
+func (s *Service) projectAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		ctx := r.Context()
+		userType := ctx.Value(contextKeyUserType).(string)
+		projectID := r.PathValue("projectId")
+		idErr := validate.Var(projectID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		userID := ctx.Value(contextKeyUserID).(string)
+
+		if userType != thunderdome.AdminUserType {
+			isMember, role, err := s.ProjectDataSvc.IsUserProjectMember(ctx, userID, projectID)
+			if err != nil || !isMember {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "PROJECT_MEMBERSHIP_REQUIRED"))
+				return
+			}
+			if role != thunderdome.AdminUserType {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "PROJECT_ADMIN_REQUIRED"))
+				return
+			}
+		}
+
+		h(w, r.WithContext(ctx))
+	}
+}
