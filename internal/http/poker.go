@@ -518,3 +518,57 @@ func (s *Service) handlePokerDelete(pokerSvc *poker.Service) http.HandlerFunc {
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
+
+// handleGameStop handles stopping a poker game via HTTP POST request
+//
+//	@Summary		Stop Game
+//	@Description	Stops a poker game by setting the ended_date
+//	@Tags			games
+//	@Produce		json
+//	@Param			gameId	path		string	true	"the game ID"
+//	@Success		200		object		standardJsonResponse{}
+//	@Success		403		object		standardJsonResponse{}
+//	@Success		500		object		standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/games/{gameId}/stop [post]
+func (s *Service) handleGameStop() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		gameID := r.PathValue("gameId")
+		idErr := validate.Var(gameID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		// CRITICAL SECURITY: Verify user is a facilitator of the game
+		err := s.PokerDataSvc.ConfirmFacilitator(gameID, sessionUserID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Warn("SECURITY_VIOLATION: unauthorized game stop attempt via HTTP",
+				zap.String("game_id", gameID),
+				zap.String("user_id", sessionUserID),
+				zap.String("violation_type", "unauthorized_stop_game_http"))
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "User not authorized to stop this game"))
+			return
+		}
+
+		// Stop the game
+		stopErr := s.PokerDataSvc.StopGame(gameID)
+		if stopErr != nil {
+			s.Logger.Ctx(ctx).Error("handleGameStop error", zap.Error(stopErr),
+				zap.String("game_id", gameID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, stopErr)
+			return
+		}
+
+		// SECURITY AUDIT: Log successful game stop for compliance
+		s.Logger.Ctx(ctx).Info("SECURITY_AUDIT: game stopped by authorized facilitator via HTTP",
+			zap.String("game_id", gameID),
+			zap.String("stopped_by", sessionUserID),
+			zap.String("action", "stop_game_http"))
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}

@@ -1,7 +1,7 @@
 <script lang="ts">
   interface Props {
     label: string;
-    color?: 'gray' | 'blue' | 'indigo';
+    color?: 'gray' | 'blue' | 'indigo' | 'green' | 'red' | 'orange';
     testId?: string;
     class?: string;
   }
@@ -17,6 +17,18 @@
   </span>
 {:else if color === 'indigo'}
   <span class="{badgeClasses} bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 {klass}" data-testid={testId}>
+      {label}
+  </span>
+{:else if color === 'green'}
+  <span class="{badgeClasses} bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 {klass}" data-testid={testId}>
+      {label}
+  </span>
+{:else if color === 'red'}
+  <span class="{badgeClasses} bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 {klass}" data-testid={testId}>
+      {label}
+  </span>
+{:else if color === 'orange'}
+  <span class="{badgeClasses} bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 {klass}" data-testid={testId}>
       {label}
   </span>
 {:else}

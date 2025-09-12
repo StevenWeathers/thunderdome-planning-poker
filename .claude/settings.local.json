@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm ci:*)",
+      "Bash(npm run build:*)",
+      "Bash(go build:*)",
+      "Bash(go test:*)",
+      "Bash(go run:*)",
+      "Bash(cat:*)",
+      "Bash(go:*)",
+      "Bash(npm install)",
+      "Bash(docker:*)",
+      "Bash(swag init:*)",
+      "Bash(\"C:\\Users\\ARaha\\go\\bin\\swag.exe\" init -g internal/http/http.go -o docs/swagger)",
+      "Bash(.thunderdome-planning-poker.exe --help)",
+      "Bash(./thunderdome-planning-poker.exe --help)",
+      "Bash(CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o thunderdome-planning-poker-linux -v)",
+      "Bash(CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o thunderdome-planning-poker-linux)",
+      "Bash(CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o thunderdome-planning-poker-macos)",
+      "Bash(make:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

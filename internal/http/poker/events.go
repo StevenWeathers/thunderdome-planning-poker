@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
+	"go.uber.org/zap"
 )
 
 // UserNudge handles notifying user that they need to vote
@@ -177,6 +180,44 @@ func (b *Service) Revise(ctx context.Context, pokerID string, userID string, eve
 
 	updatedBattle, _ := json.Marshal(rb)
 	msg := wshub.CreateSocketEvent("battle_revised", string(updatedBattle), "")
+
+	return nil, msg, nil, false
+}
+
+// Stop handles stopping the poker game by setting ended_date
+func (b *Service) Stop(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	// CRITICAL SECURITY FIX: Add explicit facilitator authorization check
+	if err := b.PokerService.ConfirmFacilitator(pokerID, userID); err != nil {
+		// Log security event for unauthorized stop attempt
+		b.logger.Ctx(ctx).Warn("SECURITY_VIOLATION: unauthorized game stop attempt",
+			zap.String("poker_id", pokerID),
+			zap.String("user_id", userID),
+			zap.String("violation_type", "unauthorized_stop_game"),
+			zap.Time("timestamp", time.Now()))
+		
+		return nil, nil, fmt.Errorf("UNAUTHORIZED: user not authorized to stop game"), false
+	}
+
+	err := b.PokerService.StopGame(pokerID)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	// SECURITY AUDIT: Log successful game stop for compliance
+	b.logger.Ctx(ctx).Info("SECURITY_AUDIT: game stopped by authorized facilitator",
+		zap.String("poker_id", pokerID),
+		zap.String("stopped_by", userID),
+		zap.String("action", "stop_game"),
+		zap.Time("timestamp", time.Now()))
+	
+	// Get the updated game data to send back to clients
+	stoppedGame, err := b.PokerService.GetGameByID(pokerID, userID)
+	if err != nil {
+		return nil, nil, err, false
+	}
+	
+	stoppedGameJSON, _ := json.Marshal(stoppedGame)
+	msg := wshub.CreateSocketEvent("battle_stopped", string(stoppedGameJSON), "")
 
 	return nil, msg, nil, false
 }

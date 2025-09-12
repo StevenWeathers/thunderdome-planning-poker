@@ -47,6 +47,8 @@ type PokerDataSvc interface {
 	RemoveFacilitator(pokerID string, userID string) ([]string, error)
 	// ToggleSpectator toggles a user's spectator status in a poker game
 	ToggleSpectator(pokerID string, userID string, spectator bool) ([]*thunderdome.PokerUser, error)
+	// StopGame stops a poker game by setting ended_date
+	StopGame(pokerID string) error
 	// DeleteGame deletes a poker game
 	DeleteGame(pokerID string) error
 	// CreateStory creates a new story in a poker game
@@ -132,6 +134,7 @@ func New(
 		"become_leader":    b.UserPromoteSelf,
 		"spectator_toggle": b.UserSpectatorToggle,
 		"revise_battle":    b.Revise,
+		"stop_battle":      b.Stop,
 		"concede_battle":   b.Delete,
 		"abandon_battle":   b.Abandon,
 	},
@@ -148,6 +151,7 @@ func New(
 			"promote_leader": {},
 			"demote_leader":  {},
 			"revise_battle":  {},
+			"stop_battle":    {},
 			"concede_battle": {},
 		},
 		b.PokerService.ConfirmFacilitator,

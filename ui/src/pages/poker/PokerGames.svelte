@@ -26,6 +26,30 @@
   let battles = $state([]);
   let loading = $state(true);
 
+  // Stop game functionality
+  function stopGame(gameId: string) {
+    return () => {
+      xfetch(`/api/games/${gameId}/stop`, { method: 'POST' })
+        .then(res => {
+          if (res.ok) {
+            notifications.success($LL.battleStopped());
+            // Update the local state to reflect the stopped game
+            battles = battles.map(battle => 
+              battle.id === gameId 
+                ? { ...battle, endedDate: new Date() }
+                : battle
+            );
+          } else {
+            throw new Error('Failed to stop game');
+          }
+        })
+        .catch(err => {
+          console.error('Error stopping game:', err);
+          notifications.danger($LL.stopGameError());
+        });
+    };
+  }
+
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
 
@@ -83,6 +107,9 @@
           showFacilitatorIcon={true}
           facilitatorsKey="leaders"
           showCompletedStories={true}
+          showStopButton={true}
+          showStatusBadge={true}
+          toggleStop={stopGame}
         />
       {:else if loading === false}
         <div

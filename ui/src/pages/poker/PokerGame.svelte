@@ -21,6 +21,8 @@
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
+  import GameStatusBadge from '../../components/poker/GameStatusBadge.svelte';
+  import GameControlSection from '../../components/poker/GameControlSection.svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
@@ -89,6 +91,7 @@
   let currentStory = $state({ ...defaultStory });
   let showEditGame: boolean = $state(false);
   let showDeleteGame: boolean = $state(false);
+  let showStopGame: boolean = $state(false);
   let isSpectator: boolean = $state(false);
   let voteStartTime: Date = $state(new Date());
 
@@ -275,6 +278,11 @@
         notifications.warning($LL.battleDeleted());
         router.route(appRoutes.games);
         break;
+      case 'battle_stopped':
+        const stoppedBattle = JSON.parse(parsedEvent.value);
+        pokerGame.endedDate = new Date(stoppedBattle.endedDate);
+        notifications.success($LL.battleStopped());
+        break;
       case 'jab_warrior':
         const userToNudge = pokerGame.users.find(
           w => w.id === parsedEvent.value,
@@ -460,6 +468,14 @@
     showDeleteGame = !showDeleteGame;
   };
 
+  const toggleStopGame = () => {
+    showStopGame = !showStopGame;
+  };
+
+  function stopGame() {
+    sendSocketEvent('stop_battle', '');
+  }
+
   function handleGameEdit(revisedBattle) {
     sendSocketEvent('revise_battle', JSON.stringify(revisedBattle));
     toggleEditGame();
@@ -486,8 +502,33 @@
 </svelte:head>
 
 <PageLayout>
+  {#if pokerGame.endedDate}
+    <div class="bg-orange-100 dark:bg-orange-900 border border-orange-300 dark:border-orange-700 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <div class="text-orange-800 dark:text-orange-200 font-semibold text-lg">
+          🛑 {$LL.gameEnded()}
+        </div>
+        <div class="ml-auto text-orange-600 dark:text-orange-300">
+          {$LL.battleStoppedAt({ endTime: new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }).format(pokerGame.endedDate) })}
+        </div>
+      </div>
+    </div>
+  {/if}
   <div class="mb-6 flex flex-wrap">
     <div class="w-full text-center md:w-2/3 md:text-left">
+      <div class="mb-2">
+        <GameStatusBadge 
+          isActive={!pokerGame.endedDate} 
+          endedDate={pokerGame.endedDate}
+          class="mb-2"
+        />
+      </div>
       <h1
         class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center flex-wrap gap-2"
       >
@@ -553,7 +594,7 @@
                 active={vote === point}
                 on:voted="{handleVote}"
                 on:voteRetraction="{handleUnvote}"
-                isLocked={pokerGame.votingLocked || isSpectator}
+                isLocked={pokerGame.votingLocked || isSpectator || !!pokerGame.endedDate}
               />
             </div>
           {/each}
@@ -567,6 +608,7 @@
         notifications={notifications}
         xfetch={xfetch}
         gameId={pokerGame.id}
+        gameEnded={!!pokerGame.endedDate}
       />
     </div>
 
@@ -595,7 +637,7 @@
           {/if}
         {/each}
 
-        {#if isFacilitator}
+        {#if isFacilitator && !pokerGame.endedDate}
           <VotingControls
             points={points}
             planId={pokerGame.activePlanId}
@@ -613,35 +655,16 @@
           joinCode={pokerGame.joinCode}
           notifications={notifications}
         />
-        {#if isFacilitator}
-          <div class="mt-4 text-right">
-            <HollowButton
-              color="blue"
-              onClick={toggleEditGame}
-              testid="battle-edit"
-            >
-              {$LL.battleEdit()}
-            </HollowButton>
-            <HollowButton
-              color="red"
-              onClick={toggleDeleteGame}
-              testid="battle-delete"
-            >
-              {$LL.battleDelete()}
-            </HollowButton>
-          </div>
-        {:else}
-          <div class="mt-4 text-right">
-            <HollowButton
-              color="red"
-              onClick={abandonBattle}
-              testid="battle-abandon"
-            >
-              {$LL.battleAbandon()}
-            </HollowButton>
-          </div>
-        {/if}
       </div>
+
+      <GameControlSection 
+        isFacilitator={isFacilitator}
+        gameEnded={!!pokerGame.endedDate}
+        onEditGame={toggleEditGame}
+        onStopGame={toggleStopGame}
+        onDeleteGame={toggleDeleteGame}
+        onAbandonGame={abandonBattle}
+      />
     </div>
   </div>
 
@@ -669,6 +692,15 @@
       handleDelete={concedeGame}
       confirmText={$LL.deleteBattleConfirmText()}
       confirmBtnText={$LL.deleteBattle()}
+    />
+  {/if}
+
+  {#if showStopGame}
+    <DeleteConfirmation
+      toggleDelete={toggleStopGame}
+      handleDelete={stopGame}
+      confirmText={$LL.stopBattleConfirmText()}
+      confirmBtnText={$LL.battleStop()}
     />
   {/if}
 

@@ -15404,6 +15404,9 @@ const docTemplate = `{
                 "createdDate": {
                     "type": "string"
                 },
+                "endedDate": {
+                    "type": "string"
+                },
                 "estimationScale": {
                     "$ref": "#/definitions/thunderdome.EstimationScale"
                 },

@@ -38,6 +38,7 @@ type Poker struct {
 	EstimationScale      *EstimationScale `json:"estimationScale,omitempty"`
 	CreatedDate          time.Time        `json:"createdDate"`
 	UpdatedDate          time.Time        `json:"updatedDate"`
+	EndedDate            *time.Time       `json:"endedDate,omitempty"`
 }
 
 // Vote structure

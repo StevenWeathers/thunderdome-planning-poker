@@ -27,6 +27,7 @@
     notifications: NotificationService;
     xfetch: ApiClient;
     gameId?: string;
+    gameEnded?: boolean;
   }
 
   let {
@@ -35,7 +36,8 @@
     sendSocketEvent = (event: string, value: string) => {},
     notifications,
     xfetch,
-    gameId = ''
+    gameId = '',
+    gameEnded = false
   }: Props = $props();
 
   let defaultPlan = {
@@ -177,7 +179,7 @@
       </h3>
     </div>
     <div class="w-2/3 text-right">
-      {#if isFacilitator}
+      {#if isFacilitator && !gameEnded}
         <HollowButton onClick={toggleImport} color="blue">
           {$LL.importPlans()}
         </HollowButton>
@@ -241,7 +243,7 @@
         'outline-indigo-500',
         'dark:outline-yellow-400',
       ],
-      dragDisabled: !isFacilitator,
+      dragDisabled: !isFacilitator || gameEnded,
     }}"
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
@@ -254,11 +256,11 @@
           : ''}"
         data-testid="plan"
         data-storyid="{plan.id}"
-        draggable={isFacilitator}
+        draggable={isFacilitator && !gameEnded}
       >
         <div class="flex-grow font-bold align-middle dark:text-white me-1">
           <div class="flex items-center gap-2">
-            {#if isFacilitator}
+            {#if isFacilitator && !gameEnded}
               <span><Grip class="inline-block text-gray-400 dark:text-gray-500"/></span>
             {/if}
             
@@ -303,7 +305,7 @@
           >
             {$LL.view()}
           </HollowButton>
-          {#if isFacilitator}
+          {#if isFacilitator && !gameEnded}
             {#if !plan.active}
               <HollowButton
                 color="red"

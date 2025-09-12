@@ -364,6 +364,8 @@ type PokerDataSvc interface {
 	RemoveFacilitator(pokerID string, userID string) ([]string, error)
 	// ToggleSpectator toggles a user's spectator status in a poker game
 	ToggleSpectator(pokerID string, userID string, spectator bool) ([]*thunderdome.PokerUser, error)
+	// StopGame stops a poker game by setting ended_date
+	StopGame(pokerID string) error
 	// DeleteGame deletes a poker game
 	DeleteGame(pokerID string) error
 	// AddFacilitatorsByEmail adds facilitators to a poker game by email

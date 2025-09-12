@@ -321,6 +321,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle("POST "+prefix+"/api/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(pokerSvc)))
 		router.Handle("PUT "+prefix+"/api/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryUpdate(pokerSvc)))
 		router.Handle("DELETE "+prefix+"/api/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryDelete(pokerSvc)))
+		router.Handle("POST "+prefix+"/api/games/{gameId}/stop", a.userOnly(a.handleGameStop()))
 		router.Handle(prefix+"/api/arena/{battleId}", pokerSvc.ServeBattleWs())
 
 		// estimation scales

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"regexp"
 
 	"github.com/jackc/pgx/v5/pgtype"
 
@@ -324,7 +325,7 @@ func (d *Service) GetGameByID(pokerID string, userID string) (*thunderdome.Poker
 		`
 		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.auto_finish_voting,
 		b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''),
-		b.estimation_scale_id, b.point_values_allowed, COALESCE(b.team_id::text, ''), b.created_date, b.updated_date,
+		b.estimation_scale_id, b.point_values_allowed, COALESCE(b.team_id::text, ''), b.created_date, b.updated_date, b.ended_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders,
 		COALESCE(
 			json_build_object(
@@ -364,6 +365,7 @@ func (d *Service) GetGameByID(pokerID string, userID string) (*thunderdome.Poker
 		&b.TeamID,
 		&b.CreatedDate,
 		&b.UpdatedDate,
+		&b.EndedDate,
 		&facilitators,
 		&estimationScaleJSON,
 	)
@@ -542,6 +544,37 @@ func (d *Service) GetGamesByUser(userID string, limit int, offset int) ([]*thund
 	return games, count, nil
 }
 
+// StopGame sets the ended_date for the poker game to mark it as stopped
+func (d *Service) StopGame(pokerID string) error {
+	// SECURITY FIX: Input validation and state verification
+	if !isValidUUID(pokerID) {
+		return fmt.Errorf("SECURITY_VALIDATION: invalid poker game ID format")
+	}
+
+	// Check if game exists and is not already stopped
+	var endedDate sql.NullTime
+	err := d.DB.QueryRow("SELECT ended_date FROM thunderdome.poker WHERE id = $1", pokerID).Scan(&endedDate)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("SECURITY_VALIDATION: poker game not found")
+		}
+		return fmt.Errorf("poker stop game validation error: %v", err)
+	}
+	
+	// Prevent double-stop operations
+	if endedDate.Valid {
+		return fmt.Errorf("SECURITY_VALIDATION: poker game already stopped")
+	}
+
+	// Proceed with stopping the game
+	if _, err := d.DB.Exec(
+		`UPDATE thunderdome.poker SET ended_date = NOW() WHERE id = $1;`, pokerID); err != nil {
+		return fmt.Errorf("poker stop game query error: %v", err)
+	}
+
+	return nil
+}
+
 // DeleteGame removes all game associations and the game itself by PokerID
 func (d *Service) DeleteGame(pokerID string) error {
 	if _, err := d.DB.Exec(
@@ -683,4 +716,13 @@ func (d *Service) GetActiveGames(limit int, offset int) ([]*thunderdome.Poker, i
 	}
 
 	return games, count, nil
+}
+
+// isValidUUID validates if a string is a valid UUID format
+// Used for security input validation to prevent malformed UUID attacks
+func isValidUUID(u string) bool {
+	// UUID v4 regex pattern (standard 8-4-4-4-12 format)
+	uuidPattern := `^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`
+	matched, _ := regexp.MatchString(uuidPattern, u)
+	return matched
 }

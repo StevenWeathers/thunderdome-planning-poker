@@ -1,0 +1,17 @@
+http:
+  domain: localhost
+db:
+  host: 10.88.2.30
+  port: 5432
+  user: thunderdome
+  pass: thunderdome
+  name: thunderdome
+admin:
+  email: admin@localhome.lan
+smtp:
+  enabled: "true"
+  host: smtprelay.mylocal.lan
+  port: 25
+  secure: "false"
+  skip_tls_verify: "true"
+  sender: "me@mylocal.lan"

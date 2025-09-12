@@ -3,6 +3,8 @@
   import LL from '../i18n/i18n-svelte';
   import { user } from '../stores';
   import { Crown } from 'lucide-svelte';
+  import GameStatusBadge from './poker/GameStatusBadge.svelte';
+  import StopGameButton from './poker/StopGameButton.svelte';
 
   interface Props {
     items?: Array<object>;
@@ -17,7 +19,10 @@
     showFacilitatorIcon?: boolean;
     facilitatorsKey?: string;
     showCompletedStories?: boolean;
+    showStopButton?: boolean;
+    showStatusBadge?: boolean;
     toggleRemove?: Function;
+    toggleStop?: Function;
   }
 
   let {
@@ -33,7 +38,10 @@
     showFacilitatorIcon = false,
     facilitatorsKey = 'facilitators',
     showCompletedStories = false,
-    toggleRemove = id => () => {}
+    showStopButton = false,
+    showStatusBadge = false,
+    toggleRemove = id => () => {},
+    toggleStop = id => () => {}
   }: Props = $props();
 </script>
 
@@ -47,6 +55,14 @@
         class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight"
       >
+        {#if showStatusBadge}
+          <div class="mb-2">
+            <GameStatusBadge 
+              isActive={!item.endedDate} 
+              endedDate={item.endedDate}
+            />
+          </div>
+        {/if}
         {#if showFacilitatorIcon}
           {#if item[facilitatorsKey].includes($user.id)}
             <Crown class="inline-block text-yellow-500" />&nbsp;
@@ -83,14 +99,22 @@
         {/if}
       </div>
       <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-        {#if isAdmin}
-          <HollowButton onClick={toggleRemove(item.id)} color="red">
-            {$LL.remove()}
+        <div class="flex flex-wrap gap-2 justify-end">
+          {#if isAdmin}
+            <HollowButton onClick={toggleRemove(item.id)} color="red">
+              {$LL.remove()}
+            </HollowButton>
+          {/if}
+          {#if showStopButton && item[facilitatorsKey].includes($user.id) && !item.endedDate}
+            <StopGameButton 
+              onStopGame={toggleStop(item.id)}
+              testid="game-list-stop-{item.id}"
+            />
+          {/if}
+          <HollowButton href="{pageRoute}/{item.id}">
+            {joinBtnText}
           </HollowButton>
-        {/if}
-        <HollowButton href="{pageRoute}/{item.id}">
-          {joinBtnText}
-        </HollowButton>
+        </div>
       </div>
     </div>
   </div>
