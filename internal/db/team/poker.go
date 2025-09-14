@@ -12,7 +12,7 @@ import (
 func (d *Service) TeamPokerList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Poker {
 	var pokers = make([]*thunderdome.Poker, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT p.id, p.name
+		`SELECT p.id, p.name, p.end_time, p.end_reason
         FROM thunderdome.poker p
         WHERE p.team_id = $1
         ORDER BY p.created_date DESC
@@ -31,6 +31,8 @@ func (d *Service) TeamPokerList(ctx context.Context, teamID string, limit int, o
 			if err := rows.Scan(
 				&tb.ID,
 				&tb.Name,
+				&tb.EndTime,
+				&tb.EndReason,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_poker list query scan error", zap.Error(err))
 			} else {

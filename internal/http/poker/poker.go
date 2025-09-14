@@ -4,6 +4,7 @@ package poker
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
 
@@ -69,6 +70,8 @@ type PokerDataSvc interface {
 	ArrangeStory(pokerID string, storyID string, beforeStoryID string) ([]*thunderdome.Story, error)
 	// FinalizeStory finalizes the points for a story in a poker game
 	FinalizeStory(pokerID string, storyID string, points string) ([]*thunderdome.Story, error)
+	// EndGame ends a poker game with a specified reason
+	EndGame(ctx context.Context, pokerID string, endReason string) (string, time.Time, error)
 }
 
 type AuthDataSvc interface {
@@ -132,6 +135,7 @@ func New(
 		"become_leader":    b.UserPromoteSelf,
 		"spectator_toggle": b.UserSpectatorToggle,
 		"revise_battle":    b.Revise,
+		"end_game":         b.EndGame,
 		"concede_battle":   b.Delete,
 		"abandon_battle":   b.Abandon,
 	},
@@ -148,6 +152,7 @@ func New(
 			"promote_leader": {},
 			"demote_leader":  {},
 			"revise_battle":  {},
+			"end_game":       {},
 			"concede_battle": {},
 		},
 		b.PokerService.ConfirmFacilitator,

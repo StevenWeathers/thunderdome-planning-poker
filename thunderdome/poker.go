@@ -36,6 +36,8 @@ type Poker struct {
 	TeamName             string           `json:"teamName"`
 	EstimationScaleID    string           `json:"estimationScaleId"`
 	EstimationScale      *EstimationScale `json:"estimationScale,omitempty"`
+	EndTime              *time.Time       `json:"endTime"`
+	EndReason            *string          `json:"endReason,omitempty"`
 	CreatedDate          time.Time        `json:"createdDate"`
 	UpdatedDate          time.Time        `json:"updatedDate"`
 }
@@ -94,4 +96,10 @@ type PokerSettings struct {
 	FacilitatorCode      string    `json:"facilitatorCode"`
 	CreatedAt            time.Time `json:"createdAt"`
 	UpdatedAt            time.Time `json:"updatedAt"`
+}
+
+type PokerEndGameEvent struct {
+	PokerID   string    `json:"pokerId"`
+	EndReason string    `json:"endReason"`
+	EndTime   time.Time `json:"endTime"`
 }

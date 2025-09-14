@@ -3,9 +3,20 @@
   import LL from '../i18n/i18n-svelte';
   import { user } from '../stores';
   import { Crown } from 'lucide-svelte';
+  import Badge from './global/Badge.svelte';
+  import EndStatusBadge from './global/EndStatusBadge.svelte';
+
+  interface Item {
+    id: string;
+    name: string;
+    owner_id?: string;
+    endTime?: Date;
+    endReason?: string;
+    plans?: Array<{ points: string }>;
+  }
 
   interface Props {
-    items?: Array<object>;
+    items?: Array<Item>;
     pageRoute?: string;
     joinBtnText?: string;
     itemType?: string;
@@ -42,17 +53,23 @@
     class="w-full bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
                         border-b"
   >
-    <div class="flex flex-wrap items-center p-4">
-      <div
-        class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
-                            md:text-xl leading-tight"
-      >
+  <div class="flex flex-col md:flex-row md:items-center p-4 gap-2">
+        <div
+          class="flex-1 min-w-0 font-semibold md:text-xl leading-tight"
+        >
         {#if showFacilitatorIcon}
           {#if item[facilitatorsKey].includes($user.id)}
             <Crown class="inline-block text-yellow-500" />&nbsp;
           {/if}
         {/if}
         <span data-testid="{itemType}-name">{item.name}</span>
+        {#if item.endTime}
+          <EndStatusBadge
+            endTime={item.endTime}
+            endReason={item.endReason || 'Ended'}
+            class="inline-block ms-2"
+          />
+        {/if}
         {#if showOwnerName}
           <span
             class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
@@ -73,16 +90,16 @@
         {/if}
         {#if showCompletedStories}
           <div
-            class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
+            class="mt-2 font-semibold md:text-sm text-gray-600 dark:text-gray-400"
           >
             {$LL.countPlansPointed({
-              totalPointed: item.plans.filter(p => p.points !== '').length,
-              totalPlans: item.plans.length,
+              totalPointed: item.plans?.filter(p => p.points !== '').length,
+              totalPlans: item.plans?.length,
             })}
           </div>
         {/if}
       </div>
-      <div class="w-full md:w-1/2 md:mb-0 flex flex-wrap gap-2 justify-end">
+  <div class="flex-none w-full md:w-auto flex flex-wrap gap-2 justify-start md:justify-end md:items-center">
         {#if isAdmin}
           <HollowButton onClick={toggleRemove(item.id)} color="red">
             {$LL.remove()}

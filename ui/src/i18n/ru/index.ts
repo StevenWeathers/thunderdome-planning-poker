@@ -6,6 +6,9 @@ const ru: Translation = {
   termsConditions: 'Terms & Conditions',
   support: 'Support',
   abandoned: 'Abandoned',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  ended: 'Ended',
   actionComments: 'Action Comments',
   actionItem: 'Action Item',
   actionItemPlaceholder: 'Action item...',
@@ -720,6 +723,10 @@ const ru: Translation = {
   projectUpdateSuccess: 'Проект успешно обновлен',
   projectCreateError: 'Не удалось создать проект',
   projectUpdateError: 'Не удалось обновить проект',
+  gameSettings: 'Настройки игры',
+  endGame: 'Завершить игру',
+  endGameReason: 'Причина завершения игры',
+  endGameReasonPlaceholder: 'Выберите причину',
 };
 
 export default ru;

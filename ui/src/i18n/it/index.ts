@@ -6,6 +6,9 @@ const it: Translation = {
   termsConditions: 'Termini e Condizioni',
   support: 'Supporto',
   abandoned: 'Abbandonato',
+  completed: 'Completato',
+  cancelled: 'Annullato',
+  ended: 'Terminato',
   actionComments: 'Commenti Azioni',
   actionItem: 'Compito',
   actionItemPlaceholder: 'Compito...',
@@ -757,6 +760,11 @@ const it: Translation = {
   projectUpdateSuccess: 'Progetto aggiornato con successo',
   projectCreateError: 'Impossibile creare il progetto',
   projectUpdateError: 'Impossibile aggiornare il progetto',
+  gameSettings: 'Impostazioni di Gioco',
+  endGame: 'Termina Gioco',
+  endGameReason: 'Motivo per Terminare il Gioco',
+  endGameReasonPlaceholder:
+    'Inserisci il motivo per terminare il gioco (opzionale)',
 };
 
 export default it;
