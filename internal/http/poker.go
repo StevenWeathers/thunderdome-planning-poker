@@ -525,10 +525,10 @@ func (s *Service) handlePokerDelete(pokerSvc *poker.Service) http.HandlerFunc {
 //	@Description	Stops a poker game by setting the ended_date
 //	@Tags			games
 //	@Produce		json
-//	@Param			gameId	path		string	true	"the game ID"
-//	@Success		200		object		standardJsonResponse{}
-//	@Success		403		object		standardJsonResponse{}
-//	@Success		500		object		standardJsonResponse{}
+//	@Param			gameId	path	string	true	"the game ID"
+//	@Success		200		object	standardJsonResponse{}
+//	@Success		403		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
 //	@Router			/games/{gameId}/stop [post]
 func (s *Service) handleGameStop() http.HandlerFunc {

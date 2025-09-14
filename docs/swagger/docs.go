@@ -3126,6 +3126,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/games/{gameId}/stop": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Stops a poker game by setting the ended_date",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "games"
+                ],
+                "summary": "Stop Game",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the game ID",
+                        "name": "gameId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/maintenance/clean-battles": {
             "delete": {
                 "security": [
@@ -15029,6 +15075,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "departmentCount": {
+                    "type": "integer"
+                },
+                "endedBattleCount": {
                     "type": "integer"
                 },
                 "estimationScaleCount": {

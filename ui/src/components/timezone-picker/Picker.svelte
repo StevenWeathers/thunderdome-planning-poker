@@ -170,6 +170,15 @@
     scrollList(highlightedZone);
   };
 
+  // Handle keyboard navigation for overlay (Escape to close)
+  const handleOverlayKeydown = ev => {
+    if (ev.key === 'Escape' || ev.key === 'Enter' || ev.key === ' ') {
+      reset();
+      toggleButtonRef.focus();
+      ev.preventDefault();
+    }
+  };
+
   // We watch for when the user presses Escape, ArrowDown or ArrowUp and react accordingly
   const keyDown = ev => {
     // If the clearButton is focused, don't do anything else
@@ -216,6 +225,15 @@
 
   const setHighlightedZone = zone => {
     highlightedZone = zone;
+  };
+
+  // Handle focus events to complement mouseover for better accessibility
+  const handleFocus = zone => {
+    setHighlightedZone(zone);
+  };
+
+  const handleBlur = () => {
+    // Optional: Could implement blur handling if needed
   };
 
   const toggleExpanded = ev => {
@@ -394,7 +412,14 @@
 </style>
 
 {#if expanded}
-  <div class="overlay" on:click="{reset}"></div>
+  <div
+    class="overlay"
+    role="button"
+    tabindex="0"
+    aria-label="Close timezone picker"
+    on:click={reset}
+    on:keydown={handleOverlayKeydown}
+  ></div>
 {/if}
 
 <button
@@ -421,6 +446,9 @@
 {#if expanded}
   <div
     class="tz-dropdown rounded shadow bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-400"
+    role="listbox"
+    tabindex="-1"
+    aria-label="Select timezone"
     transition:slide
     on:introend="{scrollToHighlighted}"
     on:keydown="{keyDown}"
@@ -458,7 +486,7 @@
     >
       {#each Object.keys(groupedZones) as group}
         {#if groupHasVisibleChildren(group, filteredZones)}
-          <li role="option" aria-hidden="true">
+          <li role="option" aria-hidden="true" aria-selected="false">
             <p>{group}</p>
           </li>
           {#each Object.entries(groupedZones[group]) as [zoneLabel, zoneDetails]}
@@ -469,9 +497,13 @@
                 id="{`tz-${slugify(zoneLabel)}`}"
                 bind:this="{listBoxOptionRefs[zoneLabel]}"
                 aria-label="{`Select ${zoneDetails[0]}`}"
-                aria-selected="{highlightedZone === zoneDetails[0]}"
-                on:mouseover="{() => setHighlightedZone(zoneDetails[0])}"
+                aria-selected="{highlightedZone === zoneLabel}"
+                on:mouseover="{() => setHighlightedZone(zoneLabel)}"
+                on:focus="{() => handleFocus(zoneLabel)}"
+                on:mouseleave="{handleBlur}"
+                on:blur="{handleBlur}"
                 on:click="{ev => handleTimezoneUpdate(ev, zoneLabel)}"
+                on:keydown="{(ev) => (ev.key === 'Enter' || ev.key === ' ') && handleTimezoneUpdate(ev, zoneLabel)}"
                 class="hover:bg-blue-500 hover:text-white dark:hover:bg-sky-300 dark:hover:text-gray-800 focus:bg-blue-500 focus:text-white dark:focus:bg-sky-300 dark:focus:text-gray-800"
               >
                 {zoneDetails[0]} <span>GMT {zoneDetails[1]}</span>

@@ -462,7 +462,7 @@ func (d *Service) GetGamesByUser(userID string, limit int, offset int) ([]*thund
 			SELECT poker_id, user_id FROM thunderdome.poker_facilitator WHERE poker_id IN (SELECT poker_id FROM games)
 		)
 		SELECT p.id, p.name, p.voting_locked, COALESCE(p.active_story_id::text, ''), p.point_values_allowed, p.auto_finish_voting,
-		  p.point_average_rounding, p.created_date, p.updated_date,
+		  p.point_average_rounding, p.created_date, p.updated_date, p.ended_date,
 		  (SELECT CASE WHEN COUNT(s) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(s))) END
 		  FROM thunderdome.poker_story s WHERE p.id = s.poker_id) AS stories,
 		  (SELECT CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END FROM
@@ -523,6 +523,7 @@ func (d *Service) GetGamesByUser(userID string, limit int, offset int) ([]*thund
 			&b.PointAverageRounding,
 			&b.CreatedDate,
 			&b.UpdatedDate,
+			&b.EndedDate,
 			&stories,
 			&facilitators,
 			&b.TeamName,
@@ -560,7 +561,7 @@ func (d *Service) StopGame(pokerID string) error {
 		}
 		return fmt.Errorf("poker stop game validation error: %v", err)
 	}
-	
+
 	// Prevent double-stop operations
 	if endedDate.Valid {
 		return fmt.Errorf("SECURITY_VALIDATION: poker game already stopped")
@@ -601,7 +602,7 @@ func (d *Service) GetGames(limit int, offset int) ([]*thunderdome.Poker, int, er
 
 	rows, gamesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed,
-		 b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date, COALESCE(b.team_id::TEXT, ''),
+		 b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date, b.ended_date, COALESCE(b.team_id::TEXT, ''),
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM thunderdome.poker b
 		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
@@ -636,6 +637,7 @@ func (d *Service) GetGames(limit int, offset int) ([]*thunderdome.Poker, int, er
 			&b.PointAverageRounding,
 			&b.CreatedDate,
 			&b.UpdatedDate,
+			&b.EndedDate,
 			&b.TeamID,
 			&facilitators,
 		); err != nil {
@@ -667,7 +669,7 @@ func (d *Service) GetActiveGames(limit int, offset int) ([]*thunderdome.Poker, i
 
 	rows, gamesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting,
-		 b.point_average_rounding, b.created_date, b.updated_date, COALESCE(b.team_id::TEXT, ''),
+		 b.point_average_rounding, b.created_date, b.updated_date, b.ended_date, COALESCE(b.team_id::TEXT, ''),
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM thunderdome.poker_user bu
 		LEFT JOIN thunderdome.poker b ON b.id = bu.poker_id
@@ -703,6 +705,7 @@ func (d *Service) GetActiveGames(limit int, offset int) ([]*thunderdome.Poker, i
 			&b.PointAverageRounding,
 			&b.CreatedDate,
 			&b.UpdatedDate,
+			&b.EndedDate,
 			&b.TeamID,
 			&facilitators,
 		); err != nil {

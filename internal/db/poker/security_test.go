@@ -80,17 +80,17 @@ func TestUUIDValidation(t *testing.T) {
 func TestStopGameSecurityValidation(t *testing.T) {
 	// Note: This would require database setup in a full test
 	// For now, we're documenting the expected behavior
-	
+
 	t.Run("Invalid UUID format should be rejected", func(t *testing.T) {
 		// Expected: StopGame("invalid-uuid") should return SECURITY_VALIDATION error
 		assert.True(t, true, "TODO: Implement full database test")
 	})
-	
+
 	t.Run("Non-existent game should be rejected", func(t *testing.T) {
 		// Expected: StopGame("550e8400-e29b-41d4-a716-446655440000") should return game not found
 		assert.True(t, true, "TODO: Implement full database test")
 	})
-	
+
 	t.Run("Already stopped game should be rejected", func(t *testing.T) {
 		// Expected: StopGame on already stopped game should return already stopped error
 		assert.True(t, true, "TODO: Implement full database test")
@@ -106,12 +106,12 @@ func isValidUUID(u string) bool {
 	if len(u) != 36 {
 		return false
 	}
-	
+
 	// Check basic format: 8-4-4-4-12
 	if u[8] != '-' || u[13] != '-' || u[18] != '-' || u[23] != '-' {
 		return false
 	}
-	
+
 	// Check each segment contains only hex characters
 	segments := []string{u[0:8], u[9:13], u[14:18], u[19:23], u[24:36]}
 	for _, segment := range segments {
@@ -121,6 +121,6 @@ func isValidUUID(u string) bool {
 			}
 		}
 	}
-	
+
 	return true
 }

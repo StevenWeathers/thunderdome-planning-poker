@@ -92,10 +92,16 @@
     activeWarrior = w;
   });
 
-  const detectedLocale =
-    activeWarrior.locale || detectLocale() || DefaultLocale;
-  loadLocale(detectedLocale);
-  setLocale(detectedLocale);
+  // Use $derived to properly react to activeWarrior changes
+  const detectedLocale = $derived(
+    activeWarrior?.locale || detectLocale() || DefaultLocale
+  );
+
+  // Use $effect to react to locale changes
+  $effect(() => {
+    loadLocale(detectedLocale);
+    setLocale(detectedLocale);
+  });
 
   run(() => {
     if (document.dir !== $dir) {

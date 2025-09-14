@@ -6,15 +6,21 @@
   interface Props {
     onStopGame: () => void;
     disabled?: boolean;
+    endedDate?: Date | string;
     testid?: string;
     class?: string;
   }
 
-  let { onStopGame, disabled = false, testid = "stop-game-button", class: klass = '' }: Props = $props();
+  let { onStopGame, disabled = false, endedDate, testid = "stop-game-button", class: klass = '' }: Props = $props();
+
+  // Determine if game is stopped based on endedDate
+  let isGameStopped = $derived(endedDate !== null && endedDate !== undefined);
+  let computedDisabled = $derived(disabled || isGameStopped);
 
   let showStopConfirmation = $state(false);
 
   function toggleStopConfirmation() {
+    if (computedDisabled) return;
     showStopConfirmation = !showStopConfirmation;
   }
 
@@ -27,7 +33,7 @@
 <HollowButton
   color="orange"
   onClick={toggleStopConfirmation}
-  disabled={disabled}
+  disabled={computedDisabled}
   testid={testid}
   additionalClasses={klass}
 >

@@ -893,6 +893,8 @@ definitions:
         type: integer
       departmentCount:
         type: integer
+      endedBattleCount:
+        type: integer
       estimationScaleCount:
         type: integer
       orgSubscriptionActiveCount:
@@ -4104,6 +4106,35 @@ paths:
       summary: Get Public Estimation Scale
       tags:
       - estimation-scale
+  /games/{gameId}/stop:
+    post:
+      description: Stops a poker game by setting the ended_date
+      parameters:
+      - description: the game ID
+        in: path
+        name: gameId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Stop Game
+      tags:
+      - games
   /maintenance/clean-battles:
     delete:
       description: Deletes battles older than {config.cleanup_battles_days_old} based

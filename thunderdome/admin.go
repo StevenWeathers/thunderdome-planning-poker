@@ -7,6 +7,7 @@ type ApplicationStats struct {
 	APIKeyCount                      int `json:"apikeyCount"`
 	PokerCount                       int `json:"battleCount"`
 	ActivePokerCount                 int `json:"activeBattleCount"`
+	EndedPokerCount                  int `json:"endedBattleCount"`
 	ActivePokerUserCount             int `json:"activeBattleUserCount"`
 	PokerStoryCount                  int `json:"planCount"`
 	OrganizationCount                int `json:"organizationCount"`

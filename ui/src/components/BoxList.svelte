@@ -105,10 +105,11 @@
               {$LL.remove()}
             </HollowButton>
           {/if}
-          {#if showStopButton && item[facilitatorsKey].includes($user.id) && !item.endedDate}
-            <StopGameButton 
+          {#if showStopButton && item[facilitatorsKey].includes($user.id)}
+            <StopGameButton
               onStopGame={toggleStop(item.id)}
               testid="game-list-stop-{item.id}"
+              endedDate={item.endedDate}
             />
           {/if}
           <HollowButton href="{pageRoute}/{item.id}">

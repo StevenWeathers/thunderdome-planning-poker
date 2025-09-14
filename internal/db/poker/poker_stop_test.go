@@ -16,16 +16,16 @@ func TestPokerStructEndedDate(t *testing.T) {
 		Name:      "Test Poker",
 		EndedDate: &now,
 	}
-	
+
 	assert.NotNil(t, poker.EndedDate)
 	assert.Equal(t, now, *poker.EndedDate)
-	
+
 	// Test with nil EndedDate (game not stopped)
 	pokerActive := &thunderdome.Poker{
 		ID:        "active-id",
 		Name:      "Active Poker",
 		EndedDate: nil,
 	}
-	
+
 	assert.Nil(t, pokerActive.EndedDate)
 }

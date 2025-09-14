@@ -194,7 +194,7 @@ func (b *Service) Stop(ctx context.Context, pokerID string, userID string, event
 			zap.String("user_id", userID),
 			zap.String("violation_type", "unauthorized_stop_game"),
 			zap.Time("timestamp", time.Now()))
-		
+
 		return nil, nil, fmt.Errorf("UNAUTHORIZED: user not authorized to stop game"), false
 	}
 
@@ -209,13 +209,13 @@ func (b *Service) Stop(ctx context.Context, pokerID string, userID string, event
 		zap.String("stopped_by", userID),
 		zap.String("action", "stop_game"),
 		zap.Time("timestamp", time.Now()))
-	
+
 	// Get the updated game data to send back to clients
 	stoppedGame, err := b.PokerService.GetGameByID(pokerID, userID)
 	if err != nil {
 		return nil, nil, err, false
 	}
-	
+
 	stoppedGameJSON, _ := json.Marshal(stoppedGame)
 	msg := wshub.CreateSocketEvent("battle_stopped", string(stoppedGameJSON), "")
 

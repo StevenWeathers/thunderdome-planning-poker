@@ -20,15 +20,13 @@
     }).format(date);
   }
 
-  let badgeLabel = $derived(() => {
-    if (isActive) {
-      return $LL.gameActive();
-    } else if (endedDate) {
-      return `${$LL.gameStopped()} ${formatEndedDate(endedDate)}`;
-    } else {
-      return $LL.gameStopped();
-    }
-  });
+  let badgeLabel = $derived(
+    isActive 
+      ? $LL.gameActive()
+      : endedDate 
+        ? `${$LL.gameStopped()} ${formatEndedDate(endedDate)}`
+        : $LL.gameStopped()
+  );
 
   let badgeColor = $derived(isActive ? 'green' : 'orange');
 </script>
@@ -37,5 +35,5 @@
   label={badgeLabel} 
   color={badgeColor} 
   testId="game-status-badge"
-  class="{klass}"
+  class={klass}
 />

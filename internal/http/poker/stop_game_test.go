@@ -122,7 +122,7 @@ func TestStopGameFunctionality(t *testing.T) {
 
 	t.Run("successful game stop by authorized facilitator", func(t *testing.T) {
 		mockSvc := &MockPokerDataSvc{}
-		
+
 		service := poker.New(
 			poker.Config{},
 			otelLogger,
@@ -131,11 +131,11 @@ func TestStopGameFunctionality(t *testing.T) {
 
 		gameID := "550e8400-e29b-41d4-a716-446655440000"
 		userID := "550e8400-e29b-41d4-a716-446655440001"
-		
+
 		// Mock successful facilitator confirmation and game stop
 		mockSvc.On("ConfirmFacilitator", gameID, userID).Return(nil)
 		mockSvc.On("StopGame", gameID).Return(nil)
-		
+
 		now := time.Now()
 		mockGame := &thunderdome.Poker{
 			ID:        gameID,
@@ -153,14 +153,14 @@ func TestStopGameFunctionality(t *testing.T) {
 		assert.Nil(t, result)
 		assert.NotNil(t, msg)
 		assert.False(t, shouldClose)
-		
+
 		// Verify all mocks were called
 		mockSvc.AssertExpectations(t)
 	})
 
 	t.Run("unauthorized user cannot stop game", func(t *testing.T) {
 		mockSvc := &MockPokerDataSvc{}
-		
+
 		service := poker.New(
 			poker.Config{},
 			otelLogger,
@@ -169,7 +169,7 @@ func TestStopGameFunctionality(t *testing.T) {
 
 		gameID := "550e8400-e29b-41d4-a716-446655440000"
 		userID := "550e8400-e29b-41d4-a716-446655440001"
-		
+
 		// Mock failed facilitator confirmation
 		mockSvc.On("ConfirmFacilitator", gameID, userID).Return(errors.New("not a facilitator"))
 
@@ -183,7 +183,7 @@ func TestStopGameFunctionality(t *testing.T) {
 		assert.Nil(t, result)
 		assert.Nil(t, msg)
 		assert.False(t, shouldClose)
-		
+
 		// Verify ConfirmFacilitator was called but StopGame was not
 		mockSvc.AssertExpectations(t)
 		mockSvc.AssertNotCalled(t, "StopGame")
@@ -191,7 +191,7 @@ func TestStopGameFunctionality(t *testing.T) {
 
 	t.Run("database error during game stop", func(t *testing.T) {
 		mockSvc := &MockPokerDataSvc{}
-		
+
 		service := poker.New(
 			poker.Config{},
 			otelLogger,
@@ -200,7 +200,7 @@ func TestStopGameFunctionality(t *testing.T) {
 
 		gameID := "550e8400-e29b-41d4-a716-446655440000"
 		userID := "550e8400-e29b-41d4-a716-446655440001"
-		
+
 		// Mock successful facilitator confirmation but failed game stop
 		mockSvc.On("ConfirmFacilitator", gameID, userID).Return(nil)
 		mockSvc.On("StopGame", gameID).Return(errors.New("database error"))
@@ -215,7 +215,7 @@ func TestStopGameFunctionality(t *testing.T) {
 		assert.Nil(t, result)
 		assert.Nil(t, msg)
 		assert.False(t, shouldClose)
-		
+
 		// Verify both methods were called
 		mockSvc.AssertExpectations(t)
 	})
@@ -233,7 +233,7 @@ func TestStopGameInputValidation(t *testing.T) {
 			"550e8400-e29b-41d4-a716-4466554400000", // too long
 			"550e8400-e29b-41d4-a716-44665544000z",  // invalid character
 		}
-		
+
 		for _, invalidUUID := range invalidUUIDs {
 			t.Run("UUID: "+invalidUUID, func(t *testing.T) {
 				// Test would validate that StopGame returns appropriate error
@@ -260,17 +260,17 @@ func TestGameStatusBadgeDisplay(t *testing.T) {
 		// Test logic for active game (endedDate is nil)
 		var endedDate *time.Time = nil
 		isActive := endedDate == nil
-		
+
 		assert.True(t, isActive)
 		// In actual component, this would show "Active" with green color
 	})
-	
+
 	t.Run("stopped game shows correct status with timestamp", func(t *testing.T) {
 		// Test logic for stopped game (endedDate is set)
 		now := time.Now()
 		endedDate := &now
 		isActive := endedDate == nil
-		
+
 		assert.False(t, isActive)
 		assert.NotNil(t, endedDate)
 		// In actual component, this would show "Stopped" with orange color and formatted timestamp
