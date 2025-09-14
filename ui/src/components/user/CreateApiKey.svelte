@@ -85,7 +85,7 @@
     }
   }
 
-  let focusInput: any;
+  let focusInput = $state<HTMLElement>();
   onMount(() => {
     focusInput?.focus();
   });

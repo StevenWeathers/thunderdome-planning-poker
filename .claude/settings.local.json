@@ -19,7 +19,18 @@
       "Bash(CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o thunderdome-planning-poker-macos)",
       "Bash(make:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(task build-ui)",
+      "Bash(npm run check:*)",
+      "Bash(npx update-browserslist-db:*)",
+      "Bash(timeout 60 npm run build)",
+      "Bash(task dev:*)",
+      "Bash(task build)",
+      "Bash(task fmt-ui)",
+      "Bash(task gen-swag:*)",
+      "Bash(task build-go)",
+      "Bash(task fmt-go:*)",
+      "Bash(task test-go:*)"
     ],
     "deny": [],
     "ask": []

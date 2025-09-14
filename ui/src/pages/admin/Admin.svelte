@@ -68,6 +68,7 @@
     teamCount: 0,
     apikeyCount: 0,
     activeBattleCount: 0,
+    endedBattleCount: 0,
     activeBattleUserCount: 0,
     teamCheckinsCount: 0,
     retroCount: 0,
@@ -298,6 +299,12 @@
           name: 'battlesActive',
           count: appStats.activeBattleCount,
           icon: Zap,
+          active: FeaturePoker,
+        },
+        {
+          name: 'battlesEnded',
+          count: appStats.endedBattleCount,
+          icon: SquareCheckBig,
           active: FeaturePoker,
         },
         {

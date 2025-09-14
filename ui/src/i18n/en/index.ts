@@ -71,6 +71,7 @@ const en: BaseTranslation = {
   battleRemoveSuccess: 'Game removed successfully.',
   battles: 'Games',
   battlesActive: 'Active Games',
+  battlesEnded: 'Ended Games',
   battlesActiveUsers: 'Active Game Users',
   becomeFacilitator: 'Become Facilitator',
   becomeParticipant: 'Become Participant',
@@ -123,7 +124,8 @@ const en: BaseTranslation = {
   deleteBattleConfirmText: 'Are you sure you want to delete this game?',
   deleteBattleError: 'error deleting game',
   battleStop: 'Stop Game',
-  stopBattleConfirmText: 'Are you sure you want to stop this game? This will end the game session permanently.',
+  stopBattleConfirmText:
+    'Are you sure you want to stop this game? This will end the game session permanently.',
   stopGameError: 'Error stopping game',
   battleStopped: 'Game stopped',
   battleStoppedAt: 'Game stopped at {endTime}',

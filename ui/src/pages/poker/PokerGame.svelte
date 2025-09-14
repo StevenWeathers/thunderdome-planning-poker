@@ -109,6 +109,10 @@
       case 'init': {
         JoinPassRequired = false;
         pokerGame = JSON.parse(parsedEvent.value);
+        // Convert endedDate string to Date object for consistency
+        if (pokerGame.endedDate) {
+          pokerGame.endedDate = new Date(pokerGame.endedDate);
+        }
         points = pokerGame.pointValuesAllowed;
         const { spectator = false } =
           pokerGame.users.find(w => w.id === $user.id) || {};

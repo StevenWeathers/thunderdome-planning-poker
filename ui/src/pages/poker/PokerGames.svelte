@@ -58,7 +58,11 @@
     )
       .then(res => res.json())
       .then(function (result) {
-        battles = result.data;
+        // Convert endedDate strings to Date objects for consistency
+        battles = result.data.map(battle => ({
+          ...battle,
+          endedDate: battle.endedDate ? new Date(battle.endedDate) : battle.endedDate
+        }));
         battleCount = result.meta.count;
         loading = false;
       })

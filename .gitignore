@@ -50,3 +50,5 @@ yarn-error.log*
 
 # local config
 config.yaml
+
+.claude/
