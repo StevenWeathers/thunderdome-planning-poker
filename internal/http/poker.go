@@ -499,6 +499,73 @@ func (s *Service) handlePokerStoryDelete(pokerSvc *poker.Service) http.HandlerFu
 	}
 }
 
+type endGameRequestBody struct {
+	EndReason string `json:"endReason" validate:"required,oneof=Completed Cancelled Abandoned"`
+}
+
+// handlePokerEndGame handles ending a poker game
+//
+//	@Summary		End Poker Game
+//	@Description	Ends a poker game
+//	@Param			battleId	path	string				true	"the poker game ID"
+//	@Param			reason		body	endGameRequestBody	true	"reason for ending the game"
+//	@Tags			poker
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{}
+//	@Success		403	object	standardJsonResponse{}
+//	@Success		500	object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/battles/{battleId}/end [post]
+func (s *Service) handlePokerEndGame(pokerSvc *poker.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		gameID := r.PathValue("battleId")
+		idErr := validate.Var(gameID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var bodyData endGameRequestBody
+		jsonErr := json.Unmarshal(body, &bodyData)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(bodyData)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		eventData, err := json.Marshal(bodyData)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINTERNAL, err.Error()))
+			return
+		}
+
+		_, err = pokerSvc.APIEvent(ctx, gameID, sessionUserID, "end_game", string(eventData))
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handlePokerGameEnd error", zap.Error(err),
+				zap.String("poker_id", gameID), zap.String("session_user_id", sessionUserID),
+				zap.String("end_reason", bodyData.EndReason))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 // handlePokerDelete handles deleting a poker game
 //
 //	@Summary		Delete Poker Game

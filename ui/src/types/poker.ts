@@ -15,6 +15,8 @@ export type PokerGame = {
   users: Array<PokerUser>;
   votingLocked: boolean;
   teamId?: string;
+  endTime?: Date;
+  endReason?: string;
 };
 
 export type PokerStory = {

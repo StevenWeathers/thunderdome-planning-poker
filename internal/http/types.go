@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -447,6 +448,8 @@ type PokerDataSvc interface {
 	DeleteSettings(ctx context.Context, id string) error
 	// GetSettingsByID retrieves poker settings by its ID
 	GetSettingsByID(ctx context.Context, id string) (*thunderdome.PokerSettings, error)
+	// EndGame ends a poker game with a specified reason
+	EndGame(ctx context.Context, pokerID string, endReason string) (string, time.Time, error)
 }
 
 type RetroDataSvc interface {

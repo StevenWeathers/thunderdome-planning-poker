@@ -195,6 +195,17 @@ definitions:
       teamRole:
         type: string
     type: object
+  http.endGameRequestBody:
+    properties:
+      endReason:
+        enum:
+        - Completed
+        - Cancelled
+        - Abandoned
+        type: string
+    required:
+    - endReason
+    type: object
   http.estimationScaleRequestBody:
     properties:
       defaultScale:
@@ -1151,6 +1162,10 @@ definitions:
       autoFinishVoting:
         type: boolean
       createdDate:
+        type: string
+      endReason:
+        type: string
+      endTime:
         type: string
       estimationScale:
         $ref: '#/definitions/thunderdome.EstimationScale'
@@ -3907,6 +3922,41 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Poker Game
+      tags:
+      - poker
+  /battles/{battleId}/end:
+    post:
+      description: Ends a poker game
+      parameters:
+      - description: the poker game ID
+        in: path
+        name: battleId
+        required: true
+        type: string
+      - description: reason for ending the game
+        in: body
+        name: reason
+        required: true
+        schema:
+          $ref: '#/definitions/http.endGameRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: End Poker Game
       tags:
       - poker
   /battles/{battleId}/plans:

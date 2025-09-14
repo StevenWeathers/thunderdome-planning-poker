@@ -6,6 +6,9 @@ const en: BaseTranslation = {
   termsConditions: 'Terms & Conditions',
   support: 'Support',
   abandoned: 'Abandoned',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  ended: 'Ended',
   actionComments: 'Action Comments',
   actionItem: 'Action Item',
   actionItemPlaceholder: 'Action item...',
@@ -722,6 +725,10 @@ const en: BaseTranslation = {
   projectCreateError: 'Failed to create project',
   projectUpdateError: 'Failed to update project',
   project: 'Project',
+  gameSettings: 'Game Settings',
+  endGame: 'End Game',
+  endGameReason: 'End Game Reason',
+  endGameReasonPlaceholder: 'Select a reason',
 };
 
 export default en;

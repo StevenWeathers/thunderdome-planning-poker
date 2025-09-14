@@ -37,6 +37,18 @@ type RootTranslation = {
    */
   abandoned: string;
   /**
+   * C​o​m​p​l​e​t​e​d
+   */
+  completed: string;
+  /**
+   * C​a​n​c​e​l​l​e​d
+   */
+  cancelled: string;
+  /**
+   * E​n​d​e​d
+   */
+  ended: string;
+  /**
    * A​c​t​i​o​n​ ​C​o​m​m​e​n​t​s
    */
   actionComments: string;
@@ -391,10 +403,6 @@ type RootTranslation = {
    * C​o​m​m​e​n​t​s
    */
   comments: string;
-  /**
-   * C​o​m​p​l​e​t​e​d
-   */
-  completed: string;
   /**
    * C​o​n​c​i​s​e​ ​V​o​t​i​n​g​ ​R​e​s​u​l​t​s
    */
@@ -2731,6 +2739,110 @@ type RootTranslation = {
    * G​i​t​H​u​b​ ​R​e​p​o​s​i​t​o​r​y
    */
   githubRepository: string;
+  /**
+   * P​r​o​j​e​c​t​s
+   */
+  projects: string;
+  /**
+   * C​r​e​a​t​e​ ​P​r​o​j​e​c​t
+   */
+  projectCreate: string;
+  /**
+   * P​r​o​j​e​c​t​ ​K​e​y
+   */
+  projectKey: string;
+  /**
+   * S​c​o​p​e
+   */
+  scope: string;
+  /**
+   * C​r​e​a​t​e​d​ ​A​t
+   */
+  createdAt: string;
+  /**
+   * P​r​o​j​e​c​t​ ​r​e​m​o​v​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  projectRemoveSuccess: string;
+  /**
+   * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​p​r​o​j​e​c​t
+   */
+  projectRemoveError: string;
+  /**
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​p​r​o​j​e​c​t​?​ ​T​h​i​s​ ​a​c​t​i​o​n​ ​c​a​n​n​o​t​ ​b​e​ ​u​n​d​o​n​e​.
+   */
+  removeProjectConfirmText: string;
+  /**
+   * R​e​m​o​v​e​ ​P​r​o​j​e​c​t
+   */
+  removeProject: string;
+  /**
+   * C​r​e​a​t​e​ ​P​r​o​j​e​c​t
+   */
+  modalCreateProject: string;
+  /**
+   * U​p​d​a​t​e​ ​P​r​o​j​e​c​t
+   */
+  modalUpdateProject: string;
+  /**
+   * E​n​t​e​r​ ​p​r​o​j​e​c​t​ ​k​e​y​ ​(​e​.​g​.​,​ ​P​R​O​J​)
+   */
+  projectKeyPlaceholder: string;
+  /**
+   * E​n​t​e​r​ ​p​r​o​j​e​c​t​ ​n​a​m​e
+   */
+  projectNamePlaceholder: string;
+  /**
+   * E​n​t​e​r​ ​p​r​o​j​e​c​t​ ​d​e​s​c​r​i​p​t​i​o​n​ ​(​o​p​t​i​o​n​a​l​)
+   */
+  projectDescriptionPlaceholder: string;
+  /**
+   * P​r​o​j​e​c​t​ ​k​e​y​ ​m​u​s​t​ ​b​e​ ​2​-​1​0​ ​a​l​p​h​a​n​u​m​e​r​i​c​ ​c​h​a​r​a​c​t​e​r​s
+   */
+  projectKeyValidationError: string;
+  /**
+   * 2​-​1​0​ ​c​h​a​r​a​c​t​e​r​s​,​ ​l​e​t​t​e​r​s​ ​a​n​d​ ​n​u​m​b​e​r​s​ ​o​n​l​y
+   */
+  projectKeyHelp: string;
+  /**
+   * P​r​o​j​e​c​t​ ​S​c​o​p​e
+   */
+  projectScope: string;
+  /**
+   * U​p​d​a​t​e​ ​P​r​o​j​e​c​t
+   */
+  projectUpdate: string;
+  /**
+   * P​r​o​j​e​c​t​ ​c​r​e​a​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  projectCreateSuccess: string;
+  /**
+   * P​r​o​j​e​c​t​ ​u​p​d​a​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  projectUpdateSuccess: string;
+  /**
+   * F​a​i​l​e​d​ ​t​o​ ​c​r​e​a​t​e​ ​p​r​o​j​e​c​t
+   */
+  projectCreateError: string;
+  /**
+   * F​a​i​l​e​d​ ​t​o​ ​u​p​d​a​t​e​ ​p​r​o​j​e​c​t
+   */
+  projectUpdateError: string;
+  /**
+   * G​a​m​e​ ​S​e​t​t​i​n​g​s
+   */
+  gameSettings: string;
+  /**
+   * E​n​d​ ​G​a​m​e
+   */
+  endGame: string;
+  /**
+   * E​n​d​ ​G​a​m​e​ ​R​e​a​s​o​n
+   */
+  endGameReason: string;
+  /**
+   * S​e​l​e​c​t​ ​a​ ​r​e​a​s​o​n
+   */
+  endGameReasonPlaceholder: string;
 };
 
 export type TranslationFunctions = {
@@ -2754,6 +2866,18 @@ export type TranslationFunctions = {
    * Abandoned
    */
   abandoned: () => LocalizedString;
+  /**
+   * Completed
+   */
+  completed: () => LocalizedString;
+  /**
+   * Cancelled
+   */
+  cancelled: () => LocalizedString;
+  /**
+   * Ended
+   */
+  ended: () => LocalizedString;
   /**
    * Action Comments
    */
@@ -3106,10 +3230,6 @@ export type TranslationFunctions = {
    * Comments
    */
   comments: () => LocalizedString;
-  /**
-   * Completed
-   */
-  completed: () => LocalizedString;
   /**
    * Concise Voting Results
    */
@@ -5439,6 +5559,110 @@ export type TranslationFunctions = {
    * GitHub Repository
    */
   githubRepository: () => LocalizedString;
+  /**
+   * Projects
+   */
+  projects: () => LocalizedString;
+  /**
+   * Create Project
+   */
+  projectCreate: () => LocalizedString;
+  /**
+   * Project Key
+   */
+  projectKey: () => LocalizedString;
+  /**
+   * Scope
+   */
+  scope: () => LocalizedString;
+  /**
+   * Created At
+   */
+  createdAt: () => LocalizedString;
+  /**
+   * Project removed successfully
+   */
+  projectRemoveSuccess: () => LocalizedString;
+  /**
+   * Failed to remove project
+   */
+  projectRemoveError: () => LocalizedString;
+  /**
+   * Are you sure you want to remove this project? This action cannot be undone.
+   */
+  removeProjectConfirmText: () => LocalizedString;
+  /**
+   * Remove Project
+   */
+  removeProject: () => LocalizedString;
+  /**
+   * Create Project
+   */
+  modalCreateProject: () => LocalizedString;
+  /**
+   * Update Project
+   */
+  modalUpdateProject: () => LocalizedString;
+  /**
+   * Enter project key (e.g., PROJ)
+   */
+  projectKeyPlaceholder: () => LocalizedString;
+  /**
+   * Enter project name
+   */
+  projectNamePlaceholder: () => LocalizedString;
+  /**
+   * Enter project description (optional)
+   */
+  projectDescriptionPlaceholder: () => LocalizedString;
+  /**
+   * Project key must be 2-10 alphanumeric characters
+   */
+  projectKeyValidationError: () => LocalizedString;
+  /**
+   * 2-10 characters, letters and numbers only
+   */
+  projectKeyHelp: () => LocalizedString;
+  /**
+   * Project Scope
+   */
+  projectScope: () => LocalizedString;
+  /**
+   * Update Project
+   */
+  projectUpdate: () => LocalizedString;
+  /**
+   * Project created successfully
+   */
+  projectCreateSuccess: () => LocalizedString;
+  /**
+   * Project updated successfully
+   */
+  projectUpdateSuccess: () => LocalizedString;
+  /**
+   * Failed to create project
+   */
+  projectCreateError: () => LocalizedString;
+  /**
+   * Failed to update project
+   */
+  projectUpdateError: () => LocalizedString;
+  /**
+   * Game Settings
+   */
+  gameSettings: () => LocalizedString;
+  /**
+   * End Game
+   */
+  endGame: () => LocalizedString;
+  /**
+   * End Game Reason
+   */
+  endGameReason: () => LocalizedString;
+  /**
+   * Select a reason
+   */
+  endGameReasonPlaceholder: () => LocalizedString;
 };
 
 export type Formatters = {};

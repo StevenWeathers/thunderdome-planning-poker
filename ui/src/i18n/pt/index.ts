@@ -6,6 +6,9 @@ const pt: Translation = {
   termsConditions: 'Terms & Conditions',
   support: 'Support',
   abandoned: 'Abandonado',
+  completed: 'Concluído',
+  cancelled: 'Cancelado',
+  ended: 'Finalizado',
   actionComments: 'Comentários da ação',
   actionItem: 'Item de ação',
   actionItemPlaceholder: 'Item de ação...',
@@ -741,6 +744,10 @@ const pt: Translation = {
   projectCreateError: 'Falha ao criar projeto',
   projectUpdateError: 'Falha ao atualizar projeto',
   project: 'Projeto',
+  gameSettings: 'Configurações do Jogo',
+  endGame: 'Terminar Jogo',
+  endGameReason: 'Razão para Terminar o Jogo',
+  endGameReasonPlaceholder: 'Selecione uma razão',
 };
 
 export default pt;

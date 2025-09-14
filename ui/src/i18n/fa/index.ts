@@ -6,6 +6,9 @@ const fa: Translation = {
   termsConditions: 'شرایط و ضوابط',
   support: 'پشتیبانی',
   abandoned: 'رها شده',
+  completed: 'تکمیل شده',
+  cancelled: 'لغو شده',
+  ended: 'پایان یافته',
   actionComments: 'نظرات اقدام',
   actionItem: 'آیتم اقدام',
   actionItemPlaceholder: 'آیتم اقدام...',
@@ -733,6 +736,10 @@ const fa: Translation = {
   projectCreateError: 'ایجاد پروژه با شکست مواجه شد',
   projectUpdateError: 'به‌روزرسانی پروژه با شکست مواجه شد',
   project: 'پروژه',
+  gameSettings: 'تنظیمات بازی',
+  endGame: 'پایان بازی',
+  endGameReason: 'دلیل پایان بازی',
+  endGameReasonPlaceholder: 'یک دلیل انتخاب کنید',
 };
 
 export default fa;

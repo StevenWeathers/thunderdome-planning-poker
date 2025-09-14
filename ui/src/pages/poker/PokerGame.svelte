@@ -16,7 +16,9 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
-  import { ExternalLink } from 'lucide-svelte';
+  import { ExternalLink, Pencil, Settings, TimerOff, Trash } from 'lucide-svelte';
+  import SubMenu from '../../components/global/SubMenu.svelte';
+  import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import VotingMetrics from '../../components/poker/VotingMetrics.svelte';
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
@@ -25,6 +27,8 @@
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
   import Badge from '../../components/global/Badge.svelte';
+  import EndStatusBadge from '../../components/global/EndStatusBadge.svelte';
+  import EndGameModal from '../../components/poker/EndGameModal.svelte';
 
   interface Props {
     battleId: string;
@@ -40,7 +44,7 @@
     xfetch
   }: Props = $props();
 
-  const { AllowRegistration, AllowGuests } = AppConfig;
+  const { AllowGuests } = AppConfig;
   const loginOrRegister: string = AllowGuests
     ? appRoutes.register
     : appRoutes.login;
@@ -91,6 +95,8 @@
   let showDeleteGame: boolean = $state(false);
   let isSpectator: boolean = $state(false);
   let voteStartTime: Date = $state(new Date());
+  let showEndGameModal: boolean = $state(false);
+  let gameOver: boolean = $derived(typeof pokerGame.endTime !== 'undefined' && pokerGame.endTime !== null);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -269,6 +275,11 @@
         pokerGame.joinCode = revisedBattle.joinCode;
         pokerGame.hideVoterIdentity = revisedBattle.hideVoterIdentity;
         pokerGame.teamId = revisedBattle.teamId;
+        break;
+      case 'game_ended':
+        const parsed = JSON.parse(parsedEvent.value);
+        pokerGame.endTime = new Date(parsed.endTime);
+        pokerGame.endReason = parsed.endReason;
         break;
       case 'battle_conceded':
         // poker over, goodbye.
@@ -470,6 +481,15 @@
     sendSocketEvent('auth_game', joinPasscode);
   }
 
+  function toggleEndGame() {
+    showEndGameModal = !showEndGameModal;
+  }
+
+  function handleEndGame({ endGameReason }) {
+    sendSocketEvent('end_game', JSON.stringify({ endReason: endGameReason }));
+    toggleEndGame();
+  }
+
   onMount(() => {
     if (!$user.id) {
       router.route(`${loginOrRegister}/battle/${battleId}`);
@@ -488,39 +508,48 @@
 <PageLayout>
   <div class="mb-6 flex flex-wrap">
     <div class="w-full text-center md:w-2/3 md:text-left">
-      <h1
-        class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center flex-wrap gap-2"
-      >
-        {#if currentStory.link}
-          <a
-            href="{currentStory.link}"
-            target="_blank"
-            class="text-blue-800 dark:text-sky-400 inline-block"
-            data-testid="currentplan-link"
-          >
-            <ExternalLink class="w-8 h-8" />
-          </a>
-        {/if}
-        {#if currentStory.type}
-          <Badge label={currentStory.type} testId="currentplan-type" class="text-lg" />
-        {/if}
-        {#if currentStory.referenceId}
-          <span data-testid="currentplan-refid">[{currentStory.referenceId}]</span>
-        {/if}
-        <span data-testid="currentplan-name">
-          {#if currentStory.name === ''}
-            [{$LL.votingNotStarted()}]
-          {:else}
-            {currentStory.name}
+      {#if !gameOver}
+        <h1
+          class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center flex-wrap gap-2"
+        >
+          {#if currentStory.link}
+            <a
+              href="{currentStory.link}"
+              target="_blank"
+              class="text-blue-800 dark:text-sky-400 inline-block"
+              data-testid="currentplan-link"
+            >
+              <ExternalLink class="w-8 h-8" />
+            </a>
           {/if}
-        </span>
-      </h1>
+          {#if currentStory.type}
+            <Badge label={currentStory.type} testId="currentplan-type" class="text-lg" />
+          {/if}
+          {#if currentStory.referenceId}
+            <span data-testid="currentplan-refid">[{currentStory.referenceId}]</span>
+          {/if}
+          <span data-testid="currentplan-name">
+            {#if currentStory.name === ''}
+              [{$LL.votingNotStarted()}]
+            {:else}
+              {currentStory.name}
+            {/if}
+          </span>
+        </h1>
+      {/if}
       <h2
-        class="text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
+        class="inline-block text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
         data-testid="battle-name"
       >
         {pokerGame.name}
       </h2>
+      {#if pokerGame.endTime}
+          <EndStatusBadge
+            endTime={pokerGame.endTime}
+            endReason={pokerGame.endReason || 'Ended'}
+            class="inline-block ms-2"
+          />
+      {/if}
     </div>
 
     <div class="w-full md:w-1/3 text-center md:text-right">
@@ -534,6 +563,7 @@
 
   <div class="flex flex-wrap mb-4 -mx-4">
     <div class="w-full lg:w-3/4 px-4">
+    {#if !gameOver}
       {#if showVotingResults}
         <div class=" mb-2 md:mb-4">
           <VotingMetrics
@@ -559,6 +589,7 @@
           {/each}
         </div>
       {/if}
+    {/if}    
 
       <PokerStories
         plans={pokerGame.plans}
@@ -567,6 +598,7 @@
         notifications={notifications}
         xfetch={xfetch}
         gameId={pokerGame.id}
+        gameOver={gameOver}
       />
     </div>
 
@@ -591,11 +623,12 @@
               autoFinishVoting={pokerGame.autoFinishVoting}
               sendSocketEvent={sendSocketEvent}
               notifications={notifications}
+              gameOver={gameOver}
             />
           {/if}
         {/each}
 
-        {#if isFacilitator}
+        {#if isFacilitator && !gameOver}
           <VotingControls
             points={points}
             planId={pokerGame.activePlanId}
@@ -613,24 +646,7 @@
           joinCode={pokerGame.joinCode}
           notifications={notifications}
         />
-        {#if isFacilitator}
-          <div class="mt-4 text-right">
-            <HollowButton
-              color="blue"
-              onClick={toggleEditGame}
-              testid="battle-edit"
-            >
-              {$LL.battleEdit()}
-            </HollowButton>
-            <HollowButton
-              color="red"
-              onClick={toggleDeleteGame}
-              testid="battle-delete"
-            >
-              {$LL.battleDelete()}
-            </HollowButton>
-          </div>
-        {:else}
+        {#if !isFacilitator}
           <div class="mt-4 text-right">
             <HollowButton
               color="red"
@@ -642,6 +658,35 @@
           </div>
         {/if}
       </div>
+
+      {#if isFacilitator}
+        <div class="flex justify-end">
+          <SubMenu label={$LL.gameSettings()} icon={Settings} testId="poker-settings">
+            {#snippet children({ toggleSubmenu })}
+              <SubMenuItem
+                onClickHandler={() => { toggleEditGame(); toggleSubmenu(); }}
+                testId="battle-edit"
+                icon={Pencil}
+                label={$LL.battleEdit()}
+              />
+              {#if !gameOver && isFacilitator}
+                <SubMenuItem
+                  onClickHandler={() => { toggleEndGame(); toggleSubmenu(); }}
+                  testId="end-game"
+                  icon={TimerOff}
+                  label={$LL.endGame()}
+                />
+              {/if}
+              <SubMenuItem
+                onClickHandler={() => { toggleDeleteGame(); toggleSubmenu(); }}
+                testId="battle-delete"
+                icon={Trash}
+                label={$LL.battleDelete()}
+              />
+            {/snippet}
+          </SubMenu>
+        </div>
+      {/if}
     </div>
   </div>
 
@@ -658,6 +703,15 @@
       joinCode={pokerGame.joinCode}
       leaderCode={pokerGame.leaderCode}
       teamId={pokerGame.teamId}
+      notifications={notifications}
+      xfetch={xfetch}
+    />
+  {/if}
+
+  {#if showEndGameModal}
+    <EndGameModal
+      toggleModal={toggleEndGame}
+      handleSubmit={handleEndGame}
       notifications={notifications}
       xfetch={xfetch}
     />

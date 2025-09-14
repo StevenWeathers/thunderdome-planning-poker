@@ -17,6 +17,7 @@
     points?: string;
     sendSocketEvent?: any;
     notifications: NotificationService;
+    gameOver?: boolean;
   }
 
   let {
@@ -27,7 +28,8 @@
     leaders = [],
     points = '',
     sendSocketEvent = () => {},
-    notifications
+    notifications,
+    gameOver = false
   }: Props = $props();
 
   const showRank = AppConfig.ShowWarriorRank;
@@ -116,7 +118,7 @@
         <p class="text-l text-gray-700 dark:text-gray-400 leading-tight">
           {#if leaders.includes(warrior.id)}
             <Crown class="inline-block text-yellow-500" />
-            {#if isFacilitator}
+            {#if isFacilitator && !gameOver}
               &nbsp;
               <button
                 onclick={demoteLeader}
@@ -129,7 +131,7 @@
               </button>
             {:else}&nbsp;{$LL.facilitator()}
             {/if}
-          {:else if isFacilitator}
+          {:else if isFacilitator && !gameOver}
             <button
               onclick={promoteLeader}
               class="inline-block align-baseline text-sm
@@ -140,7 +142,7 @@
               {$LL.promote()}
             </button>
           {/if}
-          {#if isFacilitator && warrior.id !== $sessionUser.id && !warrior.spectator}
+          {#if !gameOver && isFacilitator && warrior.id !== $sessionUser.id && !warrior.spectator}
             &nbsp;|&nbsp;
             <button
               onclick={jabWarrior}
@@ -154,7 +156,7 @@
           {/if}
         </p>
         {#if warrior.id === $sessionUser.id}
-          {#if !isFacilitator}
+          {#if !gameOver && !isFacilitator}
             <button
               onclick={toggleBecomeFacilitator}
               class="inline-block align-baseline text-sm
@@ -165,7 +167,7 @@
               {$LL.becomeFacilitator()}
             </button>
           {/if}
-          {#if autoFinishVoting}
+          {#if !gameOver && autoFinishVoting}
             <button
               onclick={toggleSpectator}
               class="inline-block align-baseline text-sm text-blue-500

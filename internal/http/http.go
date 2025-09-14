@@ -321,6 +321,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle("DELETE "+prefix+"/api/maintenance/clean-battles", a.userOnly(a.adminOnly(a.handleCleanPokerGames())))
 		router.Handle("GET "+prefix+"/api/battles", a.userOnly(a.adminOnly(a.handleGetPokerGames())))
 		router.Handle("GET "+prefix+"/api/battles/{battleId}", a.userOnly(a.handleGetPokerGame()))
+		router.Handle("PATCH "+prefix+"/api/battles/{battleId}/end", a.userOnly(a.handlePokerEndGame(pokerSvc)))
 		router.Handle("DELETE "+prefix+"/api/battles/{battleId}", a.userOnly(a.handlePokerDelete(pokerSvc)))
 		router.Handle("POST "+prefix+"/api/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(pokerSvc)))
 		router.Handle("PUT "+prefix+"/api/battles/{battleId}/plans/{planId}", a.userOnly(a.handlePokerStoryUpdate(pokerSvc)))

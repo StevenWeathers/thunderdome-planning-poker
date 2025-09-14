@@ -26,8 +26,12 @@ thunderdome-planning-poker
 data/
 
 # local env files
+.env
 .env.local
 .env.*.local
+
+# LLM files
+.claude
 
 # Log files
 npm-debug.log*
