@@ -2828,6 +2828,10 @@ type RootTranslation = {
    */
   projectUpdateError: string;
   /**
+   * P​r​o​j​e​c​t
+   */
+  project: string;
+  /**
    * G​a​m​e​ ​S​e​t​t​i​n​g​s
    */
   gameSettings: string;
@@ -5647,6 +5651,10 @@ export type TranslationFunctions = {
    * Failed to update project
    */
   projectUpdateError: () => LocalizedString;
+  /**
+   * Project
+   */
+  project: () => LocalizedString;
   /**
    * Game Settings
    */
