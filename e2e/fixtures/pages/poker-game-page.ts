@@ -5,6 +5,7 @@ export class PokerGamePage {
   readonly pageTitle: Locator;
   readonly toggleSpectator: Locator;
   readonly userDemoteBtn: Locator;
+  readonly pokerSettingsBtn: Locator;
   readonly gameDeleteBtn: Locator;
   readonly gameDeleteConfirmBtn: Locator;
   readonly gameDeleteCancelBtn: Locator;
@@ -24,6 +25,7 @@ export class PokerGamePage {
     this.pageTitle = page.locator("h2");
     this.toggleSpectator = page.locator('[data-testid="user-togglespectator"]');
     this.userDemoteBtn = page.locator(`[data-testid="user-demote"]`);
+    this.pokerSettingsBtn = page.locator('[data-testid="poker-settings"]');
     this.gameDeleteBtn = page.locator('[data-testid="battle-delete"]');
     this.gameDeleteConfirmBtn = page.locator("data-testid=confirm-confirm");
     this.gameDeleteCancelBtn = page.locator("data-testid=confirm-cancel");

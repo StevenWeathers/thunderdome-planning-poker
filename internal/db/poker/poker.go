@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 
@@ -342,7 +343,7 @@ func (d *Service) GetGameByID(pokerID string, userID string) (*thunderdome.Poker
 				'default_scale', es.default_scale
 			)::jsonb,
 			'{}'::jsonb
-		) AS estimation_scale
+		) AS estimation_scale, end_time, end_reason
 		FROM thunderdome.poker b
 		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
 		LEFT JOIN thunderdome.estimation_scale es ON b.estimation_scale_id = es.id
@@ -366,6 +367,8 @@ func (d *Service) GetGameByID(pokerID string, userID string) (*thunderdome.Poker
 		&b.UpdatedDate,
 		&facilitators,
 		&estimationScaleJSON,
+		&b.EndTime,
+		&b.EndReason,
 	)
 	if e != nil {
 		return nil, fmt.Errorf("get poker query error: %v", e)
@@ -482,7 +485,7 @@ func (d *Service) GetGamesByUser(userID string, limit int, offset int) ([]*thund
 				'default_scale', es.default_scale
 			)::jsonb,
 			'{}'::jsonb
-		) AS estimation_scale
+		) AS estimation_scale, p.end_time, p.end_reason
 		FROM thunderdome.poker p
 		LEFT JOIN user_teams t ON t.id = p.team_id
 		LEFT JOIN thunderdome.estimation_scale es ON p.estimation_scale_id = es.id
@@ -527,6 +530,8 @@ func (d *Service) GetGamesByUser(userID string, limit int, offset int) ([]*thund
 			&b.TeamID,
 			&b.EstimationScaleID,
 			&estimationScale,
+			&b.EndTime,
+			&b.EndReason,
 		); err != nil {
 			d.Logger.Error("error getting poker by user", zap.Error(err))
 		} else {
@@ -569,7 +574,8 @@ func (d *Service) GetGames(limit int, offset int) ([]*thunderdome.Poker, int, er
 	rows, gamesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed,
 		 b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date, COALESCE(b.team_id::TEXT, ''),
-		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
+		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders, 
+		b.end_time, b.end_reason
 		FROM thunderdome.poker b
 		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
 		GROUP BY b.id, b.created_date ORDER BY b.created_date DESC
@@ -605,6 +611,8 @@ func (d *Service) GetGames(limit int, offset int) ([]*thunderdome.Poker, int, er
 			&b.UpdatedDate,
 			&b.TeamID,
 			&facilitators,
+			&b.EndTime,
+			&b.EndReason,
 		); err != nil {
 			d.Logger.Error("get poker games query error", zap.Error(err))
 		} else {
@@ -683,4 +691,21 @@ func (d *Service) GetActiveGames(limit int, offset int) ([]*thunderdome.Poker, i
 	}
 
 	return games, count, nil
+}
+
+func (d *Service) EndGame(ctx context.Context, pokerID string, endReason string) (string, time.Time, error) {
+	row := d.DB.QueryRowContext(ctx, `
+		UPDATE thunderdome.poker
+		SET end_time = NOW(), end_reason = $2, updated_date = NOW()
+		WHERE id = $1 RETURNING end_reason, end_time`,
+		pokerID, endReason,
+	)
+
+	var reason string
+	var endTime time.Time
+	if err := row.Scan(&reason, &endTime); err != nil {
+		return "", time.Time{}, fmt.Errorf("end poker game scan error: %v", err)
+	}
+
+	return reason, endTime, nil
 }

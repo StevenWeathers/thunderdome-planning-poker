@@ -2783,6 +2783,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/battles/{battleId}/end": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Ends a poker game",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "poker"
+                ],
+                "summary": "End Poker Game",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the poker game ID",
+                        "name": "battleId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "reason for ending the game",
+                        "name": "reason",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.endGameRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/battles/{battleId}/plans": {
             "post": {
                 "security": [
@@ -14006,6 +14061,22 @@ const docTemplate = `{
                 }
             }
         },
+        "http.endGameRequestBody": {
+            "type": "object",
+            "required": [
+                "endReason"
+            ],
+            "properties": {
+                "endReason": {
+                    "type": "string",
+                    "enum": [
+                        "Completed",
+                        "Cancelled",
+                        "Abandoned"
+                    ]
+                }
+            }
+        },
         "http.estimationScaleRequestBody": {
             "type": "object",
             "required": [
@@ -15405,6 +15476,12 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "createdDate": {
+                    "type": "string"
+                },
+                "endReason": {
+                    "type": "string"
+                },
+                "endTime": {
                     "type": "string"
                 },
                 "estimationScale": {

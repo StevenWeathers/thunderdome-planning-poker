@@ -16,7 +16,9 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
-  import { ExternalLink } from 'lucide-svelte';
+  import { ExternalLink, Pencil, Settings, TimerOff, Trash } from 'lucide-svelte';
+  import SubMenu from '../../components/global/SubMenu.svelte';
+  import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import VotingMetrics from '../../components/poker/VotingMetrics.svelte';
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
@@ -25,6 +27,8 @@
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
   import Badge from '../../components/global/Badge.svelte';
+  import EndStatusBadge from '../../components/global/EndStatusBadge.svelte';
+  import EndGameModal from '../../components/poker/EndGameModal.svelte';
 
   interface Props {
     battleId: string;
@@ -85,12 +89,15 @@
     users: [],
     votingLocked: false,
     teamId: '',
+    endTime: null,
+    endReason: null,
   });
   let currentStory = $state({ ...defaultStory });
   let showEditGame: boolean = $state(false);
   let showDeleteGame: boolean = $state(false);
   let isSpectator: boolean = $state(false);
   let voteStartTime: Date = $state(new Date());
+  let showEndGameModal: boolean = $state(false);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -269,6 +276,11 @@
         pokerGame.joinCode = revisedBattle.joinCode;
         pokerGame.hideVoterIdentity = revisedBattle.hideVoterIdentity;
         pokerGame.teamId = revisedBattle.teamId;
+        break;
+      case 'game_ended':
+        const parsed = JSON.parse(parsedEvent.value);
+        pokerGame.endTime = new Date(parsed.endTime);
+        pokerGame.endReason = parsed.endReason;
         break;
       case 'battle_conceded':
         // poker over, goodbye.
@@ -470,6 +482,15 @@
     sendSocketEvent('auth_game', joinPasscode);
   }
 
+  function toggleEndGame() {
+    showEndGameModal = !showEndGameModal;
+  }
+
+  function handleEndGame({ endGameReason }) {
+    sendSocketEvent('end_game', JSON.stringify({ endReason: endGameReason }));
+    toggleEndGame();
+  }
+
   onMount(() => {
     if (!$user.id) {
       router.route(`${loginOrRegister}/battle/${battleId}`);
@@ -516,11 +537,18 @@
         </span>
       </h1>
       <h2
-        class="text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
+        class="inline-block text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
         data-testid="battle-name"
       >
         {pokerGame.name}
       </h2>
+      {#if pokerGame.endTime}
+          <EndStatusBadge
+            endTime={pokerGame.endTime}
+            endReason={pokerGame.endReason || 'Ended'}
+            class="inline-block ms-2"
+          />
+      {/if}
     </div>
 
     <div class="w-full md:w-1/3 text-center md:text-right">
@@ -613,24 +641,7 @@
           joinCode={pokerGame.joinCode}
           notifications={notifications}
         />
-        {#if isFacilitator}
-          <div class="mt-4 text-right">
-            <HollowButton
-              color="blue"
-              onClick={toggleEditGame}
-              testid="battle-edit"
-            >
-              {$LL.battleEdit()}
-            </HollowButton>
-            <HollowButton
-              color="red"
-              onClick={toggleDeleteGame}
-              testid="battle-delete"
-            >
-              {$LL.battleDelete()}
-            </HollowButton>
-          </div>
-        {:else}
+        {#if !isFacilitator}
           <div class="mt-4 text-right">
             <HollowButton
               color="red"
@@ -642,6 +653,35 @@
           </div>
         {/if}
       </div>
+
+      {#if !pokerGame.endTime && isFacilitator}
+        <div class="flex justify-end">
+          <SubMenu label={$LL.gameSettings()} icon={Settings} testId="poker-settings">
+            {#snippet children({ toggleSubmenu })}
+              <SubMenuItem
+                onClickHandler={() => { toggleEditGame(); toggleSubmenu(); }}
+                testId="battle-edit"
+                icon={Pencil}
+                label={$LL.battleEdit()}
+              />
+              {#if !pokerGame.endTime && isFacilitator}
+                <SubMenuItem
+                  onClickHandler={() => { toggleEndGame(); toggleSubmenu(); }}
+                  testId="end-game"
+                  icon={TimerOff}
+                  label={$LL.endGame()}
+                />
+              {/if}
+              <SubMenuItem
+                onClickHandler={() => { toggleDeleteGame(); toggleSubmenu(); }}
+                testId="battle-delete"
+                icon={Trash}
+                label={$LL.battleDelete()}
+              />
+            {/snippet}
+          </SubMenu>
+        </div>
+      {/if}
     </div>
   </div>
 
@@ -658,6 +698,15 @@
       joinCode={pokerGame.joinCode}
       leaderCode={pokerGame.leaderCode}
       teamId={pokerGame.teamId}
+      notifications={notifications}
+      xfetch={xfetch}
+    />
+  {/if}
+
+  {#if showEndGameModal}
+    <EndGameModal
+      toggleModal={toggleEndGame}
+      handleSubmit={handleEndGame}
       notifications={notifications}
       xfetch={xfetch}
     />

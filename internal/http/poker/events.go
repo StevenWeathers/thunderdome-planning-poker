@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
 // UserNudge handles notifying user that they need to vote
@@ -319,6 +320,38 @@ func (b *Service) StoryFinalize(ctx context.Context, pokerID string, userID stri
 	}
 	updatedStorys, _ := json.Marshal(plans)
 	msg := wshub.CreateSocketEvent("plan_finalized", string(updatedStorys), "")
+
+	return nil, msg, nil, false
+}
+
+// EndGame ends a poker game with a specified reason
+func (b *Service) EndGame(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	var p struct {
+		EndReason string `json:"endReason"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &p)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	if p.EndReason == "" || (p.EndReason != "Completed" && p.EndReason != "Abandoned" && p.EndReason != "Cancelled") {
+		p.EndReason = "Completed"
+	}
+
+	txCtx := context.WithoutCancel(ctx)
+	reason, endTime, err := b.PokerService.EndGame(txCtx, pokerID, p.EndReason)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	endedGame := thunderdome.PokerEndGameEvent{
+		PokerID:   pokerID,
+		EndReason: reason,
+		EndTime:   endTime,
+	}
+	endedGameJson, _ := json.Marshal(endedGame)
+
+	msg := wshub.CreateSocketEvent("game_ended", string(endedGameJson), "")
 
 	return nil, msg, nil, false
 }

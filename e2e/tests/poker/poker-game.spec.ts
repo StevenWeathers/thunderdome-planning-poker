@@ -380,6 +380,7 @@ test.describe("Poker Game page", { tag: ["@poker"] }, () => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerCancelDelete.id);
 
+    await bp.pokerSettingsBtn.click();
     await bp.gameDeleteBtn.click();
     await bp.gameDeleteCancelBtn.click();
 
@@ -392,6 +393,7 @@ test.describe("Poker Game page", { tag: ["@poker"] }, () => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerDelete.id);
 
+    await bp.pokerSettingsBtn.click();
     await bp.gameDeleteBtn.click();
     await bp.gameDeleteConfirmBtn.click();
 
