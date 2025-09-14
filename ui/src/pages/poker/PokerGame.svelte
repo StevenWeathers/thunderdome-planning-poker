@@ -44,7 +44,7 @@
     xfetch
   }: Props = $props();
 
-  const { AllowRegistration, AllowGuests } = AppConfig;
+  const { AllowGuests } = AppConfig;
   const loginOrRegister: string = AllowGuests
     ? appRoutes.register
     : appRoutes.login;
@@ -89,8 +89,6 @@
     users: [],
     votingLocked: false,
     teamId: '',
-    endTime: null,
-    endReason: null,
   });
   let currentStory = $state({ ...defaultStory });
   let showEditGame: boolean = $state(false);
@@ -98,6 +96,7 @@
   let isSpectator: boolean = $state(false);
   let voteStartTime: Date = $state(new Date());
   let showEndGameModal: boolean = $state(false);
+  let gameOver: boolean = $derived(typeof pokerGame.endTime !== 'undefined' && pokerGame.endTime !== null);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -509,33 +508,35 @@
 <PageLayout>
   <div class="mb-6 flex flex-wrap">
     <div class="w-full text-center md:w-2/3 md:text-left">
-      <h1
-        class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center flex-wrap gap-2"
-      >
-        {#if currentStory.link}
-          <a
-            href="{currentStory.link}"
-            target="_blank"
-            class="text-blue-800 dark:text-sky-400 inline-block"
-            data-testid="currentplan-link"
-          >
-            <ExternalLink class="w-8 h-8" />
-          </a>
-        {/if}
-        {#if currentStory.type}
-          <Badge label={currentStory.type} testId="currentplan-type" class="text-lg" />
-        {/if}
-        {#if currentStory.referenceId}
-          <span data-testid="currentplan-refid">[{currentStory.referenceId}]</span>
-        {/if}
-        <span data-testid="currentplan-name">
-          {#if currentStory.name === ''}
-            [{$LL.votingNotStarted()}]
-          {:else}
-            {currentStory.name}
+      {#if !gameOver}
+        <h1
+          class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center flex-wrap gap-2"
+        >
+          {#if currentStory.link}
+            <a
+              href="{currentStory.link}"
+              target="_blank"
+              class="text-blue-800 dark:text-sky-400 inline-block"
+              data-testid="currentplan-link"
+            >
+              <ExternalLink class="w-8 h-8" />
+            </a>
           {/if}
-        </span>
-      </h1>
+          {#if currentStory.type}
+            <Badge label={currentStory.type} testId="currentplan-type" class="text-lg" />
+          {/if}
+          {#if currentStory.referenceId}
+            <span data-testid="currentplan-refid">[{currentStory.referenceId}]</span>
+          {/if}
+          <span data-testid="currentplan-name">
+            {#if currentStory.name === ''}
+              [{$LL.votingNotStarted()}]
+            {:else}
+              {currentStory.name}
+            {/if}
+          </span>
+        </h1>
+      {/if}
       <h2
         class="inline-block text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
         data-testid="battle-name"
@@ -562,6 +563,7 @@
 
   <div class="flex flex-wrap mb-4 -mx-4">
     <div class="w-full lg:w-3/4 px-4">
+    {#if !gameOver}
       {#if showVotingResults}
         <div class=" mb-2 md:mb-4">
           <VotingMetrics
@@ -587,6 +589,7 @@
           {/each}
         </div>
       {/if}
+    {/if}    
 
       <PokerStories
         plans={pokerGame.plans}
@@ -595,6 +598,7 @@
         notifications={notifications}
         xfetch={xfetch}
         gameId={pokerGame.id}
+        gameOver={gameOver}
       />
     </div>
 
@@ -619,11 +623,12 @@
               autoFinishVoting={pokerGame.autoFinishVoting}
               sendSocketEvent={sendSocketEvent}
               notifications={notifications}
+              gameOver={gameOver}
             />
           {/if}
         {/each}
 
-        {#if isFacilitator}
+        {#if isFacilitator && !gameOver}
           <VotingControls
             points={points}
             planId={pokerGame.activePlanId}
@@ -654,7 +659,7 @@
         {/if}
       </div>
 
-      {#if !pokerGame.endTime && isFacilitator}
+      {#if isFacilitator}
         <div class="flex justify-end">
           <SubMenu label={$LL.gameSettings()} icon={Settings} testId="poker-settings">
             {#snippet children({ toggleSubmenu })}
@@ -664,7 +669,7 @@
                 icon={Pencil}
                 label={$LL.battleEdit()}
               />
-              {#if !pokerGame.endTime && isFacilitator}
+              {#if !gameOver && isFacilitator}
                 <SubMenuItem
                   onClickHandler={() => { toggleEndGame(); toggleSubmenu(); }}
                   testId="end-game"
