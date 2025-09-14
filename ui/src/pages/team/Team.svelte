@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/PageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import { ChevronRight, MessageSquareMore } from 'lucide-svelte';
@@ -22,13 +21,11 @@
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import BoxList from '../../components/BoxList.svelte';
-  import UsersList from '../../components/team/UsersList.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
   import Toggle from '../../components/forms/Toggle.svelte';
-  import InvitesList from '../../components/team/InvitesList.svelte';
   import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
   import BooleanDisplay from '../../components/global/BooleanDisplay.svelte';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
@@ -38,7 +35,6 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
-  import ProjectsList from '../../components/project/ProjectsList.svelte';
   import TeamPageLayout from '../../components/team/TeamPageLayout.svelte';
 
   interface Props {
