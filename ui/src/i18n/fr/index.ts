@@ -105,7 +105,6 @@ const fr: Translation = {
   colorLegendNotSpecified: 'légende non spécifiée',
   comment: 'Commentaire',
   comments: 'Commentaires',
-  completed: 'Terminé',
   conciseVotingResults: 'Résumé des résultats de vote',
   confirmDeleteRetro:
     'Êtes-vous sûr de vouloir supprimer cette rétrospective ?',

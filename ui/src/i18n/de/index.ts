@@ -105,7 +105,6 @@ const de: Translation = {
   colorLegendNotSpecified: 'Legende nicht angegeben',
   comment: 'Kommentar',
   comments: 'Kommentare',
-  completed: 'Abgeschlossen',
   conciseVotingResults: 'Kurze Abstimmungsergebnisse',
   confirmDeleteRetro:
     'Sind Sie sicher, dass Sie diese Retrospektive löschen möchten?',

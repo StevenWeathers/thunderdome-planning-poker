@@ -101,7 +101,6 @@ const fa: Translation = {
   colorLegendNotSpecified: 'راهنما مشخص نشده',
   comment: 'نظر',
   comments: 'نظرات',
-  completed: 'تکمیل شده',
   conciseVotingResults: 'نتایج مختصر رأی‌گیری',
   confirmDeleteRetro: 'آیا مطمئن هستید که می‌خواهید این رترو را حذف کنید؟',
   createAccount: 'ایجاد حساب',

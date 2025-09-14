@@ -103,7 +103,6 @@ const it: Translation = {
   colorLegendNotSpecified: 'legenda non specificata',
   comment: 'Commento',
   comments: 'Commenti',
-  completed: 'Completato',
   conciseVotingResults: 'Risultati Votazione Sintetici',
   confirmDeleteRetro: 'Sei sicuro di voler eliminare questa retrospettiva?',
   createAccount: 'Creare un account',

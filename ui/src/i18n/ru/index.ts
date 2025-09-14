@@ -99,7 +99,6 @@ const ru: Translation = {
   colorLegendNotSpecified: 'legend not specified',
   comment: 'Comment',
   comments: 'Comments',
-  completed: 'Completed',
   conciseVotingResults: 'Concise Voting Results',
   confirmDeleteRetro: 'Are you sure you want to delete this retrospective?',
   createAccount: 'Создать профиль',
