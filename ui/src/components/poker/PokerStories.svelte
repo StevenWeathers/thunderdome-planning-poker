@@ -27,6 +27,7 @@
     notifications: NotificationService;
     xfetch: ApiClient;
     gameId?: string;
+    gameOver?: boolean;
   }
 
   let {
@@ -35,7 +36,8 @@
     sendSocketEvent = (event: string, value: string) => {},
     notifications,
     xfetch,
-    gameId = ''
+    gameId = '',
+    gameOver = false,
   }: Props = $props();
 
   let defaultPlan = {
@@ -177,7 +179,7 @@
       </h3>
     </div>
     <div class="w-2/3 text-right">
-      {#if isFacilitator}
+      {#if isFacilitator && !gameOver}
         <HollowButton onClick={toggleImport} color="blue">
           {$LL.importPlans()}
         </HollowButton>
@@ -241,7 +243,7 @@
         'outline-indigo-500',
         'dark:outline-yellow-400',
       ],
-      dragDisabled: !isFacilitator,
+      dragDisabled: !isFacilitator || gameOver,
     }}"
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
@@ -254,11 +256,11 @@
           : ''}"
         data-testid="plan"
         data-storyid="{plan.id}"
-        draggable={isFacilitator}
+        draggable={isFacilitator && !gameOver}
       >
         <div class="flex-grow font-bold align-middle dark:text-white me-1">
           <div class="flex items-center gap-2">
-            {#if isFacilitator}
+            {#if isFacilitator && !gameOver}
               <span><Grip class="inline-block text-gray-400 dark:text-gray-500"/></span>
             {/if}
             
@@ -303,7 +305,7 @@
           >
             {$LL.view()}
           </HollowButton>
-          {#if isFacilitator}
+          {#if isFacilitator && !gameOver}
             {#if !plan.active}
               <HollowButton
                 color="red"
@@ -332,7 +334,7 @@
         </div>
       </div>
       {#if plan[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-        {@const SvelteComponent_1 = priorities[plan.priority].icon}
+        {@const PriorityIcon = priorities[plan.priority].icon}
         <div
           class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 cursor-pointer flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
           data-testid="plan"
@@ -358,7 +360,7 @@
             </div>
             &nbsp;
             {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-            <SvelteComponent_1
+            <PriorityIcon
               class="inline-block w-6 h-6"
             />
             <span data-testid="plan-name">{plan.name}</span>
