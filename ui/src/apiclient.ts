@@ -33,7 +33,7 @@ const apiclient: ApiClientFactory = handle401 => {
     };
 
     if (customConfig.body) {
-      config.body = JSON.stringify(config.body);
+      config.body = customConfig.body;
     }
 
     return fetch(`${PathPrefix}${endpoint}`, config).then(response => {

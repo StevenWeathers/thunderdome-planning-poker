@@ -81,12 +81,12 @@ func (s *Service) handleTestSMTPConnection() http.HandlerFunc {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			testEmail	body		smtpTestRequestBody	true	"Test email details"
-//	@Success		200			object		standardJsonResponse{}
-//	@Failure		400			object		standardJsonResponse{}
-//	@Failure		401			object		standardJsonResponse{}
-//	@Failure		403			object		standardJsonResponse{}
-//	@Failure		500			object		standardJsonResponse{}
+//	@Param			testEmail	body	smtpTestRequestBody	true	"Test email details"
+//	@Success		200			object	standardJsonResponse{}
+//	@Failure		400			object	standardJsonResponse{}
+//	@Failure		401			object	standardJsonResponse{}
+//	@Failure		403			object	standardJsonResponse{}
+//	@Failure		500			object	standardJsonResponse{}
 //	@Security		ApiKeyAuth
 //	@Router			/admin/smtp/test-email [post]
 func (s *Service) handleSendTestEmail() http.HandlerFunc {
@@ -97,13 +97,37 @@ func (s *Service) handleSendTestEmail() http.HandlerFunc {
 
 		jsonErr := json.NewDecoder(r.Body).Decode(&body)
 		if jsonErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINTERNAL, jsonErr.Error()))
+			s.Logger.Ctx(ctx).Error("Failed to decode SMTP test request body",
+				zap.String("session_user_id", sessionUserID),
+				zap.Error(jsonErr))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINTERNAL, "Invalid JSON request body: "+jsonErr.Error()))
 			return
+		}
+
+		s.Logger.Ctx(ctx).Info("SMTP test request received",
+			zap.String("session_user_id", sessionUserID),
+			zap.String("email", body.Email),
+			zap.String("name", body.Name),
+			zap.Int("email_len", len(body.Email)),
+			zap.Int("name_len", len(body.Name)))
+
+		// Additional validation logging for debugging
+		if body.Email == "" {
+			s.Logger.Ctx(ctx).Error("SMTP test email field is empty")
+		}
+		if body.Name == "" {
+			s.Logger.Ctx(ctx).Error("SMTP test name field is empty")
 		}
 
 		inputErr := validate.Struct(body)
 		if inputErr != nil {
-			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Logger.Ctx(ctx).Error("SMTP test request validation failed",
+				zap.String("session_user_id", sessionUserID),
+				zap.String("email", body.Email),
+				zap.String("name", body.Name),
+				zap.String("validation_error", inputErr.Error()),
+				zap.Error(inputErr))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "Validation failed: "+inputErr.Error()))
 			return
 		}
 

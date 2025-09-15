@@ -65,7 +65,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: testEmail,
+          email: testEmail.trim(),
           name: testName.trim(),
         }),
       });
@@ -73,8 +73,15 @@
       const result = await response.json();
 
       if (!response.ok) {
-        emailTestResult = `Email sending failed: ${result.error || 'Unknown error'}`;
-        notifications.danger('Test email sending failed');
+        const errorMsg = result.error || result.message || 'Unknown error';
+        emailTestResult = `Email sending failed: ${errorMsg}`;
+        notifications.danger(`Test email sending failed: ${errorMsg}`);
+        console.error('SMTP test email error:', {
+          status: response.status,
+          statusText: response.statusText,
+          result: result,
+          requestData: { email: testEmail.trim(), name: testName.trim() }
+        });
       } else {
         emailTestResult = `Test email sent successfully to ${testEmail}!`;
         notifications.success('Test email sent successfully');
@@ -85,6 +92,7 @@
     } catch (error) {
       emailTestResult = `Email sending failed: ${error.message}`;
       notifications.danger('Test email sending failed');
+      console.error('SMTP test email exception:', error);
     } finally {
       isSendingTestEmail = false;
     }

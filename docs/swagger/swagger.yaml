@@ -557,6 +557,18 @@ definitions:
     - name
     - projectKey
     type: object
+  http.smtpTestRequestBody:
+    properties:
+      email:
+        example: admin@example.com
+        type: string
+      name:
+        example: Administrator
+        type: string
+    required:
+    - email
+    - name
+    type: object
   http.standardJsonResponse:
     properties:
       data:
@@ -2940,6 +2952,106 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Search Registered Users by Email
+      tags:
+      - admin
+  /admin/smtp/config:
+    get:
+      description: Returns the current SMTP configuration with sensitive data masked
+        for security
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get SMTP Configuration
+      tags:
+      - admin
+  /admin/smtp/test-connection:
+    post:
+      description: Tests the SMTP connection configuration without sending an email
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Test SMTP Connection
+      tags:
+      - admin
+  /admin/smtp/test-email:
+    post:
+      consumes:
+      - application/json
+      description: Sends a test email to the specified recipient to verify SMTP configuration
+      parameters:
+      - description: Test email details
+        in: body
+        name: testEmail
+        required: true
+        schema:
+          $ref: '#/definitions/http.smtpTestRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Send Test Email
       tags:
       - admin
   /admin/stats:
