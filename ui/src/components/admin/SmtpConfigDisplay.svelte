@@ -100,8 +100,8 @@
     <div class="mb-6">
       <div class="flex items-center gap-3 p-4 rounded-lg {config.enabled ? 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-700' : 'bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-700'}">
         {#if config.enabled !== undefined}
-          <svelte:component
-            this={getStatusIcon(config.enabled)}
+          {@const StatusIcon = getStatusIcon(config.enabled)}
+          <StatusIcon
             class="w-6 h-6 {getStatusColor(config.enabled)}"
           />
           <div>
@@ -126,36 +126,36 @@
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.host()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white font-mono">
               {formatConfigValue('host', config.host)}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.port()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white font-mono">
               {formatConfigValue('port', config.port)}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.secure()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white">
               {formatConfigValue('secure', config.secure)}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.skipTLSVerify()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white">
               {formatConfigValue('skipTLSVerify', config.skipTLSVerify)}
             </p>
@@ -171,45 +171,45 @@
 
         <div class="space-y-3">
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.authType()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white font-mono">
               {formatConfigValue('authType', config.authType)}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.username()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white font-mono">
               {formatConfigValue('username', config.username)}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.password()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white">
               {formatConfigValue('hasPassword', config.hasPassword)}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.senderEmail()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white font-mono">
               {formatConfigValue('sender', config.sender)}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div class="block text-sm font-medium text-gray-600 dark:text-gray-400">
               {$LL.senderName()}
-            </label>
+            </div>
             <p class="text-gray-900 dark:text-white">
               {formatConfigValue('senderName', config.senderName)}
             </p>

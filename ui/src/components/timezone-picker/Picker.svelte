@@ -394,7 +394,14 @@
 </style>
 
 {#if expanded}
-  <div class="overlay" on:click="{reset}"></div>
+  <div
+    class="overlay"
+    on:click="{reset}"
+    on:keydown="{(e) => e.key === 'Escape' && reset()}"
+    role="button"
+    tabindex="0"
+    aria-label="Close timezone picker"
+  ></div>
 {/if}
 
 <button
@@ -424,6 +431,9 @@
     transition:slide
     on:introend="{scrollToHighlighted}"
     on:keydown="{keyDown}"
+    role="listbox"
+    tabindex="0"
+    aria-label="Select timezone"
   >
     <span class="sr-only" id="{labelId}">
       Select a timezone from the list. Start typing to filter or use the arrow
@@ -458,7 +468,7 @@
     >
       {#each Object.keys(groupedZones) as group}
         {#if groupHasVisibleChildren(group, filteredZones)}
-          <li role="option" aria-hidden="true">
+          <li role="option" aria-hidden="true" aria-selected="false">
             <p>{group}</p>
           </li>
           {#each Object.entries(groupedZones[group]) as [zoneLabel, zoneDetails]}
@@ -471,7 +481,9 @@
                 aria-label="{`Select ${zoneDetails[0]}`}"
                 aria-selected="{highlightedZone === zoneDetails[0]}"
                 on:mouseover="{() => setHighlightedZone(zoneDetails[0])}"
+                on:focus="{() => setHighlightedZone(zoneDetails[0])}"
                 on:click="{ev => handleTimezoneUpdate(ev, zoneLabel)}"
+                on:keydown="{(ev) => (ev.key === 'Enter' || ev.key === ' ') && handleTimezoneUpdate(ev, zoneLabel)}"
                 class="hover:bg-blue-500 hover:text-white dark:hover:bg-sky-300 dark:hover:text-gray-800 focus:bg-blue-500 focus:text-white dark:focus:bg-sky-300 dark:focus:text-gray-800"
               >
                 {zoneDetails[0]} <span>GMT {zoneDetails[1]}</span>
