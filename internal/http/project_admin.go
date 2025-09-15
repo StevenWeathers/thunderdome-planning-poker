@@ -252,7 +252,7 @@ func (s *Service) handleAdminGetProjectByID() http.HandlerFunc {
 
 		project, err := s.ProjectDataSvc.GetProjectByID(ctx, projectID)
 		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleGetProjectByID error", zap.Error(err), zap.String("project_id", projectID),
+			s.Logger.Ctx(ctx).Error("handleAdminGetProjectByID error", zap.Error(err), zap.String("project_id", projectID),
 				zap.Stringp("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
