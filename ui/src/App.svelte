@@ -88,17 +88,22 @@
 
   let notifications = $state();
 
+  const detectedLocale = detectLocale() || DefaultLocale;
+
+  const selectedLocale = detectedLocale;
+  loadLocale(selectedLocale);
+  setLocale(selectedLocale);
+
   let activeWarrior = $state();
   user.subscribe(w => {
     activeWarrior = w;
+
+    const selectedLocale = w.locale || detectedLocale;
+    loadLocale(selectedLocale);
+    setLocale(selectedLocale);
   });
 
-  const detectedLocale =
-    activeWarrior.locale || detectLocale() || DefaultLocale;
-  loadLocale(detectedLocale);
-  setLocale(detectedLocale);
-
-  run(() => {
+  $effect(() => {
     if (document.dir !== $dir) {
       document.dir = $dir;
     }
