@@ -105,7 +105,6 @@ const fr: Translation = {
   colorLegendNotSpecified: 'légende non spécifiée',
   comment: 'Commentaire',
   comments: 'Commentaires',
-  completed: 'Terminé',
   conciseVotingResults: 'Résumé des résultats de vote',
   confirmDeleteRetro:
     'Êtes-vous sûr de vouloir supprimer cette rétrospective ?',
@@ -784,6 +783,7 @@ const fr: Translation = {
   projectUpdateSuccess: 'Projet mis à jour avec succès',
   projectCreateError: 'Échec de la création du projet',
   projectUpdateError: 'Échec de la mise à jour du projet',
+  project: 'Projet',
   gameSettings: 'Paramètres du Jeu',
   endGame: 'Terminer le jeu',
   endGameReason: 'Raison de la fin du jeu',

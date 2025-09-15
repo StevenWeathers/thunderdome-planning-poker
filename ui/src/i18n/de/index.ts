@@ -105,7 +105,6 @@ const de: Translation = {
   colorLegendNotSpecified: 'Legende nicht angegeben',
   comment: 'Kommentar',
   comments: 'Kommentare',
-  completed: 'Abgeschlossen',
   conciseVotingResults: 'Kurze Abstimmungsergebnisse',
   confirmDeleteRetro:
     'Sind Sie sicher, dass Sie diese Retrospektive löschen möchten?',
@@ -766,6 +765,7 @@ const de: Translation = {
   projectUpdateSuccess: 'Projekt erfolgreich aktualisiert',
   projectCreateError: 'Projekt konnte nicht erstellt werden',
   projectUpdateError: 'Projekt konnte nicht aktualisiert werden',
+  project: 'Projekt',
   gameSettings: 'Spiel Einstellungen',
   endGame: 'Spiel beenden',
   endGameReason: 'Grund für das Beenden des Spiels',

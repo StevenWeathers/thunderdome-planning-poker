@@ -17,13 +17,15 @@
     notifications: NotificationService;
     router: any;
     apiPrefix?: string;
+    scope?: 'user' | 'project';
   }
 
   let {
     xfetch,
     notifications,
     router,
-    apiPrefix = '/api'
+    apiPrefix = '/api',
+    scope = 'user',
   }: Props = $props();
 
   let storyboardName = $state('');
@@ -37,14 +39,14 @@
 
   function createStoryboard(e) {
     e.preventDefault();
-    let endpoint = `${apiPrefix}/users/${$user.id}/storyboards`;
+    let endpoint = scope === 'project' ? `${apiPrefix}/storyboards` : `${apiPrefix}/users/${$user.id}/storyboards`;
     const body = {
       storyboardName,
       joinCode,
       facilitatorCode,
     };
 
-    if (selectedTeam !== '') {
+    if (scope !== 'project' && selectedTeam !== '') {
       endpoint = `/api/teams/${selectedTeam}/users/${$user.id}/storyboards`;
     }
 

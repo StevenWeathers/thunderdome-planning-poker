@@ -18,10 +18,10 @@ type Service struct {
 }
 
 // GetProjectsByOrganization retrieves all projects for a specific organization
-func (d *Service) GetProjectsByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.Project, error) {
+func (s *Service) GetProjectsByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.Project, error) {
 	projects := make([]*thunderdome.Project, 0)
 
-	rows, err := d.DB.QueryContext(ctx,
+	rows, err := s.DB.QueryContext(ctx,
 		`SELECT id, project_key, name, description, organization_id, department_id, team_id, created_at, updated_at
 		FROM thunderdome.project
 		WHERE organization_id = $1
@@ -30,7 +30,7 @@ func (d *Service) GetProjectsByOrganization(ctx context.Context, organizationID 
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("GetProjectsByOrganization query error", zap.Error(err))
+		s.Logger.Ctx(ctx).Error("GetProjectsByOrganization query error", zap.Error(err))
 		return nil, fmt.Errorf("error querying projects for organization: %v", err)
 	}
 	defer rows.Close()
@@ -48,7 +48,7 @@ func (d *Service) GetProjectsByOrganization(ctx context.Context, organizationID 
 			&p.CreatedAt,
 			&p.UpdatedAt,
 		); err != nil {
-			d.Logger.Ctx(ctx).Error("GetProjectsByOrganization row scan error", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("GetProjectsByOrganization row scan error", zap.Error(err))
 		} else {
 			projects = append(projects, &p)
 		}
@@ -58,10 +58,10 @@ func (d *Service) GetProjectsByOrganization(ctx context.Context, organizationID 
 }
 
 // GetProjectsByDepartment retrieves all projects for a specific department
-func (d *Service) GetProjectsByDepartment(ctx context.Context, departmentID string) ([]*thunderdome.Project, error) {
+func (s *Service) GetProjectsByDepartment(ctx context.Context, departmentID string) ([]*thunderdome.Project, error) {
 	projects := make([]*thunderdome.Project, 0)
 
-	rows, err := d.DB.QueryContext(ctx,
+	rows, err := s.DB.QueryContext(ctx,
 		`SELECT id, project_key, name, description, organization_id, department_id, team_id, created_at, updated_at
 		FROM thunderdome.project
 		WHERE department_id = $1
@@ -70,7 +70,7 @@ func (d *Service) GetProjectsByDepartment(ctx context.Context, departmentID stri
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("GetProjectsByDepartment query error", zap.Error(err))
+		s.Logger.Ctx(ctx).Error("GetProjectsByDepartment query error", zap.Error(err))
 		return nil, fmt.Errorf("error querying projects for department: %v", err)
 	}
 	defer rows.Close()
@@ -88,7 +88,7 @@ func (d *Service) GetProjectsByDepartment(ctx context.Context, departmentID stri
 			&p.CreatedAt,
 			&p.UpdatedAt,
 		); err != nil {
-			d.Logger.Ctx(ctx).Error("GetProjectsByDepartment row scan error", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("GetProjectsByDepartment row scan error", zap.Error(err))
 		} else {
 			projects = append(projects, &p)
 		}
@@ -98,10 +98,10 @@ func (d *Service) GetProjectsByDepartment(ctx context.Context, departmentID stri
 }
 
 // GetProjectsByTeam retrieves all projects for a specific team
-func (d *Service) GetProjectsByTeam(ctx context.Context, teamID string) ([]*thunderdome.Project, error) {
+func (s *Service) GetProjectsByTeam(ctx context.Context, teamID string) ([]*thunderdome.Project, error) {
 	projects := make([]*thunderdome.Project, 0)
 
-	rows, err := d.DB.QueryContext(ctx,
+	rows, err := s.DB.QueryContext(ctx,
 		`SELECT id, project_key, name, description, organization_id, department_id, team_id, created_at, updated_at
 		FROM thunderdome.project
 		WHERE team_id = $1
@@ -127,7 +127,7 @@ func (d *Service) GetProjectsByTeam(ctx context.Context, teamID string) ([]*thun
 			&p.CreatedAt,
 			&p.UpdatedAt,
 		); err != nil {
-			d.Logger.Ctx(ctx).Error("GetProjectsByTeam row scan error", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("GetProjectsByTeam row scan error", zap.Error(err))
 		} else {
 			projects = append(projects, &p)
 		}
@@ -137,10 +137,10 @@ func (d *Service) GetProjectsByTeam(ctx context.Context, teamID string) ([]*thun
 }
 
 // GetProjectByID retrieves a specific project by its ID
-func (d *Service) GetProjectByID(ctx context.Context, projectID string) (*thunderdome.Project, error) {
+func (s *Service) GetProjectByID(ctx context.Context, projectID string) (*thunderdome.Project, error) {
 	var p thunderdome.Project
 
-	err := d.DB.QueryRowContext(ctx,
+	err := s.DB.QueryRowContext(ctx,
 		`SELECT id, project_key, name, description, COALESCE(organization_id::text, ''), COALESCE(department_id::text, ''), COALESCE(team_id::text, ''), created_at, updated_at
 		FROM thunderdome.project
 		WHERE id = $1;`,
@@ -168,8 +168,8 @@ func (d *Service) GetProjectByID(ctx context.Context, projectID string) (*thunde
 }
 
 // CreateProject creates a new project
-func (d *Service) CreateProject(ctx context.Context, project *thunderdome.Project) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) CreateProject(ctx context.Context, project *thunderdome.Project) error {
+	_, err := s.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.project (
 			project_key, name, description, organization_id, department_id, team_id)
 		VALUES ($1, $2, $3, NULLIF($4, '')::uuid, NULLIF($5, '')::uuid, NULLIF($6, '')::uuid);`,
@@ -189,8 +189,8 @@ func (d *Service) CreateProject(ctx context.Context, project *thunderdome.Projec
 }
 
 // UpdateProject updates an existing project
-func (d *Service) UpdateProject(ctx context.Context, project *thunderdome.Project) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) UpdateProject(ctx context.Context, project *thunderdome.Project) error {
+	_, err := s.DB.ExecContext(ctx,
 		`UPDATE thunderdome.project
 		SET project_key = $2, name = $3, description = $4, organization_id = NULLIF($5, '')::uuid, department_id = NULLIF($6, '')::uuid, team_id = NULLIF($7, '')::uuid, updated_at = NOW()
 		WHERE id = $1;`,
@@ -211,8 +211,8 @@ func (d *Service) UpdateProject(ctx context.Context, project *thunderdome.Projec
 }
 
 // DeleteProject deletes a project by its ID
-func (d *Service) DeleteProject(ctx context.Context, projectID string) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) DeleteProject(ctx context.Context, projectID string) error {
+	_, err := s.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.project WHERE id = $1;`,
 		projectID,
 	)
@@ -225,20 +225,20 @@ func (d *Service) DeleteProject(ctx context.Context, projectID string) error {
 }
 
 // ListProjects retrieves a paginated list of projects
-func (d *Service) ListProjects(ctx context.Context, limit int, offset int) ([]*thunderdome.Project, int, error) {
+func (s *Service) ListProjects(ctx context.Context, limit int, offset int) ([]*thunderdome.Project, int, error) {
 	projects := make([]*thunderdome.Project, 0)
 	var totalCount int
 
-	err := d.DB.QueryRowContext(ctx,
+	err := s.DB.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM thunderdome.project;",
 	).Scan(&totalCount)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("ListProjects count query error", zap.Error(err))
+		s.Logger.Ctx(ctx).Error("ListProjects count query error", zap.Error(err))
 		return nil, 0, fmt.Errorf("error counting projects: %v", err)
 	}
 
-	rows, err := d.DB.QueryContext(ctx,
+	rows, err := s.DB.QueryContext(ctx,
 		`SELECT id, project_key, name, description, COALESCE(organization_id::text, ''), COALESCE(department_id::text, ''), COALESCE(team_id::text, ''), created_at, updated_at
 		FROM thunderdome.project
 		ORDER BY created_at DESC
@@ -265,7 +265,7 @@ func (d *Service) ListProjects(ctx context.Context, limit int, offset int) ([]*t
 			&p.CreatedAt,
 			&p.UpdatedAt,
 		); err != nil {
-			d.Logger.Ctx(ctx).Error("ListProjects row scan error", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("ListProjects row scan error", zap.Error(err))
 		} else {
 			projects = append(projects, &p)
 		}
@@ -275,8 +275,8 @@ func (d *Service) ListProjects(ctx context.Context, limit int, offset int) ([]*t
 }
 
 // UpdateOrganizationProject updates an existing organization project
-func (d *Service) UpdateOrganizationProject(ctx context.Context, project *thunderdome.Project) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) UpdateOrganizationProject(ctx context.Context, project *thunderdome.Project) error {
+	_, err := s.DB.ExecContext(ctx,
 		`UPDATE thunderdome.project
 		SET project_key = $3, name = $4, description = $5, updated_at = NOW()
 		WHERE id = $1 AND organization_id = $2;`,
@@ -295,8 +295,8 @@ func (d *Service) UpdateOrganizationProject(ctx context.Context, project *thunde
 }
 
 // UpdateDepartmentProject updates an existing department project
-func (d *Service) UpdateDepartmentProject(ctx context.Context, project *thunderdome.Project) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) UpdateDepartmentProject(ctx context.Context, project *thunderdome.Project) error {
+	_, err := s.DB.ExecContext(ctx,
 		`UPDATE thunderdome.project
 		SET project_key = $3, name = $4, description = $5, updated_at = NOW()
 		WHERE id = $1 AND department_id = $2;`,
@@ -315,8 +315,8 @@ func (d *Service) UpdateDepartmentProject(ctx context.Context, project *thunderd
 }
 
 // UpdateTeamProject updates an existing team project
-func (d *Service) UpdateTeamProject(ctx context.Context, project *thunderdome.Project) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) UpdateTeamProject(ctx context.Context, project *thunderdome.Project) error {
+	_, err := s.DB.ExecContext(ctx,
 		`UPDATE thunderdome.project
 		SET project_key = $3, name = $4, description = $5, updated_at = NOW()
 		WHERE id = $1 AND team_id = $2;`,
@@ -335,8 +335,8 @@ func (d *Service) UpdateTeamProject(ctx context.Context, project *thunderdome.Pr
 }
 
 // DeleteOrganizationProject deletes an organization project by its ID
-func (d *Service) DeleteOrganizationProject(ctx context.Context, orgID string, projectID string) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) DeleteOrganizationProject(ctx context.Context, orgID string, projectID string) error {
+	_, err := s.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.project WHERE id = $1 AND organization_id = $2;`,
 		projectID, orgID,
 	)
@@ -349,8 +349,8 @@ func (d *Service) DeleteOrganizationProject(ctx context.Context, orgID string, p
 }
 
 // DeleteDepartmentProject deletes a department project by its ID
-func (d *Service) DeleteDepartmentProject(ctx context.Context, deptID string, projectID string) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) DeleteDepartmentProject(ctx context.Context, deptID string, projectID string) error {
+	_, err := s.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.project WHERE id = $1 AND department_id = $2;`,
 		projectID, deptID,
 	)
@@ -363,8 +363,8 @@ func (d *Service) DeleteDepartmentProject(ctx context.Context, deptID string, pr
 }
 
 // DeleteTeamProject deletes a team project by its ID
-func (d *Service) DeleteTeamProject(ctx context.Context, teamID string, projectID string) error {
-	_, err := d.DB.ExecContext(ctx,
+func (s *Service) DeleteTeamProject(ctx context.Context, teamID string, projectID string) error {
+	_, err := s.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.project WHERE id = $1 AND team_id = $2;`,
 		projectID, teamID,
 	)

@@ -22,13 +22,15 @@
     router: any;
     xfetch: ApiClient;
     apiPrefix?: string;
+    scope?: 'user' | 'project';
   }
 
   let {
     notifications,
     router,
     xfetch,
-    apiPrefix = '/api'
+    apiPrefix = '/api',
+    scope = 'user',
   }: Props = $props();
 
   const allowedPointAverages = ['ceil', 'round', 'floor'];
@@ -98,7 +100,7 @@
 
   function createBattle(e) {
     e.preventDefault();
-    let endpoint = `${apiPrefix}/users/${$user.id}/battles`;
+    let endpoint = scope === 'project' ? `${apiPrefix}/poker` : `${apiPrefix}/users/${$user.id}/battles`;
 
     if (selectedEstimationScale === '' || allowedPointValues.length === 0) {
       notifications.danger(
@@ -123,7 +125,7 @@
       estimationScaleId: selectedEstimationScale,
     };
 
-    if (pokerSettings.selectedTeam !== '') {
+    if (scope !== 'project' && pokerSettings.selectedTeam !== '') {
       endpoint = `/api/teams/${pokerSettings.selectedTeam}/users/${$user.id}/battles`;
     }
 
