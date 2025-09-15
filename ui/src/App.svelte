@@ -76,7 +76,6 @@
   import TeamUsers from './pages/team/TeamUsers.svelte';
   import TeamProjects from './pages/team/TeamProjects.svelte';
   import Project from './pages/project/Project.svelte';
-  import type { Locales } from './i18n/i18n-types';
 
   const {
     FeaturePoker,
@@ -89,19 +88,15 @@
 
   let notifications = $state();
 
-  let activeWarrior: { locale?: string } = $state({});
+  let activeWarrior = $state();
   user.subscribe(w => {
     activeWarrior = w;
   });
 
-  const detectedLocale = $derived(
-    () => activeWarrior?.locale ?? detectLocale() ?? DefaultLocale,
-  );
-
-  $effect(() => {
-    loadLocale(detectedLocale() as Locales);
-    setLocale(detectedLocale() as Locales);
-  });
+  const detectedLocale =
+    activeWarrior.locale || detectLocale() || DefaultLocale;
+  loadLocale(detectedLocale);
+  setLocale(detectedLocale);
 
   run(() => {
     if (document.dir !== $dir) {
@@ -109,7 +104,13 @@
     }
   });
 
-  let currentPage = $state({
+  interface Page {
+    route: any;
+    params: any;
+    name: string;
+  }
+
+  let currentPage: Page = $state({
     route: Landing,
     params: {},
     name: 'landing',
@@ -677,7 +678,7 @@
 
   const xfetch: ApiClient = apiclient(handle401);
 
-  function handle401(skipRedirect) {
+  function handle401(skipRedirect: boolean = false) {
     user.delete();
     localStorage.removeItem('theme');
     window.setTheme();
@@ -689,10 +690,10 @@
   onDestroy(router.unlisten);
 </script>
 
-<Notifications bind:this="{notifications}" />
+<Notifications bind:this={notifications} />
 
 <header class="w-full">
-  <GlobalAlerts registered={!!activeWarrior.name} />
+  <GlobalAlerts registered={!!activeWarrior.name || false} />
 
   <GlobalHeader
     router={router}
