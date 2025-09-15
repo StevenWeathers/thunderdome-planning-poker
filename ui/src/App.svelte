@@ -76,6 +76,7 @@
   import TeamUsers from './pages/team/TeamUsers.svelte';
   import TeamProjects from './pages/team/TeamProjects.svelte';
   import Project from './pages/project/Project.svelte';
+  import type { Locales } from './i18n/i18n-types';
 
   const {
     FeaturePoker,
@@ -88,15 +89,19 @@
 
   let notifications = $state();
 
-  let activeWarrior = $state();
+  let activeWarrior: { locale?: string } = $state({});
   user.subscribe(w => {
     activeWarrior = w;
   });
 
-  const detectedLocale =
-    activeWarrior.locale || detectLocale() || DefaultLocale;
-  loadLocale(detectedLocale);
-  setLocale(detectedLocale);
+  const detectedLocale = $derived(
+    () => activeWarrior?.locale ?? detectLocale() ?? DefaultLocale,
+  );
+
+  $effect(() => {
+    loadLocale(detectedLocale() as Locales);
+    setLocale(detectedLocale() as Locales);
+  });
 
   run(() => {
     if (document.dir !== $dir) {
