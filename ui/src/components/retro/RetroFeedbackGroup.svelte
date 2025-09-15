@@ -191,7 +191,6 @@
               disabled={!canVoteUp()}
               class={getVoteUpButtonClasses()}
               aria-label={getVoteUpAriaLabel()}
-              role="button"
               tabindex="0"
             >
               <ThumbsUp 

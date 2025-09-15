@@ -82,7 +82,7 @@
     $derived(name === '' || format.columns.length < 2 || format.columns.length > 5);
   let isAdmin = $derived(validateUserIsAdmin($user));
 
-  let focusInput: any;
+  let focusInput: any = $state();
   onMount(() => {
     focusInput?.focus();
   });

@@ -22,7 +22,7 @@
 
   let createDisabled = $derived(organizationName === '');
 
-  let focusInput: any;
+  let focusInput: any = $state();
   onMount(() => {
     focusInput?.focus();
   });

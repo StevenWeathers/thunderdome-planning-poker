@@ -22,7 +22,7 @@
     facilitatorCode = $bindable('')
   }: Props = $props();
 
-  let focusInput: any;
+  let focusInput: any = $state();
 
   function saveStoryboard(e) {
     e.preventDefault();

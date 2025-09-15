@@ -35,7 +35,7 @@
   let selectedCommentContent = $state('');
   let actionsHidden = $state(true);
   let discussionHidden = $state(true);
-  let focusInput: any;
+  let focusInput: any = $state();
 
   let userMap = $derived(users.reduce((prev, usr) => {
     prev[usr.id] = usr.name;

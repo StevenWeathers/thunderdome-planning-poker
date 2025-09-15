@@ -33,7 +33,7 @@
   }: Props = $props();
 
   let selectedPersona = $state('');
-  let focusInput: any;
+  let focusInput: any = $state();
 
   function handleSubmit(event) {
     event.preventDefault();
