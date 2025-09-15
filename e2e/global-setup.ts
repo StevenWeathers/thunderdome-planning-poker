@@ -1,4 +1,6 @@
 import { chromium, expect, FullConfig } from "@playwright/test";
+import * as fs from "fs";
+import * as path from "path";
 import { RegisterPage } from "@fixtures/pages/register-page";
 import { LoginPage } from "@fixtures/pages/login-page";
 import { setupDB } from "@fixtures/db/setup";
@@ -13,6 +15,12 @@ import { ThunderdomeSeeder } from "@fixtures/db/seeder";
 import * as process from "process";
 
 async function globalSetup(config: FullConfig) {
+  // Ensure storage directory exists (cross-platform)
+  const storageDir = path.resolve(__dirname, "storage");
+  if (!fs.existsSync(storageDir)) {
+    fs.mkdirSync(storageDir, { recursive: true });
+  }
+
   const pool = setupDB();
   const seeder = new ThunderdomeSeeder(pool);
   const testUsers: TestUsers = {};
@@ -265,9 +273,9 @@ async function globalSetup(config: FullConfig) {
   await adminLoginPage.goto();
   await adminLoginPage.login(au.email, "kentRules!");
   await expect(adminLoginPage.page.locator("h1")).toHaveText("My Games");
-  await adminLoginPage.page
-    .context()
-    .storageState({ path: "storage/adminStorageState.json" });
+  await adminLoginPage.page.context().storageState({
+    path: path.resolve(__dirname, "storage", "adminStorageState.json"),
+  });
 
   const registeredPage = await browser.newPage({
     baseURL: baseUrl,
@@ -280,9 +288,9 @@ async function globalSetup(config: FullConfig) {
   await expect(registeredRegisterPage.page.locator("h1")).toHaveText(
     "My Games",
   );
-  await registeredRegisterPage.page
-    .context()
-    .storageState({ path: "storage/registeredStorageState.json" });
+  await registeredRegisterPage.page.context().storageState({
+    path: path.resolve(__dirname, "storage", "registeredStorageState.json"),
+  });
 
   const verifiedPage = await browser.newPage({
     baseURL: baseUrl,
@@ -293,9 +301,9 @@ async function globalSetup(config: FullConfig) {
   await userVerifiedPage.goto();
   await userVerifiedPage.login(vu.email, "kentRules!");
   await expect(userVerifiedPage.page.locator("h1")).toHaveText("My Games");
-  await userVerifiedPage.page
-    .context()
-    .storageState({ path: "storage/verifiedStorageState.json" });
+  await userVerifiedPage.page.context().storageState({
+    path: path.resolve(__dirname, "storage", "verifiedStorageState.json"),
+  });
 
   const guestPage = await browser.newPage({
     baseURL: baseUrl,
@@ -304,9 +312,9 @@ async function globalSetup(config: FullConfig) {
   await guestRegisterPage.goto();
   await guestRegisterPage.createGuestUser("E2E Guest");
   await expect(guestRegisterPage.page.locator("h1")).toHaveText("My Games");
-  await guestRegisterPage.page
-    .context()
-    .storageState({ path: "storage/guestStorageState.json" });
+  await guestRegisterPage.page.context().storageState({
+    path: path.resolve(__dirname, "storage", "guestStorageState.json"),
+  });
 
   const deleteGuestPage = await browser.newPage({
     baseURL: baseUrl,
@@ -317,9 +325,9 @@ async function globalSetup(config: FullConfig) {
   await expect(deleteGuestRegisterPage.page.locator("h1")).toHaveText(
     "My Games",
   );
-  await deleteGuestRegisterPage.page
-    .context()
-    .storageState({ path: "storage/deleteGuestStorageState.json" });
+  await deleteGuestRegisterPage.page.context().storageState({
+    path: path.resolve(__dirname, "storage", "deleteGuestStorageState.json"),
+  });
 
   const deleteRegPage = await browser.newPage({
     baseURL: baseUrl,
@@ -330,9 +338,13 @@ async function globalSetup(config: FullConfig) {
   await deleteRegisteredPage.goto();
   await deleteRegisteredPage.login(dru.email, "kentRules!");
   await expect(deleteRegisteredPage.page.locator("h1")).toHaveText("My Games");
-  await deleteRegisteredPage.page
-    .context()
-    .storageState({ path: "storage/deleteRegisteredStorageState.json" });
+  await deleteRegisteredPage.page.context().storageState({
+    path: path.resolve(
+      __dirname,
+      "storage",
+      "deleteRegisteredStorageState.json",
+    ),
+  });
 
   await browser.close();
 

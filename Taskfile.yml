@@ -95,6 +95,11 @@ tasks:
       - task: build-go
       - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_NAME}} live
 
+  windows-dev-go:
+    cmds:
+      - task: windows-build-go
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_WINDOWS}} live
+
   dev-secure:
     cmds:
       - task: build
