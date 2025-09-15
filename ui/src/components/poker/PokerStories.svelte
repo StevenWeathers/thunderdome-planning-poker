@@ -19,6 +19,7 @@
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
   import Badge from '../global/Badge.svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     plans?: any;
@@ -87,6 +88,18 @@
   let selectedPlan = $state({ ...defaultPlan });
   let storysShow = $state('unpointed');
   let showImport = $state(false);
+
+  $effect(() => {
+    if (gameOver) {
+      toggleShow('all')();
+    }
+  })
+
+  onMount(() => {
+    if (gameOver) {
+      toggleShow('all')();
+    }
+  });
 
   const toggleImport = () => {
     showImport = !showImport;
