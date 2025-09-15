@@ -54,6 +54,7 @@
   import AdminSubscriptions from './pages/admin/Subscriptions.svelte';
   import AdminSubscription from './pages/admin/Subscription.svelte';
   import AdminEstimationScales from './pages/admin/poker/EstimationScales.svelte';
+  import AdminSmtpTest from './pages/admin/SmtpTest.svelte';
   import { setLocale } from './i18n/i18n-svelte';
   import { detectLocale } from './i18n/i18n-util';
   import Confirmation from './pages/subscription/Confirmation.svelte';
@@ -462,6 +463,13 @@
       route: AdminAlerts,
       params: {},
       name: 'admin-alerts',
+    };
+  });
+  router.on(`${appRoutes.adminSmtpTest}`, () => {
+    currentPage = {
+      route: AdminSmtpTest,
+      params: {},
+      name: 'admin-smtp-test',
     };
   });
 

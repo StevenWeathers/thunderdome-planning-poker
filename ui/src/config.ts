@@ -60,6 +60,7 @@ const appRoutes = {
   adminEstimationScales: `${adminPrefix}/estimation-scales`,
   adminRetroTemplates: `${adminPrefix}/retro-templates`,
   adminProjects: `${adminPrefix}/projects`,
+  adminSmtpTest: `${adminPrefix}/smtp-test`,
   subscriptionPricing: `${PathPrefix}/subscriptions/pricing`,
   subscriptionConfirmation: `${PathPrefix}/subscriptions/confirmation`,
   privacyPolicy: `${PathPrefix}/privacy-policy`,

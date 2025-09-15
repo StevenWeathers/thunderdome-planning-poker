@@ -2,9 +2,11 @@
 package email
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
@@ -125,4 +127,101 @@ func (s *Service) send(userName string, userEmail string, subject string, body s
 	}
 
 	return err
+}
+
+// TestConnection tests the SMTP connection without sending an email
+func (s *Service) TestConnection() error {
+	if !s.Config.SmtpEnabled {
+		return fmt.Errorf("SMTP is not enabled")
+	}
+
+	var c *mail.Client
+	var err error
+
+	if s.Config.SmtpSecure {
+		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithSMTPAuth(s.authType),
+			mail.WithUsername(s.Config.SmtpUser), mail.WithPassword(s.Config.SmtpPass), mail.WithTLSConfig(s.tlsConfig))
+	} else {
+		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithTLSConfig(s.tlsConfig),
+			mail.WithTLSPolicy(mail.TLSOpportunistic))
+	}
+	if err != nil {
+		return fmt.Errorf("failed to create mail client: %v", err)
+	}
+
+	// Test connection by dialing
+	return c.DialWithContext(context.Background())
+}
+
+// SendTestEmail sends a test email to verify SMTP configuration
+func (s *Service) SendTestEmail(recipient string, recipientName string) error {
+	if !s.Config.SmtpEnabled {
+		return fmt.Errorf("SMTP is not enabled")
+	}
+
+	testSubject := "Thunderdome SMTP Test Email"
+	testBody, err := s.generateBody(hermes.Body{
+		Title: "SMTP Configuration Test",
+		Intros: []string{
+			"This is a test email from your Thunderdome Planning Poker application.",
+			"If you received this email, your SMTP configuration is working correctly!",
+		},
+		Dictionary: []hermes.Entry{
+			{
+				Key:   "Test Date",
+				Value: time.Now().Format("2006-01-02 15:04:05 MST"),
+			},
+			{
+				Key:   "Server",
+				Value: s.Config.SmtpHost + ":" + strconv.Itoa(s.Config.SmtpPort),
+			},
+			{
+				Key:   "Sender",
+				Value: s.Config.SmtpSender,
+			},
+		},
+		Outros: []string{
+			"This email was sent from the admin panel for testing purposes.",
+		},
+	})
+
+	if err != nil {
+		return fmt.Errorf("failed to generate test email body: %v", err)
+	}
+
+	return s.send(recipientName, recipient, testSubject, testBody)
+}
+
+// GetSanitizedConfig returns SMTP configuration with sensitive data masked
+func (s *Service) GetSanitizedConfig() map[string]interface{} {
+	config := map[string]interface{}{
+		"enabled":       s.Config.SmtpEnabled,
+		"host":          s.Config.SmtpHost,
+		"port":          s.Config.SmtpPort,
+		"secure":        s.Config.SmtpSecure,
+		"sender":        s.Config.SmtpSender,
+		"senderName":    s.Config.SenderName,
+		"skipTLSVerify": s.Config.SmtpSkipTLSVerify,
+		"authType":      s.Config.SmtpAuth,
+	}
+
+	// Mask sensitive information
+	if s.Config.SmtpUser != "" {
+		config["username"] = maskString(s.Config.SmtpUser)
+	}
+	if s.Config.SmtpPass != "" {
+		config["hasPassword"] = true
+	} else {
+		config["hasPassword"] = false
+	}
+
+	return config
+}
+
+// maskString masks sensitive string information for display
+func maskString(input string) string {
+	if len(input) <= 4 {
+		return strings.Repeat("*", len(input))
+	}
+	return input[:2] + strings.Repeat("*", len(input)-4) + input[len(input)-2:]
 }

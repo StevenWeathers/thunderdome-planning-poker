@@ -48,3 +48,8 @@ export const validateUserIsAdmin = user => {
 export const validateUserIsRegistered = user => {
   return user && user.rank !== 'GUEST' && user.rank !== 'PRIVATE';
 };
+
+export const validateEmail = email => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};

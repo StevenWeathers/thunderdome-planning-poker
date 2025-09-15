@@ -298,6 +298,10 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	router.Handle("GET "+prefix+"/api/admin/teams", a.userOnly(a.adminOnly(a.handleGetTeams())))
 	router.Handle("GET "+prefix+"/api/admin/apikeys", a.userOnly(a.adminOnly(a.handleGetAPIKeys())))
 	router.Handle("GET "+prefix+"/api/admin/search/users/email", a.userOnly(a.adminOnly(a.handleSearchRegisteredUsersByEmail())))
+	// SMTP testing
+	router.Handle("GET "+prefix+"/api/admin/smtp/config", a.handleGetSMTPConfig())
+	router.Handle("POST "+prefix+"/api/admin/smtp/test-connection", a.handleTestSMTPConnection())
+	router.Handle("POST "+prefix+"/api/admin/smtp/test-email", a.handleSendTestEmail())
 	// alert
 	router.Handle("GET "+prefix+"/api/alerts", a.userOnly(a.adminOnly(a.handleGetAlerts())))
 	router.Handle("POST "+prefix+"/api/alerts", a.userOnly(a.adminOnly(a.handleAlertCreate())))

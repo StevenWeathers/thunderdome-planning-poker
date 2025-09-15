@@ -160,6 +160,7 @@ const en: BaseTranslation = {
   editRetro: 'Edit Retro',
   editStoryboard: 'Edit Storyboard',
   email: 'Email',
+  emailAddress: 'Email Address',
   enterPasscode: 'Enter passcode...',
   enterYourEmail: 'Enter your email',
   execute: 'Execute',
@@ -721,6 +722,51 @@ const en: BaseTranslation = {
   projectUpdateSuccess: 'Project updated successfully',
   projectCreateError: 'Failed to create project',
   projectUpdateError: 'Failed to update project',
+  // SMTP Testing
+  smtpTestTitle: 'SMTP Test',
+  smtpTestDescription:
+    'Test your SMTP email configuration to ensure emails are being sent properly.',
+  smtpConfiguration: 'SMTP Configuration',
+  smtpEnabled: 'SMTP is enabled',
+  smtpDisabled: 'SMTP is disabled',
+  smtpEnabledDesc: 'Email functionality is active and configured.',
+  smtpDisabledDesc:
+    'Email functionality is not enabled. Check your server configuration.',
+  smtpDisabledWarning:
+    'SMTP is disabled. Email features including password reset, invitations, and notifications will not work.',
+  serverConfiguration: 'Server Configuration',
+  host: 'Host',
+  port: 'Port',
+  secure: 'Secure Connection (TLS/SSL)',
+  skipTLSVerify: 'Skip TLS Verification',
+  authenticationAndSender: 'Authentication & Sender',
+  authType: 'Authentication Type',
+  username: 'Username',
+  senderEmail: 'Sender Email',
+  senderName: 'Sender Name',
+  showSensitive: 'Show Sensitive',
+  hideSensitive: 'Hide Sensitive',
+  refresh: 'Refresh',
+  refreshing: 'Refreshing...',
+  smtpConnectionTestTitle: 'Connection Test',
+  smtpConnectionTestDescription:
+    'Test the SMTP server connection without sending any emails.',
+  testConnection: 'Test Connection',
+  testing: 'Testing...',
+  clearResults: 'Clear Results',
+  smtpSendTestEmailTitle: 'Send Test Email',
+  smtpSendTestEmailDescription:
+    'Send a test email to verify that your SMTP configuration is working correctly.',
+  recipientName: 'Recipient Name',
+  sendTestEmail: 'Send Test Email',
+  sending: 'Sending...',
+  smtpDocumentationTitle: 'Configuration Help',
+  smtpDocumentation1:
+    'Connection Test: Verifies that your application can connect to the SMTP server using the configured settings.',
+  smtpDocumentation2:
+    'Test Email: Sends an actual email to verify the complete email delivery pipeline.',
+  smtpDocumentation3:
+    'If tests fail, check your SMTP server settings, authentication credentials, and network connectivity.',
 };
 
 export default en;

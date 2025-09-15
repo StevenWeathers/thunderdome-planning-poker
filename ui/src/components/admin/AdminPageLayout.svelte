@@ -10,12 +10,13 @@
     Gamepad,
     Key,
     LayoutDashboard,
+    Mail,
+    Package,
     RefreshCcw,
     Settings,
     SquareDashedKanban,
     User,
     Users,
-    Package,
   } from 'lucide-svelte';
 
   interface Props {
@@ -105,6 +106,13 @@
       path: appRoutes.adminApiKeys,
       icon: Key,
       enabled: ExternalAPIEnabled,
+    },
+    {
+      name: 'SMTP Test',
+      label: $LL.smtpTestTitle(),
+      path: appRoutes.adminSmtpTest,
+      icon: Mail,
+      enabled: true,
     },
     {
       name: 'Subscriptions',
