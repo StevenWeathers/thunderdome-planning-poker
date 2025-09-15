@@ -22,6 +22,7 @@ func (s *Service) handleGetProjectByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		sessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		role := ctx.Value(contextKeyUserProjectRole).(string)
 
 		projectID := r.PathValue("projectId")
 		idErr := validate.Var(projectID, "required,uuid")
@@ -43,6 +44,10 @@ func (s *Service) handleGetProjectByID() http.HandlerFunc {
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, project, nil)
+		meta := map[string]string{
+			"role": role,
+		}
+
+		s.Success(w, r, http.StatusOK, project, meta)
 	}
 }

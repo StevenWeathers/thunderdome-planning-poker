@@ -55,3 +55,27 @@ func (s *Service) ListRetros(ctx context.Context, projectID string, limit int, o
 
 	return retros, nil
 }
+
+// RemoveRetro removes the association of a retrospective with a project
+func (s *Service) RemoveRetro(ctx context.Context, projectID string, retroID string) error {
+	res, err := s.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.project_retro
+		WHERE project_id = $1 AND retro_id = $2;`,
+		projectID,
+		retroID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("error removing retro from project: %v", err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error checking retro removal from project: %v", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("retro not found for project")
+	}
+
+	return nil
+}

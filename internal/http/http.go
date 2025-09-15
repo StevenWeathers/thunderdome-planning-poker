@@ -523,16 +523,22 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		// Project storyboards
 		if a.Config.FeatureStoryboard {
 			router.Handle("GET "+prefix+"/api/projects/{projectId}/storyboards", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleGetProjectStoryboards()))))
+			router.Handle("POST "+prefix+"/api/projects/{projectId}/storyboards", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleCreateProjectStoryboard()))))
+			router.Handle("DELETE "+prefix+"/api/projects/{projectId}/storyboards/{storyboardId}", a.userOnly(a.subscribedProjectOnly(a.projectAdminOnly(a.handleProjectStoryboardRemove()))))
 		}
 
 		// Project retros
 		if a.Config.FeatureRetro {
 			router.Handle("GET "+prefix+"/api/projects/{projectId}/retros", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleGetProjectRetros()))))
+			router.Handle("POST "+prefix+"/api/projects/{projectId}/retros", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleCreateProjectRetro()))))
+			router.Handle("DELETE "+prefix+"/api/projects/{projectId}/retros/{retroId}", a.userOnly(a.subscribedProjectOnly(a.projectAdminOnly(a.handleProjectRetroRemove()))))
 		}
 
 		// Project poker games
 		if a.Config.FeaturePoker {
 			router.Handle("GET "+prefix+"/api/projects/{projectId}/poker", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleGetProjectPokerGames()))))
+			router.Handle("POST "+prefix+"/api/projects/{projectId}/poker", a.userOnly(a.subscribedProjectOnly(a.projectUserOnly(a.handleCreateProjectPokerGame()))))
+			router.Handle("DELETE "+prefix+"/api/projects/{projectId}/poker/{gameId}", a.userOnly(a.subscribedProjectOnly(a.projectAdminOnly(a.handleProjectPokerGameRemove()))))
 		}
 
 		// General project operations (admin)

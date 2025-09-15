@@ -12,12 +12,13 @@ import (
 )
 
 const (
-	contextKeyUserID         contextKey = "userId"
-	contextKeyUserType       contextKey = "userType"
-	apiKeyHeaderName         string     = "X-API-Key"
-	contextKeyUserTeamRoles  contextKey = "userTeamRoles"
-	contextKeyOrgRole        contextKey = "orgRole"
-	contextKeyDepartmentRole contextKey = "departmentRole"
+	contextKeyUserID          contextKey = "userId"
+	contextKeyUserType        contextKey = "userType"
+	apiKeyHeaderName          string     = "X-API-Key"
+	contextKeyUserTeamRoles   contextKey = "userTeamRoles"
+	contextKeyOrgRole         contextKey = "orgRole"
+	contextKeyDepartmentRole  contextKey = "departmentRole"
+	contextKeyUserProjectRole contextKey = "userProjectRole"
 )
 
 var validate *validator.Validate
@@ -640,15 +641,18 @@ type ProjectDataSvc interface {
 	UpdateTeamProject(ctx context.Context, project *thunderdome.Project) error
 	DeleteTeamProject(ctx context.Context, teamID string, projectID string) error
 
-	// Team associated Storyboards
+	// Project associated Storyboards
 	AssociateStoryboard(ctx context.Context, projectID string, storyboardID string) error
 	ListStoryboards(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Storyboard, error)
+	RemoveStoryboard(ctx context.Context, projectID string, storyboardID string) error
 
-	// Team associated Retros
+	// Project associated Retros
 	AssociateRetro(ctx context.Context, projectID string, retroID string) error
 	ListRetros(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Retro, error)
+	RemoveRetro(ctx context.Context, projectID string, retroID string) error
 
-	// Team associated Poker Games
+	// Project associated Poker Games
 	AssociatePoker(ctx context.Context, projectID string, pokerID string) error
 	ListPokerGames(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Poker, error)
+	RemovePokerGame(ctx context.Context, projectID string, pokerID string) error
 }

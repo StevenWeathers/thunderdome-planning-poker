@@ -20,13 +20,15 @@
     notifications: NotificationService;
     router: any;
     apiPrefix?: string;
+    scope?: 'user' | 'project';
   }
 
   let {
     xfetch,
     notifications,
     router,
-    apiPrefix = '/api'
+    apiPrefix = '/api',
+    scope = 'user',
   }: Props = $props();
 
   const maxPhaseTimeLimitMin = 59;
@@ -74,7 +76,7 @@
 
   function createRetro(e) {
     e.preventDefault();
-    let endpoint = `${apiPrefix}/users/${$user.id}/retros`;
+    let endpoint = scope === 'project' ? `${apiPrefix}/retros` : `${apiPrefix}/users/${$user.id}/retros`;
 
     if (retroSettings.templateId === '') {
       notifications.danger('Must select a retrospective template.');
@@ -99,7 +101,7 @@
       hideVotesDuringVoting: retroSettings.hideVotesDuringVoting
     };
 
-    if (retroSettings.selectedTeam !== '') {
+    if (scope !== 'project' && retroSettings.selectedTeam !== '') {
       endpoint = `/api/teams/${retroSettings.selectedTeam}/users/${$user.id}/retros`;
     }
 

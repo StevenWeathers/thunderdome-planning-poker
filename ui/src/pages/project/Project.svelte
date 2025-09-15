@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { user } from '../../stores';
-    import { validateUserIsRegistered } from '../../validationUtils';
+    import { validateUserIsAdmin, validateUserIsRegistered } from '../../validationUtils';
     import { appRoutes, AppConfig } from '../../config';
     import ProjectPageLayout from '../../components/project/ProjectPageLayout.svelte';
     import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
@@ -15,6 +15,7 @@
     import LL from '../../i18n/i18n-svelte';
     import Modal from '../../components/global/Modal.svelte';
     import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
+  import { get } from 'svelte/store';
 
     const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -71,7 +72,11 @@
                 const data = result?.data || result;
                 if (data) {
                     project = { ...project, ...data };
+                    isProjectAdmin = result?.meta?.role.toLowerCase() === 'admin' || validateUserIsAdmin($user);
                 }
+                getBattles();
+                getRetros();
+                getStoryboards();
             })
             .catch(() => {
             notifications.danger('Failed to get project');
@@ -82,7 +87,7 @@
     if (FeaturePoker) {
       const battlesOffset = (battlesPage - 1) * battlesPageLimit;
       xfetch(
-        `${projectPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
+        `${projectPrefix}/poker?limit=${battlesPageLimit}&offset=${battlesOffset}`,
       )
         .then(res => res.json())
         .then(function (result) {
@@ -127,7 +132,7 @@
   }
 
   function handleBattleRemove() {
-    xfetch(`${projectPrefix}/battles/${removeBattleId}`, { method: 'DELETE' })
+    xfetch(`${projectPrefix}/poker/${removeBattleId}`, { method: 'DELETE' })
       .then(function () {
         toggleRemoveBattle(null)();
         notifications.success($LL.battleRemoveSuccess());
@@ -206,7 +211,7 @@
 
 <ProjectPageLayout activePage="project" {projectId}>
   <div class="container mx-auto px-4 py-4 md:py-6 lg:py-8">
-      <h1 class="text-3xl font-semibold font-rajdhani dark:text-white" data-testid="project-title">{project.name}</h1>
+      <h1 class="text-3xl font-semibold font-rajdhani dark:text-white mb-4" data-testid="project-title">Project {project.name}</h1>
 
       <!-- Subscription Required if enabled -->
       {#if AppConfig.SubscriptionsEnabled && $user && !$user.isSubscriber}
@@ -246,10 +251,11 @@
               {#if showCreateBattle}
                 <Modal closeModal={toggleCreateBattle}>
                     <CreateBattle
-                    apiPrefix={projectPrefix}
-                    notifications={notifications}
-                    router={router}
-                    xfetch={xfetch}
+                      apiPrefix={projectPrefix}
+                      scope={"project"}
+                      notifications={notifications}
+                      router={router}
+                      xfetch={xfetch}
                     />
                 </Modal>
               {/if}
@@ -287,10 +293,11 @@
               {#if showCreateRetro}
                   <Modal closeModal={toggleCreateRetro}>
                       <CreateRetro
-                      apiPrefix={projectPrefix}
-                      notifications={notifications}
-                      router={router}
-                      xfetch={xfetch}
+                        apiPrefix={projectPrefix}
+                        scope={"project"}
+                        notifications={notifications}
+                        router={router}
+                        xfetch={xfetch}
                       />
                   </Modal>
               {/if}
@@ -329,10 +336,11 @@
               {#if showCreateStoryboard}
               <Modal closeModal={toggleCreateStoryboard}>
                   <CreateStoryboard
-                  apiPrefix={projectPrefix}
-                  notifications={notifications}
-                  router={router}
-                  xfetch={xfetch}
+                    apiPrefix={projectPrefix}
+                    scope={"project"}
+                    notifications={notifications}
+                    router={router}
+                    xfetch={xfetch}
                   />
               </Modal>
               {/if}

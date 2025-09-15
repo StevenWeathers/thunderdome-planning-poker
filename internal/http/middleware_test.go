@@ -1846,6 +1846,15 @@ func (m *MockProjectDataSvc) AssociatePoker(ctx context.Context, projectID strin
 func (m *MockProjectDataSvc) ListPokerGames(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Poker, error) {
 	panic("implement me")
 }
+func (m *MockProjectDataSvc) RemovePokerGame(ctx context.Context, projectID string, gameID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) RemoveRetro(ctx context.Context, projectID string, retroID string) error {
+	panic("implement me")
+}
+func (m *MockProjectDataSvc) RemoveStoryboard(ctx context.Context, projectID string, storyboardID string) error {
+	panic("implement me")
+}
 
 func TestProjectUserOnly(t *testing.T) {
 	tests := []struct {

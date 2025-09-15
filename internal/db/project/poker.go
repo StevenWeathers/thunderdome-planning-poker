@@ -55,3 +55,27 @@ func (s *Service) ListPokerGames(ctx context.Context, projectID string, limit in
 
 	return games, nil
 }
+
+// RemovePokerGame removes the association of a planning poker game with a project
+func (s *Service) RemovePokerGame(ctx context.Context, projectID string, pokerID string) error {
+	result, err := s.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.project_poker
+		WHERE project_id = $1 AND poker_id = $2;`,
+		projectID,
+		pokerID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("error removing poker from project: %v", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error getting rows affected: %v", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("no poker game found with ID %s for project %s", pokerID, projectID)
+	}
+
+	return nil
+}

@@ -62,3 +62,28 @@ func (d *Service) ListStoryboards(ctx context.Context, projectId string, limit i
 
 	return storyboards, nil
 }
+
+// RemoveStoryboard removes the association of a Storyboard with a project
+func (s *Service) RemoveStoryboard(ctx context.Context, projectID string, storyboardID string) error {
+	res, err := s.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.project_storyboard
+		WHERE project_id = $1
+		AND storyboard_id = $2;`,
+		projectID,
+		storyboardID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("error removing storyboard from project: %v", err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error checking rows affected: %v", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("error removing storyboard from project: no rows affected")
+	}
+
+	return nil
+}
