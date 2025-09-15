@@ -607,6 +607,10 @@ type EmailService interface {
 	SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, userName string, userEmail string) error
 	SendEmailChangeRequest(userName string, userEmail string, changeId string) error
 	SendEmailChangeConfirmation(userName string, userEmail string, newEmail string) error
+	// SMTP testing methods
+	TestConnection() error
+	SendTestEmail(recipient string, recipientName string) error
+	GetSanitizedConfig() map[string]interface{}
 }
 
 // ProjectDataSvc represents the interface for project data operations
