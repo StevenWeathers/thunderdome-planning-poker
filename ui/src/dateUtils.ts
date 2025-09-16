@@ -9,9 +9,9 @@ export const getTimezoneName = function () {
 
 export const formatDayForInput = function (date) {
   let month, day, year;
-  (month = '' + (date.getMonth() + 1)),
+  ((month = '' + (date.getMonth() + 1)),
     (day = '' + date.getDate()),
-    (year = date.getFullYear());
+    (year = date.getFullYear()));
 
   if (month.length < 2) month = '0' + month;
   if (day.length < 2) day = '0' + day;
