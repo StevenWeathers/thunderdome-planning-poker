@@ -72,7 +72,7 @@ jobs:
             docs/swagger
 
       - name: Run Thunderdome application
-        run: ./thunderdome-planning-poker &
+        run: ./thunderdome-planning-poker serve &
         env:
           DB_HOST: ${{ matrix.db-host }}
           APP_DOMAIN: ".127.0.0.1"
