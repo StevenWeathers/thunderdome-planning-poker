@@ -53,3 +53,4 @@ USER appuser
 
 # Run the thunderdome binary.
 ENTRYPOINT ["/go/bin/thunderdome"]
+CMD ["serve"]

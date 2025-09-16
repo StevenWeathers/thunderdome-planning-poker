@@ -52,7 +52,7 @@ docker run -d \
 
 4. Run the binary:
 ```bash
-./thunderdome
+./thunderdome serve
 ```
 
 ### 3. Kubernetes Installation

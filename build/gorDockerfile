@@ -10,3 +10,4 @@ COPY --from=0 /etc/passwd /etc/passwd
 USER appuser
 
 ENTRYPOINT ["/thunderdome-planning-poker"]
+CMD ["serve"]

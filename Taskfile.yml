@@ -126,3 +126,7 @@ tasks:
   run:
     cmds:
       - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./$(BINARY_NAME)
+
+  run-windows:
+    cmds:
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_WINDOWS}}
