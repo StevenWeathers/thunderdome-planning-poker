@@ -120,7 +120,11 @@ func (s *Service) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		_ = s.Email.SendWelcome(user.Name, user.Email, verifyID)
+		err = s.Email.SendWelcome(user.Name, user.Email, verifyID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleUserCreate error sending welcome email", zap.Error(err),
+				zap.String("user_email", user.Email), zap.String("session_user_id", sessionUserID))
+		}
 
 		s.Success(w, r, http.StatusOK, newUser, nil)
 	}
@@ -313,7 +317,11 @@ func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 			return
 		}
 
-		_ = s.Email.SendPasswordUpdate(userName, userEmail)
+		emailErr := s.Email.SendPasswordUpdate(userName, userEmail)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleAdminUpdateUserPassword error sending password update email", zap.Error(emailErr),
+				zap.String("user_email", sanitizeUserInputForLogs(userEmail)))
+		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
