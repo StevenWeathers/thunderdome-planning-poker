@@ -451,7 +451,12 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		_ = s.Email.SendWelcome(userName, userEmail, verifyID)
+		emailErr := s.Email.SendWelcome(userName, userEmail, verifyID)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserRegistration error sending welcome email", zap.Error(emailErr),
+				zap.String("user_email", sanitizeUserInputForLogs(userEmail)),
+				zap.String("active_user_id", activeUserID))
+		}
 
 		if activeUserID != "" {
 			s.Cookie.ClearUserCookies(w)
@@ -517,7 +522,11 @@ func (s *Service) handleForgotPassword() http.HandlerFunc {
 
 		resetID, userName, resetErr := s.AuthDataSvc.UserResetRequest(ctx, userEmail)
 		if resetErr == nil {
-			_ = s.Email.SendForgotPassword(userName, userEmail, resetID)
+			emailErr := s.Email.SendForgotPassword(userName, userEmail, resetID)
+			if emailErr != nil {
+				s.Logger.Ctx(ctx).Error("handleForgotPassword error sending forgot password email", zap.Error(emailErr),
+					zap.String("user_email", sanitizeUserInputForLogs(userEmail)))
+			}
 		} else {
 			s.Logger.Ctx(ctx).Error("handleForgotPassword error", zap.Error(resetErr),
 				zap.String("user_email", sanitizeUserInputForLogs(userEmail)))
@@ -574,7 +583,13 @@ func (s *Service) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		_ = s.Email.SendPasswordReset(userName, userEmail)
+		emailErr := s.Email.SendPasswordReset(userName, userEmail)
+
+		if emailErr != nil {
+			// only log, don't fail the request if email fails to send after password reset
+			s.Logger.Ctx(ctx).Error("handleResetPassword error sending password reset email", zap.Error(emailErr),
+				zap.String("reset_id", u.ResetID))
+		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -628,7 +643,11 @@ func (s *Service) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		_ = s.Email.SendPasswordUpdate(userName, userEmail)
+		emailErr := s.Email.SendPasswordUpdate(userName, userEmail)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUpdatePassword error sending password update email", zap.Error(emailErr),
+				zap.String("session_user_id", sessionUserID))
+		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}

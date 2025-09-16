@@ -232,7 +232,11 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 
 		// don't attempt to send email to guest users
 		if user.Email != "" {
-			_ = s.Email.SendDeleteConfirmation(user.Name, user.Email)
+			emailErr := s.Email.SendDeleteConfirmation(user.Name, user.Email)
+			if emailErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserDelete error sending delete confirmation email", zap.Error(emailErr),
+					zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			}
 		}
 
 		// don't clear admins user cookies when deleting other users
@@ -274,7 +278,13 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 			return
 		}
 
-		_ = s.Email.SendEmailVerification(user.Name, user.Email, verifyID)
+		emailErr := s.Email.SendEmailVerification(user.Name, user.Email, verifyID)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleVerifyRequest error sending email verification", zap.Error(emailErr),
+				zap.String("entity_user_id", userID), zap.Stringp("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, emailErr)
+			return
+		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
