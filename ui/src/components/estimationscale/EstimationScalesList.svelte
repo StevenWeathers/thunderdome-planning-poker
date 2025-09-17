@@ -58,7 +58,7 @@
   let showUpdateScale = $state(false);
   let updateScale = $state({});
   let showRemoveScale = $state(false);
-  let removeScaleId = null;
+  let removeScaleId = $state(null);
 
   function handleCreateScale() {
     getScales();
