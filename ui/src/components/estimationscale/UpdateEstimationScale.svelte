@@ -94,24 +94,17 @@
     const target = e.target as HTMLInputElement;
     const inputValue = target.value;
 
-    // Regex to validate the entire input string
-    const validationRegex =
-      /^[\p{L}\p{N}\p{Emoji}\p{Emoji_Component}_?]*[\p{L}\p{N}\p{Emoji}\p{Emoji_Component}?]+( *, *[\p{L}\p{N}\p{Emoji}\p{Emoji_Component}_?]*[\p{L}\p{N}\p{Emoji}\p{Emoji_Component}?]+)*$/u;
+    // Regex to allow letters, numbers, commas, spaces, underscores, and emoji
+    const allowedCharsRegex = /^[\p{L}\p{N}, _\p{Emoji}\p{Emoji_Component}]*$/u;
 
-    if (validationRegex.test(inputValue)) {
-      // If the input is valid, split it into values
+    if (allowedCharsRegex.test(inputValue)) {
       values = inputValue
         .split(',')
         .map(v => v.trim())
         .filter(v => v !== '');
-
-      // Update the input field with the cleaned values
-      target.value = values.join(', ');
     } else {
-      // If the input is not valid, don't update the values array
-      // Optionally, you could provide feedback to the user here
       notifications.danger(
-        'Invalid input. Please use only letters, numbers, and commas.',
+        'Invalid input. Please use only letters, numbers, emojis, commas, spaces, and underscores.',
       );
     }
   }
@@ -189,7 +182,7 @@
       </label>
       <TextInput
         value={values.join(', ')}
-        on:input={handleValuesChange}
+        oninput={handleValuesChange}
         placeholder={$LL.estimationScaleValuesPlaceholder()}
         id="scaleValues"
         name="scaleValues"

@@ -750,6 +750,8 @@
           isEntityAdmin={isAdmin}
           apiPrefix={teamOnlyPrefix}
           organizationId={organizationId}
+          departmentId={departmentId}
+          teamId={teamId}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -792,6 +794,8 @@
           isEntityAdmin={isAdmin}
           apiPrefix={teamOnlyPrefix}
           organizationId={organizationId}
+          departmentId={departmentId}
+          teamId={teamId}
         />
       {:else}
         <FeatureSubscribeBanner
