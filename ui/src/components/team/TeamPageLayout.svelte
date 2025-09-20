@@ -8,6 +8,8 @@
     Package,
   } from 'lucide-svelte';
 
+  const { PathPrefix } = AppConfig;
+
   interface Props {
     activePage?: string;
     children?: import('svelte').Snippet;
@@ -23,10 +25,10 @@
   } = AppConfig;
 
   let routePrefix = departmentId
-    ? `/organization/${organizationId}/department/${departmentId}/team/${teamId}`
+    ? `${appRoutes.organization}/${organizationId}/department/${departmentId}/team/${teamId}`
     : organizationId
-      ? `/organization/${organizationId}/team/${teamId}`
-      : `/${appRoutes.team}/${teamId}`;
+      ? `${appRoutes.organization}/${organizationId}/team/${teamId}`
+      : `${appRoutes.team}/${teamId}`;
 
    // Team pages configuration
   let pages: PageItem[] = $derived($LL ? [
