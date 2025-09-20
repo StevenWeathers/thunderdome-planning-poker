@@ -309,6 +309,16 @@
     },
   );
   router.on(
+    `${appRoutes.organization}/:organizationId/team/:teamId/users`,
+    params => {
+      currentPage = {
+        route: TeamUsers,
+        params,
+        name: 'team-users',
+      };
+    },
+  );
+  router.on(
     `${appRoutes.organization}/:organizationId/team/:teamId/checkin`,
     params => {
       currentPage = {
@@ -346,6 +356,16 @@
     },
   );
   router.on(
+    `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/users`,
+    params => {
+      currentPage = {
+        route: TeamUsers,
+        params,
+        name: 'team-users',
+      };
+    },
+  );
+  router.on(
     `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/checkin`,
     params => {
       currentPage = {
@@ -355,6 +375,28 @@
       };
     },
   );
+  if (FeatureProject) {
+    router.on(
+      `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/projects`,
+      params => {
+        currentPage = {
+          route: TeamProjects,
+          params,
+          name: 'team-projects',
+        };
+      },
+    );
+    router.on(
+      `${appRoutes.organization}/:organizationId/team/:teamId/projects`,
+      params => {
+        currentPage = {
+          route: TeamProjects,
+          params,
+          name: 'team-projects',
+        };
+      },
+    );
+  }
   router.on(`${appRoutes.team}/:teamId`, params => {
     currentPage = {
       route: Team,
@@ -369,13 +411,15 @@
       name: 'team-users',
     };
   });
-  router.on(`${appRoutes.team}/:teamId/projects`, params => {
-    currentPage = {
-      route: TeamProjects,
-      params,
-      name: 'team-projects',
-    };
-  });
+  if (FeatureProject) {
+    router.on(`${appRoutes.team}/:teamId/projects`, params => {
+      currentPage = {
+        route: TeamProjects,
+        params,
+        name: 'team-projects',
+      };
+    });
+  }
   router.on(`${appRoutes.team}/:teamId/checkin`, params => {
     currentPage = {
       route: TeamCheckin,

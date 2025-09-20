@@ -12,34 +12,42 @@
     activePage?: string;
     children?: import('svelte').Snippet;
     teamId: string;
+    organizationId?: string;
+    departmentId?: string;
   }
 
-  let { activePage = 'Team', children, teamId }: Props = $props();
+  let { activePage = 'Team', children, teamId, organizationId, departmentId }: Props = $props();
 
   const {
     FeatureProject,
   } = AppConfig;
+
+  let routePrefix = departmentId
+    ? `/organization/${organizationId}/department/${departmentId}/team/${teamId}`
+    : organizationId
+      ? `/organization/${organizationId}/team/${teamId}`
+      : `/${appRoutes.team}/${teamId}`;
 
    // Team pages configuration
   let pages: PageItem[] = $derived($LL ? [
     {
       name: 'Team',
       label: $LL.team(),
-      path: `${appRoutes.team}/${teamId}`,
+      path: routePrefix,
       icon: Users,
       enabled: true,
     },
     {
       name: 'Users',
       label: $LL.users(),
-      path: `${appRoutes.team}/${teamId}/users`,
+      path: `${routePrefix}/users`,
       icon: User,
       enabled: true,
     },
     {
       name: 'Projects',
       label: $LL.projects(),
-      path: `${appRoutes.team}/${teamId}/projects`,
+      path: `${routePrefix}/projects`,
       icon: Package,
       enabled: FeatureProject,
     },
