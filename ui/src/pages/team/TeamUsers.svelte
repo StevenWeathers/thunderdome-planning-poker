@@ -125,7 +125,7 @@
   <title>{$LL.users()} {team.name} | {$LL.appName()}</title>
 </svelte:head>
 
-<TeamPageLayout activePage="users" {teamId}>
+<TeamPageLayout activePage="users" {teamId} {organizationId} {departmentId}>
   <div class="flex mb-6 lg:mb-8">
     <div class="flex-1">
       <h1 class="text-3xl font-semibold font-rajdhani dark:text-white">
