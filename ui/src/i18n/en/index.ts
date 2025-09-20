@@ -728,6 +728,36 @@ const en: BaseTranslation = {
   endGame: 'End Game',
   endGameReason: 'End Game Reason',
   endGameReasonPlaceholder: 'Select a reason',
+  welcomeBack: 'Welcome back,',
+  dashboardSubtitle: `Let's make your next team collaboration session your best one yet.`,
+  filterByTeam: 'Filter by team:',
+  allTeams: 'All Teams',
+  showContentForAllTeams: 'Show content from all teams',
+  clearFilter: 'Clear filter',
+  teamPage: 'Team page',
+  dashboardTeamsRequired: `Select a team to see your planning poker sessions, retrospectives, and storyboards.`,
+  planningPokerSessions: 'Planning Poker sessions',
+  viewAllPokerSessions: 'View all planning poker sessions',
+  totalPokerSessions: '{total} total sessions',
+  noSessionsFoundForTeam: 'No sessions found {teamName}',
+  noSessionsFound: 'No sessions found',
+  trySelectingDifferentTeamForPoker:
+    'Try selecting a different team or create a new game',
+  startFirstPlanningPokerSession: 'Start your first planning poker session',
+  sprintRetrospectives: 'Sprint Retrospectives',
+  viewAllRetros: 'View all retros',
+  totalRetros: '{total} total retros',
+  noRetrosFoundForTeam: 'No retrospectives found {teamName}',
+  startFirstSprintRetrospective: 'Start your first sprint retrospective',
+  trySelectingDifferentTeamForRetros:
+    'Try selecting a different team or create a new retrospective',
+  viewAllStoryboards: 'View all storyboards',
+  totalStoryboards: '{total} total storyboards',
+  noStoryboardsFoundForTeam: 'No storyboards found {teamName}',
+  startFirstStoryboard: 'Start your first storyboard',
+  agileStoryMapping: 'Agile Story Mapping',
+  trySelectingDifferentTeamForStoryboards:
+    'Try selecting a different team or create a new storyboard',
 };
 
 export default en;

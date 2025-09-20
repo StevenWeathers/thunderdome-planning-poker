@@ -31,6 +31,7 @@ const { PathPrefix, DefaultLocale } = AppConfig;
 const adminPrefix = `${PathPrefix}/admin`;
 const appRoutes = {
   landing: `${PathPrefix}/`,
+  dashboard: `${PathPrefix}/dashboard`,
   register: `${PathPrefix}/register`,
   login: `${PathPrefix}/login`,
   resetPwd: `${PathPrefix}/reset-password`,

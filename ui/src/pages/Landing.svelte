@@ -1,7 +1,6 @@
 <script lang="ts">
   import { AppConfig, appRoutes } from '../config';
   import { user } from '../stores';
-  import { validateUserIsRegistered } from '../validationUtils';
   import { Github, Users, Zap } from 'lucide-svelte';
   import LL from '../i18n/i18n-svelte';
   import Countries from '../components/user/Countries.svelte';
@@ -18,12 +17,8 @@
   const {
     ShowActiveCountries,
     PathPrefix,
-    SubscriptionsEnabled,
-    SubscriptionCheckoutLink,
     RepoURL,
   } = AppConfig;
-
-  let isRegisteredUser = $derived($user && !!$user.id && validateUserIsRegistered($user));
 
   const slogans = [
     'Empower Your Agile Teams',

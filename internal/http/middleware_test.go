@@ -99,7 +99,7 @@ func (m *MockTeamDataSvc) TeamGetUserInvites(ctx context.Context, teamID string)
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker {
+func (m *MockTeamDataSvc) TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.Poker, int) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -119,7 +119,7 @@ func (m *MockTeamDataSvc) TeamDelete(ctx context.Context, TeamID string) error {
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Retro {
+func (m *MockTeamDataSvc) TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.Retro, int) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -134,7 +134,7 @@ func (m *MockTeamDataSvc) TeamRemoveRetro(ctx context.Context, TeamID string, Re
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamStoryboardList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Storyboard {
+func (m *MockTeamDataSvc) TeamStoryboardList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.Storyboard, int) {
 	//TODO implement me
 	panic("implement me")
 }

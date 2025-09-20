@@ -39,7 +39,7 @@
   });
 
   function targetPage() {
-    let tp = appRoutes.games;
+    let tp = appRoutes.dashboard;
 
     if (teamInviteId) {
       tp = `${appRoutes.invite}/team/${teamInviteId}`;
@@ -66,7 +66,7 @@
     return tp;
   }
 
-  function createUserGuest(name) {
+  function createUserGuest(name: string) {
     const body = {
       name,
     };
@@ -89,7 +89,7 @@
       });
   }
 
-  function createUserRegistered(name, email, password1, password2) {
+  function createUserRegistered(name: string, email: string, password1: string, password2: string) {
     const body = {
       name,
       email,
@@ -130,8 +130,6 @@
         notifications.danger(`Failed to get ${inviteType} invite`);
       });
   }
-
-  let registerDisabled = $derived(wasInvited && inviteDetails.email === '');
 
   const loginLinkContextClasses =
     'font-rajdhani uppercase text-lg md:text-xl lg:text-2xl md:leading-tight';

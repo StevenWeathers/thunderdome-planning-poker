@@ -9,8 +9,21 @@ import (
 )
 
 // TeamStoryboardList gets a list of team storyboards
-func (d *Service) TeamStoryboardList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Storyboard {
+func (d *Service) TeamStoryboardList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.Storyboard, int) {
 	var storyboards = make([]*thunderdome.Storyboard, 0)
+	var count int
+
+	err := d.DB.QueryRow(
+		"SELECT COUNT(*) FROM thunderdome.storyboard WHERE team_id = $1;",
+		teamID,
+	).Scan(
+		&count,
+	)
+	if err != nil {
+		d.Logger.Ctx(ctx).Error("get storyboards count query error", zap.Error(err))
+		return storyboards, count
+	}
+
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT s.id, s.name
         FROM thunderdome.storyboard s
@@ -41,7 +54,7 @@ func (d *Service) TeamStoryboardList(ctx context.Context, teamID string, limit i
 		d.Logger.Ctx(ctx).Error("team_storyboard_list query error", zap.Error(err))
 	}
 
-	return storyboards
+	return storyboards, count
 }
 
 // TeamAddStoryboard adds a storyboard to a team

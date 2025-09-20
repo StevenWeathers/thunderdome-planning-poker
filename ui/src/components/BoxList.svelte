@@ -13,6 +13,7 @@
     endTime?: Date;
     endReason?: string;
     plans?: Array<{ points: string }>;
+    [key: string]: any;
   }
 
   interface Props {
@@ -58,7 +59,7 @@
           class="flex-1 min-w-0 font-semibold md:text-xl leading-tight"
         >
         {#if showFacilitatorIcon}
-          {#if item[facilitatorsKey].includes($user.id)}
+            {#if Array.isArray(item[facilitatorsKey]) && item[facilitatorsKey].includes($user.id)}
             <Crown class="inline-block text-yellow-500" />&nbsp;
           {/if}
         {/if}

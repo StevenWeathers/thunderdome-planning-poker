@@ -524,9 +524,13 @@ func (s *Service) handleGetTeamPokerGames() http.HandlerFunc {
 
 		limit, offset := getLimitOffsetFromRequest(r)
 
-		games := s.TeamDataSvc.TeamPokerList(ctx, teamID, limit, offset)
+		games, count := s.TeamDataSvc.TeamPokerList(ctx, teamID, limit, offset)
 
-		s.Success(w, r, http.StatusOK, games, nil)
+		s.Success(w, r, http.StatusOK, games, &pagination{
+			Count:  count,
+			Limit:  limit,
+			Offset: offset,
+		})
 	}
 }
 
@@ -631,9 +635,15 @@ func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 		}
 		limit, offset := getLimitOffsetFromRequest(r)
 
-		retrospectives := s.TeamDataSvc.TeamRetroList(ctx, teamID, limit, offset)
+		retrospectives, count := s.TeamDataSvc.TeamRetroList(ctx, teamID, limit, offset)
 
-		s.Success(w, r, http.StatusOK, retrospectives, nil)
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
+		}
+
+		s.Success(w, r, http.StatusOK, retrospectives, meta)
 	}
 }
 
@@ -700,9 +710,15 @@ func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 		}
 		limit, offset := getLimitOffsetFromRequest(r)
 
-		storyboards := s.TeamDataSvc.TeamStoryboardList(ctx, teamID, limit, offset)
+		storyboards, count := s.TeamDataSvc.TeamStoryboardList(ctx, teamID, limit, offset)
 
-		s.Success(w, r, http.StatusOK, storyboards, nil)
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
+		}
+
+		s.Success(w, r, http.StatusOK, storyboards, meta)
 	}
 }
 

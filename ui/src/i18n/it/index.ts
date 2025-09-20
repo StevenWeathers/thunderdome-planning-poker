@@ -765,6 +765,39 @@ const it: Translation = {
   endGameReason: 'Motivo per Terminare il Gioco',
   endGameReasonPlaceholder:
     'Inserisci il motivo per terminare il gioco (opzionale)',
+  welcomeBack: 'Bentornato,',
+  dashboardSubtitle:
+    'Rendiamo la tua prossima sessione di collaborazione di squadra la migliore di sempre.',
+  filterByTeam: 'Filtra per squadra:',
+  allTeams: 'Tutte le squadre',
+  showContentForAllTeams: 'Mostra contenuto di tutte le squadre',
+  clearFilter: 'Cancella filtro',
+  teamPage: 'Pagina della squadra',
+  dashboardTeamsRequired:
+    'Seleziona una squadra per vedere le tue sessioni di planning poker, retrospettive e storyboard.',
+  planningPokerSessions: 'Sessioni di Planning Poker',
+  viewAllPokerSessions: 'Vedi tutte le sessioni di planning poker',
+  totalPokerSessions: '{total} sessioni totali',
+  noSessionsFoundForTeam: 'Nessuna sessione trovata per {teamName}',
+  noSessionsFound: 'Nessuna sessione trovata',
+  trySelectingDifferentTeamForPoker:
+    'Prova a selezionare una squadra diversa o crea una nuova partita',
+  startFirstPlanningPokerSession:
+    'Inizia la tua prima sessione di planning poker',
+  sprintRetrospectives: 'Retrospettive di Sprint',
+  viewAllRetros: 'Vedi tutte le retrospettive',
+  totalRetros: '{total} retrospettive totali',
+  noRetrosFoundForTeam: 'Nessuna retrospettiva trovata per {teamName}',
+  startFirstSprintRetrospective: 'Inizia la tua prima retrospettiva di sprint',
+  trySelectingDifferentTeamForRetros:
+    'Prova a selezionare una squadra diversa o crea una nuova retrospettiva',
+  viewAllStoryboards: 'Vedi tutti gli storyboard',
+  totalStoryboards: '{total} storyboard totali',
+  noStoryboardsFoundForTeam: 'Nessuno storyboard trovato per {teamName}',
+  startFirstStoryboard: 'Inizia il tuo primo storyboard',
+  agileStoryMapping: 'Mappatura agile delle storie',
+  trySelectingDifferentTeamForStoryboards:
+    'Prova a selezionare una squadra diversa o crea un nuovo storyboard',
 };
 
 export default it;
