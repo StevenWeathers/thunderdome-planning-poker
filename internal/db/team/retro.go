@@ -9,8 +9,21 @@ import (
 )
 
 // TeamRetroList gets a list of team retros
-func (d *Service) TeamRetroList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Retro {
+func (d *Service) TeamRetroList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.Retro, int) {
+	var count int
 	var retros = make([]*thunderdome.Retro, 0)
+
+	err := d.DB.QueryRow(
+		"SELECT COUNT(*) FROM thunderdome.retro WHERE team_id = $1;",
+		teamID,
+	).Scan(
+		&count,
+	)
+	if err != nil {
+		d.Logger.Ctx(ctx).Error("get retros count query error", zap.Error(err))
+		return retros, count
+	}
+
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT r.id, r.name, r.template_id, r.phase
         FROM thunderdome.retro r
@@ -43,7 +56,7 @@ func (d *Service) TeamRetroList(ctx context.Context, teamID string, limit int, o
 		d.Logger.Ctx(ctx).Error("team_retro_list query error", zap.Error(err))
 	}
 
-	return retros
+	return retros, count
 }
 
 // TeamAddRetro adds a retro to a team

@@ -22,8 +22,8 @@ test.describe("Register page", () => {
       try {
         await registerPage.createGuestUser("TestGuestUser");
 
-        const battlesTitle = page.locator("h1");
-        await expect(battlesTitle).toHaveText(battlesPageTitle);
+        const dashboardTitle = page.locator("h1");
+        await expect(dashboardTitle).toHaveText("Welcome back, TestGuestUser");
       } finally {
         const u = await request.get("/api/auth/user");
         const user = await u.json();
@@ -48,8 +48,10 @@ test.describe("Register page", () => {
           userPass,
         );
 
-        const battlesTitle = page.locator("h1");
-        await expect(battlesTitle).toHaveText(battlesPageTitle);
+        const dashboardTitle = page.locator("h1");
+        await expect(dashboardTitle).toHaveText(
+          "Welcome back, Registered Test User",
+        );
       } finally {
         const u = await request.get("/api/auth/user");
         const user = await u.json();
@@ -70,8 +72,8 @@ test.describe("Register page", () => {
       try {
         await registerPage.createGuestUser("TestGuestUser");
 
-        const battlesTitle = page.locator("h1");
-        await expect(battlesTitle).toHaveText(battlesPageTitle);
+        const dashboardTitle = page.locator("h1");
+        await expect(dashboardTitle).toHaveText("Welcome back, TestGuestUser");
 
         await registerPage.goto();
 
@@ -84,8 +86,8 @@ test.describe("Register page", () => {
           userPass,
         );
 
-        const battlesTitle2 = page.locator("h1");
-        await expect(battlesTitle2).toHaveText(battlesPageTitle);
+        const dashboardTitle2 = page.locator("h1");
+        await expect(dashboardTitle2).toHaveText("Welcome back, TestGuestUser");
       } finally {
         const u = await request.get("/api/auth/user");
         const user = await u.json();

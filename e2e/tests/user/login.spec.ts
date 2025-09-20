@@ -9,7 +9,10 @@ test.describe("The Login Page", { tag: "@login" }, () => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
     await loginPage.login(registeredUser.email, "kentRules!");
-    await expect(loginPage.page.locator("h1")).toHaveText("My Games");
+    // should land on user dashboard
+    await expect(loginPage.page.locator("h1")).toHaveText(
+      "Welcome back, E2E Registered User",
+    );
 
     // UI should reflect this user being logged in
     await expect(
