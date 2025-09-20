@@ -282,14 +282,14 @@ type TeamDataSvc interface {
 	TeamUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.TeamUserInvite, error)
 	TeamDeleteUserInvite(ctx context.Context, inviteID string) error
 	TeamGetUserInvites(ctx context.Context, teamId string) ([]thunderdome.TeamUserInvite, error)
-	TeamPokerList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Poker
+	TeamPokerList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.Poker, int)
 	TeamAddPoker(ctx context.Context, teamID string, pokerID string) error
 	TeamRemovePoker(ctx context.Context, teamID string, pokerID string) error
 	TeamDelete(ctx context.Context, teamID string) error
-	TeamRetroList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Retro
+	TeamRetroList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.Retro, int)
 	TeamAddRetro(ctx context.Context, teamID string, retroID string) error
 	TeamRemoveRetro(ctx context.Context, teamID string, retroID string) error
-	TeamStoryboardList(ctx context.Context, teamID string, limit int, offset int) []*thunderdome.Storyboard
+	TeamStoryboardList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.Storyboard, int)
 	TeamAddStoryboard(ctx context.Context, teamID string, storyboardID string) error
 	TeamRemoveStoryboard(ctx context.Context, teamID string, storyboardID string) error
 	TeamList(ctx context.Context, limit int, offset int) ([]*thunderdome.Team, int)

@@ -76,6 +76,7 @@
   import TeamUsers from './pages/team/TeamUsers.svelte';
   import TeamProjects from './pages/team/TeamProjects.svelte';
   import Project from './pages/project/Project.svelte';
+  import Dashboard from './pages/Dashboard.svelte';
 
   const {
     FeaturePoker,
@@ -128,6 +129,14 @@
       route: Landing,
       params: {},
       name: 'landing',
+    };
+  });
+
+  router.on(appRoutes.dashboard, () => {
+    currentPage = {
+      route: Dashboard,
+      params: {},
+      name: 'dashboard',
     };
   });
   router.on(appRoutes.privacyPolicy, () => {
