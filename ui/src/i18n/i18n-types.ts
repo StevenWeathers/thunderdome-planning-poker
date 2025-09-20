@@ -2847,6 +2847,120 @@ type RootTranslation = {
    * S​e​l​e​c​t​ ​a​ ​r​e​a​s​o​n
    */
   endGameReasonPlaceholder: string;
+  /**
+   * W​e​l​c​o​m​e​ ​b​a​c​k​,
+   */
+  welcomeBack: string;
+  /**
+   * L​e​t​'​s​ ​m​a​k​e​ ​y​o​u​r​ ​n​e​x​t​ ​t​e​a​m​ ​c​o​l​l​a​b​o​r​a​t​i​o​n​ ​s​e​s​s​i​o​n​ ​y​o​u​r​ ​b​e​s​t​ ​o​n​e​ ​y​e​t​.
+   */
+  dashboardSubtitle: string;
+  /**
+   * F​i​l​t​e​r​ ​b​y​ ​t​e​a​m​:
+   */
+  filterByTeam: string;
+  /**
+   * A​l​l​ ​T​e​a​m​s
+   */
+  allTeams: string;
+  /**
+   * S​h​o​w​ ​c​o​n​t​e​n​t​ ​f​r​o​m​ ​a​l​l​ ​t​e​a​m​s
+   */
+  showContentForAllTeams: string;
+  /**
+   * C​l​e​a​r​ ​f​i​l​t​e​r
+   */
+  clearFilter: string;
+  /**
+   * T​e​a​m​ ​p​a​g​e
+   */
+  teamPage: string;
+  /**
+   * S​e​l​e​c​t​ ​a​ ​t​e​a​m​ ​t​o​ ​s​e​e​ ​y​o​u​r​ ​p​l​a​n​n​i​n​g​ ​p​o​k​e​r​ ​s​e​s​s​i​o​n​s​,​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​s​,​ ​a​n​d​ ​s​t​o​r​y​b​o​a​r​d​s​.
+   */
+  dashboardTeamsRequired: string;
+  /**
+   * P​l​a​n​n​i​n​g​ ​P​o​k​e​r​ ​s​e​s​s​i​o​n​s
+   */
+  planningPokerSessions: string;
+  /**
+   * V​i​e​w​ ​a​l​l​ ​p​l​a​n​n​i​n​g​ ​p​o​k​e​r​ ​s​e​s​s​i​o​n​s
+   */
+  viewAllPokerSessions: string;
+  /**
+   * {​t​o​t​a​l​}​ ​t​o​t​a​l​ ​s​e​s​s​i​o​n​s
+   * @param {unknown} total
+   */
+  totalPokerSessions: RequiredParams<'total'>;
+  /**
+   * N​o​ ​s​e​s​s​i​o​n​s​ ​f​o​u​n​d​ ​{​t​e​a​m​N​a​m​e​}
+   * @param {unknown} teamName
+   */
+  noSessionsFoundForTeam: RequiredParams<'teamName'>;
+  /**
+   * N​o​ ​s​e​s​s​i​o​n​s​ ​f​o​u​n​d
+   */
+  noSessionsFound: string;
+  /**
+   * T​r​y​ ​s​e​l​e​c​t​i​n​g​ ​a​ ​d​i​f​f​e​r​e​n​t​ ​t​e​a​m​ ​o​r​ ​c​r​e​a​t​e​ ​a​ ​n​e​w​ ​g​a​m​e
+   */
+  trySelectingDifferentTeamForPoker: string;
+  /**
+   * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​p​l​a​n​n​i​n​g​ ​p​o​k​e​r​ ​s​e​s​s​i​o​n
+   */
+  startFirstPlanningPokerSession: string;
+  /**
+   * S​p​r​i​n​t​ ​R​e​t​r​o​s​p​e​c​t​i​v​e​s
+   */
+  sprintRetrospectives: string;
+  /**
+   * V​i​e​w​ ​a​l​l​ ​r​e​t​r​o​s
+   */
+  viewAllRetros: string;
+  /**
+   * {​t​o​t​a​l​}​ ​t​o​t​a​l​ ​r​e​t​r​o​s
+   * @param {unknown} total
+   */
+  totalRetros: RequiredParams<'total'>;
+  /**
+   * N​o​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​s​ ​f​o​u​n​d​ ​{​t​e​a​m​N​a​m​e​}
+   * @param {unknown} teamName
+   */
+  noRetrosFoundForTeam: RequiredParams<'teamName'>;
+  /**
+   * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​p​r​i​n​t​ ​r​e​t​r​o​s​p​e​c​t​i​v​e
+   */
+  startFirstSprintRetrospective: string;
+  /**
+   * T​r​y​ ​s​e​l​e​c​t​i​n​g​ ​a​ ​d​i​f​f​e​r​e​n​t​ ​t​e​a​m​ ​o​r​ ​c​r​e​a​t​e​ ​a​ ​n​e​w​ ​r​e​t​r​o​s​p​e​c​t​i​v​e
+   */
+  trySelectingDifferentTeamForRetros: string;
+  /**
+   * V​i​e​w​ ​a​l​l​ ​s​t​o​r​y​b​o​a​r​d​s
+   */
+  viewAllStoryboards: string;
+  /**
+   * {​t​o​t​a​l​}​ ​t​o​t​a​l​ ​s​t​o​r​y​b​o​a​r​d​s
+   * @param {unknown} total
+   */
+  totalStoryboards: RequiredParams<'total'>;
+  /**
+   * N​o​ ​s​t​o​r​y​b​o​a​r​d​s​ ​f​o​u​n​d​ ​{​t​e​a​m​N​a​m​e​}
+   * @param {unknown} teamName
+   */
+  noStoryboardsFoundForTeam: RequiredParams<'teamName'>;
+  /**
+   * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​o​r​y​b​o​a​r​d
+   */
+  startFirstStoryboard: string;
+  /**
+   * A​g​i​l​e​ ​S​t​o​r​y​ ​M​a​p​p​i​n​g
+   */
+  agileStoryMapping: string;
+  /**
+   * T​r​y​ ​s​e​l​e​c​t​i​n​g​ ​a​ ​d​i​f​f​e​r​e​n​t​ ​t​e​a​m​ ​o​r​ ​c​r​e​a​t​e​ ​a​ ​n​e​w​ ​s​t​o​r​y​b​o​a​r​d
+   */
+  trySelectingDifferentTeamForStoryboards: string;
 };
 
 export type TranslationFunctions = {
@@ -5671,6 +5785,114 @@ export type TranslationFunctions = {
    * Select a reason
    */
   endGameReasonPlaceholder: () => LocalizedString;
+  /**
+   * Welcome back,
+   */
+  welcomeBack: () => LocalizedString;
+  /**
+   * Let's make your next team collaboration session your best one yet.
+   */
+  dashboardSubtitle: () => LocalizedString;
+  /**
+   * Filter by team:
+   */
+  filterByTeam: () => LocalizedString;
+  /**
+   * All Teams
+   */
+  allTeams: () => LocalizedString;
+  /**
+   * Show content from all teams
+   */
+  showContentForAllTeams: () => LocalizedString;
+  /**
+   * Clear filter
+   */
+  clearFilter: () => LocalizedString;
+  /**
+   * Team page
+   */
+  teamPage: () => LocalizedString;
+  /**
+   * Select a team to see your planning poker sessions, retrospectives, and storyboards.
+   */
+  dashboardTeamsRequired: () => LocalizedString;
+  /**
+   * Planning Poker sessions
+   */
+  planningPokerSessions: () => LocalizedString;
+  /**
+   * View all planning poker sessions
+   */
+  viewAllPokerSessions: () => LocalizedString;
+  /**
+   * {total} total sessions
+   */
+  totalPokerSessions: (arg: { total: unknown }) => LocalizedString;
+  /**
+   * No sessions found {teamName}
+   */
+  noSessionsFoundForTeam: (arg: { teamName: unknown }) => LocalizedString;
+  /**
+   * No sessions found
+   */
+  noSessionsFound: () => LocalizedString;
+  /**
+   * Try selecting a different team or create a new game
+   */
+  trySelectingDifferentTeamForPoker: () => LocalizedString;
+  /**
+   * Start your first planning poker session
+   */
+  startFirstPlanningPokerSession: () => LocalizedString;
+  /**
+   * Sprint Retrospectives
+   */
+  sprintRetrospectives: () => LocalizedString;
+  /**
+   * View all retros
+   */
+  viewAllRetros: () => LocalizedString;
+  /**
+   * {total} total retros
+   */
+  totalRetros: (arg: { total: unknown }) => LocalizedString;
+  /**
+   * No retrospectives found {teamName}
+   */
+  noRetrosFoundForTeam: (arg: { teamName: unknown }) => LocalizedString;
+  /**
+   * Start your first sprint retrospective
+   */
+  startFirstSprintRetrospective: () => LocalizedString;
+  /**
+   * Try selecting a different team or create a new retrospective
+   */
+  trySelectingDifferentTeamForRetros: () => LocalizedString;
+  /**
+   * View all storyboards
+   */
+  viewAllStoryboards: () => LocalizedString;
+  /**
+   * {total} total storyboards
+   */
+  totalStoryboards: (arg: { total: unknown }) => LocalizedString;
+  /**
+   * No storyboards found {teamName}
+   */
+  noStoryboardsFoundForTeam: (arg: { teamName: unknown }) => LocalizedString;
+  /**
+   * Start your first storyboard
+   */
+  startFirstStoryboard: () => LocalizedString;
+  /**
+   * Agile Story Mapping
+   */
+  agileStoryMapping: () => LocalizedString;
+  /**
+   * Try selecting a different team or create a new storyboard
+   */
+  trySelectingDifferentTeamForStoryboards: () => LocalizedString;
 };
 
 export type Formatters = {};

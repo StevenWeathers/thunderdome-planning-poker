@@ -60,9 +60,9 @@
     registerLink = base;
   });
 
-  let targetPage = $state(appRoutes.games);
+  let targetPage = $state(appRoutes.dashboard);
   $effect(() => {
-    let next = appRoutes.games;
+    let next = appRoutes.dashboard;
     if (teamInviteId) {
       next = `${appRoutes.invite}/team/${teamInviteId}`;
     }

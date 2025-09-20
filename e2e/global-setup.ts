@@ -272,7 +272,9 @@ async function globalSetup(config: FullConfig) {
   const adminLoginPage = new LoginPage(adminPage);
   await adminLoginPage.goto();
   await adminLoginPage.login(au.email, "kentRules!");
-  await expect(adminLoginPage.page.locator("h1")).toHaveText("My Games");
+  await expect(adminLoginPage.page.locator("h1")).toHaveText(
+    "Welcome back, E2E ADMIN",
+  );
   await adminLoginPage.page.context().storageState({
     path: path.resolve(__dirname, "storage", "adminStorageState.json"),
   });
@@ -286,7 +288,7 @@ async function globalSetup(config: FullConfig) {
   await registeredRegisterPage.goto();
   await registeredRegisterPage.login(ru.email, "kentRules!");
   await expect(registeredRegisterPage.page.locator("h1")).toHaveText(
-    "My Games",
+    "Welcome back, E2E Registered User",
   );
   await registeredRegisterPage.page.context().storageState({
     path: path.resolve(__dirname, "storage", "registeredStorageState.json"),
@@ -300,7 +302,9 @@ async function globalSetup(config: FullConfig) {
   const userVerifiedPage = new LoginPage(verifiedPage);
   await userVerifiedPage.goto();
   await userVerifiedPage.login(vu.email, "kentRules!");
-  await expect(userVerifiedPage.page.locator("h1")).toHaveText("My Games");
+  await expect(userVerifiedPage.page.locator("h1")).toHaveText(
+    "Welcome back, E2E Verified User",
+  );
   await userVerifiedPage.page.context().storageState({
     path: path.resolve(__dirname, "storage", "verifiedStorageState.json"),
   });
@@ -311,7 +315,9 @@ async function globalSetup(config: FullConfig) {
   const guestRegisterPage = new RegisterPage(guestPage);
   await guestRegisterPage.goto();
   await guestRegisterPage.createGuestUser("E2E Guest");
-  await expect(guestRegisterPage.page.locator("h1")).toHaveText("My Games");
+  await expect(guestRegisterPage.page.locator("h1")).toHaveText(
+    "Welcome back, E2E Guest",
+  );
   await guestRegisterPage.page.context().storageState({
     path: path.resolve(__dirname, "storage", "guestStorageState.json"),
   });
@@ -323,7 +329,7 @@ async function globalSetup(config: FullConfig) {
   await deleteGuestRegisterPage.goto();
   await deleteGuestRegisterPage.createGuestUser("E2E Delete Guest");
   await expect(deleteGuestRegisterPage.page.locator("h1")).toHaveText(
-    "My Games",
+    "Welcome back, E2E Delete Guest",
   );
   await deleteGuestRegisterPage.page.context().storageState({
     path: path.resolve(__dirname, "storage", "deleteGuestStorageState.json"),
@@ -337,7 +343,9 @@ async function globalSetup(config: FullConfig) {
   const deleteRegisteredPage = new LoginPage(deleteRegPage);
   await deleteRegisteredPage.goto();
   await deleteRegisteredPage.login(dru.email, "kentRules!");
-  await expect(deleteRegisteredPage.page.locator("h1")).toHaveText("My Games");
+  await expect(deleteRegisteredPage.page.locator("h1")).toHaveText(
+    "Welcome back, E2E Delete User",
+  );
   await deleteRegisteredPage.page.context().storageState({
     path: path.resolve(
       __dirname,

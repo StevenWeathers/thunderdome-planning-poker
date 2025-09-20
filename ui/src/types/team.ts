@@ -3,6 +3,8 @@ export type Team = {
   id: string;
   name: string;
   updatedDate: string;
+  organization_id?: string;
+  department_id?: string;
 };
 
 export type TeamUser = {

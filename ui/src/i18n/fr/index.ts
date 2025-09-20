@@ -788,6 +788,40 @@ const fr: Translation = {
   endGame: 'Terminer le jeu',
   endGameReason: 'Raison de la fin du jeu',
   endGameReasonPlaceholder: 'Sélectionnez une raison',
+  welcomeBack: 'Bon retour,',
+  dashboardSubtitle:
+    'Faisons de votre prochaine session de collaboration d’équipe la meilleure à ce jour.',
+  filterByTeam: 'Filtrer par équipe :',
+  allTeams: 'Toutes les équipes',
+  showContentForAllTeams: 'Afficher le contenu de toutes les équipes',
+  clearFilter: 'Effacer le filtre',
+  teamPage: 'Page de l’équipe',
+  dashboardTeamsRequired:
+    'Sélectionnez une équipe pour voir vos sessions de planning poker, rétrospectives et storyboards.',
+  planningPokerSessions: 'Sessions de Planning Poker',
+  viewAllPokerSessions: 'Voir toutes les sessions de planning poker',
+  totalPokerSessions: '{total} sessions au total',
+  noSessionsFoundForTeam: 'Aucune session trouvée pour {teamName}',
+  noSessionsFound: 'Aucune session trouvée',
+  trySelectingDifferentTeamForPoker:
+    'Essayez de sélectionner une autre équipe ou créez une nouvelle partie',
+  startFirstPlanningPokerSession:
+    'Commencez votre première session de planning poker',
+  sprintRetrospectives: 'Rétrospectives de Sprint',
+  viewAllRetros: 'Voir toutes les rétrospectives',
+  totalRetros: '{total} rétrospectives au total',
+  noRetrosFoundForTeam: 'Aucune rétrospective trouvée pour {teamName}',
+  startFirstSprintRetrospective:
+    'Commencez votre première rétrospective de sprint',
+  trySelectingDifferentTeamForRetros:
+    'Essayez de sélectionner une autre équipe ou créez une nouvelle rétrospective',
+  viewAllStoryboards: 'Voir tous les storyboards',
+  totalStoryboards: '{total} storyboards au total',
+  noStoryboardsFoundForTeam: 'Aucun storyboard trouvé pour {teamName}',
+  startFirstStoryboard: 'Commencez votre premier storyboard',
+  agileStoryMapping: 'Cartographie agile des histoires',
+  trySelectingDifferentTeamForStoryboards:
+    'Essayez de sélectionner une autre équipe ou créez un nouveau storyboard',
 };
 
 export default fr;

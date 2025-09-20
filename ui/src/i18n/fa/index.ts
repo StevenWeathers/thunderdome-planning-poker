@@ -739,6 +739,38 @@ const fa: Translation = {
   endGame: 'پایان بازی',
   endGameReason: 'دلیل پایان بازی',
   endGameReasonPlaceholder: 'یک دلیل انتخاب کنید',
+  welcomeBack: 'خوش آمدید،',
+  dashboardSubtitle: 'بیایید جلسه همکاری تیمی بعدی شما را بهترین کنیم.',
+  filterByTeam: 'فیلتر بر اساس تیم:',
+  allTeams: 'همه تیم‌ها',
+  showContentForAllTeams: 'نمایش محتوا از همه تیم‌ها',
+  clearFilter: 'پاک کردن فیلتر',
+  teamPage: 'صفحه تیم',
+  dashboardTeamsRequired:
+    'برای مشاهده جلسات برنامه‌ریزی پوکر، رتروسپکتیوها و استوری‌بوردها، یک تیم را انتخاب کنید.',
+  planningPokerSessions: 'جلسات برنامه‌ریزی پوکر',
+  viewAllPokerSessions: 'مشاهده همه جلسات برنامه‌ریزی پوکر',
+  totalPokerSessions: '{total} جلسه در مجموع',
+  noSessionsFoundForTeam: 'هیچ جلسه‌ای برای {teamName} یافت نشد',
+  noSessionsFound: 'هیچ جلسه‌ای یافت نشد',
+  trySelectingDifferentTeamForPoker:
+    'تیم دیگری را انتخاب کنید یا یک بازی جدید بسازید',
+  startFirstPlanningPokerSession:
+    'اولین جلسه برنامه‌ریزی پوکر خود را شروع کنید',
+  sprintRetrospectives: 'رتروسپکتیوهای اسپرینت',
+  viewAllRetros: 'مشاهده همه رتروسپکتیوها',
+  totalRetros: '{total} رتروسپکتیو در مجموع',
+  noRetrosFoundForTeam: 'هیچ رتروسپکتیوی برای {teamName} یافت نشد',
+  startFirstSprintRetrospective: 'اولین رتروسپکتیو اسپرینت خود را شروع کنید',
+  trySelectingDifferentTeamForRetros:
+    'تیم دیگری را انتخاب کنید یا یک رتروسپکتیو جدید بسازید',
+  viewAllStoryboards: 'مشاهده همه استوری‌بوردها',
+  totalStoryboards: '{total} استوری‌بورد در مجموع',
+  noStoryboardsFoundForTeam: 'هیچ استوری‌بوردی برای {teamName} یافت نشد',
+  startFirstStoryboard: 'اولین استوری‌بورد خود را شروع کنید',
+  agileStoryMapping: 'نقشه‌برداری داستان چابک',
+  trySelectingDifferentTeamForStoryboards:
+    'تیم دیگری را انتخاب کنید یا یک استوری‌بورد جدید بسازید',
 };
 
 export default fa;
