@@ -28,8 +28,6 @@
   let { xfetch, router, notifications, organizationId, departmentId, teamId } =
     $props();
 
-  const { AllowRegistration, AllowGuests } = AppConfig;
-
   // State variables using $state()
   let timezone = $state(getTimezoneName());
   let showCheckin = $state(false);
@@ -134,6 +132,7 @@
       .then(res => res.json())
       .then(function (result) {
         checkins = result.data;
+        calculateCheckinStats();
         filterCheckins();
       })
       .catch(function () {
@@ -357,8 +356,6 @@
       departmentRole === 'ADMIN' ||
       teamRole !== '',
   );
-
-  const checkStats = $derived(checkins && userCount && calculateCheckinStats());
 
   const alreadyCheckedIn = $derived(
     checkins && checkins.find(c => c.user.id === $user.id) !== undefined,

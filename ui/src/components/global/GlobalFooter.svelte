@@ -84,6 +84,14 @@
               </li>
               <li>
                 <a
+                  href="{appRoutes.openSource}"
+                  class="{navLinkClasses} block py-1"
+                >
+                  {$LL.openSource()}
+                </a>
+              </li>
+              <li>
+                <a
                   href="{appRoutes.privacyPolicy}"
                   class="{navLinkClasses} block py-1"
                 >

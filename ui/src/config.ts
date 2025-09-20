@@ -66,6 +66,7 @@ const appRoutes = {
   privacyPolicy: `${PathPrefix}/privacy-policy`,
   termsConditions: `${PathPrefix}/terms-conditions`,
   support: `${PathPrefix}/support`,
+  openSource: `${PathPrefix}/open-source`,
   invite: `${PathPrefix}/invite`,
   projects: `${PathPrefix}/projects`,
 };
