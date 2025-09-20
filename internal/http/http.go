@@ -569,6 +569,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	// static assets
 	router.Handle(prefix+"/assets/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	router.Handle(prefix+"/img/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	router.Handle(prefix+"/content/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
 
 	// health check for load balancers, k8s, etc...
 	router.Handle(prefix+"/healthz", a.handleHealthCheck())

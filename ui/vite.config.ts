@@ -55,6 +55,7 @@ export default defineConfig({
           if (path.includes('/src/pages/poker/')) return 'poker';
           if (path.includes('/src/pages/retro/')) return 'retro';
           if (path.includes('/src/pages/storyboard/')) return 'storyboard';
+          if (path.includes('/src/pages/project/')) return 'project';
           if (path.includes('/src/pages/admin/')) return 'admin';
           if (
             path.includes('/src/pages/organization/') ||

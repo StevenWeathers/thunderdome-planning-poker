@@ -2,7 +2,7 @@ module.exports = {
   darkMode: 'class',
   content: [
     './src/**/*.{svelte,ts,js}',
-    './public/index.html'
+    './public/**/*.html',
   ],
   theme: {
     extend: {
