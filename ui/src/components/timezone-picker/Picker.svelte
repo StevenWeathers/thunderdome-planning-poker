@@ -1,7 +1,6 @@
 <script lang="ts">
   // Copied from https://github.com/tricinel/svelte-timezone-picker due to lack of svelte4 and typescript support
   // and to modify the appearance to fit dark/light modes
-  import { createEventDispatcher, onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import groupedZones from './timezones';
   import {
@@ -16,59 +15,45 @@
   import TextInput from '../forms/TextInput.svelte';
 
   // ***** Public API *****
+  interface Props {
+    timezone?: string | null;
+    expanded?: boolean;
+    allowedTimezones?: string[] | null;
+    onUpdate?: (timezone: string | null) => void;
+  }
 
-  // allow customizing the main btn styles
-  export let btnClasses = '';
-
-  // The timezone value comes from the consumer of the component
-  // If it's not provided, we will set it in onMount to be the user's current timezone
-  export let timezone = null;
-
-  // Should the dropdown be expanded by default?
-  export let expanded = false;
-
-  // We can allow the user to filter the timezones displayed to only a few
-  export let allowedTimezones = null;
+  let {
+    timezone = $bindable(null), 
+    expanded = false, 
+    allowedTimezones = null,
+    onUpdate
+  }: Props = $props();
 
   // ***** End Public API *****
 
-  // What is the current zone?
-  // Array ['Abidjan', '+00:00', '+00:00']
-  // The first value is the display name for the zone, the second is the standard offset, the third the daylight saving time offset
-  let currentZone;
+  // State variables
+  let currentZone = $state();
+  let userSearch = $state(null);
+  let highlightedZone = $state();
 
-  // We keep track of what the user is typing in the search box
-  // String
-  let userSearch;
+  // DOM refs
+  let toggleButtonRef = $state();
+  let searchInputRef = $state();
+  let clearButtonRef = $state();
+  let listBoxRef = $state();
+  let listBoxOptionRefs = $state();
 
-  // What is the currently selected zone in the dropdown?
-  // String 'Africa/Abidjan'
-  let highlightedZone;
-
-  // DOM nodes refs
-  let toggleButtonRef;
-  let searchInputRef;
-  let clearButtonRef;
-  let listBoxRef;
-  let listBoxOptionRefs;
-
-  // A few IDs that will we use for a11y
+  // Constants
   const labelId = uid();
   const listBoxId = uid();
   const searchInputId = uid();
 
   // We ungroup the zones
-  // e.g. { Africa: {'Africa/Abidjan': ['Abidjan', '+00:00', '+00:00']} }
-  // => {'Africa/Abidjan': ['Abidjan', '+00:00', '+00:00']}
   const ungroupedZones = ungroup(groupedZones);
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
 
-  const userTimezone =
-    Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
-
-  // We will only display the timezones the user passed in
-  // and default to all the zones if that's empty or the wrong format
+  // Process allowed timezones
   let availableZones = ungroupedZones;
-
   if (allowedTimezones) {
     if (Array.isArray(allowedTimezones)) {
       availableZones = pick(ungroupedZones, [
@@ -83,42 +68,50 @@
     }
   }
 
-  // We also want a list of all the valid zones
-  // e.g. {'Africa/Abidjan': ['Abidjan', '+00:00', '+00:00'], 'Africa/Accra': ['Accra', '+00:00', '+00:00']}
-  // => ['Africa/Abidjan', 'Africa/Accra']
   const validZones = Object.keys(availableZones);
 
-  // Zones will be filtered as the user types, so we keep track of them internally here
-  let filteredZones = [];
-
-  // We take the ungroupedZones and create a list of just the user-visible labels
-  // and add them to the refs
-  // e.g. {'Africa/Abidjan': ['Abidjan', '+00:00', '+00:00'], 'Africa/Accra': ['Accra', '+00:00', '+00:00']}
-  // => ['Abidjan', 'Accra']
+  // Initialize option refs
   listBoxOptionRefs = Object.values(availableZones).map(([zone]) => ({
     [zone]: null,
   }));
 
-  // We keep track of the initial state so we can reset to these values when needed
+  // Initial state
   const initialState = {
     expanded,
     userSearch: null,
   };
 
+  // Derived state
+  let filteredZones = $derived(
+    userSearch && userSearch.length > 0
+      ? filter(userSearch, availableZones)
+      : validZones.slice()
+  );
+
+  // ***** Methods *****
+
   // Reset the dropdown and all internal state to the initial values
   const reset = () => {
-    expanded = initialState.expanded; // eslint-disable-line prefer-destructuring
-    userSearch = initialState.userSearch; // eslint-disable-line prefer-destructuring
+    expanded = initialState.expanded;
+    userSearch = initialState.userSearch;
   };
 
-  // We will use the dispatcher to send the update event
-  const dispatch = createEventDispatcher();
-
+  // Custom event dispatch and callback
   const dispatchUpdates = () => {
-    const eventName = 'update';
-    const eventData = { timezone };
-
-    dispatch(eventName, eventData);
+    // Call the onUpdate callback if provided
+    if (onUpdate) {
+      onUpdate(timezone);
+    }
+    
+    // Also dispatch a custom event for compatibility
+    const event = new CustomEvent('timezoneUpdate', {
+      detail: { timezone },
+      bubbles: true
+    });
+    
+    if (toggleButtonRef) {
+      toggleButtonRef.dispatchEvent(event);
+    }
   };
 
   // Emit the event back to the consumer
@@ -127,18 +120,15 @@
     timezone = zoneId;
     dispatchUpdates();
     reset();
-    toggleButtonRef.focus();
+    toggleButtonRef?.focus();
     ev.preventDefault();
   };
 
-  // ***** Methods *****
-
   // Figure out if a grouped zone has any currently visible zones
-  // We use this when the user searches in order to show/hide the group name in the list
   const groupHasVisibleChildren = (group, zones) =>
     Object.keys(groupedZones[group]).some(zone => zones.includes(zone));
 
-  // Scroll the list to a specific element in it if that element is not already visible on screen
+  // Scroll the list to a specific element
   const scrollList = zone => {
     const zoneElementRef = listBoxOptionRefs[zone];
     if (listBoxRef && zoneElementRef) {
@@ -147,71 +137,55 @@
     }
   };
 
-  // Every time the user uses their keyboard to move up or down in the list,
-  // we need to figure out if their at the end/start of the list and scroll the correct elements
-  // into view
+  // Move selection up or down
   const moveSelection = direction => {
     const len = filteredZones.length;
     const zoneIndex = filteredZones.findIndex(zone => zone === highlightedZone);
 
     let index;
-
     if (direction === 'up') {
       index = (zoneIndex - 1 + len) % len;
     }
-
     if (direction === 'down') {
       index = (zoneIndex + 1) % len;
     }
 
-    // We update the highlightedZone to be the one the user is currently on
     highlightedZone = filteredZones[index];
-    // We make sure the highlightedZone is visible on screen, scrolling it into view if not
     scrollList(highlightedZone);
   };
 
-  // We watch for when the user presses Escape, ArrowDown or ArrowUp and react accordingly
+  // Handle keyboard navigation
   const keyDown = ev => {
-    // If the clearButton is focused, don't do anything else
-    // We should only continue if the dropdown is expanded
     if (document.activeElement === clearButtonRef || !expanded) {
       return;
     }
 
-    // If the user presses Escape, we dismiss the drodpown
     if (ev.keyCode === keyCodes.Escape) {
       reset();
     }
-
-    // If the user presses the down arrow, start navigating the list
     if (ev.keyCode === keyCodes.ArrowDown) {
       ev.preventDefault();
       moveSelection('down');
     }
-    // If the user presses the up arrow, start navigating the list
     if (ev.keyCode === keyCodes.ArrowUp) {
       ev.preventDefault();
       moveSelection('up');
     }
-    // If the user presses Enter and the dropdown is expanded, select the current item
     if (ev.keyCode === keyCodes.Enter && highlightedZone) {
       handleTimezoneUpdate(ev, highlightedZone);
     }
-    // If the user start to type letters or numbers, we focus on the Search field
     if (
       keyCodes.Characters.includes(ev.keyCode) ||
       ev.keyCode === keyCodes.Backspace
     ) {
-      searchInputRef.focus();
+      searchInputRef?.focus();
     }
   };
 
-  // When the user presses the clear button when searching,
-  // we want to clear the text and refocus on the input
+  // Clear search
   const clearSearch = () => {
-    userSearch = initialState.userSearch; // eslint-disable-line prefer-destructuring
-    // Refocus to the search input
-    searchInputRef.focus();
+    userSearch = initialState.userSearch;
+    searchInputRef?.focus();
   };
 
   const setHighlightedZone = zone => {
@@ -220,21 +194,16 @@
 
   const toggleExpanded = ev => {
     if (ev.keyCode) {
-      // If it's a keyboard event, we should react only to certain keys
-      // Enter and Space should show it
       if ([keyCodes.Enter, keyCodes.Space].includes(ev.keyCode)) {
         expanded = !expanded;
       }
-      // Escape should just hide the menu
       if (ev.keyCode === keyCodes.Escape) {
         expanded = false;
       }
-      // ArrowDown should show it
       if (ev.keyCode === keyCodes.ArrowDown) {
         expanded = true;
       }
     } else {
-      // If there is no keyCode, it's not a keyboard event
       expanded = !expanded;
     }
   };
@@ -245,21 +214,12 @@
     }
   };
 
-  // ***** Reactive *****
-
-  // As the user types, we filter the available zones to show only those that should be visible
-  $: filteredZones =
-    userSearch && userSearch.length > 0
-      ? filter(userSearch, availableZones)
-      : validZones.slice();
-
   const setTimezone = tz => {
     if (!tz) {
       timezone = userTimezone;
     }
 
     if (tz && !validZones.includes(tz)) {
-      // The timezone must be a valid timezone, so we check it against our list of values in flat
       console.warn(
         `The timezone provided is not valid: ${tz}!`,
         `Valid zones are: ${validZones}`,
@@ -271,118 +231,293 @@
     setHighlightedZone(timezone);
   };
 
-  // We want to properly handle any potential changes to the current timezone
-  // that might come in from the consumer of the component.
-  // This includes setting the proper timezone and dispatching the updated values
-  // back up to the consumer
-  $: setTimezone(timezone);
-
-  // ***** Lifecycle methods *****
-  onMount(() => {
+  // Effects - replace reactive statements and onMount
+  $effect(() => {
     setTimezone(timezone);
-    scrollToHighlighted();
+  });
+
+  $effect(() => {
+    if (expanded && highlightedZone) {
+      scrollToHighlighted();
+    }
   });
 </script>
 
 <style>
   .overlay {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2px);
     height: 100vh;
     left: 0;
     position: fixed;
     top: 0;
     width: 100vw;
-    z-index: 0;
+    z-index: 40;
+    transition: all 0.2s ease-in-out;
   }
 
   button {
     background: transparent;
     border: 0;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
   }
 
   svg polygon {
     fill: currentColor;
+    transition: fill 0.2s ease-in-out;
   }
 
   button[data-toggle] {
-    align-content: flex-start;
     align-items: center;
-    display: flex;
-    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    display: inline-flex;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    position: relative;
+    transition: all 0.15s ease-in-out;
+    color: #374151;
+    text-decoration: underline;
+    text-decoration-color: #d1d5db;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  button[data-toggle]:hover {
+    color: #1f2937;
+    text-decoration-color: #6b7280;
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  button[data-toggle]:focus {
+    outline: none;
+    color: #3b82f6;
+    text-decoration-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+
+  button[data-toggle]:active {
+    color: #1e40af;
+    text-decoration-color: #1e40af;
+  }
+
+  /* Dark mode styles for button */
+  :global(.dark) button[data-toggle] {
+    color: #d1d5db;
+    text-decoration-color: #4b5563;
+  }
+
+  :global(.dark) button[data-toggle]:hover {
+    color: #f9fafb;
+    text-decoration-color: #9ca3af;
+    background: rgba(96, 165, 250, 0.1);
+  }
+
+  :global(.dark) button[data-toggle]:focus {
+    color: #60a5fa;
+    text-decoration-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
   }
 
   button[data-toggle] > span {
     font-weight: 500;
-    margin-right: 0.4em;
-    text-decoration: underline;
+    text-align: left;
+    line-height: 1.3;
   }
 
   button[data-toggle] > span small {
     font-weight: 400;
-    font-size: 0.8em;
+    font-size: 0.85em;
+    color: #6b7280;
+    margin-left: 6px;
+    opacity: 0.8;
+  }
+
+  :global(.dark) button[data-toggle] > span small {
+    color: #9ca3af;
+  }
+
+  .chevron {
+    margin-left: 6px;
+    transition: transform 0.15s ease-in-out;
+    color: #9ca3af;
+    opacity: 0.7;
+  }
+
+  :global(.dark) .chevron {
+    color: #6b7280;
+  }
+
+  button[data-toggle][aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
+
+  .timezone-picker-container {
+    position: relative;
+    display: inline-block;
   }
 
   .tz-dropdown {
     display: flex;
     flex-direction: column;
-    min-width: 18em;
-    max-width: 100vw;
+    min-width: 320px;
+    max-width: 400px;
     position: absolute;
     z-index: 50;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+  }
+
+  :global(.dark) .tz-dropdown {
+    background: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  }
+
+  .search-container {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fafbfc;
+  }
+
+  :global(.dark) .search-container {
+    background: #111827;
+    border-bottom-color: #374151;
   }
 
   .tz-groups {
-    height: 240px;
-    max-height: 40vh;
-    overflow: scroll;
+    height: 280px;
+    max-height: 50vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .tz-groups::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .tz-groups::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .tz-groups::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  :global(.dark) .tz-groups::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
   }
 
   ul {
     margin: 0;
-    list-style: none inside none;
-    padding: 0;
+    list-style: none;
+    padding: 8px 0;
   }
 
   ul li {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     display: block;
     margin: 0;
     padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   ul li > span {
     font-size: 0.8em;
     line-height: 1.4em;
     text-align: right;
+    color: #64748b;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, Consolas, monospace;
+  }
+
+  :global(.dark) ul li > span {
+    color: #94a3b8;
   }
 
   ul li p {
-    font-size: 0.92rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     margin: 0;
-    padding: 0;
+    padding: 12px 20px 8px;
     text-transform: uppercase;
+    color: #475569;
+    background: #f8fafc;
+    border-bottom: 1px solid #f1f5f9;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
-  ul li {
+  :global(.dark) ul li p {
+    color: #94a3b8;
+    background: #0f172a;
+    border-bottom-color: #1e293b;
+  }
+
+  ul li[role="option"]:not([aria-hidden="true"]) {
     border: 0;
     display: flex;
     justify-content: space-between;
-    padding: 0.8em 1.2em;
+    align-items: center;
+    padding: 12px 20px;
     text-align: left;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    position: relative;
+    color: #1f2937;
   }
 
-  ul li[aria-selected]:hover,
-  ul li:focus,
-  li[aria-selected='true'] {
-    cursor: pointer;
+  :global(.dark) ul li[role="option"]:not([aria-hidden="true"]) {
+    color: #f9fafb;
+  }
+
+  ul li[role="option"]:not([aria-hidden="true"]):hover {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #1e40af;
+  }
+
+  ul li[role="option"]:not([aria-hidden="true"]):focus,
+  ul li[aria-selected="true"]:not([aria-hidden="true"]) {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    outline: none;
+    position: relative;
+  }
+
+  ul li[role="option"]:not([aria-hidden="true"]):focus > span,
+  ul li[aria-selected="true"]:not([aria-hidden="true"]) > span {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  :global(.dark) ul li[role="option"]:not([aria-hidden="true"]):hover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #dbeafe;
+  }
+
+  :global(.dark) ul li[role="option"]:not([aria-hidden="true"]):focus,
+  :global(.dark) ul li[aria-selected="true"]:not([aria-hidden="true"]) {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
   }
 
   .sr-only {
     border: 0;
-    clip: 'rect(0, 0, 0, 0)';
+    clip: rect(0, 0, 0, 0);
     height: 1px;
     margin: -1px;
     opacity: 0;
@@ -391,13 +526,51 @@
     position: absolute;
     width: 1px;
   }
+
+  /* Enhanced search input styling */
+  :global(.searchField) {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    font-size: 0.95rem !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    transition: all 0.2s ease-in-out !important;
+    background: white !important;
+  }
+
+  :global(.searchField:focus) {
+    outline: none !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  }
+
+  :global(.dark .searchField) {
+    background: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #f9fafb !important;
+  }
+
+  :global(.dark .searchField:focus) {
+    border-color: #60a5fa !important;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2) !important;
+  }
+
+  :global(.searchField::placeholder) {
+    color: #9ca3af !important;
+    font-weight: 400 !important;
+  }
+
+  :global(.dark .searchField::placeholder) {
+    color: #6b7280 !important;
+  }
 </style>
 
 {#if expanded}
   <div
     class="overlay"
-    on:click="{reset}"
-    on:keydown="{(e) => { if (e.key === 'Enter' || e.key === ' ') reset(); }}"
+    onclick="{reset}"
+    onkeydown="{(e) => { if (e.key === 'Enter' || e.key === ' ') reset(); }}"
     aria-label="Close timezone picker"
     aria-modal="true"
     tabindex="-1"
@@ -405,33 +578,32 @@
   ></div>
 {/if}
 
-<button
-  bind:this="{toggleButtonRef}"
-  type="button"
-  aria-label="{`${currentZone[0]} is currently selected. Change timezone`}"
-  aria-haspopup="listbox"
-  data-toggle="true"
-  aria-expanded="{expanded}"
-  on:click="{toggleExpanded}"
-  on:keydown="{toggleExpanded}"
-  class="{btnClasses}"
->
-  <span>{currentZone[0]} <small>GMT {currentZone[1]}</small></span>
-  <svg width="10" height="16" viewBox="0 0 16 16" fill="currentColor">
-    <polygon
-      x="0"
-      y="0"
-      points="8, 8, 16, 16, 0, 16"
-      transform="{expanded ? 'rotate(0)' : 'rotate(180, 8, 8)'} translate(0 -4)"
-    ></polygon>
-  </svg>
-</button>
-{#if expanded}
+<div class="timezone-picker-container">
+  <button
+    bind:this="{toggleButtonRef}"
+    type="button"
+    aria-label="{`${currentZone?.[0]} is currently selected. Change timezone`}"
+    aria-haspopup="listbox"
+    data-toggle="true"
+    aria-expanded="{expanded}"
+    onclick="{toggleExpanded}"
+    onkeydown="{toggleExpanded}"
+  >
+    <span>
+      {currentZone?.[0]}
+      <small>GMT {currentZone?.[1]}</small>
+    </span>
+    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" class="chevron">
+      <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  {#if expanded}
   <div
-    class="tz-dropdown rounded shadow bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-400"
-    transition:slide
-    on:introend="{scrollToHighlighted}"
-    on:keydown="{keyDown}"
+    class="tz-dropdown"
+    transition:slide="{{ duration: 200, easing: (t) => t * (2 - t) }}"
+    onintroend="{scrollToHighlighted}"
+    onkeydown="{keyDown}"
     role="dialog"
     tabindex="0"
   >
@@ -439,8 +611,8 @@
       Select a timezone from the list. Start typing to filter or use the arrow
       keys to navigate the list
     </span>
-    <!-- svelte-ignore a11y-autofocus -->
-    <div class="w-full p-2">
+    
+    <div class="search-container">
       <TextInput
         id="{searchInputId}"
         bind:this="{searchInputRef}"
@@ -450,7 +622,7 @@
         aria-labelledby="{labelId}"
         autocomplete="off"
         autocorrect="off"
-        placeholder="Search..."
+        placeholder="Search timezones..."
         bind:value="{userSearch}"
         autofocus
         class="searchField"
@@ -480,15 +652,14 @@
                 bind:this={listBoxOptionRefs[zoneLabel]}
                 aria-label={`Select ${zoneDetails[0]}`}
                 aria-selected={highlightedZone === zoneDetails[0]}
-                on:mouseover={() => setHighlightedZone(zoneDetails[0])}
-                on:focus={() => setHighlightedZone(zoneDetails[0])}
-                on:click={ev => handleTimezoneUpdate(ev, zoneLabel)}
-                on:keydown={(ev) => {
+                onmouseover={() => setHighlightedZone(zoneDetails[0])}
+                onfocus={() => setHighlightedZone(zoneDetails[0])}
+                onclick={ev => handleTimezoneUpdate(ev, zoneLabel)}
+                onkeydown={(ev) => {
                   if (ev.key === 'Enter' || ev.key === ' ') {
                     handleTimezoneUpdate(ev, zoneLabel);
                   }
                 }}
-                class="hover:bg-blue-500 hover:text-white dark:hover:bg-sky-300 dark:hover:text-gray-800 focus:bg-blue-500 focus:text-white dark:focus:bg-sky-300 dark:focus:text-gray-800"
               >
                 {zoneDetails[0]} <span>GMT {zoneDetails[1]}</span>
               </li>
@@ -498,4 +669,5 @@
       {/each}
     </ul>
   </div>
-{/if}
+  {/if}
+</div>
