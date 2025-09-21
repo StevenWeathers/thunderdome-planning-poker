@@ -219,9 +219,9 @@
 
 <!-- Click outside to close dropdown -->
 {#if showActions}
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="fixed inset-0 z-0" onclick={() => (showActions = false)}></div>
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="fixed inset-0 z-0" onclick={() => (showActions = false)} tabindex="-1"></div>
 {/if}
 
 <style>

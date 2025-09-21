@@ -348,11 +348,6 @@
     transition: all 0.2s ease-in-out;
   }
 
-  svg polygon {
-    fill: currentColor;
-    transition: fill 0.2s ease-in-out;
-  }
-
   button[data-toggle] {
     align-items: center;
     background: transparent;

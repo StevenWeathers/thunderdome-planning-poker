@@ -210,26 +210,4 @@
   .fade-in-50 {
     animation: fade-in 0.2s ease-out;
   }
-
-  /* Custom scrollbar */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-  }
-
-  .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
-    background-color: rgb(209 213 219);
-    border-radius: 9999px;
-  }
-
-  .dark .scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
-    background-color: rgb(75 85 99);
-  }
-
-  .scrollbar-track-transparent::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
 </style>

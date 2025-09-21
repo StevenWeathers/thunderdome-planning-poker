@@ -20,6 +20,7 @@
   import type { ApiClient } from '../../../types/apiclient';
   import UpdateSupportTicket from '../../../components/admin/UpdateSupportTicket.svelte';
   import UserAvatar from '../../../components/user/UserAvatar.svelte';
+  import type { SupportTicket, User } from '../../../types/user';
 
   interface Props {
     xfetch: ApiClient;
@@ -32,24 +33,28 @@
   const ticketsPageLimit = 25;
   let ticketCount = $state(0);
 
-  const defaultTicket = {
+  const defaultTicket: SupportTicket = {
     id: '',
-    name: '',
-    type: '',
-    content: '',
-    active: false,
-    registeredOnly: false,
-    allowDismiss: true,
+    createdAt: '',
+    updatedAt: '',
+    userId: null,
+    fullName: '',
+    email: '',
+    inquiry: '',
+    assignedTo: null,
+    resolvedAt: null,
+    resolvedBy: null,
+    notes: '',
   };
 
-  let tickets = $state([]);
-  let ticketsPage = $state(1);
-  let showTicketUpdate = $state(false);
-  let showDeleteTicket = $state(false);
-  let selectedTicket = $state({ ...defaultTicket });
-  let deleteTicketId = $state(null);
-  let adminUsers = $state([]);
-  let loaded = $state(false);
+  let tickets: SupportTicket[] = $state([]);
+  let ticketsPage: number = $state(1);
+  let showTicketUpdate: boolean = $state(false);
+  let showDeleteTicket: boolean = $state(false);
+  let selectedTicket: SupportTicket = $state({ ...defaultTicket });
+  let deleteTicketId: string | null = $state(null);
+  let adminUsers: User[] = $state([]);
+  let loaded: boolean = $state(false);
 
   function getAdminUsers() {
     return xfetch('/api/admin/admin-users?limit=1000&offset=0')
@@ -62,17 +67,17 @@
       });
   }
 
-  const toggleUpdateTicket = ticket => () => {
+  const toggleUpdateTicket = (ticket: any) => () => {
     showTicketUpdate = !showTicketUpdate;
     selectedTicket = ticket;
   };
 
-  const toggleDeleteTicket = ticketId => () => {
+  const toggleDeleteTicket = (ticketId: string | null) => () => {
     showDeleteTicket = !showDeleteTicket;
     deleteTicketId = ticketId;
   };
 
-  function updateTicket(id, body) {
+  function updateTicket(id: string, body: any) {
     xfetch(`/api/admin/support-tickets/${id}`, { body, method: 'PUT' })
       .then(res => res.json())
       .then(function () {
@@ -163,9 +168,7 @@
         <tbody class={className}>
           {#if !loaded}
             <TableRow>
-              <RowCol colspan="7" class="text-center">
-                {$LL.loading()}
-              </RowCol>
+              <RowCol colspan={7} class="text-center">Loading...</RowCol>
             </TableRow>
           {:else}
             {#each tickets as ticket, i}
@@ -192,22 +195,20 @@
                   {#if ticket.assignedTo !== null && ticket.assignedTo !== ''}
                     {@const admin = adminUsers.find(u => u.id === ticket.assignedTo)}
                     <a
-                      href="{appRoutes.adminUsers}/{admin.id}"
+                      href="{appRoutes.adminUsers}/{admin?.id}"
                       class="flex items-center text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                     >
                       <UserAvatar
-                        warriorId={admin.id}
-                        pictureUrl={admin.picture}
-                        gravatarHash={admin.gravatarHash}
-                        avatar={admin.avatar}
-                        userName={admin.name}
+                        warriorId={admin?.id}
+                        pictureUrl={admin?.picture}
+                        gravatarHash={admin?.gravatarHash}
+                        avatar={admin?.avatar}
+                        userName={admin?.name}
                       />
                       {admin?.name || 'Unknown Admin'}
                     </a>
                   {:else}
-                    <span class="text-gray-500 dark:text-gray-400 italic">
-                      {$LL.unassigned()}
-                    </span>
+                    <span class="text-gray-500 dark:text-gray-400 italic"> Unassigned </span>
                   {/if}
                 </RowCol>
                 <RowCol>

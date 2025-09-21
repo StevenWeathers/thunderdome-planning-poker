@@ -6,6 +6,7 @@ export type User = {
   disabled: boolean;
   email: string;
   gravatarHash: string;
+  picture?: string;
   id: string;
   jobTitle: string;
   lastActive: string;
@@ -30,4 +31,18 @@ export type UserAPIKey = {
   userEmail: string;
   userId: string;
   userName: string;
+};
+
+export type SupportTicket = {
+  id: string;
+  userId: string | null;
+  fullName: string;
+  email: string;
+  inquiry: string;
+  assignedTo: string | null;
+  resolvedAt: string | null;
+  resolvedBy: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
