@@ -15,7 +15,7 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import Toggle from '../../../components/forms/Toggle.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -34,9 +34,7 @@
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
-    xfetch(
-      `/api/battles?limit=${battlesPageLimit}&offset=${battlesOffset}&active=${activeBattles}`,
-    )
+    xfetch(`/api/battles?limit=${battlesPageLimit}&offset=${battlesOffset}&active=${activeBattles}`)
       .then(res => res.json())
       .then(function (result) {
         battles = result.data;
@@ -91,7 +89,7 @@
     </TableNav>
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -105,16 +103,15 @@
             <span class="sr-only">{$LL.actions()}</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each battles as battle, i}
             <TableRow itemIndex={i}>
               <RowCol>
                 <a
                   href="{appRoutes.adminPokerGames}/{battle.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                  >{battle.name}</a
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">{battle.name}</a
                 >
               </RowCol>
               <RowCol>
@@ -131,7 +128,7 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
     <TableFooter
       bind:current={battlesPage}

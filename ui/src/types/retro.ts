@@ -68,15 +68,7 @@ export type RetroVote = {
 export type RetroTemplateColumn = {
   name: string;
   label: string;
-  color:
-    | 'red'
-    | 'blue'
-    | 'green'
-    | 'yellow'
-    | 'purple'
-    | 'teal'
-    | 'orange'
-    | '';
+  color: 'red' | 'blue' | 'green' | 'yellow' | 'purple' | 'teal' | 'orange' | '';
   icon: 'smiley' | 'frown' | 'question' | 'angry' | '';
 };
 export type RetroTemplateFormat = {

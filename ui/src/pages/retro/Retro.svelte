@@ -48,12 +48,7 @@
     xfetch: ApiClient;
   }
 
-  let {
-    retroId,
-    notifications,
-    router,
-    xfetch
-  }: Props = $props();
+  let { retroId, notifications, router, xfetch }: Props = $props();
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
@@ -141,8 +136,7 @@
 
     retro.votes.map(vote => {
       voteCount = voteCount + vote.count;
-      groupMap[vote.groupId].voteCount =
-        groupMap[vote.groupId].voteCount + vote.count;
+      groupMap[vote.groupId].voteCount = groupMap[vote.groupId].voteCount + vote.count;
       groupMap[vote.groupId].votes.push(vote);
       if (vote.userId === $user.id) {
         userVoteCount = userVoteCount + vote.count;
@@ -243,9 +237,7 @@
         const unreadyUser = retro.users.find(w => w.id === parsedEvent.userId);
         retro.readyUsers = JSON.parse(parsedEvent.value);
 
-        notifications.warning(
-          `${unreadyUser.name} is no longer done brainstorming.`,
-        );
+        notifications.warning(`${unreadyUser.name} is no longer done brainstorming.`);
         break;
       }
       case 'item_moved': {
@@ -286,10 +278,7 @@
       }
       case 'action_updated':
         retro.actionItems = JSON.parse(parsedEvent.value);
-        selectedAction =
-          selectedAction !== null
-            ? retro.actionItems.find(a => a.id === selectedAction.id)
-            : null;
+        selectedAction = selectedAction !== null ? retro.actionItems.find(a => a.id === selectedAction.id) : null;
         break;
       case 'facilitators_updated':
         retro.facilitators = JSON.parse(parsedEvent.value);
@@ -348,8 +337,7 @@
     ws.close();
   });
 
-  let isFacilitator =
-    $derived(retro.facilitators && retro.facilitators.includes($user.id));
+  let isFacilitator = $derived(retro.facilitators && retro.facilitators.includes($user.id));
 
   const sendSocketEvent = (type, value) => {
     ws.send(
@@ -369,7 +357,7 @@
       sendSocketEvent('abandon_retro', '');
       toggleSubmenu?.();
     };
-  };
+  }
 
   const toggleDeleteRetro = (toggleSubmenu?: () => void) => () => {
     showDeleteRetro = !showDeleteRetro;
@@ -547,7 +535,7 @@
     return () => {
       showEditRetro = !showEditRetro;
       toggleSubmenu?.();
-    }
+    };
   }
 
   let showBecomeFacilitator = $state(false);
@@ -597,7 +585,7 @@
       showBecomeFacilitator = !showBecomeFacilitator;
       toggleSubmenu?.();
     };
-  };
+  }
 
   let showOpenActionItems = $state(false);
 
@@ -611,16 +599,6 @@
     }
   });
 </script>
-
-<style>
-  :global(input:checked ~ div) {
-    @apply border-green-500;
-  }
-
-  :global(input:checked ~ div svg) {
-    @apply block;
-  }
-</style>
 
 <svelte:head>
   <title>{$LL.retro()} {retro.name} | {$LL.appName()}</title>
@@ -639,11 +617,7 @@
     <div class="flex justify-end space-x-2">
       <div>
         {#if retro.phase === 'completed'}
-          <SolidButton
-            color="green"
-            onClick={toggleExport}
-            testid="retro-export"
-          >
+          <SolidButton color="green" onClick={toggleExport} testid="retro-export">
             {#if showExport}
               {$LL.back()}
             {:else}
@@ -662,45 +636,41 @@
 
         {#if isFacilitator}
           {#if retro.phase !== 'completed'}
-            <SolidButton
-              color="green"
-              onClick={setPhase(null)}
-              testid="retro-nextphase"
-            >
+            <SolidButton color="green" onClick={setPhase(null)} testid="retro-nextphase">
               {$LL.nextPhase()}
             </SolidButton>
           {/if}
         {/if}
         <SubMenu label={$LL.retroSettings()} icon={Settings} testId="retro-settings">
-            {#snippet children({ toggleSubmenu })}
-              {#if isFacilitator}
-                <SubMenuItem
-                  onClickHandler={toggleEditRetro(toggleSubmenu)}
-                  testId="retro-edit"
-                  icon={Pencil}
-                  label={$LL.editRetro()}
-                />
-                <SubMenuItem
-                  onClickHandler={toggleDeleteRetro(toggleSubmenu)}
-                  testId="retro-delete"
-                  icon={Trash}
-                  label={$LL.deleteRetro()}
-                />
-              {:else}
-                <SubMenuItem
-                  onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
-                  testId="become-facilitator"
-                  icon={Crown}
-                  label={$LL.becomeFacilitator()}
-                />
-                <SubMenuItem
-                  onClickHandler={abandonRetro(toggleSubmenu)}
-                  testId="retro-leave"
-                  icon={LogOut}
-                  label={$LL.leaveRetro()}
-                />
-              {/if}
-            {/snippet}
+          {#snippet children({ toggleSubmenu })}
+            {#if isFacilitator}
+              <SubMenuItem
+                onClickHandler={toggleEditRetro(toggleSubmenu)}
+                testId="retro-edit"
+                icon={Pencil}
+                label={$LL.editRetro()}
+              />
+              <SubMenuItem
+                onClickHandler={toggleDeleteRetro(toggleSubmenu)}
+                testId="retro-delete"
+                icon={Trash}
+                label={$LL.deleteRetro()}
+              />
+            {:else}
+              <SubMenuItem
+                onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
+                testId="become-facilitator"
+                icon={Crown}
+                label={$LL.becomeFacilitator()}
+              />
+              <SubMenuItem
+                onClickHandler={abandonRetro(toggleSubmenu)}
+                testId="retro-leave"
+                icon={LogOut}
+                label={$LL.leaveRetro()}
+              />
+            {/if}
+          {/snippet}
         </SubMenu>
       </div>
     </div>
@@ -723,8 +693,7 @@
           class="flex-initial px-1 {retro.phase === 'brainstorm' &&
             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
         >
-          <button onclick={setPhase('brainstorm')}>{$LL.brainstorm()}</button
-          >
+          <button onclick={setPhase('brainstorm')}>{$LL.brainstorm()}</button>
         </div>
         <div class="flex-initial px-1">
           <ChevronRight class="inline-block" />
@@ -777,18 +746,13 @@
     </div>
   </div>
   {#if showExport}
-    <Export retro={retro} />
+    <Export {retro} />
   {/if}
   {#if !showExport}
     <div class="w-full p-4 flex flex-col flex-grow">
       {#if retro.phase === 'intro'}
         {#if showOpenActionItems}
-          <RetroActionItemReview
-            team={team}
-            toggle={toggleReviewActionItems}
-            xfetch={xfetch}
-            notifications={notifications}
-          />
+          <RetroActionItemReview {team} toggle={toggleReviewActionItems} {xfetch} {notifications} />
           <div class="w-full text-center pt-4 md:pt-6">
             <HollowButton
               color="purple"
@@ -811,27 +775,19 @@
                 </HollowButton>
               </div>
             {:else if team && AppConfig.SubscriptionsEnabled && !team.subscribed}
-              <FeatureSubscribeBanner
-                salesPitch="Review open action items from previous team retrospectives."
-              />
+              <FeatureSubscribeBanner salesPitch="Review open action items from previous team retrospectives." />
             {/if}
-            <h2
-              class="md:mt-14 lg:mt-20 text-3xl md:text-4xl lg:text-5xl font-rajdhani mb-2 tracking-wide"
-            >
+            <h2 class="md:mt-14 lg:mt-20 text-3xl md:text-4xl lg:text-5xl font-rajdhani mb-2 tracking-wide">
               The Prime Directive
             </h2>
             <div class="title-line bg-yellow-thunder"></div>
-            <p
-              class="md:leading-loose tracking-wider text-xl md:text-2xl lg:text-3xl"
-            >
-              "Regardless of what we discover, we understand and truly believe
-              that everyone did the best job they could, given what they knew at
-              the time, their skills and abilities, the resources available, and
-              the situation at hand."
+            <p class="md:leading-loose tracking-wider text-xl md:text-2xl lg:text-3xl">
+              "Regardless of what we discover, we understand and truly believe that everyone did the best job they
+              could, given what they knew at the time, their skills and abilities, the resources available, and the
+              situation at hand."
             </p>
             <p class="tracking-wider md:text-lg lg:text-xl">
-              &mdash;Norm Kerth, Project Retrospectives: A Handbook for Team
-              Review <a
+              &mdash;Norm Kerth, Project Retrospectives: A Handbook for Team Review <a
                 href="https://retrospectivewiki.org/index.php?title=The_Prime_Directive"
                 target="_blank"
                 class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -847,12 +803,12 @@
           <BrainstormPhase
             items={retro.items}
             phase={retro.phase}
-            isFacilitator={isFacilitator}
-            sendSocketEvent={sendSocketEvent}
+            {isFacilitator}
+            {sendSocketEvent}
             template={retro.template}
             users={retro.users}
             brainstormVisibility={retro.brainstormVisibility}
-            columnColors={columnColors}
+            {columnColors}
           />
         {/if}
         {#if retro.phase === 'group'}
@@ -861,11 +817,11 @@
               phase={retro.phase}
               groups={groupedItems}
               handleItemChange={handleItemGroupChange}
-              handleGroupNameChange={handleGroupNameChange}
+              {handleGroupNameChange}
               users={retro.users}
-              sendSocketEvent={sendSocketEvent}
-              isFacilitator={isFacilitator}
-              columnColors={columnColors}
+              {sendSocketEvent}
+              {isFacilitator}
+              {columnColors}
             />
           </div>
         {/if}
@@ -875,13 +831,13 @@
               <VotePhase
                 phase={retro.phase}
                 groups={groupedItems}
-                handleVote={handleVote}
-                handleVoteSubtract={handleVoteSubtract}
+                {handleVote}
+                {handleVoteSubtract}
                 allowCumulativeVoting={retro.allowCumulativeVoting}
                 users={retro.users}
-                sendSocketEvent={sendSocketEvent}
-                isFacilitator={isFacilitator}
-                columnColors={columnColors}
+                {sendSocketEvent}
+                {isFacilitator}
+                {columnColors}
                 hideVotesDuringVoting={retro.hideVotesDuringVoting}
               />
             </div>
@@ -894,9 +850,9 @@
                 phase={retro.phase}
                 groups={groupedItems}
                 users={retro.users}
-                sendSocketEvent={sendSocketEvent}
-                isFacilitator={isFacilitator}
-                columnColors={columnColors}
+                {sendSocketEvent}
+                {isFacilitator}
+                {columnColors}
               />
             </div>
           </div>
@@ -905,15 +861,13 @@
               {#if retro.phase === 'action'}
                 <div class="flex items-center mb-4">
                   <div class="flex-shrink pe-2">
-                    <SquareCheckBig
-                      class="w-8 h-8 text-indigo-500 dark:text-violet-400"
-                    />
+                    <SquareCheckBig class="w-8 h-8 text-indigo-500 dark:text-violet-400" />
                   </div>
                   <div class="flex-grow">
                     <form onsubmit={handleActionItem}>
                       <input
-                        bind:value="{actionItem}"
-                        placeholder="{$LL.actionItemPlaceholder()}"
+                        bind:value={actionItem}
+                        placeholder={$LL.actionItemPlaceholder()}
                         class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
                     px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
                     focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
@@ -960,13 +914,9 @@
                       <input
                         type="checkbox"
                         id="{i}Completed"
-                        checked="{item.completed}"
+                        checked={item.completed}
                         class="opacity-0 absolute h-6 w-6"
-                        onchange={handleActionUpdate(
-                          item.id,
-                          item.completed,
-                          item.content,
-                        )}
+                        onchange={handleActionUpdate(item.id, item.completed, item.content)}
                       />
                       <div
                         class="bg-white dark:bg-gray-800 border-2 rounded-md
@@ -974,9 +924,7 @@
                                             justify-center items-center me-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
                       >
-                        <Check
-                          class="hidden w-4 h-4 text-green-600 pointer-events-none"
-                        />
+                        <Check class="hidden w-4 h-4 text-green-600 pointer-events-none" />
                       </div>
                       <label for="{i}Completed" class="select-none"></label>
                     </div>
@@ -999,10 +947,10 @@
                 hideVotesDuringVoting={retro.hideVotesDuringVoting}
                 facilitators={retro.facilitators}
                 readyUsers={retro.readyUsers}
-                handleAddFacilitator={handleAddFacilitator}
-                handleRemoveFacilitator={handleRemoveFacilitator}
-                handleUserReady={handleUserReady}
-                handleUserUnReady={handleUserUnReady}
+                {handleAddFacilitator}
+                {handleRemoveFacilitator}
+                {handleUserReady}
+                {handleUserUnReady}
                 phase={retro.phase}
               />
             {/if}
@@ -1010,10 +958,8 @@
         </div>
         {#if retro.phase === 'intro'}
           <div class="mt-4 flex w-full p-2 dark:text-white justify-center">
-            <div
-              class="w-full md:w-1/2 lg:w-1/3 p-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg"
-            >
-              <InviteUser hostname={hostname} retroId={retro.id} />
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+              <InviteUser {hostname} retroId={retro.id} />
             </div>
           </div>
         {/if}
@@ -1025,7 +971,7 @@
 {#if showEditRetro}
   <EditRetro
     retroName={retro.name}
-    handleRetroEdit={handleRetroEdit}
+    {handleRetroEdit}
     toggleEditRetro={toggleEditRetro()}
     joinCode={retro.joinCode}
     facilitatorCode={retro.facilitatorCode}
@@ -1052,16 +998,13 @@
     handleDelete={handleActionDelete}
     action={selectedAction}
     assignableUsers={retro.users}
-    handleAssigneeAdd={handleAssigneeAdd}
-    handleAssigneeRemove={handleAssigneeRemove}
+    {handleAssigneeAdd}
+    {handleAssigneeRemove}
   />
 {/if}
 
 {#if showBecomeFacilitator}
-  <BecomeFacilitator
-    handleBecomeFacilitator={becomeFacilitator}
-    toggleBecomeFacilitator={toggleBecomeFacilitator()}
-  />
+  <BecomeFacilitator handleBecomeFacilitator={becomeFacilitator} toggleBecomeFacilitator={toggleBecomeFacilitator()} />
 {/if}
 
 {#if socketReconnecting}
@@ -1079,3 +1022,13 @@
 {:else if JoinPassRequired}
   <JoinCodeForm handleSubmit={authRetro} submitText={$LL.joinRetro()} />
 {/if}
+
+<style>
+  :global(input:checked ~ div) {
+    @apply border-green-500;
+  }
+
+  :global(input:checked ~ div svg) {
+    @apply block;
+  }
+</style>

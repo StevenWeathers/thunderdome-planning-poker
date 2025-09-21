@@ -72,11 +72,4 @@ const appRoutes = {
   projects: `${PathPrefix}/projects`,
 };
 
-export {
-  locales,
-  DefaultLocale,
-  appRoutes,
-  PathPrefix,
-  AppConfig,
-  rtlLanguages,
-};
+export { locales, DefaultLocale, appRoutes, PathPrefix, AppConfig, rtlLanguages };

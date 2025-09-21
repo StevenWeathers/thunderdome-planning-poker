@@ -5,7 +5,6 @@
   import TextInput from '../forms/TextInput.svelte';
   import { onMount } from 'svelte';
 
-
   interface Props {
     toggleCreate?: any;
     handleCreate?: any;
@@ -31,14 +30,11 @@
 <Modal closeModal={toggleCreate} ariaLabel={$LL.modalCreateDepartment()}>
   <form onsubmit={onSubmit} name="createDepartment">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-        for="departmentName"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="departmentName">
         {$LL.departmentName()}
       </label>
       <TextInput
-        bind:value="{departmentName}"
+        bind:value={departmentName}
         bind:this={focusInput}
         placeholder={$LL.departmentNamePlaceholder()}
         id="departmentName"

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Check } from "lucide-svelte";
+  import { Check } from 'lucide-svelte';
 
   export let label: string = '';
   export let id: string = '';
@@ -10,16 +10,8 @@
 </script>
 
 <div class="flex items-center">
-  <label for="{id}" class="flex items-center cursor-pointer select-none">
-    <input
-      type="checkbox"
-      id="{id}"
-      bind:checked="{checked}"
-      value="{value}"
-      class="sr-only peer"
-      name="{name}"
-      disabled="{disabled}"
-    />
+  <label for={id} class="flex items-center cursor-pointer select-none">
+    <input type="checkbox" {id} bind:checked {value} class="sr-only peer" {name} {disabled} />
     <div
       class="w-6 h-6 border-2 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center bg-white dark:bg-gray-800 border-indigo-400 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-indigo-500 peer-disabled:opacity-50"
       aria-hidden="true"

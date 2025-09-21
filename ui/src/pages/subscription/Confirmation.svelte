@@ -34,9 +34,7 @@
 
 <section class="relative bg-indigo-600 py-12">
   <div class="relative mx-auto max-w-2xl px-6 text-center lg:max-w-7xl lg:px-8">
-    <h1 class="text-5xl font-bold tracking-tight text-white sm:text-6xl">
-      Thank you for subscribing!
-    </h1>
+    <h1 class="text-5xl font-bold tracking-tight text-white sm:text-6xl">Thank you for subscribing!</h1>
     <p class="mt-4 text-xl text-indigo-100">
       You should receive an email shortly, once your subscription is activated.
     </p>
@@ -46,9 +44,7 @@
 <section class="bg-white dark:bg-transparent text-gray-700 dark:text-gray-300">
   <div class="container px-5 pb-24 pt-12 mx-auto max-w-2xl lg:max-w-4xl">
     <div class="mb-8">
-      <h2
-        class="mb-4 font-bold text-2xl md:text-3xl lg:text-4xl text-green-500 dark:text-lime-400"
-      >
+      <h2 class="mb-4 font-bold text-2xl md:text-3xl lg:text-4xl text-green-500 dark:text-lime-400">
         Associate Team or Organization to Subscription
       </h2>
       <p class="mb-2 text-lg">
@@ -60,11 +56,8 @@
       </p>
     </div>
     <div class="mb-4">
-      <h3
-        class="text-lg text-2xl font-bold mb-4 text-blue-500 dark:text-sky-400"
-      >
-        1. Navigate to your profile by pressing the Ninja User in the top
-        navigation bar
+      <h3 class="text-lg text-2xl font-bold mb-4 text-blue-500 dark:text-sky-400">
+        1. Navigate to your profile by pressing the Ninja User in the top navigation bar
       </h3>
       <img
         src="{PathPrefix}/img/header_user_profile_icon_preview.png"
@@ -73,12 +66,9 @@
       />
     </div>
     <div class="mb-4">
-      <h3
-        class="text-lg text-2xl font-bold mb-4 text-blue-500 dark:text-sky-400"
-      >
+      <h3 class="text-lg text-2xl font-bold mb-4 text-blue-500 dark:text-sky-400">
         2. Look for the <span class="underline">Active Subscriptions</span>
-        section and Press the <span class="underline">Associate to</span> button
-        for the respective subscription type
+        section and Press the <span class="underline">Associate to</span> button for the respective subscription type
       </h3>
       <img
         src="{PathPrefix}/img/active_subs_preview.png"
@@ -87,11 +77,8 @@
       />
     </div>
     <div class="mb-4">
-      <h3
-        class="text-lg text-2xl font-bold mb-4 text-blue-500 dark:text-sky-400"
-      >
-        3. Select the Team or Organization to associate to the subscription and
-        press save
+      <h3 class="text-lg text-2xl font-bold mb-4 text-blue-500 dark:text-sky-400">
+        3. Select the Team or Organization to associate to the subscription and press save
       </h3>
       <img
         src="{PathPrefix}/img/sub_associate_team_preview.png"
@@ -100,11 +87,8 @@
       />
     </div>
     <div>
-      <h3
-        class="text-lg md:text-xl lg:text-2xl font-bold mb-4 text-green-500 dark:text-lime-400"
-      >
-        Now the associated Team or Organization members can access premium
-        features after they re-login.
+      <h3 class="text-lg md:text-xl lg:text-2xl font-bold mb-4 text-green-500 dark:text-lime-400">
+        Now the associated Team or Organization members can access premium features after they re-login.
       </h3>
     </div>
   </div>

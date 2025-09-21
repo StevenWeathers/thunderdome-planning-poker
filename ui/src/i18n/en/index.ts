@@ -13,8 +13,7 @@ const en: BaseTranslation = {
   actionItem: 'Action Item',
   actionItemPlaceholder: 'Action item...',
   actionItems: 'Action Items',
-  actionPhaseDescription:
-    'Add action items, you can no longer group or vote comments',
+  actionPhaseDescription: 'Add action items, you can no longer group or vote comments',
   actions: 'Actions',
   activate: 'Activate',
   active: 'Active',
@@ -34,8 +33,7 @@ const en: BaseTranslation = {
   adminPageTeams: 'Teams',
   adminPageUsers: 'Users',
   adminPageSubscriptions: 'Subscriptions',
-  deleteSubscriptionConfirmation:
-    'Are you sure you want to delete this subscription?',
+  deleteSubscriptionConfirmation: 'Are you sure you want to delete this subscription?',
   deleteSubscription: 'Delete Subscription',
   alertAllowDismiss: 'Allow Dismiss',
   alertContent: 'Alert Content',
@@ -126,11 +124,9 @@ const en: BaseTranslation = {
   deleteBattleError: 'error deleting game',
   deleteCheckinError: 'Error deleting check in',
   deleteDepartment: 'Delete Department',
-  deleteDepartmentConfirmText:
-    'Are you sure you want to delete this department?',
+  deleteDepartmentConfirmText: 'Are you sure you want to delete this department?',
   deleteOrganization: 'Delete Organization',
-  deleteOrganizationConfirmText:
-    'Are you sure you want to delete this organization?',
+  deleteOrganizationConfirmText: 'Are you sure you want to delete this organization?',
   deleteRetro: 'Delete Retro',
   deleteRetroErrorMessage: 'error deleting retro',
   deleteStoryboard: 'Delete Storyboard',
@@ -193,8 +189,7 @@ const en: BaseTranslation = {
   group: 'Group',
   groupName: 'Group Name',
   groupPhaseDescription: 'Drag and drop comments to group them together',
-  hostedDesc:
-    '{linkOpen}Thunderdome.dev{linkClose} is a free hosted service (SaaS) without Ads.',
+  hostedDesc: '{linkOpen}Thunderdome.dev{linkClose} is a free hosted service (SaaS) without Ads.',
   hostedOrSelfHosted: 'Hosted service or self-hosted',
   importCsv: 'Import stories from a CSV file',
   importCsvFileBadFileTypeError: 'Error bad file type',
@@ -286,8 +281,7 @@ const en: BaseTranslation = {
   planDescription: 'Description',
   planDescriptionPlaceholder: 'Enter a description',
   planLink: 'Link',
-  planLinkInvalid:
-    "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)",
+  planLinkInvalid: "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)",
   planLinkPlaceholder: 'Enter a link to story',
   planName: 'Story Name',
   planNamePlaceholder: 'Enter a story name',
@@ -329,8 +323,7 @@ const en: BaseTranslation = {
   removeRetro: 'Remove Retro',
   removeRetroConfirmText: 'Are you sure you want to remove this retro?',
   removeStoryboard: 'Remove Storyboard',
-  removeStoryboardConfirmText:
-    'Are you sure you want to remove this storyboard?',
+  removeStoryboardConfirmText: 'Are you sure you want to remove this storyboard?',
   removeUser: 'Remove User',
   removeUserConfirmText: 'Are you sure you want to remove this user?',
   requestVerifyEmail: 'Request Verification Email',
@@ -363,8 +356,7 @@ const en: BaseTranslation = {
   search: 'Search',
   searchLengthError: 'Search value must be at least 3 characters',
   selectTeam: 'Select a Team',
-  selfHostedDesc:
-    'Alternatively you can {linkOpen}run it on your own server{linkClose}.',
+  selfHostedDesc: 'Alternatively you can {linkOpen}run it on your own server{linkClose}.',
   sessionDuplicate: 'Duplicate game session exists for your ID',
   showActiveBattles: 'Show Active Games',
   showActiveRetros: 'Show active retros',
@@ -484,12 +476,10 @@ const en: BaseTranslation = {
   profile: 'Profile',
   updatePassword: 'Update Password',
   deleteAccount: 'Delete Account',
-  deleteAccountWarningStatement:
-    'Are you sure you want to delete your account?',
+  deleteAccountWarningStatement: 'Are you sure you want to delete your account?',
   deleteConfirmButton: 'Confirm Delete',
   apiKeyNameInvalid: 'Please enter a key name',
-  apiKeyCreateSuccess:
-    'New Api Key {keyName} created and {onlyNowOpen}it will be displayed only now{onlyNowClose}',
+  apiKeyCreateSuccess: 'New Api Key {keyName} created and {onlyNowOpen}it will be displayed only now{onlyNowClose}',
   apiKeyStoreWarning:
     'Please store it somewhere safe because as soon as you navigate away from this page, we will not be able to retrieve or restore this generated token.',
   apiKeyLimitReached: 'You have the max number of API keys allowed.',
@@ -537,8 +527,7 @@ const en: BaseTranslation = {
   enlistToBattle: 'Enlist to Battle',
   loginForBattle: 'or {loginOpen}Login{loginClose} to join the Game',
   yourNamePlaceholder: 'Enter your name',
-  createAccountFormTitle:
-    'Create an Account {optionalOpen}(optional){optionalClose}',
+  createAccountFormTitle: 'Create an Account {optionalOpen}(optional){optionalClose}',
   sendResetPasswordSuccess: 'Password reset instructions sent to {email}',
   sendResetPasswordError: 'Error encountered attempting to send password reset',
   chooseCountryPlaceholder: 'Choose your country (optional)',
@@ -601,8 +590,7 @@ const en: BaseTranslation = {
   estimationScaleTypePlaceholder: 'Select scale type',
   scaleValues: 'Scale Values',
   estimationScaleValuesPlaceholder: 'Enter comma-separated values',
-  estimationScaleValuesHelp:
-    'Enter values separated by commas (e.g., 1, 2, 3, 5, 8)',
+  estimationScaleValuesHelp: 'Enter values separated by commas (e.g., 1, 2, 3, 5, 8)',
   estimationScaleIsPublic: 'Make this scale public',
   estimationScaleDefault: 'Set as default scale',
   estimationScaleSave: 'Save Scale',
@@ -614,8 +602,7 @@ const en: BaseTranslation = {
   estimationScaleUpdateError: 'Error updating estimation scale',
   estimationScaleRemoveSuccess: 'Estimation scale successfully removed',
   estimationScaleRemoveError: 'Error removing estimation scale',
-  removeEstimationScaleConfirmText:
-    'Are you sure you want to remove this estimation scale?',
+  removeEstimationScaleConfirmText: 'Are you sure you want to remove this estimation scale?',
   removeEstimationScale: 'Remove Estimation Scale',
   yes: 'Yes',
   no: 'No',
@@ -624,8 +611,7 @@ const en: BaseTranslation = {
   publicEstimationScales: 'Public Estimation Scales',
   organizationEstimationScales: 'Organization Estimation Scales',
   teamEstimationScales: 'Team Estimation Scales',
-  allowCumulativeVotingLabel:
-    'Allow Cumulative Voting (more than 1 vote per item group)',
+  allowCumulativeVotingLabel: 'Allow Cumulative Voting (more than 1 vote per item group)',
   activeSubscriptions: 'Active Subscriptions',
   retroTemplates: 'Retrospective Templates',
   publicRetroTemplates: 'Public Retro Templates',
@@ -643,18 +629,15 @@ const en: BaseTranslation = {
   retroTemplateUpdateError: 'Error updating retrospective template',
   retroTemplateRemoveSuccess: 'Retrospective template successfully removed',
   retroTemplateRemoveError: 'Error removing retrospective template',
-  removeRetroTemplateConfirmText:
-    'Are you sure you want to remove this retrospective template?',
+  removeRetroTemplateConfirmText: 'Are you sure you want to remove this retrospective template?',
   removeRetroTemplate: 'Remove Retrospective Template',
   retroTemplateDefault: 'Set as default template',
   jiradatacenterLabel: 'Jira DataCenter',
   loginWithSSO: 'Login with {provider}',
-  requestEmailChangeSuccess:
-    'Email change request sent, check your inbox for instructions',
+  requestEmailChangeSuccess: 'Email change request sent, check your inbox for instructions',
   requestEmailChangeError: 'Error encountered attempting to change email',
   changeEmail: 'Change Email',
-  errorChangingEmail:
-    'Error encountered attempting to change email, perhaps this link expired or was already used.',
+  errorChangingEmail: 'Error encountered attempting to change email, perhaps this link expired or was already used.',
   emailChanged: 'Email changed successfully',
   newEmailToLogin: 'From now on, please use your new email to login.',
   newEmail: 'New Email',
@@ -691,8 +674,7 @@ const en: BaseTranslation = {
   modalViewRetroTemplateFormat: 'View Retro Template Format',
   modalUpdateRetroTemplate: 'Update Retro Template',
   modalAssociateTeamToSubscription: 'Associate Team to Subscription',
-  modalAssociateOrganizationToSubscription:
-    'Associate Organization to Subscription',
+  modalAssociateOrganizationToSubscription: 'Associate Organization to Subscription',
   modalTeamUpdateUser: 'Team Update User',
   modalSubscriptionForm: 'Subscription Form',
   modalEditRetro: 'Edit Retro',
@@ -707,8 +689,7 @@ const en: BaseTranslation = {
   createdAt: 'Created At',
   projectRemoveSuccess: 'Project removed successfully',
   projectRemoveError: 'Failed to remove project',
-  removeProjectConfirmText:
-    'Are you sure you want to remove this project? This action cannot be undone.',
+  removeProjectConfirmText: 'Are you sure you want to remove this project? This action cannot be undone.',
   removeProject: 'Remove Project',
   modalCreateProject: 'Create Project',
   modalUpdateProject: 'Update Project',
@@ -741,26 +722,22 @@ const en: BaseTranslation = {
   totalPokerSessions: '{total} total sessions',
   noSessionsFoundForTeam: 'No sessions found {teamName}',
   noSessionsFound: 'No sessions found',
-  trySelectingDifferentTeamForPoker:
-    'Try selecting a different team or create a new game',
+  trySelectingDifferentTeamForPoker: 'Try selecting a different team or create a new game',
   startFirstPlanningPokerSession: 'Start your first planning poker session',
   sprintRetrospectives: 'Sprint Retrospectives',
   viewAllRetros: 'View all retros',
   totalRetros: '{total} total retros',
   noRetrosFoundForTeam: 'No retrospectives found {teamName}',
   startFirstSprintRetrospective: 'Start your first sprint retrospective',
-  trySelectingDifferentTeamForRetros:
-    'Try selecting a different team or create a new retrospective',
+  trySelectingDifferentTeamForRetros: 'Try selecting a different team or create a new retrospective',
   viewAllStoryboards: 'View all storyboards',
   totalStoryboards: '{total} total storyboards',
   noStoryboardsFoundForTeam: 'No storyboards found {teamName}',
   startFirstStoryboard: 'Start your first storyboard',
   agileStoryMapping: 'Agile Story Mapping',
-  trySelectingDifferentTeamForStoryboards:
-    'Try selecting a different team or create a new storyboard',
+  trySelectingDifferentTeamForStoryboards: 'Try selecting a different team or create a new storyboard',
   supportTickets: 'Support Tickets',
-  supportTicketDeleteConfirmation:
-    'Are you sure you want to delete this support ticket? This action cannot be undone.',
+  supportTicketDeleteConfirmation: 'Are you sure you want to delete this support ticket? This action cannot be undone.',
   supportTicketDelete: 'Delete Ticket',
   updateSupportTicketSuccess: 'Support ticket updated successfully',
   updateSupportTicketError: 'Failed to update support ticket',

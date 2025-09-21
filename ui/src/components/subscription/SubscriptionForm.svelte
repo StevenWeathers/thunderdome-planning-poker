@@ -38,7 +38,7 @@
     subscription_id = $bindable(''),
     type = $bindable('user'),
     active = $bindable(true),
-    expires = $bindable(new Date().toISOString())
+    expires = $bindable(new Date().toISOString()),
   }: Props = $props();
 
   function handleSubmit(event) {
@@ -80,10 +80,7 @@
       expires,
     };
 
-    const endpoint =
-      subscriptionId != ''
-        ? `/api/subscriptions/${subscriptionId}`
-        : `/api/subscriptions`;
+    const endpoint = subscriptionId != '' ? `/api/subscriptions/${subscriptionId}` : `/api/subscriptions`;
     const method = subscriptionId != '' ? 'PUT' : 'POST';
 
     xfetch(endpoint, { body, method: method })
@@ -112,34 +109,22 @@
       <TextInput
         id="userId"
         name="userId"
-        bind:value="{user_id}"
+        bind:value={user_id}
         bind:this={focusInput}
         placeholder="Enter the User Id..."
         required
       />
     </div>
     <div class="mb-4">
-      <label class="block dark:text-gray-400 font-bold mb-2" for="teamId">
-        Thunderdome Team Id
-      </label>
-      <TextInput
-        id="teamId"
-        name="teamId"
-        bind:value="{team_id}"
-        placeholder="Enter the associated Team Id..."
-      />
+      <label class="block dark:text-gray-400 font-bold mb-2" for="teamId"> Thunderdome Team Id </label>
+      <TextInput id="teamId" name="teamId" bind:value={team_id} placeholder="Enter the associated Team Id..." />
     </div>
     <div class="mb-4">
-      <label
-        class="block dark:text-gray-400 font-bold mb-2"
-        for="organizationId"
-      >
-        Thunderdome Organization Id
-      </label>
+      <label class="block dark:text-gray-400 font-bold mb-2" for="organizationId"> Thunderdome Organization Id </label>
       <TextInput
         id="organizationId"
         name="organizationId"
-        bind:value="{organization_id}"
+        bind:value={organization_id}
         placeholder="Enter the associated Organization Id..."
       />
     </div>
@@ -150,24 +135,19 @@
       <TextInput
         id="customerId"
         name="customerId"
-        bind:value="{customer_id}"
+        bind:value={customer_id}
         placeholder="Enter the Stripe Customer Id..."
         required
       />
     </div>
     <div class="mb-4">
-      <label
-        class="block dark:text-gray-400 font-bold mb-2"
-        for="subscriptionId"
-      >
-        Stripe Subscription Id<span class="text-red-500 dark:text-red-400"
-          >*</span
-        >
+      <label class="block dark:text-gray-400 font-bold mb-2" for="subscriptionId">
+        Stripe Subscription Id<span class="text-red-500 dark:text-red-400">*</span>
       </label>
       <TextInput
         id="subscriptionId"
         name="subscriptionId"
-        bind:value="{subscription_id}"
+        bind:value={subscription_id}
         placeholder="Enter the Stripe Subscription Id..."
         required
       />
@@ -176,33 +156,16 @@
       <label class="block dark:text-gray-400 font-bold mb-2" for="subType">
         Subscription Type<span class="text-red-500 dark:text-red-400">*</span>
       </label>
-      <TextInput
-        id="subType"
-        name="subType"
-        bind:value="{type}"
-        placeholder="Enter the Subscription Type..."
-        required
-      />
+      <TextInput id="subType" name="subType" bind:value={type} placeholder="Enter the Subscription Type..." required />
     </div>
     <div class="mb-4">
-      <Checkbox
-        bind:checked={active}
-        id="active"
-        name="active"
-        label={$LL.active()}
-      />
+      <Checkbox bind:checked={active} id="active" name="active" label={$LL.active()} />
     </div>
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="expires">
         Expires<span class="text-red-500 dark:text-red-400">*</span>
       </label>
-      <TextInput
-        id="expires"
-        name="expires"
-        bind:value="{expires}"
-        placeholder="Enter the expiration date..."
-        required
-      />
+      <TextInput id="expires" name="expires" bind:value={expires} placeholder="Enter the expiration date..." required />
     </div>
     <div class="text-right">
       <div>

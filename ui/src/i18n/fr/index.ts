@@ -13,8 +13,7 @@ const fr: Translation = {
   actionItem: "Élément d'action",
   actionItemPlaceholder: "Élément d'action...",
   actionItems: "Éléments d'action",
-  actionPhaseDescription:
-    "Ajoutez des éléments d'action, vous ne pouvez plus regrouper ou voter des commentaires",
+  actionPhaseDescription: "Ajoutez des éléments d'action, vous ne pouvez plus regrouper ou voter des commentaires",
   actions: 'Actions',
   activate: 'Activer',
   active: 'Actif',
@@ -26,8 +25,7 @@ const fr: Translation = {
   addPersona: 'Ajouter une persona',
   admin: 'Admin',
   adminCleanOldRetros: 'Nettoyer les retros de plus de {daysOld} jours',
-  adminCleanOldStoryboards:
-    'Nettoyer les storyboards de plus de {daysOld} jours',
+  adminCleanOldStoryboards: 'Nettoyer les storyboards de plus de {daysOld} jours',
   adminPageAdmin: 'Administration',
   adminPageAlerts: 'Alertes',
   adminPageApi: 'Clés API',
@@ -35,8 +33,7 @@ const fr: Translation = {
   adminPageTeams: 'Équipes',
   adminPageUsers: 'Utilisateurs',
   adminPageSubscriptions: 'Abonnements',
-  deleteSubscriptionConfirmation:
-    'Êtes-vous sûr de vouloir supprimer cet abonnement ?',
+  deleteSubscriptionConfirmation: 'Êtes-vous sûr de vouloir supprimer cet abonnement ?',
   deleteSubscription: "Supprimer l'abonnement",
   alertAllowDismiss: 'Autoriser la fermeture',
   alertContent: "Contenu de l'alerte",
@@ -54,8 +51,7 @@ const fr: Translation = {
   apikeyCopyFailure: 'Impossible de copier la clé API dans le presse-papiers',
   apikeyCopySuccess: 'Clé API copiée dans le presse-papiers',
   apiKeys: 'Clés API',
-  applicationStatsError:
-    "Erreur lors de la récupération des statistiques de l'application",
+  applicationStatsError: "Erreur lors de la récupération des statistiques de l'application",
   appName: 'Thunderdome',
   appPreviewAlt: 'Aperçu de Thunderdome, expérience UI de Poker Planning Agile',
   appSubtitle: 'Application Open Source de Poker Planning Agile',
@@ -69,8 +65,7 @@ const fr: Translation = {
   battleCreate: 'Créer un jeu',
   battleDelete: 'Supprimer le jeu',
   battleEdit: 'Modifier le jeu',
-  battleEditPointsDisabled:
-    'Le vote est actif, impossible de modifier les points autorisés.',
+  battleEditPointsDisabled: 'Le vote est actif, impossible de modifier les points autorisés.',
   battleJoin: 'Rejoindre le jeu',
   battleName: 'Nom du jeu',
   battleRemoveError: 'Erreur lors de la tentative de suppression du jeu.',
@@ -86,18 +81,15 @@ const fr: Translation = {
   blockersPlaceholder: 'Je suis bloqué par...',
   brainstorm: 'Brainstorming',
   brainstormPhaseDescription: 'Ajoutez vos commentaires ci-dessous',
-  brainstormPhaseFeedbackVisibility:
-    'Visibilité des retours de la phase de brainstorming',
+  brainstormPhaseFeedbackVisibility: 'Visibilité des retours de la phase de brainstorming',
   brainstormVisibilityLabelConcealed: 'Retours dissimulés',
   brainstormVisibilityLabelHidden: 'Retours cachés',
   brainstormVisibilityLabelVisible: 'Retours visibles',
   cancel: 'Annuler',
   cannotBeUndone: 'Cela ne peut pas être annulé.',
   checkIn: 'Enregistrement',
-  checkinCommentDeleteError:
-    "Erreur lors de la suppression du commentaire sur l'enregistrement",
-  checkinCommentError:
-    "Erreur lors de l'ajout du commentaire sur l'enregistrement",
+  checkinCommentDeleteError: "Erreur lors de la suppression du commentaire sur l'enregistrement",
+  checkinCommentError: "Erreur lors de l'ajout du commentaire sur l'enregistrement",
   checkinError: "Erreur lors de l'enregistrement",
   checkinMeetYesterdayGoalsQuestion: "Avez-vous atteint les objectifs d'hier ?",
   checkins: 'Enregistrements',
@@ -106,8 +98,7 @@ const fr: Translation = {
   comment: 'Commentaire',
   comments: 'Commentaires',
   conciseVotingResults: 'Résumé des résultats de vote',
-  confirmDeleteRetro:
-    'Êtes-vous sûr de vouloir supprimer cette rétrospective ?',
+  confirmDeleteRetro: 'Êtes-vous sûr de vouloir supprimer cette rétrospective ?',
   createAccount: 'Créer un compte',
   createAccountTagline: "Vous n'avez pas de compte ?",
   createAlertError: "Erreur lors de la création de l'alerte",
@@ -133,11 +124,9 @@ const fr: Translation = {
   deleteBattleError: 'erreur lors de la suppression du jeu',
   deleteCheckinError: "Erreur lors de la suppression de l'enregistrement",
   deleteDepartment: 'Supprimer le département',
-  deleteDepartmentConfirmText:
-    'Êtes-vous sûr de vouloir supprimer ce département ?',
+  deleteDepartmentConfirmText: 'Êtes-vous sûr de vouloir supprimer ce département ?',
   deleteOrganization: "Supprimer l'organisation",
-  deleteOrganizationConfirmText:
-    'Êtes-vous sûr de vouloir supprimer cette organisation ?',
+  deleteOrganizationConfirmText: 'Êtes-vous sûr de vouloir supprimer cette organisation ?',
   deleteRetro: 'Supprimer la rétro',
   deleteRetroErrorMessage: 'erreur lors de la suppression de la rétro',
   deleteStoryboard: 'Supprimer le storyboard',
@@ -149,26 +138,21 @@ const fr: Translation = {
   demoteUserError: "Erreur lors de la rétrogradation de l'utilisateur",
   department: 'Département',
   departmentCreate: 'Créer un département',
-  departmentCreateError:
-    'Erreur lors de la tentative de création du département',
-  departmentDeleteError:
-    'Erreur lors de la tentative de suppression du département',
+  departmentCreateError: 'Erreur lors de la tentative de création du département',
+  departmentDeleteError: 'Erreur lors de la tentative de suppression du département',
   departmentDeleteSuccess: 'Département supprimé avec succès.',
   departmentGetError: 'Erreur lors de la récupération du département',
   departmentName: 'Nom du département',
   departmentNamePlaceholder: 'Entrez un nom de département',
   departments: 'Départements',
   departmentSave: 'Enregistrer le département',
-  departmentTeamsGetError:
-    'Erreur lors de la récupération des équipes du département',
-  departmentUsersGetError:
-    'Erreur lors de la récupération des utilisateurs du département',
+  departmentTeamsGetError: 'Erreur lors de la récupération des équipes du département',
+  departmentUsersGetError: 'Erreur lors de la récupération des utilisateurs du département',
   discuss: 'Discuter',
   discussPlaceholder: 'Je voudrais discuter...',
   done: 'Terminé',
   duplicateRetroSession: 'Une session de rétro en double existe pour votre ID',
-  duplicateStoryboardSession:
-    'Une session de storyboard en double existe pour votre ID',
+  duplicateStoryboardSession: 'Une session de storyboard en double existe pour votre ID',
   edit: 'Modifier',
   editColorLegend: 'Modifier la légende',
   editRetro: 'Modifier la rétro',
@@ -205,10 +189,8 @@ const fr: Translation = {
   goalsMet: 'Objectifs atteints',
   group: 'Groupe',
   groupName: 'Nom du groupe',
-  groupPhaseDescription:
-    'Faites glisser et déposez les commentaires pour les regrouper',
-  hostedDesc:
-    '{linkOpen}Thunderdome.dev{linkClose} est un service hébergé gratuit (SaaS) sans publicités.',
+  groupPhaseDescription: 'Faites glisser et déposez les commentaires pour les regrouper',
+  hostedDesc: '{linkOpen}Thunderdome.dev{linkClose} est un service hébergé gratuit (SaaS) sans publicités.',
   hostedOrSelfHosted: 'Service hébergé ou auto-hébergé',
   importCsv: "Importer des stories à partir d'un fichier CSV",
   importCsvFileBadFileTypeError: 'Erreur de type de fichier incorrect',
@@ -217,19 +199,16 @@ const fr: Translation = {
   importJiraXMLBadFileTypeError: 'Erreur de type de fichier incorrect',
   importJiraXMLReadFileError: 'Erreur de lecture du fichier',
   incorrectPassCode: "Code d'accès incorrect",
-  inviteLinkCopyFailure:
-    "Impossible de copier le lien d'invitation dans le presse-papiers",
+  inviteLinkCopyFailure: "Impossible de copier le lien d'invitation dans le presse-papiers",
   inviteLinkCopySuccess: "Lien d'invitation copié dans le presse-papiers",
   jiraXmlImport: 'Import XML Jira',
-  joinCodeCopyFailure:
-    "Impossible de copier le code d'accès dans le presse-papiers",
+  joinCodeCopyFailure: "Impossible de copier le code d'accès dans le presse-papiers",
   joinCodeCopySuccess: "Code d'accès copié dans le presse-papiers",
   joinCodeLabelOptional: "Code d'accès (optionnel)",
   joinCodePlaceholder: "Entrez un code d'accès",
   joinRetro: 'Rejoindre la rétro',
   joinStoryboard: 'Rejoindre le storyboard',
-  joinStoryboardError:
-    'Erreur lors de la connexion au storyboard, actualisez et réessayez.',
+  joinStoryboardError: 'Erreur lors de la connexion au storyboard, actualisez et réessayez.',
   landingCountries: 'Utilisateurs dans plus de {count} pays',
   landingFeatureOpenSourceText:
     'Consultez le {repoOpen}dépôt Github{repoClose} pour demander ou contribuer à des améliorations, des traductions et des corrections de bugs ou pour {donateOpen}faire un don{donateClose}.',
@@ -244,10 +223,8 @@ const fr: Translation = {
   loadingRetro: 'Chargement de la rétro...',
   loadingStoryboard: 'Chargement du storyboard...',
   login: 'Connexion',
-  loginForRetro:
-    'ou {loginOpen}connectez-vous{loginClose} pour rejoindre la rétro',
-  loginForStoryboard:
-    'ou {loginOpen}connectez-vous{loginClose} pour rejoindre le storyboard',
+  loginForRetro: 'ou {loginOpen}connectez-vous{loginClose} pour rejoindre la rétro',
+  loginForStoryboard: 'ou {loginOpen}connectez-vous{loginClose} pour rejoindre le storyboard',
   logout: 'Déconnexion',
   logoutError: "Erreur lors de la tentative de déconnexion de l'utilisateur",
   makeFacilitator: 'Nommer un facilitateur',
@@ -283,16 +260,12 @@ const fr: Translation = {
   optionalPasscodePlaceholder: "Code d'accès optionnel",
   organization: 'Organisation',
   organizationCreate: 'Créer une organisation',
-  organizationDeleteError:
-    "Erreur lors de la tentative de suppression de l'organisation",
+  organizationDeleteError: "Erreur lors de la tentative de suppression de l'organisation",
   organizationDeleteSuccess: 'Organisation supprimée avec succès.',
-  organizationGetDepartmentsError:
-    "Erreur lors de la récupération des départements de l'organisation",
+  organizationGetDepartmentsError: "Erreur lors de la récupération des départements de l'organisation",
   organizationGetError: "Erreur lors de la récupération de l'organisation",
-  organizationGetTeamsError:
-    "Erreur lors de la récupération des équipes de l'organisation",
-  organizationGetUsersError:
-    "Erreur lors de la récupération des utilisateurs de l'organisation",
+  organizationGetTeamsError: "Erreur lors de la récupération des équipes de l'organisation",
+  organizationGetUsersError: "Erreur lors de la récupération des utilisateurs de l'organisation",
   organizationName: "Nom de l'organisation",
   organizationNamePlaceholder: "Entrez un nom d'organisation",
   organizations: 'Organisations',
@@ -309,8 +282,7 @@ const fr: Translation = {
   planDescription: 'Description',
   planDescriptionPlaceholder: 'Entrez une description',
   planLink: 'Lien',
-  planLinkInvalid:
-    "Le lien n'est pas une URL absolue valide, par exemple qui inclut le protocole (HTTP/HTTPS)",
+  planLinkInvalid: "Le lien n'est pas une URL absolue valide, par exemple qui inclut le protocole (HTTP/HTTPS)",
   planLinkPlaceholder: 'Entrez un lien vers la story',
   planName: 'Nom de la story',
   planNamePlaceholder: 'Entrez un nom de story',
@@ -352,21 +324,16 @@ const fr: Translation = {
   removeRetro: 'Supprimer la rétro',
   removeRetroConfirmText: 'Êtes-vous sûr de vouloir supprimer cette rétro ?',
   removeStoryboard: 'Supprimer le storyboard',
-  removeStoryboardConfirmText:
-    'Êtes-vous sûr de vouloir supprimer ce storyboard ?',
+  removeStoryboardConfirmText: 'Êtes-vous sûr de vouloir supprimer ce storyboard ?',
   removeUser: "Supprimer l'utilisateur",
   removeUserConfirmText: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ?',
   requestVerifyEmail: "Demander l'envoi d'un mail de vérification",
   requestVerifyEmailFailure: "Erreur lors de l'envoi du mail de vérification",
-  requestVerifyEmailSuccess:
-    'Mail de vérification envoyé, vérifiez votre boîte de réception',
+  requestVerifyEmailSuccess: 'Mail de vérification envoyé, vérifiez votre boîte de réception',
   retro: 'Rétro',
-  retroActionCommentAddError:
-    "Erreur lors de l'ajout du commentaire sur l'action de rétro",
-  retroActionCommentDeleteError:
-    "Erreur lors de la suppression du commentaire sur l'action de rétro",
-  retroActionCommentEditError:
-    "Erreur lors de la modification du commentaire sur l'action de rétro",
+  retroActionCommentAddError: "Erreur lors de l'ajout du commentaire sur l'action de rétro",
+  retroActionCommentDeleteError: "Erreur lors de la suppression du commentaire sur l'action de rétro",
+  retroActionCommentEditError: "Erreur lors de la modification du commentaire sur l'action de rétro",
   retroActionItems: "Éléments d'action de rétro",
   retroAddError: "Erreur lors de l'ajout de la rétro.",
   retroAddSuccess: 'Rétro ajoutée avec succès.',
@@ -375,8 +342,7 @@ const fr: Translation = {
   retroFeedbackHidden: 'Retour caché',
   retroImprovePlaceholder: 'Ce qui doit être amélioré...',
   retroItems: 'Éléments de rétro',
-  retroJoinError:
-    'Erreur lors de la connexion à la rétro, actualisez et réessayez.',
+  retroJoinError: 'Erreur lors de la connexion à la rétro, actualisez et réessayez.',
   retroMaxVotesPerUserLabel: 'Votes max par groupe (par utilisateur)',
   retroName: 'Nom de la rétro',
   retroNamePlaceholder: 'Entrez un nom de rétro',
@@ -389,17 +355,14 @@ const fr: Translation = {
   rolePlaceholder: 'Sélectionnez un rôle utilisateur',
   save: 'Enregistrer',
   search: 'Rechercher',
-  searchLengthError:
-    'La valeur de recherche doit comporter au moins 3 caractères',
+  searchLengthError: 'La valeur de recherche doit comporter au moins 3 caractères',
   selectTeam: 'Sélectionnez une équipe',
-  selfHostedDesc:
-    "Alternativement, vous pouvez {linkOpen}l'exécuter sur votre propre serveur{linkClose}.",
+  selfHostedDesc: "Alternativement, vous pouvez {linkOpen}l'exécuter sur votre propre serveur{linkClose}.",
   sessionDuplicate: 'Une session de jeu en double existe pour votre ID',
   showActiveBattles: 'Afficher les jeux actifs',
   showActiveRetros: 'Afficher les rétros actives',
   showActiveStoryboards: 'Afficher les storyboards actifs',
-  showBlockedCheckins:
-    'Afficher uniquement les enregistrements nécessitant une discussion',
+  showBlockedCheckins: 'Afficher uniquement les enregistrements nécessitant une discussion',
   showCompletedActionItems: "Afficher les éléments d'action terminés",
   showVoters: 'Afficher les votants',
   skipped: 'Passé',
@@ -430,21 +393,16 @@ const fr: Translation = {
   teamDeleteSuccess: 'Équipe supprimée avec succès.',
   teamGetBattlesError: "Erreur lors de la récupération des jeux de l'équipe",
   teamGetError: "Erreur lors de la récupération de l'équipe",
-  teamGetRetroActionsError:
-    "Erreur lors de la récupération des actions de rétro de l'équipe",
+  teamGetRetroActionsError: "Erreur lors de la récupération des actions de rétro de l'équipe",
   teamGetRetrosError: "Erreur lors de la récupération des rétros de l'équipe",
-  teamGetStoryboardsError:
-    "Erreur lors de la récupération des storyboards de l'équipe",
-  teamGetUsersError:
-    "Erreur lors de la récupération des utilisateurs de l'équipe",
+  teamGetStoryboardsError: "Erreur lors de la récupération des storyboards de l'équipe",
+  teamGetUsersError: "Erreur lors de la récupération des utilisateurs de l'équipe",
   teamName: "Nom de l'équipe",
   teamNamePlaceholder: "Entrez un nom d'équipe",
   teams: 'Équipes',
   teamSave: "Enregistrer l'équipe",
-  teamUserRequiredToCheckin:
-    "L'utilisateur doit être dans l'équipe pour s'enregistrer",
-  teamUserRequiredToComment:
-    "L'utilisateur doit être dans l'équipe pour commenter",
+  teamUserRequiredToCheckin: "L'utilisateur doit être dans l'équipe pour s'enregistrer",
+  teamUserRequiredToComment: "L'utilisateur doit être dans l'équipe pour commenter",
   today: "Aujourd'hui",
   todayPlaceholder: "Aujourd'hui, je vais...",
   totalPoints: 'Total',
@@ -477,8 +435,7 @@ const fr: Translation = {
   view: 'Voir',
   vote: 'Voter',
   voteCount: 'Nombre de votes',
-  votePhaseDescription:
-    'Votez pour les groupes dont vous souhaiteriez discuter plus en détail',
+  votePhaseDescription: 'Votez pour les groupes dont vous souhaiteriez discuter plus en détail',
   voteResultsAverage: 'Moyenne',
   voteResultsHighest: 'Le plus élevé',
   votingFinish: 'Terminer le vote',
@@ -495,8 +452,7 @@ const fr: Translation = {
   yourStoryboards: 'Vos storyboards',
   addPlan: 'Ajouter une story',
   battleNamePlaceholder: 'Entrez un nom de jeu',
-  autoFinishVotingLabel:
-    'Terminer automatiquement le vote lorsque tous les joueurs ont voté',
+  autoFinishVotingLabel: 'Terminer automatiquement le vote lorsque tous les joueurs ont voté',
   averageRoundingOptions: {
     ceil: 'Par excès',
     floor: 'Par troncature',
@@ -515,26 +471,21 @@ const fr: Translation = {
   profileErrorUpdating: 'Erreur lors de la mise à jour de votre profil',
   profileUpdateSuccess: 'Profil mis à jour',
   passwordUpdated: 'Mot de passe mis à jour.',
-  passwordUpdateError:
-    'Erreur lors de la tentative de mise à jour du mot de passe',
-  profileDeleteError:
-    'Erreur lors de la tentative de suppression de votre compte.',
+  passwordUpdateError: 'Erreur lors de la tentative de mise à jour du mot de passe',
+  profileDeleteError: 'Erreur lors de la tentative de suppression de votre compte.',
   profileTitle: 'Votre profil',
   profile: 'Profil',
   updatePassword: 'Mettre à jour le mot de passe',
   deleteAccount: 'Supprimer le compte',
-  deleteAccountWarningStatement:
-    'Êtes-vous sûr de vouloir supprimer votre compte ?',
+  deleteAccountWarningStatement: 'Êtes-vous sûr de vouloir supprimer votre compte ?',
   deleteConfirmButton: 'Confirmer la suppression',
   apiKeyNameInvalid: 'Veuillez entrer un nom de clé',
   apiKeyCreateSuccess:
     'Nouvelle clé API {keyName} créée, {onlyNowOpen}elle sera affichée uniquement maintenant{onlyNowClose}',
   apiKeyStoreWarning:
     'Veuillez la stocker en lieu sûr car dès lors que vous quitterez cette page, nous ne pourrons plus récupérer ou restaurer cette clé générée.',
-  apiKeyLimitReached:
-    'Vous avez atteint le nombre maximum de clés API autorisées.',
-  apiKeyUnverifiedUser:
-    'Seuls les utilisateurs inscrits et vérifiés peuvent créer des clés API.',
+  apiKeyLimitReached: 'Vous avez atteint le nombre maximum de clés API autorisées.',
+  apiKeyUnverifiedUser: 'Seuls les utilisateurs inscrits et vérifiés peuvent créer des clés API.',
   apiKeyCreateFailed: 'Échec de la création de la clé API',
   apiKeyName: 'Nom de la clé',
   apiKeyNamePlaceholder: 'Entrez un nom pour la clé',
@@ -558,8 +509,7 @@ const fr: Translation = {
   battle: 'Jeu',
   warriors: 'Joueurs',
   battleSocketReconnecting: 'Oups, rechargement du jeu...',
-  battleSocketError:
-    'Erreur lors de la connexion au jeu, actualisez et réessayez.',
+  battleSocketError: 'Erreur lors de la connexion au jeu, actualisez et réessayez.',
   battleLoading: 'Chargement du jeu...',
   votingNotStarted: "Le vote n'a pas commencé",
   password: 'Mot de passe',
@@ -569,25 +519,19 @@ const fr: Translation = {
   confirmPasswordPlaceholder: 'Confirmez votre mot de passe',
   update: 'Mettre à jour',
   reset: 'Réinitialiser',
-  passwordResetError:
-    'Erreur lors de la tentative de réinitialisation du mot de passe',
+  passwordResetError: 'Erreur lors de la tentative de réinitialisation du mot de passe',
   resetPassword: 'Réinitialiser le mot de passe',
   registerAsGuest: "S'inscrire en tant qu'invité",
   registrationDisabled: "L'inscription est désactivée.",
   userNamePlaceholder: 'Entrez votre nom',
-  guestRegisterError:
-    "Erreur lors de la tentative d'inscription en tant qu'invité",
+  guestRegisterError: "Erreur lors de la tentative d'inscription en tant qu'invité",
   registerError: "Erreur lors de la tentative d'inscription",
   enlistToBattle: "S'inscrire au jeu",
-  loginForBattle:
-    'ou {loginOpen}connectez-vous{loginClose} pour rejoindre le jeu',
+  loginForBattle: 'ou {loginOpen}connectez-vous{loginClose} pour rejoindre le jeu',
   yourNamePlaceholder: 'Entrez votre nom',
-  createAccountFormTitle:
-    'Créer un compte {optionalOpen}(optionnel){optionalClose}',
-  sendResetPasswordSuccess:
-    'Instructions de réinitialisation du mot de passe envoyées à {email}',
-  sendResetPasswordError:
-    "Erreur lors de la tentative d'envoi de la réinitialisation du mot de passe",
+  createAccountFormTitle: 'Créer un compte {optionalOpen}(optionnel){optionalClose}',
+  sendResetPasswordSuccess: 'Instructions de réinitialisation du mot de passe envoyées à {email}',
+  sendResetPasswordError: "Erreur lors de la tentative d'envoi de la réinitialisation du mot de passe",
   chooseCountryPlaceholder: 'Choisissez votre pays (optionnel)',
   locale: 'Langue',
   companyPlaceholder: "Entrez votre nom d'entreprise (optionnel)",
@@ -613,15 +557,13 @@ const fr: Translation = {
   userUpdateError: "Erreur lors de la mise à jour de l'utilisateur.",
   userInvites: "Invitations d'utilisateur",
   userInviteSent: "Invitation d'utilisateur envoyée",
-  userInviteConfirmDelete:
-    "Êtes-vous sûr de vouloir supprimer cette invitation d'utilisateur ?",
+  userInviteConfirmDelete: "Êtes-vous sûr de vouloir supprimer cette invitation d'utilisateur ?",
   userInviteDelete: "Supprimer l'invitation",
   expireDate: "Date d'expiration",
   addUserWillInviteNotFoundFieldNote:
     "Si l'utilisateur n'est pas inscrit, une invitation à s'inscrire et à rejoindre le {pageType} sera envoyée.",
   inviteUserFieldNote: 'Une invitation à rejoindre le {pageType} sera envoyée.',
-  requiresOrganizationMember:
-    "L'utilisateur doit déjà être dans l'organisation.",
+  requiresOrganizationMember: "L'utilisateur doit déjà être dans l'organisation.",
   teamUpdateSuccess: 'Équipe mise à jour avec succès',
   teamUpdateError: "Erreur lors de la mise à jour de l'équipe",
   orgUpdateSuccess: 'Organisation mise à jour avec succès',
@@ -631,8 +573,7 @@ const fr: Translation = {
   hideVoterIdentity: "Masquer l'identité du votant",
   storyboardName: 'Nom du storyboard',
   storyboardNamePlaceholder: 'Entrez un nom de storyboard',
-  retroPhaseTimeLimitMinLabel:
-    'Limite de temps de la phase de brainstorming en minutes',
+  retroPhaseTimeLimitMinLabel: 'Limite de temps de la phase de brainstorming en minutes',
   phaseAutoAdvanceLabel: 'Dérouler automatiquement les phases',
   removeOnlyFacilitatorError: "Impossible de supprimer l'unique facilitateur",
   noGamesFound: "Aucun jeu trouvé, essayez d'en créer un.",
@@ -650,26 +591,20 @@ const fr: Translation = {
   scaleType: "Type d'échelle",
   estimationScaleTypePlaceholder: "Sélectionnez le type d'échelle",
   scaleValues: "Valeurs de l'échelle",
-  estimationScaleValuesPlaceholder:
-    'Entrez des valeurs séparées par des virgules',
-  estimationScaleValuesHelp:
-    'Entrez des valeurs séparées par des virgules (par exemple, 1, 2, 3, 5, 8)',
+  estimationScaleValuesPlaceholder: 'Entrez des valeurs séparées par des virgules',
+  estimationScaleValuesHelp: 'Entrez des valeurs séparées par des virgules (par exemple, 1, 2, 3, 5, 8)',
   estimationScaleIsPublic: 'Rendre cette échelle publique',
   estimationScaleDefault: 'Définir comme échelle par défaut',
   estimationScaleSave: "Enregistrer l'échelle",
   estimationScales: "Échelles d'estimation",
   estimationScaleCreate: "Créer une échelle d'estimation",
   estimationScaleCreateSuccess: "Échelle d'estimation créée avec succès",
-  estimationScaleCreateError:
-    "Erreur lors de la création de l'échelle d'estimation",
+  estimationScaleCreateError: "Erreur lors de la création de l'échelle d'estimation",
   estimationScaleUpdateSuccess: "Échelle d'estimation mise à jour avec succès",
-  estimationScaleUpdateError:
-    "Erreur lors de la mise à jour de l'échelle d'estimation",
+  estimationScaleUpdateError: "Erreur lors de la mise à jour de l'échelle d'estimation",
   estimationScaleRemoveSuccess: "Échelle d'estimation supprimée avec succès",
-  estimationScaleRemoveError:
-    "Erreur lors de la suppression de l'échelle d'estimation",
-  removeEstimationScaleConfirmText:
-    "Êtes-vous sûr de vouloir supprimer cette échelle d'estimation ?",
+  estimationScaleRemoveError: "Erreur lors de la suppression de l'échelle d'estimation",
+  removeEstimationScaleConfirmText: "Êtes-vous sûr de vouloir supprimer cette échelle d'estimation ?",
   removeEstimationScale: "Supprimer l'échelle d'estimation",
   yes: 'Oui',
   no: 'Non',
@@ -678,8 +613,7 @@ const fr: Translation = {
   publicEstimationScales: "Échelles d'estimation publiques",
   organizationEstimationScales: "Échelles d'estimation de l'organisation",
   teamEstimationScales: "Échelles d'estimation de l'équipe",
-  allowCumulativeVotingLabel:
-    "Autoriser le vote cumulatif (plus d'un vote par groupe d'éléments)",
+  allowCumulativeVotingLabel: "Autoriser le vote cumulatif (plus d'un vote par groupe d'éléments)",
   activeSubscriptions: 'Abonnements actifs',
   retroTemplates: 'Modèles de rétrospective',
   publicRetroTemplates: 'Modèles de rétrospective publics',
@@ -692,16 +626,12 @@ const fr: Translation = {
   retroTemplateSave: 'Enregistrer le modèle',
   retroTemplateCreate: 'Créer un modèle de rétrospective',
   retroTemplateCreateSuccess: 'Modèle de rétrospective créé avec succès',
-  retroTemplateCreateError:
-    'Erreur lors de la création du modèle de rétrospective',
+  retroTemplateCreateError: 'Erreur lors de la création du modèle de rétrospective',
   retroTemplateUpdateSuccess: 'Modèle de rétrospective mis à jour avec succès',
-  retroTemplateUpdateError:
-    'Erreur lors de la mise à jour du modèle de rétrospective',
+  retroTemplateUpdateError: 'Erreur lors de la mise à jour du modèle de rétrospective',
   retroTemplateRemoveSuccess: 'Modèle de rétrospective supprimé avec succès',
-  retroTemplateRemoveError:
-    'Erreur lors de la suppression du modèle de rétrospective',
-  removeRetroTemplateConfirmText:
-    'Êtes-vous sûr de vouloir supprimer ce modèle de rétrospective ?',
+  retroTemplateRemoveError: 'Erreur lors de la suppression du modèle de rétrospective',
+  removeRetroTemplateConfirmText: 'Êtes-vous sûr de vouloir supprimer ce modèle de rétrospective ?',
   removeRetroTemplate: 'Supprimer le modèle de rétrospective',
   retroTemplateDefault: 'Définir comme modèle par défaut',
   jiradatacenterLabel: 'Jira DataCenter',
@@ -713,8 +643,7 @@ const fr: Translation = {
   errorChangingEmail:
     'Erreur lors de la tentative de changement de mail, peut-être que ce lien a expiré ou a déjà été utilisé.',
   emailChanged: 'Mail changé avec succès',
-  newEmailToLogin:
-    'À partir de maintenant, utilisez votre nouveau mail pour vous connecter.',
+  newEmailToLogin: 'À partir de maintenant, utilisez votre nouveau mail pour vous connecter.',
   newEmail: 'Nouveau mail',
   enterYourNewEmail: 'Entrez votre nouveau mail',
   retroSettings: 'Paramètres de rétro',
@@ -749,8 +678,7 @@ const fr: Translation = {
   modalViewRetroTemplateFormat: 'Voir le format du modèle de rétrospective',
   modalUpdateRetroTemplate: 'Mettre à jour le modèle de rétrospective',
   modalAssociateTeamToSubscription: "Associer l'équipe à l'abonnement",
-  modalAssociateOrganizationToSubscription:
-    "Associer l'organisation à l'abonnement",
+  modalAssociateOrganizationToSubscription: "Associer l'organisation à l'abonnement",
   modalTeamUpdateUser: "Mettre à jour l'utilisateur de l'équipe",
   modalSubscriptionForm: "Formulaire d'abonnement",
   modalEditRetro: 'Modifier la rétrospective',
@@ -765,17 +693,14 @@ const fr: Translation = {
   createdAt: 'Créé le',
   projectRemoveSuccess: 'Projet supprimé avec succès',
   projectRemoveError: 'Échec de la suppression du projet',
-  removeProjectConfirmText:
-    'Êtes-vous sûr de vouloir supprimer ce projet ? Cette action ne peut pas être annulée.',
+  removeProjectConfirmText: 'Êtes-vous sûr de vouloir supprimer ce projet ? Cette action ne peut pas être annulée.',
   removeProject: 'Supprimer le projet',
   modalCreateProject: 'Créer un Projet',
   modalUpdateProject: 'Mettre à Jour le Projet',
   projectKeyPlaceholder: 'Saisissez la clé du projet (ex. PROJ)',
   projectNamePlaceholder: 'Saisissez le nom du projet',
-  projectDescriptionPlaceholder:
-    'Saisissez la description du projet (facultatif)',
-  projectKeyValidationError:
-    'La clé du projet doit contenir 2-10 caractères alphanumériques',
+  projectDescriptionPlaceholder: 'Saisissez la description du projet (facultatif)',
+  projectKeyValidationError: 'La clé du projet doit contenir 2-10 caractères alphanumériques',
   projectKeyHelp: '2-10 caractères, lettres et chiffres uniquement',
   projectScope: 'Portée du Projet',
   projectUpdate: 'Mettre à Jour le Projet',
@@ -789,8 +714,7 @@ const fr: Translation = {
   endGameReason: 'Raison de la fin du jeu',
   endGameReasonPlaceholder: 'Sélectionnez une raison',
   welcomeBack: 'Bon retour,',
-  dashboardSubtitle:
-    'Faisons de votre prochaine session de collaboration d’équipe la meilleure à ce jour.',
+  dashboardSubtitle: 'Faisons de votre prochaine session de collaboration d’équipe la meilleure à ce jour.',
   filterByTeam: 'Filtrer par équipe :',
   allTeams: 'Toutes les équipes',
   showContentForAllTeams: 'Afficher le contenu de toutes les équipes',
@@ -803,25 +727,20 @@ const fr: Translation = {
   totalPokerSessions: '{total} sessions au total',
   noSessionsFoundForTeam: 'Aucune session trouvée pour {teamName}',
   noSessionsFound: 'Aucune session trouvée',
-  trySelectingDifferentTeamForPoker:
-    'Essayez de sélectionner une autre équipe ou créez une nouvelle partie',
-  startFirstPlanningPokerSession:
-    'Commencez votre première session de planning poker',
+  trySelectingDifferentTeamForPoker: 'Essayez de sélectionner une autre équipe ou créez une nouvelle partie',
+  startFirstPlanningPokerSession: 'Commencez votre première session de planning poker',
   sprintRetrospectives: 'Rétrospectives de Sprint',
   viewAllRetros: 'Voir toutes les rétrospectives',
   totalRetros: '{total} rétrospectives au total',
   noRetrosFoundForTeam: 'Aucune rétrospective trouvée pour {teamName}',
-  startFirstSprintRetrospective:
-    'Commencez votre première rétrospective de sprint',
-  trySelectingDifferentTeamForRetros:
-    'Essayez de sélectionner une autre équipe ou créez une nouvelle rétrospective',
+  startFirstSprintRetrospective: 'Commencez votre première rétrospective de sprint',
+  trySelectingDifferentTeamForRetros: 'Essayez de sélectionner une autre équipe ou créez une nouvelle rétrospective',
   viewAllStoryboards: 'Voir tous les storyboards',
   totalStoryboards: '{total} storyboards au total',
   noStoryboardsFoundForTeam: 'Aucun storyboard trouvé pour {teamName}',
   startFirstStoryboard: 'Commencez votre premier storyboard',
   agileStoryMapping: 'Cartographie agile des histoires',
-  trySelectingDifferentTeamForStoryboards:
-    'Essayez de sélectionner une autre équipe ou créez un nouveau storyboard',
+  trySelectingDifferentTeamForStoryboards: 'Essayez de sélectionner une autre équipe ou créez un nouveau storyboard',
   supportTickets: 'Tickets de Support',
   supportTicketDeleteConfirmation:
     'Êtes-vous sûr de vouloir supprimer ce ticket de support ? Cette action ne peut pas être annulée.',

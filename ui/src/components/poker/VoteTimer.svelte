@@ -12,10 +12,9 @@
 
   let currentTime: Date = $state(new Date());
 
-  let voteDuration =
-    $derived(currentStoryId !== '' && votingLocked === false
-      ? timeUnitsBetween(voteStartTime, currentTime)
-      : {});
+  let voteDuration = $derived(
+    currentStoryId !== '' && votingLocked === false ? timeUnitsBetween(voteStartTime, currentTime) : {},
+  );
 
   onMount(() => {
     const voteCounter = setInterval(() => {
@@ -37,8 +36,6 @@
     {#if voteDuration.hours !== 0}
       {addTimeLeadZero(voteDuration.hours)}:
     {/if}
-    {addTimeLeadZero(voteDuration.minutes)}:{addTimeLeadZero(
-      voteDuration.seconds,
-    )}
+    {addTimeLeadZero(voteDuration.minutes)}:{addTimeLeadZero(voteDuration.seconds)}
   {/if}
 </div>

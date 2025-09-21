@@ -30,22 +30,16 @@
     notifications,
     toggle = () => {},
     team = {
-    id: '',
-    name: '',
-    organization_id: '',
-    department_id: '',
-    role: '',
-  }
+      id: '',
+      name: '',
+      organization_id: '',
+      department_id: '',
+      role: '',
+    },
   }: Props = $props();
 
-  const orgPrefix =
-    team.organization_id !== ''
-      ? `/api/organizations/${team.organization_id}`
-      : '/api';
-  const deptPrefix =
-    team.department_id !== ''
-      ? `${orgPrefix}/departments/${team.department_id}`
-      : orgPrefix;
+  const orgPrefix = team.organization_id !== '' ? `/api/organizations/${team.organization_id}` : '/api';
+  const deptPrefix = team.department_id !== '' ? `${orgPrefix}/departments/${team.department_id}` : orgPrefix;
   const teamPrefix = `${deptPrefix}/teams/${team.id}`;
 
   const retroActionsPageLimit = 10;
@@ -66,9 +60,7 @@
   function getTeamOpenActionItems() {
     const offset = (retroActionsPage - 1) * retroActionsPageLimit;
 
-    xfetch(
-      `${teamPrefix}/retro-actions?limit=${retroActionsPageLimit}&offset=${offset}&completed=false`,
-    )
+    xfetch(`${teamPrefix}/retro-actions?limit=${retroActionsPageLimit}&offset=${offset}&completed=false`)
       .then(response => response.json())
       .then(res => {
         actionItems = res.data;
@@ -91,8 +83,7 @@
   let selectedAction = $state(null);
   const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
-    selectedAction =
-      retroId !== null ? actionItems.find(r => r.id === id) : null;
+    selectedAction = retroId !== null ? actionItems.find(r => r.id === id) : null;
   };
 
   function handleRetroActionEdit(action) {
@@ -184,15 +175,15 @@
       <TableNav title="Open Action Items" createBtnEnabled={false} />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>{$LL.actionItem()}</HeadCol>
             <HeadCol>{$LL.completed()}</HeadCol>
             <HeadCol>{$LL.comments()}</HeadCol>
             <HeadCol />
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             {#each actionItems as item, i}
               <TableRow itemIndex={i}>
                 <RowCol>
@@ -213,31 +204,21 @@
                   <BooleanDisplay boolValue={item.completed} />
                 </RowCol>
                 <RowCol>
-                  <MessageSquareMore
-                    width="22"
-                    height="22"
-                    class="inline-block"
-                  />
-                  <button
-                    class="text-lg text-blue-400 dark:text-sky-400"
-                    onclick={toggleRetroActionComments(item.id)}
-                  >
+                  <MessageSquareMore width="22" height="22" class="inline-block" />
+                  <button class="text-lg text-blue-400 dark:text-sky-400" onclick={toggleRetroActionComments(item.id)}>
                     &nbsp;{item.comments.length}
                   </button>
                 </RowCol>
                 <RowCol type="action">
                   <CrudActions
-                    editBtnClickHandler={toggleRetroActionEdit(
-                      item.retroId,
-                      item.id,
-                    )}
+                    editBtnClickHandler={toggleRetroActionEdit(item.retroId, item.id)}
                     deleteBtnEnabled={false}
                   />
                 </RowCol>
               </TableRow>
             {/each}
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
       <TableFooter
         bind:current={retroActionsPage}
@@ -265,11 +246,11 @@
   <ActionComments
     toggleComments={toggleRetroActionComments(null)}
     actions={actionItems}
-    users={users}
+    {users}
     selectedActionId={selectedRetroAction}
     getRetrosActions={getTeamOpenActionItems}
-    xfetch={xfetch}
-    notifications={notifications}
-    isAdmin={isAdmin}
+    {xfetch}
+    {notifications}
+    {isAdmin}
   />
 {/if}

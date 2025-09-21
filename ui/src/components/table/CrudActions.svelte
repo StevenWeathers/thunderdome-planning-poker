@@ -23,34 +23,26 @@
     deleteBtnClickHandler = () => {},
     deleteBtnTestId = 'delete',
     detailsLinkText = 'View Details',
-    children
+    children,
   }: Props = $props();
 </script>
 
 <div class="flex gap-2 justify-end items-center">
   {@render children?.()}
   {#if detailsLink !== ''}
-    <a href="{detailsLink}" class="hover:text-blue-500" title={detailsLinkText}>
+    <a href={detailsLink} class="hover:text-blue-500" title={detailsLinkText}>
       <Eye />
       <span class="sr-only">{detailsLinkText}</span>
     </a>
   {/if}
   {#if editBtnEnabled}
-    <button
-      onclick={editBtnClickHandler}
-      class="hover:text-green-500"
-      data-testid="{editBtnTestId}"
-    >
+    <button onclick={editBtnClickHandler} class="hover:text-green-500" data-testid={editBtnTestId}>
       <span class="sr-only">{$LL.edit()}</span>
       <Pencil />
     </button>
   {/if}
   {#if deleteBtnEnabled}
-    <button
-      onclick={deleteBtnClickHandler}
-      class="hover:text-red-500"
-      data-testid="{deleteBtnTestId}"
-    >
+    <button onclick={deleteBtnClickHandler} class="hover:text-red-500" data-testid={deleteBtnTestId}>
       <span class="sr-only">{$LL.delete()}</span>
       <Trash2 />
     </button>

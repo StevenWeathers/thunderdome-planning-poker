@@ -1,12 +1,10 @@
 <script>
-  let {
-    title,
-    description,
-    benefits
-  } = $props();
+  let { title, description, benefits } = $props();
 </script>
 
-<section class="mt-24 bg-gradient-to-r from-indigo-100 to-blue-100 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-8 text-center">
+<section
+  class="mt-24 bg-gradient-to-r from-indigo-100 to-blue-100 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-8 text-center"
+>
   <h2 class="text-3xl font-bold mb-4 dark:text-white">
     {title}
   </h2>

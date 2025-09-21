@@ -81,14 +81,8 @@
   import AdminListTickets from './pages/admin/support/ListTickets.svelte';
   import AdminTicketDetails from './pages/admin/support/TicketDetails.svelte';
 
-  const {
-    FeaturePoker,
-    FeatureRetro,
-    FeatureStoryboard,
-    FeatureProject,
-    SubscriptionsEnabled,
-    DefaultLocale,
-  } = AppConfig;
+  const { FeaturePoker, FeatureRetro, FeatureStoryboard, FeatureProject, SubscriptionsEnabled, DefaultLocale } =
+    AppConfig;
 
   let notifications = $state();
 
@@ -317,36 +311,27 @@
       name: 'organization-teams',
     };
   });
-  router.on(
-    `${appRoutes.organization}/:organizationId/team/:teamId`,
-    params => {
-      currentPage = {
-        route: Team,
-        params,
-        name: 'team',
-      };
-    },
-  );
-  router.on(
-    `${appRoutes.organization}/:organizationId/team/:teamId/users`,
-    params => {
-      currentPage = {
-        route: TeamUsers,
-        params,
-        name: 'team-users',
-      };
-    },
-  );
-  router.on(
-    `${appRoutes.organization}/:organizationId/team/:teamId/checkin`,
-    params => {
-      currentPage = {
-        route: TeamCheckin,
-        params,
-        name: 'team-checkin',
-      };
-    },
-  );
+  router.on(`${appRoutes.organization}/:organizationId/team/:teamId`, params => {
+    currentPage = {
+      route: Team,
+      params,
+      name: 'team',
+    };
+  });
+  router.on(`${appRoutes.organization}/:organizationId/team/:teamId/users`, params => {
+    currentPage = {
+      route: TeamUsers,
+      params,
+      name: 'team-users',
+    };
+  });
+  router.on(`${appRoutes.organization}/:organizationId/team/:teamId/checkin`, params => {
+    currentPage = {
+      route: TeamCheckin,
+      params,
+      name: 'team-checkin',
+    };
+  });
   router.on(`${appRoutes.organization}/:organizationId/departments`, params => {
     currentPage = {
       route: OrganizationDepartments,
@@ -354,67 +339,49 @@
       name: 'organization-departments',
     };
   });
-  router.on(
-    `${appRoutes.organization}/:organizationId/department/:departmentId`,
-    params => {
-      currentPage = {
-        route: Department,
-        params,
-        name: 'department',
-      };
-    },
-  );
-  router.on(
-    `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId`,
-    params => {
-      currentPage = {
-        route: Team,
-        params,
-        name: 'team',
-      };
-    },
-  );
-  router.on(
-    `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/users`,
-    params => {
-      currentPage = {
-        route: TeamUsers,
-        params,
-        name: 'team-users',
-      };
-    },
-  );
-  router.on(
-    `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/checkin`,
-    params => {
-      currentPage = {
-        route: TeamCheckin,
-        params,
-        name: 'team-checkin',
-      };
-    },
-  );
+  router.on(`${appRoutes.organization}/:organizationId/department/:departmentId`, params => {
+    currentPage = {
+      route: Department,
+      params,
+      name: 'department',
+    };
+  });
+  router.on(`${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId`, params => {
+    currentPage = {
+      route: Team,
+      params,
+      name: 'team',
+    };
+  });
+  router.on(`${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/users`, params => {
+    currentPage = {
+      route: TeamUsers,
+      params,
+      name: 'team-users',
+    };
+  });
+  router.on(`${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/checkin`, params => {
+    currentPage = {
+      route: TeamCheckin,
+      params,
+      name: 'team-checkin',
+    };
+  });
   if (FeatureProject) {
-    router.on(
-      `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/projects`,
-      params => {
-        currentPage = {
-          route: TeamProjects,
-          params,
-          name: 'team-projects',
-        };
-      },
-    );
-    router.on(
-      `${appRoutes.organization}/:organizationId/team/:teamId/projects`,
-      params => {
-        currentPage = {
-          route: TeamProjects,
-          params,
-          name: 'team-projects',
-        };
-      },
-    );
+    router.on(`${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/projects`, params => {
+      currentPage = {
+        route: TeamProjects,
+        params,
+        name: 'team-projects',
+      };
+    });
+    router.on(`${appRoutes.organization}/:organizationId/team/:teamId/projects`, params => {
+      currentPage = {
+        route: TeamProjects,
+        params,
+        name: 'team-projects',
+      };
+    });
   }
   router.on(`${appRoutes.team}/:teamId`, params => {
     currentPage = {
@@ -495,36 +462,27 @@
       name: 'admin-organization',
     };
   });
-  router.on(
-    `${appRoutes.adminOrganizations}/:organizationId/team/:teamId`,
-    params => {
-      currentPage = {
-        route: AdminTeam,
-        params: params,
-        name: 'admin-team',
-      };
-    },
-  );
-  router.on(
-    `${appRoutes.adminOrganizations}/:organizationId/department/:departmentId`,
-    params => {
-      currentPage = {
-        route: AdminDepartment,
-        params: params,
-        name: 'admin-department',
-      };
-    },
-  );
-  router.on(
-    `${appRoutes.adminOrganizations}/:organizationId/department/:departmentId/team/:teamId`,
-    params => {
-      currentPage = {
-        route: AdminTeam,
-        params: params,
-        name: 'admin-team',
-      };
-    },
-  );
+  router.on(`${appRoutes.adminOrganizations}/:organizationId/team/:teamId`, params => {
+    currentPage = {
+      route: AdminTeam,
+      params: params,
+      name: 'admin-team',
+    };
+  });
+  router.on(`${appRoutes.adminOrganizations}/:organizationId/department/:departmentId`, params => {
+    currentPage = {
+      route: AdminDepartment,
+      params: params,
+      name: 'admin-department',
+    };
+  });
+  router.on(`${appRoutes.adminOrganizations}/:organizationId/department/:departmentId/team/:teamId`, params => {
+    currentPage = {
+      route: AdminTeam,
+      params: params,
+      name: 'admin-team',
+    };
+  });
   router.on(`${appRoutes.adminTeams}`, () => {
     currentPage = {
       route: AdminTeams,
@@ -777,21 +735,11 @@
 <header class="w-full">
   <GlobalAlerts registered={!!activeWarrior.name || false} />
 
-  <GlobalHeader
-    router={router}
-    xfetch={xfetch}
-    notifications={notifications}
-    currentPage={currentPage.name}
-  />
+  <GlobalHeader {router} {xfetch} {notifications} currentPage={currentPage.name} />
 </header>
 
 <main class="flex-grow flex flex-wrap flex-col">
-  <currentPage.route
-    {...currentPage.params}
-    notifications={notifications}
-    router={router}
-    xfetch={xfetch}
-  />
+  <currentPage.route {...currentPage.params} {notifications} {router} {xfetch} />
 </main>
 
 <GlobalFooter />

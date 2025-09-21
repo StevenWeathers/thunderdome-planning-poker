@@ -26,7 +26,7 @@
     labelFor = '',
     size = 'medium',
     fullWidth = false,
-    children
+    children,
   }: Props = $props();
 
   /**
@@ -50,6 +50,51 @@
     }
   }
 </script>
+
+{#if type === 'label'}
+  <label
+    class="btn-hollow btn-hollow-{color} cursor-pointer inline-block {additionalClasses}"
+    class:btn-hollow-large={size === 'large'}
+    class:btn-hollow-full={fullWidth}
+    class:disabled
+    data-testid={testid}
+    role="button"
+    aria-disabled={disabled}
+    onkeydown={handleLabelKeydown}
+    tabindex="0"
+    {...options}
+    for={labelFor}
+  >
+    {@render children?.()}
+  </label>
+{:else if href === ''}
+  <button
+    class="btn-hollow btn-hollow-{color}
+        {disabled ? 'disabled' : ''}
+        {additionalClasses}"
+    class:btn-hollow-large={size === 'large'}
+    class:btn-hollow-full={fullWidth}
+    onclick={onClick}
+    {type}
+    {disabled}
+    data-testid={testid}
+    {...options}
+  >
+    {@render children?.()}
+  </button>
+{:else}
+  <a
+    {href}
+    class="btn-hollow btn-hollow-{color} inline-block no-underline {additionalClasses}"
+    class:btn-hollow-large={size === 'large'}
+    class:btn-hollow-full={fullWidth}
+    class:disabled
+    data-testid={testid}
+    {...options}
+  >
+    {@render children?.()}
+  </a>
+{/if}
 
 <style>
   .btn-hollow {
@@ -260,48 +305,3 @@
     outline-offset: 2px;
   }
 </style>
-
-{#if type === 'label'}
-  <label
-    class="btn-hollow btn-hollow-{color} cursor-pointer inline-block {additionalClasses}"
-    class:btn-hollow-large={size === 'large'}
-    class:btn-hollow-full={fullWidth}
-    class:disabled={disabled}
-    data-testid="{testid}"
-    role="button"
-    aria-disabled={disabled}
-    onkeydown={handleLabelKeydown}
-    tabindex="0"
-    {...options}
-    for="{labelFor}"
-  >
-    {@render children?.()}
-  </label>
-{:else if href === ''}
-  <button
-    class="btn-hollow btn-hollow-{color}
-        {disabled ? 'disabled' : ''}
-        {additionalClasses}"
-    class:btn-hollow-large={size === 'large'}
-    class:btn-hollow-full={fullWidth}
-    onclick={onClick}
-    type="{type}"
-    disabled="{disabled}"
-    data-testid="{testid}"
-    {...options}
-  >
-    {@render children?.()}
-  </button>
-{:else}
-  <a
-    href="{href}"
-    class="btn-hollow btn-hollow-{color} inline-block no-underline {additionalClasses}"
-    class:btn-hollow-large={size === 'large'}
-    class:btn-hollow-full={fullWidth}
-    class:disabled={disabled}
-    data-testid="{testid}"
-    {...options}
-  >
-    {@render children?.()}
-  </a>
-{/if}

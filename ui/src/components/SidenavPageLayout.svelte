@@ -22,25 +22,14 @@
     children?: import('svelte').Snippet;
   }
 
-  let { 
-    pages, 
-    activePage = '', 
-    menuType = 'default',
-    expanded,
-    children 
-  }: Props = $props();
+  let { pages, activePage = '', menuType = 'default', expanded, children }: Props = $props();
 
   // Filter enabled pages
   let enabledPages = $derived(pages.filter(page => page.enabled));
 </script>
 
 <section class="flex min-h-screen">
-  <SideNavigation
-    menuItems={enabledPages}
-    activePage={activePage}
-    menuType={menuType}
-    {expanded}
-  />
+  <SideNavigation menuItems={enabledPages} {activePage} {menuType} {expanded} />
   <div class="flex-1 px-4 py-4 md:py-6 md:px-6 lg:py-8 lg:px-8">
     {@render children?.()}
   </div>

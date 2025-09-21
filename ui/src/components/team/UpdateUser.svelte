@@ -19,7 +19,7 @@
     handleUpdate = () => {},
     userId = '',
     userEmail = '',
-    role = $bindable('')
+    role = $bindable(''),
   }: Props = $props();
 
   const roles = ['ADMIN', 'MEMBER'];
@@ -41,36 +41,26 @@
 <Modal closeModal={toggleUpdate} ariaLabel={$LL.modalTeamUpdateUser()}>
   <form onsubmit={onSubmit} name="teamUpdateUser">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 font-bold mb-2 disabled"
-        for="userEmail"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2 disabled" for="userEmail">
         {$LL.userEmail()}
       </label>
       <TextInput bind:this={focusInput} value={userEmail} id="userEmail" name="userEmail" disabled />
     </div>
 
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 font-bold mb-2"
-        for="userRole"
-      >
+      <label class="text-gray-700 dark:text-gray-400 font-bold mb-2" for="userRole">
         {$LL.role()}
       </label>
-      <SelectInput bind:value="{role}" id="userRole" name="userRole">
+      <SelectInput bind:value={role} id="userRole" name="userRole">
         {#each roles as userRole}
-          <option value="{userRole}">{userRole}</option>
+          <option value={userRole}>{userRole}</option>
         {/each}
       </SelectInput>
     </div>
 
     <div>
       <div class="text-right">
-        <SolidButton
-          type="submit"
-          disabled={updateDisabled}
-          testid="userupdate-confirm"
-        >
+        <SolidButton type="submit" disabled={updateDisabled} testid="userupdate-confirm">
           {$LL.userUpdate()}
         </SolidButton>
       </div>

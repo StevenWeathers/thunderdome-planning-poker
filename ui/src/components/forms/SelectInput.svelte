@@ -6,7 +6,7 @@
 
 <div class="relative">
   <select
-    bind:value="{value}"
+    bind:value
     on:change
     class="block appearance-none w-full border border-gray-300 dark:border-gray-700
                 text-gray-700 dark:text-gray-300 py-2 px-4 pe-8 rounded leading-tight

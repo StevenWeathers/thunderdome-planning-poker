@@ -60,7 +60,7 @@
     projectsPage = $bindable(1),
     projectsPageLimit = 10,
     changePage = () => {},
-    getProjects = () => {}
+    getProjects = () => {},
   }: Props = $props();
 
   let showAddProject = $state(false);
@@ -108,14 +108,12 @@
   };
 
   let isAdmin = $derived(validateUserIsAdmin($user));
-  
+
   // Check if a scope is set (not global)
   let hasScopeSet = $derived(
-    Boolean(organizationId?.trim()) || 
-    Boolean(teamId?.trim()) || 
-    Boolean(departmentId?.trim())
+    Boolean(organizationId?.trim()) || Boolean(teamId?.trim()) || Boolean(departmentId?.trim()),
   );
-  
+
   // Only allow create button if user has permissions AND a scope is set
   let canCreateProject = $derived((isAdmin || isEntityAdmin) && hasScopeSet);
 
@@ -129,14 +127,16 @@
   function getScopeLink(project: Project): string | null {
     if (isAdminPage) {
       if (project.teamId) return `${appRoutes.adminTeams}/${project.teamId}`;
-      if (project.departmentId) return `${appRoutes.adminOrganizations}/${project.organizationId}/department/${project.departmentId}`;
+      if (project.departmentId)
+        return `${appRoutes.adminOrganizations}/${project.organizationId}/department/${project.departmentId}`;
       if (project.organizationId) return `${appRoutes.adminOrganizations}/${project.organizationId}`;
     } else {
       if (project.teamId) return `${appRoutes.teams}/${project.teamId}`;
-      if (project.departmentId) return `${appRoutes.organization}/${project.organizationId}/department/${project.departmentId}`;
+      if (project.departmentId)
+        return `${appRoutes.organization}/${project.organizationId}/department/${project.departmentId}`;
       if (project.organizationId) return `${appRoutes.organization}/${project.organizationId}`;
     }
-    
+
     return null;
   }
 
@@ -171,12 +171,15 @@
         </tr>
       {/snippet}
       {#snippet body({ class: className })}
-        <tbody class="{className}">
+        <tbody class={className}>
           {#each projects as project, i}
             <TableRow itemIndex={i}>
               <RowCol>
                 <div class="font-medium text-gray-900 dark:text-gray-200">
-                  <span data-testid="project-key" class="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                  <span
+                    data-testid="project-key"
+                    class="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded"
+                  >
                     {project.projectKey}
                   </span>
                 </div>
@@ -194,7 +197,7 @@
               {#if isAdmin && !teamId && !organizationId && !departmentId}
                 <RowCol>
                   {#if getScopeLink(project)}
-                    <a 
+                    <a
                       href={getScopeLink(project)}
                       data-testid="project-scope"
                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-150"
@@ -202,7 +205,10 @@
                       {getProjectScope(project)}
                     </a>
                   {:else}
-                    <span data-testid="project-scope" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+                    <span
+                      data-testid="project-scope"
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                    >
                       {getProjectScope(project)}
                     </span>
                   {/if}
@@ -216,7 +222,9 @@
               <RowCol type="action">
                 {#if isAdmin || isEntityAdmin}
                   <CrudActions
-                    detailsLink={isAdminPage ? `${appRoutes.adminProjects}/${project.id}` : `${appRoutes.projects}/${project.id}`}
+                    detailsLink={isAdminPage
+                      ? `${appRoutes.adminProjects}/${project.id}`
+                      : `${appRoutes.projects}/${project.id}`}
                     detailsLinkText="View Project"
                     editBtnClickHandler={toggleUpdateProject(project)}
                     deleteBtnClickHandler={toggleRemoveProject(project.id)}
@@ -229,7 +237,7 @@
       {/snippet}
     </Table>
     <TableFooter
-      bind:current="{projectsPage}"
+      bind:current={projectsPage}
       num_items={projectCount}
       per_page={projectsPageLimit}
       on:navigate={changePage}
@@ -240,12 +248,12 @@
     <CreateProject
       toggleCreate={toggleCreateProject}
       handleCreate={handleCreateProject}
-      organizationId={organizationId}
-      departmentId={departmentId}
-      teamId={teamId}
-      apiPrefix={apiPrefix}
-      xfetch={xfetch}
-      notifications={notifications}
+      {organizationId}
+      {departmentId}
+      {teamId}
+      {apiPrefix}
+      {xfetch}
+      {notifications}
     />
   {/if}
 
@@ -260,9 +268,9 @@
       organizationId={updateProject.organizationId || organizationId}
       departmentId={updateProject.departmentId || departmentId}
       teamId={updateProject.teamId || teamId}
-      apiPrefix={apiPrefix}
-      xfetch={xfetch}
-      notifications={notifications}
+      {apiPrefix}
+      {xfetch}
+      {notifications}
     />
   {/if}
 

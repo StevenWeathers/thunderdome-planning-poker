@@ -57,10 +57,8 @@
       })
       .then(function (result) {
         ticket = result.data;
-        assignedAdmin =
-          adminUsers.find(user => user.id === ticket.assignedTo) || null;
-        resolvedByAdmin =
-          adminUsers.find(user => user.id === ticket.resolvedBy) || null;
+        assignedAdmin = adminUsers.find(user => user.id === ticket.assignedTo) || null;
+        resolvedByAdmin = adminUsers.find(user => user.id === ticket.resolvedBy) || null;
       })
       .catch(function () {
         notifications.danger('Error fetching support ticket');
@@ -89,13 +87,9 @@
 
 <AdminPageLayout activePage="support-tickets">
   <!-- Header Section -->
-  <div
-    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
-  >
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
     <div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-        Support Ticket Details
-      </h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Support Ticket Details</h1>
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
         Ticket ID: #{ticketId}
       </p>
@@ -107,18 +101,8 @@
       class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-400 transition-colors duration-200"
       aria-label="Go back to support tickets list"
     >
-      <svg
-        class="w-4 h-4 rtl:rotate-180"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M10 19l-7-7m0 0l7-7m-7 7h18"
-        />
+      <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
       Back to Tickets
     </a>
@@ -126,18 +110,10 @@
 
   <!-- Loading State -->
   {#if !loaded}
-    <div
-      class="flex items-center justify-center min-h-64"
-      role="status"
-      aria-label="Loading support ticket details"
-    >
+    <div class="flex items-center justify-center min-h-64" role="status" aria-label="Loading support ticket details">
       <div class="flex flex-col items-center gap-4">
-        <div
-          class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"
-        ></div>
-        <p class="text-gray-500 dark:text-gray-400">
-          Loading ticket details...
-        </p>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+        <p class="text-gray-500 dark:text-gray-400">Loading ticket details...</p>
       </div>
     </div>
   {:else}
@@ -180,12 +156,8 @@
         <div
           class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
-          <div
-            class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700"
-          >
-            <h2
-              class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2"
-            >
+          <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <svg
                 class="w-5 h-5 text-blue-600 dark:text-blue-400"
                 fill="none"
@@ -204,10 +176,7 @@
           </div>
           <div class="p-6 space-y-4">
             <div class="space-y-1">
-              <label
-                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
-                >Full Name</label
-              >
+              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</label>
               <p class="text-base text-gray-900 dark:text-white font-medium">
                 {#if ticket.userId === null}
                   {ticket.fullName}
@@ -222,10 +191,7 @@
               </p>
             </div>
             <div class="space-y-1">
-              <label
-                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
-                >Email Address</label
-              >
+              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Email Address</label>
               <p class="text-base text-gray-900 dark:text-white">
                 <a
                   href="mailto:{ticket.email}"
@@ -243,12 +209,8 @@
         <div
           class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
-          <div
-            class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700"
-          >
-            <h2
-              class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2"
-            >
+          <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <svg
                 class="w-5 h-5 text-purple-600 dark:text-purple-400"
                 fill="none"
@@ -267,11 +229,7 @@
           </div>
           <div class="p-6 space-y-4">
             <div class="space-y-1">
-              <div
-                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
-              >
-                Assigned To
-              </div>
+              <div class="block text-sm font-medium text-gray-500 dark:text-gray-400">Assigned To</div>
               {#if ticket.assignedTo && assignedAdmin}
                 <div class="flex items-center gap-2">
                   <div class="w-12 h-12">
@@ -283,9 +241,7 @@
                       userName={assignedAdmin.name}
                     />
                   </div>
-                  <div
-                    class="flex text-base text-gray-900 dark:text-white font-medium"
-                  >
+                  <div class="flex text-base text-gray-900 dark:text-white font-medium">
                     <a
                       href="{appRoutes.adminUsers}/{assignedAdmin.id}"
                       class="flex items-center text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -294,18 +250,13 @@
                   </div>
                 </div>
               {:else}
-                <p class="text-base text-gray-500 dark:text-gray-400 italic">
-                  Unassigned
-                </p>
+                <p class="text-base text-gray-500 dark:text-gray-400 italic">Unassigned</p>
               {/if}
             </div>
 
             {#if ticket.resolvedAt}
               <div class="space-y-1">
-                <label
-                  class="block text-sm font-medium text-gray-500 dark:text-gray-400"
-                  >Resolved By</label
-                >
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Resolved By</label>
                 <div class="flex items-center gap-2">
                   <div class="w-12 h-12">
                     <UserAvatar
@@ -316,9 +267,7 @@
                       userName={resolvedByAdmin.name}
                     />
                   </div>
-                  <div
-                    class="flex text-base text-gray-900 dark:text-white font-medium"
-                  >
+                  <div class="flex text-base text-gray-900 dark:text-white font-medium">
                     <a
                       href="{appRoutes.adminUsers}/{resolvedByAdmin.id}"
                       class="flex items-center text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -328,10 +277,7 @@
                 </div>
               </div>
               <div class="space-y-1">
-                <label
-                  class="block text-sm font-medium text-gray-500 dark:text-gray-400"
-                  >Resolved At</label
-                >
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Resolved At</label>
                 <p class="text-base text-gray-900 dark:text-white">
                   {new Date(ticket.resolvedAt).toLocaleString()}
                 </p>
@@ -346,12 +292,8 @@
         <div
           class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
-          <div
-            class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700"
-          >
-            <h2
-              class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2"
-            >
+          <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <svg
                 class="w-5 h-5 text-green-600 dark:text-green-400"
                 fill="none"
@@ -370,9 +312,7 @@
           </div>
           <div class="p-6">
             <div class="prose prose-gray dark:prose-invert max-w-none">
-              <p
-                class="text-gray-900 dark:text-white whitespace-pre-line leading-relaxed"
-              >
+              <p class="text-gray-900 dark:text-white whitespace-pre-line leading-relaxed">
                 {ticket.inquiry}
               </p>
             </div>
@@ -385,12 +325,8 @@
         <div
           class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
-          <div
-            class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700"
-          >
-            <h2
-              class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2"
-            >
+          <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <svg
                 class="w-5 h-5 text-orange-600 dark:text-orange-400"
                 fill="none"
@@ -410,16 +346,12 @@
           <div class="p-6">
             {#if ticket.notes && ticket.notes.trim()}
               <div class="prose prose-gray dark:prose-invert max-w-none">
-                <p
-                  class="text-gray-900 dark:text-white whitespace-pre-line leading-relaxed"
-                >
+                <p class="text-gray-900 dark:text-white whitespace-pre-line leading-relaxed">
                   {ticket.notes}
                 </p>
               </div>
             {:else}
-              <p class="text-gray-500 dark:text-gray-400 italic">
-                No notes available
-              </p>
+              <p class="text-gray-500 dark:text-gray-400 italic">No notes available</p>
             {/if}
           </div>
         </div>

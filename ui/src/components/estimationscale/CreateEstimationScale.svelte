@@ -31,7 +31,7 @@
     departmentId,
     apiPrefix = '/api',
     xfetch,
-    notifications
+    notifications,
   }: Props = $props();
 
   let name = $state('');
@@ -41,14 +41,7 @@
   let isPublic = $state(false);
   let defaultScale = $state(false);
 
-  const scaleTypes = [
-    'fibonacci',
-    'modified_fibonacci',
-    't_shirt',
-    'powers_of_two',
-    'thunderdome_default',
-    'custom',
-  ];
+  const scaleTypes = ['fibonacci', 'modified_fibonacci', 't_shirt', 'powers_of_two', 'thunderdome_default', 'custom'];
 
   function toggleClose() {
     toggleCreate();
@@ -95,9 +88,7 @@
         .map(v => v.trim())
         .filter(v => v !== '');
     } else {
-      notifications.danger(
-        'Invalid input. Please use only letters, numbers, emojis, commas, spaces, and underscores.',
-      );
+      notifications.danger('Invalid input. Please use only letters, numbers, emojis, commas, spaces, and underscores.');
     }
   }
   let createDisabled = $derived(name === '' || scaleType === '' || values.length === 0);
@@ -112,10 +103,7 @@
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalCreateEstimationScale()}>
   <form onsubmit={onSubmit} name="createEstimationScale">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="scaleName"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="scaleName">
         {$LL.name()}
       </label>
       <TextInput
@@ -129,10 +117,7 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="scaleDescription"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="scaleDescription">
         {$LL.description()}
       </label>
       <TextInput
@@ -148,12 +133,7 @@
         <label class="block font-bold mb-2 dark:text-gray-400" for="scaleType">
           {$LL.scaleType()}
         </label>
-        <SelectInput
-          name="scaleType"
-          id="scaleType"
-          bind:value="{scaleType}"
-          required
-        >
+        <SelectInput name="scaleType" id="scaleType" bind:value={scaleType} required>
           <option value="" disabled>
             {$LL.estimationScaleTypePlaceholder()}
           </option>
@@ -165,10 +145,7 @@
     {/if}
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="scaleValues"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="scaleValues">
         {$LL.scaleValues()}
       </label>
       <TextInput
@@ -186,12 +163,7 @@
 
     {#if isAdmin && !organizationId && !teamId}
       <div class="mb-4">
-        <Checkbox
-          bind:checked={isPublic}
-          id="isPublic"
-          name="isPublic"
-          label={$LL.estimationScaleIsPublic()}
-        />
+        <Checkbox bind:checked={isPublic} id="isPublic" name="isPublic" label={$LL.estimationScaleIsPublic()} />
       </div>
     {/if}
 

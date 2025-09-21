@@ -76,33 +76,25 @@
     xfetch(`/api/admin/support-tickets/${id}`, { body, method: 'PUT' })
       .then(res => res.json())
       .then(function () {
-        notifications.success(
-          $LL.updateSupportTicketSuccess(),
-        );
+        notifications.success($LL.updateSupportTicketSuccess());
         getTickets();
         toggleUpdateTicket({ ...defaultTicket })();
       })
       .catch(function () {
-        notifications.danger(
-          $LL.updateSupportTicketError(),
-        );
+        notifications.danger($LL.updateSupportTicketError());
       });
   }
 
   function getTickets() {
     const ticketsOffset = (ticketsPage - 1) * ticketsPageLimit;
-    xfetch(
-      `/api/admin/support-tickets?limit=${ticketsPageLimit}&offset=${ticketsOffset}`,
-    )
+    xfetch(`/api/admin/support-tickets?limit=${ticketsPageLimit}&offset=${ticketsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         tickets = result.data;
         ticketCount = result.meta.count || 0;
       })
       .catch(function () {
-        notifications.danger(
-          $LL.getSupportTicketsError(),
-        );
+        notifications.danger($LL.getSupportTicketsError());
       });
   }
 
@@ -112,14 +104,10 @@
       .then(function () {
         getTickets();
         toggleDeleteTicket(null)();
-        notifications.success(
-          $LL.deleteSupportTicketSuccess(),
-        );
+        notifications.success($LL.deleteSupportTicketSuccess());
       })
       .catch(function () {
-        notifications.danger(
-          $LL.deleteSupportTicketError(),
-        );
+        notifications.danger($LL.deleteSupportTicketError());
       });
   }
 
@@ -154,10 +142,7 @@
 
 <AdminPageLayout activePage="support-tickets">
   <TableContainer>
-    <TableNav
-      title={$LL.supportTickets()}
-      createBtnEnabled={false}
-    />
+    <TableNav title={$LL.supportTickets()} createBtnEnabled={false} />
     <Table>
       {#snippet header()}
         <tr>
@@ -184,53 +169,62 @@
             </TableRow>
           {:else}
             {#each tickets as ticket, i}
-            <TableRow itemIndex={i}>
-              <RowCol>
-                {#if ticket.userId === null}
-                  {ticket.fullName}
-                {:else}
-                  <a href="{appRoutes.adminUsers}/{ticket.userId}" class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">
+              <TableRow itemIndex={i}>
+                <RowCol>
+                  {#if ticket.userId === null}
                     {ticket.fullName}
-                  </a>
-                {/if}
-              </RowCol>
-              <RowCol>
-                {ticket.email}
-              </RowCol>
-              <RowCol>
-                {ticket.inquiry.substring(0, 50)}{ticket.inquiry.length > 50
-                  ? '...'
-                  : ''}
-              </RowCol>
-              <RowCol>
-                {#if ticket.assignedTo !== null && ticket.assignedTo !== ''}
-                  {@const admin = adminUsers.find(u => u.id === ticket.assignedTo)}
-                    <a href="{appRoutes.adminUsers}/{admin.id}" class="flex items-center text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">
-                      <UserAvatar warriorId={admin.id} pictureUrl={admin.picture} gravatarHash={admin.gravatarHash}
-                      avatar={admin.avatar} userName={admin.name} />
+                  {:else}
+                    <a
+                      href="{appRoutes.adminUsers}/{ticket.userId}"
+                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                    >
+                      {ticket.fullName}
+                    </a>
+                  {/if}
+                </RowCol>
+                <RowCol>
+                  {ticket.email}
+                </RowCol>
+                <RowCol>
+                  {ticket.inquiry.substring(0, 50)}{ticket.inquiry.length > 50 ? '...' : ''}
+                </RowCol>
+                <RowCol>
+                  {#if ticket.assignedTo !== null && ticket.assignedTo !== ''}
+                    {@const admin = adminUsers.find(u => u.id === ticket.assignedTo)}
+                    <a
+                      href="{appRoutes.adminUsers}/{admin.id}"
+                      class="flex items-center text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                    >
+                      <UserAvatar
+                        warriorId={admin.id}
+                        pictureUrl={admin.picture}
+                        gravatarHash={admin.gravatarHash}
+                        avatar={admin.avatar}
+                        userName={admin.name}
+                      />
                       {admin?.name || 'Unknown Admin'}
                     </a>
-                {:else}
-                  <span class="text-gray-500 dark:text-gray-400 italic">
-                    {$LL.unassigned()}
-                  </span>
-                {/if}
-              </RowCol>
-              <RowCol>
-                <BooleanDisplay boolValue={ticket.resolvedAt !== null} />
-              </RowCol>
-              <RowCol>
-                {new Date(ticket.updatedAt).toLocaleString()}
-              </RowCol>
-              <RowCol type="action">
-                <CrudActions
-                  detailsLink={`${appRoutes.adminSupportTickets}/${ticket.id}`}
-                  editBtnClickHandler={toggleUpdateTicket(ticket)}
-                  deleteBtnClickHandler={toggleDeleteTicket(ticket.id)}
-                />
-              </RowCol>
-            </TableRow>
-          {/each}
+                  {:else}
+                    <span class="text-gray-500 dark:text-gray-400 italic">
+                      {$LL.unassigned()}
+                    </span>
+                  {/if}
+                </RowCol>
+                <RowCol>
+                  <BooleanDisplay boolValue={ticket.resolvedAt !== null} />
+                </RowCol>
+                <RowCol>
+                  {new Date(ticket.updatedAt).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  <CrudActions
+                    detailsLink={`${appRoutes.adminSupportTickets}/${ticket.id}`}
+                    editBtnClickHandler={toggleUpdateTicket(ticket)}
+                    deleteBtnClickHandler={toggleDeleteTicket(ticket.id)}
+                  />
+                </RowCol>
+              </TableRow>
+            {/each}
           {/if}
         </tbody>
       {/snippet}

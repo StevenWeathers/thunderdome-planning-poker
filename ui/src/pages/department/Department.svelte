@@ -30,13 +30,7 @@
     departmentId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId,
-    departmentId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId, departmentId }: Props = $props();
 
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
@@ -124,10 +118,7 @@
       name,
     };
 
-    xfetch(
-      `/api/organizations/${organizationId}/departments/${departmentId}/teams`,
-      { body },
-    )
+    xfetch(`/api/organizations/${organizationId}/departments/${departmentId}/teams`, { body })
       .then(res => res.json())
       .then(function () {
         toggleCreateTeam();
@@ -140,10 +131,9 @@
   }
 
   function handleDeleteTeam() {
-    xfetch(
-      `/api/organizations/${organizationId}/departments/${departmentId}/teams/${deleteTeamId}`,
-      { method: 'DELETE' },
-    )
+    xfetch(`/api/organizations/${organizationId}/departments/${departmentId}/teams/${deleteTeamId}`, {
+      method: 'DELETE',
+    })
       .then(function () {
         toggleDeleteTeam(null)();
         notifications.success($LL.teamDeleteSuccess());
@@ -173,10 +163,10 @@
       name,
     };
 
-    xfetch(
-      `/api/organizations/${organizationId}/departments/${departmentId}/teams/${selectedTeam.id}`,
-      { body, method: 'PUT' },
-    )
+    xfetch(`/api/organizations/${organizationId}/departments/${departmentId}/teams/${selectedTeam.id}`, {
+      body,
+      method: 'PUT',
+    })
       .then(res => res.json())
       .then(function () {
         getTeams();
@@ -234,7 +224,7 @@
       />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.name()}
             </HeadCol>
@@ -248,9 +238,9 @@
               <span class="sr-only">{$LL.actions()}</span>
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             {#each teams as team, i}
               <TableRow itemIndex={i}>
                 <RowCol>
@@ -278,29 +268,23 @@
               </TableRow>
             {/each}
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <InvitesList
-        xfetch={xfetch}
-        notifications={notifications}
-        pageType="department"
-        teamPrefix={deptPrefix}
-        bind:this="{invitesList}"
-      />
+      <InvitesList {xfetch} {notifications} pageType="department" teamPrefix={deptPrefix} bind:this={invitesList} />
     </div>
   {/if}
 
   <UsersList
-    users={users}
-    getUsers={getUsers}
-    xfetch={xfetch}
-    notifications={notifications}
-    isAdmin={isAdmin}
+    {users}
+    {getUsers}
+    {xfetch}
+    {notifications}
+    {isAdmin}
     pageType="department"
     orgId={organizationId}
     deptId={departmentId}
@@ -308,10 +292,7 @@
   />
 
   {#if showCreateTeam}
-    <CreateTeam
-      toggleCreate={toggleCreateTeam}
-      handleCreate={createTeamHandler}
-    />
+    <CreateTeam toggleCreate={toggleCreateTeam} handleCreate={createTeamHandler} />
   {/if}
 
   {#if showTeamUpdate}

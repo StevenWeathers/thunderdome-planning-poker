@@ -15,7 +15,7 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import Toggle from '../../../components/forms/Toggle.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -34,9 +34,7 @@
 
   function getStoryboards() {
     const storyboardsOffset = (storyboardsPage - 1) * storyboardsPageLimit;
-    xfetch(
-      `/api/storyboards?limit=${storyboardsPageLimit}&offset=${storyboardsOffset}&active=${activeStoryboards}`,
-    )
+    xfetch(`/api/storyboards?limit=${storyboardsPageLimit}&offset=${storyboardsOffset}&active=${activeStoryboards}`)
       .then(res => res.json())
       .then(function (result) {
         storyboards = result.data;
@@ -81,14 +79,14 @@
       <Toggle
         name="activeStoryboards"
         id="activeStoryboards"
-        bind:checked="{activeStoryboards}"
+        bind:checked={activeStoryboards}
         changeHandler={changeActiveStoryboardsToggle}
         label={$LL.showActiveStoryboards()}
       />
     </TableNav>
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -102,9 +100,9 @@
             <span class="sr-only">{$LL.actions()}</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each storyboards as storyboard, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -128,7 +126,7 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
     <TableFooter
       bind:current={storyboardsPage}

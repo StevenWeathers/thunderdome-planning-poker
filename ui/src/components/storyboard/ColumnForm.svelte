@@ -26,10 +26,10 @@
     handlePersonaAdd = () => {},
     personas = [],
     column = $bindable({
-    id: '',
-    name: '',
-    personas: [],
-  })
+      id: '',
+      name: '',
+      personas: [],
+    }),
   }: Props = $props();
 
   let selectedPersona = $state('');
@@ -59,15 +59,12 @@
 <Modal closeModal={toggleColumnEdit} ariaLabel={$LL.modalStoryboardColumnSettings()}>
   <form onsubmit={handleSubmit} name="addColumn">
     <div class="mb-4">
-      <label
-        class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
-        for="columnName"
-      >
+      <label class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2" for="columnName">
         Column Name
       </label>
       <TextInput
         id="columnName"
-        bind:value="{column.name}"
+        bind:value={column.name}
         placeholder="Enter a column name"
         name="columnName"
         bind:this={focusInput}
@@ -75,9 +72,7 @@
     </div>
     <div class="flex">
       <div class="md:w-1/2 text-left">
-        <HollowButton color="red" onClick={deleteColumn(column.id)}>
-          Delete Column
-        </HollowButton>
+        <HollowButton color="red" onClick={deleteColumn(column.id)}>Delete Column</HollowButton>
       </div>
       <div class="md:w-1/2 text-right">
         <SolidButton type="submit">Save</SolidButton>
@@ -91,22 +86,17 @@
     </div>
     <div class="flex w-full gap-4">
       <div class="w-2/3">
-        <SelectInput bind:value="{selectedPersona}" id="persona" name="persona">
+        <SelectInput bind:value={selectedPersona} id="persona" name="persona">
           <option value="" disabled>Select a persona</option>
           {#each personas as persona}
-            <option value="{persona.id}">
+            <option value={persona.id}>
               {persona.name} ({persona.role})
             </option>
           {/each}
         </SelectInput>
       </div>
       <div class="w-1/3">
-        <HollowButton
-          onClick={addPersona}
-          disabled={selectedPersona === ''}
-        >
-          Add Persona
-        </HollowButton>
+        <HollowButton onClick={addPersona} disabled={selectedPersona === ''}>Add Persona</HollowButton>
       </div>
     </div>
     {#if column.personas.length}

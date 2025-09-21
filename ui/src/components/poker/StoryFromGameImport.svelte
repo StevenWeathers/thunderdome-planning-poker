@@ -15,12 +15,7 @@
     gameId?: string;
   }
 
-  let {
-    notifications,
-    xfetch,
-    handleImport,
-    gameId = ''
-  }: Props = $props();
+  let { notifications, xfetch, handleImport, gameId = '' }: Props = $props();
 
   let selectedGameIdx = $state('');
   let games = $state([]);
@@ -65,16 +60,12 @@
 </script>
 
 <div class="mb-4">
-  <SelectInput
-    id="selectedGame"
-    bind:value="{selectedGameIdx}"
-    on:change="{getGameStories}"
-  >
+  <SelectInput id="selectedGame" bind:value={selectedGameIdx} on:change={getGameStories}>
     >
     <option value="" disabled>Select game to import from</option>
     {#each games as game, idx}
       {#if game.id !== gameId}
-        <option value="{idx}">{game.name}</option>
+        <option value={idx}>{game.name}</option>
       {/if}
     {/each}
   </SelectInput>

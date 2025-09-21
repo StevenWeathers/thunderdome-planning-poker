@@ -4,10 +4,10 @@
   let {
     title,
     description,
-    primaryCta = "Get Started",
-    secondaryCta = "Sign In to Continue",
+    primaryCta = 'Get Started',
+    secondaryCta = 'Sign In to Continue',
     primaryHref = appRoutes.register,
-    secondaryHref = appRoutes.login
+    secondaryHref = appRoutes.login,
   } = $props();
 </script>
 
@@ -19,7 +19,7 @@
     <p class="text-xl leading-8 text-indigo-100 mb-8 max-w-2xl mx-auto">
       {description}
     </p>
-    
+
     <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
       <a
         href={primaryHref}

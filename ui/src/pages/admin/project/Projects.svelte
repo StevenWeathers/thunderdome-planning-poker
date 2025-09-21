@@ -7,7 +7,7 @@
   import AdminPageLayout from '../../../components/admin/AdminPageLayout.svelte';
   import ProjectsList from '../../../components/project/ProjectsList.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -25,9 +25,7 @@
 
   function getProjects() {
     const projectsOffset = (projectsPage - 1) * projectsPageLimit;
-    xfetch(
-      `/api/admin/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`,
-    )
+    xfetch(`/api/admin/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         projects = result.data;
@@ -66,15 +64,15 @@
 
 <AdminPageLayout activePage="projects">
   <ProjectsList
-    xfetch={xfetch}
-    notifications={notifications}
-    projects={projects}
+    {xfetch}
+    {notifications}
+    {projects}
     apiPrefix="/api/admin"
-    getProjects={getProjects}
-    changePage={changePage}
-    projectCount={projectCount}
-    projectsPage={projectsPage}
-    projectsPageLimit={projectsPageLimit}
+    {getProjects}
+    {changePage}
+    {projectCount}
+    {projectsPage}
+    {projectsPageLimit}
     isAdminPage={true}
   />
 </AdminPageLayout>

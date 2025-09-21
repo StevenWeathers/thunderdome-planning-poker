@@ -21,7 +21,7 @@
     userMap = new Map<string, TeamUser>(),
     isAdmin = false,
     handleEdit = () => {},
-    handleDelete = () => {}
+    handleDelete = () => {},
   }: Props = $props();
 
   let showEdit = $state(false);
@@ -66,10 +66,9 @@
     return date.toLocaleDateString();
   }
 
- let canEdit = $derived(comment.user_id === $user.id || isAdmin);
+  let canEdit = $derived(comment.user_id === $user.id || isAdmin);
 
-let showDeleteConfirm = $state(false);
-
+  let showDeleteConfirm = $state(false);
 </script>
 
 <article
@@ -90,7 +89,7 @@ let showDeleteConfirm = $state(false);
           avatar={userMap[comment?.user_id]?.avatar || ''}
         />
       </div>
-      
+
       <!-- User Info -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
@@ -119,7 +118,9 @@ let showDeleteConfirm = $state(false);
 
         {#if showActions}
           <!-- Actions Dropdown -->
-          <div class="absolute top-full end-0 rtl:start-0 rtl:end-auto mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10 min-w-32">
+          <div
+            class="absolute top-full end-0 rtl:start-0 rtl:end-auto mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10 min-w-32"
+          >
             <div class="py-1">
               <button
                 onclick={toggleEdit}
@@ -129,10 +130,10 @@ let showDeleteConfirm = $state(false);
                 {$LL.edit()}
               </button>
               <button
-                  onclick={() => {
-                    showDeleteConfirm = true;
-                    showActions = false;
-                  }}
+                onclick={() => {
+                  showDeleteConfirm = true;
+                  showActions = false;
+                }}
                 class="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
               >
                 <Trash2 class="w-4 h-4" />
@@ -151,9 +152,7 @@ let showDeleteConfirm = $state(false);
       <!-- Edit Mode -->
       <form onsubmit={onSubmit} name="editComment" class="space-y-4">
         <div>
-          <label for="edit-comment-{comment.id}" class="sr-only">
-            Edit comment
-          </label>
+          <label for="edit-comment-{comment.id}" class="sr-only"> Edit comment </label>
           <textarea
             id="edit-comment-{comment.id}"
             bind:value={editcomment}
@@ -173,7 +172,7 @@ let showDeleteConfirm = $state(false);
             <X class="w-4 h-4" />
             {$LL.cancel()}
           </button>
-          
+
           <button
             type="submit"
             disabled={!editcomment.trim() || editcomment === comment.comment}
@@ -207,8 +206,11 @@ let showDeleteConfirm = $state(false);
   {#if showDeleteConfirm}
     <DeleteConfirmation
       toggleDelete={() => (showDeleteConfirm = false)}
-      handleDelete={() => { handleDelete(checkinId, comment.id)(); showDeleteConfirm = false; }}
-      confirmText={"Are you sure you want to delete this comment?"}
+      handleDelete={() => {
+        handleDelete(checkinId, comment.id)();
+        showDeleteConfirm = false;
+      }}
+      confirmText={'Are you sure you want to delete this comment?'}
       confirmBtnText={$LL.delete()}
       permanent={true}
     />
@@ -219,10 +221,7 @@ let showDeleteConfirm = $state(false);
 {#if showActions}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div 
-    class="fixed inset-0 z-0" 
-    onclick={() => showActions = false}
-  ></div>
+  <div class="fixed inset-0 z-0" onclick={() => (showActions = false)}></div>
 {/if}
 
 <style>

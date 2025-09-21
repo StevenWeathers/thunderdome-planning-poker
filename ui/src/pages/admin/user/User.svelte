@@ -20,7 +20,7 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import { BadgeCheck } from 'lucide-svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -30,12 +30,7 @@
     userId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    userId
-  }: Props = $props();
+  let { xfetch, router, notifications, userId }: Props = $props();
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -80,9 +75,7 @@
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
-    xfetch(
-      `/api/users/${userId}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
-    )
+    xfetch(`/api/users/${userId}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`)
       .then(res => res.json())
       .then(function (result) {
         battles = result.data;
@@ -105,9 +98,7 @@
 
   function getRetros() {
     const offset = (retrosPage - 1) * retrosPageLimit;
-    xfetch(
-      `/api/users/${userId}/retros?limit=${retrosPageLimit}&offset=${offset}`,
-    )
+    xfetch(`/api/users/${userId}/retros?limit=${retrosPageLimit}&offset=${offset}`)
       .then(res => res.json())
       .then(function (result) {
         retros = result.data;
@@ -130,9 +121,7 @@
 
   function getStoryboards() {
     const offset = (storyboardsPage - 1) * storyboardsPageLimit;
-    xfetch(
-      `/api/users/${userId}/storyboards?limit=${storyboardsPageLimit}&offset=${offset}`,
-    )
+    xfetch(`/api/users/${userId}/storyboards?limit=${storyboardsPageLimit}&offset=${offset}`)
       .then(res => res.json())
       .then(function (result) {
         storyboards = result.data;
@@ -189,13 +178,11 @@
   <div class="mb-6 lg:mb-8">
     <TableContainer>
       <TableNav title={userDetails.name} createBtnEnabled={false}>
-        <SolidButton onClick={toggleUpdatePassword}
-          >{$LL.updatePassword()}</SolidButton
-        >
+        <SolidButton onClick={toggleUpdatePassword}>{$LL.updatePassword()}</SolidButton>
       </TableNav>
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol />
             <HeadCol>
               {$LL.country()}
@@ -216,9 +203,9 @@
               {$LL.lastActive()}
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             <TableRow itemIndex={0}>
               <RowCol>
                 <div class="flex items-center flex-nowrap">
@@ -237,12 +224,7 @@
               <RowCol>
                 {#if userDetails.country}
                   &nbsp;
-                  <CountryFlag
-                    country={userDetails.country}
-                    additionalClass="inline-block"
-                    width="32"
-                    height="24"
-                  />
+                  <CountryFlag country={userDetails.country} additionalClass="inline-block" width="32" height="24" />
                 {/if}
               </RowCol>
               <RowCol>
@@ -267,7 +249,7 @@
               </RowCol>
             </TableRow>
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -278,7 +260,7 @@
         <TableNav title={$LL.battles()} createBtnEnabled={false} />
         <Table>
           {#snippet header()}
-                    <tr >
+            <tr>
               <HeadCol>
                 {$LL.name()}
               </HeadCol>
@@ -292,9 +274,9 @@
                 <span class="sr-only">{$LL.actions()}</span>
               </HeadCol>
             </tr>
-                  {/snippet}
+          {/snippet}
           {#snippet body({ class: className })}
-                    <tbody   class="{className}">
+            <tbody class={className}>
               {#each battles as battle, i}
                 <TableRow itemIndex={i}>
                   <RowCol>
@@ -318,7 +300,7 @@
                 </TableRow>
               {/each}
             </tbody>
-                  {/snippet}
+          {/snippet}
         </Table>
         <TableFooter
           bind:current={battlesPage}
@@ -336,7 +318,7 @@
         <TableNav title={$LL.retros()} createBtnEnabled={false} />
         <Table>
           {#snippet header()}
-                    <tr >
+            <tr>
               <HeadCol>
                 {$LL.name()}
               </HeadCol>
@@ -350,9 +332,9 @@
                 <span class="sr-only">{$LL.actions()}</span>
               </HeadCol>
             </tr>
-                  {/snippet}
+          {/snippet}
           {#snippet body({ class: className })}
-                    <tbody class="{className}">
+            <tbody class={className}>
               {#each retros as retro, i}
                 <TableRow itemIndex={i}>
                   <RowCol>
@@ -376,7 +358,7 @@
                 </TableRow>
               {/each}
             </tbody>
-                  {/snippet}
+          {/snippet}
         </Table>
         <TableFooter
           bind:current={retrosPage}
@@ -394,7 +376,7 @@
         <TableNav title={$LL.storyboards()} createBtnEnabled={false} />
         <Table>
           {#snippet header()}
-                    <tr >
+            <tr>
               <HeadCol>
                 {$LL.name()}
               </HeadCol>
@@ -408,9 +390,9 @@
                 <span class="sr-only">{$LL.actions()}</span>
               </HeadCol>
             </tr>
-                  {/snippet}
+          {/snippet}
           {#snippet body({ class: className })}
-                    <tbody   class="{className}">
+            <tbody class={className}>
               {#each storyboards as storyboard, i}
                 <TableRow itemIndex={i}>
                   <RowCol>
@@ -434,7 +416,7 @@
                 </TableRow>
               {/each}
             </tbody>
-                  {/snippet}
+          {/snippet}
         </Table>
         <TableFooter
           bind:current={storyboardsPage}
@@ -448,11 +430,7 @@
 
   {#if showUpdatePassword}
     <Modal closeModal={toggleUpdatePassword}>
-      <UpdatePasswordForm
-        handleUpdate={updatePassword}
-        toggleForm={toggleUpdatePassword}
-        notifications={notifications}
-      />
+      <UpdatePasswordForm handleUpdate={updatePassword} toggleForm={toggleUpdatePassword} {notifications} />
     </Modal>
   {/if}
 </AdminPageLayout>

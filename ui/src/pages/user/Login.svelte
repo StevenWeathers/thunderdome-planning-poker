@@ -27,7 +27,7 @@
     storyboardId,
     subscription = false,
     orgInviteId,
-    teamInviteId
+    teamInviteId,
   }: Props = $props();
 
   const { AllowRegistration } = AppConfig;
@@ -95,15 +95,7 @@
 <div
   class="space-y-8 flex items-center justify-center min-h-[80vh] bg-gradient-to-br from-blue-200 via-purple-200 to-indigo-300 dark:from-blue-800 dark:via-purple-800 dark:to-indigo-800"
 >
-  <div
-    class="p-8 rounded-2xl shadow-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-800/50"
-  >
-    <LoginForm
-      xfetch={xfetch}
-      notifications={notifications}
-      router={router}
-      registerLink={registerLink}
-      targetPage={targetPage}
-    />
+  <div class="p-8 rounded-2xl shadow-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-800/50">
+    <LoginForm {xfetch} {notifications} {router} {registerLink} {targetPage} />
   </div>
 </div>

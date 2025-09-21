@@ -1,14 +1,5 @@
 import type { ComponentType } from 'svelte';
-import {
-  ChartNoAxesColumn,
-  Briefcase,
-  CheckSquare,
-  FileText,
-  Layout,
-  Play,
-  RefreshCcw,
-  Users,
-} from 'lucide-svelte';
+import { ChartNoAxesColumn, Briefcase, CheckSquare, FileText, Layout, Play, RefreshCcw, Users } from 'lucide-svelte';
 
 export type MetricItem = {
   key: string;
@@ -33,10 +24,7 @@ export const iconMap: { [key: string]: ComponentType } = {
   retro_template_count: FileText,
 };
 
-export async function fetchAndUpdateMetrics(
-  apiPrefix: string,
-  currentMetrics: MetricItem[],
-): Promise<MetricItem[]> {
+export async function fetchAndUpdateMetrics(apiPrefix: string, currentMetrics: MetricItem[]): Promise<MetricItem[]> {
   try {
     const response = await fetch(`${apiPrefix}/metrics`);
     if (!response.ok) {

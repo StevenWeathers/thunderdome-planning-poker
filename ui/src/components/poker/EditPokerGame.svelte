@@ -45,13 +45,12 @@
     hideVoterIdentity = $bindable(false),
     teamId = $bindable(''),
     notifications,
-    xfetch
+    xfetch,
   }: Props = $props();
 
   let checkedPointColor =
     'border-green-500 bg-green-100 text-green-600 dark:bg-gray-900 dark:text-lime-500 dark:border-lime-500';
-  let uncheckedPointColor =
-    'border-gray-300 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300';
+  let uncheckedPointColor = 'border-gray-300 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300';
 
   let teams = $state([]);
 
@@ -94,23 +93,16 @@
   });
 </script>
 
-<Modal
-  closeModal={toggleEditBattle}
-  widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
-  ariaLabel={$LL.modalEditPokerGame()}
->
+<Modal closeModal={toggleEditBattle} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabel={$LL.modalEditPokerGame()}>
   <form onsubmit={saveBattle} name="createBattle">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="battleName"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="battleName">
         {$LL.battleName()}
       </label>
       <div class="control">
         <TextInput
           name="battleName"
-          bind:value="{battleName}"
+          bind:value={battleName}
           bind:this={focusInput}
           placeholder={$LL.battleNamePlaceholder()}
           id="battleName"
@@ -132,21 +124,13 @@
         {#each allowedPointValues as point}
           <label
             class="
-                        {points.includes(point)
-              ? checkedPointColor
-              : uncheckedPointColor}
+                        {points.includes(point) ? checkedPointColor : uncheckedPointColor}
                         cursor-pointer font-bold border p-2 me-2 xl:me-1 mb-2
                         xl:mb-0 rounded inline-block {!votingLocked
               ? 'opacity-25 cursor-not-allowed'
               : 'cursor-pointer'}"
           >
-            <input
-              type="checkbox"
-              bind:group="{points}"
-              value="{point}"
-              class="hidden"
-              disabled="{!votingLocked}"
-            />
+            <input type="checkbox" bind:group={points} value={point} class="hidden" disabled={!votingLocked} />
             {point}
           </label>
         {/each}
@@ -154,20 +138,13 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="averageRounding"
-      >
+      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="averageRounding">
         {$LL.pointAverageRounding()}
       </label>
       <div class="relative">
-        <SelectInput
-          bind:value="{pointAverageRounding}"
-          id="averageRounding"
-          name="averageRounding"
-        >
+        <SelectInput bind:value={pointAverageRounding} id="averageRounding" name="averageRounding">
           {#each allowedPointAverages as item}
-            <option value="{item}">
+            <option value={item}>
               {$LL.averageRoundingOptions[item]()}
             </option>
           {/each}
@@ -183,7 +160,7 @@
 
     <div class="mb-4">
       <Checkbox
-        bind:checked="{autoFinishVoting}"
+        bind:checked={autoFinishVoting}
         id="autoFinishVoting"
         name="autoFinishVoting"
         disabled={!votingLocked}
@@ -193,7 +170,7 @@
 
     <div class="mb-4">
       <Checkbox
-        bind:checked="{hideVoterIdentity}"
+        bind:checked={hideVoterIdentity}
         id="hideVoterIdentity"
         name="hideVoterIdentity"
         label={$LL.hideVoterIdentity()}
@@ -201,16 +178,13 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="joinCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">
         {$LL.passCode()}
       </label>
       <div class="control">
         <TextInput
           name="joinCode"
-          bind:value="{joinCode}"
+          bind:value={joinCode}
           placeholder={$LL.optionalPasscodePlaceholder()}
           id="joinCode"
           icon={Lock}
@@ -219,16 +193,13 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="leaderCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="leaderCode">
         {$LL.facilitatorCodeOptional()}
       </label>
       <div class="control">
         <TextInput
           name="leaderCode"
-          bind:value="{leaderCode}"
+          bind:value={leaderCode}
           placeholder={$LL.facilitatorCodePlaceholder()}
           id="leaderCode"
           icon={Crown}
@@ -237,17 +208,14 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-        for="selectedTeam"
-      >
+      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2" for="selectedTeam">
         {$LL.associateTeam()}
         {#if !AppConfig.RequireTeams}{$LL.optional()}{/if}
       </label>
-      <SelectInput bind:value="{teamId}" id="selectedTeam" name="selectedTeam">
+      <SelectInput bind:value={teamId} id="selectedTeam" name="selectedTeam">
         <option value="" disabled>{$LL.selectTeam()}</option>
         {#each teams as team}
-          <option value="{team.id}">
+          <option value={team.id}>
             {team.name}
           </option>
         {/each}

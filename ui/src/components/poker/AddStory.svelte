@@ -1,13 +1,7 @@
 <script lang="ts">
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
-  import {
-    Ban,
-    ChevronDown,
-    ChevronsDown,
-    ChevronsUp,
-    ChevronUp,
-  } from 'lucide-svelte';
+  import { Ban, ChevronDown, ChevronsDown, ChevronsUp, ChevronUp } from 'lucide-svelte';
   import Bars2 from '../icons/Bars2.svelte';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
@@ -72,7 +66,7 @@
     planLink = $bindable(''),
     description = $bindable(''),
     acceptanceCriteria = $bindable(''),
-    priority = $bindable(99)
+    priority = $bindable(99),
   }: Props = $props();
 
   /** @type {TextInput} */
@@ -125,17 +119,12 @@
       <label class="block font-bold mb-2 dark:text-gray-400" for="planType">
         {$LL.planType()}
       </label>
-      <SelectInput
-        name="planType"
-        id="planType"
-        bind:value="{planType}"
-        required
-      >
+      <SelectInput name="planType" id="planType" bind:value={planType} required>
         <option value="" disabled>
           {$LL.planTypePlaceholder()}
         </option>
         {#each planTypes as pType}
-          <option value="{pType}">{pType}</option>
+          <option value={pType}>{pType}</option>
         {/each}
       </SelectInput>
     </div>
@@ -146,8 +135,8 @@
       <TextInput
         id="planName"
         name="planName"
-        bind:this="{planNameTextInput}"
-        bind:value="{planName}"
+        bind:this={planNameTextInput}
+        bind:value={planName}
         placeholder={$LL.planNamePlaceholder()}
       />
     </div>
@@ -158,7 +147,7 @@
       <TextInput
         id="referenceId"
         name="referenceId"
-        bind:value="{referenceId}"
+        bind:value={referenceId}
         placeholder={$LL.planReferenceIdPlaceholder()}
       />
     </div>
@@ -166,27 +155,18 @@
       <label class="block font-bold mb-2 dark:text-gray-400" for="planLink">
         {$LL.planLink()}
       </label>
-      <TextInput
-        id="planLink"
-        name="planLink"
-        bind:value="{planLink}"
-        placeholder={$LL.planLinkPlaceholder()}
-      />
+      <TextInput id="planLink" name="planLink" bind:value={planLink} placeholder={$LL.planLinkPlaceholder()} />
     </div>
     <div class="mb-4">
       <label class="block font-bold mb-2 dark:text-gray-400" for="priority">
         {$LL.planPriority()}
       </label>
-      <SelectInput name="priority" id="priority" bind:value="{priority}">
-        <option value="{99}" disabled>
+      <SelectInput name="priority" id="priority" bind:value={priority}>
+        <option value={99} disabled>
           {$LL.planPriorityPlaceholder()}
         </option>
         {#each priorities as p}
-          <option value="{p.value}">
-            <p.icon
-              class="inline-block w-6 h-6"
-            />{p.name}</option
-          >
+          <option value={p.value}> <p.icon class="inline-block w-6 h-6" />{p.name}</option>
         {/each}
       </SelectInput>
     </div>

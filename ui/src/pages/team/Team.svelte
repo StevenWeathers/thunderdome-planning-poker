@@ -46,14 +46,7 @@
     teamId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId,
-    departmentId,
-    teamId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId, departmentId, teamId }: Props = $props();
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -109,20 +102,22 @@
   let isTeamMember = $state(false);
 
   const apiPrefix = '/api';
-  let orgPrefix = $derived(departmentId
-    ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
-    : `${apiPrefix}/organizations/${organizationId}`);
-  let teamPrefix = $derived(organizationId
-    ? `${orgPrefix}/teams/${teamId}`
-    : `${apiPrefix}/teams/${teamId}`);
+  let orgPrefix = $derived(
+    departmentId
+      ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
+      : `${apiPrefix}/organizations/${organizationId}`,
+  );
+  let teamPrefix = $derived(organizationId ? `${orgPrefix}/teams/${teamId}` : `${apiPrefix}/teams/${teamId}`);
 
   const teamOnlyPrefix = `${apiPrefix}/teams/${teamId}`;
 
-  let currentPageUrl = $derived(teamPrefix
-    .replace('/api', '')
-    .replace('organizations', 'organization')
-    .replace('departments', 'department')
-    .replace('teams', 'team'));
+  let currentPageUrl = $derived(
+    teamPrefix
+      .replace('/api', '')
+      .replace('organizations', 'organization')
+      .replace('departments', 'department')
+      .replace('teams', 'team'),
+  );
 
   function toggleCreateBattle() {
     showCreateBattle = !showCreateBattle;
@@ -169,12 +164,9 @@
     if (
       FeaturePoker &&
       (!AppConfig.SubscriptionsEnabled ||
-        (AppConfig.SubscriptionsEnabled &&
-          (team.subscribed || organization.subscribed)))
+        (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed)))
     ) {
-      xfetch(
-        `${teamPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`,
-      )
+      xfetch(`${teamPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`)
         .then(res => res.json())
         .then(function (result) {
           estimationScales = result.data;
@@ -201,12 +193,9 @@
     if (
       AppConfig.FeatureRetro &&
       (!AppConfig.SubscriptionsEnabled ||
-        (AppConfig.SubscriptionsEnabled &&
-          (team.subscribed || organization.subscribed)))
+        (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed)))
     ) {
-      xfetch(
-        `${teamPrefix}/retro-templates?limit=${retroTemplatePageLimit}&offset=${offset}`,
-      )
+      xfetch(`${teamPrefix}/retro-templates?limit=${retroTemplatePageLimit}&offset=${offset}`)
         .then(res => res.json())
         .then(function (result) {
           retroTemplates = result.data;
@@ -240,14 +229,8 @@
           organizationRole = result.data.organizationRole;
         }
 
-        isAdmin =
-          organizationRole === 'ADMIN' ||
-          departmentRole === 'ADMIN' ||
-          teamRole === 'ADMIN';
-        isTeamMember =
-          organizationRole === 'ADMIN' ||
-          departmentRole === 'ADMIN' ||
-          teamRole !== '';
+        isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole === 'ADMIN';
+        isTeamMember = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole !== '';
 
         getBattles();
         getRetros();
@@ -277,9 +260,7 @@
   function getBattles() {
     if (FeaturePoker) {
       const battlesOffset = (battlesPage - 1) * battlesPageLimit;
-      xfetch(
-        `${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
-      )
+      xfetch(`${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`)
         .then(res => res.json())
         .then(function (result) {
           battles = result.data;
@@ -293,9 +274,7 @@
   function getRetros() {
     if (FeatureRetro) {
       const retrosOffset = (retrosPage - 1) * retrosPageLimit;
-      xfetch(
-        `${teamPrefix}/retros?limit=${retrosPageLimit}&offset=${retrosOffset}`,
-      )
+      xfetch(`${teamPrefix}/retros?limit=${retrosPageLimit}&offset=${retrosOffset}`)
         .then(res => res.json())
         .then(function (result) {
           retros = result.data;
@@ -316,10 +295,7 @@
         .then(function (result) {
           retroActions = result.data;
           totalRetroActions = result.meta.count;
-          selectedAction =
-            selectedAction !== null
-              ? retroActions.find(r => r.id === selectedAction.id)
-              : null;
+          selectedAction = selectedAction !== null ? retroActions.find(r => r.id === selectedAction.id) : null;
         })
         .catch(function () {
           notifications.danger($LL.teamGetRetroActionsError());
@@ -330,9 +306,7 @@
   function getStoryboards() {
     if (FeatureStoryboard) {
       const storyboardsOffset = (storyboardsPage - 1) * storyboardsPageLimit;
-      xfetch(
-        `${teamPrefix}/storyboards?limit=${storyboardsPageLimit}&offset=${storyboardsOffset}`,
-      )
+      xfetch(`${teamPrefix}/storyboards?limit=${storyboardsPageLimit}&offset=${storyboardsOffset}`)
         .then(res => res.json())
         .then(function (result) {
           storyboards = result.data;
@@ -409,8 +383,7 @@
   let selectedAction = $state(null);
   const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
-    selectedAction =
-      retroId !== null ? retroActions.find(r => r.id === id) : null;
+    selectedAction = retroId !== null ? retroActions.find(r => r.id === id) : null;
   };
 
   function handleRetroActionEdit(action) {
@@ -520,9 +493,7 @@
       {/if}
     </div>
     <div class="flex-1 text-right">
-      <SolidButton
-        additionalClasses="font-rajdhani uppercase text-2xl"
-        href={`${currentPageUrl}/checkin`}
+      <SolidButton additionalClasses="font-rajdhani uppercase text-2xl" href={`${currentPageUrl}/checkin`}
         >{$LL.checkins()}
       </SolidButton>
     </div>
@@ -532,17 +503,13 @@
     <div class="w-full mb-6 lg:mb-8">
       <div class="flex w-full">
         <div class="flex-1">
-          <h2
-            class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-          >
+          <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
             {$LL.battles()}
           </h2>
         </div>
         <div class="flex-1 text-right">
           {#if isTeamMember}
-            <SolidButton onClick={toggleCreateBattle}
-              >{$LL.battleCreate()}
-            </SolidButton>
+            <SolidButton onClick={toggleCreateBattle}>{$LL.battleCreate()}</SolidButton>
           {/if}
         </div>
       </div>
@@ -553,7 +520,7 @@
           itemType="battle"
           pageRoute={appRoutes.game}
           joinBtnText={$LL.battleJoin()}
-          isAdmin={isAdmin}
+          {isAdmin}
           toggleRemove={toggleRemoveBattle}
         />
       </div>
@@ -561,12 +528,7 @@
 
     {#if showCreateBattle}
       <Modal closeModal={toggleCreateBattle}>
-        <CreateBattle
-          apiPrefix={teamPrefix}
-          notifications={notifications}
-          router={router}
-          xfetch={xfetch}
-        />
+        <CreateBattle apiPrefix={teamPrefix} {notifications} {router} {xfetch} />
       </Modal>
     {/if}
   {/if}
@@ -575,17 +537,13 @@
     <div class="w-full mb-6 lg:mb-8">
       <div class="flex w-full">
         <div class="flex-1">
-          <h2
-            class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-          >
+          <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
             {$LL.retros()}
           </h2>
         </div>
         <div class="flex-1 text-right">
           {#if isTeamMember}
-            <SolidButton onClick={toggleCreateRetro}
-              >{$LL.createRetro()}</SolidButton
-            >
+            <SolidButton onClick={toggleCreateRetro}>{$LL.createRetro()}</SolidButton>
           {/if}
         </div>
       </div>
@@ -596,7 +554,7 @@
           itemType="retro"
           pageRoute={appRoutes.retro}
           joinBtnText={$LL.joinRetro()}
-          isAdmin={isAdmin}
+          {isAdmin}
           toggleRemove={toggleRemoveRetro}
           showOwner={false}
         />
@@ -605,10 +563,7 @@
       {#if retros.length}
         <div class="w-full pt-4 px-4">
           <TableContainer>
-            <TableNav
-              title={$LL.retroActionItems()}
-              createBtnEnabled={false}
-            >
+            <TableNav title={$LL.retroActionItems()} createBtnEnabled={false}>
               <Toggle
                 name="completedActionItems"
                 id="completedActionItems"
@@ -619,15 +574,15 @@
             </TableNav>
             <Table>
               {#snippet header()}
-                            <tr >
+                <tr>
                   <HeadCol>{$LL.actionItem()}</HeadCol>
                   <HeadCol>{$LL.completed()}</HeadCol>
                   <HeadCol>{$LL.comments()}</HeadCol>
                   <HeadCol />
                 </tr>
-                          {/snippet}
+              {/snippet}
               {#snippet body()}
-                            <tbody >
+                <tbody>
                   {#each retroActions as item, i}
                     <TableRow itemIndex={i}>
                       <RowCol>
@@ -648,11 +603,7 @@
                         <BooleanDisplay boolValue={item.completed} />
                       </RowCol>
                       <RowCol>
-                        <MessageSquareMore
-                          width="22"
-                          height="22"
-                          class="inline-block"
-                        />
+                        <MessageSquareMore width="22" height="22" class="inline-block" />
                         <button
                           class="text-lg text-blue-400 dark:text-sky-400"
                           onclick={toggleRetroActionComments(item.id)}
@@ -662,17 +613,14 @@
                       </RowCol>
                       <RowCol type="action">
                         <CrudActions
-                          editBtnClickHandler={toggleRetroActionEdit(
-                            item.retroId,
-                            item.id,
-                          )}
+                          editBtnClickHandler={toggleRetroActionEdit(item.retroId, item.id)}
                           deleteBtnEnabled={false}
                         />
                       </RowCol>
                     </TableRow>
                   {/each}
                 </tbody>
-                          {/snippet}
+              {/snippet}
             </Table>
             <TableFooter
               bind:current={retroActionsPage}
@@ -687,12 +635,7 @@
 
     {#if showCreateRetro}
       <Modal closeModal={toggleCreateRetro}>
-        <CreateRetro
-          apiPrefix={teamPrefix}
-          notifications={notifications}
-          router={router}
-          xfetch={xfetch}
-        />
+        <CreateRetro apiPrefix={teamPrefix} {notifications} {router} {xfetch} />
       </Modal>
     {/if}
   {/if}
@@ -701,17 +644,13 @@
     <div class="w-full mb-6 lg:mb-8">
       <div class="flex w-full">
         <div class="flex-1">
-          <h2
-            class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-          >
+          <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
             {$LL.storyboards()}
           </h2>
         </div>
         <div class="flex-1 text-right">
           {#if isTeamMember}
-            <SolidButton onClick={toggleCreateStoryboard}
-              >{$LL.createStoryboard()}
-            </SolidButton>
+            <SolidButton onClick={toggleCreateStoryboard}>{$LL.createStoryboard()}</SolidButton>
           {/if}
         </div>
       </div>
@@ -722,7 +661,7 @@
           itemType="storyboard"
           pageRoute={appRoutes.storyboard}
           joinBtnText={$LL.joinStoryboard()}
-          isAdmin={isAdmin}
+          {isAdmin}
           toggleRemove={toggleRemoveStoryboard}
           showOwner={false}
         />
@@ -731,12 +670,7 @@
 
     {#if showCreateStoryboard}
       <Modal closeModal={toggleCreateStoryboard}>
-        <CreateStoryboard
-          apiPrefix={teamPrefix}
-          notifications={notifications}
-          router={router}
-          xfetch={xfetch}
-        />
+        <CreateStoryboard apiPrefix={teamPrefix} {notifications} {router} {xfetch} />
       </Modal>
     {/if}
   {/if}
@@ -745,13 +679,13 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <PokerSettings
-          xfetch={xfetch}
-          notifications={notifications}
+          {xfetch}
+          {notifications}
           isEntityAdmin={isAdmin}
           apiPrefix={teamOnlyPrefix}
-          organizationId={organizationId}
-          departmentId={departmentId}
-          teamId={teamId}
+          {organizationId}
+          {departmentId}
+          {teamId}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -763,24 +697,22 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <EstimationScalesList
-          xfetch={xfetch}
-          notifications={notifications}
+          {xfetch}
+          {notifications}
           isEntityAdmin={isAdmin}
           apiPrefix={teamPrefix}
-          organizationId={organizationId}
-          departmentId={departmentId}
-          teamId={teamId}
+          {organizationId}
+          {departmentId}
+          {teamId}
           scales={estimationScales}
           getScales={getEstimationScales}
-          scaleCount={scaleCount}
-          scalesPage={scalesPage}
-          scalesPageLimit={scalesPageLimit}
+          {scaleCount}
+          {scalesPage}
+          {scalesPageLimit}
           changePage={changeScalesPage}
         />
       {:else}
-        <FeatureSubscribeBanner
-          salesPitch="Create custom poker point scales to match your team's estimation style."
-        />
+        <FeatureSubscribeBanner salesPitch="Create custom poker point scales to match your team's estimation style." />
       {/if}
     </div>
   {/if}
@@ -789,13 +721,13 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <RetroSettings
-          xfetch={xfetch}
-          notifications={notifications}
+          {xfetch}
+          {notifications}
           isEntityAdmin={isAdmin}
           apiPrefix={teamOnlyPrefix}
-          organizationId={organizationId}
-          departmentId={departmentId}
-          teamId={teamId}
+          {organizationId}
+          {departmentId}
+          {teamId}
         />
       {:else}
         <FeatureSubscribeBanner
@@ -807,13 +739,13 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
         <RetroTemplatesList
-          xfetch={xfetch}
-          notifications={notifications}
+          {xfetch}
+          {notifications}
           isEntityAdmin={isAdmin}
           apiPrefix={teamPrefix}
-          organizationId={organizationId}
-          departmentId={departmentId}
-          teamId={teamId}
+          {organizationId}
+          {departmentId}
+          {teamId}
           templates={retroTemplates}
           getTemplates={getRetroTemplates}
           templateCount={retroTemplateCount}
@@ -828,7 +760,6 @@
       {/if}
     </div>
   {/if}
-
 
   {#if isAdmin && !organizationId && !departmentId}
     <div class="w-full text-center mt-8">
@@ -893,12 +824,12 @@
     <ActionComments
       toggleComments={toggleRetroActionComments(null)}
       actions={retroActions}
-      users={users}
+      {users}
       selectedActionId={selectedRetroAction}
-      getRetrosActions={getRetrosActions}
-      xfetch={xfetch}
-      notifications={notifications}
-      isAdmin={isAdmin}
+      {getRetrosActions}
+      {xfetch}
+      {notifications}
+      {isAdmin}
     />
   {/if}
 </TeamPageLayout>

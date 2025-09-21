@@ -1,16 +1,8 @@
 <script lang="ts">
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import {
-    Ban,
-    ChevronDown,
-    ChevronsDown,
-    ChevronsUp,
-    ChevronUp,
-    ExternalLink,
-  } from 'lucide-svelte';
+  import { Ban, ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, ExternalLink } from 'lucide-svelte';
   import Bars2 from '../icons/Bars2.svelte';
-
 
   interface Props {
     togglePlanView?: any;
@@ -31,7 +23,7 @@
     planLink = '',
     description = '',
     acceptanceCriteria = '',
-    priority = 99
+    priority = 99,
   }: Props = $props();
 
   const priorities = {
@@ -89,7 +81,7 @@
     <div class="font-bold mb-2 dark:text-gray-400">{$LL.planLink()}</div>
     {#if planLink !== ''}
       <a
-        href="{planLink}"
+        href={planLink}
         target="_blank"
         class="text-blue-800 hover:text-blue-600 dark:text-sky-400 dark:hover:text-sky-600"
       >
@@ -103,9 +95,7 @@
     <div class="font-bold mb-2 dark:text-gray-400">
       {$LL.planPriority()}
     </div>
-    <SvelteComponent
-      class="inline-block w-6 h-6"
-    />{priorities[priority].name}
+    <SvelteComponent class="inline-block w-6 h-6" />{priorities[priority].name}
   </div>
   <div class="mb-4">
     <div class="font-bold mb-2 dark:text-gray-400">

@@ -3,7 +3,7 @@
   import SubMenuItem from './SubMenuItem.svelte';
   import { locales } from '../../config';
   import { Globe } from 'lucide-svelte';
-   import type { Locales } from '../../i18n/i18n-types';
+  import type { Locales } from '../../i18n/i18n-types';
 
   interface Props {
     selectedLocale: Locales;
@@ -15,7 +15,7 @@
     value: Locales;
   }
 
-  let { update, selectedLocale = 'en'}: Props = $props();
+  let { update, selectedLocale = 'en' }: Props = $props();
 
   const supportedLocales: Array<Locale> = [];
   for (const [key, value] of Object.entries(locales)) {
@@ -37,7 +37,7 @@
       class="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
       aria-label="Locale"
       type="button"
-      onclick="{toggleSubmenu}"
+      onclick={toggleSubmenu}
     >
       <span class="sr-only">Locale</span><Globe />
     </button>

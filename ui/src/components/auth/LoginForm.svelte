@@ -20,7 +20,7 @@
     targetPage = appRoutes.landing,
     router,
     xfetch = async (url, ...options) => {},
-    notifications = () => {}
+    notifications = () => {},
   }: Props = $props();
 
   declare global {
@@ -29,13 +29,7 @@
     }
   }
 
-  const {
-    LdapEnabled,
-    GoogleAuthEnabled,
-    HeaderAuthEnabled,
-    OIDCAuthEnabled,
-    OIDCProviderName,
-  } = AppConfig;
+  const { LdapEnabled, GoogleAuthEnabled, HeaderAuthEnabled, OIDCAuthEnabled, OIDCProviderName } = AppConfig;
   const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth';
 
   let email = $state('');
@@ -148,34 +142,26 @@
     class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
   >
     <span class="flex items-center pe-3">
-      <Lock
-        class="h-5 w-5 text-purple-300 group-hover:text-purple-200"
-        aria-hidden="true"
-      />
+      <Lock class="h-5 w-5 text-purple-300 group-hover:text-purple-200" aria-hidden="true" />
     </span>
     {$LL.loginWithSSO({ provider: OIDCProviderName })}
   </button>
 {/if}
 
 {#if !OIDCAuthEnabled && !forgotPassword && !mfaRequired}
-  <form
-    onsubmit={handleLoginSubmit}
-    class="space-y-6"
-    name="login"
-    id="login"
-  >
+  <form onsubmit={handleLoginSubmit} class="space-y-6" name="login" id="login">
     <TextInput
       id="email"
       data-testid="username"
       placeholder={$LL.enterYourEmail()}
       required
-      bind:value="{email}"
+      bind:value={email}
       icon={Mail}
       autocomplete="email"
     />
 
     <PasswordInput
-      bind:value="{password}"
+      bind:value={password}
       placeholder={$LL.yourPasswordPlaceholder()}
       id="password"
       name="password"
@@ -198,7 +184,7 @@
       {#if !LdapEnabled}
         <a
           class="font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-all duration-300 cursor-pointer"
-          onclick={(e) => { 
+          onclick={e => {
             e.preventDefault();
             toggleForgotPassword();
           }}
@@ -215,10 +201,7 @@
       class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <span class="absolute left-0 inset-y-0 flex items-center ps-3">
-        <Lock
-          class="h-5 w-5 text-purple-300 group-hover:text-purple-200"
-          aria-hidden="true"
-        />
+        <Lock class="h-5 w-5 text-purple-300 group-hover:text-purple-200" aria-hidden="true" />
       </span>
       {$LL.login()}
     </button>
@@ -227,10 +210,7 @@
     <div class="w-full space-y-4 mt-4">
       <div class="flex items-center space-x-2">
         <div class="flex-grow h-px bg-gray-300"></div>
-        <span
-          class="uppercase text-sm text-gray-500 dark:text-gray-400 font-medium"
-          >Or continue with</span
-        >
+        <span class="uppercase text-sm text-gray-500 dark:text-gray-400 font-medium">Or continue with</span>
         <div class="flex-grow h-px bg-gray-300"></div>
       </div>
       <button
@@ -264,21 +244,14 @@
     <div class="m-auto mt-6 w-fit md:mt-8">
       <span class="m-auto dark:text-gray-400"
         >{$LL.createAccountTagline()}
-        <a
-          class="font-semibold text-indigo-600 dark:text-indigo-100"
-          href={registerLink}>{$LL.createAccount()}</a
-        >
+        <a class="font-semibold text-indigo-600 dark:text-indigo-100" href={registerLink}>{$LL.createAccount()}</a>
       </span>
     </div>
   {/if}
 {/if}
 
 {#if forgotPassword}
-  <form
-    onsubmit={sendPasswordReset}
-    class="space-y-6 max-w-md"
-    name="resetPassword"
-  >
+  <form onsubmit={sendPasswordReset} class="space-y-6 max-w-md" name="resetPassword">
     <div class="mb-4">
       <h2
         class="font-rajdhani uppercase text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 mb-2"
@@ -322,10 +295,7 @@
 {#if mfaRequired}
   <form onsubmit={authMfa} class="space-y-6" name="authMfa">
     <div class="space-y-2">
-      <label
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        for="mfaToken"
-      >
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="mfaToken">
         {$LL.mfaTokenLabel()}
       </label>
       <TextInput
@@ -347,10 +317,7 @@
         class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span class="absolute left-0 inset-y-0 flex items-center ps-3">
-          <Shield
-            class="h-5 w-5 text-purple-300 group-hover:text-purple-200"
-            aria-hidden="true"
-          />
+          <Shield class="h-5 w-5 text-purple-300 group-hover:text-purple-200" aria-hidden="true" />
         </span>
         {$LL.login()}
       </button>

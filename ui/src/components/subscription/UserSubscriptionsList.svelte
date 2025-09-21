@@ -50,17 +50,13 @@
 <div class="flex flex-col">
   <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-      <div
-        class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-      >
+      <div class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg">
         {#if $user.subscribed && userSubscriptions.length === 0}
           <p class="text-green-600 dark:text-lime-400 font-semibold">
             Active subscription(s) associated to Organization(s) or Team(s)
           </p>
         {:else}
-          <table
-            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-          >
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th
@@ -89,33 +85,27 @@
                 </th>
               </tr>
             </thead>
-            <tbody
-              class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
-            >
+            <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white">
               {#each userSubscriptions as sub, i}
                 <tr
-                  class:bg-slate-100="{i % 2 !== 0}"
-                  class:dark:bg-gray-800="{i % 2 !== 0}"
+                  class:bg-slate-100={i % 2 !== 0}
+                  class:dark:bg-gray-800={i % 2 !== 0}
                   data-testid="subscriptions"
-                  data-apikeyid="{sub.id}"
+                  data-apikeyid={sub.id}
                 >
-                  <td class="px-6 py-4 whitespace-nowrap" data-testid="sub-type"
-                    >{sub.type}</td
-                  >
+                  <td class="px-6 py-4 whitespace-nowrap" data-testid="sub-type">{sub.type}</td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     {#if sub.type === 'organization'}
                       {#if sub.organization_id === ''}
-                        <HollowButton
-                          onClick="{toggleAssociateOrganization(sub.id)}"
-                        >
+                        <HollowButton onClick={toggleAssociateOrganization(sub.id)}>
                           Associate to Organization
                         </HollowButton>
                       {:else}
                         <AssociatedOrganization
-                          userId="{$user.id}"
-                          organizationId="{sub.organization_id}"
-                          xfetch={xfetch}
-                          notifications={notifications}
+                          userId={$user.id}
+                          organizationId={sub.organization_id}
+                          {xfetch}
+                          {notifications}
                         />
                       {/if}
                     {:else}
@@ -125,16 +115,9 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     {#if sub.type === 'team'}
                       {#if sub.team_id === ''}
-                        <HollowButton onClick="{toggleAssociateTeam(sub.id)}">
-                          Associate to Team
-                        </HollowButton>
+                        <HollowButton onClick={toggleAssociateTeam(sub.id)}>Associate to Team</HollowButton>
                       {:else}
-                        <AssociatedTeam
-                          userId="{$user.id}"
-                          teamId="{sub.team_id}"
-                          xfetch={xfetch}
-                          notifications={notifications}
-                        />
+                        <AssociatedTeam userId={$user.id} teamId={sub.team_id} {xfetch} {notifications} />
                       {/if}
                     {:else}
                       <span class="text-gray-300 dark:text-gray-400">N/A</span>
@@ -156,9 +139,9 @@
     <AssociateTeamForm
       handleUpdate={handleAssociate}
       toggleClose={toggleAssociateTeam(null)}
-      subscriptionId="{selectedSubscriptionId}"
-      xfetch={xfetch}
-      notifications={notifications}
+      subscriptionId={selectedSubscriptionId}
+      {xfetch}
+      {notifications}
     />
   {/if}
 
@@ -166,9 +149,9 @@
     <AssociateOrgForm
       handleUpdate={handleAssociate}
       toggleClose={toggleAssociateOrganization(null)}
-      subscriptionId="{selectedSubscriptionId}"
-      xfetch={xfetch}
-      notifications={notifications}
+      subscriptionId={selectedSubscriptionId}
+      {xfetch}
+      {notifications}
     />
   {/if}
 </div>

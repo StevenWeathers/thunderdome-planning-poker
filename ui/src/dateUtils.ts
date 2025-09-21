@@ -9,9 +9,7 @@ export const getTimezoneName = function () {
 
 export const formatDayForInput = function (date) {
   let month, day, year;
-  ((month = '' + (date.getMonth() + 1)),
-    (day = '' + date.getDate()),
-    (year = date.getFullYear()));
+  ((month = '' + (date.getMonth() + 1)), (day = '' + date.getDate()), (year = date.getFullYear()));
 
   if (month.length < 2) month = '0' + month;
   if (day.length < 2) day = '0' + day;
@@ -48,10 +46,7 @@ export type TimeBetweenUnits = {
   days: number;
 };
 
-export const timeUnitsBetween = function (
-  startDate,
-  endDate,
-): TimeBetweenUnits {
+export const timeUnitsBetween = function (startDate, endDate): TimeBetweenUnits {
   let delta = Math.abs(endDate - startDate) / 1000;
   const unitDivisions: Array<{
     key: string;

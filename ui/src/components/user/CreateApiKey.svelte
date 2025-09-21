@@ -20,7 +20,7 @@
     handleApiKeyCreate = () => {},
     toggleCreateApiKey = () => {},
     xfetch = () => {},
-    notifications
+    notifications,
   }: Props = $props();
 
   let keyName = $state('');
@@ -101,7 +101,7 @@
         <TextInput
           id="keyName"
           name="keyName"
-          bind:value="{keyName}"
+          bind:value={keyName}
           bind:this={focusInput}
           placeholder={$LL.apiKeyNamePlaceholder()}
           required
@@ -131,7 +131,7 @@
                     rounded-e-none px-4 appearance-none text-gray-800 dark:text-gray-400 font-bold
                     focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
           type="text"
-          value="{apiKey}"
+          value={apiKey}
           id="apiKey"
           readonly
         />

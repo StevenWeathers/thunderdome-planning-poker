@@ -18,9 +18,7 @@
   }
 </script>
 
-<div
-  class="w-full h-full fixed top-0 left-0 bg-white/80 dark:bg-gray-900/80 z-50"
->
+<div class="w-full h-full fixed top-0 left-0 bg-white/80 dark:bg-gray-900/80 z-50">
   <div class="flex justify-center items-center content-center h-full">
     <div class="w-full md:w-1/2 lg:w-1/3">
       <form
@@ -29,14 +27,11 @@
         name="joinPasscodeForm"
       >
         <div class="mb-4">
-          <label
-            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-            for="passCode"
-          >
+          <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="passCode">
             {$LL.passCodeRequired()}
           </label>
           <TextInput
-            bind:value="{joinPasscode}"
+            bind:value={joinPasscode}
             placeholder={$LL.enterPasscode()}
             id="passCode"
             name="passCode"

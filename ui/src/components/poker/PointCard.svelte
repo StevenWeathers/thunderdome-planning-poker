@@ -18,20 +18,20 @@
     active = false,
     isLocked = true,
     results = {
-    count: 0,
-    voters: [],
-  },
-    hideVoterIdentity = false
+      count: 0,
+      voters: [],
+    },
+    hideVoterIdentity = false,
   }: Props = $props();
 
   let showVoters = $state(false);
 
-  let activeColor = $derived(active
-    ? 'border-green-500 bg-green-100 text-green-600 dark:border-lime-500 dark:bg-lime-100 dark:text-lime-700'
-    : 'border-gray-300 bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200');
-  let lockedClass = $derived(isLocked
-    ? 'opacity-25 cursor-not-allowed'
-    : 'cursor-pointer');
+  let activeColor = $derived(
+    active
+      ? 'border-green-500 bg-green-100 text-green-600 dark:border-lime-500 dark:bg-lime-100 dark:text-lime-700'
+      : 'border-gray-300 bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200',
+  );
+  let lockedClass = $derived(isLocked ? 'opacity-25 cursor-not-allowed' : 'cursor-pointer');
 
   function voteAction() {
     if (isLocked) {
@@ -49,9 +49,9 @@
 
 <div
   data-testid="pointCard"
-  data-active="{active}"
-  data-locked="{isLocked}"
-  data-point="{point}"
+  data-active={active}
+  data-locked={isLocked}
+  data-point={point}
   class="relative select-none"
 >
   {#if results.count}
@@ -72,7 +72,7 @@
             showVoters = false;
           }
         }}
-        title="{$LL.showVoters()}"
+        title={$LL.showVoters()}
         class="text-green-500 dark:text-lime-400 relative leading-none"
       >
         <User class="h-5 w-5 inline-block" />

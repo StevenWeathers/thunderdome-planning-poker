@@ -13,7 +13,7 @@
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import TableFooter from '../../../components/table/TableFooter.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -71,7 +71,7 @@
     <TableNav title={$LL.teams()} createBtnEnabled={false} />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -82,16 +82,15 @@
             {$LL.dateUpdated()}
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each teams as team, i}
             <TableRow itemIndex={i}>
               <RowCol>
                 <a
                   href="{appRoutes.adminTeams}/{team.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                  >{team.name}</a
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">{team.name}</a
                 >
               </RowCol>
               <RowCol>
@@ -103,13 +102,8 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
-    <TableFooter
-      bind:current={teamsPage}
-      num_items={teamCount}
-      per_page={teamsPageLimit}
-      on:navigate={changePage}
-    />
+    <TableFooter bind:current={teamsPage} num_items={teamCount} per_page={teamsPageLimit} on:navigate={changePage} />
   </TableContainer>
 </AdminPageLayout>

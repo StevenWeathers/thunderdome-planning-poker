@@ -1,12 +1,5 @@
 <script lang="ts">
-    import {
-    ChevronDown,
-    ChevronUp,
-    Pencil,
-    Plus,
-    Settings,
-    Trash,
-  } from 'lucide-svelte';
+  import { ChevronDown, ChevronUp, Pencil, Plus, Settings, Trash } from 'lucide-svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import SubMenu from '../../components/global/SubMenu.svelte';
@@ -29,9 +22,9 @@
     toggleEdit = (goalId: String) => () => {},
     handleDelete = (goalId: String) => {},
     handleColumnAdd = (goalId: String) => {},
-    goal = { id: "", columns: [] },
+    goal = { id: '', columns: [] },
     goalIndex = 0,
-    isFacilitator = false
+    isFacilitator = false,
   }: Props = $props();
 
   let collapsed = $state(false);
@@ -61,35 +54,34 @@
 </script>
 
 <div data-goalid={goal.id} data-testid="storyboard-goal">
-  <div class="flex flex-wrap gap-y-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex > 0 ? 'border-t-2' : ''}">
+  <div
+    class="flex flex-wrap gap-y-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex >
+    0
+      ? 'border-t-2'
+      : ''}"
+  >
     <div class="grow">
       <div class="font-bold dark:text-gray-200 text-xl">
         <h2 class="inline-block align-middle pt-1">
-          <button
-            onclick={toggleCollapse}
-            data-testid="goal-expand"
-            data-collapsed={collapsed}
-          >
+          <button onclick={toggleCollapse} data-testid="goal-expand" data-collapsed={collapsed}>
             {#if collapsed}
               <ChevronDown class="me-1 inline-block" />
             {:else}
               <ChevronUp class="me-1 inline-block" />
             {/if}
-            <span class="text-2xl text-gray-700 dark:text-gray-400">Goal</span> {goal.name} <GoalEstimate columns={goal.columns} />
+            <span class="text-2xl text-gray-700 dark:text-gray-400">Goal</span>
+            {goal.name}
+            <GoalEstimate columns={goal.columns} />
           </button>
         </h2>
       </div>
     </div>
     <div class="flex justify-end space-x-2">
       {#if isFacilitator}
-        <SolidButton
-          color="green"
-          onClick={handleColAdd}
-          testid="column-add"
-        >
+        <SolidButton color="green" onClick={handleColAdd} testid="column-add">
           <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddColumn()}
         </SolidButton>
-        
+
         <SubMenu label="Goal Settings" icon={Settings} testId="goal-settings">
           {#snippet children({ toggleSubmenu })}
             <SubMenuItem
@@ -117,10 +109,10 @@
 
   {#if showDeleteConfirmation}
     <DeleteConfirmation
-        toggleDelete={toggleDeleteConfirmation()}
-        handleDelete={handleDeletion}
-        confirmText={"Are you sure you want to delete this goal?"}
-        confirmBtnText={"Delete Goal"}
-        />
-    {/if}
+      toggleDelete={toggleDeleteConfirmation()}
+      handleDelete={handleDeletion}
+      confirmText={'Are you sure you want to delete this goal?'}
+      confirmBtnText={'Delete Goal'}
+    />
+  {/if}
 </div>

@@ -12,45 +12,41 @@
     ariaDescribedby?: string;
   }
 
-  let { 
-    closeModal = () => {}, 
-    widthClasses = '', 
+  let {
+    closeModal = () => {},
+    widthClasses = '',
     children,
     ariaLabel,
     ariaLabelledby,
-    ariaDescribedby
+    ariaDescribedby,
   }: Props = $props();
 
-  const handle_keydown = (e) => {
+  const handle_keydown = e => {
     if (e.key === 'Escape') return closeModal();
   };
 
   let modalElement: any;
   let focusTrap: any;
-  
+
   onMount(() => {
     focusTrap = createFocusTrap(modalElement, {
       escapeDeactivates: false, // Handle escape separately
-      returnFocusOnDeactivate: true
+      returnFocusOnDeactivate: true,
     });
     focusTrap.activate();
-    
+
     return () => focusTrap.deactivate();
   });
 </script>
 
 <svelte:window on:keydown|once={handle_keydown} />
 
-<div
-  class="fixed z-50 inset-0 flex items-center z-40 max-h-screen overflow-y-scroll"
->
+<div class="fixed z-50 inset-0 flex items-center z-40 max-h-screen overflow-y-scroll">
   <!-- Background overlay -->
   <div class="fixed inset-0 bg-gray-900 opacity-75" aria-hidden="true"></div>
 
   <div
-    class="relative z-[100] mx-4 md:mx-auto w-full {widthClasses != ''
-      ? widthClasses
-      : 'md:w-2/3 lg:w-3/5 xl:w-1/3'}
+    class="relative z-[100] mx-4 md:mx-auto w-full {widthClasses != '' ? widthClasses : 'md:w-2/3 lg:w-3/5 xl:w-1/3'}
         max-h-full"
   >
     <div class="py-8">

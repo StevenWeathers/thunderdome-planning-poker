@@ -13,8 +13,7 @@ const es: Translation = {
   actionItem: 'Item de Acción',
   actionItemPlaceholder: 'Item de acción...',
   actionItems: 'Items de Acción',
-  actionPhaseDescription:
-    'Añadir elementos de acción, ya no se pueden agrupar ni votar comentarios',
+  actionPhaseDescription: 'Añadir elementos de acción, ya no se pueden agrupar ni votar comentarios',
   actions: 'Acciones',
   activate: 'Activar',
   active: 'Activo',
@@ -26,8 +25,7 @@ const es: Translation = {
   addPersona: 'Añadir Persona',
   admin: 'Admin',
   adminCleanOldRetros: 'Limpiar Retros anteriores a {daysOld} días',
-  adminCleanOldStoryboards:
-    'Limpiar Storyboards con más de {daysOld} días de antigüedad',
+  adminCleanOldStoryboards: 'Limpiar Storyboards con más de {daysOld} días de antigüedad',
   adminPageAdmin: 'Admin',
   adminPageAlerts: 'Alertas',
   adminPageApi: 'Claves API',
@@ -35,8 +33,7 @@ const es: Translation = {
   adminPageTeams: 'Equipos',
   adminPageUsers: 'Usuários',
   adminPageSubscriptions: 'Suscripciones',
-  deleteSubscriptionConfirmation:
-    '¿Está seguro de que desea eliminar esta suscripción?',
+  deleteSubscriptionConfirmation: '¿Está seguro de que desea eliminar esta suscripción?',
   deleteSubscription: 'Eliminar suscripción',
   alertAllowDismiss: 'Permitir Descartar',
   alertContent: 'Contenido de Alerta',
@@ -68,8 +65,7 @@ const es: Translation = {
   battleCreate: 'Crear Juego',
   battleDelete: 'Eliminar Juego',
   battleEdit: 'Editar Juego',
-  battleEditPointsDisabled:
-    'La votación está activa, no puede modificar los puntos permitidos.',
+  battleEditPointsDisabled: 'La votación está activa, no puede modificar los puntos permitidos.',
   battleJoin: 'Unirse al juego',
   battleName: 'Nombre del juego',
   battleRemoveError: 'Error al intentar eliminar el juego.',
@@ -85,8 +81,7 @@ const es: Translation = {
   blockersPlaceholder: 'Estoy bloqueado por...',
   brainstorm: 'Lluvia de ideas',
   brainstormPhaseDescription: 'Añada sus comentarios',
-  brainstormPhaseFeedbackVisibility:
-    'Fase de lluvia de ideas Feedback Visibilidad',
+  brainstormPhaseFeedbackVisibility: 'Fase de lluvia de ideas Feedback Visibilidad',
   brainstormVisibilityLabelConcealed: 'Feedback Escondido',
   brainstormVisibilityLabelHidden: 'Feedback Oculto',
   brainstormVisibilityLabelVisible: 'Feedback Visible',
@@ -129,11 +124,9 @@ const es: Translation = {
   deleteBattleError: 'error al eliminar el juego',
   deleteCheckinError: 'Error al eliminar el registro',
   deleteDepartment: 'Eliminar Departamento',
-  deleteDepartmentConfirmText:
-    '¿Seguro que quieres eliminar este departamento?',
+  deleteDepartmentConfirmText: '¿Seguro que quieres eliminar este departamento?',
   deleteOrganization: 'Eliminar organización',
-  deleteOrganizationConfirmText:
-    '¿Está seguro de que desea eliminar esta organización?',
+  deleteOrganizationConfirmText: '¿Está seguro de que desea eliminar esta organización?',
   deleteRetro: 'Eliminar Retro',
   deleteRetroErrorMessage: 'error al eliminar retro',
   deleteStoryboard: 'Eliminar Storyboard',
@@ -159,8 +152,7 @@ const es: Translation = {
   discussPlaceholder: 'Me gustaría discutir...',
   done: 'Hecho',
   duplicateRetroSession: 'Existe una sesión retro duplicada para su ID',
-  duplicateStoryboardSession:
-    'Existe una sesión de storyboard duplicada para su ID',
+  duplicateStoryboardSession: 'Existe una sesión de storyboard duplicada para su ID',
   edit: 'Editar',
   editColorLegend: 'Editar leyenda',
   editRetro: 'Editar Retro',
@@ -176,8 +168,7 @@ const es: Translation = {
   facilitatorCodePlaceholder: 'Introduzca un código de facilitador opcional',
   finalPoints: 'Puntos finales',
   flag: 'Bandera',
-  footerAuthoredBy:
-    'Creado con ❤️ por {authorOpen}Steven Weathers{authorClose}',
+  footerAuthoredBy: 'Creado con ❤️ por {authorOpen}Steven Weathers{authorClose}',
   forgotPassword: '¿Ha olvidado su contraseña?',
   forgotPasswordSubtext: `No se preocupe. Solo tienes que introducir tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.`,
   returnToLogin: 'Volver al inicio de sesión',
@@ -198,8 +189,7 @@ const es: Translation = {
   group: 'Grupo',
   groupName: 'Nombre del grupo',
   groupPhaseDescription: 'Arrastre y suelte los comentarios para agruparlos',
-  hostedDesc:
-    '{linkOpen}Thunderdome.dev{linkClose} es un servicio alojado gratuito (SaaS) sin anuncios.',
+  hostedDesc: '{linkOpen}Thunderdome.dev{linkClose} es un servicio alojado gratuito (SaaS) sin anuncios.',
   hostedOrSelfHosted: 'Servicio alojado o autoalojado',
   importCsv: 'Importar historias desde un archivo CSV',
   importCsvFileBadFileTypeError: 'Error tipo de archivo incorrecto',
@@ -208,8 +198,7 @@ const es: Translation = {
   importJiraXMLBadFileTypeError: 'Error tipo de archivo incorrecto',
   importJiraXMLReadFileError: 'Error al leer el archivo',
   incorrectPassCode: 'Código de acceso incorrecto',
-  inviteLinkCopyFailure:
-    'No se ha podido copiar el enlace de invitación al portapapeles',
+  inviteLinkCopyFailure: 'No se ha podido copiar el enlace de invitación al portapapeles',
   inviteLinkCopySuccess: 'Enlace de invitación copiado en el portapapeles',
   jiraXmlImport: 'Importación XML de Jira',
   joinCodeCopyFailure: 'No se puede copiar el código de acceso al portapapeles',
@@ -218,16 +207,14 @@ const es: Translation = {
   joinCodePlaceholder: 'Introduzca un código de acceso',
   joinRetro: 'Únete a Retro',
   joinStoryboard: 'Únete al Storyboard',
-  joinStoryboardError:
-    'Error al unirse al storyboard, actualice e inténtelo de nuevo.',
+  joinStoryboardError: 'Error al unirse al storyboard, actualice e inténtelo de nuevo.',
   landingCountries: 'Usuarios en más de {count} países',
   landingFeatureOpenSourceText:
     'Echa un vistazo al {repoOpen}Repositorio Github{repoClose} para solicitar o aportar mejoras, traducciones a otros idiomas y correcciones de errores o para {donateOpen}Donar{donateClose}.',
   landingFeatureOpenSourceTitle: 'Código abierto',
   landingSalesPitch:
     'Colaboración remota en equipo con puntuación de historias agiles, print restrospectiva, mapeo de historias y registro asíncrono de equipos.',
-  landingTitle:
-    'TThunderdome es una aplicación de póquer de planificación ágil',
+  landingTitle: 'TThunderdome es una aplicación de póquer de planificación ágil',
   lastActive: 'Último activo',
   leaveRetro: 'Abandonar Retro',
   leaveStoryboard: 'Abandonar Storyboard',
@@ -236,11 +223,9 @@ const es: Translation = {
   loadingStoryboard: 'Cargando Storyboard...',
   login: 'Login',
   loginForRetro: 'o {loginOpen}Login{loginClose} para unirse a Retro',
-  loginForStoryboard:
-    'o {loginOpen}Login{loginClose} para unirse al Storyboard',
+  loginForStoryboard: 'o {loginOpen}Login{loginClose} para unirse al Storyboard',
   logout: 'Salir',
-  logoutError:
-    'Se ha producido un error al intentar cerrar la sesión del usuario',
+  logoutError: 'Se ha producido un error al intentar cerrar la sesión del usuario',
   makeFacilitator: 'Hacer de facilitador',
   mfa2faLabel: 'Autenticación 2FA/MFA',
   mfa2faRemove: 'Eliminar 2FA/MFA',
@@ -270,15 +255,13 @@ const es: Translation = {
   oldStoryboardsCleanError: 'Error al limpiar storyboards',
   openSource: 'Código abierto',
   optional: '(Opcional)',
-  optionalLeadercodePlaceholder:
-    'Código de líder opcional para convertirse en líder',
+  optionalLeadercodePlaceholder: 'Código de líder opcional para convertirse en líder',
   optionalPasscodePlaceholder: 'Código de acceso opcional',
   organization: 'Organización',
   organizationCreate: 'Crear organización',
   organizationDeleteError: 'Error al intentar eliminar una organización',
   organizationDeleteSuccess: 'Organización eliminada con éxito.',
-  organizationGetDepartmentsError:
-    'Error al obtener los departamentos de la organización',
+  organizationGetDepartmentsError: 'Error al obtener los departamentos de la organización',
   organizationGetError: 'Error al obtener la organización',
   organizationGetTeamsError: 'Error al obtener equipos de organización',
   organizationGetUsersError: 'Error al obtener usuarios de la organización',
@@ -298,8 +281,7 @@ const es: Translation = {
   planDescription: 'Descripción',
   planDescriptionPlaceholder: 'Introduzca una descripción',
   planLink: 'Enlace',
-  planLinkInvalid:
-    'El enlace no es una URL absoluta válida, por ejemplo, incluye el protocolo (HTTP/HTTPS)',
+  planLinkInvalid: 'El enlace no es una URL absoluta válida, por ejemplo, incluye el protocolo (HTTP/HTTPS)',
   planLinkPlaceholder: 'Introduzca un enlace a la historya',
   planName: 'Nombre de la historia',
   planNamePlaceholder: 'Introduzca el nombre de la historia',
@@ -345,10 +327,8 @@ const es: Translation = {
   removeUser: 'Eliminar Usuario',
   removeUserConfirmText: '¿Seguro que deseas eliminar a este usuario?',
   requestVerifyEmail: 'Solicitar Correo de Verificación',
-  requestVerifyEmailFailure:
-    'Error al intentar enviar el Correo de Verificación',
-  requestVerifyEmailSuccess:
-    'Correo de Verificación solicitado, revisa tu bandeja de entrada',
+  requestVerifyEmailFailure: 'Error al intentar enviar el Correo de Verificación',
+  requestVerifyEmailSuccess: 'Correo de Verificación solicitado, revisa tu bandeja de entrada',
   retro: 'Retro',
   retroActionCommentAddError: 'error al agregar comentario de acción retro',
   retroActionCommentDeleteError: 'error al eliminar comentario de acción retro',
@@ -376,8 +356,7 @@ const es: Translation = {
   search: 'Buscar',
   searchLengthError: 'El valor de búsqueda debe tener al menos 3 caracteres',
   selectTeam: 'Selecciona un Equipo',
-  selfHostedDesc:
-    'Alternativamente, puedes {linkOpen}ejecutarlo en tu propio servidor{linkClose}.',
+  selfHostedDesc: 'Alternativamente, puedes {linkOpen}ejecutarlo en tu propio servidor{linkClose}.',
   sessionDuplicate: 'Existe una sesión de juego duplicada para tu ID',
   showActiveBattles: 'Mostrar Juegos Activos',
   showActiveRetros: 'Mostrar retros activos',
@@ -421,8 +400,7 @@ const es: Translation = {
   teamNamePlaceholder: 'Ingresa un nombre de equipo',
   teams: 'Equipos',
   teamSave: 'Guardar Equipo',
-  teamUserRequiredToCheckin:
-    'El usuario debe estar en el equipo para hacer check-in',
+  teamUserRequiredToCheckin: 'El usuario debe estar en el equipo para hacer check-in',
   teamUserRequiredToComment: 'El usuario debe estar en el equipo para comentar',
   today: 'Hoy',
   todayPlaceholder: 'Hoy voy a...',
@@ -473,8 +451,7 @@ const es: Translation = {
   yourStoryboards: 'Tus Storyboards',
   addPlan: 'Agregar Historia',
   battleNamePlaceholder: 'Ingresa un nombre de juego',
-  autoFinishVotingLabel:
-    'Finalizar Votación Automáticamente cuando todos los Jugadores hayan votado',
+  autoFinishVotingLabel: 'Finalizar Votación Automáticamente cuando todos los Jugadores hayan votado',
   averageRoundingOptions: {
     ceil: 'Redondear hacia arriba',
     floor: 'Redondear hacia abajo',
@@ -499,18 +476,14 @@ const es: Translation = {
   profile: 'Perfil',
   updatePassword: 'Actualizar Contraseña',
   deleteAccount: 'Eliminar Cuenta',
-  deleteAccountWarningStatement:
-    '¿Estás seguro de que deseas eliminar tu cuenta?',
+  deleteAccountWarningStatement: '¿Estás seguro de que deseas eliminar tu cuenta?',
   deleteConfirmButton: 'Confirmar Eliminación',
   apiKeyNameInvalid: 'Por favor, ingresa un nombre de clave',
-  apiKeyCreateSuccess:
-    'Nueva Clave API {keyName} creada y {onlyNowOpen}solo se mostrará ahora{onlyNowClose}',
+  apiKeyCreateSuccess: 'Nueva Clave API {keyName} creada y {onlyNowOpen}solo se mostrará ahora{onlyNowClose}',
   apiKeyStoreWarning:
     'Guárdala en un lugar seguro, ya que una vez que abandones esta página, no podremos recuperar o restaurar este token generado.',
-  apiKeyLimitReached:
-    'Has alcanzado el número máximo de claves API permitidas.',
-  apiKeyUnverifiedUser:
-    'Solo los usuarios registrados y verificados pueden crear claves API.',
+  apiKeyLimitReached: 'Has alcanzado el número máximo de claves API permitidas.',
+  apiKeyUnverifiedUser: 'Solo los usuarios registrados y verificados pueden crear claves API.',
   apiKeyCreateFailed: 'Failed to create API Key',
   apiKeyName: 'Nombre clave',
   apiKeyNamePlaceholder: 'Introduzca un nombre de clave',
@@ -554,12 +527,9 @@ const es: Translation = {
   enlistToBattle: 'Unirse a la Batalla',
   loginForBattle: 'o {loginOpen}Inicia Sesión{loginClose} para unirte al Juego',
   yourNamePlaceholder: 'Ingresa tu nombre',
-  createAccountFormTitle:
-    'Crear una Cuenta {optionalOpen}(opcional){optionalClose}',
-  sendResetPasswordSuccess:
-    'Instrucciones para restablecer la contraseña enviadas a {email}',
-  sendResetPasswordError:
-    'Error al intentar enviar el restablecimiento de contraseña',
+  createAccountFormTitle: 'Crear una Cuenta {optionalOpen}(opcional){optionalClose}',
+  sendResetPasswordSuccess: 'Instrucciones para restablecer la contraseña enviadas a {email}',
+  sendResetPasswordError: 'Error al intentar enviar el restablecimiento de contraseña',
   chooseCountryPlaceholder: 'Elige tu país (opcional)',
   locale: 'Idioma',
   companyPlaceholder: 'Ingresa tu empresa (opcional)',
@@ -585,8 +555,7 @@ const es: Translation = {
   userUpdateError: 'Error al actualizar el usuario.',
   userInvites: 'Invitaciones de Usuario',
   userInviteSent: 'Invitación de usuario enviada',
-  userInviteConfirmDelete:
-    '¿Estás seguro de que deseas eliminar esta invitación de usuario?',
+  userInviteConfirmDelete: '¿Estás seguro de que deseas eliminar esta invitación de usuario?',
   userInviteDelete: 'Eliminar Invitación',
   expireDate: 'Fecha de Expiración',
   addUserWillInviteNotFoundFieldNote:
@@ -602,8 +571,7 @@ const es: Translation = {
   hideVoterIdentity: 'Ocultar Identidad del Votante',
   storyboardName: 'Nombre del Storyboard',
   storyboardNamePlaceholder: 'Ingresa un nombre de storyboard',
-  retroPhaseTimeLimitMinLabel:
-    'Límite de tiempo de la fase de lluvia de ideas en minutos',
+  retroPhaseTimeLimitMinLabel: 'Límite de tiempo de la fase de lluvia de ideas en minutos',
   phaseAutoAdvanceLabel: 'Avanzar fases automáticamente',
   removeOnlyFacilitatorError: 'No se puede eliminar al único facilitador',
   noGamesFound: 'No se encontraron juegos, intenta crear uno.',
@@ -622,8 +590,7 @@ const es: Translation = {
   estimationScaleTypePlaceholder: 'Selecciona el tipo de escala',
   scaleValues: 'Valores de Escala',
   estimationScaleValuesPlaceholder: 'Ingresa valores separados por comas',
-  estimationScaleValuesHelp:
-    'Ingresa valores separados por comas (e.g., 1, 2, 3, 5, 8)',
+  estimationScaleValuesHelp: 'Ingresa valores separados por comas (e.g., 1, 2, 3, 5, 8)',
   estimationScaleIsPublic: 'Hacer esta escala pública',
   estimationScaleDefault: 'Establecer como escala predeterminada',
   estimationScaleSave: 'Guardar Escala',
@@ -635,8 +602,7 @@ const es: Translation = {
   estimationScaleUpdateError: 'Error al actualizar la escala de estimación',
   estimationScaleRemoveSuccess: 'Escala de estimación eliminada con éxito',
   estimationScaleRemoveError: 'Error al eliminar la escala de estimación',
-  removeEstimationScaleConfirmText:
-    '¿Estás seguro de que deseas eliminar esta escala de estimación?',
+  removeEstimationScaleConfirmText: '¿Estás seguro de que deseas eliminar esta escala de estimación?',
   removeEstimationScale: 'Eliminar Escala de Estimación',
   yes: 'Sí',
   no: 'No',
@@ -645,8 +611,7 @@ const es: Translation = {
   publicEstimationScales: 'Escalas de Estimación Públicas',
   organizationEstimationScales: 'Escalas de Estimación de la Organización',
   teamEstimationScales: 'Escalas de Estimación del Equipo',
-  allowCumulativeVotingLabel:
-    'Permitir Votación Acumulativa (más de 1 voto por grupo de ítems)',
+  allowCumulativeVotingLabel: 'Permitir Votación Acumulativa (más de 1 voto por grupo de ítems)',
   activeSubscriptions: 'Suscripciones Activas',
   retroTemplates: 'Plantillas de Retrospectiva',
   publicRetroTemplates: 'Plantillas de Retrospectiva Públicas',
@@ -660,13 +625,11 @@ const es: Translation = {
   retroTemplateCreate: 'Crear Plantilla de Retrospectiva',
   retroTemplateCreateSuccess: 'Plantilla de retrospectiva creada con éxito',
   retroTemplateCreateError: 'Error al crear la plantilla de retrospectiva',
-  retroTemplateUpdateSuccess:
-    'Plantilla de retrospectiva actualizada con éxito',
+  retroTemplateUpdateSuccess: 'Plantilla de retrospectiva actualizada con éxito',
   retroTemplateUpdateError: 'Error al actualizar la plantilla de retrospectiva',
   retroTemplateRemoveSuccess: 'Plantilla de retrospectiva eliminada con éxito',
   retroTemplateRemoveError: 'Error al eliminar la plantilla de retrospectiva',
-  removeRetroTemplateConfirmText:
-    '¿Estás seguro de que deseas eliminar esta plantilla de retrospectiva?',
+  removeRetroTemplateConfirmText: '¿Estás seguro de que deseas eliminar esta plantilla de retrospectiva?',
   removeRetroTemplate: 'Eliminar Plantilla de Retrospectiva',
   retroTemplateDefault: 'Establecer como plantilla predeterminada',
   jiradatacenterLabel: 'Jira DataCenter',
@@ -675,11 +638,9 @@ const es: Translation = {
     'Solicitud de cambio de correo electrónico enviada, revise su bandeja de entrada para obtener instrucciones',
   requestEmailChangeError: 'Error al intentar cambiar el correo electrónico',
   changeEmail: 'Cambiar Correo Electrónico',
-  errorChangingEmail:
-    'Error al intentar cambiar el correo electrónico, tal vez este enlace expiró o ya fue utilizado.',
+  errorChangingEmail: 'Error al intentar cambiar el correo electrónico, tal vez este enlace expiró o ya fue utilizado.',
   emailChanged: 'Correo electrónico cambiado exitosamente',
-  newEmailToLogin:
-    'A partir de ahora, use su nuevo correo electrónico para iniciar sesión.',
+  newEmailToLogin: 'A partir de ahora, use su nuevo correo electrónico para iniciar sesión.',
   newEmail: 'Nuevo Correo Electrónico',
   enterYourNewEmail: 'Ingrese su nuevo correo electrónico',
   retroSettings: 'Retro Settings',
@@ -714,8 +675,7 @@ const es: Translation = {
   modalViewRetroTemplateFormat: 'Ver Formato de Plantilla de Retro',
   modalUpdateRetroTemplate: 'Actualizar Plantilla de Retro',
   modalAssociateTeamToSubscription: 'Asociar Equipo a Suscripción',
-  modalAssociateOrganizationToSubscription:
-    'Asociar Organización a Suscripción',
+  modalAssociateOrganizationToSubscription: 'Asociar Organización a Suscripción',
   modalTeamUpdateUser: 'Actualizar Usuario del Equipo',
   modalSubscriptionForm: 'Formulario de Suscripción',
   modalEditRetro: 'Editar Retro',
@@ -730,17 +690,14 @@ const es: Translation = {
   createdAt: 'Creado en',
   projectRemoveSuccess: 'Proyecto eliminado exitosamente',
   projectRemoveError: 'Error al eliminar el proyecto',
-  removeProjectConfirmText:
-    '¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.',
+  removeProjectConfirmText: '¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.',
   removeProject: 'Eliminar Proyecto',
   modalCreateProject: 'Crear Proyecto',
   modalUpdateProject: 'Actualizar Proyecto',
   projectKeyPlaceholder: 'Ingrese la clave del proyecto (ej. PROJ)',
   projectNamePlaceholder: 'Ingrese el nombre del proyecto',
-  projectDescriptionPlaceholder:
-    'Ingrese la descripción del proyecto (opcional)',
-  projectKeyValidationError:
-    'La clave del proyecto debe tener 2-10 caracteres alfanuméricos',
+  projectDescriptionPlaceholder: 'Ingrese la descripción del proyecto (opcional)',
+  projectKeyValidationError: 'La clave del proyecto debe tener 2-10 caracteres alfanuméricos',
   projectKeyHelp: '2-10 caracteres, solo letras y números',
   projectScope: 'Alcance del Proyecto',
   projectUpdate: 'Actualizar Proyecto',
@@ -754,37 +711,32 @@ const es: Translation = {
   endGameReason: 'Razón para Terminar el Juego',
   endGameReasonPlaceholder: 'Seleccione una razón',
   welcomeBack: 'Bienvenido de nuevo,',
-  dashboardSubtitle:
-    'Hagamos que tu próxima sesión de colaboración en equipo sea la mejor hasta ahora.',
+  dashboardSubtitle: 'Hagamos que tu próxima sesión de colaboración en equipo sea la mejor hasta ahora.',
   filterByTeam: 'Filtrar por equipo:',
   allTeams: 'Todos los equipos',
   showContentForAllTeams: 'Mostrar contenido de todos los equipos',
   clearFilter: 'Limpiar filtro',
   teamPage: 'Página del equipo',
-  dashboardTeamsRequired:
-    'Selecciona un equipo para ver tus sesiones de planning poker, retrospectivas y storyboards.',
+  dashboardTeamsRequired: 'Selecciona un equipo para ver tus sesiones de planning poker, retrospectivas y storyboards.',
   planningPokerSessions: 'Sesiones de Planning Poker',
   viewAllPokerSessions: 'Ver todas las sesiones de planning poker',
   totalPokerSessions: '{total} sesiones en total',
   noSessionsFoundForTeam: 'No se encontraron sesiones para {teamName}',
   noSessionsFound: 'No se encontraron sesiones',
-  trySelectingDifferentTeamForPoker:
-    'Intenta seleccionar un equipo diferente o crea un nuevo juego',
+  trySelectingDifferentTeamForPoker: 'Intenta seleccionar un equipo diferente o crea un nuevo juego',
   startFirstPlanningPokerSession: 'Inicia tu primera sesión de planning poker',
   sprintRetrospectives: 'Retrospectivas de Sprint',
   viewAllRetros: 'Ver todas las retrospectivas',
   totalRetros: '{total} retrospectivas en total',
   noRetrosFoundForTeam: 'No se encontraron retrospectivas para {teamName}',
   startFirstSprintRetrospective: 'Inicia tu primera retrospectiva de sprint',
-  trySelectingDifferentTeamForRetros:
-    'Intenta seleccionar un equipo diferente o crea una nueva retrospectiva',
+  trySelectingDifferentTeamForRetros: 'Intenta seleccionar un equipo diferente o crea una nueva retrospectiva',
   viewAllStoryboards: 'Ver todos los storyboards',
   totalStoryboards: '{total} storyboards en total',
   noStoryboardsFoundForTeam: 'No se encontraron storyboards para {teamName}',
   startFirstStoryboard: 'Inicia tu primer storyboard',
   agileStoryMapping: 'Mapeo de historias ágiles',
-  trySelectingDifferentTeamForStoryboards:
-    'Intenta seleccionar un equipo diferente o crea un nuevo storyboard',
+  trySelectingDifferentTeamForStoryboards: 'Intenta seleccionar un equipo diferente o crea un nuevo storyboard',
   supportTickets: 'Tickets de Soporte',
   supportTicketDeleteConfirmation:
     '¿Estás seguro de que quieres eliminar este ticket de soporte? Esta acción no se puede deshacer.',

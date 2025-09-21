@@ -17,7 +17,7 @@
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -27,12 +27,7 @@
     battleId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    battleId
-  }: Props = $props();
+  let { xfetch, router, notifications, battleId }: Props = $props();
 
   let showDeleteBattle = $state(false);
 
@@ -102,7 +97,7 @@
       <TableNav title={battle.name} createBtnEnabled={false} />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.votingLocked()}
             </HeadCol>
@@ -122,9 +117,9 @@
               {$LL.dateUpdated()}
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             <TableRow itemIndex={0}>
               <RowCol>
                 <BooleanDisplay boolValue={battle.votingLocked} />
@@ -146,7 +141,7 @@
               </RowCol>
             </TableRow>
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -156,7 +151,7 @@
       <TableNav title={$LL.users()} createBtnEnabled={false} />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.name()}
             </HeadCol>
@@ -176,9 +171,9 @@
               {$LL.facilitator()}
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             {#each battle.users as user, i}
               <TableRow itemIndex={i}>
                 <RowCol>
@@ -202,12 +197,7 @@
                         >
                         {#if user.country}
                           &nbsp;
-                          <CountryFlag
-                            country={user.country}
-                            additionalClass="inline-block"
-                            width="32"
-                            height="24"
-                          />
+                          <CountryFlag country={user.country} additionalClass="inline-block" width="32" height="24" />
                         {/if}
                       </div>
                     </div>
@@ -226,14 +216,12 @@
                   <BooleanDisplay boolValue={user.spectator} />
                 </RowCol>
                 <RowCol>
-                  <BooleanDisplay
-                    boolValue={battle.leaders.includes(user.id)}
-                  />
+                  <BooleanDisplay boolValue={battle.leaders.includes(user.id)} />
                 </RowCol>
               </TableRow>
             {/each}
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -242,7 +230,7 @@
     <TableNav title={$LL.plans()} createBtnEnabled={false} />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -265,9 +253,9 @@
             {$LL.skipped()}
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each battle.plans as plan, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -294,16 +282,12 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
   </TableContainer>
 
   <div class="text-center mt-4">
-    <HollowButton
-      color="red"
-      onClick={toggleDeleteBattle}
-      testid="battle-delete"
-    >
+    <HollowButton color="red" onClick={toggleDeleteBattle} testid="battle-delete">
       {$LL.battleDelete()}
     </HollowButton>
   </div>

@@ -30,13 +30,12 @@
     orgId = '',
     deptId = '',
     notifications,
-    xfetch
+    xfetch,
   }: Props = $props();
 
   const roles = ['ADMIN', 'MEMBER'];
   const showDeptUsers = pageType === 'team' && deptId !== '';
-  const showOrgUsers =
-    pageType === 'department' || (pageType === 'team' && orgId !== '');
+  const showOrgUsers = pageType === 'department' || (pageType === 'team' && orgId !== '');
   let userEmail = $state('');
   let selectedUser = $state('');
   let role = $state('');
@@ -59,9 +58,7 @@
 
   function getDepartmentUsers() {
     if (orgId !== '' && deptId !== '') {
-      xfetch(
-        `/api/organizations/${orgId}/departments/${deptId}/users?limit=${9999}&offset=${0}`,
-      )
+      xfetch(`/api/organizations/${orgId}/departments/${deptId}/users?limit=${9999}&offset=${0}`)
         .then(res => res.json())
         .then(function (result) {
           departmentUsers = result.data;
@@ -105,62 +102,39 @@
 <Modal closeModal={toggleAdd} ariaLabel={$LL.modalTeamAddUser()}>
   <form onsubmit={onSubmit} name="teamAddUser">
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 font-bold mb-2"
-        for="userRole"
-      >
+      <label class="text-gray-700 dark:text-gray-400 font-bold mb-2" for="userRole">
         {$LL.role()}
       </label>
-      <SelectInput bind:value="{role}" id="userRole" name="userRole">
+      <SelectInput bind:value={role} id="userRole" name="userRole">
         <option value="">{$LL.rolePlaceholder()}</option>
         {#each roles as userRole}
-          <option value="{userRole}">{userRole}</option>
+          <option value={userRole}>{userRole}</option>
         {/each}
       </SelectInput>
     </div>
 
     {#if showOrgUsers}
       <div class="mb-4">
-        <label
-          class="text-gray-700 dark:text-gray-400 font-bold mb-2"
-          for="orgUser"
-        >
+        <label class="text-gray-700 dark:text-gray-400 font-bold mb-2" for="orgUser">
           Select an existing user from Organization
         </label>
-        <SelectInput
-          bind:value="{selectedUser}"
-          on:change="{clearEmail}"
-          id="orgUser"
-          name="orgUser"
-        >
+        <SelectInput bind:value={selectedUser} on:change={clearEmail} id="orgUser" name="orgUser">
           <option value="">Organization Users...</option>
           {#each organizationUsers as orgUser}
-            <option value="{orgUser.id}"
-              >{orgUser.name} ({orgUser.email})
-            </option>
+            <option value={orgUser.id}>{orgUser.name} ({orgUser.email}) </option>
           {/each}
         </SelectInput>
       </div>
     {/if}
     {#if showDeptUsers}
       <div class="mb-4">
-        <label
-          class="text-gray-700 dark:text-gray-400 font-bold mb-2"
-          for="deptUser"
-        >
+        <label class="text-gray-700 dark:text-gray-400 font-bold mb-2" for="deptUser">
           Select an existing user from Department
         </label>
-        <SelectInput
-          bind:value="{selectedUser}"
-          on:change="{clearEmail}"
-          id="deptUser"
-          name="deptUser"
-        >
+        <SelectInput bind:value={selectedUser} on:change={clearEmail} id="deptUser" name="deptUser">
           <option value="">Department Users...</option>
           {#each departmentUsers as deptUser}
-            <option value="{deptUser.id}"
-              >{deptUser.name} ({deptUser.email})
-            </option>
+            <option value={deptUser.id}>{deptUser.name} ({deptUser.email}) </option>
           {/each}
         </SelectInput>
       </div>
@@ -172,23 +146,17 @@
           <div class="w-full border-t border-gray-300"></div>
         </div>
         <div class="relative flex justify-center text-sm">
-          <span
-            class="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-white"
-            >Or invite a user by email</span
-          >
+          <span class="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-white">Or invite a user by email</span>
         </div>
       </div>
     {/if}
 
     <div class="mb-2">
-      <label
-        class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-        for="userEmail"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="userEmail">
         {$LL.userEmail()}
       </label>
       <TextInput
-        bind:value="{userEmail}"
+        bind:value={userEmail}
         placeholder={$LL.userEmailPlaceholder()}
         id="userEmail"
         name="userEmail"
@@ -209,11 +177,7 @@
 
     <div>
       <div class="text-right">
-        <SolidButton
-          type="submit"
-          disabled={createDisabled}
-          testid="useradd-confirm"
-        >
+        <SolidButton type="submit" disabled={createDisabled} testid="useradd-confirm">
           {$LL.userAdd()}
         </SolidButton>
       </div>

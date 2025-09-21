@@ -4,10 +4,9 @@
   }
 
   let { class: klass = 'w-6 h-6' }: Props = $props();
-  
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 0 48 48" class="{klass}">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 0 48 48" class={klass}>
   <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
     <g id="Color-" transform="translate(-401.000000, -860.000000)">
       <g id="Google" transform="translate(401.000000, 860.000000)">

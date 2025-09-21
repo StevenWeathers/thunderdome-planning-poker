@@ -16,20 +16,16 @@
     confirmBtnText = 'Confirm Delete',
     permanent = true,
     handleDelete = () => {},
-    toggleDelete = () => {}
+    toggleDelete = () => {},
   }: Props = $props();
 </script>
 
 <Modal closeModal={toggleDelete} ariaLabel={$LL.modalDeleteConfirmation()}>
   <div class="mb-4">
-    <div
-      class="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 p-2 flex items-center justify-center mx-auto mb-3.5"
-    >
+    <div class="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 p-2 flex items-center justify-center mx-auto mb-3.5">
       <TriangleAlert class="w-8 h-8 text-gray-600 dark:text-gray-400" />
     </div>
-    <div
-      class="text-center text-gray-800 dark:text-gray-100 mb-4 font-semibold text-lg"
-    >
+    <div class="text-center text-gray-800 dark:text-gray-100 mb-4 font-semibold text-lg">
       {confirmText}
     </div>
     <div class="text-xl text-center text-red-400 dark:text-[#fdba8c]">

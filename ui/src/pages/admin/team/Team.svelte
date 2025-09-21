@@ -19,7 +19,7 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import Toggle from '../../../components/forms/Toggle.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
@@ -33,14 +33,7 @@
     teamId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId,
-    departmentId,
-    teamId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId, departmentId, teamId }: Props = $props();
 
   const battlesPageLimit = 1000;
   const retrosPageLimit = 1000;
@@ -76,12 +69,12 @@
   let showDeleteTeam = $state(false);
 
   const apiPrefix = '/api';
-  let orgPrefix = $derived(departmentId
-    ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
-    : `${apiPrefix}/organizations/${organizationId}`);
-  let teamPrefix = $derived(organizationId
-    ? `${orgPrefix}/teams/${teamId}`
-    : `${apiPrefix}/teams/${teamId}`);
+  let orgPrefix = $derived(
+    departmentId
+      ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
+      : `${apiPrefix}/organizations/${organizationId}`,
+  );
+  let teamPrefix = $derived(organizationId ? `${orgPrefix}/teams/${teamId}` : `${apiPrefix}/teams/${teamId}`);
 
   let showRetroActionComments = false;
   let selectedRetroAction = null;
@@ -129,9 +122,7 @@
   function getBattles() {
     if (FeaturePoker) {
       const battlesOffset = (battlesPage - 1) * battlesPageLimit;
-      xfetch(
-        `${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
-      )
+      xfetch(`${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`)
         .then(res => res.json())
         .then(function (result) {
           battles = result.data;
@@ -145,9 +136,7 @@
   function getRetros() {
     if (FeatureRetro) {
       const retrosOffset = (retrosPage - 1) * retrosPageLimit;
-      xfetch(
-        `${teamPrefix}/retros?limit=${retrosPageLimit}&offset=${retrosOffset}`,
-      )
+      xfetch(`${teamPrefix}/retros?limit=${retrosPageLimit}&offset=${retrosOffset}`)
         .then(res => res.json())
         .then(function (result) {
           retros = result.data;
@@ -178,9 +167,7 @@
   function getStoryboards() {
     if (FeatureStoryboard) {
       const storyboardsOffset = (storyboardsPage - 1) * storyboardsPageLimit;
-      xfetch(
-        `${teamPrefix}/storyboards?limit=${storyboardsPageLimit}&offset=${storyboardsOffset}`,
-      )
+      xfetch(`${teamPrefix}/storyboards?limit=${storyboardsPageLimit}&offset=${storyboardsOffset}`)
         .then(res => res.json())
         .then(function (result) {
           storyboards = result.data;
@@ -196,9 +183,7 @@
       .then(res => res.json())
       .then(function () {
         if (departmentId) {
-          router.route(
-            `${appRoutes.adminOrganizations}/${organizationId}/department/${departmentId}`,
-          );
+          router.route(`${appRoutes.adminOrganizations}/${organizationId}/department/${departmentId}`);
         } else if (organizationId) {
           router.route(`${appRoutes.adminOrganizations}/${organizationId}`);
         } else {
@@ -244,9 +229,7 @@
 
 <AdminPageLayout activePage="teams">
   <div class="px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
-    >
+    <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white">
       {team.name}
     </h1>
 
@@ -281,7 +264,7 @@
       <TableNav title={team.name} createBtnEnabled={false} />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.dateCreated()}
             </HeadCol>
@@ -289,9 +272,9 @@
               {$LL.dateUpdated()}
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             <TableRow itemIndex={0}>
               <RowCol>
                 {new Date(team.createdDate).toLocaleString()}
@@ -301,7 +284,7 @@
               </RowCol>
             </TableRow>
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -311,9 +294,7 @@
       <div class="w-full mb-6 lg:mb-8">
         <div class="flex w-full">
           <div class="flex-1">
-            <h2
-              class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-            >
+            <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
               {$LL.battles()}
             </h2>
           </div>
@@ -348,9 +329,7 @@
       <div class="w-full mb-6 lg:mb-8">
         <div class="flex w-full">
           <div class="flex-1">
-            <h2
-              class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-            >
+            <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
               {$LL.retros()}
             </h2>
           </div>
@@ -382,9 +361,7 @@
         {#if retros.length}
           <div class="w-full pt-4 px-4">
             <div class="w-full">
-              <h3
-                class="text-xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-              >
+              <h3 class="text-xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
                 {$LL.retroActionItems()}
               </h3>
 
@@ -392,7 +369,7 @@
                 <Toggle
                   name="completedActionItems"
                   id="completedActionItems"
-                  bind:checked="{completedActionItems}"
+                  bind:checked={completedActionItems}
                   changeHandler={changeRetroActionCompletedToggle}
                   label={$LL.showCompletedActionItems()}
                 />
@@ -401,14 +378,14 @@
 
             <Table>
               {#snippet header()}
-                            <tr >
+                <tr>
                   <HeadCol>{$LL.actionItem()}</HeadCol>
                   <HeadCol>{$LL.completed()}</HeadCol>
                   <HeadCol>{$LL.comments()}</HeadCol>
                 </tr>
-                          {/snippet}
+              {/snippet}
               {#snippet body({ class: className })}
-                            <tbody   class="{className}">
+                <tbody class={className}>
                   {#each retroActions as item, i}
                     <TableRow itemIndex={i}>
                       <RowCol>
@@ -420,7 +397,7 @@
                         <input
                           type="checkbox"
                           id="{i}Completed"
-                          checked="{item.completed}"
+                          checked={item.completed}
                           class="opacity-0 absolute h-6 w-6"
                           disabled
                         />
@@ -430,18 +407,12 @@
                                               justify-center items-center me-2
                                               focus-within:border-blue-500 dark:focus-within:border-sky-500"
                         >
-                          <Check
-                            class="hidden w-4 h-4 text-green-600 pointer-events-none"
-                          />
+                          <Check class="hidden w-4 h-4 text-green-600 pointer-events-none" />
                         </div>
                         <label for="{i}Completed" class="select-none"></label>
                       </RowCol>
                       <RowCol>
-                        <MessageSquareMore
-                          width="22"
-                          height="22"
-                          class="inline-block"
-                        />
+                        <MessageSquareMore width="22" height="22" class="inline-block" />
                         <button
                           class="text-lg text-blue-400 dark:text-sky-400"
                           onclick={toggleRetroActionComments(item.id)}
@@ -452,7 +423,7 @@
                     </TableRow>
                   {/each}
                 </tbody>
-                          {/snippet}
+              {/snippet}
             </Table>
             <TableFooter
               bind:current={retroActionsPage}
@@ -469,9 +440,7 @@
       <div class="w-full mb-6 lg:mb-8">
         <div class="flex w-full">
           <div class="flex-1">
-            <h2
-              class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-            >
+            <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
               {$LL.storyboards()}
             </h2>
           </div>
@@ -506,7 +475,7 @@
       <TableNav title={$LL.users()} createBtnEnabled={false} />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.name()}
             </HeadCol>
@@ -517,9 +486,9 @@
               {$LL.role()}
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             {#each users as user, i}
               <TableRow itemIndex={i}>
                 <RowCol>
@@ -544,12 +513,7 @@
                         >
                         {#if user.country}
                           &nbsp;
-                          <CountryFlag
-                            country={user.country}
-                            additionalClass="inline-block"
-                            width="32"
-                            height="24"
-                          />
+                          <CountryFlag country={user.country} additionalClass="inline-block" width="32" height="24" />
                         {/if}
                       </div>
                     </div>
@@ -566,17 +530,13 @@
               </TableRow>
             {/each}
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
 
     {#if !organizationId}
       <div class="text-center mt-4">
-        <HollowButton
-          color="red"
-          onClick={toggleDeleteTeam}
-          testid="team-delete"
-        >
+        <HollowButton color="red" onClick={toggleDeleteTeam} testid="team-delete">
           {$LL.deleteTeam()}
         </HollowButton>
       </div>

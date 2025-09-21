@@ -57,8 +57,8 @@
       : 'text-gray-400 dark:text-gray-700'}"
     role="button"
     tabindex="0"
-    on:click="{() => current > 1 && setCurrent(current - 1)}"
-    on:keypress="{() => current > 1 && setCurrent(current - 1)}"
+    on:click={() => current > 1 && setCurrent(current - 1)}
+    on:keypress={() => current > 1 && setCurrent(current - 1)}
   >
     <ChevronLeft class="w-6 h-6 inline-block" />
   </div>
@@ -73,8 +73,8 @@
                 "
         role="button"
         tabindex="0"
-        on:click="{() => setCurrent(i)}"
-        on:keypress="{() => setCurrent(i)}"
+        on:click={() => setCurrent(i)}
+        on:keypress={() => setCurrent(i)}
       >
         {i}
       </div>
@@ -93,8 +93,8 @@
       : 'text-gray-400 dark:text-gray-700'}"
     role="button"
     tabindex="0"
-    on:click="{() => current < num_pages && setCurrent(current + 1)}"
-    on:keypress="{() => current < num_pages && setCurrent(current + 1)}"
+    on:click={() => current < num_pages && setCurrent(current + 1)}
+    on:keypress={() => current < num_pages && setCurrent(current + 1)}
   >
     <ChevronRight class="w-6 h-6 inline-block" />
   </div>

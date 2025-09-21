@@ -20,7 +20,7 @@
       {salesPitch}
       <a
         class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer ms-1 underline"
-        href="{appRoutes.subscriptionPricing}"
+        href={appRoutes.subscriptionPricing}
         target="_blank"
       >
         Subscribe now

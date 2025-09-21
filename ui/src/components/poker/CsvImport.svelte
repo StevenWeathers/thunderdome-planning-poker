@@ -36,7 +36,8 @@
           notifications.danger($LL.importCsvFileReadFileError());
           return;
         }
-        const content = typeof reader.result === 'string' ? reader.result : new TextDecoder().decode(reader.result as ArrayBuffer);
+        const content =
+          typeof reader.result === 'string' ? reader.result : new TextDecoder().decode(reader.result as ArrayBuffer);
         const items = parseCsvFile(content);
         if (items) {
           const totalItems = items.length;
@@ -81,17 +82,10 @@
     return items;
   }
 
-  const expectedHeader = [
-    'type',
-    'title',
-    'referenceid',
-    'link',
-    'description',
-    'acceptancecriteria',
-  ];
+  const expectedHeader = ['type', 'title', 'referenceid', 'link', 'description', 'acceptancecriteria'];
 
   function isHeaderLine(line: string): boolean {
-    const fields = parseCsvLine(line).map((f) => f.trim().toLowerCase());
+    const fields = parseCsvLine(line).map(f => f.trim().toLowerCase());
     if (fields.length < expectedHeader.length) return false;
     for (let i = 0; i < expectedHeader.length; i++) {
       if (fields[i] !== expectedHeader[i]) return false;
@@ -161,21 +155,8 @@
 </script>
 
 {#if allowCsvImport}
-  <HollowButton
-    type="label"
-    additionalClasses="me-2"
-    fullWidth={true}
-    size="large"
-    color="purple"
-    labelFor="csvimport"
-  >
+  <HollowButton type="label" additionalClasses="me-2" fullWidth={true} size="large" color="purple" labelFor="csvimport">
     {$LL.selectFile()}
-    <input
-      type="file"
-      onchange={uploadFile}
-      class="hidden"
-      id="csvimport"
-      accept=".csv"
-    />
+    <input type="file" onchange={uploadFile} class="hidden" id="csvimport" accept=".csv" />
   </HollowButton>
 {/if}

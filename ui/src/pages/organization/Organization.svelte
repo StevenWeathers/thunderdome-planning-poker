@@ -21,10 +21,7 @@
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
   import MetricsDisplay from '../../components/global/MetricsDisplay.svelte';
-  import {
-    fetchAndUpdateMetrics,
-    type MetricItem,
-  } from '../../components/team/metrics';
+  import { fetchAndUpdateMetrics, type MetricItem } from '../../components/team/metrics';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
   import RetroTemplatesList from '../../components/retrotemplate/RetroTemplatesList.svelte';
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
@@ -41,12 +38,7 @@
     organizationId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId }: Props = $props();
 
   const orgPrefix = `/api/organizations/${organizationId}`;
 
@@ -144,12 +136,9 @@
     const scalesOffset = (scalesPage - 1) * scalesPageLimit;
     if (
       AppConfig.FeaturePoker &&
-      (!AppConfig.SubscriptionsEnabled ||
-        (AppConfig.SubscriptionsEnabled && organization.subscribed))
+      (!AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed))
     ) {
-      xfetch(
-        `${orgPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`,
-      )
+      xfetch(`${orgPrefix}/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`)
         .then(res => res.json())
         .then(function (result) {
           estimationScales = result.data;
@@ -174,12 +163,9 @@
     const offset = (retroTemplatesPage - 1) * retroTemplatePageLimit;
     if (
       AppConfig.FeatureRetro &&
-      (!AppConfig.SubscriptionsEnabled ||
-        (AppConfig.SubscriptionsEnabled && organization.subscribed))
+      (!AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed))
     ) {
-      xfetch(
-        `${orgPrefix}/retro-templates?limit=${retroTemplatePageLimit}&offset=${offset}`,
-      )
+      xfetch(`${orgPrefix}/retro-templates?limit=${retroTemplatePageLimit}&offset=${offset}`)
         .then(res => res.json())
         .then(function (result) {
           retroTemplates = result.data;
@@ -198,10 +184,7 @@
 
     getOrganization();
     try {
-      organizationMetrics = await fetchAndUpdateMetrics(
-        orgPrefix,
-        organizationMetrics,
-      );
+      organizationMetrics = await fetchAndUpdateMetrics(orgPrefix, organizationMetrics);
     } catch (e) {
       notifications.danger('Failed to get organization metrics');
     }
@@ -228,13 +211,7 @@
   {#if AppConfig.FeaturePoker}
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
-        <PokerSettings
-          xfetch={xfetch}
-          notifications={notifications}
-          isEntityAdmin={isAdmin}
-          apiPrefix={orgPrefix}
-          organizationId={organizationId}
-        />
+        <PokerSettings {xfetch} {notifications} isEntityAdmin={isAdmin} apiPrefix={orgPrefix} {organizationId} />
       {:else}
         <FeatureSubscribeBanner
           salesPitch="Optimize your Organization's estimation workflow with customized default Planning Poker settings."
@@ -245,16 +222,16 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <EstimationScalesList
-          xfetch={xfetch}
-          notifications={notifications}
+          {xfetch}
+          {notifications}
           isEntityAdmin={isAdmin}
           apiPrefix={orgPrefix}
-          organizationId={organizationId}
+          {organizationId}
           scales={estimationScales}
           getScales={getEstimationScales}
-          scaleCount={scaleCount}
-          scalesPage={scalesPage}
-          scalesPageLimit={scalesPageLimit}
+          {scaleCount}
+          {scalesPage}
+          {scalesPageLimit}
           changePage={changeScalesPage}
         />
       {:else}
@@ -268,13 +245,7 @@
   {#if AppConfig.FeatureRetro}
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
-        <RetroSettings
-          xfetch={xfetch}
-          notifications={notifications}
-          isEntityAdmin={isAdmin}
-          apiPrefix={orgPrefix}
-          organizationId={organizationId}
-        />
+        <RetroSettings {xfetch} {notifications} isEntityAdmin={isAdmin} apiPrefix={orgPrefix} {organizationId} />
       {:else}
         <FeatureSubscribeBanner
           salesPitch="Enhance your Organization's reflection process with customized default Retrospective settings."
@@ -285,11 +256,11 @@
     <div class="mt-8">
       {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <RetroTemplatesList
-          xfetch={xfetch}
-          notifications={notifications}
+          {xfetch}
+          {notifications}
           isEntityAdmin={isAdmin}
           apiPrefix={orgPrefix}
-          organizationId={organizationId}
+          {organizationId}
           templates={retroTemplates}
           getTemplates={getRetroTemplates}
           templateCount={retroTemplateCount}

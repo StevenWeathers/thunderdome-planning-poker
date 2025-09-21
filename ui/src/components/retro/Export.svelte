@@ -5,10 +5,12 @@
     retro?: any;
   }
 
-  let { retro = {
-    items: [],
-    actionItems: [],
-  } }: Props = $props();
+  let {
+    retro = {
+      items: [],
+      actionItems: [],
+    },
+  }: Props = $props();
 </script>
 
 <div class="flex flex-grow p-4 dark:text-white">

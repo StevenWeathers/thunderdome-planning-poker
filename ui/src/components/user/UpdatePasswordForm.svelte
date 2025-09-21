@@ -37,20 +37,16 @@
     }
   }
 
-  let updatePasswordDisabled =
-    $derived(password1 === '' || password2 === '' || LdapEnabled || HeaderAuthEnabled);
+  let updatePasswordDisabled = $derived(password1 === '' || password2 === '' || LdapEnabled || HeaderAuthEnabled);
 </script>
 
 <form onsubmit={updatePassword} name="updatePassword">
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-      for="yourPassword1"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourPassword1">
       {$LL.password()}
     </label>
     <PasswordInput
-      bind:value="{password1}"
+      bind:value={password1}
       placeholder={$LL.passwordPlaceholder()}
       id="yourPassword1"
       name="yourPassword1"
@@ -59,14 +55,11 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-      for="yourPassword2"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourPassword2">
       {$LL.confirmPassword()}
     </label>
     <PasswordInput
-      bind:value="{password2}"
+      bind:value={password2}
       placeholder={$LL.confirmPasswordPlaceholder()}
       id="yourPassword2"
       name="yourPassword2"

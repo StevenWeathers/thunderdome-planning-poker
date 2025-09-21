@@ -280,10 +280,7 @@
       }
     }
 
-    if (
-      (SubscriptionsEnabled && $user.subscribed) ||
-      (!SubscriptionsEnabled && $user.rank !== 'GUEST')
-    ) {
+    if ((SubscriptionsEnabled && $user.subscribed) || (!SubscriptionsEnabled && $user.rank !== 'GUEST')) {
       getJiraInstances();
     }
   });
@@ -304,16 +301,14 @@
   <div class="flex justify-center flex-wrap">
     <div class="w-full md:w-1/2 lg:w-1/3">
       {#if !updatePassword}
-        <div
-          class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
-        >
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4">
           <ProfileForm
             credential={userCredential}
             profile={userProfile}
             handleUpdate={updateUserProfile}
-            toggleUpdatePassword={toggleUpdatePassword}
-            xfetch={xfetch}
-            notifications={notifications}
+            {toggleUpdatePassword}
+            {xfetch}
+            {notifications}
           />
         </div>
       {/if}
@@ -327,11 +322,7 @@
             {$LL.updatePassword()}
           </div>
 
-          <UpdatePasswordForm
-            handleUpdate={updateUserPassword}
-            toggleForm={toggleUpdatePassword}
-            notifications={notifications}
-          />
+          <UpdatePasswordForm handleUpdate={updateUserPassword} toggleForm={toggleUpdatePassword} {notifications} />
         </div>
       {/if}
     </div>
@@ -341,19 +332,14 @@
         <div class="ms-8 mb-8">
           <div class="flex w-full">
             <div class="flex-1">
-              <h2
-                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-              >
+              <h2 class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
                 Active Subscriptions
               </h2>
             </div>
             <div class="flex-1">
               <div class="text-right">
                 {#if $user.subscribed}
-                  <SolidButton
-                    color="green"
-                    href={Subscription.ManageLink}
-                    options={{ target: '_blank' }}
+                  <SolidButton color="green" href={Subscription.ManageLink} options={{ target: '_blank' }}
                     >Manage subscriptions
                   </SolidButton>
                 {/if}
@@ -361,16 +347,11 @@
             </div>
           </div>
           {#if $user.subscribed}
-            <UserSubscriptionsList
-              xfetch={xfetch}
-              notifications={notifications}
-            />
+            <UserSubscriptionsList {xfetch} {notifications} />
           {:else}
             <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4">
               <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
-                See <a href="{appRoutes.subscriptionPricing}" class="underline"
-                  >Pricing page</a
-                > to subscribe today.
+                See <a href={appRoutes.subscriptionPricing} class="underline">Pricing page</a> to subscribe today.
               </p>
             </div>
           {/if}
@@ -380,25 +361,16 @@
         <div class="ms-8 mb-8">
           <div class="flex w-full">
             <div class="flex-1">
-              <h2
-                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-              >
+              <h2 class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
                 {$LL.apiKeys()}
               </h2>
             </div>
             <div class="flex-1">
               <div class="text-right">
-                <HollowButton
-                  href="{PathPrefix}/swagger/index.html"
-                  options={{ target: '_blank' }}
-                  color="blue"
-                >
+                <HollowButton href="{PathPrefix}/swagger/index.html" options={{ target: '_blank' }} color="blue">
                   {$LL.apiDocumentation()}
                 </HollowButton>
-                <HollowButton
-                  onClick={toggleCreateApiKey}
-                  testid="apikey-create"
-                >
+                <HollowButton onClick={toggleCreateApiKey} testid="apikey-create">
                   {$LL.apiKeyCreateButton()}
                 </HollowButton>
               </div>
@@ -407,15 +379,9 @@
 
           <div class="flex flex-col">
             <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div
-                class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-              >
-                <div
-                  class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                >
-                  <table
-                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                  >
+              <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                <div class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg">
+                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-800">
                       <tr>
                         <th
@@ -452,39 +418,24 @@
                     >
                       {#each apiKeys as apk, i}
                         <tr
-                          class:bg-slate-100="{i % 2 !== 0}"
-                          class:dark:bg-gray-800="{i % 2 !== 0}"
+                          class:bg-slate-100={i % 2 !== 0}
+                          class:dark:bg-gray-800={i % 2 !== 0}
                           data-testid="apikey"
-                          data-apikeyid="{apk.id}"
+                          data-apikeyid={apk.id}
                         >
-                          <td
-                            class="px-6 py-4 whitespace-nowrap"
-                            data-testid="apikey-name">{apk.name}</td
-                          >
-                          <td
-                            class="px-6 py-4 whitespace-nowrap"
-                            data-testid="apikey-prefix"
-                          >
+                          <td class="px-6 py-4 whitespace-nowrap" data-testid="apikey-name">{apk.name}</td>
+                          <td class="px-6 py-4 whitespace-nowrap" data-testid="apikey-prefix">
                             {apk.prefix}
                           </td>
-                          <td
-                            class="px-6 py-4 whitespace-nowrap"
-                            data-testid="apikey-active"
-                            data-active="{apk.active}"
-                          >
+                          <td class="px-6 py-4 whitespace-nowrap" data-testid="apikey-active" data-active={apk.active}>
                             <BooleanDisplay boolValue={apk.active} />
                           </td>
                           <td class="px-6 py-4 whitespace-nowrap">
                             {new Date(apk.updatedDate).toLocaleString()}
                           </td>
-                          <td
-                            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                          >
+                          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <HollowButton
-                              onClick={toggleApiKeyActiveStatus(
-                                apk.id,
-                                apk.active,
-                              )}
+                              onClick={toggleApiKeyActiveStatus(apk.id, apk.active)}
                               testid="apikey-activetoggle"
                             >
                               {#if !apk.active}
@@ -493,11 +444,7 @@
                                 {$LL.deactivate()}
                               {/if}
                             </HollowButton>
-                            <HollowButton
-                              color="red"
-                              onClick={deleteApiKey(apk.id)}
-                              testid="apikey-delete"
-                            >
+                            <HollowButton color="red" onClick={deleteApiKey(apk.id)} testid="apikey-delete">
                               {$LL.delete()}
                             </HollowButton>
                           </td>
@@ -515,19 +462,14 @@
       <div class="ms-8">
         <div class="flex w-full">
           <div class="flex-1">
-            <h2
-              class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-            >
+            <h2 class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white">
               Jira Instances
             </h2>
           </div>
           {#if (SubscriptionsEnabled && $user.subscribed) || (!SubscriptionsEnabled && $user.rank !== 'GUEST')}
             <div class="flex-1">
               <div class="text-right">
-                <HollowButton
-                  onClick={toggleCreateJiraInstance}
-                  testid="jirainstance-create"
-                >
+                <HollowButton onClick={toggleCreateJiraInstance} testid="jirainstance-create">
                   Add Jira Instance
                 </HollowButton>
               </div>
@@ -536,24 +478,16 @@
         </div>
         <div class="flex flex-col">
           <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div
-              class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-            >
-              <div
-                class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-              >
+            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+              <div class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg">
                 {#if SubscriptionsEnabled && !$user.subscribed}
-                  <FeatureSubscribeBanner
-                    salesPitch="Setup Jira Cloud to import your stories in Poker Planning."
-                  />
+                  <FeatureSubscribeBanner salesPitch="Setup Jira Cloud to import your stories in Poker Planning." />
                 {:else if !SubscriptionsEnabled && $user.rank === 'GUEST'}
                   <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
                     Must be logged in to setup Jira integrations
                   </p>
                 {:else}
-                  <table
-                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                  >
+                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-800">
                       <tr>
                         <th
@@ -578,29 +512,17 @@
                     >
                       {#each jiraInstances as ji, i}
                         <tr
-                          class:bg-slate-100="{i % 2 !== 0}"
-                          class:dark:bg-gray-800="{i % 2 !== 0}"
+                          class:bg-slate-100={i % 2 !== 0}
+                          class:dark:bg-gray-800={i % 2 !== 0}
                           data-testid="apikey"
-                          data-apikeyid="{ji.id}"
+                          data-apikeyid={ji.id}
                         >
-                          <td
-                            class="px-6 py-4 whitespace-nowrap"
-                            data-testid="jira-host">{ji.host}</td
-                          >
-                          <td
-                            class="px-6 py-4 whitespace-nowrap"
-                            data-testid="jira-clientmail"
-                          >
+                          <td class="px-6 py-4 whitespace-nowrap" data-testid="jira-host">{ji.host}</td>
+                          <td class="px-6 py-4 whitespace-nowrap" data-testid="jira-clientmail">
                             {ji.client_mail}
                           </td>
-                          <td
-                            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                          >
-                            <HollowButton
-                              color="red"
-                              onClick={deleteJiraInstance(ji.id)}
-                              testid="jira-delete"
-                            >
+                          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <HollowButton color="red" onClick={deleteJiraInstance(ji.id)} testid="jira-delete">
                               {$LL.delete()}
                             </HollowButton>
                           </td>
@@ -625,19 +547,14 @@
     {/if}
   </div>
   {#if showApiKeyCreate}
-    <CreateApiKey
-      toggleCreateApiKey={toggleCreateApiKey}
-      handleApiKeyCreate={getApiKeys}
-      notifications={notifications}
-      xfetch={xfetch}
-    />
+    <CreateApiKey {toggleCreateApiKey} handleApiKeyCreate={getApiKeys} {notifications} {xfetch} />
   {/if}
   {#if showJiraInstanceCreate}
     <CreateJiraInstance
       toggleClose={toggleCreateJiraInstance}
       handleCreate={getJiraInstances}
-      notifications={notifications}
-      xfetch={xfetch}
+      {notifications}
+      {xfetch}
     />
   {/if}
 

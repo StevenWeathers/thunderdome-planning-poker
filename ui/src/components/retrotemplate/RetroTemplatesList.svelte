@@ -51,7 +51,7 @@
     templatesPage = $bindable(1),
     templatesPageLimit = 10,
     changePage = () => {},
-    getTemplates = () => {}
+    getTemplates = () => {},
   }: Props = $props();
 
   const dispatch = createEventDispatcher();
@@ -122,7 +122,7 @@
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>{$LL.name()}</HeadCol>
           <HeadCol>{$LL.description()}</HeadCol>
           <HeadCol>{$LL.format()}</HeadCol>
@@ -134,9 +134,9 @@
             <span class="sr-only">{$LL.actions()}</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each templates as template, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -145,31 +145,22 @@
                 </div>
               </RowCol>
               <RowCol>
-                <span data-testid="template-description"
-                  >{template.description}</span
-                >
+                <span data-testid="template-description">{template.description}</span>
               </RowCol>
               <RowCol>
                 <span data-testid="template-format">
-                  <button
-                    onclick={() => toggleViewFormat(template)}
-                    class="text-blue-500 dark:text-sky-400"
-                  >
+                  <button onclick={() => toggleViewFormat(template)} class="text-blue-500 dark:text-sky-400">
                     <Eye class="w-5 h-5" />
                   </button>
                 </span>
               </RowCol>
               {#if isAdmin && !teamId && !organizationId}
                 <RowCol>
-                  <span data-testid="template-is-public"
-                    ><BooleanDisplay boolValue={template.isPublic} /></span
-                  >
+                  <span data-testid="template-is-public"><BooleanDisplay boolValue={template.isPublic} /></span>
                 </RowCol>
               {/if}
               <RowCol>
-                <span data-testid="template-is-default"
-                  ><BooleanDisplay boolValue={template.defaultTemplate} />
-                </span>
+                <span data-testid="template-is-default"><BooleanDisplay boolValue={template.defaultTemplate} /> </span>
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin || isEntityAdmin}
@@ -182,10 +173,10 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
     <TableFooter
-      bind:current="{templatesPage}"
+      bind:current={templatesPage}
       num_items={templateCount}
       per_page={templatesPageLimit}
       on:navigate={changePage}
@@ -196,12 +187,12 @@
     <CreateRetroTemplate
       toggleCreate={toggleCreateTemplate}
       handleCreate={handleCreateTemplate}
-      organizationId={organizationId}
-      departmentId={departmentId}
-      teamId={teamId}
-      apiPrefix={apiPrefix}
-      xfetch={xfetch}
-      notifications={notifications}
+      {organizationId}
+      {departmentId}
+      {teamId}
+      {apiPrefix}
+      {xfetch}
+      {notifications}
     />
   {/if}
 
@@ -215,12 +206,12 @@
       format={updateTemplate.format}
       isPublic={updateTemplate.isPublic}
       defaultTemplate={updateTemplate.defaultTemplate}
-      organizationId={organizationId}
-      departmentId={departmentId}
-      teamId={teamId}
-      apiPrefix={apiPrefix}
-      xfetch={xfetch}
-      notifications={notifications}
+      {organizationId}
+      {departmentId}
+      {teamId}
+      {apiPrefix}
+      {xfetch}
+      {notifications}
     />
   {/if}
 
@@ -235,9 +226,6 @@
   {/if}
 
   {#if showFormat}
-    <ViewFormat
-      format={selectedTemplate.format}
-      toggleClose={toggleViewFormat}
-    />
+    <ViewFormat format={selectedTemplate.format} toggleClose={toggleViewFormat} />
   {/if}
 </div>

@@ -16,12 +16,7 @@
     notifications: NotificationService;
   }
 
-  let {
-    handleCreate = () => {},
-    toggleClose = () => {},
-    xfetch = () => {},
-    notifications
-  }: Props = $props();
+  let { handleCreate = () => {}, toggleClose = () => {}, xfetch = () => {}, notifications }: Props = $props();
 
   let host = $state('');
   let client_mail = $state('');
@@ -38,9 +33,7 @@
     }
 
     if (!/(http(s?)):\/\//i.test(host)) {
-      notifications.danger(
-        'Host must contain protocol e.g. https:// or http://',
-      );
+      notifications.danger('Host must contain protocol e.g. https:// or http://');
       return false;
     }
 
@@ -103,49 +96,41 @@
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalCreateJiraInstance()}>
   <form onsubmit={handleSubmit} name="createjirainstance">
     <div class="mb-4">
-      <label class="block dark:text-gray-400 font-bold mb-2" for="host">
-        Host
-      </label>
+      <label class="block dark:text-gray-400 font-bold mb-2" for="host"> Host </label>
       <TextInput
         id="host"
         name="host"
-        bind:value="{host}"
+        bind:value={host}
         bind:this={focusInput}
         placeholder="Enter the Jira Hostname..."
         required
       />
-      <span class="font-bold dark:text-gray-400"
-        >Example: https://yourjira.atlassian.net</span
-      >
+      <span class="font-bold dark:text-gray-400">Example: https://yourjira.atlassian.net</span>
     </div>
     <div class="mb-4">
       <Checkbox
-        bind:checked="{jira_data_center}"
+        bind:checked={jira_data_center}
         id="jira_data_center"
         name="jira_data_center"
         label={$LL.jiradatacenterLabel()}
       />
     </div>
     <div class="mb-4">
-      <label class="block dark:text-gray-400 font-bold mb-2" for="client_mail">
-        Jira User Email
-      </label>
+      <label class="block dark:text-gray-400 font-bold mb-2" for="client_mail"> Jira User Email </label>
       <TextInput
         id="client_mail"
         name="client_mail"
-        bind:value="{client_mail}"
+        bind:value={client_mail}
         placeholder="Enter your Jira user email..."
         required
       />
     </div>
     <div class="mb-4">
-      <label class="block dark:text-gray-400 font-bold mb-2" for="access_token">
-        API Access Token
-      </label>
+      <label class="block dark:text-gray-400 font-bold mb-2" for="access_token"> API Access Token </label>
       <TextInput
         id="access_token"
         name="access_token"
-        bind:value="{access_token}"
+        bind:value={access_token}
         placeholder="Enter your Jira API Access Token..."
         required
       />

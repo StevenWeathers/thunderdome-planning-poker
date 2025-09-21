@@ -174,28 +174,31 @@
       value: appStats.openSupportTicketCount,
       icon: MessageCircleQuestion,
       color: 'from-yellow-500 to-yellow-600',
-      active: true
+      active: true,
     },
     {
       title: 'Active Sessions',
       value: appStats.activeBattleUserCount + appStats.activeRetroUserCount + appStats.activeStoryboardUserCount,
       icon: Activity,
       color: 'from-green-500 to-green-600',
-      active: true
+      active: true,
     },
     {
       title: 'Total Users',
       value: appStats.registeredUserCount + appStats.unregisteredUserCount,
       icon: Users,
       color: 'from-blue-500 to-blue-600',
-      active: true
+      active: true,
     },
     {
       title: 'Total Subscriptions',
-      value: appStats.userSubscriptionActiveCount + appStats.teamSubscriptionActiveCount + appStats.orgSubscriptionActiveCount,
+      value:
+        appStats.userSubscriptionActiveCount +
+        appStats.teamSubscriptionActiveCount +
+        appStats.orgSubscriptionActiveCount,
       icon: CreditCard,
       color: 'from-indigo-500 to-indigo-600',
-      active: AppConfig.SubscriptionsEnabled
+      active: AppConfig.SubscriptionsEnabled,
     },
   ]);
 
@@ -497,16 +500,24 @@
     </div>
   {:else}
     <!-- Overview Cards -->
-    <div class="grid grid-cols-1 {AppConfig.SubscriptionsEnabled ? 'md:grid-cols-3 lg:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4 mb-6">
+    <div
+      class="grid grid-cols-1 {AppConfig.SubscriptionsEnabled
+        ? 'md:grid-cols-3 lg:grid-cols-4'
+        : 'md:grid-cols-2 lg:grid-cols-3'} gap-4 mb-6"
+    >
       {#each overviewStats.filter(stat => stat.active) as stat}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden group hover:shadow-lg transition-all duration-300">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden group hover:shadow-lg transition-all duration-300"
+        >
           <div class="p-4">
             <div class="flex items-center justify-between">
               <div class="flex-1">
                 <p class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{stat.title}</p>
                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{stat.value.toLocaleString()}</p>
               </div>
-              <div class="w-12 h-12 bg-gradient-to-r {stat.color} rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <div
+                class="w-12 h-12 bg-gradient-to-r {stat.color} rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300"
+              >
                 <stat.icon class="w-6 h-6 text-white" />
               </div>
             </div>
@@ -519,21 +530,27 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 mb-6">
       {#each statGroups.filter(g => g.active) as group}
         {#if group.stats.some(stat => stat.active)}
-          <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-md overflow-hidden">
+          <div
+            class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-md overflow-hidden"
+          >
             <!-- Group Header -->
             <div class="bg-gradient-to-r {group.gradient} px-4 py-2">
               <h2 class="text-sm font-bold text-white font-rajdhani uppercase tracking-wide">
                 {group.title}
               </h2>
             </div>
-            
+
             <!-- Stats Content -->
             <div class="p-3">
               <div class="space-y-2">
                 {#each group.stats.filter(stat => stat.active) as stat}
-                  <div class="flex items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 group cursor-pointer">
+                  <div
+                    class="flex items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 group cursor-pointer"
+                  >
                     <div class="flex-shrink-0 mr-3">
-                      <div class="w-8 h-8 {group.iconBg} rounded flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow duration-200">
+                      <div
+                        class="w-8 h-8 {group.iconBg} rounded flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow duration-200"
+                      >
                         <stat.icon class="w-4 h-4 text-white" />
                       </div>
                     </div>
@@ -541,7 +558,9 @@
                       <p class="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
                         {$LL[stat.name]()}
                       </p>
-                      <p class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
+                      <p
+                        class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200"
+                      >
                         {stat.count.toLocaleString()}
                       </p>
                     </div>
@@ -555,7 +574,9 @@
     </div>
 
     <!-- Maintenance Section -->
-    <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-lg p-6 border border-gray-200 dark:border-gray-600">
+    <div
+      class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-lg p-6 border border-gray-200 dark:border-gray-600"
+    >
       <div class="text-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-rajdhani uppercase tracking-wide mb-1">
           {$LL.maintenance()}
@@ -565,9 +586,13 @@
 
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
         <!-- Clean Guests -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-300 group">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-300 group"
+        >
           <div class="text-center">
-            <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"
+            >
               <Ghost class="w-6 h-6 text-white" />
             </div>
             <h3 class="font-bold text-gray-700 dark:text-gray-300 mb-2 text-xs uppercase tracking-wide">
@@ -581,9 +606,13 @@
 
         <!-- Clean Battles -->
         {#if FeaturePoker}
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-300 group">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-300 group"
+          >
             <div class="text-center">
-              <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+              <div
+                class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"
+              >
                 <Vote class="w-6 h-6 text-white" />
               </div>
               <h3 class="font-bold text-gray-700 dark:text-gray-300 mb-2 text-xs uppercase tracking-wide">
@@ -598,9 +627,13 @@
 
         <!-- Clean Retros -->
         {#if FeatureRetro}
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-300 group">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-300 group"
+          >
             <div class="text-center">
-              <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+              <div
+                class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"
+              >
                 <RefreshCcw class="w-6 h-6 text-white" />
               </div>
               <h3 class="font-bold text-gray-700 dark:text-gray-300 mb-2 text-xs uppercase tracking-wide">
@@ -615,9 +648,13 @@
 
         <!-- Clean Storyboards -->
         {#if FeatureStoryboard}
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-300 group">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-300 group"
+          >
             <div class="text-center">
-              <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+              <div
+                class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"
+              >
                 <LayoutDashboard class="w-6 h-6 text-white" />
               </div>
               <h3 class="font-bold text-gray-700 dark:text-gray-300 mb-2 text-xs uppercase tracking-wide">

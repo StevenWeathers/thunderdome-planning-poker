@@ -19,7 +19,7 @@
     handleStoryboardEdit = () => {},
     storyboardName = $bindable(''),
     joinCode = $bindable(''),
-    facilitatorCode = $bindable('')
+    facilitatorCode = $bindable(''),
   }: Props = $props();
 
   let focusInput: any = $state();
@@ -48,16 +48,13 @@
 >
   <form onsubmit={saveStoryboard} name="createStoryboard">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="storyboardName"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="storyboardName">
         {$LL.storyboardName()}
       </label>
       <div class="control">
         <TextInput
           name="storyboardName"
-          bind:value="{storyboardName}"
+          bind:value={storyboardName}
           placeholder={$LL.storyboardNamePlaceholder()}
           id="storyboardName"
           bind:this={focusInput}
@@ -67,10 +64,7 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="joinCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">
         {$LL.passCode()}
       </label>
       <div class="control">
@@ -85,16 +79,13 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-        for="facilitatorCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="facilitatorCode">
         {$LL.facilitatorCodeOptional()}
       </label>
       <div class="control">
         <TextInput
           name="facilitatorCode"
-          bind:value="{facilitatorCode}"
+          bind:value={facilitatorCode}
           placeholder={$LL.facilitatorCodePlaceholder()}
           id="facilitatorCode"
           icon={Crown}

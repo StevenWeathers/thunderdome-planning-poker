@@ -25,13 +25,7 @@
     scope?: 'user' | 'project';
   }
 
-  let {
-    notifications,
-    router,
-    xfetch,
-    apiPrefix = '/api',
-    scope = 'user',
-  }: Props = $props();
+  let { notifications, router, xfetch, apiPrefix = '/api', scope = 'user' }: Props = $props();
 
   const allowedPointAverages = ['ceil', 'round', 'floor'];
 
@@ -103,9 +97,7 @@
     let endpoint = scope === 'project' ? `${apiPrefix}/poker` : `${apiPrefix}/users/${$user.id}/battles`;
 
     if (selectedEstimationScale === '' || allowedPointValues.length === 0) {
-      notifications.danger(
-        'Must select an estimation scale and allowed point values.',
-      );
+      notifications.danger('Must select an estimation scale and allowed point values.');
       return;
     }
 
@@ -138,9 +130,7 @@
       .catch(function (error) {
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
-            notifications.danger(
-              `${$LL.createBattleError()} : ${result.error}`,
-            );
+            notifications.danger(`${$LL.createBattleError()} : ${result.error}`);
           });
         } else {
           notifications.danger($LL.createBattleError());
@@ -183,21 +173,11 @@
     const team = teams.find(t => t.id === pokerSettings.selectedTeam);
     // if subscriptions are enabled and the team (or its parent org) isn't subscribed
     // don't attempt to get private scales
-    if (
-      AppConfig.SubscriptionsEnabled &&
-      !validateUserIsAdmin($user) &&
-      !team.subscribed
-    ) {
+    if (AppConfig.SubscriptionsEnabled && !validateUserIsAdmin($user) && !team.subscribed) {
       return;
     }
-    const orgPrefix =
-      team.organization_id !== ''
-        ? `/api/organizations/${team.organization_id}`
-        : `/api`;
-    const teamPrefix =
-      team.department_id !== ''
-        ? `${orgPrefix}/departments/${team.department_id}`
-        : `/api`;
+    const orgPrefix = team.organization_id !== '' ? `/api/organizations/${team.organization_id}` : `/api`;
+    const teamPrefix = team.department_id !== '' ? `${orgPrefix}/departments/${team.department_id}` : `/api`;
 
     xfetch(`${teamPrefix}/teams/${team.id}/estimation-scales`)
       .then(res => res.json())
@@ -225,11 +205,7 @@
   const combineEstimationScales = () => {
     // scales priority order (Team -> Organization -> Public)
     let defaultFound = false;
-    estimateScales = [
-      ...teamEstimationScales,
-      ...organizationEstimationScales,
-      ...publicEstimationScales,
-    ];
+    estimateScales = [...teamEstimationScales, ...organizationEstimationScales, ...publicEstimationScales];
 
     estimateScales.map(scale => {
       // Find default scale with priority order (Team -> Organization -> Public)
@@ -255,11 +231,7 @@
     const team = teams.find(t => t.id === pokerSettings.selectedTeam);
     // if subscriptions are enabled and the team (or its parent org) isn't subscribed
     // don't attempt to get poker settings
-    if (
-      AppConfig.SubscriptionsEnabled &&
-      !validateUserIsAdmin($user) &&
-      !team.subscribed
-    ) {
+    if (AppConfig.SubscriptionsEnabled && !validateUserIsAdmin($user) && !team.subscribed) {
       return;
     }
 
@@ -292,9 +264,7 @@
     }
 
     if (team.department_id !== '') {
-      xfetch(
-        `/api/organizations/${team.organization_id}/departments/${team.department_id}/poker-settings`,
-      )
+      xfetch(`/api/organizations/${team.organization_id}/departments/${team.department_id}/poker-settings`)
         .then(res => res.json())
         .then(function (result) {
           if (!result.data) {
@@ -352,17 +322,14 @@
 
 <form onsubmit={createBattle} name="createBattle">
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="battleName"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="battleName">
       {$LL.battleName()}
     </label>
     <div class="control">
       <TextInput
         name="battleName"
         bind:this={battleNameTextInput}
-        bind:value="{pokerSettings.battleName}"
+        bind:value={pokerSettings.battleName}
         placeholder={$LL.battleNamePlaceholder()}
         id="battleName"
         required
@@ -372,22 +339,19 @@
 
   {#if apiPrefix === '/api' && $user.rank !== 'GUEST'}
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-        for="selectedTeam"
-      >
+      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2" for="selectedTeam">
         {$LL.associateTeam()}
         {#if !AppConfig.RequireTeams}{$LL.optional()}{/if}
       </label>
       <SelectInput
-        bind:value="{pokerSettings.selectedTeam}"
-        on:change="{handleTeamChange}"
+        bind:value={pokerSettings.selectedTeam}
+        on:change={handleTeamChange}
         id="selectedTeam"
         name="selectedTeam"
       >
         <option value="" disabled>{$LL.selectTeam()}</option>
         {#each teams as team}
-          <option value="{team.id}">
+          <option value={team.id}>
             {team.name}
           </option>
         {/each}
@@ -396,11 +360,7 @@
   {/if}
 
   <div class="mb-4">
-    <div
-      class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-    >
-      Estimation Scale
-    </div>
+    <div class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2">Estimation Scale</div>
     <SelectWithSubtext
       on:change={updatePointValues}
       items={estimateScales}
@@ -417,17 +377,10 @@
     <div class="control relative flex flex-wrap gap-1">
       {#each allowedPointValues as point, pi}
         <label
-          class="{points.includes(point)
-            ? checkedPointColor
-            : uncheckedPointColor}
+          class="{points.includes(point) ? checkedPointColor : uncheckedPointColor}
                     cursor-pointer font-bold border p-2 rounded inline-block"
         >
-          <input
-            type="checkbox"
-            bind:group="{points}"
-            value="{point}"
-            class="hidden"
-          />
+          <input type="checkbox" bind:group={points} value={point} class="hidden" />
           {point}
         </label>
       {/each}
@@ -446,23 +399,14 @@
         {$LL.addPlan()}
       </HollowButton>
       {#if showImport}
-        <ImportModal
-          notifications={notifications}
-          toggleImport={toggleImport}
-          handlePlanAdd={handlePlanImport}
-          xfetch={xfetch}
-        />
+        <ImportModal {notifications} {toggleImport} handlePlanAdd={handlePlanImport} {xfetch} />
       {/if}
     </div>
 
     {#each plans as plan, i}
       <div class="flex flex-wrap mb-2">
         <div class="w-3/4">
-          <TextInput
-            bind:value="{plan.name}"
-            placeholder={$LL.planNamePlaceholder()}
-            required
-          />
+          <TextInput bind:value={plan.name} placeholder={$LL.planNamePlaceholder()} required />
         </div>
         <div class="w-1/4">
           <div class="ps-2">
@@ -476,19 +420,12 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-      for="averageRounding"
-    >
+    <label class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2" for="averageRounding">
       {$LL.pointAverageRounding()}
     </label>
-    <SelectInput
-      bind:value="{pokerSettings.pointAverageRounding}"
-      id="averageRounding"
-      name="averageRounding"
-    >
+    <SelectInput bind:value={pokerSettings.pointAverageRounding} id="averageRounding" name="averageRounding">
       {#each allowedPointAverages as item}
-        <option value="{item}">
+        <option value={item}>
           {$LL.averageRoundingOptions[item]()}
         </option>
       {/each}
@@ -497,7 +434,7 @@
 
   <div class="mb-4">
     <Checkbox
-      bind:checked="{pokerSettings.autoFinishVoting}"
+      bind:checked={pokerSettings.autoFinishVoting}
       id="autoFinishVoting"
       name="autoFinishVoting"
       label={$LL.autoFinishVotingLabel()}
@@ -506,7 +443,7 @@
 
   <div class="mb-4">
     <Checkbox
-      bind:checked="{pokerSettings.hideVoterIdentity}"
+      bind:checked={pokerSettings.hideVoterIdentity}
       id="hideVoterIdentity"
       name="hideVoterIdentity"
       label={$LL.hideVoterIdentity()}
@@ -514,16 +451,13 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="joinCode"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">
       {$LL.joinCodeLabelOptional()}
     </label>
     <div class="control">
       <TextInput
         name="joinCode"
-        bind:value="{pokerSettings.joinCode}"
+        bind:value={pokerSettings.joinCode}
         placeholder={$LL.optionalPasscodePlaceholder()}
         id="joinCode"
         icon={Lock}
@@ -532,16 +466,13 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="leaderCode"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="leaderCode">
       {$LL.facilitatorCodeOptional()}
     </label>
     <div class="control">
       <TextInput
         name="leaderCode"
-        bind:value="{pokerSettings.leaderCode}"
+        bind:value={pokerSettings.leaderCode}
         placeholder={$LL.facilitatorCodePlaceholder()}
         id="leaderCode"
         icon={Crown}

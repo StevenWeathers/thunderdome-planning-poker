@@ -7,11 +7,7 @@
 
   import type { NotificationService } from '../../types/notifications';
 
-  let {
-    organizationId = '',
-    xfetch = async () => {},
-    notifications
-  }: Props = $props();
+  let { organizationId = '', xfetch = async () => {}, notifications }: Props = $props();
 
   let organization = $state({
     name: '',

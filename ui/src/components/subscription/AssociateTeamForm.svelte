@@ -21,7 +21,7 @@
     toggleClose = () => {},
     xfetch = async (url, ...options) => {},
     notifications,
-    subscriptionId = ''
+    subscriptionId = '',
   }: Props = $props();
 
   let teams = $state([]);
@@ -74,15 +74,10 @@
       <label class="block dark:text-gray-400 font-bold mb-2" for="selectedTeam">
         {$LL.associateTeam()}
       </label>
-      <SelectInput
-        bind:value="{selectedTeam}"
-        bind:this={focusInput}
-        id="selectedTeam"
-        name="selectedTeam"
-      >
+      <SelectInput bind:value={selectedTeam} bind:this={focusInput} id="selectedTeam" name="selectedTeam">
         <option value="" disabled>{$LL.selectTeam()}</option>
         {#each teams as team}
-          <option value="{team.id}">
+          <option value={team.id}>
             {team.name}
           </option>
         {/each}

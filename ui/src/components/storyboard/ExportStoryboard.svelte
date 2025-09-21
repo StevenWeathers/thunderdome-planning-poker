@@ -21,14 +21,19 @@
   let copiedStates = $state({
     json: false,
     csv: false,
-    xml: false
+    xml: false,
   });
 
   // For screen reader announcements
   let announceText = $state('');
 
   function safeFilename(name: string, ext: string) {
-    const base = name ? name.replace(/[^a-z0-9-_]+/gi, '_').replace(/_{2,}/g,'_').replace(/^_|_$/g,'') : 'storyboard';
+    const base = name
+      ? name
+          .replace(/[^a-z0-9-_]+/gi, '_')
+          .replace(/_{2,}/g, '_')
+          .replace(/^_|_$/g, '')
+      : 'storyboard';
     return `${base}-storyboard.${ext}`;
   }
 
@@ -46,15 +51,15 @@
   function generateJSON() {
     if (!storyboard) return;
     const {
-         facilitatorCode: _facilitatorCode,
-         joinCode: _joinCode,
-         facilitators: _facilitators,
-         users: _users,
-         owner_id: _owner_id,
-         teamId: _team_id,
-         teamName: _team_name,
-         ...safe
-       } = storyboard;
+      facilitatorCode: _facilitatorCode,
+      joinCode: _joinCode,
+      facilitators: _facilitators,
+      users: _users,
+      owner_id: _owner_id,
+      teamId: _team_id,
+      teamName: _team_name,
+      ...safe
+    } = storyboard;
 
     const jsonData = JSON.stringify(safe, null, 2);
     const filename = safeFilename(storyboard.name, 'json');
@@ -72,15 +77,11 @@
       g.columns.forEach(c => {
         c.stories.forEach(s => {
           const safe = (val: string | number | boolean) => `"${String(val).replace(/"/g, '""')}"`;
-          rows.push([
-            safe(g.name),
-            safe(c.name),
-            safe(s.name),
-            s.points ?? 0,
-            s.closed,
-            safe(s.color),
-            safe(s.link || '')
-          ].join(','));
+          rows.push(
+            [safe(g.name), safe(c.name), safe(s.name), s.points ?? 0, s.closed, safe(s.color), safe(s.link || '')].join(
+              ',',
+            ),
+          );
         });
       });
     });
@@ -94,7 +95,8 @@
 
   function generateXML() {
     if (!storyboard) return;
-    const esc = (v: string) => v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const esc = (v: string) =>
+      v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += `<storyboard id="${esc(storyboard.id)}" name="${esc(storyboard.name)}">`;
     storyboard.goals.forEach(g => {
@@ -130,7 +132,7 @@
       await navigator.clipboard.writeText(data);
       copiedStates[format] = true;
       announceText = `${format.toUpperCase()} data copied to clipboard`;
-      
+
       setTimeout(() => {
         copiedStates[format] = false;
         announceText = '';
@@ -146,11 +148,11 @@
       textarea.select();
       document.execCommand('copy');
       document.body.removeChild(textarea);
-      
+
       // Still show success feedback for fallback
       copiedStates[format] = true;
       announceText = `${format.toUpperCase()} data copied to clipboard`;
-      
+
       setTimeout(() => {
         copiedStates[format] = false;
         announceText = '';
@@ -174,28 +176,32 @@
       generateCSV();
       generateXML();
     }
-    
+
     return cleanup;
   });
 </script>
 
-<Modal closeModal={closeModal} ariaLabel="Storyboard Export Options" widthClasses="md:w-4/5 lg:w-3/4 xl:w-2/3">
+<Modal {closeModal} ariaLabel="Storyboard Export Options" widthClasses="md:w-4/5 lg:w-3/4 xl:w-2/3">
   <div>
     <!-- Screen reader announcements -->
     <div aria-live="polite" aria-atomic="true" class="sr-only">
       {announceText}
     </div>
-    
+
     <!-- Skip link for keyboard users -->
-    <a href="#export-actions" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">
+    <a
+      href="#export-actions"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50"
+    >
       Skip to export actions
     </a>
-    
+
     <h2 class="text-2xl font-rajdhani mb-6 text-gray-900 dark:text-white">Export Storyboard</h2>
     <div class="space-y-6" data-testid="storyboard-export-options" role="main" id="export-actions">
-      
       <!-- JSON Export -->
-      <div class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm dark:shadow-gray-900/20">
+      <div
+        class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm dark:shadow-gray-900/20"
+      >
         <div class="flex items-center justify-between mb-4">
           <div>
             <div class="font-bold flex items-center space-x-2 text-gray-900 dark:text-white">
@@ -205,21 +211,21 @@
             <div class="text-gray-600 dark:text-gray-300 mt-1">Full raw data dump with complete structure</div>
           </div>
         </div>
-        
+
         {#if downloads.json}
           <div class="flex flex-wrap gap-3" role="group" aria-label="JSON export actions">
-            <SolidButton 
+            <SolidButton
               color="green"
               href={downloads.json.url}
-              options={{ 
+              options={{
                 download: downloads.json.filename,
-                'aria-label': `Download JSON file: ${downloads.json.filename}`
+                'aria-label': `Download JSON file: ${downloads.json.filename}`,
               }}
             >
               <Download class="w-4 h-4 mr-2" aria-hidden="true" />
               Download {downloads.json.filename}
             </SolidButton>
-            
+
             <SolidButton
               color="blue"
               onClick={() => copyToClipboard(downloads.json!.data, 'json')}
@@ -238,31 +244,35 @@
       </div>
 
       <!-- CSV Export -->
-      <div class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm dark:shadow-gray-900/20">
+      <div
+        class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm dark:shadow-gray-900/20"
+      >
         <div class="flex items-center justify-between mb-4">
           <div>
             <div class="font-bold flex items-center space-x-2 text-gray-900 dark:text-white">
               <FileSpreadsheet class="w-5 h-5 text-orange-600 dark:text-orange-400" />
               <span>CSV Export</span>
             </div>
-            <div class="text-gray-600 dark:text-gray-300 mt-1">Tabular format for spreadsheets (Excel, Google Sheets)</div>
+            <div class="text-gray-600 dark:text-gray-300 mt-1">
+              Tabular format for spreadsheets (Excel, Google Sheets)
+            </div>
           </div>
         </div>
-        
+
         {#if downloads.csv}
           <div class="flex flex-wrap gap-3" role="group" aria-label="CSV export actions">
-            <SolidButton 
+            <SolidButton
               color="green"
               href={downloads.csv.url}
-              options={{ 
+              options={{
                 download: downloads.csv.filename,
-                'aria-label': `Download CSV file: ${downloads.csv.filename}`
+                'aria-label': `Download CSV file: ${downloads.csv.filename}`,
               }}
             >
               <Download class="w-4 h-4 mr-2" aria-hidden="true" />
               Download {downloads.csv.filename}
             </SolidButton>
-            
+
             <SolidButton
               color="blue"
               onClick={() => copyToClipboard(downloads.csv!.data, 'csv')}
@@ -281,7 +291,9 @@
       </div>
 
       <!-- XML Export -->
-      <div class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm dark:shadow-gray-900/20">
+      <div
+        class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm dark:shadow-gray-900/20"
+      >
         <div class="flex items-center justify-between mb-4">
           <div>
             <div class="font-bold flex items-center space-x-2 text-gray-900 dark:text-white">
@@ -291,21 +303,21 @@
             <div class="text-gray-600 dark:text-gray-300 mt-1">Hierarchical structure for data interchange</div>
           </div>
         </div>
-        
+
         {#if downloads.xml}
           <div class="flex flex-wrap gap-3" role="group" aria-label="XML export actions">
-            <SolidButton 
+            <SolidButton
               color="green"
               href={downloads.xml.url}
-              options={{ 
+              options={{
                 download: downloads.xml.filename,
-                'aria-label': `Download XML file: ${downloads.xml.filename}`
+                'aria-label': `Download XML file: ${downloads.xml.filename}`,
               }}
             >
               <Download class="w-4 h-4 mr-2" aria-hidden="true" />
               Download {downloads.xml.filename}
             </SolidButton>
-            
+
             <SolidButton
               color="blue"
               onClick={() => copyToClipboard(downloads.xml!.data, 'xml')}
@@ -346,12 +358,7 @@
     </div>
 
     <div class="text-right mt-8">
-      <SolidButton 
-        color="gray" 
-        onClick={closeModal}
-      >
-        Close
-      </SolidButton>
+      <SolidButton color="gray" onClick={closeModal}>Close</SolidButton>
     </div>
   </div>
 </Modal>

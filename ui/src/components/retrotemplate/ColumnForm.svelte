@@ -57,11 +57,7 @@
     }
   }
 
-  function updateColumn(
-    index: number,
-    field: keyof RetroTemplateColumn,
-    value: string,
-  ) {
+  function updateColumn(index: number, field: keyof RetroTemplateColumn, value: string) {
     if (field === 'name') {
       value = validateColumnName(value);
     }
@@ -87,9 +83,7 @@
   }
 
   function getIconComponent(iconValue: string) {
-    return (
-      iconOptions.find(option => option.value === iconValue)?.component || Smile
-    );
+    return iconOptions.find(option => option.value === iconValue)?.component || Smile;
   }
 </script>
 
@@ -104,7 +98,7 @@
   {#each format.columns as column, index}
     <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
       <input
-        bind:value="{column.name}"
+        bind:value={column.name}
         oninput={() => updateColumn(index, 'name', column.name)}
         placeholder="Column name"
         maxlength="16"
@@ -112,47 +106,43 @@
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       />
       <input
-        bind:value="{column.label}"
+        bind:value={column.label}
         oninput={() => updateColumn(index, 'label', column.label)}
         placeholder="Column label"
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       />
       <select
-        bind:value="{column.color}"
+        bind:value={column.color}
         onchange={() => updateColumn(index, 'color', column.color)}
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       >
         <option value="">Select an optional color</option>
         {#each colorOptions as option}
-          <option value="{option.value}">{option.name}</option>
+          <option value={option.value}>{option.name}</option>
         {/each}
       </select>
       <div class="flex items-center mb-2">
         <select
-          bind:value="{column.icon}"
+          bind:value={column.icon}
           onchange={() => updateColumn(index, 'icon', column.icon)}
           class="flex-grow p-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
         >
           <option value="">Select an optional icon</option>
           {#each iconOptions as option}
-            <option value="{option.value}">{option.name}</option>
+            <option value={option.value}>{option.name}</option>
           {/each}
         </select>
-        <div
-          class="ms-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600"
-        >
+        <div class="ms-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600">
           {#if column.icon}
             {@const SvelteComponent = getIconComponent(column.icon)}
-            <SvelteComponent
-              class="w-6 h-6 text-gray-700 dark:text-white"
-            />
+            <SvelteComponent class="w-6 h-6 text-gray-700 dark:text-white" />
           {/if}
         </div>
       </div>
       <button
         onclick={() => removeColumn(index)}
         class="w-full p-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed dark:bg-red-700 dark:hover:bg-red-800 dark:disabled:bg-red-900"
-        disabled="{!canRemoveColumn}"
+        disabled={!canRemoveColumn}
       >
         Remove Column
       </button>
@@ -163,44 +153,40 @@
     <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
       <h3 class="text-xl font-bold mb-2 dark:text-white">Add New Column</h3>
       <input
-        bind:value="{newColumn.name}"
+        bind:value={newColumn.name}
         placeholder="Column name"
         maxlength="16"
         pattern="[a-z]+"
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       />
       <input
-        bind:value="{newColumn.label}"
+        bind:value={newColumn.label}
         placeholder="Column label"
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       />
       <select
-        bind:value="{newColumn.color}"
+        bind:value={newColumn.color}
         class="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
       >
         <option value="">Select an optional color</option>
         {#each colorOptions as option}
-          <option value="{option.value}">{option.name}</option>
+          <option value={option.value}>{option.name}</option>
         {/each}
       </select>
       <div class="flex items-center mb-2">
         <select
-          bind:value="{newColumn.icon}"
+          bind:value={newColumn.icon}
           class="flex-grow p-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
         >
           <option value="">Select an optional icon</option>
           {#each iconOptions as option}
-            <option value="{option.value}">{option.name}</option>
+            <option value={option.value}>{option.name}</option>
           {/each}
         </select>
-        <div
-          class="ms-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600"
-        >
+        <div class="ms-2 p-2 bg-white dark:bg-gray-700 border rounded dark:border-gray-600">
           {#if newColumn.icon}
             {@const SvelteComponent_1 = getIconComponent(newColumn.icon)}
-            <SvelteComponent_1
-              class="w-6 h-6 text-gray-700 dark:text-white"
-            />
+            <SvelteComponent_1 class="w-6 h-6 text-gray-700 dark:text-white" />
           {/if}
         </div>
       </div>
