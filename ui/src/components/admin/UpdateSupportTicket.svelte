@@ -5,14 +5,14 @@
   import type { NotificationService } from '../../types/notifications';
   import Checkbox from '../forms/Checkbox.svelte';
   import HollowButton from '../global/HollowButton.svelte';
-  import type { User } from '../../types/user';
+  import type { SupportTicket, User } from '../../types/user';
 
   interface Props {
     xfetch: ApiClient;
     notifications: NotificationService;
     toggleUpdate?: any;
     handleUpdate?: any;
-    ticket: any;
+    ticket: SupportTicket;
     adminUsers: User[];
   }
 
@@ -30,16 +30,16 @@
       notes: null,
       resolvedAt: null,
       resolvedBy: null,
-    },
+    } as SupportTicket,
     adminUsers = [],
   }: Props = $props();
 
-  let fullName = $state(ticket.fullName);
-  let email = $state(ticket.email);
-  let inquiry = $state(ticket.inquiry);
-  let assignedTo = $state(ticket.assignedTo);
-  let notes = $state(ticket.notes);
-  let markResolved = $state(ticket.resolvedAt !== '' && ticket.resolvedAt !== null);
+  let fullName: string = $state(ticket.fullName);
+  let email: string = $state(ticket.email);
+  let inquiry: string = $state(ticket.inquiry);
+  let assignedTo: string | null = $state(ticket.assignedTo);
+  let notes: string | null = $state(ticket.notes);
+  let markResolved: boolean = $state(ticket.resolvedAt !== '' && ticket.resolvedAt !== null);
 
   function onSubmit() {
     handleUpdate(ticket.id, { fullName, email, inquiry, assignedTo, notes, markResolved });
