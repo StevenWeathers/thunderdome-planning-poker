@@ -36,19 +36,19 @@
 
   let {
     profile = $bindable({
-    id: '',
-    rank: '',
-    name: '',
-    email: '',
-    company: '',
-    country: '',
-    jobTitle: '',
-    notificationsEnabled: true,
-    avatar: '',
-    gravatarHash: '',
-    verified: false,
-    theme: 'auto',
-  }),
+      id: '',
+      rank: '',
+      name: '',
+      email: '',
+      company: '',
+      country: '',
+      jobTitle: '',
+      notificationsEnabled: true,
+      avatar: '',
+      gravatarHash: '',
+      verified: false,
+      theme: 'auto',
+    }),
     credential = $bindable(),
     handleUpdate = () => {},
     toggleUpdatePassword,
@@ -56,17 +56,11 @@
     xfetch,
   }: Props = $props();
 
-  const {
-     AvatarService,
-     LdapEnabled,
-    HeaderAuthEnabled,
-    OIDCAuthEnabled, 
-  } = AppConfig;
+  const { AvatarService, LdapEnabled, HeaderAuthEnabled, OIDCAuthEnabled } = AppConfig;
 
   const themes = ['auto', 'light', 'dark'];
   const configurableAvatarServices = ['gravatar', 'robohash', 'govatar'];
-  const isAvatarConfigurable =
-    configurableAvatarServices.includes(AvatarService);
+  const isAvatarConfigurable = configurableAvatarServices.includes(AvatarService);
   const avatarOptions = {
     gravatar: ['mp', 'identicon', 'monsterid', 'wavatar', 'retro', 'robohash'],
     robohash: ['set1', 'set2', 'set3', 'set4'],
@@ -154,14 +148,11 @@
 
 <form onsubmit={handleSubmit} name="updateProfile">
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-      for="yourName"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourName">
       {$LL.name()}
     </label>
     <TextInput
-      bind:value="{profile.name}"
+      bind:value={profile.name}
       placeholder={$LL.yourNamePlaceholder()}
       id="yourName"
       name="yourName"
@@ -171,10 +162,7 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-      for="yourEmail"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourEmail">
       {$LL.email()}
       {#if profile.rank && profile.rank !== 'GUEST'}
         {#if profile.verified}
@@ -199,7 +187,7 @@
         {/if}
 
         {#if !LdapEnabled && !HeaderAuthEnabled && !OIDCAuthEnabled}
-        <button
+          <button
             class="float-right inline-block align-baseline font-bold text-sm text-blue-500
                                         hover:text-blue-800"
             onclick={requestEmailChange}
@@ -211,7 +199,7 @@
       {/if}
     </label>
     <TextInput
-      bind:value="{profile.email}"
+      bind:value={profile.email}
       id="yourEmail"
       name="yourEmail"
       type="email"
@@ -226,35 +214,24 @@
         {$LL.mfa2faLabel()}
       </p>
       {#if !credential.mfa_enabled}
-        <HollowButton color="teal" onClick={toggleMfaSetup}
-          >{$LL.mfa2faSetup()}
-        </HollowButton>
+        <HollowButton color="teal" onClick={toggleMfaSetup}>{$LL.mfa2faSetup()}</HollowButton>
       {:else}
-        <HollowButton color="red" onClick={toggleMfaRemove}
-          >{$LL.mfa2faRemove()}
-        </HollowButton>
+        <HollowButton color="red" onClick={toggleMfaRemove}>{$LL.mfa2faRemove()}</HollowButton>
       {/if}
     </div>
   {/if}
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-      for="yourCountry"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourCountry">
       {$LL.country()}
     </label>
 
-    <SelectInput
-      bind:value="{profile.country}"
-      id="yourCountry"
-      name="yourCountry"
-    >
+    <SelectInput bind:value={profile.country} id="yourCountry" name="yourCountry">
       <option value="">
         {$LL.chooseCountryPlaceholder()}
       </option>
       {#each countryList as item}
-        <option value="{item.abbrev}">
+        <option value={item.abbrev}>
           {item.name} [{item.abbrev}]
         </option>
       {/each}
@@ -265,21 +242,15 @@
     <div class="text-gray-700 dark:text-gray-400 font-bold mb-2">
       {$LL.locale()}
     </div>
-    <LocaleSwitcher
-      selectedLocale={$locale}
-      on:locale-changed="{e => setupI18n(e.detail)}"
-    />
+    <LocaleSwitcher selectedLocale={$locale} on:locale-changed={e => setupI18n(e.detail)} />
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-      for="yourCompany"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourCompany">
       {$LL.company()}
     </label>
     <TextInput
-      bind:value="{profile.company}"
+      bind:value={profile.company}
       placeholder={$LL.companyPlaceholder()}
       id="yourCompany"
       name="yourCompany"
@@ -288,14 +259,11 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-      for="yourJobTitle"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourJobTitle">
       {$LL.jobTitle()}
     </label>
     <TextInput
-      bind:value="{profile.jobTitle}"
+      bind:value={profile.jobTitle}
       placeholder={$LL.jobTitlePlaceholder()}
       id="yourJobTitle"
       name="yourJobTitle"
@@ -303,15 +271,12 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-      for="yourCountry"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourCountry">
       {$LL.theme()}
     </label>
-    <SelectInput bind:value="{profile.theme}" id="theme" name="theme">
+    <SelectInput bind:value={profile.theme} id="theme" name="theme">
       {#each themes as theme}
-        <option value="{theme}">
+        <option value={theme}>
           {theme}
         </option>
       {/each}
@@ -319,10 +284,7 @@
   </div>
 
   <div class="mb-4">
-    <Checkbox
-      bind:checked="{profile.notificationsEnabled}"
-      label={$LL.enableBattleNotifications()}
-    />
+    <Checkbox bind:checked={profile.notificationsEnabled} label={$LL.enableBattleNotifications()} />
   </div>
 
   {#if isAvatarConfigurable}
@@ -339,13 +301,9 @@
           {#if AvatarService === 'gravatar'}
             <span class="dark:text-gray-300">Optional Gravatar Fallback</span>
           {/if}
-          <SelectInput
-            bind:value="{profile.avatar}"
-            id="yourAvatar"
-            name="yourAvatar"
-          >
+          <SelectInput bind:value={profile.avatar} id="yourAvatar" name="yourAvatar">
             {#each avatars as item}
-              <option value="{item}">
+              <option value={item}>
                 {item}
               </option>
             {/each}
@@ -388,12 +346,7 @@
 </form>
 
 {#if showMFASetup}
-  <SetupMFA
-    notifications={notifications}
-    xfetch={xfetch}
-    toggleSetup={toggleMfaSetup}
-    handleComplete={handleMfaSetupCompletion}
-  />
+  <SetupMFA {notifications} {xfetch} toggleSetup={toggleMfaSetup} handleComplete={handleMfaSetupCompletion} />
 {/if}
 
 {#if showMfaRemove}

@@ -16,7 +16,7 @@
   import CrudActions from '../../../components/table/CrudActions.svelte';
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -55,9 +55,7 @@
 
   function getApiKeys() {
     const apikeysOffset = (apikeysPage - 1) * apikeysPageLimit;
-    xfetch(
-      `/api/admin/apikeys?limit=${apikeysPageLimit}&offset=${apikeysOffset}`,
-    )
+    xfetch(`/api/admin/apikeys?limit=${apikeysPageLimit}&offset=${apikeysOffset}`)
       .then(res => res.json())
       .then(function (result) {
         apikeys = result.data;
@@ -134,7 +132,7 @@
     <TableNav title={$LL.apiKeys()} createBtnEnabled={false} />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.apiKeyName()}
           </HeadCol>
@@ -157,9 +155,9 @@
             {$LL.actions()}
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each apikeys as apikey, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -192,11 +190,7 @@
                   deleteBtnTestId="apikey-delete"
                 >
                   <HollowButton
-                    onClick={toggleApiKeyActiveStatus(
-                      apikey.userId,
-                      apikey.id,
-                      apikey.active,
-                    )}
+                    onClick={toggleApiKeyActiveStatus(apikey.userId, apikey.id, apikey.active)}
                     testid="apikey-activetoggle"
                   >
                     {#if !apikey.active}
@@ -210,7 +204,7 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
     <TableFooter
       bind:current={apikeysPage}

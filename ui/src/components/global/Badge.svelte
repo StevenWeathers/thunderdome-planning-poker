@@ -7,7 +7,7 @@
     title?: string;
   }
 
-  let { class: klass, label, testId = "", color = 'gray', title = label }: Props = $props();
+  let { class: klass, label, testId = '', color = 'gray', title = label }: Props = $props();
 
   const badgeClasses = 'inline-flex items-center px-3 py-1 rounded-full font-medium';
 
@@ -27,6 +27,6 @@
   }
 </script>
 
-<span class="{badgeClasses} {getColorClasses(color)} {klass}" data-testid={testId} title={title}>
+<span class="{badgeClasses} {getColorClasses(color)} {klass}" data-testid={testId} {title}>
   {label}
 </span>

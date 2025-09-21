@@ -27,25 +27,18 @@
   });
 </script>
 
-<Modal
-  closeModal={toggleBecomeFacilitator}
-  widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
-  ariaLabelledby="modalTitle"
->
+<Modal closeModal={toggleBecomeFacilitator} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabelledby="modalTitle">
   <form onsubmit={handleSubmit} name="becomeFacilitator" class="space-y-4">
     <h2 class="text-xl font-bold dark:text-gray-300" id="modalTitle">{$LL.becomeFacilitator()}</h2>
 
     <div>
-      <label
-        class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-        for="facilitatorCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="facilitatorCode">
         {$LL.facilitatorCode()}
       </label>
       <div class="control">
         <TextInput
           name="facilitatorCode"
-          bind:value="{facilitatorCode}"
+          bind:value={facilitatorCode}
           placeholder={$LL.enterFacilitatorCode()}
           id="facilitatorCode"
           bind:this={focusInput}

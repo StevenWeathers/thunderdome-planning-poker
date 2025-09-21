@@ -2,11 +2,7 @@
   import SidenavPageLayout, { type PageItem } from '../SidenavPageLayout.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import {
-    Users,
-    User,
-    Package,
-  } from 'lucide-svelte';
+  import { Users, User, Package } from 'lucide-svelte';
 
   const { PathPrefix } = AppConfig;
 
@@ -20,9 +16,7 @@
 
   let { activePage = 'Team', children, teamId, organizationId, departmentId }: Props = $props();
 
-  const {
-    FeatureProject,
-  } = AppConfig;
+  const { FeatureProject } = AppConfig;
 
   let routePrefix = departmentId
     ? `${appRoutes.organization}/${organizationId}/department/${departmentId}/team/${teamId}`
@@ -30,32 +24,36 @@
       ? `${appRoutes.organization}/${organizationId}/team/${teamId}`
       : `${appRoutes.team}/${teamId}`;
 
-   // Team pages configuration
-  let pages: PageItem[] = $derived($LL ? [
-    {
-      name: 'Team',
-      label: $LL.team(),
-      path: routePrefix,
-      icon: Users,
-      enabled: true,
-    },
-    {
-      name: 'Users',
-      label: $LL.users(),
-      path: `${routePrefix}/users`,
-      icon: User,
-      enabled: true,
-    },
-    {
-      name: 'Projects',
-      label: $LL.projects(),
-      path: `${routePrefix}/projects`,
-      icon: Package,
-      enabled: FeatureProject,
-    },
-  ] : []);
+  // Team pages configuration
+  let pages: PageItem[] = $derived(
+    $LL
+      ? [
+          {
+            name: 'Team',
+            label: $LL.team(),
+            path: routePrefix,
+            icon: Users,
+            enabled: true,
+          },
+          {
+            name: 'Users',
+            label: $LL.users(),
+            path: `${routePrefix}/users`,
+            icon: User,
+            enabled: true,
+          },
+          {
+            name: 'Projects',
+            label: $LL.projects(),
+            path: `${routePrefix}/projects`,
+            icon: Package,
+            enabled: FeatureProject,
+          },
+        ]
+      : [],
+  );
 </script>
 
-<SidenavPageLayout {pages} activePage={activePage} menuType="team" expanded={true}>
+<SidenavPageLayout {pages} {activePage} menuType="team" expanded={true}>
   {@render children?.()}
 </SidenavPageLayout>

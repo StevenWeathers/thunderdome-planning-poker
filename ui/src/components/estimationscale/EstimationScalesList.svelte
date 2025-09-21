@@ -49,7 +49,7 @@
     scalesPage = $bindable(1),
     scalesPageLimit = 10,
     changePage = () => {},
-    getScales = () => {}
+    getScales = () => {},
   }: Props = $props();
 
   const dispatch = createEventDispatcher();
@@ -112,7 +112,7 @@
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>{$LL.name()}</HeadCol>
           <HeadCol>{$LL.description()}</HeadCol>
           <HeadCol>{$LL.scaleValues()}</HeadCol>
@@ -125,9 +125,9 @@
             <span class="sr-only">{$LL.actions()}</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each scales as scale, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -146,15 +146,11 @@
                   <span data-testid="scale-type">{scale.scaleType}</span>
                 </RowCol>
                 <RowCol>
-                  <span data-testid="scale-is-public"
-                    ><BooleanDisplay boolValue={scale.isPublic} /></span
-                  >
+                  <span data-testid="scale-is-public"><BooleanDisplay boolValue={scale.isPublic} /></span>
                 </RowCol>
               {/if}
               <RowCol>
-                <span data-testid="scale-is-default"
-                  ><BooleanDisplay boolValue={scale.defaultScale} />
-                </span>
+                <span data-testid="scale-is-default"><BooleanDisplay boolValue={scale.defaultScale} /> </span>
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin || isEntityAdmin}
@@ -167,26 +163,21 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
-    <TableFooter
-      bind:current={scalesPage}
-      num_items={scaleCount}
-      per_page={scalesPageLimit}
-      on:navigate={changePage}
-    />
+    <TableFooter bind:current={scalesPage} num_items={scaleCount} per_page={scalesPageLimit} on:navigate={changePage} />
   </TableContainer>
 
   {#if showAddScale}
     <CreateEstimationScale
       toggleCreate={toggleCreateScale}
       handleCreate={handleCreateScale}
-      organizationId={organizationId}
-      departmentId={departmentId}
-      teamId={teamId}
-      apiPrefix={apiPrefix}
-      xfetch={xfetch}
-      notifications={notifications}
+      {organizationId}
+      {departmentId}
+      {teamId}
+      {apiPrefix}
+      {xfetch}
+      {notifications}
     />
   {/if}
 
@@ -201,12 +192,12 @@
       scaleType={updateScale.scaleType}
       isPublic={updateScale.isPublic}
       defaultScale={updateScale.defaultScale}
-      organizationId={organizationId}
-      departmentId={departmentId}
-      teamId={teamId}
-      apiPrefix={apiPrefix}
-      xfetch={xfetch}
-      notifications={notifications}
+      {organizationId}
+      {departmentId}
+      {teamId}
+      {apiPrefix}
+      {xfetch}
+      {notifications}
     />
   {/if}
 

@@ -23,14 +23,45 @@
   };
 
   const showAlert = (dismissedAlerts, isRegistered, alert) => {
-    const meetsAllowDesmissed = alert.allowDismiss
-      ? !dismissedAlerts.includes(alert.id)
-      : true;
+    const meetsAllowDesmissed = alert.allowDismiss ? !dismissedAlerts.includes(alert.id) : true;
     const meetsRegisteredOnly = alert.registeredOnly ? isRegistered : true;
 
     return meetsAllowDesmissed && meetsRegisteredOnly;
   };
 </script>
+
+{#each alerts as alert}
+  {#if showAlert(dismissed, registered, alert)}
+    <div class={`${alert.type}Alert`}>
+      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between flex-wrap" role="alert">
+          <div class="w-0 flex-1 flex items-center">
+            <span
+              class="{alert.type}Alert-type flex rounded-lg uppercase
+                        px-2 py-1 text-xs font-bold me-3"
+            >
+              {alert.type}
+            </span>
+            <p class="ms-3 font-medium {alert.type}Alert-body truncate">
+              {alert.content}
+            </p>
+          </div>
+          {#if alert.allowDismiss}
+            <div class="order-2 flex-shrink-0 sm:order-3 sm:ms-3">
+              <button
+                type="button"
+                onclick={dismissAlert(alert.id)}
+                class="-me-1 sm:-me-2 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white"
+              >
+                <X />
+              </button>
+            </div>
+          {/if}
+        </div>
+      </div>
+    </div>
+  {/if}
+{/each}
 
 <style>
   .NEWAlert {
@@ -149,36 +180,3 @@
     @apply bg-yellow-700;
   }
 </style>
-
-{#each alerts as alert}
-  {#if showAlert(dismissed, registered, alert)}
-    <div class={`${alert.type}Alert`}>
-      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between flex-wrap" role="alert">
-          <div class="w-0 flex-1 flex items-center">
-            <span
-              class="{alert.type}Alert-type flex rounded-lg uppercase
-                        px-2 py-1 text-xs font-bold me-3"
-            >
-              {alert.type}
-            </span>
-            <p class="ms-3 font-medium {alert.type}Alert-body truncate">
-              {alert.content}
-            </p>
-          </div>
-          {#if alert.allowDismiss}
-            <div class="order-2 flex-shrink-0 sm:order-3 sm:ms-3">
-              <button
-                type="button"
-                onclick={dismissAlert(alert.id)}
-                class="-me-1 sm:-me-2 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white"
-              >
-                <X />
-              </button>
-            </div>
-          {/if}
-        </div>
-      </div>
-    </div>
-  {/if}
-{/each}

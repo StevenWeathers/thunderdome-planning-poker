@@ -7,7 +7,7 @@
   import AdminPageLayout from '../../../components/admin/AdminPageLayout.svelte';
   import EstimationScalesList from '../../../components/estimationscale/EstimationScalesList.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -25,9 +25,7 @@
 
   function getScales() {
     const scalesOffset = (scalesPage - 1) * scalesPageLimit;
-    xfetch(
-      `/api/admin/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`,
-    )
+    xfetch(`/api/admin/estimation-scales?limit=${scalesPageLimit}&offset=${scalesOffset}`)
       .then(res => res.json())
       .then(function (result) {
         scales = result.data;
@@ -66,14 +64,14 @@
 
 <AdminPageLayout activePage="estimation-scales">
   <EstimationScalesList
-    xfetch={xfetch}
-    notifications={notifications}
-    scales={scales}
+    {xfetch}
+    {notifications}
+    {scales}
     apiPrefix="/api/admin"
-    getScales={getScales}
-    changePage={changePage}
-    scaleCount={scaleCount}
-    scalesPage={scalesPage}
-    scalesPageLimit={scalesPageLimit}
+    {getScales}
+    {changePage}
+    {scaleCount}
+    {scalesPage}
+    {scalesPageLimit}
   />
 </AdminPageLayout>

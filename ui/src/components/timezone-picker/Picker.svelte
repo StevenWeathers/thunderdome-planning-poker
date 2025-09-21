@@ -3,15 +3,7 @@
   // and to modify the appearance to fit dark/light modes
   import { slide } from 'svelte/transition';
   import groupedZones from './timezones';
-  import {
-    filter,
-    keyCodes,
-    pick,
-    scrollIntoView,
-    slugify,
-    uid,
-    ungroup,
-  } from './utils';
+  import { filter, keyCodes, pick, scrollIntoView, slugify, uid, ungroup } from './utils';
   import TextInput from '../forms/TextInput.svelte';
 
   // ***** Public API *****
@@ -22,12 +14,7 @@
     onUpdate?: (timezone: string | null) => void;
   }
 
-  let {
-    timezone = $bindable(null), 
-    expanded = false, 
-    allowedTimezones = null,
-    onUpdate
-  }: Props = $props();
+  let { timezone = $bindable(null), expanded = false, allowedTimezones = null, onUpdate }: Props = $props();
 
   // ***** End Public API *****
 
@@ -56,15 +43,9 @@
   let availableZones = ungroupedZones;
   if (allowedTimezones) {
     if (Array.isArray(allowedTimezones)) {
-      availableZones = pick(ungroupedZones, [
-        ...allowedTimezones,
-        userTimezone,
-      ]);
+      availableZones = pick(ungroupedZones, [...allowedTimezones, userTimezone]);
     } else {
-      console.error(
-        'You need to provide a list of timezones as an Array!',
-        `You provided ${allowedTimezones}.`,
-      );
+      console.error('You need to provide a list of timezones as an Array!', `You provided ${allowedTimezones}.`);
     }
   }
 
@@ -83,9 +64,7 @@
 
   // Derived state
   let filteredZones = $derived(
-    userSearch && userSearch.length > 0
-      ? filter(userSearch, availableZones)
-      : validZones.slice()
+    userSearch && userSearch.length > 0 ? filter(userSearch, availableZones) : validZones.slice(),
   );
 
   // ***** Methods *****
@@ -102,13 +81,13 @@
     if (onUpdate) {
       onUpdate(timezone);
     }
-    
+
     // Also dispatch a custom event for compatibility
     const event = new CustomEvent('timezoneUpdate', {
       detail: { timezone },
-      bubbles: true
+      bubbles: true,
     });
-    
+
     if (toggleButtonRef) {
       toggleButtonRef.dispatchEvent(event);
     }
@@ -125,8 +104,7 @@
   };
 
   // Figure out if a grouped zone has any currently visible zones
-  const groupHasVisibleChildren = (group, zones) =>
-    Object.keys(groupedZones[group]).some(zone => zones.includes(zone));
+  const groupHasVisibleChildren = (group, zones) => Object.keys(groupedZones[group]).some(zone => zones.includes(zone));
 
   // Scroll the list to a specific element
   const scrollList = zone => {
@@ -174,10 +152,7 @@
     if (ev.keyCode === keyCodes.Enter && highlightedZone) {
       handleTimezoneUpdate(ev, highlightedZone);
     }
-    if (
-      keyCodes.Characters.includes(ev.keyCode) ||
-      ev.keyCode === keyCodes.Backspace
-    ) {
+    if (keyCodes.Characters.includes(ev.keyCode) || ev.keyCode === keyCodes.Backspace) {
       searchInputRef?.focus();
     }
   };
@@ -220,10 +195,7 @@
     }
 
     if (tz && !validZones.includes(tz)) {
-      console.warn(
-        `The timezone provided is not valid: ${tz}!`,
-        `Valid zones are: ${validZones}`,
-      );
+      console.warn(`The timezone provided is not valid: ${tz}!`, `Valid zones are: ${validZones}`);
       timezone = userTimezone;
     }
 
@@ -242,6 +214,119 @@
     }
   });
 </script>
+
+{#if expanded}
+  <div
+    class="overlay"
+    onclick={reset}
+    onkeydown={e => {
+      if (e.key === 'Enter' || e.key === ' ') reset();
+    }}
+    aria-label="Close timezone picker"
+    aria-modal="true"
+    tabindex="-1"
+    role="dialog"
+  ></div>
+{/if}
+
+<div class="timezone-picker-container">
+  <button
+    bind:this={toggleButtonRef}
+    type="button"
+    aria-label={`${currentZone?.[0]} is currently selected. Change timezone`}
+    aria-haspopup="listbox"
+    data-toggle="true"
+    aria-expanded={expanded}
+    onclick={toggleExpanded}
+    onkeydown={toggleExpanded}
+  >
+    <span>
+      {currentZone?.[0]}
+      <small>GMT {currentZone?.[1]}</small>
+    </span>
+    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" class="chevron">
+      <path
+        d="M2.5 4.5L6 8L9.5 4.5"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+
+  {#if expanded}
+    <div
+      class="tz-dropdown"
+      transition:slide={{ duration: 200, easing: t => t * (2 - t) }}
+      onintroend={scrollToHighlighted}
+      onkeydown={keyDown}
+      role="dialog"
+      tabindex="0"
+    >
+      <span class="sr-only" id={labelId}>
+        Select a timezone from the list. Start typing to filter or use the arrow keys to navigate the list
+      </span>
+
+      <div class="search-container">
+        <TextInput
+          id={searchInputId}
+          bind:this={searchInputRef}
+          type="search"
+          aria-autocomplete="list"
+          aria-controls={listBoxId}
+          aria-labelledby={labelId}
+          autocomplete="off"
+          autocorrect="off"
+          placeholder="Search timezones..."
+          bind:value={userSearch}
+          autofocus
+          class="searchField"
+        />
+      </div>
+
+      <ul
+        tabindex="-1"
+        class="tz-groups"
+        id={listBoxId}
+        role="listbox"
+        bind:this={listBoxRef}
+        aria-labelledby={labelId}
+        aria-activedescendant={currentZone && `tz-${slugify(currentZone[0])}`}
+      >
+        {#each Object.keys(groupedZones) as group}
+          {#if groupHasVisibleChildren(group, filteredZones)}
+            <li role="option" aria-hidden="true" aria-selected="false">
+              <p>{group}</p>
+            </li>
+            {#each Object.entries(groupedZones[group]) as [zoneLabel, zoneDetails]}
+              {#if filteredZones.includes(zoneLabel)}
+                <li
+                  role="option"
+                  tabindex="0"
+                  id={`tz-${slugify(zoneLabel)}`}
+                  bind:this={listBoxOptionRefs[zoneLabel]}
+                  aria-label={`Select ${zoneDetails[0]}`}
+                  aria-selected={highlightedZone === zoneDetails[0]}
+                  onmouseover={() => setHighlightedZone(zoneDetails[0])}
+                  onfocus={() => setHighlightedZone(zoneDetails[0])}
+                  onclick={ev => handleTimezoneUpdate(ev, zoneLabel)}
+                  onkeydown={ev => {
+                    if (ev.key === 'Enter' || ev.key === ' ') {
+                      handleTimezoneUpdate(ev, zoneLabel);
+                    }
+                  }}
+                >
+                  {zoneDetails[0]} <span>GMT {zoneDetails[1]}</span>
+                </li>
+              {/if}
+            {/each}
+          {/if}
+        {/each}
+      </ul>
+    </div>
+  {/if}
+</div>
 
 <style>
   .overlay {
@@ -263,18 +348,19 @@
     transition: all 0.2s ease-in-out;
   }
 
-  svg polygon {
-    fill: currentColor;
-    transition: fill 0.2s ease-in-out;
-  }
-
   button[data-toggle] {
     align-items: center;
     background: transparent;
     border: none;
     border-radius: 6px;
     display: inline-flex;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
     font-size: 0.9rem;
     padding: 4px 8px;
     position: relative;
@@ -351,7 +437,7 @@
     color: #6b7280;
   }
 
-  button[data-toggle][aria-expanded="true"] .chevron {
+  button[data-toggle][aria-expanded='true'] .chevron {
     transform: rotate(180deg);
     opacity: 1;
   }
@@ -374,7 +460,9 @@
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
     overflow: hidden;
     backdrop-filter: blur(8px);
   }
@@ -382,7 +470,9 @@
   :global(.dark) .tz-dropdown {
     background: #1f2937;
     border-color: #374151;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.4),
+      0 10px 10px -5px rgba(0, 0, 0, 0.2);
   }
 
   .search-container {
@@ -432,7 +522,13 @@
     display: block;
     margin: 0;
     padding: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
   }
 
   ul li > span {
@@ -469,7 +565,7 @@
     border-bottom-color: #1e293b;
   }
 
-  ul li[role="option"]:not([aria-hidden="true"]) {
+  ul li[role='option']:not([aria-hidden='true']) {
     border: 0;
     display: flex;
     justify-content: space-between;
@@ -482,35 +578,35 @@
     color: #1f2937;
   }
 
-  :global(.dark) ul li[role="option"]:not([aria-hidden="true"]) {
+  :global(.dark) ul li[role='option']:not([aria-hidden='true']) {
     color: #f9fafb;
   }
 
-  ul li[role="option"]:not([aria-hidden="true"]):hover {
+  ul li[role='option']:not([aria-hidden='true']):hover {
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
     color: #1e40af;
   }
 
-  ul li[role="option"]:not([aria-hidden="true"]):focus,
-  ul li[aria-selected="true"]:not([aria-hidden="true"]) {
+  ul li[role='option']:not([aria-hidden='true']):focus,
+  ul li[aria-selected='true']:not([aria-hidden='true']) {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     outline: none;
     position: relative;
   }
 
-  ul li[role="option"]:not([aria-hidden="true"]):focus > span,
-  ul li[aria-selected="true"]:not([aria-hidden="true"]) > span {
+  ul li[role='option']:not([aria-hidden='true']):focus > span,
+  ul li[aria-selected='true']:not([aria-hidden='true']) > span {
     color: rgba(255, 255, 255, 0.8);
   }
 
-  :global(.dark) ul li[role="option"]:not([aria-hidden="true"]):hover {
+  :global(.dark) ul li[role='option']:not([aria-hidden='true']):hover {
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
     color: #dbeafe;
   }
 
-  :global(.dark) ul li[role="option"]:not([aria-hidden="true"]):focus,
-  :global(.dark) ul li[aria-selected="true"]:not([aria-hidden="true"]) {
+  :global(.dark) ul li[role='option']:not([aria-hidden='true']):focus,
+  :global(.dark) ul li[aria-selected='true']:not([aria-hidden='true']) {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     color: white;
   }
@@ -534,7 +630,13 @@
     border: 1px solid #e2e8f0 !important;
     border-radius: 10px !important;
     font-size: 0.95rem !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      sans-serif !important;
     transition: all 0.2s ease-in-out !important;
     background: white !important;
   }
@@ -565,109 +667,3 @@
     color: #6b7280 !important;
   }
 </style>
-
-{#if expanded}
-  <div
-    class="overlay"
-    onclick="{reset}"
-    onkeydown="{(e) => { if (e.key === 'Enter' || e.key === ' ') reset(); }}"
-    aria-label="Close timezone picker"
-    aria-modal="true"
-    tabindex="-1"
-    role="dialog"
-  ></div>
-{/if}
-
-<div class="timezone-picker-container">
-  <button
-    bind:this="{toggleButtonRef}"
-    type="button"
-    aria-label="{`${currentZone?.[0]} is currently selected. Change timezone`}"
-    aria-haspopup="listbox"
-    data-toggle="true"
-    aria-expanded="{expanded}"
-    onclick="{toggleExpanded}"
-    onkeydown="{toggleExpanded}"
-  >
-    <span>
-      {currentZone?.[0]}
-      <small>GMT {currentZone?.[1]}</small>
-    </span>
-    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" class="chevron">
-      <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
-
-  {#if expanded}
-  <div
-    class="tz-dropdown"
-    transition:slide="{{ duration: 200, easing: (t) => t * (2 - t) }}"
-    onintroend="{scrollToHighlighted}"
-    onkeydown="{keyDown}"
-    role="dialog"
-    tabindex="0"
-  >
-    <span class="sr-only" id="{labelId}">
-      Select a timezone from the list. Start typing to filter or use the arrow
-      keys to navigate the list
-    </span>
-    
-    <div class="search-container">
-      <TextInput
-        id="{searchInputId}"
-        bind:this="{searchInputRef}"
-        type="search"
-        aria-autocomplete="list"
-        aria-controls="{listBoxId}"
-        aria-labelledby="{labelId}"
-        autocomplete="off"
-        autocorrect="off"
-        placeholder="Search timezones..."
-        bind:value="{userSearch}"
-        autofocus
-        class="searchField"
-      />
-    </div>
-
-    <ul
-      tabindex="-1"
-      class="tz-groups"
-      id="{listBoxId}"
-      role="listbox"
-      bind:this="{listBoxRef}"
-      aria-labelledby="{labelId}"
-      aria-activedescendant="{currentZone && `tz-${slugify(currentZone[0])}`}"
-    >
-      {#each Object.keys(groupedZones) as group}
-        {#if groupHasVisibleChildren(group, filteredZones)}
-          <li role="option" aria-hidden="true" aria-selected="false">
-            <p>{group}</p>
-          </li>
-          {#each Object.entries(groupedZones[group]) as [zoneLabel, zoneDetails]}
-            {#if filteredZones.includes(zoneLabel)}
-              <li
-                role="option"
-                tabindex="0"
-                id={`tz-${slugify(zoneLabel)}`}
-                bind:this={listBoxOptionRefs[zoneLabel]}
-                aria-label={`Select ${zoneDetails[0]}`}
-                aria-selected={highlightedZone === zoneDetails[0]}
-                onmouseover={() => setHighlightedZone(zoneDetails[0])}
-                onfocus={() => setHighlightedZone(zoneDetails[0])}
-                onclick={ev => handleTimezoneUpdate(ev, zoneLabel)}
-                onkeydown={(ev) => {
-                  if (ev.key === 'Enter' || ev.key === ' ') {
-                    handleTimezoneUpdate(ev, zoneLabel);
-                  }
-                }}
-              >
-                {zoneDetails[0]} <span>GMT {zoneDetails[1]}</span>
-              </li>
-            {/if}
-          {/each}
-        {/if}
-      {/each}
-    </ul>
-  </div>
-  {/if}
-</div>

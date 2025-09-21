@@ -5,9 +5,7 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import {
-    ChevronRight,
-  } from 'lucide-svelte';
+  import { ChevronRight } from 'lucide-svelte';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
 
   import type { NotificationService } from '../../types/notifications';
@@ -22,12 +20,7 @@
     organizationId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId }: Props = $props();
 
   const projectsPageLimit = 10;
   const orgPrefix = `/api/organizations/${organizationId}`;
@@ -65,9 +58,7 @@
 
   function getProjects() {
     const projectsOffset = (projectsPage - 1) * projectsPageLimit;
-    xfetch(
-      `${orgPrefix}/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`,
-    )
+    xfetch(`${orgPrefix}/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         projects = result.data;
@@ -101,12 +92,14 @@
   <h1 class="mb-4 text-3xl font-semibold font-rajdhani dark:text-white">
     <span class="uppercase">{$LL.organization()}</span>
     <ChevronRight class="w-8 h-8 inline-block" />
-    {organization.name} <ChevronRight class="w-8 h-8 inline-block" /> {$LL.projects()}
+    {organization.name}
+    <ChevronRight class="w-8 h-8 inline-block" />
+    {$LL.projects()}
   </h1>
 
   {#if AppConfig.FeatureProject}
     <div class="mt-8">
-        {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <ProjectsList
           {xfetch}
           {notifications}

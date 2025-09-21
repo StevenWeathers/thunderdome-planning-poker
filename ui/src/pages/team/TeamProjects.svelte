@@ -22,14 +22,7 @@
     teamId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId,
-    departmentId,
-    teamId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId, departmentId, teamId }: Props = $props();
 
   const projectsPageLimit = 10;
 
@@ -59,12 +52,12 @@
   let isTeamMember = $state(false);
 
   const apiPrefix = '/api';
-  let orgPrefix = $derived(departmentId
-    ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
-    : `${apiPrefix}/organizations/${organizationId}`);
-  let teamPrefix = $derived(organizationId
-    ? `${orgPrefix}/teams/${teamId}`
-    : `${apiPrefix}/teams/${teamId}`);
+  let orgPrefix = $derived(
+    departmentId
+      ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
+      : `${apiPrefix}/organizations/${organizationId}`,
+  );
+  let teamPrefix = $derived(organizationId ? `${orgPrefix}/teams/${teamId}` : `${apiPrefix}/teams/${teamId}`);
 
   function getTeam() {
     xfetch(teamPrefix)
@@ -82,14 +75,8 @@
           organizationRole = result.data.organizationRole;
         }
 
-        isEntityAdmin =
-          organizationRole === 'ADMIN' ||
-          departmentRole === 'ADMIN' ||
-          teamRole === 'ADMIN';
-        isTeamMember =
-          organizationRole === 'ADMIN' ||
-          departmentRole === 'ADMIN' ||
-          teamRole !== '';
+        isEntityAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole === 'ADMIN';
+        isTeamMember = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole !== '';
 
         getProjects();
       })
@@ -100,9 +87,7 @@
 
   function getProjects() {
     const projectsOffset = (projectsPage - 1) * projectsPageLimit;
-    xfetch(
-      `${teamPrefix}/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`,
-    )
+    xfetch(`${teamPrefix}/projects?limit=${projectsPageLimit}&offset=${projectsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         projects = result.data;
@@ -138,7 +123,9 @@
       <h1 class="text-3xl font-semibold font-rajdhani dark:text-white">
         <span class="uppercase">{$LL.team()}</span>
         <ChevronRight class="w-8 h-8 inline-block" />
-        {team.name} <ChevronRight class="w-8 h-8 inline-block" /> {$LL.projects()}
+        {team.name}
+        <ChevronRight class="w-8 h-8 inline-block" />
+        {$LL.projects()}
       </h1>
 
       {#if organizationId}
@@ -170,17 +157,17 @@
 
   {#if AppConfig.FeatureProject}
     <div class="mt-8">
-        {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
         <ProjectsList
           {xfetch}
           {notifications}
           {projects}
           apiPrefix={teamPrefix}
-          getProjects={getProjects}
+          {getProjects}
           changePage={changeProjectsPage}
           {projectCount}
           {projectsPage}
-          projectsPageLimit={projectsPageLimit}
+          {projectsPageLimit}
           {organizationId}
           {departmentId}
           {teamId}

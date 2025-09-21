@@ -70,11 +70,8 @@
   };
 
   function getSubscriptions() {
-    const subscriptionsOffset =
-      (subscriptionsPage - 1) * subscriptionsPageLimit;
-    xfetch(
-      `/api/subscriptions?limit=${subscriptionsPageLimit}&offset=${subscriptionsOffset}`,
-    )
+    const subscriptionsOffset = (subscriptionsPage - 1) * subscriptionsPageLimit;
+    xfetch(`/api/subscriptions?limit=${subscriptionsPageLimit}&offset=${subscriptionsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         subscriptions = result.data;
@@ -131,7 +128,7 @@
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.email()}
           </HeadCol>
@@ -148,9 +145,9 @@
             <span class="sr-only">Actions</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each subscriptions as subscription, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -186,7 +183,7 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
     <TableFooter
       bind:current={subscriptionsPage}
@@ -196,19 +193,14 @@
     />
 
     {#if showSubCreate}
-      <SubscriptionForm
-        toggleClose={toggleSubCreate}
-        handleUpdate={getSubscriptions}
-        xfetch={xfetch}
-        notifications={notifications}
-      />
+      <SubscriptionForm toggleClose={toggleSubCreate} handleUpdate={getSubscriptions} {xfetch} {notifications} />
     {/if}
     {#if showSubUpdate}
       <SubscriptionForm
         toggleClose={toggleSubUpdate({ ...defaultSubscription })}
         handleUpdate={getSubscriptions}
-        xfetch={xfetch}
-        notifications={notifications}
+        {xfetch}
+        {notifications}
         subscriptionId={selectedSub.id}
         customer_id={selectedSub.customer_id}
         subscription_id={selectedSub.subscription_id}

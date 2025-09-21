@@ -30,7 +30,7 @@
     users = [],
     columnColors = {},
     hideVotesDuringVoting = false,
-    sendSocketEvent = (event: string, value: any) => {}
+    sendSocketEvent = (event: string, value: any) => {},
   }: Props = $props();
 
   // Calculate total votes used by current user across all groups
@@ -38,7 +38,7 @@
     groups.reduce((acc, group) => {
       const userVotes = group.votes?.find(v => v.userId === $user.id)?.count || 0;
       return acc + userVotes;
-    }, 0)
+    }, 0),
   );
 
   // Get user votes for a specific group
@@ -50,7 +50,7 @@
 {#each groups as group, _ (group.id)}
   {#if (group.items ?? []).length > 0}
     {@const userVotesOnThisGroup = getUserVotesOnGroup(group)}
-    
+
     <RetroFeedbackGroup
       {phase}
       group={{

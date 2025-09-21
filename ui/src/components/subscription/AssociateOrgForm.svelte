@@ -21,7 +21,7 @@
     toggleClose = () => {},
     xfetch = async (url, ...options) => {},
     notifications,
-    subscriptionId = ''
+    subscriptionId = '',
   }: Props = $props();
 
   let organizations = $state([]);
@@ -58,9 +58,7 @@
         toggleClose();
       })
       .catch(function () {
-        notifications.danger(
-          'failed to associate organization to subscription',
-        );
+        notifications.danger('failed to associate organization to subscription');
       });
   }
 
@@ -73,21 +71,16 @@
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalAssociateOrganizationToSubscription()}>
   <form onsubmit={handleSubmit} name="associateOrganizationForm">
     <div class="mb-4">
-      <label
-        class="block dark:text-gray-400 font-bold mb-2"
-        for="selectedOrganization"
-      >
-        Associate Organization
-      </label>
+      <label class="block dark:text-gray-400 font-bold mb-2" for="selectedOrganization"> Associate Organization </label>
       <SelectInput
-        bind:value="{selectedOrganization}"
+        bind:value={selectedOrganization}
         bind:this={focusInput}
         id="selectedOrganization"
         name="selectedOrganization"
       >
         <option value="" disabled>Select Organization</option>
         {#each organizations as organization}
-          <option value="{organization.id}">
+          <option value={organization.id}>
             {organization.name}
           </option>
         {/each}

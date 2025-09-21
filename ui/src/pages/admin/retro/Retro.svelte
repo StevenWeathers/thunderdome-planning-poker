@@ -17,7 +17,7 @@
   import TableNav from '../../../components/table/TableNav.svelte';
   import BooleanDisplay from '../../../components/global/BooleanDisplay.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -27,12 +27,7 @@
     retroId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    retroId
-  }: Props = $props();
+  let { xfetch, router, notifications, retroId }: Props = $props();
 
   let showDeleteRetro = $state(false);
 
@@ -94,7 +89,7 @@
       <TableNav title={retro.name} createBtnEnabled={false} />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.dateCreated()}
             </HeadCol>
@@ -102,9 +97,9 @@
               {$LL.dateUpdated()}
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             <TableRow itemIndex={0}>
               <RowCol>
                 {new Date(retro.createdDate).toLocaleString()}
@@ -114,7 +109,7 @@
               </RowCol>
             </TableRow>
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -123,7 +118,7 @@
     <TableNav title={$LL.users()} createBtnEnabled={false} />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -137,9 +132,9 @@
             {$LL.facilitator()}
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each retro.users as user, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -163,12 +158,7 @@
                       >
                       {#if user.country}
                         &nbsp;
-                        <CountryFlag
-                          country={user.country}
-                          additionalClass="inline-block"
-                          width="32"
-                          height="24"
-                        />
+                        <CountryFlag country={user.country} additionalClass="inline-block" width="32" height="24" />
                       {/if}
                     </div>
                   </div>
@@ -186,16 +176,12 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
   </TableContainer>
 
   <div class="text-center mt-4">
-    <HollowButton
-      color="red"
-      onClick={toggleDeleteRetro}
-      testid="retro-delete"
-    >
+    <HollowButton color="red" onClick={toggleDeleteRetro} testid="retro-delete">
       {$LL.deleteRetro()}
     </HollowButton>
   </div>

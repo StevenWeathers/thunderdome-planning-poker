@@ -9,9 +9,7 @@
   import TableRow from '../../components/table/TableRow.svelte';
   import HeadCol from '../../components/table/HeadCol.svelte';
   import Table from '../../components/table/Table.svelte';
-  import {
-    ChevronRight,
-  } from 'lucide-svelte';
+  import { ChevronRight } from 'lucide-svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
@@ -29,12 +27,7 @@
     organizationId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId }: Props = $props();
 
   const teamsPageLimit = 1000;
   const orgPrefix = `/api/organizations/${organizationId}`;
@@ -173,7 +166,9 @@
   <h1 class="mb-4 text-3xl font-semibold font-rajdhani dark:text-white">
     <span class="uppercase">{$LL.organization()}</span>
     <ChevronRight class="w-8 h-8 inline-block" />
-    {organization.name} <ChevronRight class="w-8 h-8 inline-block" /> {$LL.teams()}
+    {organization.name}
+    <ChevronRight class="w-8 h-8 inline-block" />
+    {$LL.teams()}
   </h1>
 
   <div class="w-full mb-6 lg:mb-8">
@@ -187,7 +182,7 @@
       />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.name()}
             </HeadCol>
@@ -201,9 +196,9 @@
               <span class="sr-only">{$LL.actions()}</span>
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             {#each teams as team, i}
               <TableRow itemIndex={i}>
                 <RowCol>
@@ -231,16 +226,13 @@
               </TableRow>
             {/each}
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
 
   {#if showCreateTeam}
-    <CreateTeam
-      toggleCreate={toggleCreateTeam}
-      handleCreate={createTeamHandler}
-    />
+    <CreateTeam toggleCreate={toggleCreateTeam} handleCreate={createTeamHandler} />
   {/if}
 
   {#if showTeamUpdate}

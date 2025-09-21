@@ -32,7 +32,7 @@
     content = $bindable(''),
     active = $bindable(true),
     registeredOnly = $bindable(false),
-    allowDismiss = $bindable(true)
+    allowDismiss = $bindable(true),
   }: Props = $props();
 
   const alertTypes = ['ERROR', 'INFO', 'NEW', 'SUCCESS', 'WARNING'];
@@ -75,10 +75,7 @@
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalCreateAlert()}>
   <form onsubmit={onSubmit} name="createAlert">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="alertName"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="alertName">
         {$LL.name()}
       </label>
       <TextInput
@@ -95,12 +92,7 @@
       <label class="block font-bold mb-2 dark:text-gray-400" for="alertType">
         {$LL.type()}
       </label>
-      <SelectInput
-        name="alertType"
-        id="alertType"
-        bind:value={alertType}
-        required
-      >
+      <SelectInput name="alertType" id="alertType" bind:value={alertType} required>
         <option value="" disabled>
           {$LL.alertTypePlaceholder()}
         </option>
@@ -111,10 +103,7 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="alertContent"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="alertContent">
         {$LL.alertContent()}
       </label>
       <TextInput
@@ -127,12 +116,7 @@
     </div>
 
     <div class="mb-4">
-      <Checkbox
-        bind:checked={active}
-        id="active"
-        name="active"
-        label={$LL.active()}
-      />
+      <Checkbox bind:checked={active} id="active" name="active" label={$LL.active()} />
     </div>
     <div class="mb-4">
       <Checkbox
@@ -143,12 +127,7 @@
       />
     </div>
     <div class="mb-4">
-      <Checkbox
-        bind:checked={allowDismiss}
-        id="allowDismiss"
-        name="allowDismiss"
-        label={$LL.alertAllowDismiss()}
-      />
+      <Checkbox bind:checked={allowDismiss} id="allowDismiss" name="allowDismiss" label={$LL.alertAllowDismiss()} />
     </div>
 
     <div>

@@ -14,11 +14,7 @@
 
   let { xfetch }: Props = $props();
 
-  const {
-    ShowActiveCountries,
-    PathPrefix,
-    RepoURL,
-  } = AppConfig;
+  const { ShowActiveCountries, PathPrefix, RepoURL } = AppConfig;
 
   const slogans = [
     'Empower Your Agile Teams',
@@ -44,30 +40,27 @@
   <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
     <div class="container mx-auto px-4 py-16">
       <div class="max-w-7xl mx-auto text-center">
-        <h1
-          class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
-        >
-          <span
-            class="block bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500"
-          >
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <span class="block bg-clip-text text-transparent bg-gradient-to-r from-yellow-thunder to-orange-500">
             Thunderdome
           </span>
           {randomSlogan}
         </h1>
         <p class="max-w-4xl mx-auto text-xl sm:text-2xl text-blue-100 mb-8">
-          Transform your agile ceremonies from time-wasters into team-builders. Get the tools that make planning poker, retrospectives, and story mapping actually work for remote and in-person teams.
+          Transform your agile ceremonies from time-wasters into team-builders. Get the tools that make planning poker,
+          retrospectives, and story mapping actually work for remote and in-person teams.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
           {#if $user.id}
             <a
-              href="{appRoutes.games}"
+              href={appRoutes.games}
               class="bg-white text-indigo-700 hover:bg-gray-100 font-semibold py-3 px-8 rounded-full transition duration-300 shadow-lg"
             >
               Start Planning
             </a>
           {:else}
             <a
-              href="{appRoutes.register}"
+              href={appRoutes.register}
               class="bg-white text-indigo-700 hover:bg-gray-100 font-semibold py-3 px-8 rounded-full transition duration-300 shadow-lg"
             >
               Get Started Free
@@ -89,32 +82,34 @@
       <div class="flex flex-col md:flex-row items-center justify-between">
         <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
           <div class="title-line bg-yellow-thunder"></div>
-          <h2
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
-          >
+          <h2 class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6">
             Planning Poker That Gets Consensus
           </h2>
           <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
-            Stop letting the loudest voice win your estimations. Get accurate story points from your whole team with bias-free voting.
+            Stop letting the loudest voice win your estimations. Get accurate story points from your whole team with
+            bias-free voting.
           </p>
-          <ul
-            class="space-y-3 text-gray-700 dark:text-gray-300 mb-8"
-          >
+          <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8">
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Eliminate estimation bias:</strong> Anonymous voting prevents anchoring and groupthink</span>
+              <span><strong>Eliminate estimation bias:</strong> Anonymous voting prevents anchoring and groupthink</span
+              >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Flexible scales:</strong> Use Fibonacci, T-shirt sizes, or create custom ranges that fit your workflow</span>
+              <span
+                ><strong>Flexible scales:</strong> Use Fibonacci, T-shirt sizes, or create custom ranges that fit your workflow</span
+              >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Remote-first design:</strong> Equal participation whether you're in-person or distributed</span>
+              <span
+                ><strong>Remote-first design:</strong> Equal participation whether you're in-person or distributed</span
+              >
             </li>
           </ul>
           <a
-            href="{appRoutes.games}"
+            href={appRoutes.games}
             class="group relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
             <span
@@ -129,12 +124,12 @@
             <img
               class="rounded-b-lg hidden dark:block"
               src="{PathPrefix}/img/previews/planning_poker_20250812_dark.png"
-              alt="{$LL.appPreviewAlt()}"
+              alt={$LL.appPreviewAlt()}
             />
             <img
               class="rounded-b-lg dark:hidden"
               src="{PathPrefix}/img/previews/planning_poker_20250812_light.png"
-              alt="{$LL.appPreviewAlt()}"
+              alt={$LL.appPreviewAlt()}
             />
           </BrowserMock>
         </div>
@@ -144,37 +139,38 @@
 
   <section class="bg-gray-100 dark:bg-gray-900 py-20">
     <div class="container mx-auto px-4">
-      <div
-        class="flex flex-col md:flex-row-reverse items-center justify-between"
-      >
+      <div class="flex flex-col md:flex-row-reverse items-center justify-between">
         <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
           <div class="title-line bg-yellow-thunder"></div>
-          <h2
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
-          >
+          <h2 class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6">
             Retrospectives That Drive Change
           </h2>
           <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
-            Move beyond the same old "what went well" discussions. Create psychological safety where real improvements happen.
+            Move beyond the same old "what went well" discussions. Create psychological safety where real improvements
+            happen.
           </p>
-          <ul
-            class="space-y-3 text-gray-700 dark:text-gray-300 mb-8"
-          >
+          <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8">
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Battle-tested formats:</strong> Start/Stop/Continue, 4Ls, Mad/Sad/Glad, plus custom templates</span>
+              <span
+                ><strong>Battle-tested formats:</strong> Start/Stop/Continue, 4Ls, Mad/Sad/Glad, plus custom templates</span
+              >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Safe space for honesty:</strong> Anonymous feedback removes fear of judgment or retaliation</span>
+              <span
+                ><strong>Safe space for honesty:</strong> Anonymous feedback removes fear of judgment or retaliation</span
+              >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Accountability that works:</strong> Convert insights into trackable action items with follow-through</span>
+              <span
+                ><strong>Accountability that works:</strong> Convert insights into trackable action items with follow-through</span
+              >
             </li>
           </ul>
           <a
-            href="{appRoutes.retros}"
+            href={appRoutes.retros}
             class="group relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
             <span
@@ -207,32 +203,37 @@
       <div class="flex flex-col md:flex-row items-center justify-between">
         <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
           <div class="title-line bg-yellow-thunder"></div>
-          <h2
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
-          >
+          <h2 class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6">
             Story Maps That Tell the Real Story
           </h2>
           <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
-            Stop building features in isolation. Visualize the complete user journey and prioritize what actually matters to your users.
+            Stop building features in isolation. Visualize the complete user journey and prioritize what actually
+            matters to your users.
           </p>
-          <ul
-            class="space-y-3 text-gray-700 dark:text-gray-300 mb-8"
-          >
+          <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8">
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Visual user journeys:</strong> Drag-and-drop interface transforms complex backlogs into clear story flows</span>
+              <span
+                ><strong>Visual user journeys:</strong> Drag-and-drop interface transforms complex backlogs into clear story
+                flows</span
+              >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Real-time team alignment:</strong> Live collaboration keeps distributed product teams in sync</span>
+              <span
+                ><strong>Real-time team alignment:</strong> Live collaboration keeps distributed product teams in sync</span
+              >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>User-value prioritization:</strong> Stop building random features and focus on what users actually need</span>
+              <span
+                ><strong>User-value prioritization:</strong> Stop building random features and focus on what users actually
+                need</span
+              >
             </li>
           </ul>
           <a
-            href="{appRoutes.storyboards}"
+            href={appRoutes.storyboards}
             class="group relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
           >
             <span
@@ -262,18 +263,13 @@
 
   <section class="bg-gray-100 dark:bg-gray-900 py-20">
     <div class="container mx-auto px-4">
-      <div
-        class="flex flex-col md:flex-row-reverse items-center justify-between"
-      >
+      <div class="flex flex-col md:flex-row-reverse items-center justify-between">
         <div class="md:w-1/2 md:ps-8 mb-8 md:mb-0">
           <div class="title-line bg-yellow-thunder"></div>
-          <h2
-            class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6"
-          >
-            Team Checkins
-          </h2>
+          <h2 class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6">Team Checkins</h2>
           <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            Skip the status updates everyone already knows. Focus your daily standups on blockers, dependencies, and what actually needs team discussion.
+            Skip the status updates everyone already knows. Focus your daily standups on blockers, dependencies, and
+            what actually needs team discussion.
           </p>
         </div>
         <div class="md:w-1/2">
@@ -294,48 +290,46 @@
 
   <section class="bg-indigo-600 text-white py-20">
     <div class="container mx-auto px-4 text-center">
-      <h2 class="text-4xl font-bold mb-6 font-rajdhani uppercase">
-        Why Choose Thunderdome?
-      </h2>
+      <h2 class="text-4xl font-bold mb-6 font-rajdhani uppercase">Why Choose Thunderdome?</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg p-6 text-gray-800 dark:text-white"
-        >
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 text-gray-800 dark:text-white">
           <div class="text-indigo-500 text-4xl mb-4">
             <Zap class="h-12 w-12 mx-auto" />
           </div>
           <h3 class="text-xl font-semibold mb-2">Built for Remote Teams</h3>
           <p>
-            Every feature works seamlessly whether your team is in the same room or spread across continents. No more "remote-friendly" compromises.
+            Every feature works seamlessly whether your team is in the same room or spread across continents. No more
+            "remote-friendly" compromises.
           </p>
         </div>
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg p-6 text-gray-800 dark:text-white"
-        >
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 text-gray-800 dark:text-white">
           <div class="text-indigo-500 text-4xl mb-4">
             <Users class="h-12 w-12 mx-auto" />
           </div>
           <h3 class="text-xl font-semibold mb-2">Psychological Safety First</h3>
           <p>
-            Anonymous options, inclusive facilitation, and bias reduction tools help every team member contribute their best thinking.
+            Anonymous options, inclusive facilitation, and bias reduction tools help every team member contribute their
+            best thinking.
           </p>
         </div>
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg p-6 text-gray-800 dark:text-white"
-        >
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 text-gray-800 dark:text-white">
           <div class="text-indigo-500 text-4xl mb-4">
             <Github class="h-12 w-12 mx-auto" />
           </div>
           <h3 class="text-xl font-semibold mb-2">Open Source</h3>
-          <p><a
-              href="{appRoutes.subscriptionPricing}"
+          <p>
+            <a
+              href={appRoutes.subscriptionPricing}
               class="text-indigo-400 dark:text-indigo-300 hover:text-yellow-thunder dark:hover:text-yellow-thunder font-bold"
               >Premium cloud-hosted</a
-            > convenience or <a
+            >
+            convenience or
+            <a
               href="{RepoURL}/blob/main/docs/INSTALLATION.md"
               target="_blank"
               class="text-indigo-400 dark:text-indigo-300 hover:text-yellow-thunder dark:hover:text-yellow-thunder font-bold"
-              >self-hosted</a> sovereignty. The choice is entirely yours.
+              >self-hosted</a
+            > sovereignty. The choice is entirely yours.
           </p>
         </div>
       </div>
@@ -345,7 +339,7 @@
   {#if ShowActiveCountries}
     <section class="bg-slate-100 dark:bg-gray-900 py-20">
       <div class="container mx-auto px-4">
-        <Countries xfetch={xfetch} />
+        <Countries {xfetch} />
       </div>
     </section>
   {/if}

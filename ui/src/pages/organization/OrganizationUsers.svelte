@@ -5,9 +5,7 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import {
-    ChevronRight,
-  } from 'lucide-svelte';
+  import { ChevronRight } from 'lucide-svelte';
   import UsersList from '../../components/team/UsersList.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
 
@@ -22,12 +20,7 @@
     organizationId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId }: Props = $props();
 
   const usersPageLimit = 1000;
   const orgPrefix = `/api/organizations/${organizationId}`;
@@ -90,27 +83,23 @@
   <h1 class="mb-4 text-3xl font-semibold font-rajdhani dark:text-white">
     <span class="uppercase">{$LL.organization()}</span>
     <ChevronRight class="w-8 h-8 inline-block" />
-    {organization.name} <ChevronRight class="w-8 h-8 inline-block" /> {$LL.users()}
+    {organization.name}
+    <ChevronRight class="w-8 h-8 inline-block" />
+    {$LL.users()}
   </h1>
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <InvitesList
-        xfetch={xfetch}
-        notifications={notifications}
-        pageType="organization"
-        teamPrefix={orgPrefix}
-        bind:this="{invitesList}"
-      />
+      <InvitesList {xfetch} {notifications} pageType="organization" teamPrefix={orgPrefix} bind:this={invitesList} />
     </div>
   {/if}
 
   <UsersList
-    users={users}
-    getUsers={getUsers}
-    xfetch={xfetch}
-    notifications={notifications}
-    isAdmin={isAdmin}
+    {users}
+    {getUsers}
+    {xfetch}
+    {notifications}
+    {isAdmin}
     pageType="organization"
     orgId={organizationId}
     teamPrefix="/api/organizations/{organizationId}"

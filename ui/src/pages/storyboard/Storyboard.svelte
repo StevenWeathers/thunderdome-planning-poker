@@ -37,7 +37,13 @@
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import Personas from '../../components/storyboard/Personas.svelte';
   import GoalSection from '../../components/storyboard/GoalSection.svelte';
-  import type { StoryboardPersona, StoryboardUser, Storyboard, ColorLegend, StoryboardGoal } from '../../types/storyboard';
+  import type {
+    StoryboardPersona,
+    StoryboardUser,
+    Storyboard,
+    ColorLegend,
+    StoryboardGoal,
+  } from '../../types/storyboard';
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
   import type { NotificationService } from '../../types/notifications';
 
@@ -99,15 +105,11 @@
       case 'user_joined':
         storyboard.users = JSON.parse(parsedEvent.value);
         updateActiveUserCount();
-        const joinedUser = storyboard.users.find(
-          w => w.id === parsedEvent.userId,
-        );
+        const joinedUser = storyboard.users.find(w => w.id === parsedEvent.userId);
         notifications.success(`${joinedUser.name} joined.`);
         break;
       case 'user_left':
-        const leftUser = storyboard.users.find(
-          w => w.id === parsedEvent.userId,
-        );
+        const leftUser = storyboard.users.find(w => w.id === parsedEvent.userId);
         storyboard.users = JSON.parse(parsedEvent.value);
         updateActiveUserCount();
 
@@ -190,40 +192,37 @@
     }
   };
 
-  const ws = new Sockette(
-    `${getWebsocketAddress()}/api/storyboard/${storyboardId}`,
-    {
-      timeout: 2e3,
-      maxAttempts: 15,
-      onmessage: onSocketMessage,
-      onerror: () => {
-        socketError = true;
-      },
-      onclose: e => {
-        if (e.code === 4004) {
-          router.route(appRoutes.storyboards);
-        } else if (e.code === 4001) {
-          user.delete();
-          router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
-        } else if (e.code === 4003) {
-          notifications.danger($LL.duplicateStoryboardSession());
-          router.route(`${appRoutes.storyboards}`);
-        } else if (e.code === 4002) {
-          router.route(appRoutes.storyboards);
-        } else {
-          socketReconnecting = true;
-        }
-      },
-      onopen: () => {
-        isLoading = false;
-        socketError = false;
-        socketReconnecting = false;
-      },
-      onmaximum: () => {
-        socketReconnecting = false;
-      },
+  const ws = new Sockette(`${getWebsocketAddress()}/api/storyboard/${storyboardId}`, {
+    timeout: 2e3,
+    maxAttempts: 15,
+    onmessage: onSocketMessage,
+    onerror: () => {
+      socketError = true;
     },
-  );
+    onclose: e => {
+      if (e.code === 4004) {
+        router.route(appRoutes.storyboards);
+      } else if (e.code === 4001) {
+        user.delete();
+        router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
+      } else if (e.code === 4003) {
+        notifications.danger($LL.duplicateStoryboardSession());
+        router.route(`${appRoutes.storyboards}`);
+      } else if (e.code === 4002) {
+        router.route(appRoutes.storyboards);
+      } else {
+        socketReconnecting = true;
+      }
+    },
+    onopen: () => {
+      isLoading = false;
+      socketError = false;
+      socketReconnecting = false;
+    },
+    onmaximum: () => {
+      socketReconnecting = false;
+    },
+  });
 
   onDestroy(() => {
     ws.close();
@@ -255,23 +254,15 @@
     storyboard.goals[goalIndex].columns[columnIndex].stories = e.detail.items;
     storyboard.goals = storyboard.goals;
 
-    const matchedStory = storyboard.goals[goalIndex].columns[
-      columnIndex
-    ].stories.find(i => i.id === storyId);
+    const matchedStory = storyboard.goals[goalIndex].columns[columnIndex].stories.find(i => i.id === storyId);
 
     if (matchedStory) {
       const goalId = storyboard.goals[goalIndex].id;
       const columnId = storyboard.goals[goalIndex].columns[columnIndex].id;
 
       // determine what story to place story before in target column
-      const matchedStoryIndex =
-        storyboard.goals[goalIndex].columns[columnIndex].stories.indexOf(
-          matchedStory,
-        );
-      const sibling =
-        storyboard.goals[goalIndex].columns[columnIndex].stories[
-          matchedStoryIndex + 1
-        ];
+      const matchedStoryIndex = storyboard.goals[goalIndex].columns[columnIndex].stories.indexOf(matchedStory);
+      const sibling = storyboard.goals[goalIndex].columns[columnIndex].stories[matchedStoryIndex + 1];
       const placeBefore = sibling ? sibling.id : '';
 
       sendSocketEvent(
@@ -345,7 +336,7 @@
     return () => {
       sendSocketEvent('abandon_storyboard', '');
       toggleSubmenu?.();
-    }
+    };
   }
 
   function toggleUsersPanel() {
@@ -360,7 +351,7 @@
       showColorLegend = false;
       showPersonas = !showPersonas;
       toggleSubmenu?.();
-    }
+    };
   }
 
   function toggleColumnEdit(column) {
@@ -374,22 +365,22 @@
       showColorLegend = false;
       showColorLegendForm = !showColorLegendForm;
       toggleSubmenu?.();
-    }
+    };
   }
 
   const toggleDeleteStoryboard = (toggleSubmenu?: () => void) => {
     return () => {
       showDeleteStoryboard = !showDeleteStoryboard;
       toggleSubmenu?.();
-    }
+    };
   };
 
   const toggleExportStoryboard = (toggleSubmenu?: () => void) => {
     return () => {
       showExportStoryboard = !showExportStoryboard;
       toggleSubmenu?.();
-    }
-  }
+    };
+  };
 
   let showAddGoal = $state(false);
   let reviseGoalId = $state('');
@@ -455,7 +446,7 @@
     return () => {
       showEditStoryboard = !showEditStoryboard;
       toggleSubmenu?.();
-    }
+    };
   }
 
   const toggleStoryForm = story => () => {
@@ -473,7 +464,7 @@
     return () => {
       showBecomeFacilitator = !showBecomeFacilitator;
       toggleSubmenu?.();
-    }
+    };
   }
 
   function updateActiveUserCount() {
@@ -488,6 +479,404 @@
     }
   });
 </script>
+
+<svelte:head>
+  <title>{$LL.storyboard()} {storyboard.name} | {$LL.appName()}</title>
+</svelte:head>
+
+<div class="w-full">
+  <div
+    class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
+        flex-wrap gap-y-2"
+  >
+    <div class="grow">
+      <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
+        <span class="text-2xl text-gray-700 dark:text-gray-400">{$LL.storyboard()}</span>
+        {storyboard.name}
+      </h1>
+    </div>
+    <div class="flex justify-end space-x-2">
+      <SolidButton color="green" onClick={toggleAddGoal()} testid="goal-add">
+        <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
+      </SolidButton>
+      <SubMenu label="Storyboard Settings" icon={Settings} testId="storyboard-settings">
+        {#snippet children({ toggleSubmenu })}
+          <SubMenuItem
+            onClickHandler={togglePersonas(toggleSubmenu)}
+            testId="personas-toggle"
+            icon={Users}
+            label={$LL.personas()}
+          />
+          <SubMenuItem
+            onClickHandler={toggleEditLegend(toggleSubmenu)}
+            testId="colorlegend"
+            icon={SwatchBook}
+            label={$LL.colorLegend()}
+          />
+          <SubMenuItem
+            onClickHandler={toggleExportStoryboard(toggleSubmenu)}
+            testId="storyboard-export"
+            icon={Download}
+            label={$LL.export()}
+          />
+          {#if isFacilitator}
+            <SubMenuItem
+              onClickHandler={toggleEditStoryboard(toggleSubmenu)}
+              testId="storyboard-edit"
+              icon={Pencil}
+              label={$LL.editStoryboard()}
+            />
+            <SubMenuItem
+              onClickHandler={toggleDeleteStoryboard(toggleSubmenu)}
+              testId="storyboard-delete"
+              icon={Trash}
+              label={$LL.deleteStoryboard()}
+            />
+          {:else}
+            <SubMenuItem
+              onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
+              testId="become-facilitator"
+              icon={Crown}
+              label={$LL.becomeFacilitator()}
+            />
+            <SubMenuItem
+              onClickHandler={abandonStoryboard(toggleSubmenu)}
+              testId="storyboard-leave"
+              icon={LogOut}
+              label={$LL.leaveStoryboard()}
+            />
+          {/if}
+        {/snippet}
+      </SubMenu>
+      <SolidButton color="gray" onClick={toggleUsersPanel} testid="users-toggle">
+        <Users class="inline-block w-4 h-4 me-2" />
+        {$LL.users()}&nbsp;<span
+          class="rounded-full bg-gray-500 text-white dark:bg-gray-300 dark:text-gray-800 text-sm {activeUserCount > 9
+            ? 'px-1'
+            : 'px-2'}">{activeUserCount}</span
+        >
+        <ChevronDown class="ms-1 inline-block w-4 h-4" />
+      </SolidButton>
+    </div>
+  </div>
+  {#if showUsers}
+    <ActiveUsers
+      users={storyboard.users}
+      facilitatorIds={storyboard.facilitators}
+      {isFacilitator}
+      inviteUrl="{hostname}{appRoutes.storyboard}/{storyboard.id}"
+      onAddFacilitator={handleAddFacilitator}
+      onRemoveFacilitator={handleRemoveFacilitator}
+    />
+  {/if}
+  {#each storyboard.goals as goal, goalIndex (goal.id)}
+    <GoalSection
+      {goal}
+      handleDelete={handleGoalDeletion}
+      handleColumnAdd={addStoryColumn}
+      toggleEdit={toggleAddGoal}
+      {goalIndex}
+      {isFacilitator}
+    >
+      <div class="flex">
+        {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+          <div class="flex-none mx-2 w-40" data-testid="goal-personas">
+            <div class="w-full mb-2">
+              {#each goalColumn.personas as persona}
+                <div class="mt-4 dark:text-gray-300 text-right" data-testid="goal-persona">
+                  <div class="font-bold" data-testid="persona-name">
+                    <User class="inline-block h-4 w-4" />
+                    {persona.name}
+                  </div>
+                  <div class="text-sm" data-testid="persona-role">
+                    {persona.role}
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/each}
+      </div>
+      <div class="flex">
+        {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+          <div class="flex-none my-4 mx-2 w-40" data-testid="goal-column">
+            <div class="flex-none">
+              <div class="w-full mb-2">
+                <div class="flex">
+                  <span
+                    class="font-bold flex-grow truncate dark:text-gray-300"
+                    title={goalColumn.name}
+                    data-testid="column-name"
+                  >
+                    {goalColumn.name}
+                  </span>
+                  <button
+                    onclick={toggleColumnEdit(goalColumn)}
+                    class="flex-none font-bold text-xl
+                                    border-dashed border-2 border-gray-400 dark:border-gray-600
+                                    hover:border-green-500 text-gray-600 dark:text-gray-400
+                                    hover:text-green-500 py-1 px-2"
+                    title={$LL.storyboardEditColumn()}
+                    data-testid="column-edit"
+                  >
+                    <Pencil />
+                  </button>
+                </div>
+              </div>
+              <div class="w-full">
+                <div class="flex">
+                  <button
+                    onclick={addStory(goal.id, goalColumn.id)}
+                    class="flex-grow font-bold text-xl py-1
+                                    px-2 border-dashed border-2
+                                    border-gray-400 dark:border-gray-600 hover:border-green-500
+                                    text-gray-600 dark:text-gray-400 hover:text-green-500"
+                    title={$LL.storyboardAddStoryToColumn()}
+                    data-testid="story-add"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="w-full relative"
+              data-testid="column-dropzone"
+              style="min-height: 160px;"
+              data-goalid={goal.id}
+              data-columnid={goalColumn.id}
+              data-goalIndex={goalIndex}
+              data-columnindex={columnIndex}
+              use:dndzone={{
+                items: goalColumn.stories,
+                type: 'story',
+                dropTargetStyle: '',
+                dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
+              }}
+              onconsider={handleDndConsider}
+              onfinalize={handleDndFinalize}
+            >
+              {#each goalColumn.stories as story (story.id)}
+                <div
+                  class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4 cursor-pointer"
+                  style="list-style: none;"
+                  role="button"
+                  tabindex="0"
+                  data-goalid={goal.id}
+                  data-columnid={goalColumn.id}
+                  data-storyid={story.id}
+                  data-testid="column-story"
+                  onclick={toggleStoryForm(story)}
+                  onkeypress={toggleStoryForm(story)}
+                >
+                  <div>
+                    <div>
+                      <div
+                        class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
+                        title={story.name}
+                        data-testid="story-name"
+                      >
+                        {story.name}
+                      </div>
+                      <div class="h-10">
+                        <div class="flex content-center p-2 text-sm">
+                          <div class="w-1/2 text-gray-600 dark:text-gray-300">
+                            {#if story.comments.length > 0}
+                              <span
+                                class="inline-block align-middle"
+                                data-testid="story-comments"
+                                title="Story has {story.comments.length} {story.comments.length
+                                  ? 'comments'
+                                  : 'comment'}"
+                              >
+                                {story.comments.length}
+                                <MessageSquareMore class="inline-block" />
+                              </span>
+                            {/if}
+                          </div>
+                          <div class="w-1/2 flex space-x-2 justify-end">
+                            {#if story.link !== ''}
+                              <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
+                            {/if}
+                            {#if story.points > 0}
+                              <span
+                                class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
+                                data-testid="story-points"
+                                title="Story points"
+                              >
+                                {story.points}
+                              </span>
+                            {/if}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+                    <div
+                      class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
+                                story-{story.color} border
+                                cursor-pointer"
+                      style="list-style: none;"
+                      role="button"
+                      tabindex="0"
+                      data-goalid={goal.id}
+                      data-columnid={goalColumn.id}
+                      data-storyid={story.id}
+                      data-testid="column-story-shadowitem"
+                      onclick={toggleStoryForm(story)}
+                      onkeypress={toggleStoryForm(story)}
+                    >
+                      <div>
+                        <div>
+                          <div
+                            class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
+                            title={story.name}
+                            data-testid="shadow-story-name"
+                          >
+                            {story.name}
+                          </div>
+                          <div class="h-10">
+                            <div class="flex content-center p-2 text-sm">
+                              <div class="w-1/2 text-gray-600 dark:text-gray-300">
+                                {#if story.comments.length > 0}
+                                  <span
+                                    class="inline-block align-middle"
+                                    data-testid="story-comments"
+                                    title="Story has {story.comments.length} {story.comments.length
+                                      ? 'comments'
+                                      : 'comment'}"
+                                  >
+                                    {story.comments.length}
+                                    <MessageSquareMore class="inline-block" />
+                                  </span>
+                                {/if}
+                              </div>
+                              <div class="w-1/2 flex space-x-2 justify-end">
+                                {#if story.link !== ''}
+                                  <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
+                                {/if}
+                                {#if story.points > 0}
+                                  <span
+                                    class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
+                                    data-testid="story-points"
+                                    title="Story points"
+                                  >
+                                    {story.points}
+                                  </span>
+                                {/if}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {/if}
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/each}
+      </div>
+    </GoalSection>
+  {/each}
+</div>
+
+{#if showAddGoal}
+  <AddGoal
+    {handleGoalAdd}
+    toggleAddGoal={toggleAddGoal()}
+    {handleGoalRevision}
+    goalId={reviseGoalId}
+    goalName={reviseGoalName}
+  />
+{/if}
+
+{#if editColumn}
+  <ColumnForm
+    {handleColumnRevision}
+    toggleColumnEdit={toggleColumnEdit()}
+    column={editColumn}
+    personas={storyboard.personas}
+    handlePersonaAdd={handleColumnPersonaAdd}
+    handlePersonaRemove={handleColumnPersonaRemove}
+    {deleteColumn}
+  />
+{/if}
+
+{#if activeStory}
+  <StoryForm
+    toggleStoryForm={toggleStoryForm()}
+    story={activeStory}
+    {sendSocketEvent}
+    {notifications}
+    colorLegend={storyboard.color_legend}
+    users={storyboard.users}
+  />
+{/if}
+
+{#if showColorLegendForm}
+  <ColorLegendForm
+    {handleLegendRevision}
+    toggleEditLegend={toggleEditLegend()}
+    colorLegend={storyboard.color_legend}
+    {isFacilitator}
+  />
+{/if}
+
+{#if showEditStoryboard}
+  <EditStoryboard
+    storyboardName={storyboard.name}
+    {handleStoryboardEdit}
+    toggleEditStoryboard={toggleEditStoryboard()}
+    joinCode={storyboard.joinCode}
+    facilitatorCode={storyboard.facilitatorCode}
+  />
+{/if}
+
+{#if showExportStoryboard}
+  <ExportStoryboard {storyboard} closeModal={toggleExportStoryboard()} />
+{/if}
+
+{#if showDeleteStoryboard}
+  <DeleteConfirmation
+    toggleDelete={toggleDeleteStoryboard()}
+    handleDelete={concedeStoryboard}
+    confirmText={'Are you sure you want to delete this Storyboard?'}
+    confirmBtnText={'Delete Storyboard'}
+  />
+{/if}
+
+{#if showBecomeFacilitator}
+  <BecomeFacilitator handleBecomeFacilitator={becomeFacilitator} toggleBecomeFacilitator={toggleBecomeFacilitator()} />
+{/if}
+
+{#if showPersonas}
+  <Personas
+    personas={storyboard.personas}
+    closeModal={togglePersonas()}
+    onDelete={handleDeletePersona}
+    onAdd={handlePersonaAdd}
+    onUpdate={handlePersonaRevision}
+    {isFacilitator}
+  />
+{/if}
+
+{#if socketReconnecting}
+  <FullpageLoader>
+    {$LL.reloadingStoryboard()}
+  </FullpageLoader>
+{:else if socketError}
+  <FullpageLoader>
+    {$LL.joinStoryboardError()}
+  </FullpageLoader>
+{:else if isLoading}
+  <FullpageLoader>
+    {$LL.loadingStoryboard()}
+  </FullpageLoader>
+{:else if JoinPassRequired}
+  <JoinCodeForm handleSubmit={authStoryboard} submitText={$LL.joinStoryboard()} />
+{/if}
 
 <style>
   .story-gray {
@@ -610,420 +999,3 @@
     @apply bg-pink-400;
   }
 </style>
-
-<svelte:head>
-  <title>{$LL.storyboard()} {storyboard.name} | {$LL.appName()}</title>
-</svelte:head>
-
-<div class="w-full">
-  <div
-    class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
-        flex-wrap gap-y-2"
-  >
-
-    <div class="grow">
-      <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
-        <span class="text-2xl text-gray-700 dark:text-gray-400">{$LL.storyboard()}</span> {storyboard.name}
-      </h1>
-    </div>
-    <div class="flex justify-end space-x-2">
-      <SolidButton
-        color="green"
-        onClick={toggleAddGoal()}
-        testid="goal-add"
-      >
-        <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
-      </SolidButton>
-      <SubMenu label="Storyboard Settings" icon={Settings} testId="storyboard-settings">
-        {#snippet children({ toggleSubmenu })}
-          <SubMenuItem
-            onClickHandler={togglePersonas(toggleSubmenu)}
-            testId="personas-toggle"
-            icon={Users}
-            label={$LL.personas()}
-          />
-          <SubMenuItem
-            onClickHandler={toggleEditLegend(toggleSubmenu)}
-            testId="colorlegend"
-            icon={SwatchBook}
-            label={$LL.colorLegend()}
-          />
-          <SubMenuItem
-            onClickHandler={toggleExportStoryboard(toggleSubmenu)}
-            testId="storyboard-export"
-            icon={Download}
-            label={$LL.export()}
-          />
-          {#if isFacilitator}
-            <SubMenuItem
-              onClickHandler={toggleEditStoryboard(toggleSubmenu)}
-              testId="storyboard-edit"
-              icon={Pencil}
-              label={$LL.editStoryboard()}
-            />
-            <SubMenuItem
-              onClickHandler={toggleDeleteStoryboard(toggleSubmenu)}
-              testId="storyboard-delete"
-              icon={Trash}
-              label={$LL.deleteStoryboard()}
-            />
-          {:else}
-            <SubMenuItem
-              onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
-              testId="become-facilitator"
-              icon={Crown}
-              label={$LL.becomeFacilitator()}
-            />
-            <SubMenuItem
-              onClickHandler={abandonStoryboard(toggleSubmenu)}
-              testId="storyboard-leave"
-              icon={LogOut}
-              label={$LL.leaveStoryboard()}
-            />
-          {/if}
-        {/snippet}
-      </SubMenu>
-      <SolidButton
-        color="gray"
-        onClick={toggleUsersPanel}
-        testid="users-toggle"
-      >
-        <Users class="inline-block w-4 h-4 me-2" />
-        {$LL.users()}&nbsp;<span class="rounded-full bg-gray-500 text-white dark:bg-gray-300 dark:text-gray-800 text-sm { activeUserCount > 9 ? 'px-1' : 'px-2'}"
-        >{activeUserCount}</span>
-        <ChevronDown class="ms-1 inline-block w-4 h-4" />
-      </SolidButton>
-    </div>
-  </div>
-  {#if showUsers}
-    <ActiveUsers
-      users={storyboard.users}
-      facilitatorIds={storyboard.facilitators}
-      isFacilitator={isFacilitator}
-      inviteUrl="{hostname}{appRoutes.storyboard}/{storyboard.id}"
-      onAddFacilitator={handleAddFacilitator}
-      onRemoveFacilitator={handleRemoveFacilitator}
-    />
-  {/if}
-  {#each storyboard.goals as goal, goalIndex (goal.id)}
-    <GoalSection
-     goal={goal}
-     handleDelete={handleGoalDeletion}
-     handleColumnAdd={addStoryColumn}
-     toggleEdit={toggleAddGoal}
-     goalIndex={goalIndex}
-     isFacilitator={isFacilitator}
-    >
-      <div class="flex">
-        {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-          <div class="flex-none mx-2 w-40" data-testid="goal-personas">
-            <div class="w-full mb-2">
-              {#each goalColumn.personas as persona}
-                <div
-                  class="mt-4 dark:text-gray-300 text-right"
-                  data-testid="goal-persona"
-                >
-                  <div class="font-bold" data-testid="persona-name">
-                    <User class="inline-block h-4 w-4" />
-                    {persona.name}
-                  </div>
-                  <div class="text-sm" data-testid="persona-role">
-                    {persona.role}
-                  </div>
-                </div>
-              {/each}
-            </div>
-          </div>
-        {/each}
-      </div>
-      <div class="flex">
-        {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-          <div class="flex-none my-4 mx-2 w-40" data-testid="goal-column">
-            <div class="flex-none">
-              <div class="w-full mb-2">
-                <div class="flex">
-                  <span
-                    class="font-bold flex-grow truncate dark:text-gray-300"
-                    title="{goalColumn.name}"
-                    data-testid="column-name"
-                  >
-                    {goalColumn.name}
-                  </span>
-                  <button
-                    onclick={toggleColumnEdit(goalColumn)}
-                    class="flex-none font-bold text-xl
-                                    border-dashed border-2 border-gray-400 dark:border-gray-600
-                                    hover:border-green-500 text-gray-600 dark:text-gray-400
-                                    hover:text-green-500 py-1 px-2"
-                    title="{$LL.storyboardEditColumn()}"
-                    data-testid="column-edit"
-                  >
-                    <Pencil />
-                  </button>
-                </div>
-              </div>
-              <div class="w-full">
-                <div class="flex">
-                  <button
-                    onclick={addStory(goal.id, goalColumn.id)}
-                    class="flex-grow font-bold text-xl py-1
-                                    px-2 border-dashed border-2
-                                    border-gray-400 dark:border-gray-600 hover:border-green-500
-                                    text-gray-600 dark:text-gray-400 hover:text-green-500"
-                    title="{$LL.storyboardAddStoryToColumn()}"
-                    data-testid="story-add"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div
-              class="w-full relative"
-              data-testid="column-dropzone"
-              style="min-height: 160px;"
-              data-goalid="{goal.id}"
-              data-columnid="{goalColumn.id}"
-              data-goalIndex="{goalIndex}"
-              data-columnindex="{columnIndex}"
-              use:dndzone="{{
-                items: goalColumn.stories,
-                type: 'story',
-                dropTargetStyle: '',
-                dropTargetClasses: [
-                  'outline',
-                  'outline-2',
-                  'outline-indigo-500',
-                  'dark:outline-yellow-400',
-                ],
-              }}"
-              onconsider={handleDndConsider}
-              onfinalize={handleDndFinalize}
-            >
-              {#each goalColumn.stories as story (story.id)}
-                <div
-                  class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4 cursor-pointer"
-                  style="list-style: none;"
-                  role="button"
-                  tabindex="0"
-                  data-goalid="{goal.id}"
-                  data-columnid="{goalColumn.id}"
-                  data-storyid="{story.id}"
-                  data-testid="column-story"
-                  onclick={toggleStoryForm(story)}
-                  onkeypress={toggleStoryForm(story)}
-                >
-                  <div>
-                    <div>
-                      <div
-                        class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
-                        title="{story.name}"
-                        data-testid="story-name"
-                      >
-                        {story.name}
-                      </div>
-                      <div class="h-10">
-                        <div
-                          class="flex content-center p-2 text-sm">
-                          <div
-                            class="w-1/2 text-gray-600 dark:text-gray-300">
-                            {#if story.comments.length > 0}
-                              <span
-                                class="inline-block align-middle"
-                                data-testid="story-comments"
-                                title="Story has {story.comments.length} {story.comments.length ? 'comments' : 'comment'}"
-                              >
-                                {story.comments.length}
-                                <MessageSquareMore class="inline-block" />
-                              </span>
-                            {/if}
-                          </div>
-                          <div class="w-1/2 flex space-x-2 justify-end">
-                            {#if story.link !== ""}
-                              <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
-                            {/if}
-                            {#if story.points > 0}
-                              <span
-                                class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
-                                data-testid="story-points"
-                                title="Story points"
-                              >
-                                {story.points}
-                              </span>
-                            {/if}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-                    <div
-                      class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
-                                story-{story.color} border
-                                cursor-pointer"
-                      style="list-style: none;"
-                      role="button"
-                      tabindex="0"
-                      data-goalid="{goal.id}"
-                      data-columnid="{goalColumn.id}"
-                      data-storyid="{story.id}"
-                      data-testid="column-story-shadowitem"
-                      onclick={toggleStoryForm(story)}
-                      onkeypress={toggleStoryForm(story)}
-                    >
-                      <div>
-                        <div>
-                          <div
-                            class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
-                            title="{story.name}"
-                            data-testid="shadow-story-name"
-                          >
-                            {story.name}
-                          </div>
-                          <div class="h-10">
-                        <div
-                          class="flex content-center p-2 text-sm">
-                          <div
-                            class="w-1/2 text-gray-600 dark:text-gray-300">
-                            {#if story.comments.length > 0}
-                              <span
-                                class="inline-block align-middle"
-                                data-testid="story-comments"
-                                title="Story has {story.comments.length} {story.comments.length ? 'comments' : 'comment'}"
-                              >
-                                {story.comments.length}
-                                <MessageSquareMore class="inline-block" />
-                              </span>
-                            {/if}
-                          </div>
-                          <div class="w-1/2 flex space-x-2 justify-end">
-                            {#if story.link !== ""}
-                              <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
-                            {/if}
-                            {#if story.points > 0}
-                              <span
-                                class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
-                                data-testid="story-points"
-                                title="Story points"
-                              >
-                                {story.points}
-                              </span>
-                            {/if}
-                          </div>
-                        </div>
-                      </div>
-                        </div>
-                      </div>
-                    </div>
-                  {/if}
-                </div>
-              {/each}
-            </div>
-          </div>
-        {/each}
-      </div>
-    </GoalSection>
-  {/each}
-</div>
-
-{#if showAddGoal}
-  <AddGoal
-    handleGoalAdd={handleGoalAdd}
-    toggleAddGoal={toggleAddGoal()}
-    handleGoalRevision={handleGoalRevision}
-    goalId={reviseGoalId}
-    goalName={reviseGoalName}
-  />
-{/if}
-
-{#if editColumn}
-  <ColumnForm
-    handleColumnRevision={handleColumnRevision}
-    toggleColumnEdit={toggleColumnEdit()}
-    column={editColumn}
-    personas={storyboard.personas}
-    handlePersonaAdd={handleColumnPersonaAdd}
-    handlePersonaRemove={handleColumnPersonaRemove}
-    deleteColumn={deleteColumn}
-  />
-{/if}
-
-{#if activeStory}
-  <StoryForm
-    toggleStoryForm={toggleStoryForm()}
-    story={activeStory}
-    sendSocketEvent={sendSocketEvent}
-    notifications={notifications}
-    colorLegend={storyboard.color_legend}
-    users={storyboard.users}
-  />
-{/if}
-
-{#if showColorLegendForm}
-  <ColorLegendForm
-    handleLegendRevision={handleLegendRevision}
-    toggleEditLegend={toggleEditLegend()}
-    colorLegend={storyboard.color_legend}
-    isFacilitator={isFacilitator}
-  />
-{/if}
-
-{#if showEditStoryboard}
-  <EditStoryboard
-    storyboardName={storyboard.name}
-    handleStoryboardEdit={handleStoryboardEdit}
-    toggleEditStoryboard={toggleEditStoryboard()}
-    joinCode={storyboard.joinCode}
-    facilitatorCode={storyboard.facilitatorCode}
-  />
-{/if}
-
-{#if showExportStoryboard}
-  <ExportStoryboard storyboard={storyboard} closeModal={toggleExportStoryboard()} />
-{/if}
-
-{#if showDeleteStoryboard}
-  <DeleteConfirmation
-      toggleDelete={toggleDeleteStoryboard()}
-      handleDelete={concedeStoryboard}
-      confirmText={"Are you sure you want to delete this Storyboard?"}
-      confirmBtnText={"Delete Storyboard"}
-    />
-{/if}
-
-{#if showBecomeFacilitator}
-  <BecomeFacilitator
-    handleBecomeFacilitator={becomeFacilitator}
-    toggleBecomeFacilitator={toggleBecomeFacilitator()}
-  />
-{/if}
-
-{#if showPersonas}
-  <Personas
-    personas={storyboard.personas}
-    closeModal={togglePersonas()}
-    onDelete={handleDeletePersona}
-    onAdd={handlePersonaAdd}
-    onUpdate={handlePersonaRevision}
-    isFacilitator={isFacilitator}
-  />
-{/if}
-
-{#if socketReconnecting}
-  <FullpageLoader>
-    {$LL.reloadingStoryboard()}
-  </FullpageLoader>
-{:else if socketError}
-  <FullpageLoader>
-    {$LL.joinStoryboardError()}
-  </FullpageLoader>
-{:else if isLoading}
-  <FullpageLoader>
-    {$LL.loadingStoryboard()}
-  </FullpageLoader>
-{:else if JoinPassRequired}
-  <JoinCodeForm
-    handleSubmit={authStoryboard}
-    submitText={$LL.joinStoryboard()}
-  />
-{/if}

@@ -12,11 +12,7 @@
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import {
-    formatDayForInput,
-    getTimezoneName,
-    subtractDays,
-  } from '../../dateUtils';
+  import { formatDayForInput, getTimezoneName, subtractDays } from '../../dateUtils';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import BlockedPing from '../../components/checkin/BlockedPing.svelte';
   import Picker from '../../components/timezone-picker/Picker.svelte';
@@ -25,8 +21,7 @@
   import type { TeamUser } from '../../types/team';
 
   // Props using Svelte 5 syntax
-  let { xfetch, router, notifications, organizationId, departmentId, teamId } =
-    $props();
+  let { xfetch, router, notifications, organizationId, departmentId, teamId } = $props();
 
   // State variables using $state()
   let timezone = $state(getTimezoneName());
@@ -100,11 +95,7 @@
       ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
       : `${apiPrefix}/organizations/${organizationId}`,
   );
-  const teamPrefix = $derived(
-    organizationId
-      ? `${orgPrefix}/teams/${teamId}`
-      : `${apiPrefix}/teams/${teamId}`,
-  );
+  const teamPrefix = $derived(organizationId ? `${orgPrefix}/teams/${teamId}` : `${apiPrefix}/teams/${teamId}`);
 
   function getTeam() {
     xfetch(teamPrefix)
@@ -287,24 +278,21 @@
     }
   };
 
-  const ws = new Sockette(
-    `${getWebsocketAddress()}/api/teams/${teamId}/checkin`,
-    {
-      timeout: 2e3,
-      maxAttempts: 15,
-      onmessage: onSocketMessage,
-      onclose: e => {
-        if (e.code === 4005) {
-          ws.close();
-        } else if (e.code === 4004) {
-          router.route(appRoutes.teams);
-        } else if (e.code === 4001) {
-          user.delete();
-          router.route(appRoutes.login);
-        }
-      },
+  const ws = new Sockette(`${getWebsocketAddress()}/api/teams/${teamId}/checkin`, {
+    timeout: 2e3,
+    maxAttempts: 15,
+    onmessage: onSocketMessage,
+    onclose: e => {
+      if (e.code === 4005) {
+        ws.close();
+      } else if (e.code === 4004) {
+        router.route(appRoutes.teams);
+      } else if (e.code === 4001) {
+        user.delete();
+        router.route(appRoutes.login);
+      }
     },
-  );
+  });
 
   const sendSocketEvent = (type, value) => {
     ws.send(
@@ -345,21 +333,11 @@
   }
 
   // Derived reactive values
-  const isAdmin = $derived(
-    organizationRole === 'ADMIN' ||
-      departmentRole === 'ADMIN' ||
-      teamRole === 'ADMIN',
-  );
+  const isAdmin = $derived(organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole === 'ADMIN');
 
-  const isTeamMember = $derived(
-    organizationRole === 'ADMIN' ||
-      departmentRole === 'ADMIN' ||
-      teamRole !== '',
-  );
+  const isTeamMember = $derived(organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole !== '');
 
-  const alreadyCheckedIn = $derived(
-    checkins && checkins.find(c => c.user.id === $user.id) !== undefined,
-  );
+  const alreadyCheckedIn = $derived(checkins && checkins.find(c => c.user.id === $user.id) !== undefined);
 
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
@@ -387,16 +365,12 @@
   <div class="flex sm:flex-wrap">
     <div class="md:grow">
       <div class="mb-8">
-        <div
-          class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white"
-        >
+        <div class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white">
           <h1>
             {$LL.checkIn()}
           </h1>
         </div>
-        <div
-          class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white"
-        >
+        <div class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white">
           <ChevronRight class="w-8 h-8 inline-block" />
         </div>
         <div class="inline-block">
@@ -421,8 +395,7 @@
           <ChevronRight class="inline-block" />
           <a
             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-            href="{appRoutes.organization}/{organization.id}"
-            >{organization.name}</a
+            href="{appRoutes.organization}/{organization.id}">{organization.name}</a
           >
           {#if departmentId}
             &nbsp;
@@ -431,8 +404,7 @@
             <ChevronRight class="inline-block" />
             <a
               class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-              href="{appRoutes.organization}/{organization.id}/department/{department.id}"
-              >{department.name}</a
+              href="{appRoutes.organization}/{organization.id}/department/{department.id}">{department.name}</a
             >
             <ChevronRight class="inline-block" />
             <span class="uppercase">{$LL.team()}</span>
@@ -508,9 +480,7 @@
     </div>
   </div>
 
-  <div
-    class="mt-8 mb-4 w-full text-right bg-white dark:bg-gray-800 p-3 shadow-lg rounded-lg"
-  >
+  <div class="mt-8 mb-4 w-full text-right bg-white dark:bg-gray-800 p-3 shadow-lg rounded-lg">
     <Toggle
       name="showOnlyDiscussionItems"
       id="showOnlyDiscussionItems"
@@ -559,15 +529,8 @@
                         <div
                           class="absolute -bottom-1 -end-1 rtl:-start-1 rtl:end-auto w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white dark:bg-gray-800 p-1 shadow-lg ring-2 ring-white dark:ring-gray-700"
                         >
-                          <div
-                            class="w-full h-full rounded-full bg-emerald-500 flex items-center justify-center"
-                          >
-                            <svg
-                              class="w-3 h-3 text-white"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              aria-hidden="true"
-                            >
+                          <div class="w-full h-full rounded-full bg-emerald-500 flex items-center justify-center">
+                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                               <path
                                 fillRule="evenodd"
                                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -579,9 +542,7 @@
                       {/if}
 
                       {#if checkin.blockers !== ''}
-                        <div
-                          class="absolute -top-1 -end-1 rtl:-start-1 rtl:end-auto"
-                        >
+                        <div class="absolute -top-1 -end-1 rtl:-start-1 rtl:end-auto">
                           <BlockedPing />
                         </div>
                       {/if}
@@ -604,11 +565,7 @@
 
                     <!-- Action buttons -->
                     {#if checkin.user.id === $user.id || isAdmin}
-                      <div
-                        class="flex items-center gap-2"
-                        role="group"
-                        aria-label="Check-in actions"
-                      >
+                      <div class="flex items-center gap-2" role="group" aria-label="Check-in actions">
                         <button
                           onclick={() => toggleCheckin(checkin)}
                           class="group/btn relative p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
@@ -616,9 +573,7 @@
                           data-testid="checkin-edit"
                           aria-label={`Edit check-in for ${checkin.user.name}`}
                         >
-                          <Pencil
-                            class="w-4 h-4 transition-transform group-hover/btn:rotate-12"
-                          />
+                          <Pencil class="w-4 h-4 transition-transform group-hover/btn:rotate-12" />
                           <span
                             class="absolute inset-0 rounded-xl bg-blue-600/10 scale-0 group-hover/btn:scale-100 transition-transform duration-200"
                           ></span>
@@ -631,9 +586,7 @@
                           data-testid="checkin-delete"
                           aria-label={`Delete check-in for ${checkin.user.name}`}
                         >
-                          <Trash2
-                            class="w-4 h-4 transition-transform group-hover/btn:scale-110"
-                          />
+                          <Trash2 class="w-4 h-4 transition-transform group-hover/btn:scale-110" />
                           <span
                             class="absolute inset-0 rounded-xl bg-red-600/10 scale-0 group-hover/btn:scale-100 transition-transform duration-200"
                           ></span>
@@ -684,17 +637,10 @@
                     <h4
                       class="flex items-center gap-2 text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide"
                     >
-                      <div
-                        class="w-2 h-2 rounded-full bg-red-500 animate-pulse"
-                      ></div>
+                      <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
                       <span class="flex items-center gap-1">
                         {$LL.blockers()}
-                        <svg
-                          class="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                        >
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                           <path
                             fillRule="evenodd"
                             d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -721,12 +667,7 @@
                       <div class="w-2 h-2 rounded-full bg-amber-500"></div>
                       <span class="flex items-center gap-1">
                         {$LL.discuss()}
-                        <svg
-                          class="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                        >
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                           <path
                             fillRule="evenodd"
                             d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"

@@ -4,7 +4,6 @@
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
 
-  
   interface Props {
     class?: string;
     phase?: string;
@@ -21,17 +20,17 @@
     class: klass = '',
     phase = '',
     item = {
-    id: '',
-    type: '',
-    content: '',
-    comments: [],
-  },
+      id: '',
+      type: '',
+      content: '',
+      comments: [],
+    },
     feedbackVisibility = 'visible',
     isFacilitator = false,
     users = [],
     columnColors = {},
     sendSocketEvent = (event: string, value: any) => {},
-    children
+    children,
   }: Props = $props();
 
   let showComments = $state(false);
@@ -79,15 +78,13 @@
 <div
   class="{klass} p-2 mb-3 border-s-4 border-gray-300 dark:border-gray-600 transition-all duration-200 ease-in-out hover:border-blue-500 dark:hover:border-sky-400"
   data-testid="retro-feedback-item"
-  data-itemid="{item.id}"
+  data-itemid={item.id}
 >
   <div class="flex items-center justify-between mb-1">
     <div class="flex items-center space-x-2">
       {#if phase !== 'brainstorm'}
         <span
-          class="text-xs font-medium px-2 py-1 rounded-full {getTypeTagColors(
-            item.type,
-          )}"
+          class="text-xs font-medium px-2 py-1 rounded-full {getTypeTagColors(item.type)}"
           data-testid="retro-feedback-item-type"
         >
           {item.type}
@@ -95,15 +92,12 @@
       {/if}
       <button
         class="inline-block leading-none text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-sky-400 transition-colors duration-200"
-        class:cursor-not-allowed="{phase === 'brainstorm' &&
-          feedbackVisibility === 'hidden'}"
+        class:cursor-not-allowed={phase === 'brainstorm' && feedbackVisibility === 'hidden'}
         onclick={toggleComments(item)}
-        disabled="{phase === 'brainstorm' && feedbackVisibility === 'hidden'}"
+        disabled={phase === 'brainstorm' && feedbackVisibility === 'hidden'}
       >
         <MessageSquare class="inline w-4 h-4" />
-        <span data-testid="retro-feedback-item-comments"
-          >{item.comments.length}</span
-        >
+        <span data-testid="retro-feedback-item-comments">{item.comments.length}</span>
       </button>
     </div>
     {#if phase === 'brainstorm' && item.userId === $user.id}
@@ -120,8 +114,9 @@
     {#if phase === 'brainstorm' && feedbackVisibility === 'hidden' && item.userId !== $user.id}
       <span class="italic">{$LL.retroFeedbackHidden()}</span>
     {:else if phase === 'brainstorm' && feedbackVisibility === 'concealed' && item.userId !== $user.id}
-      <span class="italic">{$LL.retroFeedbackConcealed()}&nbsp;&nbsp;</span
-      ><span class="text-white dark:text-gray-800">{item.content}</span>
+      <span class="italic">{$LL.retroFeedbackConcealed()}&nbsp;&nbsp;</span><span class="text-white dark:text-gray-800"
+        >{item.content}</span
+      >
     {:else}
       {item.content}
     {/if}
@@ -129,12 +124,6 @@
   {@render children?.()}
 
   {#if showComments}
-    <ItemComments
-      toggleComments={toggleComments(null)}
-      item={item}
-      users={users}
-      isFacilitator={isFacilitator}
-      sendSocketEvent={sendSocketEvent}
-    />
+    <ItemComments toggleComments={toggleComments(null)} {item} {users} {isFacilitator} {sendSocketEvent} />
   {/if}
 </div>

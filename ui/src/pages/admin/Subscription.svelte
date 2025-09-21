@@ -25,12 +25,7 @@
     subscriptionId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    subscriptionId
-  }: Props = $props();
+  let { xfetch, router, notifications, subscriptionId }: Props = $props();
 
   let defaultSubscription = {
     id: subscriptionId,
@@ -83,7 +78,7 @@
     <TableNav title="Subscription" createBtnEnabled={false} />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.email()}
           </HeadCol>
@@ -105,9 +100,9 @@
             <span class="sr-only">Actions</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           <TableRow>
             <RowCol>
               <a
@@ -138,7 +133,7 @@
             <RowCol type="action" />
           </TableRow>
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
   </TableContainer>
 </AdminPageLayout>

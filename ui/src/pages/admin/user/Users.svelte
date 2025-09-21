@@ -22,7 +22,7 @@
   import CrudActions from '../../../components/table/CrudActions.svelte';
   import { BadgeCheck, ToggleLeft, ToggleRight } from 'lucide-svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -59,12 +59,7 @@
     selectedUserProfile = profile;
   };
 
-  function createUser(
-    warriorName,
-    warriorEmail,
-    warriorPassword1,
-    warriorPassword2,
-  ) {
+  function createUser(warriorName, warriorEmail, warriorPassword1, warriorPassword2) {
     const body = {
       name: warriorName,
       email: warriorEmail,
@@ -85,9 +80,7 @@
   function getUsers() {
     const offset = (usersPage - 1) * usersPageLimit;
     const isSearch = searchEmail !== '';
-    const apiPrefix = isSearch
-      ? `/api/admin/search/users/email?search=${searchEmail}&`
-      : '/api/admin/users?';
+    const apiPrefix = isSearch ? `/api/admin/search/users/email?search=${searchEmail}&` : '/api/admin/users?';
 
     if (isSearch && searchEmail.length < 3) {
       notifications.danger($LL.searchLengthError());
@@ -222,7 +215,7 @@
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -240,9 +233,9 @@
             <span class="sr-only">{$LL.actions()}</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each users as user, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -266,12 +259,7 @@
                       >
                       {#if user.country}
                         &nbsp;
-                        <CountryFlag
-                          country={user.country}
-                          additionalClass="inline-block"
-                          width="32"
-                          height="24"
-                        />
+                        <CountryFlag country={user.country} additionalClass="inline-block" width="32" height="24" />
                       {/if}
                     </div>
                   </div>
@@ -280,7 +268,7 @@
               <RowCol>
                 {user.email}
                 {#if user.verified}
-                  <span class="text-green-600" title="{$LL.verified()}">
+                  <span class="text-green-600" title={$LL.verified()}>
                     <BadgeCheck class="inline-block" />
                   </span>
                 {/if}
@@ -298,12 +286,10 @@
               </RowCol>
               <RowCol>
                 <button
-                  onclick={!user.disabled
-                  ? disableUser(user.id)
-                  : enableUser(user.id)}
-                  class:text-red-500="{user.disabled}"
-                  class:text-green-500="{!user.disabled}"
-                  title="{!user.disabled ? 'enabled' : 'disabled'}"
+                  onclick={!user.disabled ? disableUser(user.id) : enableUser(user.id)}
+                  class:text-red-500={user.disabled}
+                  class:text-green-500={!user.disabled}
+                  title={!user.disabled ? 'enabled' : 'disabled'}
                 >
                   {#if user.disabled}
                     <ToggleLeft class="h-10 w-10" />
@@ -331,32 +317,18 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
-    <TableFooter
-      bind:current={usersPage}
-      num_items={totalUsers}
-      per_page={usersPageLimit}
-      on:navigate={changePage}
-    />
+    <TableFooter bind:current={usersPage} num_items={totalUsers} per_page={usersPageLimit} on:navigate={changePage} />
   </TableContainer>
 
   {#if showCreateUser}
-    <CreateUser
-      toggleCreate={toggleCreateUser}
-      handleCreate={createUser}
-      notifications
-    />
+    <CreateUser toggleCreate={toggleCreateUser} handleCreate={createUser} notifications />
   {/if}
 
   {#if showUserEdit}
     <Modal closeModal={toggleUserEdit({})}>
-      <ProfileForm
-        profile={selectedUserProfile}
-        handleUpdate={handleUserEdit}
-        xfetch={xfetch}
-        notifications={notifications}
-      />
+      <ProfileForm profile={selectedUserProfile} handleUpdate={handleUserEdit} {xfetch} {notifications} />
     </Modal>
   {/if}
 

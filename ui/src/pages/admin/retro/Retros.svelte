@@ -15,7 +15,7 @@
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import Toggle from '../../../components/forms/Toggle.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -34,9 +34,7 @@
 
   function getRetros() {
     const retrosOffset = (retrosPage - 1) * retrosPageLimit;
-    xfetch(
-      `/api/retros?limit=${retrosPageLimit}&offset=${retrosOffset}&active=${activeRetros}`,
-    )
+    xfetch(`/api/retros?limit=${retrosPageLimit}&offset=${retrosOffset}&active=${activeRetros}`)
       .then(res => res.json())
       .then(function (result) {
         retros = result.data;
@@ -88,7 +86,7 @@
     </TableNav>
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -102,16 +100,15 @@
             <span class="sr-only">{$LL.actions()}</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each retros as retro, i}
             <TableRow itemIndex={i}>
               <RowCol>
                 <a
                   href="{appRoutes.admin}/retros/{retro.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                  >{retro.name}</a
+                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">{retro.name}</a
                 >
               </RowCol>
               <RowCol>
@@ -128,13 +125,8 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
-    <TableFooter
-      bind:current={retrosPage}
-      num_items={retroCount}
-      per_page={retrosPageLimit}
-      on:navigate={changePage}
-    />
+    <TableFooter bind:current={retrosPage} num_items={retroCount} per_page={retrosPageLimit} on:navigate={changePage} />
   </TableContainer>
 </AdminPageLayout>

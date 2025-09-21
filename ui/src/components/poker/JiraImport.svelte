@@ -41,20 +41,14 @@
           const totalItems = items.length;
           for (let i = 0; i < totalItems; i++) {
             const item = items[i];
-            const decodedDescription = he.decode(
-              item.querySelector('description').innerHTML,
-            );
-            const customFields = item.querySelectorAll(
-              'customfields>customfield',
-            );
+            const decodedDescription = he.decode(item.querySelector('description').innerHTML);
+            const customFields = item.querySelectorAll('customfields>customfield');
             let acceptanceCriteria = '';
 
             if (customFields) {
               for (let j = 0; j < customFields.length; j++) {
-                const cfName =
-                  customFields[j].querySelector('customfieldname').innerHTML;
-                const cfValues =
-                  customFields[j].querySelector('customfieldvalues').innerHTML;
+                const cfName = customFields[j].querySelector('customfieldname').innerHTML;
+                const cfValues = customFields[j].querySelector('customfieldvalues').innerHTML;
 
                 if (cfName.toLowerCase() === 'acceptance criteria') {
                   acceptanceCriteria = cfValues;
@@ -86,21 +80,8 @@
 </script>
 
 {#if allowJiraImport}
-  <HollowButton
-    type="label"
-    additionalClasses="me-2"
-    fullWidth={true}
-    size="large"
-    color="blue"
-    labelFor="jiraimport"
-  >
+  <HollowButton type="label" additionalClasses="me-2" fullWidth={true} size="large" color="blue" labelFor="jiraimport">
     {$LL.selectFile()}
-    <input
-      type="file"
-      onchange={uploadFile}
-      class="hidden"
-      id="jiraimport"
-      accept=".xml"
-    />
+    <input type="file" onchange={uploadFile} class="hidden" id="jiraimport" accept=".xml" />
   </HollowButton>
 {/if}

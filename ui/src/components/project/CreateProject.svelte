@@ -39,7 +39,7 @@
     description = $bindable(''),
     organizationId = '',
     departmentId = '',
-    teamId = ''
+    teamId = '',
   }: Props = $props();
 
   function toggleClose() {
@@ -70,10 +70,8 @@
       if (teamId) body.teamId = teamId;
     }
 
-    const url = projectId !== '' 
-      ? `${apiPrefix}/projects/${projectId}` 
-      : `${apiPrefix}/projects`;
-    
+    const url = projectId !== '' ? `${apiPrefix}/projects/${projectId}` : `${apiPrefix}/projects`;
+
     const method = projectId !== '' ? 'PUT' : 'POST';
 
     xfetch(url, {
@@ -112,17 +110,13 @@
   });
 
   let createDisabled = $derived(
-    projectName === '' || 
-    projectKey === '' || 
-    !projectKeyValid() ||
-    projectKey.length < 2 || 
-    projectKey.length > 10
+    projectName === '' || projectKey === '' || !projectKeyValid() || projectKey.length < 2 || projectKey.length > 10,
   );
 
   function handleProjectKeyInput(event: Event) {
     const target = event.target as HTMLInputElement;
     projectKey = target.value.toUpperCase();
-    }
+  }
 
   let focusInput: any;
   onMount(() => {
@@ -140,10 +134,7 @@
 <Modal closeModal={toggleClose} ariaLabel={projectId ? $LL.modalUpdateProject() : $LL.modalCreateProject()}>
   <form onsubmit={onSubmit} name="createProject">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="projectKey"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="projectKey">
         {$LL.projectKey()}
       </label>
       <TextInput
@@ -169,10 +160,7 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="projectName"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="projectName">
         {$LL.name()}
       </label>
       <TextInput
@@ -186,10 +174,7 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="projectDescription"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="projectDescription">
         {$LL.description()}
       </label>
       <textarea

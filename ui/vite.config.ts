@@ -46,8 +46,7 @@ export default defineConfig({
           const path = id.replace(/\\/g, '/');
           if (path.includes('node_modules')) {
             // Keep lucide and lucide-svelte together to avoid circular init issues across chunks
-            if (path.includes('/lucide-svelte/') || path.includes('/lucide/'))
-              return 'vendor_lucide';
+            if (path.includes('/lucide-svelte/') || path.includes('/lucide/')) return 'vendor_lucide';
             if (path.includes('/svelte/')) return 'vendor_svelte';
             if (path.includes('/quill/')) return 'vendor_quill';
             return 'vendor';

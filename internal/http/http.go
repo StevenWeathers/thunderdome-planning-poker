@@ -169,6 +169,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	router.Handle("POST "+prefix+"/api/users/{userId}/request-verify", a.userOnly(a.entityUserOnly(a.handleVerifyRequest())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/email-change", a.userOnly(a.entityUserOnly(a.handleChangeEmailRequest())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/email-change/{changeId}", a.userOnly(a.entityUserOnly(a.handleChangeEmailAction())))
+	router.Handle("POST "+prefix+"/api/users/{userId}/support-ticket", a.userOnly(a.entityUserOnly(a.handleCreateSupportTicket())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/invite/team/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserTeamInvite())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/invite/organization/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserOrganizationInvite())))
 	router.Handle("POST "+prefix+"/api/users/{userId}/invite/department/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserDepartmentInvite())))
@@ -287,6 +288,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	router.Handle("GET "+prefix+"/api/teams/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics())))
 	// admin
 	router.Handle("GET "+prefix+"/api/admin/stats", a.userOnly(a.adminOnly(a.handleAppStats())))
+	router.Handle("GET "+prefix+"/api/admin/admin-users", a.userOnly(a.adminOnly(a.handleListAdminUsers())))
 	router.Handle("GET "+prefix+"/api/admin/users", a.userOnly(a.adminOnly(a.handleGetRegisteredUsers())))
 	router.Handle("POST "+prefix+"/api/admin/users", a.userOnly(a.adminOnly(a.handleUserCreate())))
 	router.Handle("PATCH "+prefix+"/api/admin/users/{userId}/promote", a.userOnly(a.adminOnly(a.handleUserPromote())))
@@ -298,6 +300,12 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	router.Handle("GET "+prefix+"/api/admin/teams", a.userOnly(a.adminOnly(a.handleGetTeams())))
 	router.Handle("GET "+prefix+"/api/admin/apikeys", a.userOnly(a.adminOnly(a.handleGetAPIKeys())))
 	router.Handle("GET "+prefix+"/api/admin/search/users/email", a.userOnly(a.adminOnly(a.handleSearchRegisteredUsersByEmail())))
+
+	// Admin support ticket routes
+	router.Handle("GET "+prefix+"/api/admin/support-tickets", a.userOnly(a.adminOnly(a.handleListSupportTickets())))
+	router.Handle("GET "+prefix+"/api/admin/support-tickets/{ticketId}", a.userOnly(a.adminOnly(a.handleGetSupportTicketByID())))
+	router.Handle("PUT "+prefix+"/api/admin/support-tickets/{ticketId}", a.userOnly(a.adminOnly(a.handleUpdateSupportTicket())))
+	router.Handle("DELETE "+prefix+"/api/admin/support-tickets/{ticketId}", a.userOnly(a.adminOnly(a.handleDeleteSupportTicket())))
 	// alert
 	router.Handle("GET "+prefix+"/api/alerts", a.userOnly(a.adminOnly(a.handleGetAlerts())))
 	router.Handle("POST "+prefix+"/api/alerts", a.userOnly(a.adminOnly(a.handleAlertCreate())))

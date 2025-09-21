@@ -5,7 +5,6 @@
   import TextInput from '../forms/TextInput.svelte';
   import { onMount } from 'svelte';
 
-
   interface Props {
     handleLegendRevision?: any;
     toggleEditLegend?: any;
@@ -13,7 +12,12 @@
     isFacilitator?: boolean;
   }
 
-  let { handleLegendRevision = () => {}, toggleEditLegend = () => {}, colorLegend = $bindable([]), isFacilitator = false }: Props = $props();
+  let {
+    handleLegendRevision = () => {},
+    toggleEditLegend = () => {},
+    colorLegend = $bindable([]),
+    isFacilitator = false,
+  }: Props = $props();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -27,6 +31,48 @@
     focusInput?.focus();
   });
 </script>
+
+<Modal closeModal={toggleEditLegend} ariaLabel={$LL.modalStoryboardColorLegend()}>
+  <form onsubmit={handleSubmit} name="colorLegend" class="space-y-4 pt-6">
+    <h2 class="text-xl font-bold dark:text-gray-300">Story Color Legend</h2>
+    <div class="space-y-2">
+      {#each colorLegend as color, i}
+        <div class="group">
+          <label class="flex-1 min-w-0">
+            <span class="sr-only">Color legend for {color.color}</span>
+            {#if i === 0}
+              <TextInput
+                bind:this={focusInput}
+                placeholder={$LL.legendRetroPlaceholder()}
+                name="legend-{color.color}"
+                disabled={!isFacilitator}
+                value={colorLegend[i].legend}
+              >
+                {#snippet startElement()}
+                  <div class="w-6 h-6 rounded bg-gray-400 colorcard-{color.color}"></div>
+                {/snippet}
+              </TextInput>
+            {:else}
+              <TextInput
+                placeholder={$LL.legendRetroPlaceholder()}
+                name="legend-{color.color}"
+                disabled={!isFacilitator}
+                value={colorLegend[i].legend}
+              >
+                {#snippet startElement()}
+                  <div class="w-6 h-6 rounded bg-gray-400 colorcard-{color.color}"></div>
+                {/snippet}
+              </TextInput>
+            {/if}
+          </label>
+        </div>
+      {/each}
+    </div>
+    <div class="flex justify-end">
+      <SolidButton type="submit">{$LL.save()}</SolidButton>
+    </div>
+  </form>
+</Modal>
 
 <style>
   .colorcard-gray {
@@ -69,45 +115,3 @@
     @apply bg-pink-400;
   }
 </style>
-
-<Modal closeModal={toggleEditLegend} ariaLabel={$LL.modalStoryboardColorLegend()}>
-  <form onsubmit={handleSubmit} name="colorLegend" class="space-y-4 pt-6">
-    <h2 class="text-xl font-bold dark:text-gray-300">Story Color Legend</h2>
-    <div class="space-y-2">
-      {#each colorLegend as color, i}
-        <div class="group">                
-          <label class="flex-1 min-w-0">
-            <span class="sr-only">Color legend for {color.color}</span>
-            {#if i === 0}
-              <TextInput
-                bind:this={focusInput}
-                placeholder={$LL.legendRetroPlaceholder()}
-                name="legend-{color.color}"
-                disabled={!isFacilitator}
-                value={colorLegend[i].legend}
-              >
-                {#snippet startElement()}
-                  <div class="w-6 h-6 rounded bg-gray-400 colorcard-{color.color}"></div>
-                {/snippet}
-              </TextInput>
-            {:else}
-              <TextInput
-                placeholder={$LL.legendRetroPlaceholder()}
-                name="legend-{color.color}"
-                disabled={!isFacilitator}
-                value={colorLegend[i].legend}
-              >
-                {#snippet startElement()}
-                  <div class="w-6 h-6 rounded bg-gray-400 colorcard-{color.color}"></div>
-                {/snippet}
-              </TextInput>
-            {/if}
-          </label>
-        </div>
-      {/each}
-    </div>
-    <div class="flex justify-end">
-      <SolidButton type="submit">{$LL.save()}</SolidButton>
-    </div>
-  </form>
-</Modal>

@@ -19,9 +19,7 @@
 </script>
 
 <div class="flex justify-center items-center space-x-4 mb-12">
-  <span class="text-lg font-semibold text-gray-600 dark:text-gray-300"
-    >Monthly</span
-  >
+  <span class="text-lg font-semibold text-gray-600 dark:text-gray-300">Monthly</span>
   <label class="relative inline-flex items-center cursor-pointer">
     <input
       type="checkbox"
@@ -35,8 +33,6 @@
     ></div>
   </label>
   <span class="text-lg font-semibold text-gray-600 dark:text-gray-300"
-    >Yearly <span class="text-purple-600 dark:text-purple-400"
-      >(2 Months Free!)</span
-    ></span
+    >Yearly <span class="text-purple-600 dark:text-purple-400">(2 Months Free!)</span></span
   >
 </div>

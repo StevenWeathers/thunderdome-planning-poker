@@ -2,15 +2,7 @@
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import {
-    Ban,
-    ChevronDown,
-    ChevronsDown,
-    ChevronsUp,
-    ChevronUp,
-    ExternalLink,
-    Grip
-  } from 'lucide-svelte';
+  import { Ban, ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, ExternalLink, Grip } from 'lucide-svelte';
   import Bars2 from '../icons/Bars2.svelte';
   import AddPlan from './AddStory.svelte';
   import ViewPlan from './ViewStory.svelte';
@@ -93,7 +85,7 @@
     if (gameOver) {
       toggleShow('all')();
     }
-  })
+  });
 
   onMount(() => {
     if (gameOver) {
@@ -144,11 +136,12 @@
   };
 
   let pointedPlans = $derived(plans.filter(p => p.points !== ''));
-  let totalPoints = $derived(pointedPlans.reduce((previousValue, currentValue) => {
-    var currentPoints =
-      currentValue.points === '1/2' ? 0.5 : parseInt(currentValue.points);
-    return isNaN(currentPoints) ? previousValue : previousValue + currentPoints;
-  }, 0));
+  let totalPoints = $derived(
+    pointedPlans.reduce((previousValue, currentValue) => {
+      var currentPoints = currentValue.points === '1/2' ? 0.5 : parseInt(currentValue.points);
+      return isNaN(currentPoints) ? previousValue : previousValue + currentPoints;
+    }, 0),
+  );
   let unpointedPlans = $derived(plans.filter(p => p.points === ''));
 
   // event handlers
@@ -185,9 +178,7 @@
 <div class="shadow-lg mb-4">
   <div class="flex items-center bg-gray-200 dark:bg-gray-700 p-4 rounded-t-lg">
     <div class="w-1/3">
-      <h3
-        class="text-3xl leading-tight font-semibold font-rajdhani uppercase dark:text-white"
-      >
+      <h3 class="text-3xl leading-tight font-semibold font-rajdhani uppercase dark:text-white">
         {$LL.plans()}
       </h3>
     </div>
@@ -203,9 +194,7 @@
     </div>
   </div>
 
-  <ul
-    class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-  >
+  <ul class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
     <li class="-mb-px me-1">
       <button
         class="{storysShow === 'unpointed'
@@ -246,49 +235,46 @@
 
   <div
     class="relative"
-    use:dndzone="{{
+    use:dndzone={{
       items: plans,
       type: 'story',
       dropTargetStyle: {},
-      dropTargetClasses: [
-        'outline',
-        'outline-2',
-        'outline-indigo-500',
-        'dark:outline-yellow-400',
-      ],
+      dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
       dragDisabled: !isFacilitator || gameOver,
-    }}"
+    }}
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
   >
     {#each plans as plan (plan.id)}
       <div
-        class="flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 {(plan.points === '' && storysShow === 'pointed') ||
+        class="flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 {(plan.points ===
+          '' &&
+          storysShow === 'pointed') ||
         (plan.points !== '' && storysShow === 'unpointed')
           ? ' hidden'
           : ''}"
         data-testid="plan"
-        data-storyid="{plan.id}"
+        data-storyid={plan.id}
         draggable={isFacilitator && !gameOver}
       >
         <div class="flex-grow font-bold align-middle dark:text-white me-1">
           <div class="flex items-center gap-2">
             {#if isFacilitator && !gameOver}
-              <span><Grip class="inline-block text-gray-400 dark:text-gray-500"/></span>
+              <span><Grip class="inline-block text-gray-400 dark:text-gray-500" /></span>
             {/if}
-            
+
             {#if hasAnyLinks}
               <div class="w-5 flex-shrink-0 flex justify-center">
                 {#if plan.link !== ''}
-                  <a href="{plan.link}" target="_blank" class="text-blue-800 dark:text-sky-400">
+                  <a href={plan.link} target="_blank" class="text-blue-800 dark:text-sky-400">
                     <ExternalLink class="inline-block" />
                   </a>
                 {/if}
               </div>
             {/if}
-            
+
             <Badge label={plan.type} testId="plan-type" />
-            
+
             <div class="flex items-center gap-1">
               {#if plan.referenceId}[{plan.referenceId}]{/if}
               {#if priorities[plan.priority]}
@@ -296,7 +282,7 @@
                 <SvelteComponent class="inline-block w-6 h-6" />
               {/if}
             </div>
-            
+
             <span data-testid="plan-name" class="flex-1">{plan.name}</span>
           </div>
         </div>
@@ -311,35 +297,20 @@
               {plan.points}
             </div>
           {/if}
-          <HollowButton
-            color="blue"
-            onClick={togglePlanView(plan.id)}
-            testid="plan-view"
-          >
+          <HollowButton color="blue" onClick={togglePlanView(plan.id)} testid="plan-view">
             {$LL.view()}
           </HollowButton>
           {#if isFacilitator && !gameOver}
             {#if !plan.active}
-              <HollowButton
-                color="red"
-                onClick={handlePlanDeletion(plan.id)}
-                testid="plan-delete"
-              >
+              <HollowButton color="red" onClick={handlePlanDeletion(plan.id)} testid="plan-delete">
                 {$LL.delete()}
               </HollowButton>
             {/if}
-            <HollowButton
-              color="purple"
-              onClick={toggleAddPlan(plan.id)}
-              testid="plan-edit"
-            >
+            <HollowButton color="purple" onClick={toggleAddPlan(plan.id)} testid="plan-edit">
               {$LL.edit()}
             </HollowButton>
             {#if !plan.active}
-              <HollowButton
-                onClick={activatePlan(plan.id)}
-                testid="plan-activate"
-              >
+              <HollowButton onClick={activatePlan(plan.id)} testid="plan-activate">
                 {$LL.activate()}
               </HollowButton>
             {/if}
@@ -351,15 +322,11 @@
         <div
           class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 cursor-pointer flex items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
           data-testid="plan"
-          data-storyid="{plan.id}"
+          data-storyid={plan.id}
         >
           <div class="flex-grow font-bold align-middle dark:text-white">
             {#if plan.link !== ''}
-              <a
-                href="{plan.link}"
-                target="_blank"
-                class="text-blue-800 dark:text-sky-400"
-              >
+              <a href={plan.link} target="_blank" class="text-blue-800 dark:text-sky-400">
                 <ExternalLink class="inline-block" />
               </a>
               &nbsp;
@@ -373,9 +340,7 @@
             </div>
             &nbsp;
             {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-            <PriorityIcon
-              class="inline-block w-6 h-6"
-            />
+            <PriorityIcon class="inline-block w-6 h-6" />
             <span data-testid="plan-name">{plan.name}</span>
           </div>
           <div class="lg:flex-none text-right">
@@ -388,35 +353,20 @@
                 {plan.points}
               </div>
             {/if}
-            <HollowButton
-              color="blue"
-              onClick={togglePlanView(plan.id)}
-              testid="plan-view"
-            >
+            <HollowButton color="blue" onClick={togglePlanView(plan.id)} testid="plan-view">
               {$LL.view()}
             </HollowButton>
             {#if isFacilitator}
               {#if !plan.active}
-                <HollowButton
-                  color="red"
-                  onClick={handlePlanDeletion(plan.id)}
-                  testid="plan-delete"
-                >
+                <HollowButton color="red" onClick={handlePlanDeletion(plan.id)} testid="plan-delete">
                   {$LL.delete()}
                 </HollowButton>
               {/if}
-              <HollowButton
-                color="purple"
-                onClick={toggleAddPlan(plan.id)}
-                testid="plan-edit"
-              >
+              <HollowButton color="purple" onClick={toggleAddPlan(plan.id)} testid="plan-edit">
                 {$LL.edit()}
               </HollowButton>
               {#if !plan.active}
-                <HollowButton
-                  onClick={activatePlan(plan.id)}
-                  testid="plan-activate"
-                >
+                <HollowButton onClick={activatePlan(plan.id)} testid="plan-activate">
                   {$LL.activate()}
                 </HollowButton>
               {/if}
@@ -448,9 +398,9 @@
 
 {#if showAddPlan}
   <AddPlan
-    handlePlanAdd={handlePlanAdd}
+    {handlePlanAdd}
     toggleAddPlan={toggleAddPlan(null)}
-    handlePlanRevision={handlePlanRevision}
+    {handlePlanRevision}
     planId={selectedPlan.id}
     planName={selectedPlan.name}
     planType={selectedPlan.type}
@@ -459,7 +409,7 @@
     description={selectedPlan.description}
     acceptanceCriteria={selectedPlan.acceptanceCriteria}
     priority={selectedPlan.priority}
-    notifications={notifications}
+    {notifications}
   />
 {/if}
 
@@ -477,11 +427,5 @@
 {/if}
 
 {#if showImport}
-  <ImportModal
-    notifications={notifications}
-    toggleImport={toggleImport}
-    handlePlanAdd={handlePlanAdd}
-    xfetch={xfetch}
-    gameId={gameId}
-  />
+  <ImportModal {notifications} {toggleImport} {handlePlanAdd} {xfetch} {gameId} />
 {/if}

@@ -18,19 +18,12 @@
     isFacilitator = false,
     users = [],
     sendSocketEvent = (event: string, value: any) => {},
-    columnColors = {}
+    columnColors = {},
   }: Props = $props();
 </script>
 
 {#each groups as group, i (group.id)}
   {#if group.items.length > 0}
-    <RetroFeedbackGroup
-      phase={phase}
-      group={group}
-      users={users}
-      isFacilitator={isFacilitator}
-      sendSocketEvent={sendSocketEvent}
-      columnColors={columnColors}
-    />
+    <RetroFeedbackGroup {phase} {group} {users} {isFacilitator} {sendSocketEvent} {columnColors} />
   {/if}
 {/each}

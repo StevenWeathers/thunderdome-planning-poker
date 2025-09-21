@@ -52,19 +52,11 @@
   }
 
   $: isGuest = $user.id !== '' && $user.rank === 'GUEST';
-  $: createFullAccount =
-    fullOnly ||
-    isGuest ||
-    (!AppConfig.AllowGuests && AppConfig.AllowRegistration);
+  $: createFullAccount = fullOnly || isGuest || (!AppConfig.AllowGuests && AppConfig.AllowRegistration);
   $: passwordsMatch = password1 === password2;
 
   $: submitDisabled =
-    userName === '' ||
-    (createFullAccount &&
-      (email === '' ||
-        password1 === '' ||
-        password2 === '' ||
-        !passwordsMatch));
+    userName === '' || (createFullAccount && (email === '' || password1 === '' || password2 === '' || !passwordsMatch));
 
   // Focus the warrior name input field if it exists
   userNameTextInput?.focus();
@@ -75,16 +67,16 @@
     {$LL.registrationDisabled()}
   </div>
 {:else}
-  <form on:submit="{onSubmit}" name="register" class="space-y-6">
+  <form on:submit={onSubmit} name="register" class="space-y-6">
     <div class="space-y-2">
       <TextInput
-        bind:this="{userNameTextInput}"
-        bind:value="{userName}"
-        placeholder="{$LL.userNamePlaceholder()}"
+        bind:this={userNameTextInput}
+        bind:value={userName}
+        placeholder={$LL.userNamePlaceholder()}
         id="yourName"
         name="yourName"
         required
-        icon="{User}"
+        icon={User}
       />
     </div>
 
@@ -93,10 +85,8 @@
         <Checkbox
           id="createFullAccount"
           name="createFullAccount"
-          bind:checked="{createFullAccount}"
-          label="{AppConfig.GuestsAllowed
-            ? 'Create full account (optional)'
-            : 'Create full account'}"
+          bind:checked={createFullAccount}
+          label={AppConfig.GuestsAllowed ? 'Create full account (optional)' : 'Create full account'}
         />
       </div>
     {/if}
@@ -104,22 +94,22 @@
     {#if createFullAccount}
       <div class="space-y-2">
         <TextInput
-          bind:value="{email}"
-          placeholder="{$LL.enterYourEmail()}"
+          bind:value={email}
+          placeholder={$LL.enterYourEmail()}
           id="yourEmail"
           name="yourEmail"
           type="email"
           required
-          disabled="{wasInvited}"
-          icon="{Mail}"
+          disabled={wasInvited}
+          icon={Mail}
           autocomplete="email"
         />
       </div>
 
       <div class="space-y-2">
         <PasswordInput
-          bind:value="{password1}"
-          placeholder="{$LL.passwordPlaceholder()}"
+          bind:value={password1}
+          placeholder={$LL.passwordPlaceholder()}
           id="yourPassword1"
           name="yourPassword1"
           data-testid="yourPassword1"
@@ -129,8 +119,8 @@
 
       <div class="space-y-2">
         <PasswordInput
-          bind:value="{password2}"
-          placeholder="{$LL.confirmPasswordPlaceholder()}"
+          bind:value={password2}
+          placeholder={$LL.confirmPasswordPlaceholder()}
           id="yourPassword2"
           name="yourPassword2"
           data-testid="yourPassword2"
@@ -139,23 +129,18 @@
       </div>
 
       {#if password1 !== '' && password2 !== '' && !passwordsMatch}
-        <div class="text-center text-lg text-red-500 font-medium">
-          Passwords do not match
-        </div>
+        <div class="text-center text-lg text-red-500 font-medium">Passwords do not match</div>
       {/if}
     {/if}
 
     <div class="pt-4">
       <button
         type="submit"
-        disabled="{submitDisabled}"
+        disabled={submitDisabled}
         class="w-full group relative flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span class="absolute left-0 inset-y-0 flex items-center ps-3">
-          <User
-            class="h-5 w-5 text-purple-300 group-hover:text-purple-200"
-            aria-hidden="true"
-          />
+          <User class="h-5 w-5 text-purple-300 group-hover:text-purple-200" aria-hidden="true" />
         </span>
         {createFullAccount ? $LL.createAccount() : $LL.registerAsGuest()}
       </button>

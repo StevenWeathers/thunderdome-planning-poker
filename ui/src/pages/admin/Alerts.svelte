@@ -47,7 +47,7 @@
   let showAlertUpdate = $state(false);
   let showDeleteAlert = $state(false);
   let selectedAlert = $state({ ...defaultAlert });
-  let deleteAlertId = null;
+  let deleteAlertId = $state(null);
 
   function toggleCreateAlert() {
     showAlertCreate = !showAlertCreate;
@@ -151,7 +151,7 @@
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -174,9 +174,9 @@
             <span class="sr-only">Actions</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each alerts as alert, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -212,21 +212,13 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
-    <TableFooter
-      bind:current={alertsPage}
-      num_items={alertCount}
-      per_page={alertsPageLimit}
-      on:navigate={changePage}
-    />
+    <TableFooter bind:current={alertsPage} num_items={alertCount} per_page={alertsPageLimit} on:navigate={changePage} />
   </TableContainer>
 
   {#if showAlertCreate}
-    <CreateAlert
-      toggleCreate={toggleCreateAlert}
-      handleCreate={createAlert}
-    />
+    <CreateAlert toggleCreate={toggleCreateAlert} handleCreate={createAlert} />
   {/if}
   {#if showAlertUpdate}
     <CreateAlert

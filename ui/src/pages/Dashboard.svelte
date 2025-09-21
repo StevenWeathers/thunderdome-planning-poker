@@ -68,9 +68,7 @@
       return;
     }
     try {
-      const prefix = selectedTeam
-        ? `/api/teams/${selectedTeam.id}/battles`
-        : `/api/users/${$user.id}/battles`;
+      const prefix = selectedTeam ? `/api/teams/${selectedTeam.id}/battles` : `/api/users/${$user.id}/battles`;
       xfetch(`${prefix}?limit=4&offset=0`)
         .then(res => res.json())
         .then(function (result) {
@@ -90,9 +88,7 @@
       return;
     }
     try {
-      const prefix = selectedTeam
-        ? `/api/teams/${selectedTeam.id}/retros`
-        : `/api/users/${$user.id}/retros`;
+      const prefix = selectedTeam ? `/api/teams/${selectedTeam.id}/retros` : `/api/users/${$user.id}/retros`;
       xfetch(`${prefix}?limit=4&offset=0`)
         .then(res => res.json())
         .then(function (result) {
@@ -112,9 +108,7 @@
       return;
     }
     try {
-      const prefix = selectedTeam
-        ? `/api/teams/${selectedTeam.id}/storyboards`
-        : `/api/users/${$user.id}/storyboards`;
+      const prefix = selectedTeam ? `/api/teams/${selectedTeam.id}/storyboards` : `/api/users/${$user.id}/storyboards`;
       xfetch(`${prefix}?limit=4&offset=0`)
         .then(res => res.json())
         .then(function (result) {
@@ -162,14 +156,10 @@
   <div>
     <!-- Hero Section with Team Filter -->
     <div class="mb-8">
-      <div
-        class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6"
-      >
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <!-- Welcome Text -->
         <div class="flex-1">
-          <h1
-            class="text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl"
-          >
+          <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
             {$LL.welcomeBack()}
             <span
               class="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent"
@@ -187,10 +177,7 @@
           <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2">
               <Filter class="h-5 w-5 text-slate-500 dark:text-slate-400" />
-              <span
-                class="text-sm font-medium text-slate-700 dark:text-slate-300"
-                >{$LL.filterByTeam()}</span
-              >
+              <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{$LL.filterByTeam()}</span>
             </div>
 
             <div class="relative">
@@ -205,9 +192,7 @@
                   </span>
                 </div>
                 <ChevronDown
-                  class="h-4 w-4 ml-2 transition-transform duration-200 {showTeamDropdown
-                    ? 'rotate-180'
-                    : ''}"
+                  class="h-4 w-4 ml-2 transition-transform duration-200 {showTeamDropdown ? 'rotate-180' : ''}"
                 />
               </button>
 
@@ -223,18 +208,12 @@
                         : ''}"
                     >
                       <div class="flex items-center space-x-3">
-                        <div
-                          class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700"
-                        >
-                          <Users
-                            class="h-4 w-4 text-slate-600 dark:text-slate-400"
-                          />
+                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700">
+                          <Users class="h-4 w-4 text-slate-600 dark:text-slate-400" />
                         </div>
                         <div class="text-left">
                           <div class="font-medium">{$LL.allTeams()}</div>
-                          <div
-                            class="text-xs text-slate-500 dark:text-slate-400"
-                          >
+                          <div class="text-xs text-slate-500 dark:text-slate-400">
                             {$LL.showContentForAllTeams()}
                           </div>
                         </div>
@@ -253,9 +232,7 @@
                           <div
                             class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30"
                           >
-                            <Users
-                              class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
-                            />
+                            <Users class="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                           </div>
                           <div class="text-left">
                             <div class="font-medium">{team.name}</div>
@@ -310,9 +287,7 @@
         <div
           class="mb-8 rounded-2xl bg-yellow-50 dark:bg-yellow-900/20 p-6 ring-1 ring-yellow-200 dark:ring-yellow-700 flex items-center space-x-4"
         >
-          <div
-            class="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-800"
-          >
+          <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-800">
             <Users class="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
           </div>
           <div>
@@ -322,9 +297,7 @@
           </div>
         </div>
       {:else}
-        <div
-          class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-start"
-        >
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-start">
           <!-- Poker Games Section -->
           {#if AppConfig.FeaturePoker}
             <section>
@@ -336,9 +309,7 @@
                     <Vote class="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h2
-                      class="text-2xl font-bold text-slate-900 dark:text-white"
-                    >
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
                       {$LL.myBattles()}
                     </h2>
                     <p class="text-slate-600 dark:text-slate-400">
@@ -366,30 +337,20 @@
                   />
 
                   {#if gameCount > 4}
-                    <div
-                      class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700"
-                    >
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                       <a
-                        href="{appRoutes.games}"
+                        href={appRoutes.games}
                         class="group w-full flex items-center justify-between p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 shadow-sm hover:shadow-md transition-all"
                       >
                         <div class="flex items-center space-x-3">
-                          <div
-                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700"
-                          >
-                            <Vote
-                              class="h-4 w-4 text-gray-600 dark:text-gray-400"
-                            />
+                          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
+                            <Vote class="h-4 w-4 text-gray-600 dark:text-gray-400" />
                           </div>
                           <div>
-                            <div
-                              class="font-semibold text-gray-900 dark:text-white"
-                            >
+                            <div class="font-semibold text-gray-900 dark:text-white">
                               {$LL.viewAllPokerSessions()}
                             </div>
-                            <div
-                              class="text-sm text-gray-500 dark:text-gray-400"
-                            >
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
                               {$LL.totalPokerSessions({ total: gameCount })}
                             </div>
                           </div>
@@ -416,9 +377,7 @@
                       : $LL.noGamesFound()}
                   </p>
                   <p class="text-sm text-slate-500 dark:text-slate-500">
-                    {selectedTeam
-                      ? $LL.trySelectingDifferentTeamForPoker()
-                      : $LL.startFirstPlanningPokerSession()}
+                    {selectedTeam ? $LL.trySelectingDifferentTeamForPoker() : $LL.startFirstPlanningPokerSession()}
                   </p>
                 </div>
               {/if}
@@ -436,9 +395,7 @@
                     <RefreshCcw class="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h2
-                      class="text-2xl font-bold text-slate-900 dark:text-white"
-                    >
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
                       {$LL.myRetros()}
                     </h2>
                     <p class="text-slate-600 dark:text-slate-400">
@@ -463,30 +420,20 @@
                   />
 
                   {#if retroCount > 4}
-                    <div
-                      class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700"
-                    >
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                       <a
-                        href="{appRoutes.retros}"
+                        href={appRoutes.retros}
                         class="group w-full flex items-center justify-between p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 shadow-sm hover:shadow-md transition-all"
                       >
                         <div class="flex items-center space-x-3">
-                          <div
-                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700"
-                          >
-                            <RefreshCcw
-                              class="h-4 w-4 text-gray-600 dark:text-gray-400"
-                            />
+                          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
+                            <RefreshCcw class="h-4 w-4 text-gray-600 dark:text-gray-400" />
                           </div>
                           <div>
-                            <div
-                              class="font-semibold text-gray-900 dark:text-white"
-                            >
+                            <div class="font-semibold text-gray-900 dark:text-white">
                               {$LL.viewAllRetros()}
                             </div>
-                            <div
-                              class="text-sm text-gray-500 dark:text-gray-400"
-                            >
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
                               {$LL.totalRetros({ total: retroCount })}
                             </div>
                           </div>
@@ -513,9 +460,7 @@
                       : $LL.noRetrosFound()}
                   </p>
                   <p class="text-sm text-slate-500 dark:text-slate-500">
-                    {selectedTeam
-                      ? $LL.trySelectingDifferentTeamForRetros()
-                      : $LL.startFirstSprintRetrospective()}
+                    {selectedTeam ? $LL.trySelectingDifferentTeamForRetros() : $LL.startFirstSprintRetrospective()}
                   </p>
                 </div>
               {/if}
@@ -533,9 +478,7 @@
                     <LayoutDashboard class="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h2
-                      class="text-2xl font-bold text-slate-900 dark:text-white"
-                    >
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
                       {$LL.myStoryboards()}
                     </h2>
                     <p class="text-slate-600 dark:text-slate-400">
@@ -559,30 +502,20 @@
                   />
 
                   {#if storyboardCount > 4}
-                    <div
-                      class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700"
-                    >
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                       <a
-                        href="{appRoutes.storyboards}"
+                        href={appRoutes.storyboards}
                         class="group w-full flex items-center justify-between p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 shadow-sm hover:shadow-md transition-all"
                       >
                         <div class="flex items-center space-x-3">
-                          <div
-                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700"
-                          >
-                            <LayoutDashboard
-                              class="h-4 w-4 text-gray-600 dark:text-gray-400"
-                            />
+                          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
+                            <LayoutDashboard class="h-4 w-4 text-gray-600 dark:text-gray-400" />
                           </div>
                           <div>
-                            <div
-                              class="font-semibold text-gray-900 dark:text-white"
-                            >
+                            <div class="font-semibold text-gray-900 dark:text-white">
                               {$LL.viewAllStoryboards()}
                             </div>
-                            <div
-                              class="text-sm text-gray-500 dark:text-gray-400"
-                            >
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
                               {$LL.totalStoryboards({
                                 total: storyboardCount,
                               })}
@@ -611,9 +544,7 @@
                       : $LL.noStoryboardsFound()}
                   </p>
                   <p class="text-sm text-slate-500 dark:text-slate-500">
-                    {selectedTeam
-                      ? $LL.trySelectingDifferentTeamForStoryboards()
-                      : $LL.startFirstStoryboard()}
+                    {selectedTeam ? $LL.trySelectingDifferentTeamForStoryboards() : $LL.startFirstStoryboard()}
                   </p>
                 </div>
               {/if}

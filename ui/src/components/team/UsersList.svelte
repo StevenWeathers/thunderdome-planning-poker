@@ -39,7 +39,7 @@
     isAdmin = false,
     pageType = '',
     users = [],
-    getUsers = () => {}
+    getUsers = () => {},
   }: Props = $props();
 
   const dispatch = createEventDispatcher();
@@ -143,7 +143,7 @@
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -157,9 +157,9 @@
             <span class="sr-only">{$LL.actions()}</span>
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each users as user, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -179,12 +179,7 @@
                       <span data-testid="user-name">{user.name}</span>
                       {#if user.country}
                         &nbsp;
-                        <CountryFlag
-                          country={user.country}
-                          additionalClass="inline-block"
-                          width="32"
-                          height="24"
-                        />
+                        <CountryFlag country={user.country} additionalClass="inline-block" width="32" height="24" />
                       {/if}
                     </div>
                   </div>
@@ -209,7 +204,7 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
   </TableContainer>
 
@@ -218,11 +213,11 @@
       toggleAdd={toggleAddUser}
       handleAdd={handleUserAdd}
       handleInvite={handleUserInvite}
-      pageType={pageType}
-      orgId={orgId}
-      deptId={deptId}
-      xfetch={xfetch}
-      notifications={notifications}
+      {pageType}
+      {orgId}
+      {deptId}
+      {xfetch}
+      {notifications}
     />
   {/if}
 

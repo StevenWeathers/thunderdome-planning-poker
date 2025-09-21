@@ -1,9 +1,5 @@
 import { PathPrefix } from './config';
-import type {
-  ApiClient,
-  ApiClientConfig,
-  ApiClientFactory,
-} from './types/apiclient';
+import type { ApiClient, ApiClientConfig, ApiClientFactory } from './types/apiclient';
 
 /**
  * Extends fetch with common inputs e.g. credentials, content-type
@@ -16,10 +12,7 @@ const apiclient: ApiClientFactory = handle401 => {
    * @param {string} endpoint the endpoint to fetch
    * @param {object} config the optional fetch config e.g. body for post
    */
-  return function (
-    endpoint: string,
-    customConfig: ApiClientConfig = {},
-  ): Promise<Response> {
+  return function (endpoint: string, customConfig: ApiClientConfig = {}): Promise<Response> {
     const headers = { 'content-type': 'application/json' };
 
     const config: RequestInit = {

@@ -16,12 +16,7 @@
     resetId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    resetId
-  }: Props = $props();
+  let { xfetch, router, notifications, resetId }: Props = $props();
 
   let warriorPassword1 = $state('');
   let warriorPassword2 = $state('');
@@ -33,10 +28,7 @@
       password1: warriorPassword1,
       password2: warriorPassword2,
     };
-    const validPasswords = validatePasswords(
-      warriorPassword1,
-      warriorPassword2,
-    );
+    const validPasswords = validatePasswords(warriorPassword1, warriorPassword2);
 
     let noFormErrors = true;
 
@@ -79,14 +71,11 @@
         </div>
 
         <div class="mb-4">
-          <label
-            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-            for="yourPassword1"
-          >
+          <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourPassword1">
             {$LL.password()}
           </label>
           <TextInput
-            bind:value="{warriorPassword1}"
+            bind:value={warriorPassword1}
             placeholder={$LL.passwordPlaceholder()}
             id="yourPassword1"
             name="yourPassword1"
@@ -96,14 +85,11 @@
         </div>
 
         <div class="mb-4">
-          <label
-            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-            for="yourPassword2"
-          >
+          <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourPassword2">
             {$LL.confirmPassword()}
           </label>
           <TextInput
-            bind:value="{warriorPassword2}"
+            bind:value={warriorPassword2}
             placeholder={$LL.confirmPasswordPlaceholder()}
             id="yourPassword2"
             name="yourPassword2"

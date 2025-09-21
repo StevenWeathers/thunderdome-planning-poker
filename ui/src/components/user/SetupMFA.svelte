@@ -17,12 +17,7 @@
     notifications: NotificationService;
   }
 
-  let {
-    toggleSetup = () => {},
-    handleComplete = () => {},
-    xfetch,
-    notifications
-  }: Props = $props();
+  let { toggleSetup = () => {}, handleComplete = () => {}, xfetch, notifications }: Props = $props();
 
   let qrCode = $state('');
   let secret = $state('');
@@ -63,18 +58,19 @@
   });
 </script>
 
-<Modal closeModal={toggleSetup} widthClasses="md:w-2/3 lg:w-1/2" ariaLabel={$LL.modalSetupMultifactorAuth()} ariaDescribedby="mfaIntro">
+<Modal
+  closeModal={toggleSetup}
+  widthClasses="md:w-2/3 lg:w-1/2"
+  ariaLabel={$LL.modalSetupMultifactorAuth()}
+  ariaDescribedby="mfaIntro"
+>
   <div class="pt-12">
     <div class="dark:text-gray-300 text-center">
       <p class="font-rajdhani text-lg mb-2" id="mfaIntro">
         {$LL.mfaSetupIntro()}
       </p>
       {#if qrCode !== ''}
-        <img
-          src="data:image/png;base64,{qrCode}"
-          class="m-auto"
-          alt="MFA QR Code"
-        />
+        <img src="data:image/png;base64,{qrCode}" class="m-auto" alt="MFA QR Code" />
 
         <p class="mt-2 font-rajdhani text-xl text-red-500">
           {$LL.mfaSecretKeyLabel()}: {secret}
@@ -83,14 +79,11 @@
     </div>
     <form onsubmit={onSubmit} name="validateMFAPasscode" class="mt-8">
       <div class="mb-4">
-        <label
-          class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-          for="mfaPasscode"
-        >
+        <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="mfaPasscode">
           {$LL.mfaTokenLabel()}
         </label>
         <TextInput
-          bind:value="{passcode}"
+          bind:value={passcode}
           bind:this={focusInput}
           placeholder={$LL.mfaTokenPlaceholder()}
           id="mfaPasscode"

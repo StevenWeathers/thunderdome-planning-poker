@@ -50,12 +50,7 @@
   }
 
   $: showingBegin = num_items === 0 ? 0 : (current - 1) * per_page + 1;
-  $: showingEnd =
-    current === num_pages
-      ? num_items
-      : num_items === 0
-      ? 0
-      : current * per_page;
+  $: showingEnd = current === num_pages ? num_items : num_items === 0 ? 0 : current * per_page;
 </script>
 
 <nav
@@ -75,8 +70,8 @@
     <li>
       <button
         class="flex items-center justify-center h-full py-1.5 px-3 ms-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-        on:click="{() => current > 1 && setCurrent(current - 1)}"
-        on:keypress="{() => current > 1 && setCurrent(current - 1)}"
+        on:click={() => current > 1 && setCurrent(current - 1)}
+        on:keypress={() => current > 1 && setCurrent(current - 1)}
       >
         <span class="sr-only">Previous</span>
         <ChevronLeft class="w-5 h-5 inline-block" />
@@ -100,8 +95,8 @@
         {:else}
           <button
             class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            on:click="{() => setCurrent(i)}"
-            on:keypress="{() => setCurrent(i)}"
+            on:click={() => setCurrent(i)}
+            on:keypress={() => setCurrent(i)}
           >
             {i}
           </button>
@@ -111,8 +106,8 @@
     <li>
       <button
         class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-        on:click="{() => current < num_pages && setCurrent(current + 1)}"
-        on:keypress="{() => current < num_pages && setCurrent(current + 1)}"
+        on:click={() => current < num_pages && setCurrent(current + 1)}
+        on:keypress={() => current < num_pages && setCurrent(current + 1)}
       >
         <span class="sr-only">Next</span>
         <ChevronRight class="w-5 h-5 inline-block" />

@@ -4,10 +4,10 @@
   let {
     title,
     subtitle,
-    primaryCta = "Get Started",
-    secondaryCta = "Learn More",
+    primaryCta = 'Get Started',
+    secondaryCta = 'Learn More',
     primaryHref = appRoutes.register,
-    secondaryHref = "#features"
+    secondaryHref = '#features',
   } = $props();
 </script>
 

@@ -14,13 +14,13 @@
   }
 
   // Props
-  let { 
+  let {
     users = [] as User[],
     facilitatorIds = [] as string[],
     inviteUrl = '',
     onAddFacilitator,
     onRemoveFacilitator,
-    isFacilitator = false
+    isFacilitator = false,
   }: {
     users?: User[];
     facilitatorIds?: string[];
@@ -46,7 +46,7 @@
     try {
       await navigator.clipboard.writeText(inviteUrl);
       copied = true;
-      setTimeout(() => copied = false, 2000);
+      setTimeout(() => (copied = false), 2000);
     } catch (err) {
       console.error('Failed to copy invite link:', err);
     }
@@ -71,17 +71,16 @@
           <Users class="inline-block w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            Active Users
-          </h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Active Users</h3>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            {displayUsers.length} {displayUsers.length === 1 ? 'participant' : 'participants'} online
+            {displayUsers.length}
+            {displayUsers.length === 1 ? 'participant' : 'participants'} online
           </p>
         </div>
       </div>
-      
+
       <button
-        onclick={() => showInviteForm = !showInviteForm}
+        onclick={() => (showInviteForm = !showInviteForm)}
         class="inline-flex items-center px-3 py-2 border border-transparent leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900 transition-colors duration-200"
       >
         <Plus class="inline-block w-4 h-4 me-2" />
@@ -130,15 +129,17 @@
       {#each displayUsers as user (user.id)}
         <div class="group">
           <!-- User Card -->
-          <div class="flex flex-col items-center p-3 rounded-lg border border-gray-300 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:shadow-md transition-all duration-200 min-w-0 w-full max-w-[140px]">
+          <div
+            class="flex flex-col items-center p-3 rounded-lg border border-gray-300 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:shadow-md transition-all duration-200 min-w-0 w-full max-w-[140px]"
+          >
             <!-- Avatar -->
             <div class="mb-2">
               <UserAvatar
-                    warriorId={user.id}
-                    avatar={user.avatar}
-                    gravatarHash={user.gravatarHash}
-                    userName={user.name}
-                />
+                warriorId={user.id}
+                avatar={user.avatar}
+                gravatarHash={user.gravatarHash}
+                userName={user.name}
+              />
             </div>
 
             <!-- User Info -->
@@ -162,11 +163,15 @@
               <div class="mt-3">
                 <button
                   onclick={() => handleFacilitatorAction(user)}
-                  class="inline-flex items-center px-3 py-1.5 font-medium rounded-md transition-colors duration-200 {isUserFacilitator(user.id) ? 'text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800' : 'text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800'}"
+                  class="inline-flex items-center px-3 py-1.5 font-medium rounded-md transition-colors duration-200 {isUserFacilitator(
+                    user.id,
+                  )
+                    ? 'text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800'
+                    : 'text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800'}"
                   title={isUserFacilitator(user.id) ? 'Remove facilitator status' : 'Make facilitator'}
                 >
                   {#if isUserFacilitator(user.id)}
-                    <Minus class="inline-block w-4 h-4 me-1.5"/>
+                    <Minus class="inline-block w-4 h-4 me-1.5" />
                     <span class="sr-only">Remove</span> Facilitator
                   {:else}
                     <Plus class="w-4 h-4 me-1.5" />

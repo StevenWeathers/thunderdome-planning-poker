@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { NotificationService } from '../../types/notifications';
-  
+
   interface Props {
     teamId?: string;
     userId?: string;
@@ -8,12 +8,7 @@
     notifications: NotificationService;
   }
 
-  let {
-    teamId = '',
-    userId = '',
-    xfetch = async () => {},
-    notifications
-  }: Props = $props();
+  let { teamId = '', userId = '', xfetch = async () => {}, notifications }: Props = $props();
 
   let team = $state({
     name: '',

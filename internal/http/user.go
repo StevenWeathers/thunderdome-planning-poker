@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"image"
 	"image/png"
@@ -11,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/microcosm-cc/bluemonday"
 
 	"go.uber.org/zap"
 
@@ -895,5 +897,95 @@ func (s *Service) handleChangeEmailAction() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, updatedUser, nil)
+	}
+}
+
+type supportTicketRequestBody struct {
+	FullName string `json:"fullName" validate:"required" maxLength:"255" minLength:"2"`
+	Email    string `json:"email" validate:"required,email"`
+	Inquiry  string `json:"inquiry" validate:"required" maxLength:"2500" minLength:"10"`
+}
+
+// handleCreateSupportTicket creates a support ticket for the session user
+//
+//	@Summary		Create Support Ticket
+//	@Description	Creates a support ticket for the session user
+//	@Tags			user
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{data=thunderdome.SupportTicket}
+//	@Failure		403		object	standardJsonResponse{}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/support-ticket [post]
+func (s *Service) handleCreateSupportTicket() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		userID := r.PathValue("userId")
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var cr = supportTicketRequestBody{}
+		jsonErr := json.Unmarshal(body, &cr)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(cr)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		p := bluemonday.StrictPolicy()
+		cr.FullName = p.Sanitize(strings.TrimSpace(cr.FullName))
+		cr.Email = p.Sanitize(strings.TrimSpace(cr.Email))
+		cr.Inquiry = p.Sanitize(strings.TrimSpace(cr.Inquiry))
+
+		ticket, ticketErr := s.UserDataSvc.CreateSupportTicket(ctx, userID, cr.FullName, cr.Email, cr.Inquiry)
+		if ticketErr != nil {
+			s.Logger.Ctx(ctx).Error("handleCreateSupportTicket error", zap.Error(ticketErr),
+				zap.String("session_user_id", sessionUserID),
+				zap.String("user_id", userID))
+			s.Failure(w, r, http.StatusInternalServerError, ticketErr)
+			return
+		}
+
+		// send email to admins in background
+		go func(ctx context.Context) {
+			adminUsers, _, adminErr := s.AdminDataSvc.ListAdminUsers(ctx, 10, 0)
+			if adminErr != nil {
+				s.Logger.Ctx(ctx).Error("handleCreateSupportTicket error", zap.Error(adminErr),
+					zap.String("session_user_id", sessionUserID),
+					zap.String("user_id", userID))
+				return
+			}
+
+			for _, adminUser := range adminUsers {
+				if adminUser.Disabled {
+					continue
+				}
+				emailErr := s.Email.SendNewTicketToAdmins(*adminUser, ticket.ID)
+				if emailErr != nil {
+					s.Logger.Ctx(ctx).Error("handleCreateSupportTicket error", zap.Error(emailErr),
+						zap.String("session_user_id", sessionUserID),
+						zap.String("user_id", userID))
+				}
+			}
+		}(context.WithoutCancel(ctx))
+
+		s.Success(w, r, http.StatusOK, ticket, nil)
 	}
 }

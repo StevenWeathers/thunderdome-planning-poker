@@ -29,7 +29,7 @@
     storyboardId,
     orgInviteId,
     teamInviteId,
-    subscription = false
+    subscription = false,
   }: Props = $props();
 
   let userName = $user.name || '';
@@ -118,8 +118,7 @@
   }
 
   function getInviteDetails() {
-    const inviteType =
-      typeof teamInviteId !== 'undefined' ? 'team' : 'organization';
+    const inviteType = typeof teamInviteId !== 'undefined' ? 'team' : 'organization';
     const inviteId = inviteType === 'team' ? teamInviteId : orgInviteId;
     xfetch(`/api/auth/invite/${inviteType}/${inviteId}`)
       .then(res => res.json())
@@ -131,8 +130,7 @@
       });
   }
 
-  const loginLinkContextClasses =
-    'font-rajdhani uppercase text-lg md:text-xl lg:text-2xl md:leading-tight';
+  const loginLinkContextClasses = 'font-rajdhani uppercase text-lg md:text-xl lg:text-2xl md:leading-tight';
   const loginLinkClasses =
     'font-bold underline text-blue-600 dark:text-cyan-300 hover:text-purple-700 dark:hover:text-yellow-thunder transition-colors duration-300';
 
@@ -158,13 +156,13 @@
       {$LL.register()}
     </h1>
     {#if teamInviteId != null}
-      <div class="{loginLinkContextClasses}">to join your Team</div>
+      <div class={loginLinkContextClasses}>to join your Team</div>
     {/if}
     {#if orgInviteId != null}
-      <div class="{loginLinkContextClasses}">to join your Organization</div>
+      <div class={loginLinkContextClasses}>to join your Organization</div>
     {/if}
     {#if battleId}
-      <div class="{loginLinkContextClasses}">
+      <div class={loginLinkContextClasses}>
         {@html $LL.loginForBattle({
           loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="${loginLinkClasses}">`,
           loginClose: `</a>`,
@@ -172,7 +170,7 @@
       </div>
     {/if}
     {#if retroId}
-      <div class="{loginLinkContextClasses}">
+      <div class={loginLinkContextClasses}>
         {@html $LL.loginForRetro({
           loginOpen: `<a href="${appRoutes.login}/retro/${retroId}" class="${loginLinkClasses}">`,
           loginClose: `</a>`,
@@ -180,7 +178,7 @@
       </div>
     {/if}
     {#if storyboardId}
-      <div class="{loginLinkContextClasses}">
+      <div class={loginLinkContextClasses}>
         {@html $LL.loginForStoryboard({
           loginOpen: `<a href="${appRoutes.login}/storyboard/${storyboardId}" class="${loginLinkClasses}">`,
           loginClose: `</a>`,
@@ -194,12 +192,12 @@
       class="w-full md:max-w-lg p-8 space-y-8 rounded-2xl shadow-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-800/50"
     >
       <UserRegisterForm
-        userName={userName}
+        {userName}
         handleFullAccountRegistration={createUserRegistered}
         handleGuestRegistration={createUserGuest}
-        notifications={notifications}
+        {notifications}
         email={wasInvited ? inviteDetails.email : ''}
-        wasInvited={wasInvited}
+        {wasInvited}
       />
     </div>
   </div>

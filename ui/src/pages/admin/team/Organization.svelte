@@ -19,7 +19,7 @@
   import TableNav from '../../../components/table/TableNav.svelte';
   import CrudActions from '../../../components/table/CrudActions.svelte';
 
-  import type { NotificationService } from '../../../types/notifications'; 
+  import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
   interface Props {
@@ -29,12 +29,7 @@
     organizationId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId }: Props = $props();
 
   const departmentsPageLimit = 1000;
   const teamsPageLimit = 1000;
@@ -98,9 +93,7 @@
 
   function getDepartments() {
     const departmentsOffset = (departmentsPage - 1) * departmentsPageLimit;
-    xfetch(
-      `${apiPrefix}/departments?limit=${departmentsPageLimit}&offset=${departmentsOffset}`,
-    )
+    xfetch(`${apiPrefix}/departments?limit=${departmentsPageLimit}&offset=${departmentsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         departments = result.data;
@@ -206,7 +199,7 @@
       <TableNav title={$LL.departments()} createBtnEnabled={false} />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.name()}
             </HeadCol>
@@ -220,9 +213,9 @@
               <span class="sr-only">{$LL.actions()}</span>
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             {#each departments as department, i}
               <TableRow itemIndex={i}>
                 <RowCol>
@@ -240,17 +233,12 @@
                   {new Date(department.updatedDate).toLocaleString()}
                 </RowCol>
                 <RowCol type="action">
-                  <CrudActions
-                    editBtnEnabled={false}
-                    deleteBtnClickHandler={toggleDeleteDepartment(
-                      department.id,
-                    )}
-                  />
+                  <CrudActions editBtnEnabled={false} deleteBtnClickHandler={toggleDeleteDepartment(department.id)} />
                 </RowCol>
               </TableRow>
             {/each}
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -260,7 +248,7 @@
       <TableNav title={$LL.teams()} createBtnEnabled={false} />
       <Table>
         {#snippet header()}
-                <tr >
+          <tr>
             <HeadCol>
               {$LL.name()}
             </HeadCol>
@@ -274,9 +262,9 @@
               <span class="sr-only">{$LL.actions()}</span>
             </HeadCol>
           </tr>
-              {/snippet}
+        {/snippet}
         {#snippet body({ class: className })}
-                <tbody   class="{className}">
+          <tbody class={className}>
             {#each teams as team, i}
               <TableRow itemIndex={i}>
                 <RowCol>
@@ -294,15 +282,12 @@
                   {new Date(team.updatedDate).toLocaleString()}
                 </RowCol>
                 <RowCol type="action">
-                  <CrudActions
-                    editBtnEnabled={false}
-                    deleteBtnClickHandler={toggleDeleteTeam(team.id)}
-                  />
+                  <CrudActions editBtnEnabled={false} deleteBtnClickHandler={toggleDeleteTeam(team.id)} />
                 </RowCol>
               </TableRow>
             {/each}
           </tbody>
-              {/snippet}
+        {/snippet}
       </Table>
     </TableContainer>
   </div>
@@ -311,7 +296,7 @@
     <TableNav title={$LL.users()} createBtnEnabled={false} />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -322,9 +307,9 @@
             {$LL.role()}
           </HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each users as user, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -349,12 +334,7 @@
                       >
                       {#if user.country}
                         &nbsp;
-                        <CountryFlag
-                          country={user.country}
-                          additionalClass="inline-block"
-                          width="32"
-                          height="24"
-                        />
+                        <CountryFlag country={user.country} additionalClass="inline-block" width="32" height="24" />
                       {/if}
                     </div>
                   </div>
@@ -371,7 +351,7 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
   </TableContainer>
 

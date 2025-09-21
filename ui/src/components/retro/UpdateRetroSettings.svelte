@@ -35,17 +35,17 @@
     apiPrefix = '/api',
     isEntityAdmin = false,
     retroSettings = $bindable({
-    id: '',
-    maxVotes: 3,
-    allowMultipleVotes: false,
-    brainstormVisibility: 'visible',
-    phaseTimeLimit: 0,
-    phaseAutoAdvance: true,
-    allowCumulativeVoting: false,
-    templateId: null,
-    joinCode: '',
-    facilitatorCode: '',
-  })
+      id: '',
+      maxVotes: 3,
+      allowMultipleVotes: false,
+      brainstormVisibility: 'visible',
+      phaseTimeLimit: 0,
+      phaseAutoAdvance: true,
+      allowCumulativeVoting: false,
+      templateId: null,
+      joinCode: '',
+      facilitatorCode: '',
+    }),
   }: Props = $props();
 
   const dispatch = createEventDispatcher();
@@ -70,15 +70,9 @@
 
     // hack because of svelte bug where binding to dynamic number input doesn't keep type
     retroSettings.maxVotes = parseInt(`${retroSettings.maxVotes}`, 10);
-    retroSettings.phaseTimeLimit = parseInt(
-      `${retroSettings.phaseTimeLimit}`,
-      10,
-    );
+    retroSettings.phaseTimeLimit = parseInt(`${retroSettings.phaseTimeLimit}`, 10);
 
-    if (
-      retroSettings.phaseTimeLimit > maxPhaseTimeLimitMin ||
-      retroSettings.phaseTimeLimit < 0
-    ) {
+    if (retroSettings.phaseTimeLimit > maxPhaseTimeLimitMin || retroSettings.phaseTimeLimit < 0) {
       notifications.danger('Phase Time Limit minutes must be between 0-59');
       return;
     }
@@ -91,16 +85,10 @@
       const res = await response.json();
       retroSettings = res.data;
       dispatch('updateRetroSettings', { settings: retroSettings });
-      notifications.success(
-        `Default retro settings ${method === 'PUT' ? 'updated' : 'created'}`,
-      );
+      notifications.success(`Default retro settings ${method === 'PUT' ? 'updated' : 'created'}`);
       toggleClose();
     } else {
-      notifications.error(
-        `Failed to ${
-          method === 'PUT' ? 'update' : 'create'
-        } default retro settings`,
-      );
+      notifications.error(`Failed to ${method === 'PUT' ? 'update' : 'create'} default retro settings`);
     }
   }
 
@@ -113,10 +101,7 @@
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalUpdateRetroSettings()}>
   <form onsubmit={preventDefault(handleSubmit)} class="mt-6 space-y-6">
     <div>
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="maxVotes"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="maxVotes">
         {$LL.retroMaxVotesPerUserLabel()}
       </label>
       <div class="control">
@@ -143,14 +128,11 @@
     </div>
 
     <div>
-      <label
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="brainstormVisibility"
-      >
+      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="brainstormVisibility">
         {$LL.brainstormPhaseFeedbackVisibility()}
       </label>
       <SelectInput
-        bind:value="{retroSettings.brainstormVisibility}"
+        bind:value={retroSettings.brainstormVisibility}
         id="brainstormVisibility"
         name="brainstormVisibility"
       >
@@ -163,10 +145,7 @@
     </div>
 
     <div>
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="phaseTimeLimitMin"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="phaseTimeLimitMin">
         {$LL.retroPhaseTimeLimitMinLabel()}
       </label>
       <div class="control">
@@ -184,7 +163,7 @@
 
     <div>
       <Checkbox
-        bind:checked="{retroSettings.phaseAutoAdvance}"
+        bind:checked={retroSettings.phaseAutoAdvance}
         id="phaseAutoAdvance"
         name="phaseAutoAdvance"
         label={$LL.phaseAutoAdvanceLabel()}
@@ -192,10 +171,7 @@
     </div>
 
     <div>
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="joinCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">
         {$LL.joinCodeLabelOptional()}
       </label>
       <div class="control">
@@ -210,10 +186,7 @@
     </div>
 
     <div>
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="leaderCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="leaderCode">
         {$LL.facilitatorCodeOptional()}
       </label>
       <div class="control">

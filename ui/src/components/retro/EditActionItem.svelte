@@ -27,12 +27,12 @@
     handleAssigneeRemove = (retroId, actionId, userId) => () => {},
     assignableUsers = [],
     action = {
-    id: '',
-    retroId: '',
-    content: '',
-    completed: false,
-    assignees: [],
-  }
+      id: '',
+      retroId: '',
+      content: '',
+      completed: false,
+      assignees: [],
+    },
   }: Props = $props();
 
   let selectedAssignee = $state('');
@@ -63,10 +63,7 @@
 <Modal closeModal={toggleEdit} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabel={$LL.modalEditRetroActionItem()}>
   <form onsubmit={handleSubmit}>
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="actionItem"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="actionItem">
         {$LL.actionItem()}
       </label>
       <div class="control">
@@ -88,20 +85,14 @@
     <div class="mb-4">
       <div class="control">
         <div class="flex-shrink">
-          <Checkbox
-            id="Completed"
-            bind:checked={editAction.completed}
-            label={$LL.completed()}
-          />
+          <Checkbox id="Completed" bind:checked={editAction.completed} label={$LL.completed()} />
         </div>
       </div>
     </div>
 
     <div class="flex w-full pt-4">
       <div class="w-1/2">
-        <HollowButton color="red" onClick={handleDelete(editAction)}
-          >{$LL.delete()}</HollowButton
-        >
+        <HollowButton color="red" onClick={handleDelete(editAction)}>{$LL.delete()}</HollowButton>
       </div>
       <div class="w-1/2 text-right">
         <SolidButton type="submit">{$LL.save()}</SolidButton>
@@ -115,11 +106,7 @@
     </div>
     <div class="flex w-full gap-4">
       <div class="w-2/3">
-        <SelectInput
-          bind:value={selectedAssignee}
-          id="assignee"
-          name="assignee"
-        >
+        <SelectInput bind:value={selectedAssignee} id="assignee" name="assignee">
           <option value="" disabled>{$LL.assigneeSelectPlaceholder()}</option>
           {#each assignableUsers as user}
             <option value={user.id}>
@@ -129,10 +116,7 @@
         </SelectInput>
       </div>
       <div class="w-1/3">
-        <HollowButton
-          onClick={addAssignee}
-          disabled={selectedAssignee === ''}
-        >
+        <HollowButton onClick={addAssignee} disabled={selectedAssignee === ''}>
           {$LL.assigneeAdd()}
         </HollowButton>
       </div>
@@ -152,14 +136,7 @@
             </div>
             <div class="w-2/4 text-lg">{assignee.name}</div>
             <div class="w-1/4 text-right">
-              <HollowButton
-                color="red"
-                onClick={handleAssigneeRemove(
-                  action.retroId,
-                  action.id,
-                  assignee.id,
-                )}
-              >
+              <HollowButton color="red" onClick={handleAssigneeRemove(action.retroId, action.id, assignee.id)}>
                 <Trash2 />
               </HollowButton>
             </div>

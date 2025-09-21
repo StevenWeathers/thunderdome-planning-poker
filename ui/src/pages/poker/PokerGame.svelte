@@ -37,17 +37,10 @@
     xfetch: ApiClient;
   }
 
-  let {
-    battleId,
-    notifications,
-    router,
-    xfetch
-  }: Props = $props();
+  let { battleId, notifications, router, xfetch }: Props = $props();
 
   const { AllowGuests } = AppConfig;
-  const loginOrRegister: string = AllowGuests
-    ? appRoutes.register
-    : appRoutes.login;
+  const loginOrRegister: string = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname: string = window.location.origin;
 
@@ -113,17 +106,12 @@
         JoinPassRequired = false;
         pokerGame = JSON.parse(parsedEvent.value);
         points = pokerGame.pointValuesAllowed;
-        const { spectator = false } =
-          pokerGame.users.find(w => w.id === $user.id) || {};
+        const { spectator = false } = pokerGame.users.find(w => w.id === $user.id) || {};
         isSpectator = spectator;
 
         if (pokerGame.activePlanId !== '') {
-          const activePlan = pokerGame.plans.find(
-            p => p.id === pokerGame.activePlanId,
-          );
-          const warriorVote = activePlan.votes.find(
-            v => v.warriorId === $user.id,
-          ) || {
+          const activePlan = pokerGame.plans.find(p => p.id === pokerGame.activePlanId);
+          const warriorVote = activePlan.votes.find(v => v.warriorId === $user.id) || {
             vote: '',
           };
           currentStory = activePlan;
@@ -135,9 +123,7 @@
       }
       case 'user_joined': {
         pokerGame.users = JSON.parse(parsedEvent.value);
-        const joinedWarrior = pokerGame.users.find(
-          w => w.id === parsedEvent.userId,
-        );
+        const joinedWarrior = pokerGame.users.find(w => w.id === parsedEvent.userId);
         if (joinedWarrior.id === $user.id) {
           isSpectator = joinedWarrior.spectator;
         }
@@ -152,9 +138,7 @@
         break;
       }
       case 'user_left':
-        const leftWarrior = pokerGame.users.find(
-          w => w.id === parsedEvent.userId,
-        );
+        const leftWarrior = pokerGame.users.find(w => w.id === parsedEvent.userId);
         pokerGame.users = JSON.parse(parsedEvent.value);
 
         if ($user.notificationsEnabled) {
@@ -200,9 +184,7 @@
         }
         break;
       case 'vote_activity':
-        const votedWarrior = pokerGame.users.find(
-          w => w.id === parsedEvent.userId,
-        );
+        const votedWarrior = pokerGame.users.find(w => w.id === parsedEvent.userId);
         if ($user.notificationsEnabled) {
           notifications.success(
             `${$LL.warriorVoted({
@@ -215,9 +197,7 @@
         pokerGame.plans = JSON.parse(parsedEvent.value);
         break;
       case 'vote_retracted':
-        const devotedWarrior = pokerGame.users.find(
-          w => w.id === parsedEvent.userId,
-        );
+        const devotedWarrior = pokerGame.users.find(w => w.id === parsedEvent.userId);
         if ($user.notificationsEnabled) {
           notifications.warning(
             `${$LL.warriorRetractedVote({
@@ -242,20 +222,14 @@
       case 'plan_revised':
         pokerGame.plans = JSON.parse(parsedEvent.value);
         if (pokerGame.activePlanId !== '') {
-          const activePlan = pokerGame.plans.find(
-            p => p.id === pokerGame.activePlanId,
-          );
+          const activePlan = pokerGame.plans.find(p => p.id === pokerGame.activePlanId);
           currentStory = activePlan;
         }
         break;
       case 'plan_burned':
         const postBurnPlans = JSON.parse(parsedEvent.value);
 
-        if (
-          pokerGame.activePlanId !== '' &&
-          postBurnPlans.filter(p => p.id === pokerGame.activePlanId).length ===
-            0
-        ) {
+        if (pokerGame.activePlanId !== '' && postBurnPlans.filter(p => p.id === pokerGame.activePlanId).length === 0) {
           pokerGame.activePlanId = '';
           currentStory = { ...defaultStory };
         }
@@ -287,9 +261,7 @@
         router.route(appRoutes.games);
         break;
       case 'jab_warrior':
-        const userToNudge = pokerGame.users.find(
-          w => w.id === parsedEvent.value,
-        );
+        const userToNudge = pokerGame.users.find(w => w.id === parsedEvent.value);
         notifications.info(
           `${$LL.warriorNudgeMessage({
             name: userToNudge.name,
@@ -375,10 +347,7 @@
 
   // Determine if the warrior has voted on active Plan yet
   function didVote(warriorId) {
-    if (
-      pokerGame.activePlanId === '' ||
-      (pokerGame.votingLocked && pokerGame.hideVoterIdentity)
-    ) {
+    if (pokerGame.activePlanId === '' || (pokerGame.votingLocked && pokerGame.hideVoterIdentity)) {
       return false;
     }
     const plan = pokerGame.plans.find(p => p.id === pokerGame.activePlanId);
@@ -389,11 +358,7 @@
 
   // Determine if we are showing users vote
   function showVote(warriorId) {
-    if (
-      pokerGame.hideVoterIdentity ||
-      pokerGame.activePlanId === '' ||
-      pokerGame.votingLocked === false
-    ) {
+    if (pokerGame.hideVoterIdentity || pokerGame.activePlanId === '' || pokerGame.votingLocked === false) {
       return '';
     }
     const story = pokerGame.plans.find(p => p.id === pokerGame.activePlanId);
@@ -412,21 +377,16 @@
       vote: '',
       count: 0,
     };
-    const activePlan = pokerGame.plans.find(
-      p => p.id === pokerGame.activePlanId,
-    );
+    const activePlan = pokerGame.plans.find(p => p.id === pokerGame.activePlanId);
 
     if (activePlan.votes.length > 0) {
-      const reversedPoints = [...points]
-        .filter(v => v !== '?' && v !== '☕️')
-        .reverse();
+      const reversedPoints = [...points].filter(v => v !== '?' && v !== '☕️').reverse();
       reversedPoints.push('?');
       reversedPoints.push('☕️');
 
       // build a count of each vote
       activePlan.votes.forEach(v => {
-        const voteWarrior =
-          pokerGame.users.find(w => w.id === v.warriorId) || {};
+        const voteWarrior = pokerGame.users.find(w => w.id === v.warriorId) || {};
         const { spectator = false } = voteWarrior;
 
         if (typeof voteCounts[v.vote] !== 'undefined' && !spectator) {
@@ -446,12 +406,10 @@
     return highestVote.vote;
   }
 
-  let highestVoteCount =
-    $derived(pokerGame.activePlanId !== '' && pokerGame.votingLocked === true
-      ? getHighestVote()
-      : '');
-  let showVotingResults =
-    $derived(pokerGame.activePlanId !== '' && pokerGame.votingLocked === true);
+  let highestVoteCount = $derived(
+    pokerGame.activePlanId !== '' && pokerGame.votingLocked === true ? getHighestVote() : '',
+  );
+  let showVotingResults = $derived(pokerGame.activePlanId !== '' && pokerGame.votingLocked === true);
 
   let isFacilitator = $derived(pokerGame.leaders.includes($user.id));
 
@@ -514,7 +472,7 @@
         >
           {#if currentStory.link}
             <a
-              href="{currentStory.link}"
+              href={currentStory.link}
               target="_blank"
               class="text-blue-800 dark:text-sky-400 inline-block"
               data-testid="currentplan-link"
@@ -544,70 +502,63 @@
         {pokerGame.name}
       </h2>
       {#if pokerGame.endTime}
-          <EndStatusBadge
-            endTime={pokerGame.endTime}
-            endReason={pokerGame.endReason || 'Ended'}
-            class="inline-block ms-2"
-          />
+        <EndStatusBadge
+          endTime={pokerGame.endTime}
+          endReason={pokerGame.endReason || 'Ended'}
+          class="inline-block ms-2"
+        />
       {/if}
     </div>
 
     <div class="w-full md:w-1/3 text-center md:text-right">
-      <VoteTimer
-        currentStoryId={currentStory.id}
-        votingLocked={pokerGame.votingLocked}
-        voteStartTime={voteStartTime}
-      />
+      <VoteTimer currentStoryId={currentStory.id} votingLocked={pokerGame.votingLocked} {voteStartTime} />
     </div>
   </div>
 
   <div class="flex flex-wrap mb-4 -mx-4">
     <div class="w-full lg:w-3/4 px-4">
-    {#if !gameOver}
-      {#if showVotingResults}
-        <div class=" mb-2 md:mb-4">
-          <VotingMetrics
-            pointValues={points}
-            votes={pokerGame.plans.find(p => p.id === pokerGame.activePlanId)
-              .votes}
-            users={pokerGame.users}
-            averageRounding={pokerGame.pointAverageRounding}
-          />
-        </div>
-      {:else}
-        <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
-          {#each points as point}
-            <div class="w-1/4 md:w-1/6 px-2 mb-4">
-              <PointCard
-                point={point}
-                active={vote === point}
-                on:voted="{handleVote}"
-                on:voteRetraction="{handleUnvote}"
-                isLocked={pokerGame.votingLocked || isSpectator}
-              />
-            </div>
-          {/each}
-        </div>
+      {#if !gameOver}
+        {#if showVotingResults}
+          <div class=" mb-2 md:mb-4">
+            <VotingMetrics
+              pointValues={points}
+              votes={pokerGame.plans.find(p => p.id === pokerGame.activePlanId).votes}
+              users={pokerGame.users}
+              averageRounding={pokerGame.pointAverageRounding}
+            />
+          </div>
+        {:else}
+          <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
+            {#each points as point}
+              <div class="w-1/4 md:w-1/6 px-2 mb-4">
+                <PointCard
+                  {point}
+                  active={vote === point}
+                  on:voted={handleVote}
+                  on:voteRetraction={handleUnvote}
+                  isLocked={pokerGame.votingLocked || isSpectator}
+                />
+              </div>
+            {/each}
+          </div>
+        {/if}
       {/if}
-    {/if}    
 
       <PokerStories
         plans={pokerGame.plans}
-        isFacilitator={isFacilitator}
-        sendSocketEvent={sendSocketEvent}
-        notifications={notifications}
-        xfetch={xfetch}
+        {isFacilitator}
+        {sendSocketEvent}
+        {notifications}
+        {xfetch}
         gameId={pokerGame.id}
-        gameOver={gameOver}
+        {gameOver}
       />
     </div>
 
     <div class="w-full lg:w-1/4 px-4">
       <div class="bg-white dark:bg-gray-800 shadow-lg mb-4 rounded-lg">
         <div class="bg-blue-500 dark:bg-gray-700 p-4 rounded-t-lg">
-          <h3
-            class="text-3xl text-white leading-tight font-semibold font-rajdhani uppercase"
-          >
+          <h3 class="text-3xl text-white leading-tight font-semibold font-rajdhani uppercase">
             {$LL.warriors()}
           </h3>
         </div>
@@ -617,22 +568,22 @@
             <UserCard
               warrior={war}
               leaders={pokerGame.leaders}
-              isFacilitator={isFacilitator}
+              {isFacilitator}
               voted={didVote(war.id)}
               points={showVote(war.id)}
               autoFinishVoting={pokerGame.autoFinishVoting}
-              sendSocketEvent={sendSocketEvent}
-              notifications={notifications}
-              gameOver={gameOver}
+              {sendSocketEvent}
+              {notifications}
+              {gameOver}
             />
           {/if}
         {/each}
 
         {#if isFacilitator && !gameOver}
           <VotingControls
-            points={points}
+            {points}
             planId={pokerGame.activePlanId}
-            sendSocketEvent={sendSocketEvent}
+            {sendSocketEvent}
             votingLocked={pokerGame.votingLocked}
             highestVote={highestVoteCount}
           />
@@ -640,19 +591,10 @@
       </div>
 
       <div class="bg-white dark:bg-gray-800 shadow-lg p-4 mb-4 rounded-lg">
-        <InviteUser
-          hostname={hostname}
-          battleId={pokerGame.id}
-          joinCode={pokerGame.joinCode}
-          notifications={notifications}
-        />
+        <InviteUser {hostname} battleId={pokerGame.id} joinCode={pokerGame.joinCode} {notifications} />
         {#if !isFacilitator}
           <div class="mt-4 text-right">
-            <HollowButton
-              color="red"
-              onClick={abandonBattle}
-              testid="battle-abandon"
-            >
+            <HollowButton color="red" onClick={abandonBattle} testid="battle-abandon">
               {$LL.battleAbandon()}
             </HollowButton>
           </div>
@@ -664,21 +606,30 @@
           <SubMenu label={$LL.gameSettings()} icon={Settings} testId="poker-settings">
             {#snippet children({ toggleSubmenu })}
               <SubMenuItem
-                onClickHandler={() => { toggleEditGame(); toggleSubmenu(); }}
+                onClickHandler={() => {
+                  toggleEditGame();
+                  toggleSubmenu();
+                }}
                 testId="battle-edit"
                 icon={Pencil}
                 label={$LL.battleEdit()}
               />
               {#if !gameOver && isFacilitator}
                 <SubMenuItem
-                  onClickHandler={() => { toggleEndGame(); toggleSubmenu(); }}
+                  onClickHandler={() => {
+                    toggleEndGame();
+                    toggleSubmenu();
+                  }}
                   testId="end-game"
                   icon={TimerOff}
                   label={$LL.endGame()}
                 />
               {/if}
               <SubMenuItem
-                onClickHandler={() => { toggleDeleteGame(); toggleSubmenu(); }}
+                onClickHandler={() => {
+                  toggleDeleteGame();
+                  toggleSubmenu();
+                }}
                 testId="battle-delete"
                 icon={Trash}
                 label={$LL.battleDelete()}
@@ -693,7 +644,7 @@
   {#if showEditGame}
     <EditPokerGame
       battleName={pokerGame.name}
-      points={points}
+      {points}
       votingLocked={pokerGame.votingLocked}
       autoFinishVoting={pokerGame.autoFinishVoting}
       pointAverageRounding={pokerGame.pointAverageRounding}
@@ -703,18 +654,13 @@
       joinCode={pokerGame.joinCode}
       leaderCode={pokerGame.leaderCode}
       teamId={pokerGame.teamId}
-      notifications={notifications}
-      xfetch={xfetch}
+      {notifications}
+      {xfetch}
     />
   {/if}
 
   {#if showEndGameModal}
-    <EndGameModal
-      toggleModal={toggleEndGame}
-      handleSubmit={handleEndGame}
-      notifications={notifications}
-      xfetch={xfetch}
-    />
+    <EndGameModal toggleModal={toggleEndGame} handleSubmit={handleEndGame} {notifications} {xfetch} />
   {/if}
 
   {#if showDeleteGame}

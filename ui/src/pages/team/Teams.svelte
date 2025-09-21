@@ -70,9 +70,7 @@
 
   function getOrganizations() {
     const orgsOffset = (organizationsPage - 1) * organizationsPageLimit;
-    xfetch(
-      `/api/users/${$user.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`,
-    )
+    xfetch(`/api/users/${$user.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         organizations = result.data;
@@ -84,9 +82,7 @@
 
   function getTeams() {
     const teamsOffset = (teamsPage - 1) * teamsPageLimit;
-    xfetch(
-      `/api/users/${$user.id}/teams-non-org?limit=${teamsPageLimit}&offset=${teamsOffset}`,
-    )
+    xfetch(`/api/users/${$user.id}/teams-non-org?limit=${teamsPageLimit}&offset=${teamsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         teams = result.data;
@@ -243,7 +239,7 @@
         />
         <Table>
           {#snippet header()}
-                    <tr >
+            <tr>
               <HeadCol>
                 {$LL.name()}
               </HeadCol>
@@ -255,9 +251,9 @@
               </HeadCol>
               <HeadCol type="action" />
             </tr>
-                  {/snippet}
+          {/snippet}
           {#snippet body({ class: className })}
-                    <tbody   class="{className}">
+            <tbody class={className}>
               {#each organizations as organization, i}
                 <TableRow itemIndex={i}>
                   <RowCol>
@@ -277,19 +273,15 @@
                   <RowCol type="action">
                     {#if organization.role === 'ADMIN'}
                       <CrudActions
-                        editBtnClickHandler={toggleUpdateOrganization(
-                          organization,
-                        )}
-                        deleteBtnClickHandler={toggleDeleteOrganization(
-                          organization,
-                        )}
+                        editBtnClickHandler={toggleUpdateOrganization(organization)}
+                        deleteBtnClickHandler={toggleDeleteOrganization(organization)}
                       />
                     {/if}
                   </RowCol>
                 </TableRow>
               {/each}
             </tbody>
-                  {/snippet}
+          {/snippet}
         </Table>
       </TableContainer>
     </div>
@@ -304,7 +296,7 @@
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>
             {$LL.name()}
           </HeadCol>
@@ -316,9 +308,9 @@
           </HeadCol>
           <HeadCol type="action" />
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body({ class: className })}
-            <tbody   class="{className}">
+        <tbody class={className}>
           {#each teams as team, i}
             <TableRow itemIndex={i}>
               <RowCol>
@@ -346,15 +338,12 @@
             </TableRow>
           {/each}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
   </TableContainer>
 
   {#if showCreateOrganization}
-    <CreateOrganization
-      toggleCreate={toggleCreateOrganization}
-      handleCreate={createOrganizationHandler}
-    />
+    <CreateOrganization toggleCreate={toggleCreateOrganization} handleCreate={createOrganizationHandler} />
   {/if}
 
   {#if showOrganizationUpdate}
@@ -375,10 +364,7 @@
   {/if}
 
   {#if showCreateTeam}
-    <CreateTeam
-      toggleCreate={toggleCreateTeam}
-      handleCreate={createTeamHandler}
-    />
+    <CreateTeam toggleCreate={toggleCreateTeam} handleCreate={createTeamHandler} />
   {/if}
 
   {#if showTeamUpdate}

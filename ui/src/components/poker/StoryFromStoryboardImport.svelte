@@ -55,8 +55,7 @@
   }
 
   const importStory = (columnIdx, storyIdx) => () => {
-    const selectedStory =
-      storyboard.goals[selectedGoalIdx].columns[columnIdx].stories[storyIdx];
+    const selectedStory = storyboard.goals[selectedGoalIdx].columns[columnIdx].stories[storyIdx];
 
     handleImport({
       name: selectedStory.name,
@@ -72,14 +71,10 @@
 </script>
 
 <div class="mb-4">
-  <SelectInput
-    id="selectedStoryboard"
-    bind:value="{selectedStoryboardIdx}"
-    on:change="{getStoryboardStories}"
-  >
+  <SelectInput id="selectedStoryboard" bind:value={selectedStoryboardIdx} on:change={getStoryboardStories}>
     <option value="" disabled>Select storyboard to import from</option>
     {#each storyboards as storyboard, idx}
-      <option value="{idx}">{storyboard.name}</option>
+      <option value={idx}>{storyboard.name}</option>
     {/each}
   </SelectInput>
 </div>
@@ -87,14 +82,14 @@
 <div class="mb-4">
   <SelectInput
     id="selectedGoal"
-    bind:value="{selectedGoalIdx}"
-    on:change="{getStoryboardStories}"
+    bind:value={selectedGoalIdx}
+    on:change={getStoryboardStories}
     disabled={selectedStoryboardIdx === ''}
   >
     <option value="" disabled>Select goal to import from</option>
     {#if selectedStoryboardIdx !== ''}
       {#each storyboard.goals as goal, idx}
-        <option value="{idx}">{goal.name}</option>
+        <option value={idx}>{goal.name}</option>
       {/each}
     {/if}
   </SelectInput>
@@ -112,9 +107,7 @@
               {story.name}
             </div>
             <div>
-              <SolidButton onClick={importStory(cIdx, sIdx)}
-                >Import
-              </SolidButton>
+              <SolidButton onClick={importStory(cIdx, sIdx)}>Import</SolidButton>
             </div>
           </div>
         {/if}

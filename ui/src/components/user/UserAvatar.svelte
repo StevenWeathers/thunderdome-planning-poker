@@ -4,7 +4,6 @@
 
   const { PathPrefix, AvatarService } = AppConfig;
 
-  
   interface Props {
     class?: string;
     pictureUrl?: string;
@@ -24,62 +23,52 @@
     avatar = '',
     userName = '',
     width = 48,
-    options = {}
+    options = {},
   }: Props = $props();
 </script>
 
 {#if pictureUrl !== ''}
-  <img
-    src="{pictureUrl}"
-    alt="{$LL.avatarAltText()}"
-    class="{klass}"
-    title="{userName}"
-    {...options}
-  />
+  <img src={pictureUrl} alt={$LL.avatarAltText()} class={klass} title={userName} {...options} />
 {:else if AvatarService === 'gravatar'}
   {#if gravatarHash !== ''}
     <img
-      src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar !== ''
-        ? avatar
-        : 'mp'}&r=g"
-      alt="{$LL.avatarAltText()}"
-      class="{klass}"
-      title="{userName}"
+      src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar !== '' ? avatar : 'mp'}&r=g"
+      alt={$LL.avatarAltText()}
+      class={klass}
+      title={userName}
       {...options}
     />
   {:else}
     <img
-      src="https://gravatar.com/avatar/{warriorId}?s={width}&d={avatar !== ''
-        ? avatar
-        : 'mp'}&r=g"
-      alt="{$LL.avatarAltText()}"
-      class="{klass}"
-      title="{userName}"
+      src="https://gravatar.com/avatar/{warriorId}?s={width}&d={avatar !== '' ? avatar : 'mp'}&r=g"
+      alt={$LL.avatarAltText()}
+      class={klass}
+      title={userName}
       {...options}
     />
   {/if}
 {:else if AvatarService === 'robohash'}
   <img
     src="https://robohash.org/{warriorId}.png?set={avatar}&size={width}x{width}"
-    alt="{$LL.avatarAltText()}"
-    class="{klass}"
-    title="{userName}"
+    alt={$LL.avatarAltText()}
+    class={klass}
+    title={userName}
     {...options}
   />
 {:else if AvatarService === 'govatar'}
   <img
     src="{PathPrefix}/avatar/{width}/{warriorId}/{avatar}"
-    alt="{$LL.avatarAltText()}"
-    class="{klass}"
-    title="{userName}"
+    alt={$LL.avatarAltText()}
+    class={klass}
+    title={userName}
     {...options}
   />
 {:else if AvatarService === 'goadorable'}
   <img
     src="{PathPrefix}/avatar/{width}/{warriorId}"
-    alt="{$LL.avatarAltText()}"
-    class="{klass}"
-    title="{userName}"
+    alt={$LL.avatarAltText()}
+    class={klass}
+    title={userName}
     {...options}
   />
 {/if}

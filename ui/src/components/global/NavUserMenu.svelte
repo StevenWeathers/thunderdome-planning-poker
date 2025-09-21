@@ -26,21 +26,21 @@
     return () => {
       toggleSubmenu?.();
       router.route(appRoutes.profile, true);
-    }
+    };
   }
 
   function goToRegister(toggleSubmenu?: () => void) {
     return () => {
       toggleSubmenu?.();
       router.route(appRoutes.register, true);
-    }
+    };
   }
 
   function goToLogin(toggleSubmenu?: () => void) {
     return () => {
       toggleSubmenu?.();
       router.route(appRoutes.login, true);
-    }
+    };
   }
 
   function getProfile() {
@@ -67,7 +67,7 @@
         .catch(function () {
           notifications.danger($LL.logoutError());
         });
-    }
+    };
   }
 
   onMount(() => {
@@ -77,11 +77,7 @@
 
 <SubMenu relativeClass="z-10">
   {#snippet button({ toggleSubmenu })}
-    <span
-      data-testid="usernav-name"
-      class="text-gray-600 dark:text-gray-300 font-semibold me-2"
-      >{$user.name}</span
-    >
+    <span data-testid="usernav-name" class="text-gray-600 dark:text-gray-300 font-semibold me-2">{$user.name}</span>
     <button
       class="align-middle rounded-full focus:ring focus:outline-none focus:ring-indigo-600"
       aria-label="Account"
@@ -124,12 +120,7 @@
         active={currentPage === 'login'}
       />
     {:else}
-      <SubMenuItem
-        onClickHandler={logoutUser(toggleSubmenu)}
-        testId="logout-link"
-        icon={LogOut}
-        label={$LL.logout()}
-      />
+      <SubMenuItem onClickHandler={logoutUser(toggleSubmenu)} testId="logout-link" icon={LogOut} label={$LL.logout()} />
     {/if}
   {/snippet}
 </SubMenu>

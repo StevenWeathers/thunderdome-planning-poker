@@ -31,7 +31,7 @@
     teamId,
     departmentId,
     apiPrefix = '/api',
-    isEntityAdmin = false
+    isEntityAdmin = false,
   }: Props = $props();
 
   let isAdmin = $derived(validateUserIsAdmin($user));
@@ -83,19 +83,13 @@
     <TableNav
       title="Default Retrospective Settings"
       createBtnEnabled={isAdmin || isEntityAdmin}
-      createBtnText="{defaultSettings.id !== ''
-        ? 'Update'
-        : 'Create'} Default Settings"
-      createButtonHandler={defaultSettings.id !== ''
-        ? toggleUpdateDefaultSettings
-        : toggleCreateDefaultSettings}
-      createBtnTestId="retro-settings-{defaultSettings.id !== ''
-        ? 'update'
-        : 'create'}-btn"
+      createBtnText="{defaultSettings.id !== '' ? 'Update' : 'Create'} Default Settings"
+      createButtonHandler={defaultSettings.id !== '' ? toggleUpdateDefaultSettings : toggleCreateDefaultSettings}
+      createBtnTestId="retro-settings-{defaultSettings.id !== '' ? 'update' : 'create'}-btn"
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>{$LL.retroMaxVotesPerUserLabel()}</HeadCol>
           <HeadCol>{$LL.brainstormPhaseFeedbackVisibility()}</HeadCol>
           <HeadCol>{$LL.retroPhaseTimeLimitMinLabel()}</HeadCol>
@@ -105,9 +99,9 @@
           <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
           <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body()}
-            <tbody >
+        <tbody>
           {#if defaultSettings.id !== ''}
             <TableRow>
               <RowCol>
@@ -123,9 +117,7 @@
                 <BooleanDisplay boolValue={defaultSettings.phaseAutoAdvance} />
               </RowCol>
               <RowCol>
-                <BooleanDisplay
-                  boolValue={defaultSettings.allowCumulativeVoting}
-                />
+                <BooleanDisplay boolValue={defaultSettings.allowCumulativeVoting} />
               </RowCol>
               <!--                    <RowCol>-->
               <!--                        {defaultSettings.templateId}-->
@@ -139,19 +131,19 @@
             </TableRow>
           {/if}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
   </TableContainer>
 
   {#if showCreateDefaultSettings}
     <UpdateRetroSettings
       toggleClose={toggleCreateDefaultSettings}
-      xfetch={xfetch}
-      notifications={notifications}
-      apiPrefix={apiPrefix}
-      organizationId={organizationId}
-      teamId={teamId}
-      departmentId={departmentId}
+      {xfetch}
+      {notifications}
+      {apiPrefix}
+      {organizationId}
+      {teamId}
+      {departmentId}
       on:updateRetroSettings={handleSettingsUpdate}
     />
   {/if}
@@ -159,13 +151,13 @@
   {#if showUpdateDefaultSettings}
     <UpdateRetroSettings
       toggleClose={toggleUpdateDefaultSettings}
-      xfetch={xfetch}
-      notifications={notifications}
+      {xfetch}
+      {notifications}
       retroSettings={defaultSettings}
-      apiPrefix={apiPrefix}
-      organizationId={organizationId}
-      teamId={teamId}
-      departmentId={departmentId}
+      {apiPrefix}
+      {organizationId}
+      {teamId}
+      {departmentId}
       on:updateRetroSettings={handleSettingsUpdate}
     />
   {/if}

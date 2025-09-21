@@ -15,12 +15,12 @@
 
   const allowedReasons = [
     {
-        value: 'Completed',
-        label: $LL.completed()
+      value: 'Completed',
+      label: $LL.completed(),
     },
     {
-        value: 'Cancelled',
-        label: $LL.cancelled()
+      value: 'Cancelled',
+      label: $LL.cancelled(),
     },
   ];
 
@@ -31,12 +31,7 @@
     xfetch: ApiClient;
   }
 
-  let {
-    toggleModal = () => {},
-    handleSubmit = (battle: any) => {},
-    notifications,
-    xfetch
-  }: Props = $props();
+  let { toggleModal = () => {}, handleSubmit = (battle: any) => {}, notifications, xfetch }: Props = $props();
 
   let endGameReason = $state('');
   let submitDisabled = $derived(() => {
@@ -49,29 +44,23 @@
   });
 
   const onSubmit = (e: Event) => {
-      e.preventDefault();
-      
-      handleSubmit({ endGameReason });
+    e.preventDefault();
+
+    handleSubmit({ endGameReason });
   };
 </script>
 
-<Modal
-  closeModal={toggleModal}
-  ariaLabel={$LL.modalEditPokerGame()}
->
+<Modal closeModal={toggleModal} ariaLabel={$LL.modalEditPokerGame()}>
   <form onsubmit={onSubmit} name="createBattle">
     <div class="text-lg font-bold mb-4 dark:text-white">{$LL.endGame()}</div>
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-        for="reason"
-      >
+      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2" for="reason">
         {$LL.endGameReason()}
       </label>
-      <SelectInput bind:this={focusInput} bind:value="{endGameReason}" id="endGameReason" name="endGameReason">
+      <SelectInput bind:this={focusInput} bind:value={endGameReason} id="endGameReason" name="endGameReason">
         <option value="" disabled>{$LL.endGameReasonPlaceholder()}</option>
         {#each allowedReasons as reason}
-          <option value="{reason.value}">
+          <option value={reason.value}>
             {reason.label}
           </option>
         {/each}

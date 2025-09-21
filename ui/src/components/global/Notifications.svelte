@@ -26,10 +26,7 @@
     return {
       delay,
       duration,
-      css: t =>
-        `opacity: ${
-          (t - 0.5) * 1
-        }; transform-origin: top right; transform: scaleX(${(t - 0.5) * 1});`,
+      css: t => `opacity: ${(t - 0.5) * 1}; transform-origin: top right; transform: scaleX(${(t - 0.5) * 1});`,
     };
   }
 
@@ -73,6 +70,21 @@
     show(msg, timeout, 'success');
   }
 </script>
+
+<ul class="toasts">
+  {#each toasts as toast (toast.id)}
+    <li class="toast" style="background: {toast.background};" out:animateOut>
+      <div class="content" data-testid="notification-msg">
+        {toast.msg}
+      </div>
+      <div
+        class="progress"
+        style="animation-duration: {toast.timeout}ms;"
+        onanimationend={() => removeToast(toast.id)}
+      ></div>
+    </li>
+  {/each}
+</ul>
 
 <style>
   .toasts {
@@ -151,18 +163,3 @@
     }
   }
 </style>
-
-<ul class="toasts">
-  {#each toasts as toast (toast.id)}
-    <li class="toast" style="background: {toast.background};" out:animateOut>
-      <div class="content" data-testid="notification-msg">
-        {toast.msg}
-      </div>
-      <div
-        class="progress"
-        style="animation-duration: {toast.timeout}ms;"
-        onanimationend={() => removeToast(toast.id)}
-      ></div>
-    </li>
-  {/each}
-</ul>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Component, Snippet } from 'svelte';
-  
+
   interface Props {
     type?: string;
     value?: any;
@@ -39,7 +39,7 @@
   const getInputPadding = () => {
     const hasStart = startElement || (icon && iconPosition === 'start');
     const hasEnd = endElement || (icon && iconPosition === 'end');
-    
+
     if (hasStart && hasEnd) {
       return 'ps-12 pe-12';
     } else if (hasStart) {
@@ -56,11 +56,11 @@
   <input
     use:typeWorkaround
     bind:this={inputElement}
-    bind:value={value}
+    bind:value
     class="block w-full {getInputPadding()} py-3 text-lg rounded-lg outline-none transition-all duration-300 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 disabled:cursor-not-allowed {klass}"
     {...restProps}
   />
-  
+
   <!-- Start side elements -->
   {#if startElement}
     <div class="absolute start-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -74,7 +74,7 @@
       tabindex={-1}
     />
   {/if}
-  
+
   <!-- End side elements -->
   {#if endElement}
     <div class="absolute end-3 top-1/2 transform -translate-y-1/2 pointer-events-none">

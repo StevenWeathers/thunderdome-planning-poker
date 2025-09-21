@@ -13,8 +13,7 @@ const fa: Translation = {
   actionItem: 'آیتم اقدام',
   actionItemPlaceholder: 'آیتم اقدام...',
   actionItems: 'آیتم‌های اقدام',
-  actionPhaseDescription:
-    'آیتم‌های اقدام اضافه کنید، دیگر نمی‌توانید نظرات را گروه‌بندی یا رأی‌گیری کنید',
+  actionPhaseDescription: 'آیتم‌های اقدام اضافه کنید، دیگر نمی‌توانید نظرات را گروه‌بندی یا رأی‌گیری کنید',
   actions: 'اقدامات',
   activate: 'فعال‌سازی',
   active: 'فعال',
@@ -34,16 +33,14 @@ const fa: Translation = {
   adminPageTeams: 'تیم‌ها',
   adminPageUsers: 'کاربران',
   adminPageSubscriptions: 'اشتراک‌ها',
-  deleteSubscriptionConfirmation:
-    'آیا مطمئن هستید که می‌خواهید این اشتراک را حذف کنید؟',
+  deleteSubscriptionConfirmation: 'آیا مطمئن هستید که می‌خواهید این اشتراک را حذف کنید؟',
   deleteSubscription: 'حذف اشتراک',
   alertAllowDismiss: 'اجازه رد کردن',
   alertContent: 'محتوای هشدار',
   alertContentPlaceholder: 'محتوای هشدار را وارد کنید',
   alertCreate: 'ایجاد هشدار',
   alertDelete: 'حذف هشدار',
-  alertDeleteConfirmation:
-    'آیا مطمئن هستید که می‌خواهید این هشدار را حذف کنید؟',
+  alertDeleteConfirmation: 'آیا مطمئن هستید که می‌خواهید این هشدار را حذف کنید؟',
   alertNamePlaceholder: 'نام هشدار را وارد کنید',
   alertRegisteredOnly: 'فقط ثبت‌نام شده‌ها',
   alerts: 'هشدارها',
@@ -68,8 +65,7 @@ const fa: Translation = {
   battleCreate: 'ایجاد بازی',
   battleDelete: 'حذف بازی',
   battleEdit: 'ویرایش بازی',
-  battleEditPointsDisabled:
-    'رأی‌گیری فعال است، نمی‌توان امتیازهای مجاز را تغییر داد.',
+  battleEditPointsDisabled: 'رأی‌گیری فعال است، نمی‌توان امتیازهای مجاز را تغییر داد.',
   battleJoin: 'پیوستن به بازی',
   battleName: 'نام بازی',
   battleRemoveError: 'خطا در تلاش برای حذف بازی.',
@@ -128,11 +124,9 @@ const fa: Translation = {
   deleteBattleError: 'خطا در حذف بازی',
   deleteCheckinError: 'خطا در حذف چک‌این',
   deleteDepartment: 'حذف بخش',
-  deleteDepartmentConfirmText:
-    'آیا مطمئن هستید که می‌خواهید این بخش را حذف کنید؟',
+  deleteDepartmentConfirmText: 'آیا مطمئن هستید که می‌خواهید این بخش را حذف کنید؟',
   deleteOrganization: 'حذف سازمان',
-  deleteOrganizationConfirmText:
-    'آیا مطمئن هستید که می‌خواهید این سازمان را حذف کنید؟',
+  deleteOrganizationConfirmText: 'آیا مطمئن هستید که می‌خواهید این سازمان را حذف کنید؟',
   deleteRetro: 'حذف رترو',
   deleteRetroErrorMessage: 'خطا در حذف رترو',
   deleteStoryboard: 'حذف استوری‌بورد',
@@ -158,8 +152,7 @@ const fa: Translation = {
   discussPlaceholder: 'من می‌خواهم در مورد... بحث کنم',
   done: 'انجام شده',
   duplicateRetroSession: 'جلسه رترو تکراری برای شناسه شما وجود دارد',
-  duplicateStoryboardSession:
-    'جلسه استوری‌بورد تکراری برای شناسه شما وجود دارد',
+  duplicateStoryboardSession: 'جلسه استوری‌بورد تکراری برای شناسه شما وجود دارد',
   edit: 'ویرایش',
   editColorLegend: 'ویرایش راهنما',
   editRetro: 'ویرایش رترو',
@@ -175,8 +168,7 @@ const fa: Translation = {
   facilitatorCodePlaceholder: 'کد تسهیل‌گر اختیاری را وارد کنید',
   finalPoints: 'امتیازات نهایی',
   flag: 'پرچم',
-  footerAuthoredBy:
-    'ساخته شده با ❤️ توسط {authorOpen}Steven Weathers{authorClose}',
+  footerAuthoredBy: 'ساخته شده با ❤️ توسط {authorOpen}Steven Weathers{authorClose}',
   forgotPassword: 'رمز عبور خود را فراموش کردید؟',
   forgotPasswordSubtext:
     'نگران نباشید! فقط ایمیل خود را وارد کنید تا دستورالعمل‌های بازنشانی رمز عبور را برای شما ارسال کنیم.',
@@ -198,8 +190,7 @@ const fa: Translation = {
   group: 'گروه',
   groupName: 'نام گروه',
   groupPhaseDescription: 'برای گروه‌بندی نظرات، آن‌ها را درگ اند دراپ کنید',
-  hostedDesc:
-    '{linkOpen}Thunderdome.dev{linkClose} یک سرویس رایگان میزبانی شده (SaaS) بدون تبلیغات است.',
+  hostedDesc: '{linkOpen}Thunderdome.dev{linkClose} یک سرویس رایگان میزبانی شده (SaaS) بدون تبلیغات است.',
   hostedOrSelfHosted: 'سرویس میزبانی شده یا خود میزبانی',
   importCsv: 'وارد کردن داستان‌ها از فایل CSV',
   importCsvFileBadFileTypeError: 'خطا در نوع فایل نامناسب',
@@ -217,8 +208,7 @@ const fa: Translation = {
   joinCodePlaceholder: 'کد پیوستن را وارد کنید',
   joinRetro: 'پیوستن به رترو',
   joinStoryboard: 'پیوستن به استوری‌بورد',
-  joinStoryboardError:
-    'خطا در پیوستن به استوری‌بورد، صفحه را بازخوانی و دوباره تلاش کنید.',
+  joinStoryboardError: 'خطا در پیوستن به استوری‌بورد، صفحه را بازخوانی و دوباره تلاش کنید.',
   landingCountries: 'کاربران در بیش از {count} کشور',
   landingFeatureOpenSourceText:
     '{repoOpen}مخزن گیت‌هاب{repoClose} را برای درخواست یا مشارکت در بهبودها، ترجمه‌های محلی و رفع باگ‌ها بررسی کنید یا {donateOpen}کمک مالی{donateClose} کنید.',
@@ -234,8 +224,7 @@ const fa: Translation = {
   loadingStoryboard: 'بارگذاری استوری‌بورد...',
   login: 'ورود',
   loginForRetro: 'یا {loginOpen}وارد شوید{loginClose} تا به رترو بپیوندید',
-  loginForStoryboard:
-    'یا {loginOpen}وارد شوید{loginClose} تا به استوری‌بورد بپیوندید',
+  loginForStoryboard: 'یا {loginOpen}وارد شوید{loginClose} تا به استوری‌بورد بپیوندید',
   logout: 'خروج',
   logoutError: 'خطا در تلاش برای خروج کاربر',
   makeFacilitator: 'تبدیل به تسهیل‌گر',
@@ -293,8 +282,7 @@ const fa: Translation = {
   planDescription: 'توضیحات',
   planDescriptionPlaceholder: 'توضیحاتی را وارد کنید',
   planLink: 'لینک',
-  planLinkInvalid:
-    'لینک یک URL مطلق معتبر نیست، مثلاً شامل پروتکل (HTTP/HTTPS)',
+  planLinkInvalid: 'لینک یک URL مطلق معتبر نیست، مثلاً شامل پروتکل (HTTP/HTTPS)',
   planLinkPlaceholder: 'لینک داستان را وارد کنید',
   planName: 'نام داستان',
   planNamePlaceholder: 'نام داستان را وارد کنید',
@@ -336,14 +324,12 @@ const fa: Translation = {
   removeRetro: 'حذف رترو',
   removeRetroConfirmText: 'آیا مطمئن هستید که می‌خواهید این رترو را حذف کنید؟',
   removeStoryboard: 'حذف استوری‌بورد',
-  removeStoryboardConfirmText:
-    'آیا مطمئن هستید که می‌خواهید این استوری‌بورد را حذف کنید؟',
+  removeStoryboardConfirmText: 'آیا مطمئن هستید که می‌خواهید این استوری‌بورد را حذف کنید؟',
   removeUser: 'حذف کاربر',
   removeUserConfirmText: 'آیا مطمئن هستید که می‌خواهید این کاربر را حذف کنید؟',
   requestVerifyEmail: 'درخواست ایمیل تأیید',
   requestVerifyEmailFailure: 'خطا در تلاش برای ارسال ایمیل تأیید',
-  requestVerifyEmailSuccess:
-    'ایمیل تأیید درخواست شد، صندوق ورودی خود را بررسی کنید',
+  requestVerifyEmailSuccess: 'ایمیل تأیید درخواست شد، صندوق ورودی خود را بررسی کنید',
   retro: 'رترو',
   retroActionCommentAddError: 'خطا در افزودن نظر اقدام رترو',
   retroActionCommentDeleteError: 'خطا در حذف نظر اقدام رترو',
@@ -371,8 +357,7 @@ const fa: Translation = {
   search: 'جستجو',
   searchLengthError: 'مقدار جستجو باید حداقل ۳ کاراکتر باشد',
   selectTeam: 'تیمی را انتخاب کنید',
-  selfHostedDesc:
-    'یا می‌توانید {linkOpen}آن را روی سرور خودتان اجرا کنید{linkClose}.',
+  selfHostedDesc: 'یا می‌توانید {linkOpen}آن را روی سرور خودتان اجرا کنید{linkClose}.',
   sessionDuplicate: 'جلسه بازی تکراری برای شناسه شما وجود دارد',
   showActiveBattles: 'نمایش بازی‌های فعال',
   showActiveRetros: 'نمایش رتروهای فعال',
@@ -441,8 +426,7 @@ const fa: Translation = {
   userRemoveSuccess: 'کاربر با موفقیت حذف شد.',
   users: 'کاربران',
   verifyAccount: 'تأیید حساب',
-  verifyAccountFailedError:
-    'خطایی در تأیید حساب شما رخ داد، شاید این لینک منقضی شده یا قبلاً استفاده شده است.',
+  verifyAccountFailedError: 'خطایی در تأیید حساب شما رخ داد، شاید این لینک منقضی شده یا قبلاً استفاده شده است.',
   verifyAccountFailedTitle: 'تأیید ناموفق',
   verifyAccountLoading: 'در حال تأیید حساب...',
   verifyAccountVerifiedThanks: 'از تأیید ایمیل شما متشکریم.',
@@ -450,8 +434,7 @@ const fa: Translation = {
   view: 'مشاهده',
   vote: 'رأی',
   voteCount: 'تعداد آرا',
-  votePhaseDescription:
-    'به گروه‌هایی که می‌خواهید بیشتر در موردشان بحث کنید رأی دهید',
+  votePhaseDescription: 'به گروه‌هایی که می‌خواهید بیشتر در موردشان بحث کنید رأی دهید',
   voteResultsAverage: 'میانگین',
   voteResultsHighest: 'بالاترین',
   votingFinish: 'پایان رأی‌گیری',
@@ -468,8 +451,7 @@ const fa: Translation = {
   yourStoryboards: 'استوری‌بوردهای شما',
   addPlan: 'افزودن داستان',
   battleNamePlaceholder: 'نام بازی را وارد کنید',
-  autoFinishVotingLabel:
-    'خودکار پایان دادن رأی‌گیری وقتی همه بازیکنان رأی دادند',
+  autoFinishVotingLabel: 'خودکار پایان دادن رأی‌گیری وقتی همه بازیکنان رأی دادند',
   averageRoundingOptions: {
     ceil: 'سقف',
     floor: 'کف',
@@ -494,17 +476,14 @@ const fa: Translation = {
   profile: 'پروفایل',
   updatePassword: 'به‌روزرسانی رمز عبور',
   deleteAccount: 'حذف حساب',
-  deleteAccountWarningStatement:
-    'آیا مطمئن هستید که می‌خواهید حساب خود را حذف کنید؟',
+  deleteAccountWarningStatement: 'آیا مطمئن هستید که می‌خواهید حساب خود را حذف کنید؟',
   deleteConfirmButton: 'تأیید حذف',
   apiKeyNameInvalid: 'لطفاً نام کلید را وارد کنید',
-  apiKeyCreateSuccess:
-    'کلید API جدید {keyName} ایجاد شد و {onlyNowOpen}فقط الان نمایش داده می‌شود{onlyNowClose}',
+  apiKeyCreateSuccess: 'کلید API جدید {keyName} ایجاد شد و {onlyNowOpen}فقط الان نمایش داده می‌شود{onlyNowClose}',
   apiKeyStoreWarning:
     'لطفاً آن را در جایی امن ذخیره کنید زیرا به محض اینکه از این صفحه خارج شوید، نمی‌توانیم این توکن تولید شده را بازیابی یا بازیابی کنیم.',
   apiKeyLimitReached: 'شما حداکثر تعداد کلیدهای API مجاز را دارید.',
-  apiKeyUnverifiedUser:
-    'فقط کاربران ثبت‌نام شده تأیید شده می‌توانند کلیدهای API ایجاد کنند.',
+  apiKeyUnverifiedUser: 'فقط کاربران ثبت‌نام شده تأیید شده می‌توانند کلیدهای API ایجاد کنند.',
   apiKeyCreateFailed: 'ایجاد کلید API ناموفق بود',
   apiKeyName: 'نام کلید',
   apiKeyNamePlaceholder: 'نام کلید را وارد کنید',
@@ -528,8 +507,7 @@ const fa: Translation = {
   battle: 'بازی',
   warriors: 'بازیکنان',
   battleSocketReconnecting: 'اوه در حال بازخوانی بازی...',
-  battleSocketError:
-    'خطا در پیوستن به بازی، صفحه را بازخوانی و دوباره تلاش کنید.',
+  battleSocketError: 'خطا در پیوستن به بازی، صفحه را بازخوانی و دوباره تلاش کنید.',
   battleLoading: 'بارگذاری بازی...',
   votingNotStarted: 'رأی‌گیری شروع نشده',
   password: 'رمز عبور',
@@ -550,8 +528,7 @@ const fa: Translation = {
   loginForBattle: 'یا {loginOpen}وارد شوید{loginClose} تا به بازی بپیوندید',
   yourNamePlaceholder: 'نام خود را وارد کنید',
   createAccountFormTitle: 'ایجاد حساب {optionalOpen}(اختیاری){optionalClose}',
-  sendResetPasswordSuccess:
-    'دستورالعمل‌های بازنشانی رمز عبور به {email} ارسال شد',
+  sendResetPasswordSuccess: 'دستورالعمل‌های بازنشانی رمز عبور به {email} ارسال شد',
   sendResetPasswordError: 'خطا در تلاش برای ارسال بازنشانی رمز عبور',
   chooseCountryPlaceholder: 'کشور خود را انتخاب کنید (اختیاری)',
   locale: 'زبان',
@@ -578,8 +555,7 @@ const fa: Translation = {
   userUpdateError: 'خطا در به‌روزرسانی کاربر.',
   userInvites: 'دعوت‌نامه‌های کاربر',
   userInviteSent: 'دعوت‌نامه کاربر ارسال شد',
-  userInviteConfirmDelete:
-    'آیا مطمئن هستید که می‌خواهید این دعوت‌نامه کاربر را حذف کنید؟',
+  userInviteConfirmDelete: 'آیا مطمئن هستید که می‌خواهید این دعوت‌نامه کاربر را حذف کنید؟',
   userInviteDelete: 'حذف دعوت‌نامه',
   expireDate: 'تاریخ انقضا',
   addUserWillInviteNotFoundFieldNote:
@@ -626,8 +602,7 @@ const fa: Translation = {
   estimationScaleUpdateError: 'خطا در به‌روزرسانی مقیاس تخمین',
   estimationScaleRemoveSuccess: 'مقیاس تخمین با موفقیت حذف شد',
   estimationScaleRemoveError: 'خطا در حذف مقیاس تخمین',
-  removeEstimationScaleConfirmText:
-    'آیا مطمئن هستید که می‌خواهید این مقیاس تخمین را حذف کنید؟',
+  removeEstimationScaleConfirmText: 'آیا مطمئن هستید که می‌خواهید این مقیاس تخمین را حذف کنید؟',
   removeEstimationScale: 'حذف مقیاس تخمین',
   yes: 'بله',
   no: 'خیر',
@@ -636,8 +611,7 @@ const fa: Translation = {
   publicEstimationScales: 'مقیاس‌های تخمین عمومی',
   organizationEstimationScales: 'مقیاس‌های تخمین سازمان',
   teamEstimationScales: 'مقیاس‌های تخمین تیم',
-  allowCumulativeVotingLabel:
-    'اجازه رأی‌گیری تجمعی (بیش از ۱ رأی به هر گروه آیتم)',
+  allowCumulativeVotingLabel: 'اجازه رأی‌گیری تجمعی (بیش از ۱ رأی به هر گروه آیتم)',
   activeSubscriptions: 'اشتراک‌های فعال',
   retroTemplates: 'قالب‌های رترو',
   publicRetroTemplates: 'قالب‌های رترو عمومی',
@@ -655,18 +629,15 @@ const fa: Translation = {
   retroTemplateUpdateError: 'خطا در به‌روزرسانی قالب گذشت‌نگری',
   retroTemplateRemoveSuccess: 'قالب گذشت‌نگری با موفقیت حذف شد',
   retroTemplateRemoveError: 'خطا در حذف قالب گذشت‌نگری',
-  removeRetroTemplateConfirmText:
-    'آیا مطمئن هستید که می‌خواهید این قالب گذشت‌نگری را حذف کنید؟',
+  removeRetroTemplateConfirmText: 'آیا مطمئن هستید که می‌خواهید این قالب گذشت‌نگری را حذف کنید؟',
   removeRetroTemplate: 'حذف قالب گذشت‌نگری',
   retroTemplateDefault: 'به عنوان قالب پیش‌فرض تنظیم کنید',
   jiradatacenterLabel: 'مرکز داده جیرا',
   loginWithSSO: 'ورود با {provider}',
-  requestEmailChangeSuccess:
-    'درخواست تغییر ایمیل ارسال شد، صندوق ورودی خود را برای دستورالعمل‌ها بررسی کنید',
+  requestEmailChangeSuccess: 'درخواست تغییر ایمیل ارسال شد، صندوق ورودی خود را برای دستورالعمل‌ها بررسی کنید',
   requestEmailChangeError: 'خطا در تلاش برای تغییر ایمیل',
   changeEmail: 'تغییر ایمیل',
-  errorChangingEmail:
-    'خطا در تلاش برای تغییر ایمیل، شاید این پیوند منقضی شده یا قبلاً استفاده شده است.',
+  errorChangingEmail: 'خطا در تلاش برای تغییر ایمیل، شاید این پیوند منقضی شده یا قبلاً استفاده شده است.',
   emailChanged: 'ایمیل با موفقیت تغییر یافت',
   newEmailToLogin: 'از این پس، لطفاً از ایمیل جدید خود برای ورود استفاده کنید.',
   newEmail: 'ایمیل جدید',
@@ -718,8 +689,7 @@ const fa: Translation = {
   createdAt: 'ایجاد شده در',
   projectRemoveSuccess: 'پروژه با موفقیت حذف شد',
   projectRemoveError: 'خطا در حذف پروژه',
-  removeProjectConfirmText:
-    'آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟ این عمل قابل بازگشت نیست.',
+  removeProjectConfirmText: 'آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟ این عمل قابل بازگشت نیست.',
   removeProject: 'حذف پروژه',
   modalCreateProject: 'ایجاد پروژه',
   modalUpdateProject: 'به‌روزرسانی پروژه',
@@ -746,31 +716,35 @@ const fa: Translation = {
   showContentForAllTeams: 'نمایش محتوا از همه تیم‌ها',
   clearFilter: 'پاک کردن فیلتر',
   teamPage: 'صفحه تیم',
-  dashboardTeamsRequired:
-    'برای مشاهده جلسات برنامه‌ریزی پوکر، رتروسپکتیوها و استوری‌بوردها، یک تیم را انتخاب کنید.',
+  dashboardTeamsRequired: 'برای مشاهده جلسات برنامه‌ریزی پوکر، رتروسپکتیوها و استوری‌بوردها، یک تیم را انتخاب کنید.',
   planningPokerSessions: 'جلسات برنامه‌ریزی پوکر',
   viewAllPokerSessions: 'مشاهده همه جلسات برنامه‌ریزی پوکر',
   totalPokerSessions: '{total} جلسه در مجموع',
   noSessionsFoundForTeam: 'هیچ جلسه‌ای برای {teamName} یافت نشد',
   noSessionsFound: 'هیچ جلسه‌ای یافت نشد',
-  trySelectingDifferentTeamForPoker:
-    'تیم دیگری را انتخاب کنید یا یک بازی جدید بسازید',
-  startFirstPlanningPokerSession:
-    'اولین جلسه برنامه‌ریزی پوکر خود را شروع کنید',
+  trySelectingDifferentTeamForPoker: 'تیم دیگری را انتخاب کنید یا یک بازی جدید بسازید',
+  startFirstPlanningPokerSession: 'اولین جلسه برنامه‌ریزی پوکر خود را شروع کنید',
   sprintRetrospectives: 'رتروسپکتیوهای اسپرینت',
   viewAllRetros: 'مشاهده همه رتروسپکتیوها',
   totalRetros: '{total} رتروسپکتیو در مجموع',
   noRetrosFoundForTeam: 'هیچ رتروسپکتیوی برای {teamName} یافت نشد',
   startFirstSprintRetrospective: 'اولین رتروسپکتیو اسپرینت خود را شروع کنید',
-  trySelectingDifferentTeamForRetros:
-    'تیم دیگری را انتخاب کنید یا یک رتروسپکتیو جدید بسازید',
+  trySelectingDifferentTeamForRetros: 'تیم دیگری را انتخاب کنید یا یک رتروسپکتیو جدید بسازید',
   viewAllStoryboards: 'مشاهده همه استوری‌بوردها',
   totalStoryboards: '{total} استوری‌بورد در مجموع',
   noStoryboardsFoundForTeam: 'هیچ استوری‌بوردی برای {teamName} یافت نشد',
   startFirstStoryboard: 'اولین استوری‌بورد خود را شروع کنید',
   agileStoryMapping: 'نقشه‌برداری داستان چابک',
-  trySelectingDifferentTeamForStoryboards:
-    'تیم دیگری را انتخاب کنید یا یک استوری‌بورد جدید بسازید',
+  trySelectingDifferentTeamForStoryboards: 'تیم دیگری را انتخاب کنید یا یک استوری‌بورد جدید بسازید',
+  supportTickets: 'تیکت‌های پشتیبانی',
+  supportTicketDeleteConfirmation:
+    'آیا مطمئن هستید که می‌خواهید این تیکت پشتیبانی را حذف کنید؟ این عمل قابل بازگشت نیست.',
+  supportTicketDelete: 'حذف تیکت',
+  updateSupportTicketSuccess: 'تیکت پشتیبانی با موفقیت به‌روزرسانی شد',
+  updateSupportTicketError: 'خطا در به‌روزرسانی تیکت پشتیبانی',
+  getSupportTicketsError: 'خطا در دریافت تیکت‌های پشتیبانی',
+  deleteSupportTicketSuccess: 'تیکت پشتیبانی با موفقیت حذف شد',
+  deleteSupportTicketError: 'خطا در حذف تیکت پشتیبانی',
 };
 
 export default fa;

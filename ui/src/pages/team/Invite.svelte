@@ -17,13 +17,7 @@
     inviteId: any;
   }
 
-  let {
-    router,
-    xfetch,
-    notifications,
-    inviteType,
-    inviteId
-  }: Props = $props();
+  let { router, xfetch, notifications, inviteType, inviteId }: Props = $props();
 
   let targetPage = $state('');
 
@@ -104,9 +98,7 @@
           <div
             class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 p-2 flex items-center justify-center mx-auto mb-3.5"
           >
-            <Check
-              class="inline-block w-8 h-8 text-green-500 dark:text-green-400"
-            />
+            <Check class="inline-block w-8 h-8 text-green-500 dark:text-green-400" />
             <span class="sr-only">Success</span>
           </div>
           <div class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
@@ -114,9 +106,7 @@
             {inviteDetails.name}
           </div>
           <div>
-            <SolidButton color="blue" href="{targetPage}/{inviteDetails.id}">
-              Continue
-            </SolidButton>
+            <SolidButton color="blue" href="{targetPage}/{inviteDetails.id}">Continue</SolidButton>
           </div>
         {/if}
       {/if}

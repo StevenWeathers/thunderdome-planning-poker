@@ -20,16 +20,14 @@
 
 <div class="text-center">
   <div class="mx-auto title-line bg-yellow-thunder"></div>
-  <h2
-    class="text-4xl font-semibold mb-4 font-rajdhani uppercase dark:text-white"
-  >
+  <h2 class="text-4xl font-semibold mb-4 font-rajdhani uppercase dark:text-white">
     Transforming teamwork in {activeCountries.length} countries and counting
   </h2>
 
   <ul class="flex flex-wrap gap-3">
     {#each activeCountries as country}
       <li class="flex-none w-12">
-        <CountryFlag country={country} additionalClass="mx-auto" />
+        <CountryFlag {country} additionalClass="mx-auto" />
       </li>
     {/each}
   </ul>

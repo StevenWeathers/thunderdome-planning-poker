@@ -20,13 +20,7 @@
     scope?: 'user' | 'project';
   }
 
-  let {
-    xfetch,
-    notifications,
-    router,
-    apiPrefix = '/api',
-    scope = 'user',
-  }: Props = $props();
+  let { xfetch, notifications, router, apiPrefix = '/api', scope = 'user' }: Props = $props();
 
   let storyboardName = $state('');
   let joinCode = $state('');
@@ -58,9 +52,7 @@
       .catch(function (error) {
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
-            notifications.danger(
-              `Error encountered creating storyboard : ${result.error}`,
-            );
+            notifications.danger(`Error encountered creating storyboard : ${result.error}`);
           });
         } else {
           notifications.danger(`Error encountered creating storyboard`);
@@ -92,17 +84,14 @@
 
 <form onsubmit={createStoryboard} name="createStoryboard">
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="storyboardName"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="storyboardName">
       {$LL.storyboardName()}
     </label>
     <div class="control">
       <TextInput
         name="storyboardName"
-        bind:value="{storyboardName}"
-        bind:this="{storyboardNameTextInput}"
+        bind:value={storyboardName}
+        bind:this={storyboardNameTextInput}
         placeholder={$LL.storyboardNamePlaceholder()}
         id="storyboardName"
         required
@@ -112,22 +101,15 @@
 
   {#if apiPrefix === '/api' && $user.rank !== 'GUEST'}
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-        for="selectedTeam"
-      >
+      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2" for="selectedTeam">
         {$LL.associateTeam()}
         {#if !AppConfig.RequireTeams}{$LL.optional()}
         {/if}
       </label>
-      <SelectInput
-        bind:value="{selectedTeam}"
-        id="selectedTeam"
-        name="selectedTeam"
-      >
+      <SelectInput bind:value={selectedTeam} id="selectedTeam" name="selectedTeam">
         <option value="" disabled>{$LL.selectTeam()}</option>
         {#each teams as team}
-          <option value="{team.id}">
+          <option value={team.id}>
             {team.name}
           </option>
         {/each}
@@ -136,16 +118,13 @@
   {/if}
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="joinCode"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">
       {$LL.passCode()}
     </label>
     <div class="control">
       <TextInput
         name="joinCode"
-        bind:value="{joinCode}"
+        bind:value={joinCode}
         placeholder={$LL.optionalPasscodePlaceholder()}
         id="joinCode"
         icon={Lock}
@@ -154,16 +133,13 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="facilitatorCode"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="facilitatorCode">
       {$LL.facilitatorCodeOptional()}
     </label>
     <div class="control">
       <TextInput
         name="facilitatorCode"
-        bind:value="{facilitatorCode}"
+        bind:value={facilitatorCode}
         placeholder={$LL.facilitatorCodePlaceholder()}
         id="facilitatorCode"
         icon={Crown}

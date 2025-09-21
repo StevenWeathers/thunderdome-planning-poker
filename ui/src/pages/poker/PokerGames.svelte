@@ -29,9 +29,7 @@
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
 
-    xfetch(
-      `/api/users/${$user.id}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
-    )
+    xfetch(`/api/users/${$user.id}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`)
       .then(res => res.json())
       .then(function (result) {
         battles = result.data;
@@ -63,9 +61,7 @@
 </svelte:head>
 
 <PageLayout>
-  <h1
-    class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-  >
+  <h1 class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white">
     {$LL.myBattles()}
   </h1>
 
@@ -85,9 +81,7 @@
           showCompletedStories={true}
         />
       {:else if loading === false}
-        <div
-          class="w-full my-10 text-lg md:text-xl dark:text-white text-center"
-        >
+        <div class="w-full my-10 text-lg md:text-xl dark:text-white text-center">
           {$LL.noGamesFound()}
         </div>
       {/if}
@@ -104,19 +98,11 @@
     </div>
 
     <div class="w-full md:w-1/2 lg:w-2/5 md:ps-2 xl:ps-4">
-      <div
-        class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white"
-      >
-        <h2
-          class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
-        >
+      <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white">
+        <h2 class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight">
           {$LL.createBattle()}
         </h2>
-        <CreateBattle
-          notifications={notifications}
-          router={router}
-          xfetch={xfetch}
-        />
+        <CreateBattle {notifications} {router} {xfetch} />
       </div>
     </div>
   </div>

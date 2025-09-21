@@ -7,9 +7,7 @@
   let { children }: Props = $props();
 </script>
 
-<div
-  class="w-full h-full fixed top-0 left-0 bg-white/75 dark:bg-gray-900/75 z-40"
->
+<div class="w-full h-full fixed top-0 left-0 bg-white/75 dark:bg-gray-900/75 z-40">
   <div class="flex justify-center items-center mt-[50vh]">
     <div class="text-indigo-600 dark:text-indigo-300 text-center">
       <LoaderPinwheel class="animate-spin h-24 w-24 -mt-12 m-auto" />

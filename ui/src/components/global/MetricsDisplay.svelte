@@ -4,11 +4,11 @@
 
   interface Props {
     metrics: Array<{
-    key: string;
-    name: string;
-    value: number | string;
-    icon: ComponentType;
-  }>;
+      key: string;
+      name: string;
+      value: number | string;
+      icon: ComponentType;
+    }>;
   }
 
   let { metrics }: Props = $props();
@@ -26,9 +26,7 @@
     {@const SvelteComponent = icon || HelpCircle}
     <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex items-center">
       <div class="me-4">
-        <SvelteComponent
-          class="w-8 h-8 text-blue-500 dark:text-blue-400"
-        />
+        <SvelteComponent class="w-8 h-8 text-blue-500 dark:text-blue-400" />
       </div>
       <div>
         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">

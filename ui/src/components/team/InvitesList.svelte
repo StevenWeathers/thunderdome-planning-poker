@@ -21,13 +21,7 @@
     pageType?: String;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    teamPrefix = '',
-    pageType = ''
-  }: Props = $props();
+  let { xfetch, router, notifications, teamPrefix = '', pageType = '' }: Props = $props();
   export const f = event => {
     if (event === 'user-invited') {
       getInvites();
@@ -77,16 +71,16 @@
   <TableNav title={$LL.userInvites()} createBtnEnabled={false} />
   <Table>
     {#snippet header()}
-        <tr >
+      <tr>
         <HeadCol>{$LL.email()}</HeadCol>
         <HeadCol>{$LL.role()}</HeadCol>
         <HeadCol>{$LL.dateCreated()}</HeadCol>
         <HeadCol>{$LL.expireDate()}</HeadCol>
         <HeadCol />
       </tr>
-      {/snippet}
+    {/snippet}
     {#snippet body({ class: className })}
-        <tbody   class="{className}">
+      <tbody class={className}>
         {#each invites as item, i}
           <TableRow itemIndex={i}>
             <RowCol>
@@ -102,15 +96,12 @@
               {new Date(item.expire_date).toLocaleString()}
             </RowCol>
             <RowCol type="action">
-              <CrudActions
-                editBtnEnabled={false}
-                deleteBtnClickHandler={toggleDeleteInvite(item.invite_id)}
-              />
+              <CrudActions editBtnEnabled={false} deleteBtnClickHandler={toggleDeleteInvite(item.invite_id)} />
             </RowCol>
           </TableRow>
         {/each}
       </tbody>
-      {/snippet}
+    {/snippet}
   </Table>
 </TableContainer>
 

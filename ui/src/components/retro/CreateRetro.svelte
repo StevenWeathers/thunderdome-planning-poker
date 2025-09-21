@@ -23,13 +23,7 @@
     scope?: 'user' | 'project';
   }
 
-  let {
-    xfetch,
-    notifications,
-    router,
-    apiPrefix = '/api',
-    scope = 'user',
-  }: Props = $props();
+  let { xfetch, notifications, router, apiPrefix = '/api', scope = 'user' }: Props = $props();
 
   const maxPhaseTimeLimitMin = 59;
 
@@ -49,7 +43,7 @@
     templateId: '',
     phaseAutoAdvance: true,
     allowCumulativeVoting: false,
-    hideVotesDuringVoting: false
+    hideVotesDuringVoting: false,
   };
   let retroSettings = $state({ ...defaultRetroSettings });
   let orgRetroSettings = $state({});
@@ -98,7 +92,7 @@
       phaseAutoAdvance: retroSettings.phaseAutoAdvance,
       allowCumulativeVoting: retroSettings.allowCumulativeVoting,
       templateId: retroSettings.templateId,
-      hideVotesDuringVoting: retroSettings.hideVotesDuringVoting
+      hideVotesDuringVoting: retroSettings.hideVotesDuringVoting,
     };
 
     if (scope !== 'project' && retroSettings.selectedTeam !== '') {
@@ -113,9 +107,7 @@
       .catch(function (error) {
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
-            notifications.danger(
-              `${$LL.createRetroErrorMessage()} : ${result.error}`,
-            );
+            notifications.danger(`${$LL.createRetroErrorMessage()} : ${result.error}`);
           });
         } else {
           notifications.danger($LL.createRetroErrorMessage());
@@ -159,11 +151,7 @@
     const team = teams.find(t => t.id === retroSettings.selectedTeam);
     // if subscriptions are enabled and the team (or its parent org) isn't subscribed
     // don't attempt to get retro settings
-    if (
-      AppConfig.SubscriptionsEnabled &&
-      !validateUserIsAdmin($user) &&
-      !team.subscribed
-    ) {
+    if (AppConfig.SubscriptionsEnabled && !validateUserIsAdmin($user) && !team.subscribed) {
       return;
     }
 
@@ -196,9 +184,7 @@
     }
 
     if (team.department_id !== '') {
-      xfetch(
-        `/api/organizations/${team.organization_id}/departments/${team.department_id}/retro-settings`,
-      )
+      xfetch(`/api/organizations/${team.organization_id}/departments/${team.department_id}/retro-settings`)
         .then(res => res.json())
         .then(function (result) {
           if (!result.data) {
@@ -235,21 +221,11 @@
     const team = teams.find(t => t.id === retroSettings.selectedTeam);
     // if subscriptions are enabled and the team (or its parent org) isn't subscribed
     // don't attempt to get private templates
-    if (
-      AppConfig.SubscriptionsEnabled &&
-      !validateUserIsAdmin($user) &&
-      !team.subscribed
-    ) {
+    if (AppConfig.SubscriptionsEnabled && !validateUserIsAdmin($user) && !team.subscribed) {
       return;
     }
-    const orgPrefix =
-      team.organization_id !== ''
-        ? `/api/organizations/${team.organization_id}`
-        : `/api`;
-    const teamPrefix =
-      team.department_id !== ''
-        ? `${orgPrefix}/departments/${team.department_id}`
-        : `/api`;
+    const orgPrefix = team.organization_id !== '' ? `/api/organizations/${team.organization_id}` : `/api`;
+    const teamPrefix = team.department_id !== '' ? `${orgPrefix}/departments/${team.department_id}` : `/api`;
 
     xfetch(`${teamPrefix}/teams/${team.id}/retro-templates`)
       .then(res => res.json())
@@ -277,11 +253,7 @@
   const combineRetroTemplates = () => {
     let defaultFound = false;
     // templates priority order (Team -> Organization -> Public)
-    retroTemplates = [
-      ...teamRetroTemplates,
-      ...organizationRetroTemplates,
-      ...publicTemplates,
-    ];
+    retroTemplates = [...teamRetroTemplates, ...organizationRetroTemplates, ...publicTemplates];
 
     retroTemplates.map(temp => {
       // Find default template with priority order (Team -> Organization -> Public)
@@ -316,10 +288,7 @@
 
 <form onsubmit={createRetro} name="createRetro">
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="retroName"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="retroName">
       {$LL.retroName()}
     </label>
     <div class="control">
@@ -336,10 +305,7 @@
 
   {#if apiPrefix === '/api' && $user.rank !== 'GUEST'}
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-        for="selectedTeam"
-      >
+      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2" for="selectedTeam">
         {$LL.associateTeam()}
         {#if !AppConfig.RequireTeams}{$LL.optional()}
         {/if}
@@ -361,11 +327,7 @@
   {/if}
 
   <div class="mb-4">
-    <div
-      class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-    >
-      Retro Template
-    </div>
+    <div class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2">Retro Template</div>
     <SelectWithSubtext
       on:change={updateSelectedTemplate}
       items={retroTemplates}
@@ -376,10 +338,7 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="joinCode"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">
       {$LL.joinCodeLabelOptional()}
     </label>
     <div class="control">
@@ -394,10 +353,7 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="facilitatorCode"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="facilitatorCode">
       {$LL.facilitatorCodeOptional()}
     </label>
     <div class="control">
@@ -412,10 +368,7 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="maxVotes"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="maxVotes">
       {$LL.retroMaxVotesPerUserLabel()}
     </label>
     <div class="control">
@@ -441,17 +394,10 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="brainstormVisibility"
-    >
+    <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="brainstormVisibility">
       {$LL.brainstormPhaseFeedbackVisibility()}
     </label>
-    <SelectInput
-      bind:value={retroSettings.brainstormVisibility}
-      id="brainstormVisibility"
-      name="brainstormVisibility"
-    >
+    <SelectInput bind:value={retroSettings.brainstormVisibility} id="brainstormVisibility" name="brainstormVisibility">
       {#each brainstormVisibilityOptions as item}
         <option value={item.value}>
           {item.label}
@@ -461,10 +407,7 @@
   </div>
 
   <div class="mb-4">
-    <label
-      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-      for="phaseTimeLimitMin"
-    >
+    <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="phaseTimeLimitMin">
       {$LL.retroPhaseTimeLimitMinLabel()}
     </label>
     <div class="control">

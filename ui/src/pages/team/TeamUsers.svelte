@@ -22,14 +22,7 @@
     teamId: any;
   }
 
-  let {
-    xfetch,
-    router,
-    notifications,
-    organizationId,
-    departmentId,
-    teamId
-  }: Props = $props();
+  let { xfetch, router, notifications, organizationId, departmentId, teamId }: Props = $props();
 
   const usersPageLimit = 1000;
 
@@ -60,12 +53,12 @@
   let isTeamMember = $state(false);
 
   const apiPrefix = '/api';
-  let orgPrefix = $derived(departmentId
-    ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
-    : `${apiPrefix}/organizations/${organizationId}`);
-  let teamPrefix = $derived(organizationId
-    ? `${orgPrefix}/teams/${teamId}`
-    : `${apiPrefix}/teams/${teamId}`);
+  let orgPrefix = $derived(
+    departmentId
+      ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
+      : `${apiPrefix}/organizations/${organizationId}`,
+  );
+  let teamPrefix = $derived(organizationId ? `${orgPrefix}/teams/${teamId}` : `${apiPrefix}/teams/${teamId}`);
 
   function getTeam() {
     xfetch(teamPrefix)
@@ -83,14 +76,8 @@
           organizationRole = result.data.organizationRole;
         }
 
-        isAdmin =
-          organizationRole === 'ADMIN' ||
-          departmentRole === 'ADMIN' ||
-          teamRole === 'ADMIN';
-        isTeamMember =
-          organizationRole === 'ADMIN' ||
-          departmentRole === 'ADMIN' ||
-          teamRole !== '';
+        isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole === 'ADMIN';
+        isTeamMember = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole !== '';
 
         getUsers();
       })
@@ -131,7 +118,9 @@
       <h1 class="text-3xl font-semibold font-rajdhani dark:text-white">
         <span class="uppercase">{$LL.team()}</span>
         <ChevronRight class="w-8 h-8 inline-block" />
-        {team.name} <ChevronRight class="w-8 h-8 inline-block" /> {$LL.users()}
+        {team.name}
+        <ChevronRight class="w-8 h-8 inline-block" />
+        {$LL.users()}
       </h1>
 
       {#if organizationId}
@@ -163,24 +152,18 @@
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <InvitesList
-        xfetch={xfetch}
-        notifications={notifications}
-        pageType="team"
-        teamPrefix={teamPrefix}
-        bind:this="{invitesList}"
-      />
+      <InvitesList {xfetch} {notifications} pageType="team" {teamPrefix} bind:this={invitesList} />
     </div>
   {/if}
 
   <UsersList
-    users={users}
-    getUsers={getUsers}
-    xfetch={xfetch}
-    notifications={notifications}
-    isAdmin={isAdmin}
+    {users}
+    {getUsers}
+    {xfetch}
+    {notifications}
+    {isAdmin}
     pageType="team"
-    teamPrefix={teamPrefix}
+    {teamPrefix}
     orgId={organizationId}
     deptId={departmentId}
     on:user-invited={() => {

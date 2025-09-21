@@ -32,7 +32,7 @@
     departmentId,
     apiPrefix = '/api',
     xfetch,
-    notifications
+    notifications,
   }: Props = $props();
 
   let name = $state('');
@@ -74,8 +74,7 @@
       });
   }
 
-  let createDisabled =
-    $derived(name === '' || format.columns.length < 2 || format.columns.length > 5);
+  let createDisabled = $derived(name === '' || format.columns.length < 2 || format.columns.length > 5);
   let isAdmin = $derived(validateUserIsAdmin($user));
 
   let focusInput: any;
@@ -87,14 +86,11 @@
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalCreateRetroTemplate()}>
   <form onsubmit={onSubmit} name="createRetroTemplate">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="templateName"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="templateName">
         {$LL.name()}
       </label>
       <TextInput
-        bind:value="{name}"
+        bind:value={name}
         bind:this={focusInput}
         placeholder={$LL.retroTemplateNamePlaceholder()}
         id="templateName"
@@ -104,36 +100,28 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
-        for="templateDescription"
-      >
+      <label class="block text-gray-700 font-bold mb-2 dark:text-gray-400" for="templateDescription">
         {$LL.description()}
       </label>
       <TextInput
-        bind:value="{description}"
+        bind:value={description}
         placeholder={$LL.retroTemplateDescriptionPlaceholder()}
         id="templateDescription"
         name="templateDescription"
       />
     </div>
 
-    <ColumnForm bind:format="{format}" />
+    <ColumnForm bind:format />
 
     {#if isAdmin && !organizationId && !teamId}
       <div class="mb-4">
-        <Checkbox
-          bind:checked="{isPublic}"
-          id="isPublic"
-          name="isPublic"
-          label={$LL.retroTemplateIsPublic()}
-        />
+        <Checkbox bind:checked={isPublic} id="isPublic" name="isPublic" label={$LL.retroTemplateIsPublic()} />
       </div>
     {/if}
 
     <div class="mb-4">
       <Checkbox
-        bind:checked="{defaultTemplate}"
+        bind:checked={defaultTemplate}
         id="defaultTemplate"
         name="defaultTemplate"
         label={$LL.retroTemplateDefault()}

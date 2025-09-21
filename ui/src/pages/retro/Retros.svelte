@@ -29,9 +29,7 @@
   function getRetros() {
     const retrosOffset = (retrosPage - 1) * retrosPageLimit;
 
-    xfetch(
-      `/api/users/${$user.id}/retros?limit=${retrosPageLimit}&offset=${retrosOffset}`,
-    )
+    xfetch(`/api/users/${$user.id}/retros?limit=${retrosPageLimit}&offset=${retrosOffset}`)
       .then(res => res.json())
       .then(function (result) {
         retros = result.data;
@@ -62,9 +60,7 @@
 </svelte:head>
 
 <PageLayout>
-  <h1
-    class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-  >
+  <h1 class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white">
     {$LL.myRetros()}
   </h1>
 
@@ -81,38 +77,28 @@
           joinBtnText={$LL.joinRetro()}
         />
       {:else if loading === false}
-        <div
-          class="w-full my-10 text-lg md:text-xl dark:text-white text-center"
-        >
+        <div class="w-full my-10 text-lg md:text-xl dark:text-white text-center">
           {$LL.noRetrosFound()}
         </div>
       {/if}
       {#if retroCount > retrosPageLimit}
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
-            bind:current="{retrosPage}"
+            bind:current={retrosPage}
             num_items={retroCount}
             per_page={retrosPageLimit}
-            on:navigate="{changePage}"
+            on:navigate={changePage}
           />
         </div>
       {/if}
     </div>
 
     <div class="w-full md:w-1/2 lg:w-2/5 md:ps-2 xl:ps-4">
-      <div
-        class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white"
-      >
-        <h2
-          class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
-        >
+      <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white">
+        <h2 class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight">
           {$LL.createARetro()}
         </h2>
-        <CreateRetro
-          notifications={notifications}
-          router={router}
-          xfetch={xfetch}
-        />
+        <CreateRetro {notifications} {router} {xfetch} />
       </div>
     </div>
   </div>

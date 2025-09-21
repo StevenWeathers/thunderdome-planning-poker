@@ -34,7 +34,7 @@
     userVotesUsed = 0,
     allowCumulativeVoting = false,
     userVotesOnThisGroup = 0,
-    hideVotesDuringVoting = false
+    hideVotesDuringVoting = false,
   }: Props = $props();
 
   let showTooltip = $state(false);
@@ -63,7 +63,7 @@
         }, 3000);
         return;
       }
-      
+
       // Only allow voting if user hasn't voted on this group yet
       if (userVotesOnThisGroup === 0) {
         handleVote(group.id);
@@ -91,27 +91,29 @@
   };
 
   const getVoteUpButtonClasses = () => {
-    const baseClasses = 'relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800';
-    
+    const baseClasses =
+      'relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800';
+
     if (!canVoteUp()) {
       return `${baseClasses} bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed border-2 border-gray-200 dark:border-gray-600`;
     }
-    
+
     // Show active state if user has votes on this group
     if (userVotesOnThisGroup > 0) {
       return `${baseClasses} bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 border-2 border-blue-300 dark:border-blue-700`;
     }
-    
+
     return `${baseClasses} bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 active:scale-95 border-2 border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600`;
   };
 
   const getVoteDownButtonClasses = () => {
-    const baseClasses = 'relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800';
-    
+    const baseClasses =
+      'relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800';
+
     if (!canVoteDown()) {
       return `${baseClasses} bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed border-2 border-gray-200 dark:border-gray-600`;
     }
-    
+
     return `${baseClasses} bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 active:scale-95 border-2 border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600`;
   };
 
@@ -158,14 +160,14 @@
 >
   <!-- Header -->
   <header class="flex items-start justify-between gap-4 mb-6">
-    <h2 
+    <h2
       id="group-title-{group.id || 'default'}"
       class="text-lg md:text-xl font-bold text-gray-900 dark:text-white flex-1 min-w-0"
       dir="auto"
     >
       {group.name || 'Group'}
     </h2>
-    
+
     <!-- Vote Section -->
     <div class="flex items-center gap-3 flex-shrink-0" dir="ltr">
       {#if phase === 'vote'}
@@ -178,10 +180,7 @@
             class={getVoteDownButtonClasses()}
             aria-label={getVoteDownAriaLabel()}
           >
-            <ThumbsDown 
-              class="w-5 h-5"
-              aria-hidden="true"
-            />
+            <ThumbsDown class="w-5 h-5" aria-hidden="true" />
           </button>
 
           <!-- Vote Up Button -->
@@ -193,17 +192,11 @@
               aria-label={getVoteUpAriaLabel()}
               tabindex="0"
             >
-              <ThumbsUp 
-                class="w-5 h-5"
-                aria-hidden="true"
-              />
-              
+              <ThumbsUp class="w-5 h-5" aria-hidden="true" />
+
               <!-- Vote limit indicator -->
               {#if !canVoteUp() && (voteLimitReached() || (!allowCumulativeVoting && userVotesOnThisGroup > 0))}
-                <AlertCircle 
-                  class="w-3 h-3 absolute -top-1 -end-1 text-red-500 dark:text-red-400" 
-                  aria-hidden="true"
-                />
+                <AlertCircle class="w-3 h-3 absolute -top-1 -end-1 text-red-500 dark:text-red-400" aria-hidden="true" />
               {/if}
             </button>
 
@@ -215,16 +208,18 @@
                 aria-live="polite"
               >
                 {getTooltipMessage()}
-                <div class="absolute top-full start-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                <div
+                  class="absolute top-full start-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"
+                ></div>
               </div>
             {/if}
-            </div>
+          </div>
         </div>
 
         <!-- Vote count with better visual hierarchy -->
         {#if !hideVotesDuringVoting}
           <div class="flex items-center gap-1">
-            <span 
+            <span
               class="font-bold text-lg md:text-xl text-green-600 dark:text-green-400 tabular-nums"
               aria-label="{group.voteCount} votes"
             >
@@ -239,13 +234,10 @@
         <!-- Non-voting phase display -->
         <div class="flex items-center gap-3">
           <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-            <ThumbsUp 
-              class="w-5 h-5 text-green-600 dark:text-green-400" 
-              aria-hidden="true"
-            />
+            <ThumbsUp class="w-5 h-5 text-green-600 dark:text-green-400" aria-hidden="true" />
           </div>
           <div class="flex items-center gap-1">
-            <span 
+            <span
               class="font-bold text-lg md:text-xl text-green-600 dark:text-green-400 tabular-nums"
               aria-label="{group.voteCount} votes"
             >
@@ -269,27 +261,27 @@
           <p>
             You have used <strong>{userVotesUsed}</strong> of <strong>{voteLimit}</strong> votes
             {#if userVotesOnThisGroup > 0}
-              <br><span class="text-blue-600 dark:text-blue-400 font-medium">
+              <br /><span class="text-blue-600 dark:text-blue-400 font-medium">
                 {userVotesOnThisGroup} vote{userVotesOnThisGroup === 1 ? '' : 's'} on this group
               </span>
             {/if}
             {#if voteLimitReached()}
-              <br><span class="text-amber-600 dark:text-amber-400 font-medium">
+              <br /><span class="text-amber-600 dark:text-amber-400 font-medium">
                 Vote limit reached
                 {#if userVotesOnThisGroup > 0}
                   (you can still remove votes from this group)
                 {/if}
               </span>
             {:else if allowCumulativeVoting}
-              <br><span class="text-green-600 dark:text-green-400 font-medium">
+              <br /><span class="text-green-600 dark:text-green-400 font-medium">
                 You can vote multiple times on this group
               </span>
             {:else if userVotesOnThisGroup === 0}
-              <br><span class="text-green-600 dark:text-green-400 font-medium">
+              <br /><span class="text-green-600 dark:text-green-400 font-medium">
                 You can vote once on this group
               </span>
             {:else}
-              <br><span class="text-blue-600 dark:text-blue-400 font-medium">
+              <br /><span class="text-blue-600 dark:text-blue-400 font-medium">
                 You have already voted on this group
               </span>
             {/if}
@@ -302,16 +294,9 @@
   <!-- Items Container -->
   <main class="flex-1 space-y-3" role="group" aria-label="Feedback items for {group.name}">
     {#each group.items as item, ii (item.id)}
-      <RetroFeedbackItem
-        {item}
-        {phase}
-        {users}
-        {isFacilitator}
-        {sendSocketEvent}
-        {columnColors}
-      />
+      <RetroFeedbackItem {item} {phase} {users} {isFacilitator} {sendSocketEvent} {columnColors} />
     {/each}
-    
+
     {#if group.items?.length === 0}
       <div class="text-center py-8 text-gray-500 dark:text-gray-400">
         <p class="text-sm">No feedback items yet</p>
@@ -322,50 +307,60 @@
 
 <style>
   /* RTL support */
-  :global([dir="rtl"]) .group {
+  :global([dir='rtl']) .group {
     text-align: right;
   }
-  
+
   /* Enhanced focus styles for accessibility */
   button:focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }
-  
+
   /* Smooth animations */
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  
+
   @keyframes slideInFromBottom {
-    from { transform: translateY(8px) translateX(-50%); }
-    to { transform: translateY(0) translateX(-50%); }
+    from {
+      transform: translateY(8px) translateX(-50%);
+    }
+    to {
+      transform: translateY(0) translateX(-50%);
+    }
   }
-  
+
   .animate-in {
     animation: fadeIn 0.2s ease-out;
   }
-  
+
   .fade-in {
     animation: fadeIn 0.2s ease-out;
   }
-  
+
   .slide-in-from-bottom-2 {
     animation: slideInFromBottom 0.2s ease-out;
   }
-  
+
   /* High contrast mode support */
   @media (prefers-contrast: high) {
     .group {
       border-width: 2px;
     }
-    
+
     button {
       border-width: 2px;
     }
   }
-  
+
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     * {
@@ -374,7 +369,7 @@
       transition-duration: 0.01ms !important;
     }
   }
-  
+
   /* Touch device optimizations */
   @media (hover: none) {
     button:hover {

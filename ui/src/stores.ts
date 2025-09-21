@@ -11,9 +11,7 @@ declare global {
 }
 
 function initWarrior() {
-  const { subscribe, set, update } = writable(
-    JSON.parse(Cookies.get(CookieName) || '{}'),
-  );
+  const { subscribe, set, update } = writable(JSON.parse(Cookies.get(CookieName) || '{}'));
 
   return {
     subscribe,
@@ -65,17 +63,13 @@ function initDismissedAlerts() {
     subscribe,
     dismiss: (actives, dismisses) => {
       const validAlerts = actives.map((prev, alert) => alert.id);
-      let alertsToDismiss = [
-        ...dismisses.filter(alert => validAlerts.includes(alert.id)),
-      ];
+      let alertsToDismiss = [...dismisses.filter(alert => validAlerts.includes(alert.id))];
       localStorage.setItem(dismissKey, JSON.stringify(alertsToDismiss));
       update((a: any) => (a = alertsToDismiss));
     },
   };
 }
 
-export const dir = derived(locale, $locale =>
-  rtlLanguages.includes($locale) ? 'rtl' : 'ltr',
-);
+export const dir = derived(locale, $locale => (rtlLanguages.includes($locale) ? 'rtl' : 'ltr'));
 
 export const dismissedAlerts = initDismissedAlerts();

@@ -1,13 +1,5 @@
 <script>
-  let {
-    title,
-    subtitle,
-    problemTitle,
-    problemItems,
-    solutionTitle,
-    solutionItems,
-    conclusion
-  } = $props();
+  let { title, subtitle, problemTitle, problemItems, solutionTitle, solutionItems, conclusion } = $props();
 </script>
 
 <section class="mb-20 text-gray-700 dark:text-gray-300">
@@ -20,7 +12,7 @@
       {subtitle}
     </p>
   </div>
-  
+
   <div class="grid md:grid-cols-2 gap-8 mb-8">
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
       <h3 class="font-semibold text-lg mb-3 text-indigo-600 dark:text-indigo-400">{problemTitle}</h3>

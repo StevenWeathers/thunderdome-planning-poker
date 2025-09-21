@@ -11,6 +11,4 @@ export interface ApiClient {
   (endpoint: string, customConfig?: ApiClientConfig): Promise<Response>;
 }
 
-export type ApiClientFactory = (
-  handle401: (skipRedirect?: boolean) => void,
-) => ApiClient;
+export type ApiClientFactory = (handle401: (skipRedirect?: boolean) => void) => ApiClient;

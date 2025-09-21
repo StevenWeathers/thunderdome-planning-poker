@@ -324,6 +324,15 @@ definitions:
       role:
         type: string
     type: object
+  http.pagination:
+    properties:
+      count:
+        type: integer
+      limit:
+        type: integer
+      offset:
+        type: integer
+    type: object
   http.planRequestBody:
     properties:
       acceptanceCriteria:
@@ -710,6 +719,25 @@ definitions:
     required:
     - type
     type: object
+  http.supportTicketUpdateRequestBody:
+    properties:
+      assignedTo:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      inquiry:
+        type: string
+      markResolved:
+        type: boolean
+      notes:
+        type: string
+    required:
+    - email
+    - fullName
+    - inquiry
+    type: object
   http.teamCreateRequestBody:
     properties:
       name:
@@ -919,6 +947,8 @@ definitions:
       departmentCount:
         type: integer
       estimationScaleCount:
+        type: integer
+      openSupportTicketCount:
         type: integer
       orgSubscriptionActiveCount:
         type: integer
@@ -1728,6 +1758,31 @@ definitions:
       user_id:
         type: string
     type: object
+  thunderdome.SupportTicket:
+    properties:
+      assignedTo:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: string
+      inquiry:
+        type: string
+      notes:
+        type: string
+      resolvedAt:
+        type: string
+      resolvedBy:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
   thunderdome.Team:
     properties:
       createdDate:
@@ -2256,6 +2311,44 @@ paths:
           schema:
             $ref: '#/definitions/http.standardJsonResponse'
       summary: Get Active Countries
+  /admin/admin-users:
+    get:
+      description: List admin users with pagination
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                ' meta':
+                  $ref: '#/definitions/http.pagination'
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.User'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List Admin Users
+      tags:
+      - admin
   /admin/apikeys:
     get:
       description: Get a list of users API Keys
@@ -2998,6 +3091,143 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Application Stats
+      tags:
+      - admin
+  /admin/support-tickets:
+    get:
+      description: List support tickets with pagination
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                ' meta':
+                  $ref: '#/definitions/http.pagination'
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.SupportTicket'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List Support Tickets
+      tags:
+      - admin
+  /admin/support-tickets/{ticketId}:
+    delete:
+      description: Delete a support ticket by its ID
+      parameters:
+      - description: The support ticket ID
+        in: path
+        name: ticketId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Support Ticket
+      tags:
+      - admin
+    get:
+      description: Get a support ticket by its ID
+      parameters:
+      - description: The support ticket ID
+        in: path
+        name: ticketId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.SupportTicket'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Support Ticket by ID
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update a support ticket
+      parameters:
+      - description: The support ticket ID
+        in: path
+        name: ticketId
+        required: true
+        type: string
+      - description: The support ticket object
+        in: body
+        name: ticket
+        required: true
+        schema:
+          $ref: '#/definitions/http.supportTicketUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.SupportTicket'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Support Ticket
       tags:
       - admin
   /admin/teams:
@@ -10672,6 +10902,40 @@ paths:
       summary: Update Entity User Subscriptions
       tags:
       - subscription
+  /users/{userId}/support-ticket:
+    post:
+      description: Creates a support ticket for the session user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.SupportTicket'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Support Ticket
+      tags:
+      - user
   /users/{userId}/teams:
     get:
       description: Get a list of teams the user is a part of

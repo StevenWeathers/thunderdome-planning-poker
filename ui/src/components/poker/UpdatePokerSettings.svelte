@@ -35,14 +35,14 @@
     apiPrefix = '/api',
     isEntityAdmin = false,
     pokerSettings = $bindable({
-    id: '',
-    autoFinishVoting: true,
-    pointAverageRounding: 'ceil',
-    hideVoterIdentity: false,
-    estimationScaleId: null,
-    joinCode: '',
-    facilitatorCode: '',
-  })
+      id: '',
+      autoFinishVoting: true,
+      pointAverageRounding: 'ceil',
+      hideVoterIdentity: false,
+      estimationScaleId: null,
+      joinCode: '',
+      facilitatorCode: '',
+    }),
   }: Props = $props();
 
   const dispatch = createEventDispatcher();
@@ -76,16 +76,10 @@
       const res = await response.json();
       pokerSettings = res.data;
       dispatch('updatePokerSettings', { settings: pokerSettings });
-      notifications.success(
-        `Default poker settings ${method === 'PUT' ? 'updated' : 'created'}`,
-      );
+      notifications.success(`Default poker settings ${method === 'PUT' ? 'updated' : 'created'}`);
       toggleClose();
     } else {
-      notifications.error(
-        `Failed to ${
-          method === 'PUT' ? 'update' : 'create'
-        } default poker settings`,
-      );
+      notifications.error(`Failed to ${method === 'PUT' ? 'update' : 'create'} default poker settings`);
     }
   }
 
@@ -98,20 +92,17 @@
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalUpdatePokerSettings()}>
   <form onsubmit={preventDefault(handleSubmit)} class="mt-6 space-y-6">
     <div>
-      <label
-        for="pointAverageRounding"
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
-      >
+      <label for="pointAverageRounding" class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2">
         {$LL.pointAverageRounding()}
       </label>
       <SelectInput
-        bind:value="{pokerSettings.pointAverageRounding}"
+        bind:value={pokerSettings.pointAverageRounding}
         id="averageRounding"
         name="averageRounding"
         bind:this={focusInput}
       >
         {#each allowedPointAverages as item}
-          <option value="{item}">
+          <option value={item}>
             {$LL.averageRoundingOptions[item]()}
           </option>
         {/each}
@@ -120,7 +111,7 @@
 
     <div>
       <Checkbox
-        bind:checked="{pokerSettings.autoFinishVoting}"
+        bind:checked={pokerSettings.autoFinishVoting}
         id="autoFinishVoting"
         name="autoFinishVoting"
         label={$LL.autoFinishVotingLabel()}
@@ -129,7 +120,7 @@
 
     <div>
       <Checkbox
-        bind:checked="{pokerSettings.hideVoterIdentity}"
+        bind:checked={pokerSettings.hideVoterIdentity}
         id="hideVoterIdentity"
         name="hideVoterIdentity"
         label={$LL.hideVoterIdentity()}
@@ -153,16 +144,13 @@
     <!--        </div>-->
 
     <div>
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="joinCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">
         {$LL.joinCodeLabelOptional()}
       </label>
       <div class="control">
         <TextInput
           name="joinCode"
-          bind:value="{pokerSettings.joinCode}"
+          bind:value={pokerSettings.joinCode}
           placeholder={$LL.optionalPasscodePlaceholder()}
           id="joinCode"
           icon={Lock}
@@ -171,16 +159,13 @@
     </div>
 
     <div>
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="leaderCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="leaderCode">
         {$LL.facilitatorCodeOptional()}
       </label>
       <div class="control">
         <TextInput
           name="leaderCode"
-          bind:value="{pokerSettings.facilitatorCode}"
+          bind:value={pokerSettings.facilitatorCode}
           placeholder={$LL.facilitatorCodePlaceholder()}
           id="leaderCode"
           icon={Crown}

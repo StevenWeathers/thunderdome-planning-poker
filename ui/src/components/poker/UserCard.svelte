@@ -29,7 +29,7 @@
     points = '',
     sendSocketEvent = () => {},
     notifications,
-    gameOver = false
+    gameOver = false,
   }: Props = $props();
 
   const showRank = AppConfig.ShowWarriorRank;
@@ -74,8 +74,8 @@
 <div
   class="border-b border-gray-300 dark:border-gray-700 p-4 flex items-center"
   data-testid="user-card"
-  data-username="{warrior.name}"
-  data-userid="{warrior.id}"
+  data-username={warrior.name}
+  data-userid={warrior.id}
 >
   <div class="w-1/4 me-2">
     <UserAvatar
@@ -90,10 +90,7 @@
   <div class="w-3/4">
     <div class="flex items-center">
       <div class="w-3/4">
-        <p
-          class="{nameStyleClass} font-bold leading-tight truncate dark:text-gray-300"
-          title="{warrior.name}"
-        >
+        <p class="{nameStyleClass} font-bold leading-tight truncate dark:text-gray-300" title={warrior.name}>
           {#if showRank}
             {#if warrior.rank == 'ADMIN'}
               <Crown class="inline-block text-yellow-500" />
@@ -104,11 +101,7 @@
             {/if}
           {/if}
           {#if autoFinishVoting && warrior.spectator}
-            <span
-              class="text-gray-600"
-              title="{$LL.spectator()}"
-              data-testid="user-name"
-            >
+            <span class="text-gray-600" title={$LL.spectator()} data-testid="user-name">
               {warrior.name}
             </span>
           {:else}
@@ -202,9 +195,6 @@
   </div>
 
   {#if showBecomeFacilitator}
-    <BecomeFacilitator
-      handleBecomeFacilitator={becomeFacilitator}
-      toggleBecomeFacilitator={toggleBecomeFacilitator}
-    />
+    <BecomeFacilitator handleBecomeFacilitator={becomeFacilitator} {toggleBecomeFacilitator} />
   {/if}
 </div>

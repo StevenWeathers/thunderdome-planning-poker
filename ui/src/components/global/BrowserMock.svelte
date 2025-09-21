@@ -5,7 +5,6 @@
   }
 
   let { class: klass = 'border-gray-300 dark:border-gray-700', children }: Props = $props();
-  
 </script>
 
 <div class="rounded rounded-b-lg shadow-xl border {klass}">

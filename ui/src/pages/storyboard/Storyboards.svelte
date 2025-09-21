@@ -29,9 +29,7 @@
   function getStoryboards() {
     const retrosOffset = (storyboardsPage - 1) * storyboardsPageLimit;
 
-    xfetch(
-      `/api/users/${$user.id}/storyboards?limit=${storyboardsPageLimit}&offset=${retrosOffset}`,
-    )
+    xfetch(`/api/users/${$user.id}/storyboards?limit=${storyboardsPageLimit}&offset=${retrosOffset}`)
       .then(res => res.json())
       .then(function (result) {
         storyboards = result.data;
@@ -62,9 +60,7 @@
 </svelte:head>
 
 <PageLayout>
-  <h1
-    class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-  >
+  <h1 class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white">
     {$LL.myStoryboards()}
   </h1>
 
@@ -80,38 +76,28 @@
           joinBtnText={$LL.joinStoryboard()}
         />
       {:else if loading === false}
-        <div
-          class="w-full my-10 text-lg md:text-xl dark:text-white text-center"
-        >
+        <div class="w-full my-10 text-lg md:text-xl dark:text-white text-center">
           {$LL.noStoryboardsFound()}
         </div>
       {/if}
       {#if storyboardCount > storyboardsPageLimit}
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
-            bind:current="{storyboardsPage}"
+            bind:current={storyboardsPage}
             num_items={storyboardCount}
             per_page={storyboardsPageLimit}
-            on:navigate="{changePage}"
+            on:navigate={changePage}
           />
         </div>
       {/if}
     </div>
 
     <div class="w-full md:w-1/2 lg:w-2/5 md:ps-2 xl:ps-4">
-      <div
-        class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white"
-      >
-        <h2
-          class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
-        >
+      <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white">
+        <h2 class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight">
           {$LL.createAStoryboard()}
         </h2>
-        <CreateStoryboard
-          notifications={notifications}
-          router={router}
-          xfetch={xfetch}
-        />
+        <CreateStoryboard {notifications} {router} {xfetch} />
       </div>
     </div>
   </div>

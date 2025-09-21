@@ -49,6 +49,7 @@ const appRoutes = {
   organization: `${PathPrefix}/organization`,
   team: `${PathPrefix}/team`,
   admin: adminPrefix,
+  adminSupportTickets: `${adminPrefix}/support-tickets`,
   adminPokerGames: `${adminPrefix}/games`,
   adminRetros: `${adminPrefix}/retros`,
   adminStoryboards: `${adminPrefix}/storyboards`,
@@ -71,11 +72,4 @@ const appRoutes = {
   projects: `${PathPrefix}/projects`,
 };
 
-export {
-  locales,
-  DefaultLocale,
-  appRoutes,
-  PathPrefix,
-  AppConfig,
-  rtlLanguages,
-};
+export { locales, DefaultLocale, appRoutes, PathPrefix, AppConfig, rtlLanguages };

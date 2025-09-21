@@ -14,13 +14,7 @@
     highestVote?: string;
   }
 
-  let {
-    sendSocketEvent = () => {},
-    planId = '',
-    points = [],
-    votingLocked = true,
-    highestVote = ''
-  }: Props = $props();
+  let { sendSocketEvent = () => {}, planId = '', points = [], votingLocked = true, highestVote = '' }: Props = $props();
 
   let customPointValue = $state(false);
 
@@ -69,58 +63,37 @@
 
 {#if planId != ''}
   <div class="p-4" data-testId="votingControls">
-    <SolidButton
-      color="blue"
-      additionalClasses="mb-2 w-full"
-      onClick={skipPlan}
-      testid="voting-skip"
-    >
+    <SolidButton color="blue" additionalClasses="mb-2 w-full" onClick={skipPlan} testid="voting-skip">
       {$LL.planSkip()}
     </SolidButton>
     {#if !votingLocked}
-      <SolidButton
-        additionalClasses="w-full"
-        onClick={endPlanVoting}
-        testid="voting-finish"
-      >
+      <SolidButton additionalClasses="w-full" onClick={endPlanVoting} testid="voting-finish">
         {$LL.votingFinish()}
       </SolidButton>
     {:else}
-      <SolidButton
-        color="blue"
-        additionalClasses="mb-2 w-full"
-        onClick={restartVoting}
-        testid="voting-restart"
-      >
+      <SolidButton color="blue" additionalClasses="mb-2 w-full" onClick={restartVoting} testid="voting-restart">
         {$LL.votingRestart()}
       </SolidButton>
       <form onsubmit={handleSubmit} name="savePlanPoints">
-        <legend
-          class="text-xl mb-2 font-semibold leading-tight dark:text-gray-300"
-        >
+        <legend class="text-xl mb-2 font-semibold leading-tight dark:text-gray-300">
           {$LL.finalPoints()}
         </legend>
         <div class="-mx-2">
           <div class="mb-2">
-            <SelectInput
-              name="planPoints"
-              bind:value="{planPoints}"
-              on:change="{toggleCustomPointValue}"
-              required
-            >
+            <SelectInput name="planPoints" bind:value={planPoints} on:change={toggleCustomPointValue} required>
               <option value="" disabled>
                 {$LL.points()}
               </option>
               >
               {#each points as point}
-                <option value="{point}">{point}</option>
+                <option value={point}>{point}</option>
               {/each}
               <option value="CUSTOM">Custom</option>
             </SelectInput>
             {#if customPointValue}
               <TextInput
                 name="customPlanPoints"
-                bind:value="{customPlanPoints}"
+                bind:value={customPlanPoints}
                 placeholder="enter a custom point value..."
                 id="customPlanPoints"
                 class="mt-2"
@@ -128,11 +101,7 @@
             {/if}
           </div>
           <div>
-            <SolidButton
-              additionalClasses="w-full h-full"
-              type="submit"
-              testid="voting-save"
-            >
+            <SolidButton additionalClasses="w-full h-full" type="submit" testid="voting-save">
               {$LL.save()}
             </SolidButton>
           </div>

@@ -29,7 +29,7 @@
     maxVotes = $bindable('3'),
     brainstormVisibility = $bindable('visible'),
     phaseAutoAdvance = $bindable(true),
-    hideVotesDuringVoting = $bindable(false)
+    hideVotesDuringVoting = $bindable(false),
   }: Props = $props();
 
   const brainstormVisibilityOptions = [
@@ -57,7 +57,7 @@
       maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
       phase_auto_advance: phaseAutoAdvance,
-      hideVotesDuringVoting
+      hideVotesDuringVoting,
     };
 
     handleRetroEdit(retro);
@@ -72,10 +72,7 @@
 <Modal closeModal={toggleEditRetro} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabel={$LL.modalEditRetro()}>
   <form onsubmit={saveRetro} name="createRetro">
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="retroName"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="retroName">
         {$LL.retroName()}
       </label>
       <div class="control">
@@ -91,10 +88,7 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="joinCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">
         {$LL.passCode()}
       </label>
       <div class="control">
@@ -109,10 +103,7 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-        for="facilitatorCode"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="facilitatorCode">
         {$LL.facilitatorCodeOptional()}
       </label>
       <div class="control">
@@ -127,37 +118,19 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="maxVotes"
-      >
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="maxVotes">
         {$LL.retroMaxVotesPerUserLabel()}
       </label>
       <div class="control">
-        <TextInput
-          name="retroName"
-          bind:value={maxVotes}
-          id="maxVotes"
-          type="number"
-          min="1"
-          max="10"
-          required
-        />
+        <TextInput name="retroName" bind:value={maxVotes} id="maxVotes" type="number" min="1" max="10" required />
       </div>
     </div>
 
     <div class="mb-4">
-      <label
-        class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="brainstormVisibility"
-      >
+      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="brainstormVisibility">
         {$LL.brainstormPhaseFeedbackVisibility()}
       </label>
-      <SelectInput
-        bind:value={brainstormVisibility}
-        id="brainstormVisibility"
-        name="brainstormVisibility"
-      >
+      <SelectInput bind:value={brainstormVisibility} id="brainstormVisibility" name="brainstormVisibility">
         {#each brainstormVisibilityOptions as item}
           <option value={item.value}>
             {item.label}

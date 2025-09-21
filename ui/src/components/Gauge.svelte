@@ -26,18 +26,7 @@
     start_xy = polar_to_cartesian(x, y, radius, end_angle);
     end_xy = polar_to_cartesian(x, y, radius, start_angle);
     return (
-      'M ' +
-      start_xy[0] +
-      ' ' +
-      start_xy[1] +
-      ' A ' +
-      radius +
-      ' ' +
-      radius +
-      ' 0 0 0 ' +
-      end_xy[0] +
-      ' ' +
-      end_xy[1]
+      'M ' + start_xy[0] + ' ' + start_xy[1] + ' A ' + radius + ' ' + radius + ' 0 0 0 ' + end_xy[0] + ' ' + end_xy[1]
     );
   };
 
@@ -63,6 +52,28 @@
     animate_arc(perc / 100, Snap(svgElem));
   });
 </script>
+
+<div class="relative gauge {color}">
+  {#if count !== ''}
+    <div class="absolute text-right text-sm md:text-lg count-text">
+      {count}
+    </div>
+  {/if}
+  <svg viewBox="0 0 1000 500" bind:this={svgElem} class="max-w-full">
+    <g class="opacity-10">
+      <path d="M 950 500 A 450 450 0 0 0 50 500"></path>
+    </g>
+    <path d="M 50 500 A 450 450 0 0 0 50 500" class="gaugeNeedle" data-ratio="0"></path>
+  </svg>
+  <div class="absolute w-full h-full flex flex-col items-center justify-end">
+    <h3 class="block text-3xl md:text-5xl font-black ms-1.5 tracking-tight percentage">
+      <span>{stat}</span><span class="ms-0.5 text-base font-bold">%</span>
+    </h3>
+    <h4 class="mt-0.5 font-bold text-gray-500 dark:text-gray-400 uppercase text-sm md:text-md tracking-wide">
+      {text}
+    </h4>
+  </div>
+</div>
 
 <style global>
   .gauge {
@@ -123,30 +134,3 @@
     @apply text-indigo-500;
   }
 </style>
-
-<div class="relative gauge {color}">
-  {#if count !== ''}
-    <div class="absolute text-right text-sm md:text-lg count-text">
-      {count}
-    </div>
-  {/if}
-  <svg viewBox="0 0 1000 500" bind:this="{svgElem}" class="max-w-full">
-    <g class="opacity-10">
-      <path d="M 950 500 A 450 450 0 0 0 50 500"></path>
-    </g>
-    <path d="M 50 500 A 450 450 0 0 0 50 500" class="gaugeNeedle" data-ratio="0"
-    ></path>
-  </svg>
-  <div class="absolute w-full h-full flex flex-col items-center justify-end">
-    <h3
-      class="block text-3xl md:text-5xl font-black ms-1.5 tracking-tight percentage"
-    >
-      <span>{stat}</span><span class="ms-0.5 text-base font-bold">%</span>
-    </h3>
-    <h4
-      class="mt-0.5 font-bold text-gray-500 dark:text-gray-400 uppercase text-sm md:text-md tracking-wide"
-    >
-      {text}
-    </h4>
-  </div>
-</div>

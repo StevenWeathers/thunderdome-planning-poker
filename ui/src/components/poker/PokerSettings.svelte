@@ -31,7 +31,7 @@
     teamId,
     departmentId,
     apiPrefix = '/api',
-    isEntityAdmin = false
+    isEntityAdmin = false,
   }: Props = $props();
 
   let isAdmin = $derived(validateUserIsAdmin($user));
@@ -81,19 +81,13 @@
     <TableNav
       title="Default Poker Settings"
       createBtnEnabled={isAdmin || isEntityAdmin}
-      createBtnText="{defaultSettings.id !== ''
-        ? 'Update'
-        : 'Create'} Default Settings"
-      createButtonHandler={defaultSettings.id !== ''
-        ? toggleUpdateDefaultSettings
-        : toggleCreateDefaultSettings}
-      createBtnTestId="poker-settings-{defaultSettings.id !== ''
-        ? 'update'
-        : 'create'}-btn"
+      createBtnText="{defaultSettings.id !== '' ? 'Update' : 'Create'} Default Settings"
+      createButtonHandler={defaultSettings.id !== '' ? toggleUpdateDefaultSettings : toggleCreateDefaultSettings}
+      createBtnTestId="poker-settings-{defaultSettings.id !== '' ? 'update' : 'create'}-btn"
     />
     <Table>
       {#snippet header()}
-            <tr >
+        <tr>
           <HeadCol>{$LL.autoFinishVotingLabel()}</HeadCol>
           <HeadCol>{$LL.pointAverageRounding()}</HeadCol>
           <HeadCol>{$LL.hideVoterIdentity()}</HeadCol>
@@ -101,9 +95,9 @@
           <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
           <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
         </tr>
-          {/snippet}
+      {/snippet}
       {#snippet body()}
-            <tbody >
+        <tbody>
           {#if defaultSettings.id !== ''}
             <TableRow>
               <RowCol>
@@ -127,19 +121,19 @@
             </TableRow>
           {/if}
         </tbody>
-          {/snippet}
+      {/snippet}
     </Table>
   </TableContainer>
 
   {#if showCreateDefaultSettings}
     <UpdatePokerSettings
       toggleClose={toggleCreateDefaultSettings}
-      xfetch={xfetch}
-      notifications={notifications}
-      apiPrefix={apiPrefix}
-      organizationId={organizationId}
-      teamId={teamId}
-      departmentId={departmentId}
+      {xfetch}
+      {notifications}
+      {apiPrefix}
+      {organizationId}
+      {teamId}
+      {departmentId}
       on:updatePokerSettings={handleSettingsUpdate}
     />
   {/if}
@@ -147,13 +141,13 @@
   {#if showUpdateDefaultSettings}
     <UpdatePokerSettings
       toggleClose={toggleUpdateDefaultSettings}
-      xfetch={xfetch}
-      notifications={notifications}
+      {xfetch}
+      {notifications}
       pokerSettings={defaultSettings}
-      apiPrefix={apiPrefix}
-      organizationId={organizationId}
-      teamId={teamId}
-      departmentId={departmentId}
+      {apiPrefix}
+      {organizationId}
+      {teamId}
+      {departmentId}
       on:updatePokerSettings={handleSettingsUpdate}
     />
   {/if}
