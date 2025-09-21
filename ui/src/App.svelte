@@ -77,6 +77,7 @@
   import TeamProjects from './pages/team/TeamProjects.svelte';
   import Project from './pages/project/Project.svelte';
   import Dashboard from './pages/Dashboard.svelte';
+  import OpenSource from './pages/support/OpenSource.svelte';
 
   const {
     FeaturePoker,
@@ -158,6 +159,13 @@
       route: Support,
       params: {},
       name: 'support',
+    };
+  });
+  router.on(appRoutes.openSource, () => {
+    currentPage = {
+      route: OpenSource,
+      params: {},
+      name: 'open-source',
     };
   });
   router.on(`${appRoutes.register}`, params => {

@@ -51,7 +51,7 @@
     toggleEdit();
   }
 
-  function formatDate(dateString) {
+  function formatDate(dateString: string) {
     const date = new Date(dateString);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -95,7 +95,7 @@ let showDeleteConfirm = $state(false);
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
           <h4 class="font-semibold text-gray-900 dark:text-white text-sm truncate">
-            {userMap[comment.user_id] || 'Loading...'}
+            {userMap[comment.user_id].name || 'Loading...'}
           </h4>
           <span class="text-xs text-gray-500 dark:text-gray-400">•</span>
           <time class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
