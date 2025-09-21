@@ -974,6 +974,9 @@ func (s *Service) handleCreateSupportTicket() http.HandlerFunc {
 			}
 
 			for _, adminUser := range adminUsers {
+				if adminUser.Disabled {
+					continue
+				}
 				emailErr := s.Email.SendNewTicketToAdmins(*adminUser, ticket.ID)
 				if emailErr != nil {
 					s.Logger.Ctx(ctx).Error("handleCreateSupportTicket error", zap.Error(emailErr),
