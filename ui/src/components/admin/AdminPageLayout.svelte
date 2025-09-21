@@ -16,6 +16,7 @@
     User,
     Users,
     Package,
+    InboxIcon,
   } from 'lucide-svelte';
 
   interface Props {
@@ -41,6 +42,13 @@
       label: $LL.adminPageAdmin(),
       path: appRoutes.admin,
       icon: Settings,
+      enabled: true,
+    },
+    {
+      name: 'Support Tickets',
+      icon: InboxIcon,
+      label: $LL.supportTickets(),
+      path: appRoutes.adminSupportTickets,
       enabled: true,
     },
     {

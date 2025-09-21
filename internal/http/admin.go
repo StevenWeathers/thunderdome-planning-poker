@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
 )
 
@@ -447,5 +449,198 @@ func (s *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, users, meta)
+	}
+}
+
+// handleListSupportTickets lists support tickets with pagination
+//
+//	@Summary		List Support Tickets
+//	@Description	List support tickets with pagination
+//	@Tags			admin
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.SupportTicket, meta=pagination}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/support-tickets [get]
+func (s *Service) handleListSupportTickets() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		limit, offset := getLimitOffsetFromRequest(r)
+		tickets, count, err := s.AdminDataSvc.ListSupportTickets(ctx, limit, offset)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleListSupportTickets error", zap.Error(err))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
+		}
+
+		s.Success(w, r, http.StatusOK, tickets, meta)
+	}
+}
+
+// handleGetSupportTicketByID gets a support ticket by its ID
+//
+//	@Summary		Get Support Ticket by ID
+//	@Description	Get a support ticket by its ID
+//	@Tags			admin
+//	@Produce		json
+//	@Param			ticketId	path	string	true	"The support ticket ID"
+//	@Success		200			object	standardJsonResponse{data=thunderdome.SupportTicket}
+//	@Failure		404			object	standardJsonResponse{}
+//	@Failure		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/support-tickets/{ticketId} [get]
+func (s *Service) handleGetSupportTicketByID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		ticketID := r.PathValue("ticketId")
+		ticket, err := s.AdminDataSvc.GetSupportTicketByID(ctx, ticketID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetSupportTicketByID error", zap.Error(err), zap.String("ticket_id", ticketID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		if ticket == nil {
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "Support ticket not found"))
+			return
+		}
+		s.Success(w, r, http.StatusOK, ticket, nil)
+	}
+}
+
+type supportTicketUpdateRequestBody struct {
+	FullName       string  `json:"fullName" validate:"required"`
+	Email          string  `json:"email" validate:"required,email"`
+	Inquiry        string  `json:"inquiry" validate:"required"`
+	AssignedTo     *string `json:"assignedTo,omitempty"`
+	Notes          *string `json:"notes,omitempty"`
+	MarkedResolved bool    `json:"markResolved,omitempty"`
+}
+
+// handleUpdateSupportTicket updates a support ticket
+//
+//	@Summary		Update Support Ticket
+//	@Description	Update a support ticket
+//	@Tags			admin
+//	@Accept			json
+//	@Produce		json
+//	@Param			ticketId	path	string							true	"The support ticket ID"
+//	@Param			ticket		body	supportTicketUpdateRequestBody	true	"The support ticket object"
+//	@Success		200			object	standardJsonResponse{data=thunderdome.SupportTicket}
+//	@Failure		400			object	standardJsonResponse{}
+//	@Failure		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/support-tickets/{ticketId} [put]
+func (s *Service) handleUpdateSupportTicket() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		ticketID := r.PathValue("ticketId")
+		var ticket supportTicketUpdateRequestBody
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		if err := json.Unmarshal(body, &ticket); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		if err := validate.Struct(ticket); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		var resolvedAt *time.Time
+		var resolvedBy *string
+		if ticket.MarkedResolved {
+			now := time.Now()
+			resolvedAt = &now
+			resolvedBy = &sessionUserID
+		}
+
+		// map to model
+		ticketModel := thunderdome.SupportTicket{
+			ID:         ticketID,
+			UpdatedAt:  time.Now(),
+			FullName:   ticket.FullName,
+			Email:      ticket.Email,
+			Inquiry:    ticket.Inquiry,
+			AssignedTo: ticket.AssignedTo,
+			Notes:      ticket.Notes,
+			ResolvedAt: resolvedAt,
+			ResolvedBy: resolvedBy,
+		}
+
+		if err := s.AdminDataSvc.UpdateSupportTicket(ctx, &ticketModel); err != nil {
+			s.Logger.Ctx(ctx).Error("handleUpdateSupportTicket error", zap.Error(err), zap.String("ticket_id", ticketID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		s.Success(w, r, http.StatusOK, ticket, nil)
+	}
+}
+
+// handleDeleteSupportTicket deletes a support ticket by its ID
+//
+//	@Summary		Delete Support Ticket
+//	@Description	Delete a support ticket by its ID
+//	@Tags			admin
+//	@Produce		json
+//	@Param			ticketId	path	string	true	"The support ticket ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Failure		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/support-tickets/{ticketId} [delete]
+func (s *Service) handleDeleteSupportTicket() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		ticketID := r.PathValue("ticketId")
+		if err := s.AdminDataSvc.DeleteSupportTicket(ctx, ticketID); err != nil {
+			s.Logger.Ctx(ctx).Error("handleDeleteSupportTicket error", zap.Error(err), zap.String("ticket_id", ticketID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleListAdminUsers
+//
+// @Summary		List Admin Users
+// @Description	List admin users with pagination
+// @Tags			admin
+// @Produce		json
+// @Param			limit	query	int	false	"Max number of results to return"
+// @Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+// @Success		200		object	standardJsonResponse{data=[]thunderdome.User, meta=pagination}
+// @Failure		500		object	standardJsonResponse{}
+// @Security		ApiKeyAuth
+// @Router			/admin/admin-users [get]
+func (s *Service) handleListAdminUsers() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		limit, offset := getLimitOffsetFromRequest(r)
+
+		adminUsers, count, err := s.AdminDataSvc.ListAdminUsers(ctx, limit, offset)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleListAdminUsers error", zap.Error(err))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		meta := &pagination{
+			Count:  count,
+			Offset: 0,
+			Limit:  100,
+		}
+		s.Success(w, r, http.StatusOK, adminUsers, meta)
 	}
 }

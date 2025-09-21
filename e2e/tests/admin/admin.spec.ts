@@ -48,14 +48,15 @@ test.describe("Admin page", { tag: ["@administration"] }, () => {
       // admin nav items are present
       const nav = ap.page.locator('[data-testid="admin-nav-item"]');
       await expect(nav.nth(0)).toHaveText("Admin");
-      await expect(nav.nth(1)).toHaveText("Alerts");
-      await expect(nav.nth(2)).toHaveText("Games");
-      await expect(nav.nth(3)).toHaveText("Retros");
-      await expect(nav.nth(4)).toHaveText("Storyboards");
-      await expect(nav.nth(5)).toHaveText("Organizations");
-      await expect(nav.nth(6)).toHaveText("Teams");
-      await expect(nav.nth(7)).toHaveText("Users");
-      await expect(nav.nth(8)).toHaveText("API Keys");
+      await expect(nav.nth(1)).toHaveText("Support Tickets");
+      await expect(nav.nth(2)).toHaveText("Alerts");
+      await expect(nav.nth(3)).toHaveText("Games");
+      await expect(nav.nth(4)).toHaveText("Retros");
+      await expect(nav.nth(5)).toHaveText("Storyboards");
+      await expect(nav.nth(6)).toHaveText("Organizations");
+      await expect(nav.nth(7)).toHaveText("Teams");
+      await expect(nav.nth(8)).toHaveText("Users");
+      await expect(nav.nth(9)).toHaveText("API Keys");
     });
   });
 });

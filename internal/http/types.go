@@ -165,6 +165,11 @@ type CookieManager interface {
 
 type AdminDataSvc interface {
 	GetAppStats(ctx context.Context) (*thunderdome.ApplicationStats, error)
+	ListSupportTickets(ctx context.Context, limit, offset int) ([]*thunderdome.SupportTicket, int, error)
+	GetSupportTicketByID(ctx context.Context, ticketID string) (*thunderdome.SupportTicket, error)
+	UpdateSupportTicket(ctx context.Context, ticket *thunderdome.SupportTicket) error
+	DeleteSupportTicket(ctx context.Context, ticketID string) error
+	ListAdminUsers(ctx context.Context, limit int, offset int) ([]*thunderdome.User, int, error)
 }
 
 type AlertDataSvc interface {
@@ -332,6 +337,7 @@ type UserDataSvc interface {
 	GetUserCredentialByUserID(ctx context.Context, userID string) (*thunderdome.Credential, error)
 	RequestEmailChange(ctx context.Context, userId string) (string, error)
 	ConfirmEmailChange(ctx context.Context, userId string, token string, newEmail string) error
+	CreateSupportTicket(ctx context.Context, userId, fullName, email, inquiry string) (thunderdome.SupportTicket, error)
 }
 
 type PokerDataSvc interface {
@@ -610,6 +616,7 @@ type EmailService interface {
 	SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, userName string, userEmail string) error
 	SendEmailChangeRequest(userName string, userEmail string, changeId string) error
 	SendEmailChangeConfirmation(userName string, userEmail string, newEmail string) error
+	SendNewTicketToAdmins(adminUser thunderdome.User, ticketID string) error
 }
 
 // ProjectDataSvc represents the interface for project data operations

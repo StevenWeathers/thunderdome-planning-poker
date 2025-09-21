@@ -2218,6 +2218,11 @@ func (m *MockUserDataService) GetUserByID(ctx context.Context, userID string) (*
 	return args.Get(0).(*thunderdome.User), args.Error(1)
 }
 
+func (m *MockUserDataService) CreateSupportTicket(ctx context.Context, userId, fullName, email, inquiry string) (thunderdome.SupportTicket, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func TestAdminOnly(t *testing.T) {
 	tests := []struct {
 		name           string

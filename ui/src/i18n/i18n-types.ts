@@ -2961,6 +2961,38 @@ type RootTranslation = {
    * T​r​y​ ​s​e​l​e​c​t​i​n​g​ ​a​ ​d​i​f​f​e​r​e​n​t​ ​t​e​a​m​ ​o​r​ ​c​r​e​a​t​e​ ​a​ ​n​e​w​ ​s​t​o​r​y​b​o​a​r​d
    */
   trySelectingDifferentTeamForStoryboards: string;
+  /**
+   * S​u​p​p​o​r​t​ ​T​i​c​k​e​t​s
+   */
+  supportTickets: string;
+  /**
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​s​u​p​p​o​r​t​ ​t​i​c​k​e​t​?​ ​T​h​i​s​ ​a​c​t​i​o​n​ ​c​a​n​n​o​t​ ​b​e​ ​u​n​d​o​n​e​.
+   */
+  supportTicketDeleteConfirmation: string;
+  /**
+   * D​e​l​e​t​e​ ​T​i​c​k​e​t
+   */
+  supportTicketDelete: string;
+  /**
+   * S​u​p​p​o​r​t​ ​t​i​c​k​e​t​ ​u​p​d​a​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  updateSupportTicketSuccess: string;
+  /**
+   * F​a​i​l​e​d​ ​t​o​ ​u​p​d​a​t​e​ ​s​u​p​p​o​r​t​ ​t​i​c​k​e​t
+   */
+  updateSupportTicketError: string;
+  /**
+   * F​a​i​l​e​d​ ​t​o​ ​g​e​t​ ​s​u​p​p​o​r​t​ ​t​i​c​k​e​t​s
+   */
+  getSupportTicketsError: string;
+  /**
+   * S​u​p​p​o​r​t​ ​t​i​c​k​e​t​ ​d​e​l​e​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  deleteSupportTicketSuccess: string;
+  /**
+   * F​a​i​l​e​d​ ​t​o​ ​d​e​l​e​t​e​ ​s​u​p​p​o​r​t​ ​t​i​c​k​e​t
+   */
+  deleteSupportTicketError: string;
 };
 
 export type TranslationFunctions = {
@@ -5893,6 +5925,38 @@ export type TranslationFunctions = {
    * Try selecting a different team or create a new storyboard
    */
   trySelectingDifferentTeamForStoryboards: () => LocalizedString;
+  /**
+   * Support Tickets
+   */
+  supportTickets: () => LocalizedString;
+  /**
+   * Are you sure you want to delete this support ticket? This action cannot be undone.
+   */
+  supportTicketDeleteConfirmation: () => LocalizedString;
+  /**
+   * Delete Ticket
+   */
+  supportTicketDelete: () => LocalizedString;
+  /**
+   * Support ticket updated successfully
+   */
+  updateSupportTicketSuccess: () => LocalizedString;
+  /**
+   * Failed to update support ticket
+   */
+  updateSupportTicketError: () => LocalizedString;
+  /**
+   * Failed to get support tickets
+   */
+  getSupportTicketsError: () => LocalizedString;
+  /**
+   * Support ticket deleted successfully
+   */
+  deleteSupportTicketSuccess: () => LocalizedString;
+  /**
+   * Failed to delete support ticket
+   */
+  deleteSupportTicketError: () => LocalizedString;
 };
 
 export type Formatters = {};

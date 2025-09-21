@@ -758,6 +758,15 @@ const en: BaseTranslation = {
   agileStoryMapping: 'Agile Story Mapping',
   trySelectingDifferentTeamForStoryboards:
     'Try selecting a different team or create a new storyboard',
+  supportTickets: 'Support Tickets',
+  supportTicketDeleteConfirmation:
+    'Are you sure you want to delete this support ticket? This action cannot be undone.',
+  supportTicketDelete: 'Delete Ticket',
+  updateSupportTicketSuccess: 'Support ticket updated successfully',
+  updateSupportTicketError: 'Failed to update support ticket',
+  getSupportTicketsError: 'Failed to get support tickets',
+  deleteSupportTicketSuccess: 'Support ticket deleted successfully',
+  deleteSupportTicketError: 'Failed to delete support ticket',
 };
 
 export default en;

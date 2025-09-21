@@ -780,6 +780,15 @@ const pt: Translation = {
   agileStoryMapping: 'Mapeamento de Histórias Ágeis',
   trySelectingDifferentTeamForStoryboards:
     'Tente selecionar uma equipe diferente ou criar um novo storyboard',
+  supportTickets: 'Tickets de Suporte',
+  supportTicketDeleteConfirmation:
+    'Tem certeza de que deseja excluir este ticket de suporte? Esta ação não pode ser desfeita.',
+  supportTicketDelete: 'Excluir Ticket',
+  updateSupportTicketSuccess: 'Ticket de suporte atualizado com sucesso',
+  updateSupportTicketError: 'Falha ao atualizar o ticket de suporte',
+  getSupportTicketsError: 'Falha ao obter tickets de suporte',
+  deleteSupportTicketSuccess: 'Ticket de suporte excluído com sucesso',
+  deleteSupportTicketError: 'Falha ao excluir ticket de suporte',
 };
 
 export default pt;

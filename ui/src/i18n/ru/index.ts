@@ -759,6 +759,15 @@ const ru: Translation = {
   agileStoryMapping: 'Agile Story Mapping',
   trySelectingDifferentTeamForStoryboards:
     'Попробуйте выбрать другую команду или создать новый storyboard',
+  supportTickets: 'Тикеты поддержки',
+  supportTicketDeleteConfirmation:
+    'Вы уверены, что хотите удалить этот тикет поддержки? Это действие нельзя отменить.',
+  supportTicketDelete: 'Удалить тикет',
+  updateSupportTicketSuccess: 'Тикет поддержки успешно обновлен',
+  updateSupportTicketError: 'Не удалось обновить тикет поддержки',
+  getSupportTicketsError: 'Не удалось получить тикеты поддержки',
+  deleteSupportTicketSuccess: 'Тикет поддержки успешно удален',
+  deleteSupportTicketError: 'Не удалось удалить тикет поддержки',
 };
 
 export default ru;

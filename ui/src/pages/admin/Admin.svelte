@@ -94,6 +94,7 @@
     organizationRetroTemplateCount: 0,
     teamRetroTemplateCount: 0,
     projectCount: 0,
+    openSupportTicketCount: 0,
   });
 
   let isLoading = $state(false);
@@ -169,10 +170,10 @@
   // Calculate totals for overview cards
   let overviewStats = $derived([
     {
-      title: 'Total Users',
-      value: appStats.registeredUserCount + appStats.unregisteredUserCount,
-      icon: Users,
-      color: 'from-blue-500 to-blue-600',
+      title: 'Open Support Tickets',
+      value: appStats.openSupportTicketCount,
+      icon: MessageCircleQuestion,
+      color: 'from-yellow-500 to-yellow-600',
       active: true
     },
     {
@@ -183,12 +184,19 @@
       active: true
     },
     {
+      title: 'Total Users',
+      value: appStats.registeredUserCount + appStats.unregisteredUserCount,
+      icon: Users,
+      color: 'from-blue-500 to-blue-600',
+      active: true
+    },
+    {
       title: 'Total Subscriptions',
       value: appStats.userSubscriptionActiveCount + appStats.teamSubscriptionActiveCount + appStats.orgSubscriptionActiveCount,
       icon: CreditCard,
       color: 'from-indigo-500 to-indigo-600',
       active: AppConfig.SubscriptionsEnabled
-    }
+    },
   ]);
 
   let statGroups = $derived([
@@ -489,7 +497,7 @@
     </div>
   {:else}
     <!-- Overview Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 {AppConfig.SubscriptionsEnabled ? 'md:grid-cols-3 lg:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4 mb-6">
       {#each overviewStats.filter(stat => stat.active) as stat}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden group hover:shadow-lg transition-all duration-300">
           <div class="p-4">

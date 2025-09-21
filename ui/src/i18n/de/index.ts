@@ -803,6 +803,15 @@ const de: Translation = {
   agileStoryMapping: 'Agiles Story Mapping',
   trySelectingDifferentTeamForStoryboards:
     'Wählen Sie ein anderes Team oder erstellen Sie ein neues Storyboard',
+  supportTickets: 'Support-Tickets',
+  supportTicketDeleteConfirmation:
+    'Sind Sie sicher, dass Sie dieses Support-Ticket löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+  supportTicketDelete: 'Ticket löschen',
+  updateSupportTicketSuccess: 'Support-Ticket erfolgreich aktualisiert',
+  updateSupportTicketError: 'Fehler beim Aktualisieren des Support-Tickets',
+  getSupportTicketsError: 'Fehler beim Abrufen der Support-Tickets',
+  deleteSupportTicketSuccess: 'Support-Ticket erfolgreich gelöscht',
+  deleteSupportTicketError: 'Fehler beim Löschen des Support-Tickets',
 };
 
 export default de;

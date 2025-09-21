@@ -771,6 +771,15 @@ const fa: Translation = {
   agileStoryMapping: 'نقشه‌برداری داستان چابک',
   trySelectingDifferentTeamForStoryboards:
     'تیم دیگری را انتخاب کنید یا یک استوری‌بورد جدید بسازید',
+  supportTickets: 'تیکت‌های پشتیبانی',
+  supportTicketDeleteConfirmation:
+    'آیا مطمئن هستید که می‌خواهید این تیکت پشتیبانی را حذف کنید؟ این عمل قابل بازگشت نیست.',
+  supportTicketDelete: 'حذف تیکت',
+  updateSupportTicketSuccess: 'تیکت پشتیبانی با موفقیت به‌روزرسانی شد',
+  updateSupportTicketError: 'خطا در به‌روزرسانی تیکت پشتیبانی',
+  getSupportTicketsError: 'خطا در دریافت تیکت‌های پشتیبانی',
+  deleteSupportTicketSuccess: 'تیکت پشتیبانی با موفقیت حذف شد',
+  deleteSupportTicketError: 'خطا در حذف تیکت پشتیبانی',
 };
 
 export default fa;

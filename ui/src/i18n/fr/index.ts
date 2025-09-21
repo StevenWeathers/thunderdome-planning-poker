@@ -822,6 +822,15 @@ const fr: Translation = {
   agileStoryMapping: 'Cartographie agile des histoires',
   trySelectingDifferentTeamForStoryboards:
     'Essayez de sélectionner une autre équipe ou créez un nouveau storyboard',
+  supportTickets: 'Tickets de Support',
+  supportTicketDeleteConfirmation:
+    'Êtes-vous sûr de vouloir supprimer ce ticket de support ? Cette action ne peut pas être annulée.',
+  supportTicketDelete: 'Supprimer le Ticket',
+  updateSupportTicketSuccess: 'Ticket de support mis à jour avec succès',
+  updateSupportTicketError: 'Échec de la mise à jour du ticket de support',
+  getSupportTicketsError: 'Échec de la récupération des tickets de support',
+  deleteSupportTicketSuccess: 'Ticket de support supprimé avec succès',
+  deleteSupportTicketError: 'Échec de la suppression du ticket de support',
 };
 
 export default fr;

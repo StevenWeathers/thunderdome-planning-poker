@@ -5,8 +5,10 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+	"go.uber.org/zap"
 )
 
 // Service represents the admin database service
@@ -55,7 +57,8 @@ func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStat
     (SELECT COUNT(*) FROM thunderdome.retro_template WHERE retro_template.is_public IS TRUE) AS public_retro_template_count,
     (SELECT COUNT(*) FROM thunderdome.retro_template WHERE organization_id IS NOT NULL) AS organization_retro_template_count,
     (SELECT COUNT(*) FROM thunderdome.retro_template WHERE team_id IS NOT NULL) AS team_retro_template_count,
-	(SELECT COUNT(*) FROM thunderdome.project) AS project_count
+	(SELECT COUNT(*) FROM thunderdome.project) AS project_count,
+	(SELECT COUNT(*) FROM thunderdome.support_ticket WHERE resolved_at IS NULL) AS open_support_ticket_count
 		;`,
 	).Scan(
 		&appStats.UnregisteredCount,
@@ -93,10 +96,68 @@ func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStat
 		&appStats.OrganizationRetroTemplateCount,
 		&appStats.TeamRetroTemplateCount,
 		&appStats.ProjectCount,
+		&appStats.OpenSupportTicketCount,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get application stats: %v", err)
 	}
 
 	return &appStats, nil
+}
+
+// ListAdminUsers gets a list of all admin users
+func (d *Service) ListAdminUsers(ctx context.Context, limit int, offset int) ([]*thunderdome.User, int, error) {
+	var users = make([]*thunderdome.User, 0)
+	var count int
+
+	err := d.DB.QueryRowContext(ctx,
+		"SELECT COUNT(*) FROM thunderdome.users WHERE type = 'ADMIN';",
+	).Scan(
+		&count,
+	)
+	if err != nil {
+		d.Logger.Ctx(ctx).Error("list admin users query error", zap.Error(err))
+	}
+
+	rows, err := d.DB.QueryContext(ctx,
+		`
+		SELECT u.id, u.name, COALESCE(u.email, ''), u.type, u.avatar, u.verified, COALESCE(u.country, ''),
+		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled, COALESCE(u.picture, '')
+		FROM thunderdome.users u
+		WHERE u.type = 'ADMIN'
+		ORDER BY u.created_date
+		LIMIT $1
+		OFFSET $2;`,
+		limit,
+		offset,
+	)
+	if err != nil {
+		return nil, count, fmt.Errorf("list admin users query error: %v", err)
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var w thunderdome.User
+
+		if err := rows.Scan(
+			&w.ID,
+			&w.Name,
+			&w.Email,
+			&w.Type,
+			&w.Avatar,
+			&w.Verified,
+			&w.Country,
+			&w.Company,
+			&w.JobTitle,
+			&w.Disabled,
+			&w.Picture,
+		); err != nil {
+			d.Logger.Ctx(ctx).Error("list admin users query scan error", zap.Error(err))
+		} else {
+			w.GravatarHash = db.CreateGravatarHash(w.Email)
+			users = append(users, &w)
+		}
+	}
+
+	return users, count, nil
 }

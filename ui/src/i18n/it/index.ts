@@ -798,6 +798,15 @@ const it: Translation = {
   agileStoryMapping: 'Mappatura agile delle storie',
   trySelectingDifferentTeamForStoryboards:
     'Prova a selezionare una squadra diversa o crea un nuovo storyboard',
+  supportTickets: 'Ticket di Supporto',
+  supportTicketDeleteConfirmation:
+    'Sei sicuro di voler eliminare questo ticket di supporto? Questa azione non può essere annullata.',
+  supportTicketDelete: 'Elimina Ticket',
+  updateSupportTicketSuccess: 'Ticket di supporto aggiornato con successo',
+  updateSupportTicketError: 'Impossibile aggiornare il ticket di supporto',
+  getSupportTicketsError: 'Impossibile recuperare i ticket di supporto',
+  deleteSupportTicketSuccess: 'Ticket di supporto eliminato con successo',
+  deleteSupportTicketError: 'Impossibile eliminare il ticket di supporto',
 };
 
 export default it;

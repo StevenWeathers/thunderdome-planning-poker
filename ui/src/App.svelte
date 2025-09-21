@@ -78,6 +78,8 @@
   import Project from './pages/project/Project.svelte';
   import Dashboard from './pages/Dashboard.svelte';
   import OpenSource from './pages/support/OpenSource.svelte';
+  import AdminListTickets from './pages/admin/support/ListTickets.svelte';
+  import AdminTicketDetails from './pages/admin/support/TicketDetails.svelte';
 
   const {
     FeaturePoker,
@@ -449,6 +451,20 @@
       route: Admin,
       params: {},
       name: 'admin',
+    };
+  });
+  router.on(appRoutes.adminSupportTickets, () => {
+    currentPage = {
+      route: AdminListTickets,
+      params: {},
+      name: 'support-tickets',
+    };
+  });
+  router.on(`${appRoutes.adminSupportTickets}/:ticketId`, params => {
+    currentPage = {
+      route: AdminTicketDetails,
+      params: params,
+      name: 'support-tickets',
     };
   });
   router.on(`${appRoutes.adminUsers}/:userId`, params => {

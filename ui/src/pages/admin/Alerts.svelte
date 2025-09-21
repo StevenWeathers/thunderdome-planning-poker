@@ -47,7 +47,7 @@
   let showAlertUpdate = $state(false);
   let showDeleteAlert = $state(false);
   let selectedAlert = $state({ ...defaultAlert });
-  let deleteAlertId = null;
+  let deleteAlertId = $state(null);
 
   function toggleCreateAlert() {
     showAlertCreate = !showAlertCreate;

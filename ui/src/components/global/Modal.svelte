@@ -42,16 +42,16 @@
 <svelte:window on:keydown|once={handle_keydown} />
 
 <div
-  class="fixed inset-0 flex items-center z-40 max-h-screen overflow-y-scroll"
+  class="fixed z-50 inset-0 flex items-center z-40 max-h-screen overflow-y-scroll"
 >
   <!-- Background overlay -->
   <div class="fixed inset-0 bg-gray-900 opacity-75" aria-hidden="true"></div>
 
   <div
-    class="relative mx-4 md:mx-auto w-full {widthClasses != ''
+    class="relative z-[100] mx-4 md:mx-auto w-full {widthClasses != ''
       ? widthClasses
       : 'md:w-2/3 lg:w-3/5 xl:w-1/3'}
-        z-50 max-h-full"
+        max-h-full"
   >
     <div class="py-8">
       <div

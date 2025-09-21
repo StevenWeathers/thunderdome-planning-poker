@@ -49,6 +49,7 @@ const appRoutes = {
   organization: `${PathPrefix}/organization`,
   team: `${PathPrefix}/team`,
   admin: adminPrefix,
+  adminSupportTickets: `${adminPrefix}/support-tickets`,
   adminPokerGames: `${adminPrefix}/games`,
   adminRetros: `${adminPrefix}/retros`,
   adminStoryboards: `${adminPrefix}/storyboards`,
