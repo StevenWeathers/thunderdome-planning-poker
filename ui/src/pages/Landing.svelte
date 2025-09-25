@@ -214,21 +214,22 @@
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
               <span
-                ><strong>Visual user journeys:</strong> Drag-and-drop interface transforms complex backlogs into clear story
-                flows</span
+                ><strong>Commenting on checkins:</strong> Team members can add comments to any checkin for deeper discussion
+                or clarification.</span
               >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
               <span
-                ><strong>Real-time team alignment:</strong> Live collaboration keeps distributed product teams in sync</span
+                ><strong>Highlight blockers & needs discussion:</strong> Instantly flag items that need team attention, so
+                blockers and dependencies stand out.</span
               >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
               <span
-                ><strong>User-value prioritization:</strong> Stop building random features and focus on what users actually
-                need</span
+                ><strong>Focused standups:</strong> Skip routine status updates and zero in on what matters most for team
+                progress.</span
               >
             </li>
           </ul>
@@ -271,16 +272,38 @@
             Skip the status updates everyone already knows. Focus your daily standups on blockers, dependencies, and
             what actually needs team discussion.
           </p>
+          <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8">
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span
+                ><strong>Visual user journeys:</strong> Drag-and-drop interface transforms complex backlogs into clear story
+                flows</span
+              >
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span
+                ><strong>Real-time team alignment:</strong> Live collaboration keeps distributed product teams in sync</span
+              >
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span
+                ><strong>User-value prioritization:</strong> Stop building random features and focus on what users actually
+                need</span
+              >
+            </li>
+          </ul>
         </div>
         <div class="md:w-1/2">
           <img
-            class="rounded-lg shadow-lg hidden dark:block"
-            src="{PathPrefix}/img/previews/checkin.png"
+            class="rounded-lg shadow-lg hidden dark:block max-w-lg mx-auto"
+            src="{PathPrefix}/img/previews/team_checkins_dark_2025_09_24.png"
             alt="Team Checkins Preview"
           />
           <img
-            class="rounded-lg shadow-lg dark:hidden"
-            src="{PathPrefix}/img/previews/checkin_light.png"
+            class="rounded-lg shadow-lg dark:hidden max-w-lg mx-auto"
+            src="{PathPrefix}/img/previews/team_checkins_light_2025_09_24.png"
             alt="Team Checkins Preview"
           />
         </div>
