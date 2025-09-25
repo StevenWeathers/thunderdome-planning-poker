@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { ChevronDown, ChevronUp, Pencil, Plus, Settings, Trash } from 'lucide-svelte';
+  import { ChevronDown, ChevronUp, Pencil, Plus, SendToBack, Settings, Trash } from 'lucide-svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import SubMenu from '../../components/global/SubMenu.svelte';
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
   import LL from '../../i18n/i18n-svelte';
+  import SubscribeButton from '../pricing/SubscribeButton.svelte';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -15,6 +16,8 @@
     handleDelete: any;
     handleColumnAdd: any;
     toggleEdit: any;
+    columnOrderEditMode: any;
+    toggleColumnOrderEdit: any;
   }
 
   let {
@@ -25,6 +28,8 @@
     goal = { id: '', columns: [] },
     goalIndex = 0,
     isFacilitator = false,
+    columnOrderEditMode = false,
+    toggleColumnOrderEdit = () => {},
   }: Props = $props();
 
   let collapsed = $state(false);
@@ -50,6 +55,11 @@
 
   const handleColAdd = () => {
     handleColumnAdd(goal.id);
+  };
+
+  const handleToggleColumnOrderEdit = (toggleSubmenu?: () => void) => () => {
+    toggleColumnOrderEdit();
+    toggleSubmenu?.();
   };
 </script>
 
@@ -78,6 +88,12 @@
     </div>
     <div class="flex justify-end space-x-2">
       {#if isFacilitator}
+        {#if columnOrderEditMode}
+          <SolidButton color="yellow" onClick={toggleColumnOrderEdit} testid="column-order-done">
+            <span class="inline-block w-4 h-4">✓</span>&nbsp;Done Editing Column Order
+          </SolidButton>
+        {/if}
+
         <SolidButton color="green" onClick={handleColAdd} testid="column-add">
           <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddColumn()}
         </SolidButton>
@@ -89,6 +105,12 @@
               testId="goal-edit"
               icon={Pencil}
               label={$LL.edit()}
+            />
+            <SubMenuItem
+              onClickHandler={handleToggleColumnOrderEdit(toggleSubmenu)}
+              testId="toggle-edit-goal-column-order"
+              icon={SendToBack}
+              label={`Edit Columns Order`}
             />
             <SubMenuItem
               onClickHandler={toggleDeleteConfirmation(toggleSubmenu)}

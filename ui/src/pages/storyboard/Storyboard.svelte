@@ -86,6 +86,7 @@
   let showEditStoryboard = $state(false);
   let showExportStoryboard = $state(false);
   let activeUserCount = $state(0);
+  let columnOrderEditMode = $state(false);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -450,7 +451,14 @@
   }
 
   const toggleStoryForm = story => () => {
+    if (columnOrderEditMode) {
+      return;
+    }
     activeStory = activeStory != null ? null : story;
+  };
+
+  const toggleColumnOrderEdit = () => {
+    columnOrderEditMode = !columnOrderEditMode;
   };
 
   let showBecomeFacilitator = $state(false);
@@ -577,6 +585,8 @@
       toggleEdit={toggleAddGoal}
       {goalIndex}
       {isFacilitator}
+      {columnOrderEditMode}
+      {toggleColumnOrderEdit}
     >
       <div class="flex">
         {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
@@ -616,6 +626,8 @@
                                     border-dashed border-2 border-gray-400 dark:border-gray-600
                                     hover:border-green-500 text-gray-600 dark:text-gray-400
                                     hover:text-green-500 py-1 px-2"
+                    class:cursor-not-allowed={columnOrderEditMode}
+                    disabled={columnOrderEditMode}
                     title={$LL.storyboardEditColumn()}
                     data-testid="column-edit"
                   >
@@ -631,6 +643,8 @@
                                     px-2 border-dashed border-2
                                     border-gray-400 dark:border-gray-600 hover:border-green-500
                                     text-gray-600 dark:text-gray-400 hover:text-green-500"
+                    class:cursor-not-allowed={columnOrderEditMode}
+                    disabled={columnOrderEditMode}
                     title={$LL.storyboardAddStoryToColumn()}
                     data-testid="story-add"
                   >
@@ -652,13 +666,16 @@
                 type: 'story',
                 dropTargetStyle: '',
                 dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
+                dragDisabled: columnOrderEditMode,
               }}
               onconsider={handleDndConsider}
               onfinalize={handleDndFinalize}
             >
               {#each goalColumn.stories as story (story.id)}
                 <div
-                  class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4 cursor-pointer"
+                  class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4"
+                  class:cursor-pointer={!columnOrderEditMode}
+                  class:cursor-not-allowed={columnOrderEditMode}
                   style="list-style: none;"
                   role="button"
                   tabindex="0"
