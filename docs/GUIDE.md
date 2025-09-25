@@ -5,15 +5,56 @@ Story mapping, Async Daily Standup (team standup) and more.
 
 As a new user in this realm, let this be your guide. First, we need to know who you are.
 
+## Table of Contents
+
+- [Register](#register-optional)
+- [Login](#login)
+- [Password Retrieval](#password-retrieval)
+- [Profile](#profile)
+  - [Details](#details)
+  - [API Access](#api-access)
+  - [Jira Integration](#jira-integration-premium-only)
+  - [Delete Account](#delete-account)
+- [Game](#game)
+  - [Create a Game](#create-a-game)
+  - [Game](#game-1)
+  - [Stories](#stories)
+  - [Users](#users)
+  - [Invite](#invite)
+- [Retrospectives](#retrospectives)
+  - [Create a Retro](#create-a-retro)
+- [Storyboards](#storyboards)
+  - [Goals](#goals)
+  - [Columns](#columns)
+  - [Add Story](#add-story)
+  - [Personas](#personas)
+  - [Add Persona](#add-persona)
+  - [Color Legend](#color-legend)
+  - [Edit Legend](#edit-legend)
+  - [Create a Storyboard](#create-a-storyboard)
+- [Teams, Organizations, and Departments](#teams-organizations-and-departments)
+  - [Organizations](#organizations)
+  - [Create Organization](#create-organization)
+  - [Departments](#departments)
+  - [Create Department](#create-department)
+  - [Teams](#teams)
+  - [Create Team](#create-team)
+  - [Add User](#add-user)
+  - [Checkins](#checkins)
+    - [Check In](#check-in)
+    - [Create Games, Retros, and Storyboards](#create-games-retros-and-storyboards)
+- [Languages](#languages)
+- [Contributions](#contributions)
+
 ## Register (optional)
 
 Create a new account, or join as guest.
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/c6f7a12c-4d81-4622-bae4-9356bdf16e62)
+![Register](img/register.png)
 
 Having an account lets you save your games and more.
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/395d06ca-6485-4293-8482-31a685e3db56)
+![Register Details](img/register-details.png)
 
 - Name  
   This will be visible to others.
@@ -27,7 +68,7 @@ You will receive an email to confirm your new account.
 
 Use the email/password you created when registering.
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/7a9ff086-fd30-4496-a1ee-a083370b9a5d)
+![Login](img/login.png)
 
 - Email
 - Password
@@ -38,7 +79,7 @@ _OIDC Providers coming soon._
 
 Forgot your password? Thunderdome can send a password reset link to your email.
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/a42e8620-dbe8-4ec4-a784-63d19fcc1327)
+![Password Retrieval](img/password-retrieval.png)
 
 ## Profile
 
@@ -46,7 +87,7 @@ User, it is all about you! Control your Thunderdome experience.
 
 ### Details
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/4c4a4512-538e-4150-b0cf-7864046fb1ff)
+![Profile Details](img/profile-details.png)
 
 - Name  
   This will be visible to others.
@@ -70,9 +111,9 @@ Create an API key to integrate Thunderdome with your tools.
 
 See API Documentation here [Thunderdome API Docs](https://thunderdome.dev/swagger/index.html)
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/431ef5a7-04fc-408c-90a7-f3dbb8690bf8)
+![API Access](img/api-access.png)
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/8e81b994-1cca-4f84-8bbb-4957527573fb)
+![API Key](img/api-key.png)
 
 ### Jira Integration (premium only)
 
@@ -87,7 +128,7 @@ This is the Thunderdome, but you are free to leave. We will erase all data about
 **This is permanent:** All poker sessions, retros, story maps, and orgs/teams directly owned by your account will also
 be deleted.
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/ae903d0a-d58c-4319-bf62-455e4ebf040f)
+![Delete Account](img/delete-account.png)
 
 ## Game
 
@@ -97,7 +138,7 @@ You can create a game to determine the size of a story, or join one in progress.
 
 ### Create a Game
 
-![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/da9b6c0b-e0ba-48d6-b999-4dca19772f5f)
+![Create Game](img/create-game.png)
 
 - Name
 - Team (optional)
@@ -118,7 +159,7 @@ finished.
 
 If the team agrees, the game is over. If not, then it has just begun!
 
-![image](https://user-images.githubusercontent.com/846933/95778842-eb76ef00-0c96-11eb-99d8-af5d098c12ee.png)
+![Game Session](img/game-session.png)
 
 ### Stories
 
@@ -178,7 +219,7 @@ Retrospectives happen in phases. The first phase is the Prime Directive. You may
 6. Done  
    Export the Retro
 
-![image](https://user-images.githubusercontent.com/846933/173260209-3ef3299f-f1b2-41e8-802f-17d40649c66d.png)
+![Retrospective](img/retrospective.png)
 
 ### Create a Retro
 
@@ -235,7 +276,7 @@ A palette is provided so that you can choose to apply meaningful colors to story
 
 This is where you can define what each color means.
 
-![image](https://user-images.githubusercontent.com/846933/173260211-304a973d-4ede-494f-bb7d-b7e5c86a4e6e.png)
+![Color Legend](img/color-legend.png)
 
 ### Create a Storyboard
 
@@ -246,13 +287,13 @@ This is where you can define what each color means.
 
 ## Teams, Organizations, and Departments
 
-![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/9a3cc4ea-3a6b-4b00-9664-1941209d7568)
+![Organizations](img/orgs.png)
 
 Teams can be simple, or they can be within Organizations and Departments.
 
 ### Organizations
 
-![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/451a6ba4-c712-4e41-8928-bce48c942e20)
+![Organization](img/organization.png)
 
 #### Create Organization
 
@@ -260,7 +301,7 @@ Teams can be simple, or they can be within Organizations and Departments.
 
 ### Departments
 
-![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/8fdb047b-8abf-4bfe-b8c1-5904ece4934b)
+![Department](img/department.png)
 
 #### Create Department
 
@@ -283,18 +324,18 @@ Teams can be simple, or they can be within Organizations and Departments.
 Asynchronous daily standup tool to aid in speeding up standup or making standups completely async depending on team
 practices.
 
-![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/eab485f4-7254-46bf-b2e8-11e468ba47f0)
+![Checkins](img/checkins.png)
 
 ##### Check In
 
 Provide your daily standup report. What did you do yesterday? What are you doing today? Any blockers? Anything to
 discuss?
 
-![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/e4411409-421e-4c54-bd4e-d73ab006153a)
+![Checkin Report](img/checkin-report.png)
 
 Choose your timezone.
 
-![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/00af5a6c-f19d-4de9-916a-a2cec975f60d)
+![Timezone](img/timezone.png)
 
 ##### Create Games, Retros, and Storyboards
 
