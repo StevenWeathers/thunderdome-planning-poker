@@ -22,6 +22,7 @@
     RotateCcw,
     CheckCircle,
   } from 'lucide-svelte';
+  import { validateUserIsRegistered } from '../validationUtils';
 
   interface Props {
     xfetch: ApiClient;
@@ -49,6 +50,9 @@
   }
 
   async function loadTeams() {
+    if (!validateUserIsRegistered($user)) {
+      return Promise.resolve();
+    }
     try {
       xfetch(`/api/users/${$user.id}/teams`)
         .then(res => res.json())
@@ -172,112 +176,116 @@
           </p>
         </div>
 
-        <!-- Team Filter Dropdown -->
-        <div class="flex-shrink-0 lg:mt-2">
-          <div class="flex items-center space-x-4">
-            <div class="flex items-center space-x-2">
-              <Filter class="h-5 w-5 text-slate-500 dark:text-slate-400" />
-              <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{$LL.filterByTeam()}</span>
-            </div>
+        {#if validateUserIsRegistered($user)}
+          <!-- Team Filter Dropdown -->
+          <div class="flex-shrink-0 lg:mt-2">
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-2">
+                <Filter class="h-5 w-5 text-slate-500 dark:text-slate-400" />
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{$LL.filterByTeam()}</span>
+              </div>
 
-            <div class="relative">
-              <button
-                onclick={toggleTeamDropdown}
-                class="inline-flex items-center justify-between rounded-xl bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm ring-1 ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[200px]"
-              >
-                <div class="flex items-center space-x-2">
-                  <Users class="h-4 w-4" />
-                  <span>
-                    {selectedTeam ? selectedTeam.name : $LL.allTeams()}
-                  </span>
-                </div>
-                <ChevronDown
-                  class="h-4 w-4 ml-2 transition-transform duration-200 {showTeamDropdown ? 'rotate-180' : ''}"
-                />
-              </button>
-
-              {#if showTeamDropdown}
-                <div
-                  class="absolute right-0 mt-2 w-64 origin-top-right rounded-xl bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+              <div class="relative">
+                <button
+                  onclick={toggleTeamDropdown}
+                  class="inline-flex items-center justify-between rounded-xl bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm ring-1 ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[200px]"
                 >
-                  <div class="py-2">
-                    <button
-                      onclick={() => selectTeam(null)}
-                      class="flex w-full items-center px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {!selectedTeam
-                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                        : ''}"
-                    >
-                      <div class="flex items-center space-x-3">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700">
-                          <Users class="h-4 w-4 text-slate-600 dark:text-slate-400" />
-                        </div>
-                        <div class="text-left">
-                          <div class="font-medium">{$LL.allTeams()}</div>
-                          <div class="text-xs text-slate-500 dark:text-slate-400">
-                            {$LL.showContentForAllTeams()}
-                          </div>
-                        </div>
-                      </div>
-                    </button>
+                  <div class="flex items-center space-x-2">
+                    <Users class="h-4 w-4" />
+                    <span>
+                      {selectedTeam ? selectedTeam.name : $LL.allTeams()}
+                    </span>
+                  </div>
+                  <ChevronDown
+                    class="h-4 w-4 ml-2 transition-transform duration-200 {showTeamDropdown ? 'rotate-180' : ''}"
+                  />
+                </button>
 
-                    {#each teams as team}
+                {#if showTeamDropdown}
+                  <div
+                    class="absolute right-0 mt-2 w-64 origin-top-right rounded-xl bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                  >
+                    <div class="py-2">
                       <button
-                        onclick={() => selectTeam(team)}
-                        class="flex w-full items-center px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {selectedTeam?.id ===
-                        team.id
+                        onclick={() => selectTeam(null)}
+                        class="flex w-full items-center px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {!selectedTeam
                           ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
                           : ''}"
                       >
                         <div class="flex items-center space-x-3">
                           <div
-                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30"
+                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700"
                           >
-                            <Users class="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            <Users class="h-4 w-4 text-slate-600 dark:text-slate-400" />
                           </div>
                           <div class="text-left">
-                            <div class="font-medium">{team.name}</div>
+                            <div class="font-medium">{$LL.allTeams()}</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">
+                              {$LL.showContentForAllTeams()}
+                            </div>
                           </div>
                         </div>
                       </button>
-                    {/each}
+
+                      {#each teams as team}
+                        <button
+                          onclick={() => selectTeam(team)}
+                          class="flex w-full items-center px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {selectedTeam?.id ===
+                          team.id
+                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                            : ''}"
+                        >
+                          <div class="flex items-center space-x-3">
+                            <div
+                              class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30"
+                            >
+                              <Users class="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            </div>
+                            <div class="text-left">
+                              <div class="font-medium">{team.name}</div>
+                            </div>
+                          </div>
+                        </button>
+                      {/each}
+                    </div>
                   </div>
-                </div>
+                {/if}
+              </div>
+
+              {#if selectedTeam}
+                <button
+                  onclick={() => selectTeam(null)}
+                  class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                >
+                  {$LL.clearFilter()}
+                </button>
               {/if}
             </div>
-
             {#if selectedTeam}
-              <button
-                onclick={() => selectTeam(null)}
-                class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-              >
-                {$LL.clearFilter()}
-              </button>
+              {@const linkPrefix = selectedTeam.department_id
+                ? `/organization/${selectedTeam.organization_id}/department/${selectedTeam.department_id}/team/${selectedTeam.id}`
+                : selectedTeam.organization_id
+                  ? `/organization/${selectedTeam.organization_id}/team/${selectedTeam.id}`
+                  : `/team/${selectedTeam.id}`}
+              <div class="flex flex-col sm:flex-row gap-3 mt-4 justify-end">
+                <a
+                  href={linkPrefix}
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 rounded-lg shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200"
+                >
+                  <Users class="h-4 w-4" />
+                  {$LL.teamPage()}
+                </a>
+                <a
+                  href="{linkPrefix}/checkin"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-lime-700 dark:text-lime-300 bg-lime-50 hover:bg-lime-100 dark:bg-lime-900/20 dark:hover:bg-lime-900/30 border border-lime-200 dark:border-lime-700 hover:border-lime-300 dark:hover:border-lime-600 rounded-lg shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200"
+                >
+                  <CheckCircle class="h-4 w-4" />
+                  {$LL.teamCheckins()}
+                </a>
+              </div>
             {/if}
           </div>
-          {#if selectedTeam}
-            {@const linkPrefix = selectedTeam.department_id
-              ? `/organization/${selectedTeam.organization_id}/department/${selectedTeam.department_id}/team/${selectedTeam.id}`
-              : selectedTeam.organization_id
-                ? `/organization/${selectedTeam.organization_id}/team/${selectedTeam.id}`
-                : `/team/${selectedTeam.id}`}
-            <div class="flex flex-col sm:flex-row gap-3 mt-4 justify-end">
-              <a
-                href={linkPrefix}
-                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 rounded-lg shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200"
-              >
-                <Users class="h-4 w-4" />
-                {$LL.teamPage()}
-              </a>
-              <a
-                href="{linkPrefix}/checkin"
-                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-lime-700 dark:text-lime-300 bg-lime-50 hover:bg-lime-100 dark:bg-lime-900/20 dark:hover:bg-lime-900/30 border border-lime-200 dark:border-lime-700 hover:border-lime-300 dark:hover:border-lime-600 rounded-lg shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200"
-              >
-                <CheckCircle class="h-4 w-4" />
-                {$LL.teamCheckins()}
-              </a>
-            </div>
-          {/if}
-        </div>
+        {/if}
       </div>
     </div>
 
