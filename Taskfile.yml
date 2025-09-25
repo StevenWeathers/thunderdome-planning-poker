@@ -1,9 +1,7 @@
 version: '3'
 
 vars:
-  BINARY_NAME: thunderdome-planning-poker
-  BINARY_LINUX: thunderdome-planning-poker_unix
-  BINARY_WINDOWS: thunderdome-planning-poker.exe
+  BINARY: '{{ if eq OS "windows" }}thunderdome-planning-poker.exe{{ else }}thunderdome-planning-poker{{ end }}'
   SWAGGER_DOCS_DIR: docs/swagger
 
 tasks:
@@ -22,9 +20,9 @@ tasks:
 
   clean:
     cmds:
-      - rm -f {{.BINARY_NAME}}
-      - rm -f {{.BINARY_LINUX}}
-      - rm -f {{.BINARY_WINDOWS}}
+      - rm -f thunderdome-planning-poker
+      - rm -f thunderdome-planning-poker_unix
+      - rm -f thunderdome-planning-poker.exe
       - rm -rf ui/dist
       - rm -rf release
       - rm -rf {{ .SWAGGER_DOCS_DIR }}
@@ -67,66 +65,61 @@ tasks:
   build-go:
     deps: [ fmt-go ]
     cmds:
-      - go build -o {{.BINARY_NAME}} -v
+      - go build -o {{.BINARY}} -v
 
   build-linux:
     deps: [ gen-swag, build-ui ]
     cmds:
-      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o {{.BINARY_LINUX}} -v
-
-  build-windows:
-    deps: [ gen-swag, build-ui ]
-    cmds:
-      - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o {{.BINARY_WINDOWS}} -v
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o thunderdome-planning-poker_unix -v
 
   build:
     deps: [ fmt-go, build-ui ]
     cmds:
-      - go build -o {{.BINARY_NAME}} -v
+      - go build -o {{.BINARY}} -v
 
   dev:
     deps: [ build-ui ]
     cmds:
       - task: build
-      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_NAME}} live
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY}} live
 
   dev-go:
     cmds:
       - task: build-go
-      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_NAME}} live
-
-  windows-dev-go:
-    cmds:
-      - task: windows-build-go
-      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_WINDOWS}} live
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY}} live
 
   dev-secure:
     cmds:
       - task: build
       - caddy start --config build/dev.caddyfile
-      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY_NAME}} live
+      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY}} live
 
   dev-secure-go:
     cmds:
       - task: build-go
       - caddy start --config build/dev.caddyfile
-      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY_NAME}} live
-
-  windows-build-go:
-    deps: [ fmt-go ]
-    cmds:
-      - go build -o {{.BINARY_WINDOWS}} -v
-
-  windows-dev-secure-go:
-    cmds:
-      - task: windows-build-go
-      - caddy start --config build/dev.caddyfile
-      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY_WINDOWS}} live
+      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY}} live
 
   run:
     cmds:
-      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./$(BINARY_NAME)
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY}}
 
-  run-windows:
+  migrate:
     cmds:
-      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY_WINDOWS}}
+      - task: build-go
+      - DB_HOST="localhost" ./{{.BINARY}} migrate
+
+  migreate-up:
+    cmds:
+      - task: build-go
+      - DB_HOST="localhost" ./{{.BINARY}} migrate up
+
+  migrate-down:
+    cmds:
+      - task: build-go
+      - DB_HOST="localhost" ./{{.BINARY}} migrate down
+
+  migrate-status:
+    cmds:
+      - task: build-go
+      - DB_HOST="localhost" ./{{.BINARY}} migrate status

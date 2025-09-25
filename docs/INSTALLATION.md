@@ -2,6 +2,16 @@
 
 This guide provides detailed instructions for installing and setting up Thunderdome using different methods.
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation Methods](#installation-methods)
+- [Configuration](#configuration)
+- [Verification](#verification)
+- [How to run DB Migrations and when necessary](#how-to-run-db-migrations-and-when-necessary)
+- [Troubleshooting](#troubleshooting)
+- [Upgrading from v2 to v3](#upgrading-from-v2-to-v3)
+
 ## Prerequisites
 
 - PostgreSQL database
@@ -86,15 +96,6 @@ kubectl port-forward svc/thunderdome 8080:8080
 
 For detailed configuration options, refer to the [Configuration Guide](CONFIGURATION.md).
 
-## Upgrading from v2 to v3
-
-If you're upgrading from version 2.x.x to 3.x.x:
-
-1. Review breaking changes in v3 (notably removal of Dicebear Avatars service)
-2. If using docker-compose, upgrade PostgreSQL to version 15
-3. Run the latest 2.x.x release to complete SQL migrations
-4. Run the latest 3.x.x release
-
 ## Verification
 
 After installation:
@@ -102,6 +103,16 @@ After installation:
 1. Access Thunderdome at `http://localhost:8080` (or your configured domain)
 2. Create an admin account on first run
 3. Verify email functionality by testing the registration process
+
+## How to run DB Migrations and when necessary
+
+By default Thunderdome will automatically attempt to run the db migrations, however there may be usecases where you want to manually run the migrations.
+
+### Migration subcommands:
+
+`./thunderdome-planning-poker migrate up` to Run all pending migrations
+`./thunderdome-planning-poker migrate down` to Rollback the last migration
+`./thunderdome-planning-poker migrate status` to Show migration status
 
 ## Troubleshooting
 
@@ -111,3 +122,12 @@ After installation:
 - Confirm proper network connectivity and port availability
 
 For additional help, refer to the [User Guide](GUIDE.md) or open an issue on GitHub.
+
+## Upgrading from v2 to v3
+
+If you're upgrading from version 2.x.x to 3.x.x:
+
+1. Review breaking changes in v3 (notably removal of Dicebear Avatars service)
+2. If using docker-compose, upgrade PostgreSQL to version 15
+3. Run the latest 2.x.x release to complete SQL migrations
+4. Run the latest 3.x.x release

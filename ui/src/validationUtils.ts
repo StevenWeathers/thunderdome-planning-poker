@@ -5,8 +5,9 @@ export const passMax = 72;
 export const nameLenError = `Name must be between ${nameMin} and ${nameMax} characters.`;
 export const passLenError = `Password must be between ${passMin} and ${passMax} characters.`;
 export const passNotMatchError = `Password and Confirm Password do not match.`;
+import type { User } from './types/user';
 
-export const validatePasswords = (password1, password2) => {
+export const validatePasswords = (password1: string, password2: string) => {
   let valid = true;
   let error = '';
 
@@ -26,7 +27,7 @@ export const validatePasswords = (password1, password2) => {
   };
 };
 
-export const validateName = warriorName => {
+export const validateName = (warriorName: string) => {
   let valid = true;
   let error = '';
 
@@ -41,10 +42,10 @@ export const validateName = warriorName => {
   };
 };
 
-export const validateUserIsAdmin = user => {
+export const validateUserIsAdmin = (user: User) => {
   return user.rank === 'ADMIN' || user.rank === 'GENERAL';
 };
 
-export const validateUserIsRegistered = user => {
+export const validateUserIsRegistered = (user: User) => {
   return user && user.rank !== 'GUEST' && user.rank !== 'PRIVATE';
 };

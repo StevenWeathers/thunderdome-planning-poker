@@ -7,6 +7,29 @@ located in one of:
 * `$HOME/.config/thunderdome/`
 * Current working directory
 
+## Table of Contents
+
+- [Example yaml configuration file](#example-yaml-configuration-file)
+- [Required configuration items](#required-configuration-items)
+- [Database configuration](#database-configuration)
+- [SMTP (Mail) server configuration](#smtp-mail-server-configuration)
+- [Configure Admin Email](#configure-admin-email)
+- [Authentication Configuration](#authentication-configuration)
+  - [Basic Configuration](#basic-configuration)
+  - [Authentication Types](#authentication-types)
+    - [Normal Authentication](#normal-authentication)
+    - [Header Authentication](#header-authentication)
+    - [LDAP Authentication](#ldap-authentication)
+    - [OpenID Connect Authentication](#openid-connect-authentication)
+  - [OpenID Connect OAuth2 Configuration](#openid-connect-oauth2-configuration)
+  - [LDAP Configuration](#ldap-configuration)
+  - [Header auth Configuration](#header-auth-configuration)
+  - [Google OAuth](#google-oauth)
+- [HTTP Configuration](#http-configuration)
+- [Open Telemetry Tracing](#open-telemetry-tracing)
+- [Optional configuration items](#optional-configuration-items)
+  - [Avatar Service configuration](#avatar-service-configuration)
+
 ### Example yaml configuration file
 
 ```
