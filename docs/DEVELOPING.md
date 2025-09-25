@@ -1,5 +1,17 @@
 # Development
 
+## Table of Contents
+
+* [Code Standards](#code-standards)
+   * [Frontend](#frontend)
+   * [Go](#go)
+* [Developing locally](#developing-locally)
+   * [Building and running with Docker Compose](#building-and-running-with-docker-compose)
+   * [Build and Run without Docker Compose](#build-and-run-without-docker-compose)
+   * [Creating SQL Migrations](#creating-sql-migrations)
+   * [Adding new Localizations](#adding-new-localizations)
+   * [Format code before commit](#format-code-before-commit)
+
 ## Code Standards
 
 ### Frontend

@@ -8,6 +8,20 @@ Submitting a fix
 Proposing new features
 Becoming a maintainer
 
+## Table of Contents
+
+1. [Code of Conduct](#code-of-conduct)
+2. [We Develop with GitHub](#we-develop-with-github)
+  - [Report bugs using GitHub's issues](#report-bugs-using-githubs-issues)
+  - [We Use Github Flow](#we-use-github-flow)
+3. [Versioning](#versioning)
+4. [Coding Conventions](#coding-conventions)
+  - [Go code conventions](#go-code-conventions)
+  - [UI code conventions](#ui-code-conventions)
+  - [End-to-End tests](#end-to-end-tests)
+5. [Authors](#authors)
+6. [License](#license)
+
 ## Code of Conduct
 
 Please read the [Code of Conduct](CODE_OF_CONDUCT.md) document.
