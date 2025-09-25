@@ -23,9 +23,11 @@ import (
 //go:embed migrations/*.sql
 var fs embed.FS
 
+var migrationsDir = "migrations"
+
 // New runs db migrations, sets up a db connection pool
 // and sets previously active users to false during startup
-func New(adminEmail string, config *Config, logger *otelzap.Logger) *Service {
+func New(adminEmail string, config *Config, logger *otelzap.Logger, instantiate bool) *Service {
 	ctx := context.Background()
 
 	// Do this once for each unique policy, and use the policy for the life of the program
@@ -71,7 +73,15 @@ func New(adminEmail string, config *Config, logger *otelzap.Logger) *Service {
 		d.Logger.Ctx(ctx).Error("goose set postgres dialect error", zap.Error(err))
 	}
 
-	if err := goose.Up(d.DB, "migrations", goose.WithAllowMissing()); err != nil {
+	if instantiate {
+		d.Instantiate(ctx, adminEmail)
+	}
+
+	return d
+}
+
+func (d *Service) Instantiate(ctx context.Context, adminEmail string) {
+	if err := goose.Up(d.DB, migrationsDir, goose.WithAllowMissing()); err != nil {
 		d.Logger.Ctx(ctx).Error("migrations error", zap.Error(err))
 	}
 
@@ -102,8 +112,6 @@ func New(adminEmail string, config *Config, logger *otelzap.Logger) *Service {
 			d.Logger.Ctx(ctx).Error("failed to update thunderdome_default estimation scale", zap.Error(err))
 		}
 	}
-
-	return d
 }
 
 // waitForDB attempts to open a database connection and ping it until successful.

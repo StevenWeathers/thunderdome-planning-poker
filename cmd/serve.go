@@ -123,7 +123,7 @@ func serve(embedUseOS bool) {
 		MaxOpenConns:           c.Db.MaxOpenConns,
 		ConnMaxLifetime:        c.Db.ConnMaxLifetime,
 		DefaultEstimationScale: c.Config.AllowedPointValues,
-	}, logger)
+	}, logger, true)
 
 	userService := &user.Service{DB: d.DB, Logger: logger}
 	apkService := &apikey.Service{DB: d.DB, Logger: logger}
