@@ -281,7 +281,7 @@
       </div>
     </div>
 
-    <!-- Main Content - Responsive Grid Layout -->
+    <!-- Main Content - Responsive Grid Layout with Equal Heights -->
     <div class="py-12">
       {#if AppConfig.RequireTeams && !selectedTeam}
         <div
@@ -297,11 +297,11 @@
           </div>
         </div>
       {:else}
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-start">
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 grid-rows-1">
           <!-- Poker Games Section -->
           {#if AppConfig.FeaturePoker}
-            <section>
-              <div class="flex items-center justify-between mb-6">
+            <section class="flex flex-col h-full">
+              <div class="flex items-center justify-between mb-6 flex-shrink-0">
                 <div class="flex items-center space-x-3">
                   <div
                     class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/25"
@@ -321,23 +321,25 @@
 
               {#if gameCount > 0}
                 <div
-                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50"
+                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50 flex-1 flex flex-col"
                 >
-                  <BoxList
-                    items={games}
-                    itemType="battle"
-                    pageRoute={appRoutes.game}
-                    joinBtnText={$LL.battleJoin()}
-                    showOwner={false}
-                    showOwnerName={true}
-                    ownerNameField="teamName"
-                    showFacilitatorIcon={true}
-                    facilitatorsKey="leaders"
-                    showCompletedStories={true}
-                  />
+                  <div class="flex-1">
+                    <BoxList
+                      items={games}
+                      itemType="battle"
+                      pageRoute={appRoutes.game}
+                      joinBtnText={$LL.battleJoin()}
+                      showOwner={false}
+                      showOwnerName={true}
+                      ownerNameField="teamName"
+                      showFacilitatorIcon={true}
+                      facilitatorsKey="leaders"
+                      showCompletedStories={true}
+                    />
+                  </div>
 
                   {#if gameCount > 4}
-                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                       <a
                         href={appRoutes.games}
                         class="group w-full flex items-center justify-between p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 shadow-sm hover:shadow-md transition-all"
@@ -363,22 +365,26 @@
                   {/if}
                 </div>
               {:else}
-                <div class="text-center py-16">
-                  <div
-                    class="mx-auto h-24 w-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6"
-                  >
-                    <Gamepad2 class="h-12 w-12 text-slate-400" />
+                <div
+                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50 flex-1 flex items-center justify-center"
+                >
+                  <div class="text-center">
+                    <div
+                      class="mx-auto h-24 w-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6"
+                    >
+                      <Gamepad2 class="h-12 w-12 text-slate-400" />
+                    </div>
+                    <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">
+                      {selectedTeam
+                        ? $LL.noSessionsFoundForTeam({
+                            teamName: selectedTeam.name,
+                          })
+                        : $LL.noGamesFound()}
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-500">
+                      {selectedTeam ? $LL.trySelectingDifferentTeamForPoker() : $LL.startFirstPlanningPokerSession()}
+                    </p>
                   </div>
-                  <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">
-                    {selectedTeam
-                      ? $LL.noSessionsFoundForTeam({
-                          teamName: selectedTeam.name,
-                        })
-                      : $LL.noGamesFound()}
-                  </p>
-                  <p class="text-sm text-slate-500 dark:text-slate-500">
-                    {selectedTeam ? $LL.trySelectingDifferentTeamForPoker() : $LL.startFirstPlanningPokerSession()}
-                  </p>
                 </div>
               {/if}
             </section>
@@ -386,8 +392,8 @@
 
           <!-- Retros Section -->
           {#if AppConfig.FeatureRetro}
-            <section>
-              <div class="flex items-center justify-between mb-6">
+            <section class="flex flex-col h-full">
+              <div class="flex items-center justify-between mb-6 flex-shrink-0">
                 <div class="flex items-center space-x-3">
                   <div
                     class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/25"
@@ -407,20 +413,22 @@
 
               {#if retroCount > 0}
                 <div
-                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50"
+                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50 flex-1 flex flex-col"
                 >
-                  <BoxList
-                    items={retros}
-                    itemType="retro"
-                    pageRoute={appRoutes.retro}
-                    ownerField="ownerId"
-                    showOwnerName={true}
-                    ownerNameField="teamName"
-                    joinBtnText={$LL.joinRetro()}
-                  />
+                  <div class="flex-1">
+                    <BoxList
+                      items={retros}
+                      itemType="retro"
+                      pageRoute={appRoutes.retro}
+                      ownerField="ownerId"
+                      showOwnerName={true}
+                      ownerNameField="teamName"
+                      joinBtnText={$LL.joinRetro()}
+                    />
+                  </div>
 
                   {#if retroCount > 4}
-                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                       <a
                         href={appRoutes.retros}
                         class="group w-full flex items-center justify-between p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 shadow-sm hover:shadow-md transition-all"
@@ -446,22 +454,26 @@
                   {/if}
                 </div>
               {:else}
-                <div class="text-center py-16">
-                  <div
-                    class="mx-auto h-24 w-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6"
-                  >
-                    <RotateCcw class="h-12 w-12 text-slate-400" />
+                <div
+                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50 flex-1 flex items-center justify-center"
+                >
+                  <div class="text-center">
+                    <div
+                      class="mx-auto h-24 w-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6"
+                    >
+                      <RotateCcw class="h-12 w-12 text-slate-400" />
+                    </div>
+                    <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">
+                      {selectedTeam
+                        ? $LL.noRetrosFoundForTeam({
+                            teamName: selectedTeam.name,
+                          })
+                        : $LL.noRetrosFound()}
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-500">
+                      {selectedTeam ? $LL.trySelectingDifferentTeamForRetros() : $LL.startFirstSprintRetrospective()}
+                    </p>
                   </div>
-                  <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">
-                    {selectedTeam
-                      ? $LL.noRetrosFoundForTeam({
-                          teamName: selectedTeam.name,
-                        })
-                      : $LL.noRetrosFound()}
-                  </p>
-                  <p class="text-sm text-slate-500 dark:text-slate-500">
-                    {selectedTeam ? $LL.trySelectingDifferentTeamForRetros() : $LL.startFirstSprintRetrospective()}
-                  </p>
                 </div>
               {/if}
             </section>
@@ -469,8 +481,8 @@
 
           <!-- Storyboards Section -->
           {#if AppConfig.FeatureStoryboard}
-            <section>
-              <div class="flex items-center justify-between mb-6">
+            <section class="flex flex-col h-full">
+              <div class="flex items-center justify-between mb-6 flex-shrink-0">
                 <div class="flex items-center space-x-3">
                   <div
                     class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25"
@@ -490,19 +502,21 @@
 
               {#if storyboardCount > 0}
                 <div
-                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50"
+                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50 flex-1 flex flex-col"
                 >
-                  <BoxList
-                    items={storyboards}
-                    itemType="storyboard"
-                    showOwnerName={true}
-                    ownerNameField="teamName"
-                    pageRoute={appRoutes.storyboard}
-                    joinBtnText={$LL.joinStoryboard()}
-                  />
+                  <div class="flex-1">
+                    <BoxList
+                      items={storyboards}
+                      itemType="storyboard"
+                      showOwnerName={true}
+                      ownerNameField="teamName"
+                      pageRoute={appRoutes.storyboard}
+                      joinBtnText={$LL.joinStoryboard()}
+                    />
+                  </div>
 
                   {#if storyboardCount > 4}
-                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                       <a
                         href={appRoutes.storyboards}
                         class="group w-full flex items-center justify-between p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 shadow-sm hover:shadow-md transition-all"
@@ -530,22 +544,26 @@
                   {/if}
                 </div>
               {:else}
-                <div class="text-center py-16">
-                  <div
-                    class="mx-auto h-24 w-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6"
-                  >
-                    <LayoutDashboard class="h-12 w-12 text-slate-400" />
+                <div
+                  class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50 flex-1 flex items-center justify-center"
+                >
+                  <div class="text-center">
+                    <div
+                      class="mx-auto h-24 w-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6"
+                    >
+                      <LayoutDashboard class="h-12 w-12 text-slate-400" />
+                    </div>
+                    <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">
+                      {selectedTeam
+                        ? $LL.noStoryboardsFoundForTeam({
+                            teamName: selectedTeam.name,
+                          })
+                        : $LL.noStoryboardsFound()}
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-500">
+                      {selectedTeam ? $LL.trySelectingDifferentTeamForStoryboards() : $LL.startFirstStoryboard()}
+                    </p>
                   </div>
-                  <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">
-                    {selectedTeam
-                      ? $LL.noStoryboardsFoundForTeam({
-                          teamName: selectedTeam.name,
-                        })
-                      : $LL.noStoryboardsFound()}
-                  </p>
-                  <p class="text-sm text-slate-500 dark:text-slate-500">
-                    {selectedTeam ? $LL.trySelectingDifferentTeamForStoryboards() : $LL.startFirstStoryboard()}
-                  </p>
                 </div>
               {/if}
             </section>
