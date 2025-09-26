@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import Sockette from 'sockette';
   import { onDestroy, onMount } from 'svelte';
 
@@ -19,15 +18,12 @@
     ChevronDown,
     Crown,
     Download,
-    Link,
     LogOut,
-    MessageSquareMore,
     Pencil,
     Plus,
     Settings,
     SwatchBook,
     Trash,
-    User,
     Users,
   } from 'lucide-svelte';
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
@@ -46,6 +42,7 @@
   } from '../../types/storyboard';
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
   import type { NotificationService } from '../../types/notifications';
+  import GoalColumns from '../../components/storyboard/GoalColumns.svelte';
 
   interface Props {
     router: any;
@@ -86,6 +83,7 @@
   let showEditStoryboard = $state(false);
   let showExportStoryboard = $state(false);
   let activeUserCount = $state(0);
+  let columnOrderEditMode = $state(false);
 
   const onSocketMessage = function (evt) {
     isLoading = false;
@@ -236,46 +234,6 @@
       }),
     );
   };
-
-  // event handlers
-  function handleDndConsider(e) {
-    const goalIndex = e.target.dataset.goalindex;
-    const columnIndex = e.target.dataset.columnindex;
-
-    storyboard.goals[goalIndex].columns[columnIndex].stories = e.detail.items;
-    storyboard.goals = storyboard.goals;
-  }
-
-  function handleDndFinalize(e) {
-    const goalIndex = e.target.dataset.goalindex;
-    const columnIndex = e.target.dataset.columnindex;
-    const storyId = e.detail.info.id;
-
-    storyboard.goals[goalIndex].columns[columnIndex].stories = e.detail.items;
-    storyboard.goals = storyboard.goals;
-
-    const matchedStory = storyboard.goals[goalIndex].columns[columnIndex].stories.find(i => i.id === storyId);
-
-    if (matchedStory) {
-      const goalId = storyboard.goals[goalIndex].id;
-      const columnId = storyboard.goals[goalIndex].columns[columnIndex].id;
-
-      // determine what story to place story before in target column
-      const matchedStoryIndex = storyboard.goals[goalIndex].columns[columnIndex].stories.indexOf(matchedStory);
-      const sibling = storyboard.goals[goalIndex].columns[columnIndex].stories[matchedStoryIndex + 1];
-      const placeBefore = sibling ? sibling.id : '';
-
-      sendSocketEvent(
-        'move_story',
-        JSON.stringify({
-          storyId,
-          goalId,
-          columnId,
-          placeBefore,
-        }),
-      );
-    }
-  }
 
   function authStoryboard(joinPasscode) {
     sendSocketEvent('auth_storyboard', joinPasscode);
@@ -450,7 +408,14 @@
   }
 
   const toggleStoryForm = story => () => {
+    if (columnOrderEditMode) {
+      return;
+    }
     activeStory = activeStory != null ? null : story;
+  };
+
+  const toggleColumnOrderEdit = () => {
+    columnOrderEditMode = !columnOrderEditMode;
   };
 
   let showBecomeFacilitator = $state(false);
@@ -496,58 +461,60 @@
       </h1>
     </div>
     <div class="flex justify-end space-x-2">
-      <SolidButton color="green" onClick={toggleAddGoal()} testid="goal-add">
-        <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
-      </SolidButton>
-      <SubMenu label="Storyboard Settings" icon={Settings} testId="storyboard-settings">
-        {#snippet children({ toggleSubmenu })}
-          <SubMenuItem
-            onClickHandler={togglePersonas(toggleSubmenu)}
-            testId="personas-toggle"
-            icon={Users}
-            label={$LL.personas()}
-          />
-          <SubMenuItem
-            onClickHandler={toggleEditLegend(toggleSubmenu)}
-            testId="colorlegend"
-            icon={SwatchBook}
-            label={$LL.colorLegend()}
-          />
-          <SubMenuItem
-            onClickHandler={toggleExportStoryboard(toggleSubmenu)}
-            testId="storyboard-export"
-            icon={Download}
-            label={$LL.export()}
-          />
-          {#if isFacilitator}
+      {#if !columnOrderEditMode}
+        <SolidButton color="green" onClick={toggleAddGoal()} testid="goal-add">
+          <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
+        </SolidButton>
+        <SubMenu label="Storyboard Settings" icon={Settings} testId="storyboard-settings">
+          {#snippet children({ toggleSubmenu })}
             <SubMenuItem
-              onClickHandler={toggleEditStoryboard(toggleSubmenu)}
-              testId="storyboard-edit"
-              icon={Pencil}
-              label={$LL.editStoryboard()}
+              onClickHandler={togglePersonas(toggleSubmenu)}
+              testId="personas-toggle"
+              icon={Users}
+              label={$LL.personas()}
             />
             <SubMenuItem
-              onClickHandler={toggleDeleteStoryboard(toggleSubmenu)}
-              testId="storyboard-delete"
-              icon={Trash}
-              label={$LL.deleteStoryboard()}
-            />
-          {:else}
-            <SubMenuItem
-              onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
-              testId="become-facilitator"
-              icon={Crown}
-              label={$LL.becomeFacilitator()}
+              onClickHandler={toggleEditLegend(toggleSubmenu)}
+              testId="colorlegend"
+              icon={SwatchBook}
+              label={$LL.colorLegend()}
             />
             <SubMenuItem
-              onClickHandler={abandonStoryboard(toggleSubmenu)}
-              testId="storyboard-leave"
-              icon={LogOut}
-              label={$LL.leaveStoryboard()}
+              onClickHandler={toggleExportStoryboard(toggleSubmenu)}
+              testId="storyboard-export"
+              icon={Download}
+              label={$LL.export()}
             />
-          {/if}
-        {/snippet}
-      </SubMenu>
+            {#if isFacilitator}
+              <SubMenuItem
+                onClickHandler={toggleEditStoryboard(toggleSubmenu)}
+                testId="storyboard-edit"
+                icon={Pencil}
+                label={$LL.editStoryboard()}
+              />
+              <SubMenuItem
+                onClickHandler={toggleDeleteStoryboard(toggleSubmenu)}
+                testId="storyboard-delete"
+                icon={Trash}
+                label={$LL.deleteStoryboard()}
+              />
+            {:else}
+              <SubMenuItem
+                onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
+                testId="become-facilitator"
+                icon={Crown}
+                label={$LL.becomeFacilitator()}
+              />
+              <SubMenuItem
+                onClickHandler={abandonStoryboard(toggleSubmenu)}
+                testId="storyboard-leave"
+                icon={LogOut}
+                label={$LL.leaveStoryboard()}
+              />
+            {/if}
+          {/snippet}
+        </SubMenu>
+      {/if}
       <SolidButton color="gray" onClick={toggleUsersPanel} testid="users-toggle">
         <Users class="inline-block w-4 h-4 me-2" />
         {$LL.users()}&nbsp;<span
@@ -577,207 +544,19 @@
       toggleEdit={toggleAddGoal}
       {goalIndex}
       {isFacilitator}
+      {columnOrderEditMode}
+      {toggleColumnOrderEdit}
     >
-      <div class="flex">
-        {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-          <div class="flex-none mx-2 w-40" data-testid="goal-personas">
-            <div class="w-full mb-2">
-              {#each goalColumn.personas as persona}
-                <div class="mt-4 dark:text-gray-300 text-right" data-testid="goal-persona">
-                  <div class="font-bold" data-testid="persona-name">
-                    <User class="inline-block h-4 w-4" />
-                    {persona.name}
-                  </div>
-                  <div class="text-sm" data-testid="persona-role">
-                    {persona.role}
-                  </div>
-                </div>
-              {/each}
-            </div>
-          </div>
-        {/each}
-      </div>
-      <div class="flex">
-        {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-          <div class="flex-none my-4 mx-2 w-40" data-testid="goal-column">
-            <div class="flex-none">
-              <div class="w-full mb-2">
-                <div class="flex">
-                  <span
-                    class="font-bold flex-grow truncate dark:text-gray-300"
-                    title={goalColumn.name}
-                    data-testid="column-name"
-                  >
-                    {goalColumn.name}
-                  </span>
-                  <button
-                    onclick={toggleColumnEdit(goalColumn)}
-                    class="flex-none font-bold text-xl
-                                    border-dashed border-2 border-gray-400 dark:border-gray-600
-                                    hover:border-green-500 text-gray-600 dark:text-gray-400
-                                    hover:text-green-500 py-1 px-2"
-                    title={$LL.storyboardEditColumn()}
-                    data-testid="column-edit"
-                  >
-                    <Pencil />
-                  </button>
-                </div>
-              </div>
-              <div class="w-full">
-                <div class="flex">
-                  <button
-                    onclick={addStory(goal.id, goalColumn.id)}
-                    class="flex-grow font-bold text-xl py-1
-                                    px-2 border-dashed border-2
-                                    border-gray-400 dark:border-gray-600 hover:border-green-500
-                                    text-gray-600 dark:text-gray-400 hover:text-green-500"
-                    title={$LL.storyboardAddStoryToColumn()}
-                    data-testid="story-add"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div
-              class="w-full relative"
-              data-testid="column-dropzone"
-              style="min-height: 160px;"
-              data-goalid={goal.id}
-              data-columnid={goalColumn.id}
-              data-goalIndex={goalIndex}
-              data-columnindex={columnIndex}
-              use:dndzone={{
-                items: goalColumn.stories,
-                type: 'story',
-                dropTargetStyle: '',
-                dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
-              }}
-              onconsider={handleDndConsider}
-              onfinalize={handleDndFinalize}
-            >
-              {#each goalColumn.stories as story (story.id)}
-                <div
-                  class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4 cursor-pointer"
-                  style="list-style: none;"
-                  role="button"
-                  tabindex="0"
-                  data-goalid={goal.id}
-                  data-columnid={goalColumn.id}
-                  data-storyid={story.id}
-                  data-testid="column-story"
-                  onclick={toggleStoryForm(story)}
-                  onkeypress={toggleStoryForm(story)}
-                >
-                  <div>
-                    <div>
-                      <div
-                        class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
-                        title={story.name}
-                        data-testid="story-name"
-                      >
-                        {story.name}
-                      </div>
-                      <div class="h-10">
-                        <div class="flex content-center p-2 text-sm">
-                          <div class="w-1/2 text-gray-600 dark:text-gray-300">
-                            {#if story.comments.length > 0}
-                              <span
-                                class="inline-block align-middle"
-                                data-testid="story-comments"
-                                title="Story has {story.comments.length} {story.comments.length
-                                  ? 'comments'
-                                  : 'comment'}"
-                              >
-                                {story.comments.length}
-                                <MessageSquareMore class="inline-block" />
-                              </span>
-                            {/if}
-                          </div>
-                          <div class="w-1/2 flex space-x-2 justify-end">
-                            {#if story.link !== ''}
-                              <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
-                            {/if}
-                            {#if story.points > 0}
-                              <span
-                                class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
-                                data-testid="story-points"
-                                title="Story points"
-                              >
-                                {story.points}
-                              </span>
-                            {/if}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-                    <div
-                      class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
-                                story-{story.color} border
-                                cursor-pointer"
-                      style="list-style: none;"
-                      role="button"
-                      tabindex="0"
-                      data-goalid={goal.id}
-                      data-columnid={goalColumn.id}
-                      data-storyid={story.id}
-                      data-testid="column-story-shadowitem"
-                      onclick={toggleStoryForm(story)}
-                      onkeypress={toggleStoryForm(story)}
-                    >
-                      <div>
-                        <div>
-                          <div
-                            class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
-                            title={story.name}
-                            data-testid="shadow-story-name"
-                          >
-                            {story.name}
-                          </div>
-                          <div class="h-10">
-                            <div class="flex content-center p-2 text-sm">
-                              <div class="w-1/2 text-gray-600 dark:text-gray-300">
-                                {#if story.comments.length > 0}
-                                  <span
-                                    class="inline-block align-middle"
-                                    data-testid="story-comments"
-                                    title="Story has {story.comments.length} {story.comments.length
-                                      ? 'comments'
-                                      : 'comment'}"
-                                  >
-                                    {story.comments.length}
-                                    <MessageSquareMore class="inline-block" />
-                                  </span>
-                                {/if}
-                              </div>
-                              <div class="w-1/2 flex space-x-2 justify-end">
-                                {#if story.link !== ''}
-                                  <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
-                                {/if}
-                                {#if story.points > 0}
-                                  <span
-                                    class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
-                                    data-testid="story-points"
-                                    title="Story points"
-                                  >
-                                    {story.points}
-                                  </span>
-                                {/if}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  {/if}
-                </div>
-              {/each}
-            </div>
-          </div>
-        {/each}
-      </div>
+      <GoalColumns
+        bind:goals={storyboard.goals}
+        {goal}
+        {goalIndex}
+        {columnOrderEditMode}
+        {addStory}
+        {toggleColumnEdit}
+        {toggleStoryForm}
+        {sendSocketEvent}
+      />
     </GoalSection>
   {/each}
 </div>
@@ -877,125 +656,3 @@
 {:else if JoinPassRequired}
   <JoinCodeForm handleSubmit={authStoryboard} submitText={$LL.joinStoryboard()} />
 {/if}
-
-<style>
-  .story-gray {
-    @apply border-gray-400;
-  }
-
-  .story-gray:hover {
-    @apply border-gray-800;
-  }
-
-  .story-red {
-    @apply border-red-400;
-  }
-
-  .story-red:hover {
-    @apply border-red-800;
-  }
-
-  .story-orange {
-    @apply border-orange-400;
-  }
-
-  .story-orange:hover {
-    @apply border-orange-800;
-  }
-
-  .story-yellow {
-    @apply border-yellow-400;
-  }
-
-  .story-yellow:hover {
-    @apply border-yellow-800;
-  }
-
-  .story-green {
-    @apply border-green-400;
-  }
-
-  .story-green:hover {
-    @apply border-green-800;
-  }
-
-  .story-teal {
-    @apply border-teal-400;
-  }
-
-  .story-teal:hover {
-    @apply border-teal-800;
-  }
-
-  .story-blue {
-    @apply border-blue-400;
-  }
-
-  .story-blue:hover {
-    @apply border-blue-800;
-  }
-
-  .story-indigo {
-    @apply border-indigo-400;
-  }
-
-  .story-indigo:hover {
-    @apply border-indigo-800;
-  }
-
-  .story-purple {
-    @apply border-purple-400;
-  }
-
-  .story-purple:hover {
-    @apply border-purple-800;
-  }
-
-  .story-pink {
-    @apply border-pink-400;
-  }
-
-  .story-pink:hover {
-    @apply border-pink-800;
-  }
-
-  .colorcard-gray {
-    @apply bg-gray-400;
-  }
-
-  .colorcard-red {
-    @apply bg-red-400;
-  }
-
-  .colorcard-orange {
-    @apply bg-orange-400;
-  }
-
-  .colorcard-yellow {
-    @apply bg-yellow-400;
-  }
-
-  .colorcard-green {
-    @apply bg-green-400;
-  }
-
-  .colorcard-teal {
-    @apply bg-teal-400;
-  }
-
-  .colorcard-blue {
-    @apply bg-blue-400;
-  }
-
-  .colorcard-indigo {
-    @apply bg-indigo-400;
-  }
-
-  .colorcard-purple {
-    @apply bg-purple-400;
-  }
-
-  .colorcard-pink {
-    @apply bg-pink-400;
-  }
-</style>

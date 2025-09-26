@@ -195,3 +195,76 @@ func (d *Service) GetStoryboardGoals(storyboardID string) []*thunderdome.Storybo
 
 	return goals
 }
+
+// GetStoryboardGoal retrieves a specific goal by ID
+func (d *Service) GetStoryboardGoal(storyboardID string, goalID string) (*thunderdome.StoryboardGoal, error) {
+	var sg = &thunderdome.StoryboardGoal{
+		ID:        "",
+		Name:      "",
+		SortOrder: "",
+		Columns:   make([]*thunderdome.StoryboardColumn, 0),
+		Personas:  make([]*thunderdome.StoryboardPersona, 0),
+	}
+	var columns string
+	var personas string
+
+	goalErr := d.DB.QueryRow(
+		`SELECT
+            sg.id,
+            sg.display_order,
+            sg.name,
+            COALESCE(json_agg(to_jsonb(t) - 'goal_id' ORDER BY t.display_order) FILTER (WHERE t.id IS NOT NULL), '[]') AS columns,
+            (SELECT COALESCE(json_agg(to_jsonb(sp)) FILTER (WHERE gp.goal_id IS NOT NULL), '[]') AS personas
+            FROM thunderdome.storyboard_goal_persona gp
+            LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = gp.persona_id) as personas
+        FROM thunderdome.storyboard_goal sg
+        LEFT JOIN (
+            SELECT
+                sc.*,
+                COALESCE(
+                    json_agg(stss ORDER BY stss.display_order) FILTER (WHERE stss.id IS NOT NULL), '[]'
+                ) AS stories,
+                (SELECT COALESCE(
+                    json_agg(sp) FILTER (WHERE cp.column_id IS NOT NULL), '[]'
+                ) AS personas
+                FROM thunderdome.storyboard_column_persona cp
+                LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = cp.persona_id
+                WHERE cp.column_id = sc.id) AS personas
+            FROM thunderdome.storyboard_column sc
+            LEFT JOIN (
+                SELECT
+                    ss.*,
+                    COALESCE(
+                        json_agg(stcm ORDER BY stcm.created_date) FILTER (WHERE stcm.id IS NOT NULL), '[]'
+                    ) AS comments
+                FROM thunderdome.storyboard_story ss
+                LEFT JOIN thunderdome.storyboard_story_comment stcm ON stcm.story_id = ss.id
+                GROUP BY ss.id
+            ) stss ON stss.column_id = sc.id
+            GROUP BY sc.id
+        ) t ON t.goal_id = sg.id
+        WHERE sg.storyboard_id = $1 AND sg.id = $2
+        GROUP BY sg.id, sg.display_order
+        ORDER BY sg.display_order;`,
+		storyboardID, goalID,
+	).Scan(&sg.ID, &sg.SortOrder, &sg.Name, &columns, &personas)
+	if goalErr != nil {
+		d.Logger.Error("get_storyboard_goal query scan error", zap.Error(goalErr))
+		return sg, goalErr
+	}
+
+	goalColumns := make([]*thunderdome.StoryboardColumn, 0)
+	jsonErr := json.Unmarshal([]byte(columns), &goalColumns)
+	if jsonErr != nil {
+		d.Logger.Error("storyboard goals json error", zap.Error(jsonErr))
+	}
+	sg.Columns = goalColumns
+	goalPersonas := make([]*thunderdome.StoryboardPersona, 0)
+	pJsonErr := json.Unmarshal([]byte(personas), &goalPersonas)
+	if jsonErr != nil {
+		d.Logger.Error("storyboard goals json error", zap.Error(pJsonErr))
+	}
+	sg.Personas = goalPersonas
+
+	return sg, nil
+}
