@@ -140,6 +140,10 @@
           });
         }
         break;
+      case 'column_moved':
+        const updatedGoal = JSON.parse(parsedEvent.value);
+        storyboard.goals = storyboard.goals.map(goal => (goal.id === updatedGoal.id ? updatedGoal : goal));
+        break;
       case 'story_added':
         storyboard.goals = JSON.parse(parsedEvent.value);
         break;
