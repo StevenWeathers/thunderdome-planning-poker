@@ -90,36 +90,36 @@
       {#if isFacilitator}
         {#if columnOrderEditMode}
           <SolidButton color="yellow" onClick={toggleColumnOrderEdit} testid="column-order-done">
-            <span class="inline-block w-4 h-4">✓</span>&nbsp;Done Editing Column Order
+            <SendToBack class="inline-block w-4 h-4 me-1" />End Column Order Edit Mode
           </SolidButton>
+        {:else}
+          <SolidButton color="green" onClick={handleColAdd} testid="column-add">
+            <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddColumn()}
+          </SolidButton>
+
+          <SubMenu label="Goal Settings" icon={Settings} testId="goal-settings">
+            {#snippet children({ toggleSubmenu })}
+              <SubMenuItem
+                onClickHandler={handleToggleEdit(toggleSubmenu)}
+                testId="goal-edit"
+                icon={Pencil}
+                label={$LL.edit()}
+              />
+              <SubMenuItem
+                onClickHandler={handleToggleColumnOrderEdit(toggleSubmenu)}
+                testId="toggle-edit-goal-column-order"
+                icon={SendToBack}
+                label={`Edit Columns Order`}
+              />
+              <SubMenuItem
+                onClickHandler={toggleDeleteConfirmation(toggleSubmenu)}
+                testId="goal-delete"
+                icon={Trash}
+                label={$LL.delete()}
+              />
+            {/snippet}
+          </SubMenu>
         {/if}
-
-        <SolidButton color="green" onClick={handleColAdd} testid="column-add">
-          <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddColumn()}
-        </SolidButton>
-
-        <SubMenu label="Goal Settings" icon={Settings} testId="goal-settings">
-          {#snippet children({ toggleSubmenu })}
-            <SubMenuItem
-              onClickHandler={handleToggleEdit(toggleSubmenu)}
-              testId="goal-edit"
-              icon={Pencil}
-              label={$LL.edit()}
-            />
-            <SubMenuItem
-              onClickHandler={handleToggleColumnOrderEdit(toggleSubmenu)}
-              testId="toggle-edit-goal-column-order"
-              icon={SendToBack}
-              label={`Edit Columns Order`}
-            />
-            <SubMenuItem
-              onClickHandler={toggleDeleteConfirmation(toggleSubmenu)}
-              testId="goal-delete"
-              icon={Trash}
-              label={$LL.delete()}
-            />
-          {/snippet}
-        </SubMenu>
       {/if}
     </div>
   </div>

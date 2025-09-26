@@ -160,13 +160,13 @@ func (d *Service) MoveStoryboardColumn(storyboardID string, userID string, colum
 	}
 	defer tx.Rollback()
 
-	if placeBeforeID != "" {
+	if placeBeforeID == "" {
 		if err := tx.QueryRow(
 			`
 		SELECT
         (SELECT MAX(display_order)
          FROM thunderdome.storyboard_column
-         WHERE storyboard_id = $1 AND goal_id = $2 AND id != $3
+         WHERE storyboard_id = $1 AND goal_id = $2 AND id != $3)
           AS last_display_order;`,
 			storyboardID, goalID, columnID,
 		).Scan(&betweenAkey); err != nil {

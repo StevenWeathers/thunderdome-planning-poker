@@ -188,4 +188,17 @@
     @apply hover:bg-indigo-300;
     @apply focus:ring-indigo-500;
   }
+
+  .btn-yellow {
+    @apply bg-yellow-400;
+    @apply hover:bg-yellow-500;
+    @apply focus:ring-yellow-300;
+  }
+
+  :global(.dark) .btn-yellow {
+    @apply bg-yellow-300;
+    @apply text-gray-800;
+    @apply hover:bg-yellow-200;
+    @apply focus:ring-yellow-400;
+  }
 </style>

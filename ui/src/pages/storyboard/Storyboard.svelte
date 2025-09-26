@@ -42,7 +42,7 @@
   } from '../../types/storyboard';
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
   import type { NotificationService } from '../../types/notifications';
-  import StoryColumn from '../../components/storyboard/StoryColumn.svelte';
+  import GoalColumns from '../../components/storyboard/GoalColumns.svelte';
 
   interface Props {
     router: any;
@@ -461,58 +461,60 @@
       </h1>
     </div>
     <div class="flex justify-end space-x-2">
-      <SolidButton color="green" onClick={toggleAddGoal()} testid="goal-add">
-        <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
-      </SolidButton>
-      <SubMenu label="Storyboard Settings" icon={Settings} testId="storyboard-settings">
-        {#snippet children({ toggleSubmenu })}
-          <SubMenuItem
-            onClickHandler={togglePersonas(toggleSubmenu)}
-            testId="personas-toggle"
-            icon={Users}
-            label={$LL.personas()}
-          />
-          <SubMenuItem
-            onClickHandler={toggleEditLegend(toggleSubmenu)}
-            testId="colorlegend"
-            icon={SwatchBook}
-            label={$LL.colorLegend()}
-          />
-          <SubMenuItem
-            onClickHandler={toggleExportStoryboard(toggleSubmenu)}
-            testId="storyboard-export"
-            icon={Download}
-            label={$LL.export()}
-          />
-          {#if isFacilitator}
+      {#if !columnOrderEditMode}
+        <SolidButton color="green" onClick={toggleAddGoal()} testid="goal-add">
+          <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
+        </SolidButton>
+        <SubMenu label="Storyboard Settings" icon={Settings} testId="storyboard-settings">
+          {#snippet children({ toggleSubmenu })}
             <SubMenuItem
-              onClickHandler={toggleEditStoryboard(toggleSubmenu)}
-              testId="storyboard-edit"
-              icon={Pencil}
-              label={$LL.editStoryboard()}
+              onClickHandler={togglePersonas(toggleSubmenu)}
+              testId="personas-toggle"
+              icon={Users}
+              label={$LL.personas()}
             />
             <SubMenuItem
-              onClickHandler={toggleDeleteStoryboard(toggleSubmenu)}
-              testId="storyboard-delete"
-              icon={Trash}
-              label={$LL.deleteStoryboard()}
-            />
-          {:else}
-            <SubMenuItem
-              onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
-              testId="become-facilitator"
-              icon={Crown}
-              label={$LL.becomeFacilitator()}
+              onClickHandler={toggleEditLegend(toggleSubmenu)}
+              testId="colorlegend"
+              icon={SwatchBook}
+              label={$LL.colorLegend()}
             />
             <SubMenuItem
-              onClickHandler={abandonStoryboard(toggleSubmenu)}
-              testId="storyboard-leave"
-              icon={LogOut}
-              label={$LL.leaveStoryboard()}
+              onClickHandler={toggleExportStoryboard(toggleSubmenu)}
+              testId="storyboard-export"
+              icon={Download}
+              label={$LL.export()}
             />
-          {/if}
-        {/snippet}
-      </SubMenu>
+            {#if isFacilitator}
+              <SubMenuItem
+                onClickHandler={toggleEditStoryboard(toggleSubmenu)}
+                testId="storyboard-edit"
+                icon={Pencil}
+                label={$LL.editStoryboard()}
+              />
+              <SubMenuItem
+                onClickHandler={toggleDeleteStoryboard(toggleSubmenu)}
+                testId="storyboard-delete"
+                icon={Trash}
+                label={$LL.deleteStoryboard()}
+              />
+            {:else}
+              <SubMenuItem
+                onClickHandler={toggleBecomeFacilitator(toggleSubmenu)}
+                testId="become-facilitator"
+                icon={Crown}
+                label={$LL.becomeFacilitator()}
+              />
+              <SubMenuItem
+                onClickHandler={abandonStoryboard(toggleSubmenu)}
+                testId="storyboard-leave"
+                icon={LogOut}
+                label={$LL.leaveStoryboard()}
+              />
+            {/if}
+          {/snippet}
+        </SubMenu>
+      {/if}
       <SolidButton color="gray" onClick={toggleUsersPanel} testid="users-toggle">
         <Users class="inline-block w-4 h-4 me-2" />
         {$LL.users()}&nbsp;<span
@@ -545,7 +547,7 @@
       {columnOrderEditMode}
       {toggleColumnOrderEdit}
     >
-      <StoryColumn
+      <GoalColumns
         bind:goals={storyboard.goals}
         {goal}
         {goalIndex}
