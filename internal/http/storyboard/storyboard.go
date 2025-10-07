@@ -57,12 +57,14 @@ type StoryboardDataSvc interface {
 	ReviseGoalName(storyboardID string, userID string, goalID string, goalName string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardGoal(storyboardID string, userID string, goalID string) ([]*thunderdome.StoryboardGoal, error)
 	GetStoryboardGoals(storyboardID string) []*thunderdome.StoryboardGoal
+	GetStoryboardGoal(storyboardID string, goalID string) (*thunderdome.StoryboardGoal, error)
 
 	CreateStoryboardColumn(storyboardID string, goalID string, userID string) (*thunderdome.StoryboardColumn, error)
 	ReviseStoryboardColumn(storyboardID string, userID string, columnID string, columnName string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardColumn(storyboardID string, userID string, columnID string) ([]*thunderdome.StoryboardGoal, error)
 	ColumnPersonaAdd(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error)
 	ColumnPersonaRemove(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error)
+	MoveStoryboardColumn(storyboardID string, userID string, columnID string, goalID string, placeBeforeID string) error
 
 	CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string) (*thunderdome.StoryboardStory, error)
 	ReviseStoryName(storyboardID string, userID string, storyID string, storyName string) ([]*thunderdome.StoryboardGoal, error)
@@ -122,6 +124,7 @@ func New(
 		"add_column":            sb.AddColumn,
 		"revise_column":         sb.ReviseColumn,
 		"delete_column":         sb.DeleteColumn,
+		"move_column":           sb.MoveColumn,
 		"column_persona_add":    sb.ColumnPersonaAdd,
 		"column_persona_remove": sb.ColumnPersonaRemove,
 		"add_story":             sb.AddStory,

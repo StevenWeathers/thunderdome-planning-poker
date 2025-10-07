@@ -140,3 +140,113 @@ func (d *Service) ColumnPersonaRemove(storyboardID string, columnID string, pers
 
 	return goals, nil
 }
+
+// MoveStoryboardColumn repositions a column within a goal
+func (d *Service) MoveStoryboardColumn(storyboardID string, userID string, columnID string, goalID string, placeBeforeID string) error {
+	var betweenAkey *string
+	var betweenBkey *string
+	var logger = d.Logger.With(
+		zap.String("user_id", userID),
+		zap.String("storyboard_id", storyboardID),
+		zap.String("goal_id", goalID),
+		zap.String("column_id", columnID),
+		zap.String("place_before_id", placeBeforeID),
+	)
+
+	tx, err := d.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		logger.Error("begin transaction error", zap.Error(err))
+		return err
+	}
+	defer tx.Rollback()
+
+	if placeBeforeID == "" {
+		if err := tx.QueryRow(
+			`
+		SELECT
+        (SELECT MAX(display_order)
+         FROM thunderdome.storyboard_column
+         WHERE storyboard_id = $1 AND goal_id = $2 AND id != $3)
+          AS last_display_order;`,
+			storyboardID, goalID, columnID,
+		).Scan(&betweenAkey); err != nil {
+			logger.Error("get display_order between query error",
+				zap.Error(err),
+			)
+			return err
+		}
+	} else {
+		if err := tx.QueryRow(
+			`
+		WITH current_column AS (
+			SELECT id, goal_id, display_order
+			FROM thunderdome.storyboard_column
+			WHERE id = $3 AND goal_id = $2 AND storyboard_id = $1
+		),
+		preceding_column AS (
+			SELECT id, display_order
+			FROM thunderdome.storyboard_column
+			WHERE goal_id = (SELECT goal_id FROM current_column)
+			AND id != $4
+			AND display_order < (SELECT display_order FROM current_column)
+			ORDER BY display_order DESC
+			LIMIT 1
+		)
+		SELECT
+			cc.display_order AS current_display_order,
+			pc.display_order AS preceding_display_order
+		FROM current_column cc
+		LEFT JOIN preceding_column pc ON true;
+		`,
+			storyboardID, goalID, placeBeforeID, columnID,
+		).Scan(&betweenBkey, &betweenAkey); err != nil {
+			logger.Error("get display_order between query error",
+				zap.Error(err),
+			)
+			return err
+		}
+	}
+
+	if betweenAkey == nil && betweenBkey == nil {
+		logger.Error("both between keys are nil",
+			zap.String("goal_id", goalID),
+			zap.String("column_id", columnID),
+			zap.Stringp("display_order_a", betweenAkey),
+			zap.Stringp("display_order_b", betweenBkey),
+		)
+		return errors.New("both between keys are nil")
+	}
+
+	displayOrder, err := fracindex.KeyBetween(betweenAkey, betweenBkey)
+	if err != nil {
+		logger.Error("get display_order between error",
+			zap.Error(err),
+			zap.Stringp("display_order_a", betweenAkey),
+			zap.Stringp("display_order_b", betweenBkey),
+		)
+		return err
+	}
+
+	if displayOrder == nil {
+		logger.Error("get display_order returned nil",
+			zap.Stringp("display_order_a", betweenAkey),
+			zap.Stringp("display_order_b", betweenBkey),
+		)
+		return errors.New("display order is nil")
+	}
+
+	if _, err := tx.Exec(
+		`UPDATE thunderdome.storyboard_column SET display_order = $1, goal_id = $2, updated_date = NOW() WHERE id = $3;`,
+		displayOrder, goalID, columnID,
+	); err != nil {
+		logger.Error("move storyboard column error", zap.Error(err))
+		return err
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		logger.Error("update drivers: unable to commit", zap.Error(commitErr))
+		return fmt.Errorf("failed to update storyboard column display_order: %v", commitErr)
+	}
+
+	return nil
+}

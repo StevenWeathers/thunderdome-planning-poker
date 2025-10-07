@@ -72,3 +72,8 @@ export type StoryboardUser = {
   id: string;
   name: string;
 };
+
+export type ColorLegend = {
+  color: string;
+  legend: string;
+};

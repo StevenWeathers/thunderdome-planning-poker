@@ -106,6 +106,34 @@ func (b *Service) DeleteColumn(ctx context.Context, storyboardID string, userID 
 	return nil, msg, nil, false
 }
 
+// MoveColumn handles moving a storyboard column between goals
+func (b *Service) MoveColumn(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
+	var moveColumnInput struct {
+		ColumnID    string `json:"columnId"`
+		GoalID      string `json:"goalId"`
+		PlaceBefore string `json:"placeBefore"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &moveColumnInput)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	err = b.StoryboardService.MoveStoryboardColumn(storyboardID, userID, moveColumnInput.ColumnID, moveColumnInput.GoalID, moveColumnInput.PlaceBefore)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	goal, err := b.StoryboardService.GetStoryboardGoal(storyboardID, moveColumnInput.GoalID)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	updatedGoal, _ := json.Marshal(goal)
+	msg := wshub.CreateSocketEvent("column_moved", string(updatedGoal), "")
+
+	return nil, msg, nil, false
+}
+
 // ColumnPersonaAdd handles adding a persona to a storyboard goal column
 func (b *Service) ColumnPersonaAdd(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var rs struct {
