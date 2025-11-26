@@ -229,7 +229,7 @@ func (d *Service) UserUpdatePassword(ctx context.Context, userID string, userPas
 
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1;`,
-		userID, hashedPassword); err != nil {
+		userID); err != nil {
 		return "", "", fmt.Errorf("update user last_active query error: %v", err)
 	}
 
