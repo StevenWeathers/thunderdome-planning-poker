@@ -834,6 +834,7 @@
                 {handleVote}
                 {handleVoteSubtract}
                 allowCumulativeVoting={retro.allowCumulativeVoting}
+                voteLimit={retro.maxVotes}
                 users={retro.users}
                 {sendSocketEvent}
                 {isFacilitator}
