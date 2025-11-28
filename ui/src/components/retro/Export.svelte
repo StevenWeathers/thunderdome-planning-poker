@@ -15,7 +15,7 @@
 
 <div class="flex flex-grow p-4 dark:text-white">
   <div class="px-4">
-    {#each retro.template.format.columns as column (column.id)}
+    {#each retro.template.format.columns as column (column.name)}
       <div class="mb-4">
         <h2 class="text-3xl font-rajdhani">{column.label}</h2>
         <ul class="ps-12 text-lg">

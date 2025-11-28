@@ -8,7 +8,7 @@ COPY ./ui/ /webapp/ui/
 WORKDIR /webapp/ui
 # install node packages
 RUN npm set progress=false
-RUN npm ci --no-optional
+RUN npm ci
 # Build the web app
 RUN npm run build
 ############################
@@ -23,6 +23,7 @@ RUN apk update && apk add --no-cache git ca-certificates
 # Create appuser
 RUN adduser -D -g '' appuser
 # Copy the go source
+COPY ./cmd/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/cmd/
 COPY ./docs/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/docs/
 COPY ./internal/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/internal/
 # COPY ./db/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/db/
