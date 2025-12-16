@@ -62,9 +62,9 @@
   const configurableAvatarServices = ['gravatar', 'robohash', 'govatar'];
   const isAvatarConfigurable = configurableAvatarServices.includes(AvatarService);
   const avatarOptions = {
-    gravatar: ['none', 'mp', 'identicon', 'monsterid', 'wavatar', 'retro', 'robohash'],
-    robohash: ['none', 'set1', 'set2', 'set3', 'set4'],
-    govatar: ['none', 'male', 'female'],
+    gravatar: ['mp', 'identicon', 'monsterid', 'wavatar', 'retro', 'robohash', 'none'],
+    robohash: ['set1', 'set2', 'set3', 'set4', 'none'],
+    govatar: ['male', 'female', 'none'],
   };
 
   let avatars = isAvatarConfigurable ? avatarOptions[AvatarService] : [];
