@@ -113,7 +113,7 @@
 
   let currentPageUrl = $derived(
     teamPrefix
-      .replace('/api', '')
+      .replace('/api/', '')
       .replace('organizations', 'organization')
       .replace('departments', 'department')
       .replace('teams', 'team'),
@@ -493,7 +493,9 @@
       {/if}
     </div>
     <div class="flex-1 text-right">
-      <SolidButton additionalClasses="font-rajdhani uppercase text-2xl" href={`${currentPageUrl}/checkin`}
+      <SolidButton
+        additionalClasses="font-rajdhani uppercase text-2xl"
+        href={`${AppConfig.PathPrefix}/${currentPageUrl}/checkin`}
         >{$LL.checkins()}
       </SolidButton>
     </div>

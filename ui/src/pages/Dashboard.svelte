@@ -263,10 +263,10 @@
             </div>
             {#if selectedTeam}
               {@const linkPrefix = selectedTeam.department_id
-                ? `/organization/${selectedTeam.organization_id}/department/${selectedTeam.department_id}/team/${selectedTeam.id}`
+                ? `${AppConfig.PathPrefix}/organization/${selectedTeam.organization_id}/department/${selectedTeam.department_id}/team/${selectedTeam.id}`
                 : selectedTeam.organization_id
-                  ? `/organization/${selectedTeam.organization_id}/team/${selectedTeam.id}`
-                  : `/team/${selectedTeam.id}`}
+                  ? `${AppConfig.PathPrefix}/organization/${selectedTeam.organization_id}/team/${selectedTeam.id}`
+                  : `${AppConfig.PathPrefix}/team/${selectedTeam.id}`}
               <div class="flex flex-col sm:flex-row gap-3 mt-4 justify-end">
                 <a
                   href={linkPrefix}
