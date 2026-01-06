@@ -72,7 +72,7 @@
 
 {#if pictureUrl !== ''}
   <img src={pictureUrl} alt={$LL.avatarAltText()} class={klass} title={userName} {...options} />
-{:else if avatar === 'none'}
+{:else if avatar === 'none' || AvatarService === 'none'}
   <div
     class={klass}
     style="background-color: {avatarColor}; width: {width}px; height: {width}px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: {Math.max(
