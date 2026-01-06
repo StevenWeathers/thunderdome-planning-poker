@@ -35,7 +35,7 @@ type UserDataSvc interface {
 }
 
 type RetroDataSvc interface {
-	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool, hideVotesDuringVoting bool) error
+	EditRetro(retroID string, retroName string, joinCode string, facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int, phaseAutoAdvance bool, hideVotesDuringVoting bool) error
 	RetroGetByID(retroID string, userID string) (*thunderdome.Retro, error)
 	RetroConfirmFacilitator(retroID string, userID string) error
 	RetroGetUsers(retroID string) []*thunderdome.RetroUser
