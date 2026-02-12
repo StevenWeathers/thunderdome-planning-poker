@@ -64,7 +64,7 @@
     if (isNumeric) {
       const numericVotes = votes
         .filter(v => !isNaN(v.vote) || v.vote === '1/2')
-        .map(v => (v === '1/2' ? '0.5' : Number(v.vote)));
+        .map(v => (v.vote === '1/2' ? 0.5 : Number(v.vote)));
       const sum = numericVotes.reduce((a, b) => a + b, 0);
       let average = 0;
 
