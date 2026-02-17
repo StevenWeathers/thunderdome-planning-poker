@@ -25,12 +25,12 @@ jobs:
         run: mkdir ui/dist && touch ui/dist/index.html
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
           # Require: The version of golangci-lint to use.
           # When `install-mode` is `binary` (default) the value can be v1.2 or v1.2.3 or `latest` to use the latest version.
           # When `install-mode` is `goinstall` the value can be v1.2.3, `latest`, or the hash
-          version: v1.64
+          version: v2.10
           args: --timeout 3m0s
 
   ui:
