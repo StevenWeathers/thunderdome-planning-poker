@@ -10,8 +10,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ "22.14.0" ]
-        go-version: [ "1.24" ]
+        node-version: [ "24.13" ]
+        go-version: [ "1.26" ]
         db-host:
           - 127.0.0.1
 
@@ -33,15 +33,15 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
@@ -64,7 +64,7 @@ jobs:
         run: go build -v .
 
       - name: Archive build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: build-artifacts
           path: |
@@ -91,7 +91,7 @@ jobs:
         env:
           DB_HOST: ${{ matrix.db-host }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report
