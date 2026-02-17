@@ -2,13 +2,16 @@ version: "2"
 linters:
   disable:
     - errcheck
-    - QF1008 # could remove embedded field from selector (staticcheck)
-    - ST1005 # error strings should not end with punctuation or newlines (staticcheck)
-    - QF1004 # could use strings.ReplaceAll instead (staticcheck)
   settings:
     govet:
       disable:
         - printf
+    staticcheck:
+      checks:
+        - all
+        - -QF1008  # could remove embedded field from selector
+        - -ST1005  # error strings should not end with punctuation or newlines
+        - -QF1004  # could use strings.ReplaceAll instead
   exclusions:
     generated: lax
     presets:
