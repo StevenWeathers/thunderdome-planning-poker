@@ -69,10 +69,10 @@
     internalExpanded = expanded;
   });
 
-  const initialState = $derived({
-    expanded: internalExpanded,
+  const initialState = {
+    expanded: false,
     userSearch: null,
-  });
+  };
 
   // Derived state
   let filteredZones = $derived<string[]>(
