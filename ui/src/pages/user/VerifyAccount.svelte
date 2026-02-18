@@ -16,9 +16,9 @@
 
   onMount(() => {
     xfetch('/api/auth/verify', { body: { verifyId }, method: 'PATCH' })
-    .then(function () {
-      accountVerified = true;
-    })
+      .then(function () {
+        accountVerified = true;
+      })
       .catch(function () {
         verficationError = true;
       });

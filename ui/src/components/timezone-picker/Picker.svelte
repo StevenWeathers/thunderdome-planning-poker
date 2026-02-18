@@ -57,7 +57,7 @@
   let listBoxOptionRefs = $derived.by(() =>
     Object.values(availableZones).map(([zone]) => ({
       [zone]: null,
-    }))
+    })),
   );
 
   // Initial state
