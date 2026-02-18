@@ -39,6 +39,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      exclude: ['node_modules/', 'src/setupTests.ts', 'src/i18n/**'],
     },
   },
 });

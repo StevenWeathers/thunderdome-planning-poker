@@ -11,3 +11,4 @@ packrd/
 pkged.go
 thunderdome-planning-poker*
 swaggerdocs/
+ui/coverage

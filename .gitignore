@@ -16,6 +16,7 @@ node_modules/
 dist/
 release/
 swaggerdocs/
+ui/coverage
 # how static assets get bundled
 *-packr.go
 packrd/

@@ -19,6 +19,7 @@ dist
 build
 packages/*/lib/app
 consoles/*/lib/app
+coverage
 
 *.ico
 *.html
