@@ -36,7 +36,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     templatesPage = evt.detail;
     getTemplates();
   };
@@ -73,5 +73,8 @@
     {templateCount}
     {templatesPage}
     {templatesPageLimit}
+    organizationId={undefined}
+    teamId={undefined}
+    departmentId={undefined}
   />
 </AdminPageLayout>

@@ -6,6 +6,12 @@
   import { filter, keyCodes, pick, scrollIntoView, slugify, uid, ungroup } from './utils';
   import TextInput from '../forms/TextInput.svelte';
 
+  // ***** Types *****
+  type TimezoneDetails = [string, string, string]; // [displayName, gmtOffset, dstOffset]
+  type UngroupedZones = Record<string, TimezoneDetails>;
+  type GroupedZones = Record<string, UngroupedZones>;
+  type ListBoxRefs = Record<string, HTMLLIElement | null>;
+
   // ***** Public API *****
   interface Props {
     timezone?: string | null;
@@ -19,15 +25,15 @@
   // ***** End Public API *****
 
   // State variables
-  let currentZone = $state();
-  let userSearch = $state(null);
-  let highlightedZone = $state();
+  let currentZone = $state<TimezoneDetails | undefined>();
+  let userSearch = $state<string | null>(null);
+  let highlightedZone = $state<string | undefined>();
 
   // DOM refs
-  let toggleButtonRef = $state();
-  let searchInputRef = $state();
-  let clearButtonRef = $state();
-  let listBoxRef = $state();
+  let toggleButtonRef = $state<HTMLButtonElement | undefined>();
+  let searchInputRef = $state<any>();
+  let clearButtonRef = $state<HTMLButtonElement | undefined>();
+  let listBoxRef = $state<HTMLUListElement | undefined>();
 
   // Constants
   const labelId = uid();
@@ -35,15 +41,15 @@
   const searchInputId = uid();
 
   // We ungroup the zones
-  const ungroupedZones = ungroup(groupedZones);
+  const ungroupedZones = ungroup(groupedZones) as UngroupedZones;
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
 
   // Process allowed timezones
-  const availableZones = $derived.by(() => {
+  const availableZones = $derived.by<UngroupedZones>(() => {
     let zones = ungroupedZones;
     if (allowedTimezones) {
       if (Array.isArray(allowedTimezones)) {
-        zones = pick(ungroupedZones, [...allowedTimezones, userTimezone]);
+        zones = pick(ungroupedZones, [...allowedTimezones, userTimezone]) as UngroupedZones;
       } else {
         console.error('You need to provide a list of timezones as an Array!', `You provided ${allowedTimezones}.`);
       }
@@ -54,11 +60,7 @@
   const validZones = $derived(Object.keys(availableZones));
 
   // Initialize option refs
-  let listBoxOptionRefs = $derived.by(() =>
-    Object.values(availableZones).map(([zone]) => ({
-      [zone]: null,
-    })),
-  );
+  let listBoxOptionRefs = $state<ListBoxRefs>({});
 
   // Initial state
   let internalExpanded = $state(false);
@@ -67,14 +69,14 @@
     internalExpanded = expanded;
   });
 
-  const initialState = $derived({
-    expanded: internalExpanded,
+  const initialState = {
+    expanded: false,
     userSearch: null,
-  });
+  };
 
   // Derived state
-  let filteredZones = $derived(
-    userSearch && userSearch.length > 0 ? filter(userSearch, availableZones) : validZones.slice(),
+  let filteredZones = $derived<string[]>(
+    userSearch && userSearch.length > 0 ? (filter(userSearch, availableZones) as string[]) : validZones.slice(),
   );
 
   // ***** Methods *****
@@ -104,7 +106,7 @@
   };
 
   // Emit the event back to the consumer
-  const handleTimezoneUpdate = (ev, zoneId) => {
+  const handleTimezoneUpdate = (ev: Event, zoneId: string) => {
     currentZone = ungroupedZones[zoneId];
     timezone = zoneId;
     dispatchUpdates();
@@ -114,10 +116,11 @@
   };
 
   // Figure out if a grouped zone has any currently visible zones
-  const groupHasVisibleChildren = (group, zones) => Object.keys(groupedZones[group]).some(zone => zones.includes(zone));
+  const groupHasVisibleChildren = (group: string, zones: string[]) =>
+    Object.keys((groupedZones as unknown as GroupedZones)[group]).some(zone => zones.includes(zone));
 
   // Scroll the list to a specific element
-  const scrollList = zone => {
+  const scrollList = (zone: string) => {
     const zoneElementRef = listBoxOptionRefs[zone];
     if (listBoxRef && zoneElementRef) {
       scrollIntoView(zoneElementRef, listBoxRef);
@@ -126,15 +129,14 @@
   };
 
   // Move selection up or down
-  const moveSelection = direction => {
+  const moveSelection = (direction: 'up' | 'down') => {
     const len = filteredZones.length;
     const zoneIndex = filteredZones.findIndex(zone => zone === highlightedZone);
 
-    let index;
+    let index: number;
     if (direction === 'up') {
       index = (zoneIndex - 1 + len) % len;
-    }
-    if (direction === 'down') {
+    } else {
       index = (zoneIndex + 1) % len;
     }
 
@@ -143,7 +145,7 @@
   };
 
   // Handle keyboard navigation
-  const keyDown = ev => {
+  const keyDown = (ev: KeyboardEvent) => {
     if (document.activeElement === clearButtonRef || !expanded) {
       return;
     }
@@ -173,12 +175,12 @@
     searchInputRef?.focus();
   };
 
-  const setHighlightedZone = zone => {
+  const setHighlightedZone = (zone: string) => {
     highlightedZone = zone;
   };
 
-  const toggleExpanded = ev => {
-    if (ev.keyCode) {
+  const toggleExpanded = (ev: MouseEvent | KeyboardEvent) => {
+    if ('keyCode' in ev && ev.keyCode) {
       if ([keyCodes.Enter, keyCodes.Space].includes(ev.keyCode)) {
         expanded = !expanded;
       }
@@ -199,7 +201,7 @@
     }
   };
 
-  const setTimezone = tz => {
+  const setTimezone = (tz: string | null) => {
     if (!tz) {
       timezone = userTimezone;
     }
@@ -209,8 +211,10 @@
       timezone = userTimezone;
     }
 
-    currentZone = ungroupedZones[timezone];
-    setHighlightedZone(timezone);
+    if (timezone) {
+      currentZone = ungroupedZones[timezone];
+      setHighlightedZone(timezone);
+    }
   };
 
   // Effects - replace reactive statements and onMount
@@ -304,12 +308,12 @@
         aria-labelledby={labelId}
         aria-activedescendant={currentZone && `tz-${slugify(currentZone[0])}`}
       >
-        {#each Object.keys(groupedZones) as group}
+        {#each Object.keys(groupedZones as unknown as GroupedZones) as group}
           {#if groupHasVisibleChildren(group, filteredZones)}
             <li role="option" aria-hidden="true" aria-selected="false">
               <p>{group}</p>
             </li>
-            {#each Object.entries(groupedZones[group]) as [zoneLabel, zoneDetails]}
+            {#each Object.entries((groupedZones as unknown as GroupedZones)[group]) as [zoneLabel, zoneDetails]: [string, TimezoneDetails]}
               {#if filteredZones.includes(zoneLabel)}
                 <li
                   role="option"

@@ -18,6 +18,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { Department } from '../../types/organization';
   import OrgPageLayout from '../../components/organization/OrgPageLayout.svelte';
 
   interface Props {
@@ -44,17 +45,17 @@
     organization.id = organizationId;
   });
   let role = $state('MEMBER');
-  let departments = $state([]);
+  let departments: Department[] = $state([]);
   let showCreateDepartment = $state(false);
   let showDeleteDepartment = $state(false);
-  let deleteDeptId = $state(null);
+  let deleteDeptId = $state<string | null>(null);
   let departmentsPage = $state(1);
 
   function toggleCreateDepartment() {
     showCreateDepartment = !showCreateDepartment;
   }
 
-  const toggleDeleteDepartment = deptId => () => {
+  const toggleDeleteDepartment = (deptId: string | null) => () => {
     showDeleteDepartment = !showDeleteDepartment;
     deleteDeptId = deptId;
   };
@@ -85,7 +86,7 @@
       });
   }
 
-  function createDepartmentHandler(name) {
+  function createDepartmentHandler(name: string) {
     const body = {
       name,
     };
@@ -114,21 +115,23 @@
       });
   }
 
-  let defaultDepartment = {
+  let defaultDepartment: Department = {
     id: '',
     name: '',
+    createdDate: '',
+    updatedDate: '',
   };
   let selectedDepartment = $state({ ...defaultDepartment });
   let showDepartmentUpdate = $state(false);
 
-  function toggleUpdateDepartment(dept) {
+  function toggleUpdateDepartment(dept: Department) {
     return () => {
       selectedDepartment = dept;
       showDepartmentUpdate = !showDepartmentUpdate;
     };
   }
 
-  function updateDepartmentHandler(name) {
+  function updateDepartmentHandler(name: string) {
     const body = {
       name,
     };

@@ -6,6 +6,7 @@
   import { user } from '../../stores';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { Organization } from '../../types/organization';
   import { onMount } from 'svelte';
 
   interface Props {
@@ -19,26 +20,29 @@
   let {
     handleUpdate = () => {},
     toggleClose = () => {},
-    xfetch = async (url, ...options) => {},
+    xfetch = async (url: string, ...options: any[]) => {},
     notifications,
     subscriptionId = '',
   }: Props = $props();
 
-  let organizations = $state([]);
+  let organizations = $state<Organization[]>([]);
   let selectedOrganization = $state('');
+  let focusInput: any = $state();
 
   onMount(() => {
     xfetch(`/api/users/${$user.id}/organizations?limit=1000&offset=0`)
-      .then(res => res.json())
-      .then(function (result) {
+      .then((res: any) => res.json())
+      .then(function (result: any) {
         organizations = result.data;
       })
       .catch(function () {
         notifications.danger($LL.getOrganizationsError());
       });
+
+    focusInput?.focus();
   });
 
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (selectedOrganization === '') {
@@ -63,11 +67,6 @@
         notifications.danger('failed to associate organization to subscription');
       });
   }
-
-  let focusInput: any = $state();
-  onMount(() => {
-    focusInput?.focus();
-  });
 </script>
 
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalAssociateOrganizationToSubscription()}>

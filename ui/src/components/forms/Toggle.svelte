@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type { ChangeEventHandler } from 'svelte/elements';
+
   export let label = '';
   export let id = '';
   export let name = '';
   export let checked: boolean | undefined = undefined;
-  export let changeHandler: Function = () => {};
+  export let changeHandler: ChangeEventHandler<HTMLInputElement> = () => {};
 </script>
 
 <label class="inline-flex items-center cursor-pointer">

@@ -8,11 +8,13 @@
   export let stat = percentage;
   export let count = '';
 
-  let svgElem;
+  let svgElem: SVGSVGElement;
 
-  let polar_to_cartesian, svg_circle_arc_path, animate_arc;
+  let polar_to_cartesian: (cx: number, cy: number, radius: number, angle: number) => number[],
+    svg_circle_arc_path: (x: number, y: number, radius: number, start_angle: number, end_angle: number) => string,
+    animate_arc: (ratio: number, svg: any) => any;
 
-  polar_to_cartesian = function (cx, cy, radius, angle) {
+  polar_to_cartesian = function (cx: number, cy: number, radius: number, angle: number) {
     let radians;
     radians = ((angle - 90) * Math.PI) / 180.0;
     return [
@@ -21,7 +23,7 @@
     ];
   };
 
-  svg_circle_arc_path = function (x, y, radius, start_angle, end_angle) {
+  svg_circle_arc_path = function (x: number, y: number, radius: number, start_angle: number, end_angle: number) {
     let end_xy, start_xy;
     start_xy = polar_to_cartesian(x, y, radius, end_angle);
     end_xy = polar_to_cartesian(x, y, radius, start_angle);
@@ -30,7 +32,7 @@
     );
   };
 
-  animate_arc = function (ratio, svg) {
+  animate_arc = function (ratio: number, svg: any) {
     const arc = svg.select('.gaugeNeedle');
     const currentRatio = parseFloat(arc.attr('data-ratio'));
     arc.attr('data-ratio', ratio); // update the ratio
@@ -38,12 +40,12 @@
     return Snap.animate(
       currentRatio,
       ratio,
-      function (val) {
+      function (val: number) {
         const path = svg_circle_arc_path(500, 500, 450, -90, val * 180.0 - 90);
         arc.attr('d', path);
       },
       1500,
-      mina.easeinout,
+      (globalThis as any).mina.easeinout,
     );
   };
 
@@ -75,7 +77,7 @@
   </div>
 </div>
 
-<style global>
+<style global lang="postcss">
   .gauge {
     --tw-aspect-h: 1;
     --tw-aspect-w: 2;

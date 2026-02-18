@@ -20,6 +20,8 @@
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
+  import type { DepartmentUser } from '../../../types/organization';
+  import type { Team } from '../../../types/team';
 
   interface Props {
     xfetch: ApiClient;
@@ -44,10 +46,10 @@
   });
   let departmentRole = '';
   let organizationRole = '';
-  let teams = $state([]);
-  let users = $state([]);
+  let teams = $state<Team[]>([]);
+  let users = $state<DepartmentUser[]>([]);
   let showDeleteTeam = $state(false);
-  let deleteTeamId = null;
+  let deleteTeamId: string | null = null;
   let teamsPage = 1;
   let usersPage = 1;
 
@@ -56,7 +58,7 @@
     department.id = departmentId;
   });
 
-  const toggleDeleteTeam = teamId => () => {
+  const toggleDeleteTeam = (teamId: string | null) => () => {
     showDeleteTeam = !showDeleteTeam;
     deleteTeamId = teamId;
   };

@@ -28,15 +28,30 @@
 
   let { xfetch, router, notifications }: Props = $props();
 
+  interface Subscription {
+    id: string;
+    user_id: string;
+    team_id?: string;
+    organization_id?: string;
+    customer_id: string;
+    subscription_id: string;
+    active: boolean;
+    type: string;
+    expires: string;
+    user: {
+      name: string;
+    };
+  }
+
   const subscriptionsPageLimit = 25;
   let subscriptionCount = $state(0);
-  let subscriptions = $state([]);
+  let subscriptions = $state<Subscription[]>([]);
   let subscriptionsPage = $state(1);
 
   let showSubCreate = $state(false);
   let showSubUpdate = $state(false);
   let showSubDelete = $state(false);
-  let deleteSubId = null;
+  let deleteSubId: string | null = null;
   let defaultSubscription = {
     id: '',
     user_id: '',
@@ -51,20 +66,29 @@
       name: '',
     },
   };
-  let selectedSub = $state({
-    ...defaultSubscription,
+  let selectedSub = $state<Subscription>({
+    id: '',
+    user_id: '',
+    customer_id: '',
+    subscription_id: '',
+    active: false,
+    type: '',
+    expires: '',
+    user: {
+      name: '',
+    },
   });
 
   function toggleSubCreate() {
     showSubCreate = !showSubCreate;
   }
 
-  const toggleSubUpdate = sub => () => {
+  const toggleSubUpdate = (sub: Subscription) => () => {
     showSubUpdate = !showSubUpdate;
     selectedSub = sub;
   };
 
-  const toggleSubDelete = subId => () => {
+  const toggleSubDelete = (subId: string | null) => () => {
     showSubDelete = !showSubDelete;
     deleteSubId = subId;
   };
@@ -95,7 +119,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     subscriptionsPage = evt.detail;
     getSubscriptions();
   };

@@ -40,8 +40,8 @@
   let selectedUser = $state('');
   let role = $state('');
 
-  let organizationUsers = $state([]);
-  let departmentUsers = $state([]);
+  let organizationUsers = $state<any[]>([]);
+  let departmentUsers = $state<any[]>([]);
 
   function getOrganizationUsers() {
     if (orgId !== '') {
@@ -73,7 +73,7 @@
     userEmail = '';
   }
 
-  function onSubmit(e) {
+  function onSubmit(e: Event) {
     e.preventDefault();
 
     const user = {

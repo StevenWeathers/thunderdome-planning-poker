@@ -20,6 +20,16 @@
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
+  interface StoryboardUserWithDetails {
+    id: string;
+    name: string;
+    avatar: string;
+    gravatarHash: string;
+    active: boolean;
+    abandoned: boolean;
+    country?: string;
+  }
+
   interface Props {
     xfetch: ApiClient;
     router: any;
@@ -29,7 +39,13 @@
 
   let { xfetch, router, notifications, storyboardId }: Props = $props();
 
-  let storyboard = $state({
+  let storyboard = $state<{
+    name: string;
+    users: StoryboardUserWithDetails[];
+    owner_id: string;
+    createdDate: string;
+    updatedDate: string;
+  }>({
     name: '',
     users: [],
     owner_id: '',

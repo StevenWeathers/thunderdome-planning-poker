@@ -476,7 +476,7 @@
   </div>
 </Modal>
 
-<style>
+<style lang="postcss">
   .colorcard-gray {
     @apply bg-gray-400;
     @apply ring-gray-400;

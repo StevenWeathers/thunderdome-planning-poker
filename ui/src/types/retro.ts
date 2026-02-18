@@ -22,7 +22,7 @@ export type RetroAction = {
   comments: Array<RetroActionComment>;
   completed: boolean;
   content: string;
-  assignees: Array<string>;
+  assignees: Array<RetroUser>;
   id: string;
   retroId: string;
 };

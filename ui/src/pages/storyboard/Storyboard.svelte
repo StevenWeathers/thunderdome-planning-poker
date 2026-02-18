@@ -39,6 +39,8 @@
     Storyboard,
     ColorLegend,
     StoryboardGoal,
+    StoryboardColumn,
+    StoryboardStory,
   } from '../../types/storyboard';
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
   import type { NotificationService } from '../../types/notifications';
@@ -77,8 +79,8 @@
   let showColorLegend = $state(false);
   let showColorLegendForm = $state(false);
   let showPersonas = $state(false);
-  let editColumn = $state(null);
-  let activeStory = $state(null);
+  let editColumn: StoryboardColumn | null = $state(null);
+  let activeStory: StoryboardStory | null = $state(null);
   let showDeleteStoryboard = $state(false);
   let showEditStoryboard = $state(false);
   let showExportStoryboard = $state(false);
@@ -87,7 +89,7 @@
 
   let ws: any;
 
-  const onSocketMessage = function (evt) {
+  const onSocketMessage = function (evt: MessageEvent) {
     isLoading = false;
     const parsedEvent = JSON.parse(evt.data);
 
@@ -106,14 +108,17 @@
         storyboard.users = JSON.parse(parsedEvent.value);
         updateActiveUserCount();
         const joinedUser = storyboard.users.find(w => w.id === parsedEvent.userId);
-        notifications.success(`${joinedUser.name} joined.`);
+        if (joinedUser) {
+          notifications.success(`${joinedUser.name} joined.`);
+        }
         break;
       case 'user_left':
         const leftUser = storyboard.users.find(w => w.id === parsedEvent.userId);
         storyboard.users = JSON.parse(parsedEvent.value);
         updateActiveUserCount();
-
-        notifications.danger(`${leftUser.name} left.`);
+        if (leftUser) {
+          notifications.danger(`${leftUser.name} left.`);
+        }
         break;
       case 'storyboard_updated':
         storyboard = JSON.parse(parsedEvent.value);
@@ -135,7 +140,7 @@
         if (editColumn !== null) {
           storyboard.goals.map(goal => {
             goal.columns.map(column => {
-              if (column.id === editColumn.id) {
+              if (editColumn && column.id === editColumn.id) {
                 editColumn = column;
               }
             });
@@ -156,7 +161,7 @@
           for (let goal of storyboard.goals) {
             for (let column of goal.columns) {
               for (let story of column.stories) {
-                if (story.id === activeStory.id) {
+                if (activeStory && story.id === activeStory.id) {
                   activeStory = story;
                   activeStoryFound = true;
                   break;
@@ -196,47 +201,7 @@
     }
   };
 
-  onMount(() => {
-    ws = new Sockette(`${getWebsocketAddress()}/api/storyboard/${storyboardId}`, {
-      timeout: 2e3,
-      maxAttempts: 15,
-      onmessage: onSocketMessage,
-      onerror: () => {
-        socketError = true;
-      },
-      onclose: e => {
-        if (e.code === 4004) {
-          router.route(appRoutes.storyboards);
-        } else if (e.code === 4001) {
-          user.delete();
-          router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
-        } else if (e.code === 4003) {
-          notifications.danger($LL.duplicateStoryboardSession());
-          router.route(`${appRoutes.storyboards}`);
-        } else if (e.code === 4002) {
-          router.route(appRoutes.storyboards);
-        } else {
-          socketReconnecting = true;
-        }
-      },
-      onopen: () => {
-        isLoading = false;
-        socketError = false;
-        socketReconnecting = false;
-      },
-      onmaximum: () => {
-        socketReconnecting = false;
-      },
-    });
-  });
-
-  onDestroy(() => {
-    if (ws) {
-      ws.close();
-    }
-  });
-
-  const sendSocketEvent = (type, value) => {
+  const sendSocketEvent = (type: string, value: any) => {
     ws.send(
       JSON.stringify({
         type,
@@ -245,11 +210,11 @@
     );
   };
 
-  function authStoryboard(joinPasscode) {
+  function authStoryboard(joinPasscode: string) {
     sendSocketEvent('auth_storyboard', joinPasscode);
   }
 
-  const addStory = (goalId, columnId) => () => {
+  const addStory = (goalId: string, columnId: string) => () => {
     sendSocketEvent(
       'add_story',
       JSON.stringify({
@@ -268,12 +233,12 @@
     );
   };
 
-  const deleteColumn = columnId => () => {
+  const deleteColumn = (columnId: string) => () => {
     sendSocketEvent('delete_column', columnId);
-    toggleColumnEdit()();
+    toggleColumnEdit(null)();
   };
 
-  const handleAddFacilitator = userId => {
+  const handleAddFacilitator = (userId: string) => {
     sendSocketEvent(
       'facilitator_add',
       JSON.stringify({
@@ -282,7 +247,7 @@
     );
   };
 
-  const handleRemoveFacilitator = userId => {
+  const handleRemoveFacilitator = (userId: string) => {
     if (storyboard.facilitators.length === 1) {
       notifications.danger($LL.removeOnlyFacilitatorError());
       return;
@@ -322,7 +287,7 @@
     };
   }
 
-  function toggleColumnEdit(column) {
+  function toggleColumnEdit(column: StoryboardColumn | null = null) {
     return () => {
       editColumn = editColumn != null ? null : column;
     };
@@ -354,11 +319,13 @@
   let reviseGoalId = $state('');
   let reviseGoalName = $state('');
 
-  const toggleAddGoal = goalId => () => {
+  const toggleAddGoal = (goalId?: string) => () => {
     if (goalId) {
-      const goalName = storyboard.goals.find(p => p.id === goalId).name;
-      reviseGoalId = goalId;
-      reviseGoalName = goalName;
+      const goal = storyboard.goals.find(p => p.id === goalId);
+      if (goal) {
+        reviseGoalId = goalId;
+        reviseGoalName = goal.name;
+      }
     } else {
       reviseGoalId = '';
       reviseGoalName = '';
@@ -366,11 +333,11 @@
     showAddGoal = !showAddGoal;
   };
 
-  const handleGoalAdd = goalName => {
+  const handleGoalAdd = (goalName: string) => {
     sendSocketEvent('add_goal', goalName);
   };
 
-  const handleGoalRevision = updatedGoal => {
+  const handleGoalRevision = (updatedGoal: any) => {
     sendSocketEvent('revise_goal', JSON.stringify(updatedGoal));
   };
 
@@ -378,22 +345,22 @@
     sendSocketEvent('delete_goal', goalId);
   };
 
-  const handleColumnRevision = column => {
+  const handleColumnRevision = (column: StoryboardColumn) => {
     sendSocketEvent('revise_column', JSON.stringify(column));
   };
 
-  const handleLegendRevision = legend => {
+  const handleLegendRevision = (legend: ColorLegend[]) => {
     sendSocketEvent('revise_color_legend', JSON.stringify(legend));
   };
 
-  const handlePersonaAdd = persona => {
+  const handlePersonaAdd = (persona: Omit<StoryboardPersona, 'id'>) => {
     sendSocketEvent('add_persona', JSON.stringify(persona));
   };
 
-  const handleColumnPersonaAdd = column_persona => {
+  const handleColumnPersonaAdd = (column_persona: any) => {
     sendSocketEvent('column_persona_add', JSON.stringify(column_persona));
   };
-  const handleColumnPersonaRemove = column_persona => () => {
+  const handleColumnPersonaRemove = (column_persona: any) => () => {
     sendSocketEvent('column_persona_remove', JSON.stringify(column_persona));
   };
 
@@ -401,11 +368,11 @@
     sendSocketEvent('update_persona', JSON.stringify(persona));
   };
 
-  const handleDeletePersona = personaId => () => {
+  const handleDeletePersona = (personaId: string) => () => {
     sendSocketEvent('delete_persona', personaId);
   };
 
-  function handleStoryboardEdit(revisedStoryboard) {
+  function handleStoryboardEdit(revisedStoryboard: any) {
     sendSocketEvent('edit_storyboard', JSON.stringify(revisedStoryboard));
     toggleEditStoryboard()();
   }
@@ -417,12 +384,14 @@
     };
   }
 
-  const toggleStoryForm = story => () => {
-    if (columnOrderEditMode) {
-      return;
-    }
-    activeStory = activeStory != null ? null : story;
-  };
+  const toggleStoryForm =
+    (story: StoryboardStory | null = null) =>
+    () => {
+      if (columnOrderEditMode) {
+        return;
+      }
+      activeStory = activeStory != null ? null : story;
+    };
 
   const toggleColumnOrderEdit = () => {
     columnOrderEditMode = !columnOrderEditMode;
@@ -430,7 +399,7 @@
 
   let showBecomeFacilitator = $state(false);
 
-  function becomeFacilitator(facilitatorCode) {
+  function becomeFacilitator(facilitatorCode: string) {
     sendSocketEvent('facilitator_self', facilitatorCode);
     toggleBecomeFacilitator();
   }
@@ -446,11 +415,50 @@
     activeUserCount = storyboard.users.filter((u: StoryboardUser) => u.active).length;
   }
 
-  let isFacilitator = $derived(storyboard.facilitators.length && storyboard.facilitators.includes($user.id));
+  let isFacilitator = $derived(storyboard.facilitators.length > 0 && storyboard.facilitators.includes($user.id));
 
   onMount(() => {
     if (!$user.id) {
       router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
+      return;
+    }
+
+    ws = new Sockette(`${getWebsocketAddress()}/api/storyboard/${storyboardId}`, {
+      timeout: 2e3,
+      maxAttempts: 15,
+      onmessage: onSocketMessage,
+      onerror: () => {
+        socketError = true;
+      },
+      onclose: e => {
+        if (e.code === 4004) {
+          router.route(appRoutes.storyboards);
+        } else if (e.code === 4001) {
+          user.delete();
+          router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
+        } else if (e.code === 4003) {
+          notifications.danger($LL.duplicateStoryboardSession());
+          router.route(`${appRoutes.storyboards}`);
+        } else if (e.code === 4002) {
+          router.route(appRoutes.storyboards);
+        } else {
+          socketReconnecting = true;
+        }
+      },
+      onopen: () => {
+        isLoading = false;
+        socketError = false;
+        socketReconnecting = false;
+      },
+      onmaximum: () => {
+        socketReconnecting = false;
+      },
+    });
+  });
+
+  onDestroy(() => {
+    if (ws) {
+      ws.close();
     }
   });
 </script>
@@ -472,7 +480,7 @@
     </div>
     <div class="flex justify-end space-x-2">
       {#if !columnOrderEditMode}
-        <SolidButton color="green" onClick={toggleAddGoal()} testid="goal-add">
+        <SolidButton color="green" onClick={() => toggleAddGoal(undefined)()} testid="goal-add">
           <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
         </SolidButton>
         <SubMenu label="Storyboard Settings" icon={Settings} testId="storyboard-settings">
@@ -574,7 +582,7 @@
 {#if showAddGoal}
   <AddGoal
     {handleGoalAdd}
-    toggleAddGoal={toggleAddGoal()}
+    toggleAddGoal={toggleAddGoal(undefined)()}
     {handleGoalRevision}
     goalId={reviseGoalId}
     goalName={reviseGoalName}
@@ -584,7 +592,7 @@
 {#if editColumn}
   <ColumnForm
     {handleColumnRevision}
-    toggleColumnEdit={toggleColumnEdit()}
+    toggleColumnEdit={toggleColumnEdit(null)()}
     column={editColumn}
     personas={storyboard.personas}
     handlePersonaAdd={handleColumnPersonaAdd}
@@ -595,7 +603,7 @@
 
 {#if activeStory}
   <StoryForm
-    toggleStoryForm={toggleStoryForm()}
+    toggleStoryForm={toggleStoryForm(null)()}
     story={activeStory}
     {sendSocketEvent}
     {notifications}

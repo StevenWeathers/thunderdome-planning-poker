@@ -26,38 +26,42 @@
     sendSocketEvent,
   }: Props = $props();
 
-  function handleDndConsider(e) {
-    const goalIndex = e.target.dataset.goalindex;
+  function handleDndConsider(e: CustomEvent) {
+    const goalIndex = Number((e.target as HTMLElement)?.dataset.goalindex);
 
-    goals[goalIndex].columns = e.detail.items;
-    goals = goals;
+    if (!isNaN(goalIndex)) {
+      goals[goalIndex].columns = e.detail.items;
+      goals = goals;
+    }
   }
 
-  function handleDndFinalize(e) {
-    const goalIndex = e.target.dataset.goalindex;
+  function handleDndFinalize(e: CustomEvent) {
+    const goalIndex = Number((e.target as HTMLElement)?.dataset.goalindex);
     const columnId = e.detail.info.id;
 
-    goals[goalIndex].columns = e.detail.items;
-    goals = goals;
+    if (!isNaN(goalIndex)) {
+      goals[goalIndex].columns = e.detail.items;
+      goals = goals;
 
-    const matchedColumn = goals[goalIndex].columns.find(column => column.id === columnId);
+      const matchedColumn = goals[goalIndex].columns.find(column => column.id === columnId);
 
-    if (matchedColumn) {
-      const goalId = goals[goalIndex].id;
+      if (matchedColumn) {
+        const goalId = goals[goalIndex].id;
 
-      // determine what column to place column before in target goal
-      const matchedColumnIndex = goals[goalIndex].columns.indexOf(matchedColumn);
-      const sibling = goals[goalIndex].columns[matchedColumnIndex + 1];
-      const placeBefore = sibling ? sibling.id : '';
+        // determine what column to place column before in target goal
+        const matchedColumnIndex = goals[goalIndex].columns.indexOf(matchedColumn);
+        const sibling = goals[goalIndex].columns[matchedColumnIndex + 1];
+        const placeBefore = sibling ? sibling.id : '';
 
-      sendSocketEvent(
-        'move_column',
-        JSON.stringify({
-          goalId,
-          columnId,
-          placeBefore,
-        }),
-      );
+        sendSocketEvent(
+          'move_column',
+          JSON.stringify({
+            goalId,
+            columnId,
+            placeBefore,
+          }),
+        );
+      }
     }
   }
 </script>
@@ -87,8 +91,8 @@
   data-goalindex={goalIndex}
   use:dndzone={{
     items: goal.columns,
-    type: 'column',
-    dropTargetStyle: '',
+    type: 'column' as const,
+    dropTargetStyle: {},
     dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
     dragDisabled: !columnOrderEditMode,
   }}

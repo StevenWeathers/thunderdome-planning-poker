@@ -15,7 +15,7 @@
 
   let leaderCode = $state('');
 
-  function handleSubmit(e) {
+  function handleSubmit(e: Event) {
     e.preventDefault();
 
     handleBecomeLeader(leaderCode);

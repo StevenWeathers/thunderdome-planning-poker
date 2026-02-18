@@ -18,6 +18,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { Team } from '../../types/team';
   import OrgPageLayout from '../../components/organization/OrgPageLayout.svelte';
 
   interface Props {
@@ -44,17 +45,17 @@
     organization.id = organizationId;
   });
   let role = $state('MEMBER');
-  let teams = $state([]);
+  let teams: Team[] = $state([]);
   let showCreateTeam = $state(false);
   let showDeleteTeam = $state(false);
-  let deleteTeamId = $state(null);
+  let deleteTeamId = $state<string | null>(null);
   let teamsPage = $state(1);
 
   function toggleCreateTeam() {
     showCreateTeam = !showCreateTeam;
   }
 
-  const toggleDeleteTeam = teamId => () => {
+  const toggleDeleteTeam = (teamId: string | null) => () => {
     showDeleteTeam = !showDeleteTeam;
     deleteTeamId = teamId;
   };
@@ -85,7 +86,7 @@
       });
   }
 
-  function createTeamHandler(name) {
+  function createTeamHandler(name: string) {
     const body = {
       name,
     };
@@ -116,21 +117,23 @@
       });
   }
 
-  let defaultTeam = {
+  let defaultTeam: Team = {
     id: '',
     name: '',
+    createdDate: '',
+    updatedDate: '',
   };
   let selectedTeam = $state({ ...defaultTeam });
   let showTeamUpdate = $state(false);
 
-  function toggleUpdateTeam(team) {
+  function toggleUpdateTeam(team: Team) {
     return () => {
       selectedTeam = team;
       showTeamUpdate = !showTeamUpdate;
     };
   }
 
-  function updateTeamHandler(name) {
+  function updateTeamHandler(name: string) {
     const body = {
       name,
     };

@@ -25,9 +25,9 @@
   interface Props {
     xfetch: ApiClient;
     notifications: NotificationService;
-    organizationId: any;
-    teamId: any;
-    departmentId: any;
+    organizationId?: any;
+    teamId?: any;
+    departmentId?: any;
     isEntityAdmin?: boolean;
     templates?: any;
     apiPrefix?: string;
@@ -41,9 +41,9 @@
   let {
     xfetch,
     notifications,
-    organizationId,
-    teamId,
-    departmentId,
+    organizationId = null,
+    teamId = null,
+    departmentId = null,
     isEntityAdmin = false,
     templates = [],
     apiPrefix = '/api',
@@ -58,9 +58,9 @@
 
   let showAddTemplate = $state(false);
   let showUpdateTemplate = $state(false);
-  let updateTemplate = $state({});
+  let updateTemplate = $state<any>({});
   let showRemoveTemplate = $state(false);
-  let removeTemplateId = null;
+  let removeTemplateId = $state<string | null>(null);
 
   function handleCreateTemplate() {
     getTemplates();
@@ -90,12 +90,12 @@
     showAddTemplate = !showAddTemplate;
   }
 
-  const toggleUpdateTemplate = template => () => {
+  const toggleUpdateTemplate = (template: any) => () => {
     updateTemplate = template;
     showUpdateTemplate = !showUpdateTemplate;
   };
 
-  const toggleRemoveTemplate = templateId => () => {
+  const toggleRemoveTemplate = (templateId: string | null) => () => {
     showRemoveTemplate = !showRemoveTemplate;
     removeTemplateId = templateId;
   };
@@ -103,9 +103,9 @@
   let isAdmin = $derived(validateUserIsAdmin($user));
 
   let showFormat = $state(false);
-  let selectedTemplate = $state(null);
+  let selectedTemplate = $state<any>(null);
 
-  let toggleViewFormat = template => {
+  let toggleViewFormat = (template: any) => {
     showFormat = !showFormat;
     selectedTemplate = template;
   };
@@ -225,7 +225,7 @@
     />
   {/if}
 
-  {#if showFormat}
+  {#if showFormat && selectedTemplate}
     <ViewFormat format={selectedTemplate.format} toggleClose={toggleViewFormat} />
   {/if}
 </div>

@@ -15,6 +15,7 @@
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
+  import type { Organization } from '../../../types/organization';
 
   interface Props {
     xfetch: ApiClient;
@@ -35,7 +36,7 @@
     departmentCount: 0,
     teamCount: 0,
   });
-  let organizations = $state([]);
+  let organizations = $state<Organization[]>([]);
   let organizationsPage = $state(1);
 
   function getAppStats() {
@@ -61,7 +62,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     organizationsPage = evt.detail;
     getOrganizations();
   };

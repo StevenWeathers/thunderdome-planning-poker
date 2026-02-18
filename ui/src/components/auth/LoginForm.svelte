@@ -6,28 +6,31 @@
   import PasswordInput from '../forms/PasswordInput.svelte';
   import Google from '../icons/Google.svelte';
   import TextInput from '../forms/TextInput.svelte';
+  import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     registerLink?: string;
     targetPage?: any;
     router: any;
-    xfetch?: any;
-    notifications?: any;
+    xfetch?: ApiClient;
+    notifications?: NotificationService;
   }
 
   let {
     registerLink = '',
     targetPage = appRoutes.landing,
     router,
-    xfetch = async (url, ...options) => {},
-    notifications = () => {},
+    xfetch = (async () => new Response()) as ApiClient,
+    notifications = {
+      success: () => {},
+      danger: () => {},
+      warning: () => {},
+      info: () => {},
+      show: () => {},
+      removeToast: () => {},
+    } as NotificationService,
   }: Props = $props();
-
-  declare global {
-    interface Window {
-      setTheme: Function;
-    }
-  }
 
   const { LdapEnabled, GoogleAuthEnabled, HeaderAuthEnabled, OIDCAuthEnabled, OIDCProviderName } = AppConfig;
   const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth';
@@ -38,23 +41,23 @@
   let resetEmail = $state('');
 
   let mfaRequired = $state(false);
-  let mfaUser = null;
-  let mfaSessionId = null;
+  let mfaUser: any = null;
+  let mfaSessionId: string | null = null;
   let mfaToken = $state('');
 
   function googleLogin() {
-    window.location = `${PathPrefix}/oauth/google/login`;
+    window.location.href = `${PathPrefix}/oauth/google/login`;
   }
 
   function oidcLogin() {
-    window.location = `${PathPrefix}/oauth/${OIDCProviderName.toLowerCase()}/login`;
+    window.location.href = `${PathPrefix}/oauth/${OIDCProviderName.toLowerCase()}/login`;
   }
 
   function toggleForgotPassword() {
     forgotPassword = !forgotPassword;
   }
 
-  function handleLoginSubmit(e) {
+  function handleLoginSubmit(e: Event) {
     e.preventDefault();
 
     const body = {
@@ -64,7 +67,7 @@
 
     xfetch(authEndpoint, { body, skip401Redirect: true })
       .then((res: any) => res.json())
-      .then(function (result) {
+      .then(function (result: any) {
         const u = result.data.user;
         const newUser = {
           id: u.id,
@@ -86,7 +89,7 @@
           } else {
             localStorage.removeItem('theme');
           }
-          window.setTheme();
+          (window as any).setTheme();
           router.route(targetPage, true);
         }
       })
@@ -95,7 +98,7 @@
       });
   }
 
-  function authMfa(e) {
+  function authMfa(e: Event) {
     e.preventDefault();
     const body = {
       passcode: mfaToken,
@@ -103,7 +106,7 @@
     };
 
     xfetch('/api/auth/mfa', { body, skip401Redirect: true })
-      .then(res => res.json())
+      .then((res: any) => res.json())
       .then(function () {
         user.create(mfaUser);
         router.route(targetPage, true);
@@ -113,7 +116,7 @@
       });
   }
 
-  function sendPasswordReset(e) {
+  function sendPasswordReset(e: Event) {
     e.preventDefault();
     const body = {
       email: resetEmail,

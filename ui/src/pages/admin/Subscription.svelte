@@ -35,6 +35,8 @@
     active: false,
     type: '',
     expires: '',
+    created_date: '',
+    updated_date: '',
     user: {
       name: '',
     },

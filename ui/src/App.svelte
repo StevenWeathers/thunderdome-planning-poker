@@ -12,6 +12,8 @@
   import { AppConfig, appRoutes } from './config';
   import apiclient from './apiclient';
   import type { ApiClient } from './types/apiclient';
+  import type { User } from './types/user';
+  import type { NotificationService } from './types/notifications';
   import { dir, user } from './stores';
 
   import Notifications from './components/global/Notifications.svelte';
@@ -84,7 +86,7 @@
   const { FeaturePoker, FeatureRetro, FeatureStoryboard, FeatureProject, SubscriptionsEnabled, DefaultLocale } =
     AppConfig;
 
-  let notifications = $state();
+  let notifications: NotificationService | undefined = $state();
 
   const detectedLocale = detectLocale() || DefaultLocale;
 
@@ -92,11 +94,11 @@
   loadLocale(selectedLocale);
   setLocale(selectedLocale);
 
-  let activeWarrior = $state();
-  user.subscribe(w => {
+  let activeWarrior: User | undefined = $state();
+  user.subscribe((w: any) => {
     activeWarrior = w;
 
-    const selectedLocale = w.locale || detectedLocale;
+    const selectedLocale = w?.locale || detectedLocale;
     loadLocale(selectedLocale);
     setLocale(selectedLocale);
   });
@@ -517,7 +519,7 @@
       router.route(appRoutes.games);
     });
     router.on(`${appRoutes.battle}/:battleId`, params => {
-      router.route(`${appRoutes.game}/${params.battleId}`);
+      router.route(`${appRoutes.game}/${params!.battleId}`);
     });
     router.on(appRoutes.games, () => {
       currentPage = {
@@ -548,10 +550,10 @@
       };
     });
     router.on(`${appRoutes.register}/battle/:battleId`, params => {
-      router.route(`${appRoutes.register}/game/${params.battleId}`);
+      router.route(`${appRoutes.register}/game/${params!.battleId}`);
     });
     router.on(`${appRoutes.login}/battle/:battleId`, params => {
-      router.route(`${appRoutes.login}/game/${params.battleId}`);
+      router.route(`${appRoutes.login}/game/${params!.battleId}`);
     });
     router.on(`${appRoutes.register}/game/:battleId`, params => {
       currentPage = {
@@ -721,19 +723,23 @@
   function handle401(skipRedirect: boolean = false) {
     user.delete();
     localStorage.removeItem('theme');
-    window.setTheme();
+    (window as any).setTheme();
     if (!skipRedirect) {
       router.route(appRoutes.login);
     }
   }
 
-  onDestroy(router.unlisten);
+  onDestroy(() => {
+    if (router.unlisten) {
+      router.unlisten();
+    }
+  });
 </script>
 
 <Notifications bind:this={notifications} />
 
 <header class="w-full">
-  <GlobalAlerts registered={!!activeWarrior.name || false} />
+  <GlobalAlerts registered={!!activeWarrior?.name || false} />
 
   <GlobalHeader {router} {xfetch} {notifications} currentPage={currentPage.name} />
 </header>

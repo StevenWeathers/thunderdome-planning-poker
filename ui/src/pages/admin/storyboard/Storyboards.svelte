@@ -18,6 +18,13 @@
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
+  interface StoryboardListItem {
+    id: string;
+    name: string;
+    createdDate: string;
+    updatedDate: string;
+  }
+
   interface Props {
     xfetch: ApiClient;
     router: any;
@@ -28,7 +35,7 @@
 
   const storyboardsPageLimit = 100;
   let storyboardCount = $state(0);
-  let storyboards = $state([]);
+  let storyboards = $state<StoryboardListItem[]>([]);
   let storyboardsPage = $state(1);
   let activeStoryboards = $state(false);
 
@@ -45,7 +52,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     storyboardsPage = evt.detail;
     getStoryboards();
   };

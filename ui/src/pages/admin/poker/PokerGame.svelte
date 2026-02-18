@@ -19,6 +19,7 @@
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
+  import type { PokerUser, PokerStory } from '../../../types/poker';
 
   interface Props {
     xfetch: ApiClient;
@@ -27,11 +28,29 @@
     battleId: any;
   }
 
+  interface AdminPokerUser extends PokerUser {
+    country?: string;
+  }
+
+  interface AdminBattle {
+    name: string;
+    votingLocked: boolean;
+    autoFinishVoting: boolean;
+    activePlanId: string;
+    pointValuesAllowed: string[];
+    pointAverageRounding: string;
+    users: AdminPokerUser[];
+    plans: PokerStory[];
+    createdDate: string;
+    updatedDate: string;
+    leaders: string[];
+  }
+
   let { xfetch, router, notifications, battleId }: Props = $props();
 
   let showDeleteBattle = $state(false);
 
-  let battle = $state({
+  let battle = $state<AdminBattle>({
     name: '',
     votingLocked: false,
     autoFinishVoting: false,
@@ -42,6 +61,7 @@
     plans: [],
     createdDate: '',
     updatedDate: '',
+    leaders: [],
   });
 
   function getBattle() {

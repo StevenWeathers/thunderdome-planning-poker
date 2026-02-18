@@ -556,7 +556,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                       <p class="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
-                        {$LL[stat.name]()}
+                        {($LL as any)[stat.name]()}
                       </p>
                       <p
                         class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200"

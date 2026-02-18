@@ -54,9 +54,9 @@
   let showRemoveBattle = $state(false);
   let showRemoveRetro = $state(false);
   let showRemoveStoryboard = $state(false);
-  let removeBattleId = $state(null);
-  let removeRetroId = $state(null);
-  let removeStoryboardId = $state(null);
+  let removeBattleId = $state<string | null>(null);
+  let removeRetroId = $state<string | null>(null);
+  let removeStoryboardId = $state<string | null>(null);
   let battles = $state([]);
   let retros = $state([]);
   let storyboards = $state([]);
@@ -174,17 +174,17 @@
     showCreateStoryboard = !showCreateStoryboard;
   }
 
-  const toggleRemoveBattle = battleId => () => {
+  const toggleRemoveBattle = (battleId: string | null) => () => {
     showRemoveBattle = !showRemoveBattle;
     removeBattleId = battleId;
   };
 
-  const toggleRemoveRetro = retroId => () => {
+  const toggleRemoveRetro = (retroId: string | null) => () => {
     showRemoveRetro = !showRemoveRetro;
     removeRetroId = retroId;
   };
 
-  const toggleRemoveStoryboard = storyboardId => () => {
+  const toggleRemoveStoryboard = (storyboardId: string | null) => () => {
     showRemoveStoryboard = !showRemoveStoryboard;
     removeStoryboardId = storyboardId;
   };

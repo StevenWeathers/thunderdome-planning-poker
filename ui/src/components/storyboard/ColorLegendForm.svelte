@@ -74,7 +74,7 @@
   </form>
 </Modal>
 
-<style>
+<style lang="postcss">
   .colorcard-gray {
     @apply bg-gray-400;
   }

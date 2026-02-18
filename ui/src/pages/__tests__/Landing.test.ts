@@ -6,7 +6,7 @@ import Landing from '../Landing.svelte';
 describe('Landing Page', () => {
   it('should render successfully', () => {
     render(Landing, {
-      xfetch: () => {},
+      xfetch: () => Promise.resolve(new Response()),
     });
   });
 });

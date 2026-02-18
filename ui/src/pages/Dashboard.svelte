@@ -4,6 +4,7 @@
   import LL from '../i18n/i18n-svelte';
   import type { Team } from '../types/team';
   import PokerGame from './poker/PokerGame.svelte';
+  import type { PokerGame as PokerGameType } from '../types/poker';
   import type { Retro } from '../types/retro';
   import type { Storyboard } from '../types/storyboard';
   import { user } from '../stores';
@@ -36,7 +37,7 @@
 
   let { xfetch, notifications, router }: Props = $props();
   let teams: Team[] = $state([]);
-  let games: PokerGame[] = $state([]);
+  let games: PokerGameType[] = $state([]);
   let gameCount: number = $state(0);
   let retros: Retro[] = $state([]);
   let retroCount: number = $state(0);

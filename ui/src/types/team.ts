@@ -14,6 +14,8 @@ export type TeamUser = {
   id: string;
   name: string;
   role: string;
+  pictureUrl?: string;
+  country?: string;
 };
 
 export type TeamCheckin = {

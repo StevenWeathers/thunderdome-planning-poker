@@ -10,7 +10,7 @@
 
   let { selectedLocale = 'en', class: klass = '' }: Props = $props();
 
-  const supportedLocales = [];
+  const supportedLocales: { name: string; value: string }[] = [];
 
   for (const [key, value] of Object.entries(locales)) {
     supportedLocales.push({
@@ -21,10 +21,10 @@
 
   const dispatch = createEventDispatcher();
 
-  function switchLocale(event) {
+  function switchLocale(event: Event) {
     event.preventDefault();
 
-    dispatch('locale-changed', event.target.value);
+    dispatch('locale-changed', (event.target as HTMLSelectElement).value);
   }
 </script>
 

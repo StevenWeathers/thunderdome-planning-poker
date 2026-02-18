@@ -20,6 +20,16 @@
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
+  interface RetroUserWithDetails {
+    id: string;
+    name: string;
+    avatar: string;
+    gravatarHash: string;
+    active: boolean;
+    abandoned: boolean;
+    country?: string;
+  }
+
   interface Props {
     xfetch: ApiClient;
     router: any;
@@ -31,7 +41,13 @@
 
   let showDeleteRetro = $state(false);
 
-  let retro = $state({
+  let retro = $state<{
+    name: string;
+    users: RetroUserWithDetails[];
+    owner_id: string;
+    createdDate: string;
+    updatedDate: string;
+  }>({
     name: '',
     users: [],
     owner_id: '',

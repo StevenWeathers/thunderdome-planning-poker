@@ -12,6 +12,10 @@ while (IDX--) {
 }
 
 // Get a unique ID
+/**
+ * @param {number} [len]
+ * @returns {string}
+ */
 const uid = (len) => {
   let str = ''
   let num = len || 11
@@ -24,6 +28,11 @@ const uid = (len) => {
 }
 
 // Scroll an element into view if needed
+/**
+ * @param {HTMLElement | null} node
+ * @param {HTMLElement} rootNode
+ * @returns {void}
+ */
 const scrollIntoView = (node, rootNode) => {
   if (node === null) {
     return
@@ -42,6 +51,10 @@ const scrollIntoView = (node, rootNode) => {
 }
 
 // Transform a string into a slug
+/**
+ * @param {any} str
+ * @returns {string}
+ */
 const slugify = (str) =>
   str
     .toString()
@@ -98,6 +111,11 @@ const keyCodes = {
   ]
 }
 
+/**
+ * @param {Record<string, any>} timezones
+ * @param {string[]} selection
+ * @returns {Record<string, any>}
+ */
 const pick = (timezones, selection) => {
   const unique = Array.from(new Set([...selection]))
 
@@ -112,6 +130,10 @@ const pick = (timezones, selection) => {
 
 // We take the grouped timezones and flatten them so that they can be easily searched
 // e.g. { Europe: { 'London': 'Europe/London', 'Berlin': 'Europe/Berlin' } } => {'London': 'Europe/London', 'Berlin': 'Europe/Berlin' }
+/**
+ * @param {Record<string, any>} timezones
+ * @returns {Record<string, any>}
+ */
 const ungroup = (timezones) =>
   Object.values(timezones).reduce(
     (values, zone) => ({ ...values, ...zone }),
@@ -119,12 +141,17 @@ const ungroup = (timezones) =>
   )
 
 // Filter the list of zone labels to only those that match a search string
+/**
+ * @param {string} search
+ * @param {Record<string, any>} zoneGroups
+ * @returns {string[]}
+ */
 const filter = (search, zoneGroups) =>
   Object.entries(zoneGroups).reduce((zones, [zone, details]) => {
     if (details[0].toLowerCase().includes(search.toLowerCase())) {
       zones.push(zone)
     }
     return zones
-  }, [])
+  }, /** @type {string[]} */ ([]))
 
 export { scrollIntoView, uid, slugify, keyCodes, ungroup, filter, pick }

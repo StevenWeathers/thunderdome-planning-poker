@@ -26,12 +26,23 @@
     notifications: NotificationService;
   }
 
+  interface Alert {
+    id: string;
+    name: string;
+    type: string;
+    content: string;
+    active: boolean;
+    registeredOnly: boolean;
+    allowDismiss: boolean;
+    updatedDate: string;
+  }
+
   let { xfetch, router, notifications }: Props = $props();
 
   const alertsPageLimit = 25;
   let alertCount = $state(0);
 
-  const defaultAlert = {
+  const defaultAlert: Alert = {
     id: '',
     name: '',
     type: '',
@@ -39,31 +50,32 @@
     active: false,
     registeredOnly: false,
     allowDismiss: true,
+    updatedDate: '',
   };
 
-  let alerts = $state([]);
+  let alerts = $state<Alert[]>([]);
   let alertsPage = $state(1);
   let showAlertCreate = $state(false);
   let showAlertUpdate = $state(false);
   let showDeleteAlert = $state(false);
-  let selectedAlert = $state({ ...defaultAlert });
-  let deleteAlertId = $state(null);
+  let selectedAlert = $state<Alert>({ ...defaultAlert });
+  let deleteAlertId = $state<string | null>(null);
 
   function toggleCreateAlert() {
     showAlertCreate = !showAlertCreate;
   }
 
-  const toggleUpdateAlert = alert => () => {
+  const toggleUpdateAlert = (alert: Alert) => () => {
     showAlertUpdate = !showAlertUpdate;
     selectedAlert = alert;
   };
 
-  const toggleDeleteAlert = alertId => () => {
+  const toggleDeleteAlert = (alertId: string | null) => () => {
     showDeleteAlert = !showDeleteAlert;
     deleteAlertId = alertId;
   };
 
-  function createAlert(body) {
+  function createAlert(body: any) {
     xfetch('/api/alerts', { body })
       .then(res => res.json())
       .then(function (result) {
@@ -77,7 +89,7 @@
       });
   }
 
-  function updateAlert(id, body) {
+  function updateAlert(id: string, body: any) {
     xfetch(`/api/alerts/${id}`, { body, method: 'PUT' })
       .then(res => res.json())
       .then(function (result) {
@@ -118,7 +130,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     alertsPage = evt.detail;
     getAlerts();
   };

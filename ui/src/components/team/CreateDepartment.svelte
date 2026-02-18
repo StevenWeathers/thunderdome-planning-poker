@@ -13,7 +13,7 @@
 
   let { toggleCreate = () => {}, handleCreate = () => {}, departmentName = $bindable('') }: Props = $props();
 
-  function onSubmit(e) {
+  function onSubmit(e: SubmitEvent) {
     e.preventDefault();
 
     handleCreate(departmentName);

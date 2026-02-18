@@ -46,11 +46,11 @@
 
   let showAddUser = $state(false);
   let showUpdateUser = $state(false);
-  let updateUser = $state({});
+  let updateUser = $state<any>({});
   let showRemoveUser = $state(false);
-  let removeUserId = null;
+  let removeUserId = $state<string | null>(null);
 
-  function handleUserAdd({ id, email, role }) {
+  function handleUserAdd({ id, email, role }: { id: string; email: string; role: string }) {
     const body = {
       user_id: id,
       role,
@@ -70,7 +70,7 @@
       });
   }
 
-  function handleUserInvite({ id, email, role }) {
+  function handleUserInvite({ id, email, role }: { id: string; email: string; role: string }) {
     const body = {
       email,
       role,
@@ -89,7 +89,7 @@
       });
   }
 
-  function handleUserUpdate(userId, role) {
+  function handleUserUpdate(userId: string, role: string) {
     const body = {
       role,
     };
@@ -121,12 +121,12 @@
     showAddUser = !showAddUser;
   }
 
-  const toggleUpdateUser = user => () => {
+  const toggleUpdateUser = (user: any) => () => {
     updateUser = user;
     showUpdateUser = !showUpdateUser;
   };
 
-  const toggleRemoveUser = userId => () => {
+  const toggleRemoveUser = (userId: string | null) => () => {
     showRemoveUser = !showRemoveUser;
     removeUserId = userId;
   };

@@ -17,9 +17,9 @@
   interface Props {
     xfetch: ApiClient;
     notifications: NotificationService;
-    organizationId: any;
-    teamId: any;
-    departmentId: any;
+    organizationId?: any;
+    teamId?: any;
+    departmentId?: any;
     apiPrefix?: string;
     isEntityAdmin?: boolean;
   }
@@ -27,9 +27,9 @@
   let {
     xfetch,
     notifications,
-    organizationId,
-    teamId,
-    departmentId,
+    organizationId = null,
+    teamId = null,
+    departmentId = null,
     apiPrefix = '/api',
     isEntityAdmin = false,
   }: Props = $props();
@@ -65,11 +65,11 @@
       }
       defaultSettings = res.data;
     } else {
-      notifications.error('Failed to get default poker settings');
+      notifications.danger('Failed to get default poker settings');
     }
   }
 
-  function handleSettingsUpdate(event) {
+  function handleSettingsUpdate(event: any) {
     defaultSettings = event.detail.settings;
   }
 

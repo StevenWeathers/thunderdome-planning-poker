@@ -44,7 +44,7 @@
     showActions = !showActions;
   }
 
-  function onSubmit(e) {
+  function onSubmit(e: Event) {
     e.preventDefault();
 
     handleEdit(checkinId, comment.id, {
@@ -78,7 +78,7 @@
 <article
   class="group relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 p-4 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200"
   data-commentid={comment.id}
-  aria-label="Comment by {userMap[comment?.user_id]?.name || 'Unknown user'}"
+  aria-label="Comment by {userMap.get(comment?.user_id)?.name || 'Unknown user'}"
 >
   <!-- Comment Header -->
   <header class="flex items-start justify-between gap-3 mb-3">
@@ -87,10 +87,10 @@
       <div class="flex-shrink-0">
         <UserAvatar
           warriorId={comment.user_id}
-          pictureUrl={userMap[comment?.user_id]?.pictureUrl || ''}
-          userName={userMap[comment?.user_id]?.name || 'Unknown'}
-          gravatarHash={userMap[comment?.user_id]?.gravatarHash || ''}
-          avatar={userMap[comment?.user_id]?.avatar || ''}
+          pictureUrl={userMap.get(comment?.user_id)?.pictureUrl || ''}
+          userName={userMap.get(comment?.user_id)?.name || 'Unknown'}
+          gravatarHash={userMap.get(comment?.user_id)?.gravatarHash || ''}
+          avatar={userMap.get(comment?.user_id)?.avatar || ''}
         />
       </div>
 
@@ -98,7 +98,7 @@
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
           <h4 class="font-semibold text-gray-900 dark:text-white text-sm truncate">
-            {userMap[comment.user_id].name || 'Loading...'}
+            {userMap.get(comment.user_id)?.name || 'Loading...'}
           </h4>
           <span class="text-xs text-gray-500 dark:text-gray-400">•</span>
           <time class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">

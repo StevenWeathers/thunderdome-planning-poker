@@ -38,12 +38,12 @@
 
   function submitSupportTicket() {
     if (!$user || !$user.id) {
-      notifications.error('You must be logged in to submit a support ticket.');
+      notifications.danger('You must be logged in to submit a support ticket.');
       return;
     }
 
     if (!inquiry || !fullName || !email) {
-      notifications.error('Please fill in all fields.');
+      notifications.danger('Please fill in all fields.');
       return;
     }
 
@@ -62,7 +62,7 @@
         submitted = true;
       })
       .catch((error: any) => {
-        notifications.error('Failed to submit support ticket.');
+        notifications.danger('Failed to submit support ticket.');
         console.error(error);
       })
       .finally(() => {

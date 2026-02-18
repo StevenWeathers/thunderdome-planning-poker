@@ -1,18 +1,30 @@
-import type { ComponentType } from 'svelte';
-import { ChartNoAxesColumn, Briefcase, CheckSquare, FileText, Layout, Play, RefreshCcw, Users } from '@lucide/svelte';
+import type { Component } from 'svelte';
+import {
+  ChartNoAxesColumn,
+  Briefcase,
+  CheckSquare,
+  FileText,
+  Layout,
+  Play,
+  RefreshCcw,
+  Users,
+  type IconProps,
+} from '@lucide/svelte';
 
 export type MetricItem = {
   key: string;
   name: string;
   value: number;
-  icon: ComponentType;
+  icon: Component<IconProps>;
 };
 
 export type MetricsResponse = {
-  [key: string]: number;
+  data: {
+    [key: string]: number;
+  };
 };
 
-export const iconMap: { [key: string]: ComponentType } = {
+export const iconMap: { [key: string]: Component<IconProps> } = {
   user_count: Users,
   department_count: Briefcase,
   team_count: Users,
@@ -30,7 +42,7 @@ export async function fetchAndUpdateMetrics(apiPrefix: string, currentMetrics: M
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const res: MetricsResponse = await response.json();
+    const res = (await response.json()) as MetricsResponse;
 
     // Update the current metrics with the fetched values
     return currentMetrics.map(metric => ({

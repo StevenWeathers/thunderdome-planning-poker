@@ -17,9 +17,9 @@
     toggleClose?: any;
     xfetch: ApiClient;
     notifications: NotificationService;
-    organizationId: any;
-    teamId: any;
-    departmentId: any;
+    organizationId?: any;
+    teamId?: any;
+    departmentId?: any;
     apiPrefix?: string;
     isEntityAdmin?: boolean;
     retroSettings?: any;
@@ -29,9 +29,9 @@
     toggleClose = () => {},
     xfetch,
     notifications,
-    organizationId,
-    teamId,
-    departmentId,
+    organizationId = null,
+    teamId = null,
+    departmentId = null,
     apiPrefix = '/api',
     isEntityAdmin = false,
     retroSettings = $bindable({
@@ -88,7 +88,7 @@
       notifications.success(`Default retro settings ${method === 'PUT' ? 'updated' : 'created'}`);
       toggleClose();
     } else {
-      notifications.error(`Failed to ${method === 'PUT' ? 'update' : 'create'} default retro settings`);
+      notifications.danger(`Failed to ${method === 'PUT' ? 'update' : 'create'} default retro settings`);
     }
   }
 

@@ -55,7 +55,7 @@
     goalsMet: false,
   });
 
-  function onSubmit(e) {
+  function onSubmit(e: Event) {
     e.preventDefault();
 
     if (checkinId) {
@@ -80,18 +80,20 @@
 
   function getLastCheckin() {
     xfetch(`${teamPrefix}/checkins/users/${userId}/last`)
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 204) {
+          return null;
+        }
+        return res.json();
+      })
       .then(result => {
-        if (!result.data) {
+        if (!result || !result.data) {
           return;
         }
         lastCheckin = result.data;
       })
-      .catch(([err, response]) => {
-        if (response.status === 204) {
-          return;
-        }
-        notifications.danger('Error getting last checkin');
+      .catch(() => {
+        // Silently handle errors for missing checkin
       });
   }
 
@@ -265,7 +267,7 @@
               content={yesterday}
               placeholder={$LL.yesterdayPlaceholder()}
               id="yesterday"
-              handleTextChange={c => (yesterday = c)}
+              handleTextChange={(c: string) => (yesterday = c)}
             />
           </div>
         </div>
@@ -314,7 +316,12 @@
           <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">What are your plans for today?</p>
         </div>
         <div class="p-6 bg-white">
-          <Editor content={today} placeholder={$LL.todayPlaceholder()} id="today" handleTextChange={c => (today = c)} />
+          <Editor
+            content={today}
+            placeholder={$LL.todayPlaceholder()}
+            id="today"
+            handleTextChange={(c: string) => (today = c)}
+          />
         </div>
       </div>
     </div>
@@ -348,7 +355,7 @@
             content={blockers}
             placeholder={$LL.blockersPlaceholder()}
             id="blockers"
-            handleTextChange={c => (blockers = c)}
+            handleTextChange={(c: string) => (blockers = c)}
           />
         </div>
       </div>
@@ -385,7 +392,7 @@
             content={discuss}
             placeholder={$LL.discussPlaceholder()}
             id="discuss"
-            handleTextChange={c => (discuss = c)}
+            handleTextChange={(c: string) => (discuss = c)}
           />
         </div>
       </div>

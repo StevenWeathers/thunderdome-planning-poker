@@ -104,7 +104,7 @@
       });
   }
 
-  const changeProjectsPage = evt => {
+  const changeProjectsPage = (evt: CustomEvent) => {
     projectsPage = evt.detail;
     getProjects();
   };

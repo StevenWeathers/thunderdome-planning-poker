@@ -63,7 +63,7 @@
   {/if}
 {/each}
 
-<style>
+<style lang="postcss">
   .NEWAlert {
     @apply bg-indigo-600;
   }

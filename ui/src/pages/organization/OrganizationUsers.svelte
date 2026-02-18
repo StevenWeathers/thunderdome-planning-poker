@@ -25,7 +25,7 @@
   const usersPageLimit = 1000;
   const orgPrefix = $derived(`/api/organizations/${organizationId}`);
 
-  let invitesList = $state();
+  let invitesList = $state<any>(undefined);
   let organization = $state({
     id: '',
     name: '',

@@ -5,7 +5,7 @@
 
   interface Props {
     format: RetroTemplateFormat;
-    toggleClose: (template) => void;
+    toggleClose: (template: any) => void;
   }
 
   let { format, toggleClose }: Props = $props();

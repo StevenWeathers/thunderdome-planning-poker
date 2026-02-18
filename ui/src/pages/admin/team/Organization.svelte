@@ -21,6 +21,8 @@
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
+  import type { Department, DepartmentUser } from '../../../types/organization';
+  import type { Team } from '../../../types/team';
 
   interface Props {
     xfetch: ApiClient;
@@ -42,9 +44,9 @@
     updateDate: '',
   });
   let role = 'MEMBER';
-  let departments = $state([]);
-  let teams = $state([]);
-  let users = $state([]);
+  let departments = $state<Department[]>([]);
+  let teams = $state<Team[]>([]);
+  let users = $state<DepartmentUser[]>([]);
   let showDeleteTeam = $state(false);
   let showDeleteDepartment = $state(false);
   let showDeleteOrganization = $state(false);

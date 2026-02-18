@@ -304,6 +304,11 @@
   let ws: any;
 
   onMount(() => {
+    if (!$user.id) {
+      router.route(`${loginOrRegister}/retro/${retroId}`);
+      return;
+    }
+
     ws = new Sockette(`${getWebsocketAddress()}/api/retro/${retroId}`, {
       timeout: 2e3,
       maxAttempts: 15,
@@ -343,9 +348,7 @@
     }
   });
 
-  let isFacilitator = $derived(retro.facilitators && retro.facilitators.includes($user.id));
-
-  const sendSocketEvent = (type, value) => {
+  const sendSocketEvent = (type: string, value: any) => {
     ws.send(
       JSON.stringify({
         type,
@@ -599,11 +602,7 @@
     showOpenActionItems = !showOpenActionItems;
   }
 
-  onMount(() => {
-    if (!$user.id) {
-      router.route(`${loginOrRegister}/retro/${retroId}`);
-    }
-  });
+  let isFacilitator = $derived(retro.facilitators && retro.facilitators.includes($user.id));
 </script>
 
 <svelte:head>
@@ -1030,7 +1029,7 @@
   <JoinCodeForm handleSubmit={authRetro} submitText={$LL.joinRetro()} />
 {/if}
 
-<style>
+<style lang="postcss">
   :global(input:checked ~ div) {
     @apply border-green-500;
   }

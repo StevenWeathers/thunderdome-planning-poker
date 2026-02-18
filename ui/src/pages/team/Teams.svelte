@@ -19,6 +19,8 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { Organization } from '../../types/organization';
+  import type { Team } from '../../types/team';
 
   interface Props {
     xfetch: ApiClient;
@@ -32,13 +34,15 @@
   const teamsPageLimit = 1000;
   const { OrganizationsEnabled } = AppConfig;
 
-  let defaultOrganization = {
+  let defaultOrganization: Organization = {
     id: '',
     name: '',
+    createdDate: '',
+    updatedDate: '',
   };
 
-  let organizations = $state([]);
-  let teams = $state([]);
+  let organizations: Organization[] = $state([]);
+  let teams: Team[] = $state([]);
   let showCreateOrganization = $state(false);
   let showCreateTeam = $state(false);
   let organizationsPage = 1;
@@ -51,7 +55,7 @@
   let showOrganizationUpdate = $state(false);
   let selectedOrganization = $state({ ...defaultOrganization });
 
-  function toggleUpdateOrganization(selectedOrg) {
+  function toggleUpdateOrganization(selectedOrg: Organization) {
     return () => {
       selectedOrganization = selectedOrg;
       showOrganizationUpdate = !showOrganizationUpdate;
@@ -63,7 +67,7 @@
   }
 
   let showDeleteOrganization = $state(false);
-  const toggleDeleteOrganization = selectedOrg => () => {
+  const toggleDeleteOrganization = (selectedOrg: Organization) => () => {
     selectedOrganization = selectedOrg;
     showDeleteOrganization = !showDeleteOrganization;
   };
@@ -92,7 +96,7 @@
       });
   }
 
-  function createOrganizationHandler(name) {
+  function createOrganizationHandler(name: string) {
     const body = {
       name,
     };
@@ -107,7 +111,7 @@
       });
   }
 
-  function createTeamHandler(name) {
+  function createTeamHandler(name: string) {
     const body = {
       name,
     };
@@ -122,7 +126,7 @@
       });
   }
 
-  function updateOrganizationHandler(name) {
+  function updateOrganizationHandler(name: string) {
     const body = {
       name,
     };
@@ -156,14 +160,16 @@
       });
   }
 
-  let defaultTeam = {
+  let defaultTeam: Team = {
     id: '',
     name: '',
+    createdDate: '',
+    updatedDate: '',
   };
   let selectedTeam = $state({ ...defaultTeam });
   let showTeamUpdate = $state(false);
 
-  function toggleUpdateTeam(team) {
+  function toggleUpdateTeam(team: Team) {
     return () => {
       selectedTeam = team;
       showTeamUpdate = !showTeamUpdate;
@@ -171,12 +177,12 @@
   }
 
   let showDeleteTeam = $state(false);
-  const toggleDeleteTeam = team => () => {
+  const toggleDeleteTeam = (team: Team) => () => {
     selectedTeam = team;
     showDeleteTeam = !showDeleteTeam;
   };
 
-  function updateTeamHandler(name) {
+  function updateTeamHandler(name: string) {
     const body = {
       name,
     };
@@ -271,7 +277,7 @@
                     {new Date(organization.updatedDate).toLocaleString()}
                   </RowCol>
                   <RowCol type="action">
-                    {#if organization.role === 'ADMIN'}
+                    {#if (organization as any).role === 'ADMIN'}
                       <CrudActions
                         editBtnClickHandler={toggleUpdateOrganization(organization)}
                         deleteBtnClickHandler={toggleDeleteOrganization(organization)}
@@ -328,7 +334,7 @@
                 {new Date(team.updatedDate).toLocaleString()}
               </RowCol>
               <RowCol type="action">
-                {#if team.role === 'ADMIN'}
+                {#if (team as any).role === 'ADMIN'}
                   <CrudActions
                     editBtnClickHandler={toggleUpdateTeam(team)}
                     deleteBtnClickHandler={toggleDeleteTeam(team)}
