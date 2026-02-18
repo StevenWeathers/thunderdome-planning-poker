@@ -24,11 +24,18 @@
     notifications: NotificationService;
   }
 
+  interface Battle {
+    id: string;
+    name: string;
+    createdDate: string;
+    updatedDate: string;
+  }
+
   let { xfetch, router, notifications }: Props = $props();
 
   const battlesPageLimit = 100;
   let battleCount = $state(0);
-  let battles = $state([]);
+  let battles = $state<Battle[]>([]);
   let battlesPage = $state(1);
   let activeBattles = $state(false);
 
@@ -45,7 +52,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     battlesPage = evt.detail;
     getBattles();
   };

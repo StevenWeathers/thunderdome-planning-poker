@@ -25,6 +25,17 @@
     notifications: NotificationService;
   }
 
+  interface ApiKey {
+    id: string;
+    name: string;
+    prefix: string;
+    userId: string;
+    userName: string;
+    active: boolean;
+    createdDate: string;
+    updatedDate: string;
+  }
+
   let { xfetch, router, notifications }: Props = $props();
 
   const apikeysPageLimit = 100;
@@ -39,7 +50,7 @@
     teamCount: 0,
     apikeyCount: 0,
   });
-  let apikeys = $state([]);
+  let apikeys = $state<ApiKey[]>([]);
   let apikeysPage = $state(1);
 
   function getAppStats() {
@@ -65,7 +76,7 @@
       });
   }
 
-  function deleteApiKey(userId, apk) {
+  function deleteApiKey(userId: string, apk: string) {
     return function () {
       xfetch(`/api/users/${userId}/apikeys/${apk}`, {
         method: 'DELETE',
@@ -82,7 +93,7 @@
     };
   }
 
-  function toggleApiKeyActiveStatus(userId, apk, active) {
+  function toggleApiKeyActiveStatus(userId: string, apk: string, active: boolean) {
     return function () {
       const body = {
         active: !active,
@@ -103,7 +114,7 @@
     };
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     apikeysPage = evt.detail;
     getApiKeys();
   };

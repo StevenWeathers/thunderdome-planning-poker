@@ -15,6 +15,7 @@
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
+  import type { Team } from '../../../types/team';
 
   interface Props {
     xfetch: ApiClient;
@@ -27,7 +28,7 @@
   const teamsPageLimit = 100;
 
   let teamCount = $state(0);
-  let teams = $state([]);
+  let teams = $state<Team[]>([]);
   let teamsPage = $state(1);
 
   function getTeams() {
@@ -43,7 +44,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     teamsPage = evt.detail;
     getTeams();
   };

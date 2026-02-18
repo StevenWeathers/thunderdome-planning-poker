@@ -14,6 +14,7 @@ export type TeamUser = {
   id: string;
   name: string;
   role: string;
+  country?: string;
 };
 
 export type TeamCheckin = {

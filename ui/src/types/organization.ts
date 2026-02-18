@@ -19,4 +19,5 @@ export type DepartmentUser = {
   id: string;
   name: string;
   role: string;
+  country?: string;
 };

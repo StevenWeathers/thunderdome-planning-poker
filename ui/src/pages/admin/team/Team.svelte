@@ -21,6 +21,11 @@
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
+  import type { Team } from '../../../types/team';
+  import type { PokerGame } from '../../../types/poker';
+  import type { Retro, RetroAction } from '../../../types/retro';
+  import type { Storyboard } from '../../../types/storyboard';
+  import type { TeamUser } from '../../../types/team';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -41,9 +46,11 @@
   const storyboardsPageLimit = 1000;
   const usersPageLimit = 1000;
 
-  let team = $state({
+  let team = $state<Team>({
     id: '',
     name: '',
+    createdDate: '',
+    updatedDate: '',
   });
   let organization = $state({
     id: '',
@@ -53,11 +60,11 @@
     id: '',
     name: '',
   });
-  let users = $state([]);
-  let battles = $state([]);
-  let retros = $state([]);
-  let retroActions = $state([]);
-  let storyboards = $state([]);
+  let users = $state<TeamUser[]>([]);
+  let battles = $state<PokerGame[]>([]);
+  let retros = $state<Retro[]>([]);
+  let retroActions = $state<RetroAction[]>([]);
+  let storyboards = $state<Storyboard[]>([]);
 
   $effect(() => {
     team.id = teamId;
@@ -84,7 +91,7 @@
 
   let showRetroActionComments = false;
   let selectedRetroAction = null;
-  const toggleRetroActionComments = id => () => {
+  const toggleRetroActionComments = (id: string) => () => {
     showRetroActionComments = !showRetroActionComments;
     selectedRetroAction = id;
   };
@@ -201,7 +208,7 @@
       });
   }
 
-  const changeRetroActionPage = evt => {
+  const changeRetroActionPage = (evt: CustomEvent) => {
     retroActionsPage = evt.detail;
     getRetrosActions();
   };

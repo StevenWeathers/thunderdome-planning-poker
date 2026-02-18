@@ -19,6 +19,7 @@ dist
 build
 packages/*/lib/app
 consoles/*/lib/app
+src/i18n/i18n-*.ts
 coverage
 
 *.ico
