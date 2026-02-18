@@ -1,6 +1,6 @@
 <script lang="ts">
   import SubscribeButton from '../../components/pricing/SubscribeButton.svelte';
-  import { AppConfig } from '../../config.ts';
+  import { AppConfig } from '../../config';
   import {
     Check,
     ShieldCheck,

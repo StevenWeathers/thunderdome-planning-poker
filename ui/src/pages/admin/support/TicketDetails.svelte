@@ -424,7 +424,7 @@
     <UpdateSupportTicket
       toggleUpdate={toggleUpdateTicket}
       handleUpdate={updateTicket}
-      {ticket}
+      ticket={ticket!}
       {adminUsers}
       {xfetch}
       {notifications}

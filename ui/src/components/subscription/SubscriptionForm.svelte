@@ -28,7 +28,7 @@
   let {
     handleUpdate = () => {},
     toggleClose = () => {},
-    xfetch = async (url, options) => {},
+    xfetch = async (url: string, options?: any) => {},
     notifications,
     subscriptionId = '',
     user_id = $bindable(''),
@@ -41,7 +41,7 @@
     expires = $bindable(new Date().toISOString()),
   }: Props = $props();
 
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (user_id === '') {

@@ -36,7 +36,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     scalesPage = evt.detail;
     getScales();
   };
@@ -73,5 +73,8 @@
     {scaleCount}
     {scalesPage}
     {scalesPageLimit}
+    organizationId={undefined}
+    teamId={undefined}
+    departmentId={undefined}
   />
 </AdminPageLayout>

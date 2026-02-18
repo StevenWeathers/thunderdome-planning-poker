@@ -31,7 +31,7 @@
     projectCount?: number;
     projectsPage?: number;
     projectsPageLimit?: number;
-    changePage?: (page: number) => void;
+    changePage?: (e: CustomEvent) => void;
     getProjects?: () => void;
   }
 
@@ -59,7 +59,7 @@
     projectCount = 0,
     projectsPage = $bindable(1),
     projectsPageLimit = 10,
-    changePage = () => {},
+    changePage = (e: CustomEvent) => {},
     getProjects = () => {},
   }: Props = $props();
 
@@ -76,7 +76,7 @@
 
   function handleProjectUpdate() {
     getProjects();
-    toggleUpdateProject({})();
+    showUpdateProject = false;
   }
 
   function handleProjectRemove() {

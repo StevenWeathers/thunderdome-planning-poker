@@ -1,13 +1,12 @@
 <script lang="ts">
   import SideNavigation from './global/SideNavigation.svelte';
-  import type { ComponentType } from 'svelte';
 
   // Define the page item type
   export interface PageItem {
     name: string;
     label: string;
     path: string;
-    icon: ComponentType;
+    icon: any;
     enabled: boolean;
   }
 

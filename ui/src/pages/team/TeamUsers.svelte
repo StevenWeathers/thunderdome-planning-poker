@@ -27,7 +27,7 @@
   const usersPageLimit = 1000;
   let usersPage = $state(1);
 
-  let invitesList = $state();
+  let invitesList = $state<any>(undefined);
 
   let team = $state({
     id: '',

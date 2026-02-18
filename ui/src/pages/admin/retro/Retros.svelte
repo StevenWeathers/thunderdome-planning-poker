@@ -18,6 +18,13 @@
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
+  interface RetroListItem {
+    id: string;
+    name: string;
+    createdDate: string;
+    updatedDate: string;
+  }
+
   interface Props {
     xfetch: ApiClient;
     router: any;
@@ -28,7 +35,7 @@
 
   const retrosPageLimit = 100;
   let retroCount = $state(0);
-  let retros = $state([]);
+  let retros = $state<RetroListItem[]>([]);
   let retrosPage = $state(1);
   let activeRetros = $state(false);
 
@@ -45,7 +52,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     retrosPage = evt.detail;
     getRetros();
   };
