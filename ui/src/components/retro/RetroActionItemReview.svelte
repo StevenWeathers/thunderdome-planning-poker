@@ -38,9 +38,9 @@
     },
   }: Props = $props();
 
-  const orgPrefix = team.organization_id !== '' ? `/api/organizations/${team.organization_id}` : '/api';
-  const deptPrefix = team.department_id !== '' ? `${orgPrefix}/departments/${team.department_id}` : orgPrefix;
-  const teamPrefix = `${deptPrefix}/teams/${team.id}`;
+  const orgPrefix = $derived(team.organization_id !== '' ? `/api/organizations/${team.organization_id}` : '/api');
+  const deptPrefix = $derived(team.department_id !== '' ? `${orgPrefix}/departments/${team.department_id}` : orgPrefix);
+  const teamPrefix = $derived(`${deptPrefix}/teams/${team.id}`);
 
   const retroActionsPageLimit = 10;
   const usersPageLimit = 1000;

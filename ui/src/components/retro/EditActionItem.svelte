@@ -38,10 +38,17 @@
   let selectedAssignee = $state('');
 
   let editAction = $state({
-    id: action.id,
-    retroId: action.retroId,
-    content: action.content,
-    completed: action.completed,
+    id: '',
+    retroId: '',
+    content: '',
+    completed: false,
+  });
+
+  $effect(() => {
+    editAction.id = action.id;
+    editAction.retroId = action.retroId;
+    editAction.content = action.content;
+    editAction.completed = action.completed;
   });
 
   const handleSubmit = e => {

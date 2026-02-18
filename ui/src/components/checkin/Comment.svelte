@@ -25,8 +25,12 @@
   }: Props = $props();
 
   let showEdit = $state(false);
-  let editcomment = $state(`${comment.comment}`);
+  let editcomment = $state('');
   let showActions = $state(false);
+
+  $effect(() => {
+    editcomment = comment.comment;
+  });
 
   function toggleEdit() {
     showEdit = !showEdit;

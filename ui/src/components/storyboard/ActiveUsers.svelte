@@ -35,7 +35,7 @@
   let showInviteForm = $state(false);
   let copied = $state(false);
 
-  let displayUsers = users.filter(user => user.active);
+  let displayUsers = $derived(users.filter(user => user.active));
 
   // Helper function to check if a user is a facilitator
   function isUserFacilitator(userId: string): boolean {

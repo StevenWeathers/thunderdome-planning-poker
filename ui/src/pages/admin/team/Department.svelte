@@ -35,11 +35,11 @@
   const usersPageLimit = 1000;
 
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
   });
   let department = $state({
-    id: departmentId,
+    id: '',
     name: '',
   });
   let departmentRole = '';
@@ -50,6 +50,11 @@
   let deleteTeamId = null;
   let teamsPage = 1;
   let usersPage = 1;
+
+  $effect(() => {
+    organization.id = organizationId;
+    department.id = departmentId;
+  });
 
   const toggleDeleteTeam = teamId => () => {
     showDeleteTeam = !showDeleteTeam;

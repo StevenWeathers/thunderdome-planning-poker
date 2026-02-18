@@ -6,6 +6,7 @@
   }
 
   import type { NotificationService } from '../../types/notifications';
+  import { onMount } from 'svelte';
 
   let { organizationId = '', xfetch = async () => {}, notifications }: Props = $props();
 
@@ -13,14 +14,16 @@
     name: '',
   });
 
-  xfetch(`/api/organizations/${organizationId}`)
-    .then(res => res.json())
-    .then(function (result) {
-      organization = result.data.organization;
-    })
-    .catch(function () {
-      notifications.danger('Error getting associated organization');
-    });
+  onMount(() => {
+    xfetch(`/api/organizations/${organizationId}`)
+      .then(res => res.json())
+      .then(function (result) {
+        organization = result.data.organization;
+      })
+      .catch(function () {
+        notifications.danger('Error getting associated organization');
+      });
+  });
 </script>
 
 {organization.name}

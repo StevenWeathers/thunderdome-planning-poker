@@ -29,22 +29,26 @@
   let invitesList = $state();
 
   let team = $state({
-    id: teamId,
+    id: '',
     name: '',
     subscribed: false,
   });
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
     subscribed: false,
   });
   let department = $state({
-    id: departmentId,
+    id: '',
     name: '',
   });
 
   let users = $state([]);
-  let usersPage = $state(1);
+  $effect(() => {
+    team.id = teamId;
+    organization.id = organizationId;
+    department.id = departmentId;
+  });
 
   let organizationRole = $state('');
   let departmentRole = $state('');

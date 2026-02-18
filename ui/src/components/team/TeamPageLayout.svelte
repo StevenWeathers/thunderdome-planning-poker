@@ -18,11 +18,13 @@
 
   const { FeatureProject } = AppConfig;
 
-  let routePrefix = departmentId
-    ? `${appRoutes.organization}/${organizationId}/department/${departmentId}/team/${teamId}`
-    : organizationId
-      ? `${appRoutes.organization}/${organizationId}/team/${teamId}`
-      : `${appRoutes.team}/${teamId}`;
+  let routePrefix = $derived(
+    departmentId
+      ? `${appRoutes.organization}/${organizationId}/department/${departmentId}/team/${teamId}`
+      : organizationId
+        ? `${appRoutes.organization}/${organizationId}/team/${teamId}`
+        : `${appRoutes.team}/${teamId}`,
+  );
 
   // Team pages configuration
   let pages: PageItem[] = $derived(

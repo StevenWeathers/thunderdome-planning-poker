@@ -36,7 +36,7 @@
   const usersPageLimit = 1000;
 
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
     createdDate: '',
     updateDate: '',
@@ -45,28 +45,27 @@
   let departments = $state([]);
   let teams = $state([]);
   let users = $state([]);
-  let showCreateDepartment = false;
-  let showCreateTeam = false;
-  let showAddUser = false;
-  let showRemoveUser = false;
-  let removeUserId = null;
   let showDeleteTeam = $state(false);
   let showDeleteDepartment = $state(false);
   let showDeleteOrganization = $state(false);
-  let deleteTeamId = null;
-  let deleteDeptId = null;
+  let deleteTeamId: string | null = null;
+  let deleteDeptId: string | null = null;
   let teamsPage = 1;
   let usersPage = 1;
   let departmentsPage = 1;
 
-  const apiPrefix = `/api/organizations/${organizationId}`;
+  $effect(() => {
+    organization.id = organizationId;
+  });
 
-  const toggleDeleteTeam = teamId => () => {
+  const apiPrefix = $derived(`/api/organizations/${organizationId}`);
+
+  const toggleDeleteTeam = (teamId: string | null) => () => {
     showDeleteTeam = !showDeleteTeam;
     deleteTeamId = teamId;
   };
 
-  const toggleDeleteDepartment = deptId => () => {
+  const toggleDeleteDepartment = (deptId: string | null) => () => {
     showDeleteDepartment = !showDeleteDepartment;
     deleteDeptId = deptId;
   };
@@ -160,7 +159,7 @@
       method: 'DELETE',
     })
       .then(function () {
-        toggleDeleteTeam();
+        toggleDeleteOrganization();
         notifications.success($LL.organizationDeleteSuccess());
         router.route(appRoutes.adminOrganizations);
       })

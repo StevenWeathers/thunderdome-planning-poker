@@ -23,14 +23,18 @@
   let { xfetch, router, notifications, organizationId }: Props = $props();
 
   const projectsPageLimit = 10;
-  const orgPrefix = `/api/organizations/${organizationId}`;
+  const orgPrefix = $derived(`/api/organizations/${organizationId}`);
 
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
     createdDate: '',
     updateDate: '',
     subscribed: false,
+  });
+
+  $effect(() => {
+    organization.id = organizationId;
   });
   let projectCount = $state(0);
   let projectsPage = $state(1);

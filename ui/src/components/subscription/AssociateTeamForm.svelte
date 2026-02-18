@@ -27,14 +27,16 @@
   let teams = $state([]);
   let selectedTeam = $state('');
 
-  xfetch(`/api/users/${$user.id}/teams?limit=1000&offset=0`)
-    .then(res => res.json())
-    .then(function (result) {
-      teams = result.data;
-    })
-    .catch(function () {
-      notifications.danger($LL.getTeamsError());
-    });
+  onMount(() => {
+    xfetch(`/api/users/${$user.id}/teams?limit=1000&offset=0`)
+      .then(res => res.json())
+      .then(function (result) {
+        teams = result.data;
+      })
+      .catch(function () {
+        notifications.danger($LL.getTeamsError());
+      });
+  });
 
   function handleSubmit(event) {
     event.preventDefault();

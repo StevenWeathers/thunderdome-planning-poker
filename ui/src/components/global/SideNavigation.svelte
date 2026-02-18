@@ -10,7 +10,7 @@
 
   let { menuItems = [], activePage = '', menuType = '', expanded = false }: Props = $props();
 
-  let isCollapsed = $state(!expanded);
+  let isCollapsed = $derived(!expanded);
 </script>
 
 <div

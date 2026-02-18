@@ -3,13 +3,13 @@
 
   let { title, description, features, imageDark, imageLight, imageAlt, index = 0 } = $props();
 
-  const reverse = index % 2 === 1;
+  const reverse = $derived(index % 2 === 1);
 
-  const sectionClass = reverse
-    ? 'flex flex-col md:flex-row-reverse items-center'
-    : 'flex flex-col md:flex-row items-center';
+  const sectionClass = $derived(
+    reverse ? 'flex flex-col md:flex-row-reverse items-center' : 'flex flex-col md:flex-row items-center',
+  );
 
-  const textClass = reverse ? 'md:w-1/2 md:ps-8 mb-8 md:mb-0' : 'md:w-1/2 md:pe-8 mb-8 md:mb-0';
+  const textClass = $derived(reverse ? 'md:w-1/2 md:ps-8 mb-8 md:mb-0' : 'md:w-1/2 md:pe-8 mb-8 md:mb-0');
 </script>
 
 <section class={sectionClass}>

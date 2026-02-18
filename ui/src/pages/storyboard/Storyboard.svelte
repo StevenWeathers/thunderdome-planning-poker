@@ -85,6 +85,8 @@
   let activeUserCount = $state(0);
   let columnOrderEditMode = $state(false);
 
+  let ws: any;
+
   const onSocketMessage = function (evt) {
     isLoading = false;
     const parsedEvent = JSON.parse(evt.data);
@@ -194,40 +196,44 @@
     }
   };
 
-  const ws = new Sockette(`${getWebsocketAddress()}/api/storyboard/${storyboardId}`, {
-    timeout: 2e3,
-    maxAttempts: 15,
-    onmessage: onSocketMessage,
-    onerror: () => {
-      socketError = true;
-    },
-    onclose: e => {
-      if (e.code === 4004) {
-        router.route(appRoutes.storyboards);
-      } else if (e.code === 4001) {
-        user.delete();
-        router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
-      } else if (e.code === 4003) {
-        notifications.danger($LL.duplicateStoryboardSession());
-        router.route(`${appRoutes.storyboards}`);
-      } else if (e.code === 4002) {
-        router.route(appRoutes.storyboards);
-      } else {
-        socketReconnecting = true;
-      }
-    },
-    onopen: () => {
-      isLoading = false;
-      socketError = false;
-      socketReconnecting = false;
-    },
-    onmaximum: () => {
-      socketReconnecting = false;
-    },
+  onMount(() => {
+    ws = new Sockette(`${getWebsocketAddress()}/api/storyboard/${storyboardId}`, {
+      timeout: 2e3,
+      maxAttempts: 15,
+      onmessage: onSocketMessage,
+      onerror: () => {
+        socketError = true;
+      },
+      onclose: e => {
+        if (e.code === 4004) {
+          router.route(appRoutes.storyboards);
+        } else if (e.code === 4001) {
+          user.delete();
+          router.route(`${loginOrRegister}/storyboard/${storyboardId}`);
+        } else if (e.code === 4003) {
+          notifications.danger($LL.duplicateStoryboardSession());
+          router.route(`${appRoutes.storyboards}`);
+        } else if (e.code === 4002) {
+          router.route(appRoutes.storyboards);
+        } else {
+          socketReconnecting = true;
+        }
+      },
+      onopen: () => {
+        isLoading = false;
+        socketError = false;
+        socketReconnecting = false;
+      },
+      onmaximum: () => {
+        socketReconnecting = false;
+      },
+    });
   });
 
   onDestroy(() => {
-    ws.close();
+    if (ws) {
+      ws.close();
+    }
   });
 
   const sendSocketEvent = (type, value) => {

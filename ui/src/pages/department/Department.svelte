@@ -34,19 +34,25 @@
 
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
-  const deptPrefix = `/api/organizations/${organizationId}/departments/${departmentId}`;
+  const deptPrefix = $derived(`/api/organizations/${organizationId}/departments/${departmentId}`);
 
   let invitesList = $state();
+
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
     createdDate: '',
     updateDate: '',
     subscribed: false,
   });
   let department = $state({
-    id: departmentId,
+    id: '',
     name: '',
+  });
+
+  $effect(() => {
+    organization.id = organizationId;
+    department.id = departmentId;
   });
   let departmentRole = $state('');
   let organizationRole = $state('');

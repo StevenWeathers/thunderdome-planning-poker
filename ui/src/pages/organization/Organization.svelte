@@ -40,10 +40,10 @@
 
   let { xfetch, router, notifications, organizationId }: Props = $props();
 
-  const orgPrefix = `/api/organizations/${organizationId}`;
+  const orgPrefix = $derived(`/api/organizations/${organizationId}`);
 
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
     createdDate: '',
     updateDate: '',
@@ -51,6 +51,10 @@
   });
   let role = $state('MEMBER');
   let showDeleteOrganization = $state(false);
+
+  $effect(() => {
+    organization.id = organizationId;
+  });
 
   const toggleDeleteOrganization = () => {
     showDeleteOrganization = !showDeleteOrganization;
