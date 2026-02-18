@@ -25,7 +25,6 @@
     "format": "npm run prettier:fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:snapshot": "vitest run -u",
     "locales": "npx typesafe-i18n --no-watch",
     "locales:watch": "typesafe-i18n"
   },
