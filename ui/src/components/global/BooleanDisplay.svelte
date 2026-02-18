@@ -9,7 +9,7 @@
 </script>
 
 {#if boolValue}
-  <Check class="text-green-500 dark:text-lime-400" />
+  <span class="sr-only">True</span><Check class="text-green-500 dark:text-lime-400" />
 {:else}
-  <X class="text-red-500" />
+  <span class="sr-only">False</span><X class="text-red-500" />
 {/if}

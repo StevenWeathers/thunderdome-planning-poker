@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 
-import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
+import DeleteConfirmation from './DeleteConfirmation.svelte';
 
 describe('DeleteConfirmation component', () => {
   it('should render successfully', () => {
