@@ -31,7 +31,7 @@
   <form onsubmit={handleSubmit} name="becomeLeader">
     <div class="mb-4">
       <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="leaderCode">
-        {$LL.leaderPasscode()}
+        {$LL.facilitatorCode()}
       </label>
       <div class="control">
         <TextInput name="leaderCode" bind:value={leaderCode} id="leaderCode" icon={Lock} bind:this={focusInput} />
