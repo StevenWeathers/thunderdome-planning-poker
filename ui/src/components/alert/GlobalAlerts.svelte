@@ -1,6 +1,6 @@
 <script lang="ts">
   import { activeAlerts, dismissedAlerts } from '../../stores';
-  import { X } from 'lucide-svelte';
+  import { X } from '@lucide/svelte';
 
   interface Props {
     registered?: boolean;

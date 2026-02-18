@@ -9,7 +9,7 @@
   import TableRow from '../../components/table/TableRow.svelte';
   import HeadCol from '../../components/table/HeadCol.svelte';
   import Table from '../../components/table/Table.svelte';
-  import { ChevronRight } from 'lucide-svelte';
+  import { ChevronRight } from '@lucide/svelte';
   import CreateDepartment from '../../components/team/CreateDepartment.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';

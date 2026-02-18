@@ -6,29 +6,42 @@ In effort to maintain a stable application Thunderdome is supported by automated
 
 [Playwright](https://playwright.dev/) is used for End to End testing of Thunderdome, keep tests atomic!
 
-```
+```bash
 cd e2e
-npm install
+npm ci
+npx playwright install --with-deps
 npm test
 ```
 
 ## Frontend Unit Testing
 
-Frontend unit tests are run with [Jest](https://jestjs.io/) and
-utilize [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/intro).
+Frontend unit tests are run with [Vitest](https://vitest.dev/) and use
+[Playwright](https://playwright.dev/) browser automation for Svelte component testing via
+[vitest-browser-svelte](https://github.com/sanderdl/vitest-browser-svelte).
 
-To run the tests `npm test` for a single run or `npm test:watch` to actively watch for test changes.
+If not already installed, install UI deps and Playwright
+
+```bash
+cd ui
+npm ci
+npx playwright install --with-deps
+```
+
+Then you can run tests
+
+```bash
+task test-ui
+```
 
 ### Conventions for Frontend Unit Tests
 
-- Check
-  out [Unit testing svelte component](https://sveltesociety.dev/recipes/testing-and-debugging/unit-testing-svelte-component/)
-  guide
-- Test files are named `{componentName}.test.js`
-- Test folders are named `__tests__` and live alongside the source code to which the test files are for
-    - Example `ui/src/pages/__tests__/*.test.js` corresponds to `ui/src/pages/*.svelte`
-- Snapshot testing should only be used for individual components not page components
+- Refer to [vitest-browser-svelte documentation](https://github.com/sanderdl/vitest-browser-svelte) for Svelte component testing patterns
+- Test files are named `{componentName}.test.ts`
+- Test files can be placed either:
+    - Alongside source files as `{componentName}.test.ts`
+    - In `__tests__` folders: `ui/src/pages/__tests__/*.test.ts` corresponds to `ui/src/pages/*.svelte`
+- Tests run in a Playwright browser environment (Chromium by default)
 
 ## Go Unit Testing
 
-Run `make testgo` to run go tests
+Run `task test-go` to run go tests

@@ -6,7 +6,7 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import { AppConfig } from '../../config';
   import { onMount } from 'svelte';
-  import { Mail } from 'lucide-svelte';
+  import { Mail } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

@@ -4,7 +4,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import { appRoutes } from '../../config';
   import SolidButton from '../../components/global/SolidButton.svelte';
-  import { Check, TriangleAlert } from 'lucide-svelte';
+  import { Check, TriangleAlert } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

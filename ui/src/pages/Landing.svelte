@@ -1,7 +1,7 @@
 <script lang="ts">
   import { AppConfig, appRoutes } from '../config';
   import { user } from '../stores';
-  import { Github, Users, Zap } from 'lucide-svelte';
+  import { Github, Users, Zap } from '@lucide/svelte';
   import LL from '../i18n/i18n-svelte';
   import Countries from '../components/user/Countries.svelte';
   import BrowserMock from '../components/global/BrowserMock.svelte';

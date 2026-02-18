@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, MessageSquareMore } from 'lucide-svelte';
+  import { Link, MessageSquareMore } from '@lucide/svelte';
   import { SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import type { StoryboardStory, StoryboardColumn, StoryboardGoal } from '../../types/storyboard';
 

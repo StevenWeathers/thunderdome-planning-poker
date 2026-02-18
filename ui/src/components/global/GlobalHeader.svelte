@@ -7,7 +7,7 @@
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
   import ThemeSelector from './ThemeSelector.svelte';
   import NavUserMenu from './NavUserMenu.svelte';
-  import { ArrowRight, Menu, X } from 'lucide-svelte';
+  import { ArrowRight, Menu, X } from '@lucide/svelte';
   import LocaleMenu from './LocaleMenu.svelte';
   import DomeLogo from '../logos/DomeLogo.svelte';
   import DomeLogoLight from '../logos/DomeLogoLight.svelte';

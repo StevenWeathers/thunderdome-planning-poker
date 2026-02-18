@@ -2,7 +2,7 @@
   import { dndzone } from 'svelte-dnd-action';
   import StoryCard from './StoryCard.svelte';
   import type { StoryboardGoal, StoryboardColumn, StoryboardStory } from '../../types/storyboard';
-  import { Pencil } from 'lucide-svelte';
+  import { Pencil } from '@lucide/svelte';
   import { LL } from '../../i18n/i18n-svelte';
 
   interface Props {

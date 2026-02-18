@@ -2,7 +2,7 @@
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { Ban, ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, ExternalLink, Grip } from 'lucide-svelte';
+  import { Ban, ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, ExternalLink, Grip } from '@lucide/svelte';
   import Bars2 from '../icons/Bars2.svelte';
   import AddPlan from './AddStory.svelte';
   import ViewPlan from './ViewStory.svelte';

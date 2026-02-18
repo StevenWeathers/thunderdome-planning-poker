@@ -7,7 +7,7 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
-  import { Crown, Lock } from 'lucide-svelte';
+  import { Crown, Lock } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

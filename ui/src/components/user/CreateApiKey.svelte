@@ -4,7 +4,7 @@
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import TextInput from '../forms/TextInput.svelte';
-  import { ClipboardCopy } from 'lucide-svelte';
+  import { ClipboardCopy } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import { onMount } from 'svelte';

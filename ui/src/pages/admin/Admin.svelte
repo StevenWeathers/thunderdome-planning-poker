@@ -32,7 +32,7 @@
     Zap,
     Package,
     Activity,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

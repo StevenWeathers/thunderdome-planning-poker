@@ -1,5 +1,5 @@
 import type { ComponentType } from 'svelte';
-import { ChartNoAxesColumn, Briefcase, CheckSquare, FileText, Layout, Play, RefreshCcw, Users } from 'lucide-svelte';
+import { ChartNoAxesColumn, Briefcase, CheckSquare, FileText, Layout, Play, RefreshCcw, Users } from '@lucide/svelte';
 
 export type MetricItem = {
   key: string;

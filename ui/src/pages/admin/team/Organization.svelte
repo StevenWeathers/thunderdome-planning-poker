@@ -14,7 +14,7 @@
   import { validateUserIsAdmin } from '../../../validationUtils';
   import UserAvatar from '../../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../../components/user/CountryFlag.svelte';
-  import { ChevronRight } from 'lucide-svelte';
+  import { ChevronRight } from '@lucide/svelte';
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import TableNav from '../../../components/table/TableNav.svelte';
   import CrudActions from '../../../components/table/CrudActions.svelte';

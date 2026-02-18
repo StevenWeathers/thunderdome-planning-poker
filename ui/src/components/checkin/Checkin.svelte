@@ -11,7 +11,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
-  import { Check, CircleCheck, CircleCheckBig, Save } from 'lucide-svelte';
+  import { Check, CircleCheck, CircleCheckBig, Save } from '@lucide/svelte';
 
   interface Props {
     toggleCheckin?: any;

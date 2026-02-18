@@ -4,7 +4,7 @@
   import LL from '../../i18n/i18n-svelte';
   import { user as sessionUser } from '../../stores';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
-  import { CircleUser, Crown, Ghost, Vote } from 'lucide-svelte';
+  import { CircleUser, Crown, Ghost, Vote } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Check } from 'lucide-svelte';
+  import { Check } from '@lucide/svelte';
 
   export let label: string = '';
   export let id: string = '';

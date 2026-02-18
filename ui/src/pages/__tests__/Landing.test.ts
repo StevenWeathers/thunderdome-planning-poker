@@ -1,6 +1,5 @@
-import { describe, it } from '@jest/globals';
-import '@testing-library/jest-dom';
-import { render } from '@testing-library/svelte';
+import { describe, it } from 'vitest';
+import { render } from 'vitest-browser-svelte';
 
 import Landing from '../Landing.svelte';
 

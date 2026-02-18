@@ -8,7 +8,10 @@ tasks:
   install:
     cmds:
       - go mod download
-      - npm ci --prefix ui
+      - for: [ui, e2e]
+        cmd: npm ci --prefix {{.ITEM}}
+      - for: [ui, e2e]
+        cmd: cd {{.ITEM}} && npx playwright install --with-deps
 
   update-ui-deps:
     cmds:
@@ -56,6 +59,10 @@ tasks:
   test-go:
     cmds:
       - go test -v ./... | grep -v {{ .SWAGGER_DOCS_DIR }}
+
+  test-ui:
+    cmds:
+      - npm test --prefix ui
 
   build-ui:
     deps: [ fmt-ui ]

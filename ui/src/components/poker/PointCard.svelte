@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { User } from 'lucide-svelte';
+  import { User } from '@lucide/svelte';
 
   const dispatch = createEventDispatcher();
 

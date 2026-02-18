@@ -15,7 +15,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
-  import { BadgeCheck, Building, Mail } from 'lucide-svelte';
+  import { BadgeCheck, Building, Mail } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

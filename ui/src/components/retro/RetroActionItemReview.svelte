@@ -8,7 +8,7 @@
   import UserAvatar from '../user/UserAvatar.svelte';
   import TableContainer from '../table/TableContainer.svelte';
   import BooleanDisplay from '../global/BooleanDisplay.svelte';
-  import { MessageSquareMore } from 'lucide-svelte';
+  import { MessageSquareMore } from '@lucide/svelte';
   import CrudActions from '../table/CrudActions.svelte';
   import TableFooter from '../table/TableFooter.svelte';
   import EditActionItem from './EditActionItem.svelte';

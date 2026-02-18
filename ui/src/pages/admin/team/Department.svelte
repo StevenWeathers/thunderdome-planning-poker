@@ -3,7 +3,7 @@
 
   import AdminPageLayout from '../../../components/admin/AdminPageLayout.svelte';
   import DeleteConfirmation from '../../../components/global/DeleteConfirmation.svelte';
-  import { ChevronRight } from 'lucide-svelte';
+  import { ChevronRight } from '@lucide/svelte';
   import CountryFlag from '../../../components/user/CountryFlag.svelte';
   import UserAvatar from '../../../components/user/UserAvatar.svelte';
   import { user } from '../../../stores';

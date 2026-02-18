@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { type RetroTemplateColumn, type RetroTemplateFormat } from '../../types/retro';
-  import { Angry, CircleHelp, Frown, Smile } from 'lucide-svelte';
+  import { Angry, CircleHelp, Frown, Smile } from '@lucide/svelte';
 
   interface Props {
     format: RetroTemplateFormat;

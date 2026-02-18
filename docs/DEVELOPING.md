@@ -58,9 +58,11 @@ With [Task](https://taskfile.dev/#/) running the `task install` command will ins
 
 OR manually run the following commands
 
-```
+```bash
 go mod download
-cd ui && npm install
+cd ui
+npm ci
+npx playwright install --with-deps
 ```
 
 #### Build and run

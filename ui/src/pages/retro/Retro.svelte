@@ -12,7 +12,7 @@
     Settings,
     SquareCheckBig,
     Trash,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditRetro from '../../components/retro/EditRetro.svelte';

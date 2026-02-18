@@ -18,7 +18,7 @@
   import TableContainer from '../../../components/table/TableContainer.svelte';
   import TableNav from '../../../components/table/TableNav.svelte';
   import TableFooter from '../../../components/table/TableFooter.svelte';
-  import { BadgeCheck } from 'lucide-svelte';
+  import { BadgeCheck } from '@lucide/svelte';
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';

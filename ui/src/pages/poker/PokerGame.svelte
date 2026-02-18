@@ -16,7 +16,7 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
-  import { ExternalLink, Pencil, Settings, TimerOff, Trash } from 'lucide-svelte';
+  import { ExternalLink, Pencil, Settings, TimerOff, Trash } from '@lucide/svelte';
   import SubMenu from '../../components/global/SubMenu.svelte';
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import VotingMetrics from '../../components/poker/VotingMetrics.svelte';

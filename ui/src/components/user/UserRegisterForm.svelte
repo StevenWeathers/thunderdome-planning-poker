@@ -1,7 +1,7 @@
 <script lang="ts">
   import { validateName, validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
-  import { Mail, User } from 'lucide-svelte';
+  import { Mail, User } from '@lucide/svelte';
   import PasswordInput from '../forms/PasswordInput.svelte';
   import { AppConfig } from '../../config';
   import Checkbox from '../forms/Checkbox.svelte';

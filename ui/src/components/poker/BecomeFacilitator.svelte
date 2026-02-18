@@ -3,7 +3,7 @@
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
-  import { Lock } from 'lucide-svelte';
+  import { Lock } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
   interface Props {

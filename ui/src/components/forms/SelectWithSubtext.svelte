@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Check, ChevronDown } from 'lucide-svelte';
+  import { Check, ChevronDown } from '@lucide/svelte';
   import { createEventDispatcher } from 'svelte';
 
   export let items = [];

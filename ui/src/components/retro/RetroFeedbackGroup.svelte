@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ThumbsUp, ThumbsDown, Info, AlertCircle } from 'lucide-svelte';
+  import { ThumbsUp, ThumbsDown, Info, AlertCircle } from '@lucide/svelte';
   import RetroFeedbackItem from './RetroFeedbackItem.svelte';
 
   interface Props {

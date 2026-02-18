@@ -17,7 +17,7 @@
     User,
     Users,
     Vote,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
   import MetricsDisplay from '../../components/global/MetricsDisplay.svelte';

@@ -5,7 +5,7 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import { ChevronRight } from 'lucide-svelte';
+  import { ChevronRight } from '@lucide/svelte';
   import UsersList from '../../components/team/UsersList.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
 

@@ -3,7 +3,7 @@
   import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import { User } from 'lucide-svelte';
+  import { User } from '@lucide/svelte';
 
   interface Props {
     toggleComments?: any;

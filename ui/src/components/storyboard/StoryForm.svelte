@@ -5,7 +5,7 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import Editor from '../forms/Editor.svelte';
-  import { User, MessageCircleMore, ChevronRight, ChevronDown } from 'lucide-svelte';
+  import { User, MessageCircleMore, ChevronRight, ChevronDown } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
   import type { NotificationService } from '../../types/notifications';

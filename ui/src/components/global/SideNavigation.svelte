@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Menu, X } from 'lucide-svelte';
+  import { Menu, X } from '@lucide/svelte';
 
   interface Props {
     menuItems?: any;

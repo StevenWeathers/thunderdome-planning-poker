@@ -9,7 +9,7 @@
   import { user } from '../../stores';
   import StoryFromStoryboardImport from './StoryFromStoryboardImport.svelte';
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
-  import { DownloadCloud, FileText, FilePlus, FileCode, FileSpreadsheet } from 'lucide-svelte';
+  import { DownloadCloud, FileText, FilePlus, FileCode, FileSpreadsheet } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

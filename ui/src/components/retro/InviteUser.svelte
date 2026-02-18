@@ -1,7 +1,7 @@
 <script lang="ts">
   import { appRoutes } from '../../config';
   import SolidButton from '../global/SolidButton.svelte';
-  import { ClipboardCopy } from 'lucide-svelte';
+  import { ClipboardCopy } from '@lucide/svelte';
 
   interface Props {
     hostname?: string;

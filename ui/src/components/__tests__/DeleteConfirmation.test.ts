@@ -1,6 +1,6 @@
-import { describe, expect, it } from '@jest/globals';
-import '@testing-library/jest-dom';
-import { fireEvent, render } from '@testing-library/svelte';
+import { describe, it, expect, vi } from 'vitest';
+import { page } from 'vitest/browser';
+import { render } from 'vitest-browser-svelte';
 
 import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
 
@@ -9,40 +9,28 @@ describe('DeleteConfirmation component', () => {
     render(DeleteConfirmation, {});
   });
 
-  it('should match snapshot', () => {
-    const { container } = render(DeleteConfirmation, {});
-
-    expect(container).toMatchSnapshot();
-  });
-
-  it('should match snapshot when permanent=false', () => {
-    const { container } = render(DeleteConfirmation, { permanent: false });
-
-    expect(container).toMatchSnapshot();
-  });
-
   it('should fire handleDelete when confirmed', async () => {
-    const stub = jest.fn();
-    const { getByText } = render(DeleteConfirmation, {
+    const stub = vi.fn();
+    render(DeleteConfirmation, {
       handleDelete: stub,
     });
-    const button = getByText('Confirm Delete');
+    const button = page.getByRole('button', { name: 'Confirm Delete' });
 
-    await fireEvent.click(button);
+    await button.click();
 
     expect(stub).toHaveBeenCalled();
   });
 
   it('should not fire handleDelete when cancel and instead fire toggleDelete', async () => {
-    const handleDelete = jest.fn();
-    const toggleDelete = jest.fn();
-    const { getByText } = render(DeleteConfirmation, {
+    const handleDelete = vi.fn();
+    const toggleDelete = vi.fn();
+    render(DeleteConfirmation, {
       handleDelete,
       toggleDelete,
     });
-    const button = getByText('Cancel');
+    const button = page.getByRole('button', { name: 'Cancel' });
 
-    await fireEvent.click(button);
+    await button.click();
 
     expect(handleDelete).not.toHaveBeenCalled();
     expect(toggleDelete).toHaveBeenCalled();

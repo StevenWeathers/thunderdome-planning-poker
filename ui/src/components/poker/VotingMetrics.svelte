@@ -2,7 +2,7 @@
   import { run } from 'svelte/legacy';
 
   import { scaleLinear } from 'd3-scale';
-  import { TriangleAlert } from 'lucide-svelte';
+  import { TriangleAlert } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
   /** @type {{votes?: any, pointValues?: any, users?: any, averageRounding?: string}} */

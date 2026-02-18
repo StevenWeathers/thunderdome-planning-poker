@@ -1,7 +1,7 @@
 <script lang="ts">
   import Modal from '../global/Modal.svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import { FileJson, FileSpreadsheet, FileCode, Download, Copy, Check } from 'lucide-svelte';
+  import { FileJson, FileSpreadsheet, FileCode, Download, Copy, Check } from '@lucide/svelte';
   import type { Storyboard } from '../../types/storyboard';
 
   interface Props {

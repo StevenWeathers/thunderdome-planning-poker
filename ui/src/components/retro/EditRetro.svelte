@@ -5,7 +5,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
-  import { Crown, Lock } from 'lucide-svelte';
+  import { Crown, Lock } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
   interface Props {
