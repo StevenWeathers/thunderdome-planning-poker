@@ -3,7 +3,7 @@
   import { user } from '../../stores';
   import type { TeamUser } from '../../types/team';
   import Comment from './Comment.svelte';
-  import { MessageSquareMore, ChevronDown, ChevronUp, Send } from 'lucide-svelte';
+  import { MessageSquareMore, ChevronDown, ChevronUp, Send } from '@lucide/svelte';
 
   interface Props {
     checkin?: any;

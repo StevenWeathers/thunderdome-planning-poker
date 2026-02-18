@@ -1,6 +1,6 @@
 <script lang="ts">
   import UserAvatar from '../user/UserAvatar.svelte';
-  import { Check, CopyIcon, Minus, Plus, Users } from 'lucide-svelte';
+  import { Check, CopyIcon, Minus, Plus, Users } from '@lucide/svelte';
   import Badge from '../global/Badge.svelte';
   import LL from '../../i18n/i18n-svelte';
 

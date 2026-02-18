@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ComponentType } from 'svelte';
-  import { HelpCircle } from 'lucide-svelte';
+  import { HelpCircle } from '@lucide/svelte';
 
   interface Props {
     metrics: Array<{

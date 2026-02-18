@@ -5,7 +5,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import Checkin from '../../components/checkin/Checkin.svelte';
-  import { ChevronRight, Pencil, Trash2 } from 'lucide-svelte';
+  import { ChevronRight, Pencil, Trash2 } from '@lucide/svelte';
   import Comments from '../../components/checkin/Comments.svelte';
   import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';

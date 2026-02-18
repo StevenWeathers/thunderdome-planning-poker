@@ -10,7 +10,7 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import SelectWithSubtext from '../forms/SelectWithSubtext.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import { Crown, Lock } from 'lucide-svelte';
+  import { Crown, Lock } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

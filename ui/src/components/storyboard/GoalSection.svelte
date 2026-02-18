@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ChevronDown, ChevronUp, Pencil, Plus, SendToBack, Settings, Trash } from 'lucide-svelte';
+  import { ChevronDown, ChevronUp, Pencil, Plus, SendToBack, Settings, Trash } from '@lucide/svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import SubMenu from '../../components/global/SubMenu.svelte';

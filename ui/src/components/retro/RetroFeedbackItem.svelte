@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MessageSquare, Trash2 } from 'lucide-svelte';
+  import { MessageSquare, Trash2 } from '@lucide/svelte';
   import ItemComments from './ItemComments.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';

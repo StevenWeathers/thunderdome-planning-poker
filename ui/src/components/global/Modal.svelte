@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { X } from 'lucide-svelte';
+  import { X } from '@lucide/svelte';
   import { createFocusTrap } from 'focus-trap';
   import { onMount } from 'svelte';
 

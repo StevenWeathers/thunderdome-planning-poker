@@ -1,7 +1,7 @@
 <script lang="ts">
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { Ban, ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, ExternalLink } from 'lucide-svelte';
+  import { Ban, ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, ExternalLink } from '@lucide/svelte';
   import Bars2 from '../icons/Bars2.svelte';
 
   interface Props {

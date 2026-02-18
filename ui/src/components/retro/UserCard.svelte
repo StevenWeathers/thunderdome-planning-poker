@@ -2,7 +2,7 @@
   import UserAvatar from '../user/UserAvatar.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user as sessionUser } from '../../stores';
-  import { ThumbsUp } from 'lucide-svelte';
+  import { ThumbsUp } from '@lucide/svelte';
 
   interface Props {
     user?: any;

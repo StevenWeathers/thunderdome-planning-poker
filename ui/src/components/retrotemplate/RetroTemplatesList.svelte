@@ -16,7 +16,7 @@
   import UpdateRetroTemplate from './UpdateRetroTemplate.svelte';
   import BooleanDisplay from '../global/BooleanDisplay.svelte';
   import TableFooter from '../table/TableFooter.svelte';
-  import { Eye } from 'lucide-svelte';
+  import { Eye } from '@lucide/svelte';
   import ViewFormat from './ViewFormat.svelte';
 
   import type { NotificationService } from '../../types/notifications';

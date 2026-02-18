@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Angry, CircleHelp, Frown, Smile } from 'lucide-svelte';
+  import { Angry, CircleHelp, Frown, Smile } from '@lucide/svelte';
   import RetroFeedbackItem from './RetroFeedbackItem.svelte';
 
   interface Props {

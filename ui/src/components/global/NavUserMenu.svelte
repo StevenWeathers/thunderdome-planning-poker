@@ -4,7 +4,7 @@
   import { user } from '../../stores';
   import UserAvatar from '../user/UserAvatar.svelte';
   import { onMount } from 'svelte';
-  import { Lock, LogOut, User, Vote } from 'lucide-svelte';
+  import { Lock, LogOut, User, Vote } from '@lucide/svelte';
   import SubMenu from './SubMenu.svelte';
   import SubMenuItem from './SubMenuItem.svelte';
 

@@ -2,7 +2,7 @@
   import SidenavPageLayout, { type PageItem } from '../SidenavPageLayout.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import { Building, User, Users, Package, Network } from 'lucide-svelte';
+  import { Building, User, Users, Package, Network } from '@lucide/svelte';
 
   interface Props {
     activePage?: string;

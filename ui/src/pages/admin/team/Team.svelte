@@ -10,7 +10,7 @@
   import RowCol from '../../../components/table/RowCol.svelte';
   import TableRow from '../../../components/table/TableRow.svelte';
   import HollowButton from '../../../components/global/HollowButton.svelte';
-  import { Check, ChevronRight, MessageSquareMore } from 'lucide-svelte';
+  import { Check, ChevronRight, MessageSquareMore } from '@lucide/svelte';
   import AdminPageLayout from '../../../components/admin/AdminPageLayout.svelte';
   import Table from '../../../components/table/Table.svelte';
   import DeleteConfirmation from '../../../components/global/DeleteConfirmation.svelte';

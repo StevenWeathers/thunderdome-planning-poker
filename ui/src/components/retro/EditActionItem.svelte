@@ -6,7 +6,7 @@
   import UserAvatar from '../user/UserAvatar.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
-  import { Trash2 } from 'lucide-svelte';
+  import { Trash2 } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
   interface Props {

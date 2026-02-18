@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MonitorCog, MoonStar, Sun } from 'lucide-svelte';
+  import { MonitorCog, MoonStar, Sun } from '@lucide/svelte';
   import SubMenu from './SubMenu.svelte';
   import SubMenuItem from './SubMenuItem.svelte';
 

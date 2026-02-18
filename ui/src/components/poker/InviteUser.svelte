@@ -2,7 +2,7 @@
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
-  import { ClipboardCopy } from 'lucide-svelte';
+  import { ClipboardCopy } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
 

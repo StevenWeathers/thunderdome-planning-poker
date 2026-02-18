@@ -1,6 +1,6 @@
 <script lang="ts">
   import { dndzone } from 'svelte-dnd-action';
-  import { Grip, User } from 'lucide-svelte';
+  import { Grip, User } from '@lucide/svelte';
   import StoryColumn from './StoryColumn.svelte';
   import type { StoryboardGoal, StoryboardColumn, StoryboardStory } from '../../types/storyboard';
 

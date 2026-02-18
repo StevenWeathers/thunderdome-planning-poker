@@ -21,7 +21,7 @@
     Gamepad2,
     RotateCcw,
     CheckCircle,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
   import { validateUserIsRegistered } from '../validationUtils';
 
   interface Props {

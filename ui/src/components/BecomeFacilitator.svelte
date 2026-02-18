@@ -4,7 +4,7 @@
   import SolidButton from './global/SolidButton.svelte';
   import TextInput from './forms/TextInput.svelte';
   import { onMount } from 'svelte';
-  import { Crown } from 'lucide-svelte';
+  import { Crown } from '@lucide/svelte';
 
   interface Props {
     toggleBecomeFacilitator?: any;

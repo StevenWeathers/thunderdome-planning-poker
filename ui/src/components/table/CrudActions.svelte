@@ -1,6 +1,6 @@
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
-  import { Eye, Pencil, Trash2 } from 'lucide-svelte';
+  import { Eye, Pencil, Trash2 } from '@lucide/svelte';
 
   interface Props {
     detailsLink?: string;

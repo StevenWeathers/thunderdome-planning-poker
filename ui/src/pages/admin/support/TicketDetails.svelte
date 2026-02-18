@@ -9,7 +9,7 @@
   import { appRoutes } from '../../../config';
   import { user } from '../../../stores';
   import { validateUserIsAdmin } from '../../../validationUtils';
-  import { MessageCircleMore, SquarePen, UserIcon, UserPlus, ArrowLeft, Check, Clock } from 'lucide-svelte';
+  import { MessageCircleMore, SquarePen, UserIcon, UserPlus, ArrowLeft, Check, Clock } from '@lucide/svelte';
   import UpdateSupportTicket from '../../../components/admin/UpdateSupportTicket.svelte';
 
   interface Props {

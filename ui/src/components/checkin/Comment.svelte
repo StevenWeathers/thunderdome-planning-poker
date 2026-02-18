@@ -1,7 +1,7 @@
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import { User, Edit3, Trash2, Save, X, MoreHorizontal } from 'lucide-svelte';
+  import { User, Edit3, Trash2, Save, X, MoreHorizontal } from '@lucide/svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
   import type { TeamUser } from '../../types/team';
   import UserAvatar from '../user/UserAvatar.svelte';

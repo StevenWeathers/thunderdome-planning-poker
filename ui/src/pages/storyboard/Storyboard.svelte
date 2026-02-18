@@ -25,7 +25,7 @@
     SwatchBook,
     Trash,
     Users,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
   import JoinCodeForm from '../../components/global/JoinCodeForm.svelte';
   import FullpageLoader from '../../components/global/FullpageLoader.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';

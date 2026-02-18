@@ -17,7 +17,7 @@
     Code,
     Lock,
     BugIcon,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
   import TextInput from '../../components/forms/TextInput.svelte';
 
   const { AppVersion, RepoURL } = AppConfig;

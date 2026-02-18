@@ -2,7 +2,7 @@
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { Lock, Mail, Shield } from 'lucide-svelte';
+  import { Lock, Mail, Shield } from '@lucide/svelte';
   import PasswordInput from '../forms/PasswordInput.svelte';
   import Google from '../icons/Google.svelte';
   import TextInput from '../forms/TextInput.svelte';

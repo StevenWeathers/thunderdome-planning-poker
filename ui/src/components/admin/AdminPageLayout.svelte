@@ -17,7 +17,7 @@
     Users,
     Package,
     InboxIcon,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
 
   interface Props {
     activePage?: string;

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Plus, Edit, Trash2, Users, User } from 'lucide-svelte';
+  import { Plus, Edit, Trash2, Users, User } from '@lucide/svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
   import Modal from '../global/Modal.svelte';

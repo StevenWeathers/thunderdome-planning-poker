@@ -2,7 +2,7 @@
   import SubMenu from './SubMenu.svelte';
   import SubMenuItem from './SubMenuItem.svelte';
   import { locales } from '../../config';
-  import { Globe } from 'lucide-svelte';
+  import { Globe } from '@lucide/svelte';
   import type { Locales } from '../../i18n/i18n-types';
 
   interface Props {

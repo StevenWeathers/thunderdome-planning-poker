@@ -13,7 +13,7 @@
     BarChart3,
     Package,
     RefreshCw,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
   import PayPeriodToggle from '../../components/pricing/PayPeriodToggle.svelte';
   import { onMount } from 'svelte';
   import { user } from '../../stores';

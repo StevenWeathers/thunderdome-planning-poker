@@ -3,7 +3,7 @@
 
   import HollowButton from '../../components/global/HollowButton.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
-  import { ChevronRight, MessageSquareMore } from 'lucide-svelte';
+  import { ChevronRight, MessageSquareMore } from '@lucide/svelte';
   import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
   import CreateRetro from '../../components/retro/CreateRetro.svelte';
   import CreateStoryboard from '../../components/storyboard/CreateStoryboard.svelte';

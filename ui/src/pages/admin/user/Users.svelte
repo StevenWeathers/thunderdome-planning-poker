@@ -20,7 +20,7 @@
   import TableNav from '../../../components/table/TableNav.svelte';
   import TableFooter from '../../../components/table/TableFooter.svelte';
   import CrudActions from '../../../components/table/CrudActions.svelte';
-  import { BadgeCheck, ToggleLeft, ToggleRight } from 'lucide-svelte';
+  import { BadgeCheck, ToggleLeft, ToggleRight } from '@lucide/svelte';
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';

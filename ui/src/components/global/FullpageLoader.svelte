@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { LoaderPinwheel } from 'lucide-svelte';
+  import { LoaderPinwheel } from '@lucide/svelte';
   interface Props {
     children?: import('svelte').Snippet;
   }

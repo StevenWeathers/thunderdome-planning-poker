@@ -4,7 +4,7 @@
 
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
-  import { Shield } from 'lucide-svelte';
+  import { Shield } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

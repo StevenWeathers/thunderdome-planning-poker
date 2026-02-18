@@ -2,7 +2,7 @@
   import HollowButton from './global/HollowButton.svelte';
   import LL from '../i18n/i18n-svelte';
   import { user } from '../stores';
-  import { Crown } from 'lucide-svelte';
+  import { Crown } from '@lucide/svelte';
   import Badge from './global/Badge.svelte';
   import EndStatusBadge from './global/EndStatusBadge.svelte';
 
