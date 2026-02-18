@@ -91,6 +91,8 @@
   let showEndGameModal: boolean = $state(false);
   let gameOver: boolean = $derived(typeof pokerGame.endTime !== 'undefined' && pokerGame.endTime !== null);
 
+  let ws: any;
+
   const onSocketMessage = function (evt) {
     isLoading = false;
     const parsedEvent = JSON.parse(evt.data);
@@ -283,40 +285,44 @@
     }
   };
 
-  const ws = new Sockette(`${getWebsocketAddress()}/api/arena/${battleId}`, {
-    timeout: 2e3,
-    maxAttempts: 15,
-    onmessage: onSocketMessage,
-    onerror: err => {
-      socketError = true;
-    },
-    onclose: e => {
-      if (e.code === 4004) {
-        router.route(appRoutes.games);
-      } else if (e.code === 4001) {
-        user.delete();
-        router.route(`${loginOrRegister}/battle/${battleId}`);
-      } else if (e.code === 4003) {
-        notifications.danger($LL.sessionDuplicate());
-        router.route(`${appRoutes.games}`);
-      } else if (e.code === 4002) {
-        router.route(appRoutes.games);
-      } else {
-        socketReconnecting = true;
-      }
-    },
-    onopen: () => {
-      socketError = false;
-      socketReconnecting = false;
-      isLoading = false;
-    },
-    onmaximum: () => {
-      socketReconnecting = false;
-    },
+  onMount(() => {
+    ws = new Sockette(`${getWebsocketAddress()}/api/arena/${battleId}`, {
+      timeout: 2e3,
+      maxAttempts: 15,
+      onmessage: onSocketMessage,
+      onerror: err => {
+        socketError = true;
+      },
+      onclose: e => {
+        if (e.code === 4004) {
+          router.route(appRoutes.games);
+        } else if (e.code === 4001) {
+          user.delete();
+          router.route(`${loginOrRegister}/battle/${battleId}`);
+        } else if (e.code === 4003) {
+          notifications.danger($LL.sessionDuplicate());
+          router.route(`${appRoutes.games}`);
+        } else if (e.code === 4002) {
+          router.route(appRoutes.games);
+        } else {
+          socketReconnecting = true;
+        }
+      },
+      onopen: () => {
+        socketError = false;
+        socketReconnecting = false;
+        isLoading = false;
+      },
+      onmaximum: () => {
+        socketReconnecting = false;
+      },
+    });
   });
 
   onDestroy(() => {
-    ws.close();
+    if (ws) {
+      ws.close();
+    }
   });
 
   const sendSocketEvent = (type, value) => {

@@ -42,15 +42,15 @@
   const usersPageLimit = 1000;
 
   let team = $state({
-    id: teamId,
+    id: '',
     name: '',
   });
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
   });
   let department = $state({
-    id: departmentId,
+    id: '',
     name: '',
   });
   let users = $state([]);
@@ -58,6 +58,12 @@
   let retros = $state([]);
   let retroActions = $state([]);
   let storyboards = $state([]);
+
+  $effect(() => {
+    team.id = teamId;
+    organization.id = organizationId;
+    department.id = departmentId;
+  });
   let usersPage = 1;
   let battlesPage = 1;
   let retrosPage = 1;

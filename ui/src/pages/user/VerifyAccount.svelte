@@ -2,6 +2,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import LL from '../../i18n/i18n-svelte';
   import type { ApiClient } from '../../types/apiclient';
+  import { onMount } from 'svelte';
 
   interface Props {
     xfetch: ApiClient;
@@ -13,13 +14,15 @@
   let accountVerified = $state(false);
   let verficationError = $state(false);
 
-  xfetch('/api/auth/verify', { body: { verifyId }, method: 'PATCH' })
+  onMount(() => {
+    xfetch('/api/auth/verify', { body: { verifyId }, method: 'PATCH' })
     .then(function () {
       accountVerified = true;
     })
-    .catch(function () {
-      verficationError = true;
-    });
+      .catch(function () {
+        verficationError = true;
+      });
+  });
 </script>
 
 <svelte:head>

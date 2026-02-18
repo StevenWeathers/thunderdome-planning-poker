@@ -57,18 +57,24 @@
   const usersPageLimit = 1000;
 
   let team = $state({
-    id: teamId,
+    id: '',
     name: '',
     subscribed: false,
   });
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
     subscribed: false,
   });
   let department = $state({
-    id: departmentId,
+    id: '',
     name: '',
+  });
+
+  $effect(() => {
+    team.id = teamId;
+    organization.id = organizationId;
+    department.id = departmentId;
   });
 
   let users = $state([]);
@@ -109,7 +115,7 @@
   );
   let teamPrefix = $derived(organizationId ? `${orgPrefix}/teams/${teamId}` : `${apiPrefix}/teams/${teamId}`);
 
-  const teamOnlyPrefix = `${apiPrefix}/teams/${teamId}`;
+  const teamOnlyPrefix = $derived(`${apiPrefix}/teams/${teamId}`);
 
   let currentPageUrl = $derived(
     teamPrefix

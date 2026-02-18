@@ -23,15 +23,17 @@
   let secret = $state('');
   let passcode = $state('');
 
-  xfetch('/api/auth/mfa/setup/generate', { method: 'POST' })
-    .then(res => res.json())
-    .then(r => {
-      qrCode = r.data.qrCode;
-      secret = r.data.secret;
-    })
-    .catch(() => {
-      notifications.danger($LL.mfaGenerateFailed());
-    });
+  onMount(() => {
+    xfetch('/api/auth/mfa/setup/generate', { method: 'POST' })
+      .then(res => res.json())
+      .then(r => {
+        qrCode = r.data.qrCode;
+        secret = r.data.secret;
+      })
+      .catch(() => {
+        notifications.danger($LL.mfaGenerateFailed());
+      });
+  });
 
   function onSubmit(e) {
     e.preventDefault();

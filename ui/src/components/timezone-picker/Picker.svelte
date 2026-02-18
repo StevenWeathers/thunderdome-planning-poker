@@ -28,7 +28,6 @@
   let searchInputRef = $state();
   let clearButtonRef = $state();
   let listBoxRef = $state();
-  let listBoxOptionRefs = $state();
 
   // Constants
   const labelId = uid();
@@ -40,27 +39,38 @@
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
 
   // Process allowed timezones
-  let availableZones = ungroupedZones;
-  if (allowedTimezones) {
-    if (Array.isArray(allowedTimezones)) {
-      availableZones = pick(ungroupedZones, [...allowedTimezones, userTimezone]);
-    } else {
-      console.error('You need to provide a list of timezones as an Array!', `You provided ${allowedTimezones}.`);
+  const availableZones = $derived.by(() => {
+    let zones = ungroupedZones;
+    if (allowedTimezones) {
+      if (Array.isArray(allowedTimezones)) {
+        zones = pick(ungroupedZones, [...allowedTimezones, userTimezone]);
+      } else {
+        console.error('You need to provide a list of timezones as an Array!', `You provided ${allowedTimezones}.`);
+      }
     }
-  }
+    return zones;
+  });
 
-  const validZones = Object.keys(availableZones);
+  const validZones = $derived(Object.keys(availableZones));
 
   // Initialize option refs
-  listBoxOptionRefs = Object.values(availableZones).map(([zone]) => ({
-    [zone]: null,
-  }));
+  let listBoxOptionRefs = $derived.by(() =>
+    Object.values(availableZones).map(([zone]) => ({
+      [zone]: null,
+    }))
+  );
 
   // Initial state
-  const initialState = {
-    expanded,
+  let internalExpanded = $state(false);
+
+  $effect(() => {
+    internalExpanded = expanded;
+  });
+
+  const initialState = $derived({
+    expanded: internalExpanded,
     userSearch: null,
-  };
+  });
 
   // Derived state
   let filteredZones = $derived(

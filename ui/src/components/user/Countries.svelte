@@ -8,14 +8,18 @@
 
   let { xfetch }: Props = $props();
 
+  import { onMount } from 'svelte';
+
   let activeCountries = $state([]);
 
-  xfetch('/api/active-countries')
-    .then(res => res.json())
-    .then(function (result) {
-      activeCountries = result.data.sort();
-    })
-    .catch(function () {});
+  onMount(() => {
+    xfetch('/api/active-countries')
+      .then(res => res.json())
+      .then(function (result) {
+        activeCountries = result.data.sort();
+      })
+      .catch(function () {});
+  });
 </script>
 
 <div class="text-center">

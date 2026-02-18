@@ -27,8 +27,8 @@
 
   let { xfetch, router, notifications, subscriptionId }: Props = $props();
 
-  let defaultSubscription = {
-    id: subscriptionId,
+  let defaultSubscription = $state({
+    id: '',
     user_id: '',
     customer_id: '',
     subscription_id: '',
@@ -38,7 +38,11 @@
     user: {
       name: '',
     },
-  };
+  });
+
+  $effect(() => {
+    defaultSubscription.id = subscriptionId;
+  });
 
   let subscription = $state({
     ...defaultSubscription,

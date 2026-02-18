@@ -40,16 +40,22 @@
   });
 
   let team = $state({
-    id: teamId,
+    id: '',
     name: '',
   });
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
   });
   let department = $state({
-    id: departmentId,
+    id: '',
     name: '',
+  });
+
+  $effect(() => {
+    team.id = teamId;
+    organization.id = organizationId;
+    department.id = departmentId;
   });
   let users = $state([]);
   let userCount = $state(1);
@@ -62,6 +68,8 @@
   let checkinColumns = $state([]);
   let showOnlyDiscussionItems = $state(false);
   let userMap: Map<string, TeamUser> = $state(new Map());
+
+  let ws: any;
 
   function updateTimezone(tz: string): void {
     timezone = tz;
@@ -278,20 +286,28 @@
     }
   };
 
-  const ws = new Sockette(`${getWebsocketAddress()}/api/teams/${teamId}/checkin`, {
-    timeout: 2e3,
-    maxAttempts: 15,
-    onmessage: onSocketMessage,
-    onclose: e => {
-      if (e.code === 4005) {
-        ws.close();
-      } else if (e.code === 4004) {
-        router.route(appRoutes.teams);
-      } else if (e.code === 4001) {
-        user.delete();
-        router.route(appRoutes.login);
-      }
-    },
+  onMount(() => {
+    ws = new Sockette(`${getWebsocketAddress()}/api/teams/${teamId}/checkin`, {
+      timeout: 2e3,
+      maxAttempts: 15,
+      onmessage: onSocketMessage,
+      onclose: e => {
+        if (e.code === 4005) {
+          ws.close();
+        } else if (e.code === 4004) {
+          router.route(appRoutes.teams);
+        } else if (e.code === 4001) {
+          user.delete();
+          router.route(appRoutes.login);
+        }
+      },
+    });
+  });
+
+  onDestroy(() => {
+    if (ws) {
+      ws.close();
+    }
   });
 
   const sendSocketEvent = (type, value) => {

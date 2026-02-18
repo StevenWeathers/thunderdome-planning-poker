@@ -14,7 +14,7 @@
 
   const dispatch = createEventDispatcher();
 
-  let phaseEndTime = addMinutesToDate(timeStart, timeLimitMin);
+  let phaseEndTime = $derived.by(() => addMinutesToDate(timeStart, timeLimitMin));
   let now: Date = $state(new Date());
 
   let count = $derived(Math.round((phaseEndTime - now) / 1000));

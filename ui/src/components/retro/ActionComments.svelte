@@ -30,10 +30,10 @@
     isAdmin = false,
   }: Props = $props();
 
-  const userMap = users.reduce((prev, cur) => {
+  const userMap = $derived(users.reduce((prev, cur) => {
     prev[cur.id] = cur.name;
     return prev;
-  }, {});
+  }, {}));
 
   let userComment = $state('');
   let selectedComment = $state(null);

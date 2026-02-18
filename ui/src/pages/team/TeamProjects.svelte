@@ -27,21 +27,27 @@
   const projectsPageLimit = 10;
 
   let team = $state({
-    id: teamId,
+    id: '',
     name: '',
     subscribed: false,
   });
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
     subscribed: false,
   });
   let department = $state({
-    id: departmentId,
+    id: '',
     name: '',
   });
 
   let projectCount = $state(0);
+  $effect(() => {
+    team.id = teamId;
+    organization.id = organizationId;
+    department.id = departmentId;
+  });
+
   let projectsPage = $state(1);
   let projects = $state([]);
 

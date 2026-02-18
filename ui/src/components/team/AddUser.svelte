@@ -34,8 +34,8 @@
   }: Props = $props();
 
   const roles = ['ADMIN', 'MEMBER'];
-  const showDeptUsers = pageType === 'team' && deptId !== '';
-  const showOrgUsers = pageType === 'department' || (pageType === 'team' && orgId !== '');
+  const showDeptUsers = $derived(pageType === 'team' && deptId !== '');
+  const showOrgUsers = $derived(pageType === 'department' || (pageType === 'team' && orgId !== ''));
   let userEmail = $state('');
   let selectedUser = $state('');
   let role = $state('');

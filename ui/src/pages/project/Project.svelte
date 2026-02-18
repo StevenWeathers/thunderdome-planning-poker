@@ -30,7 +30,7 @@
 
   // Basic project state
   let project = $state({
-    id: projectId,
+    id: '',
     projectKey: '',
     name: '',
     description: '',
@@ -42,8 +42,12 @@
   const retrosPageLimit = 1000;
   const storyboardsPageLimit = 1000;
 
-  let projectPrefix = `${apiPrefix}/projects/${projectId}`;
+  let projectPrefix = $derived(`${apiPrefix}/projects/${projectId}`);
   let isProjectAdmin = $state(false);
+
+  $effect(() => {
+    project.id = projectId;
+  });
   let showCreateBattle = $state(false);
   let showCreateRetro = $state(false);
   let showCreateStoryboard = $state(false);

@@ -30,14 +30,18 @@
   let { xfetch, router, notifications, organizationId }: Props = $props();
 
   const teamsPageLimit = 1000;
-  const orgPrefix = `/api/organizations/${organizationId}`;
+  const orgPrefix = $derived(`/api/organizations/${organizationId}`);
 
   let organization = $state({
-    id: organizationId,
+    id: '',
     name: '',
     createdDate: '',
     updateDate: '',
     subscribed: false,
+  });
+
+  $effect(() => {
+    organization.id = organizationId;
   });
   let role = $state('MEMBER');
   let teams = $state([]);

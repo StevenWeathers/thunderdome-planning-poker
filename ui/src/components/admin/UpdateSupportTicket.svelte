@@ -34,12 +34,21 @@
     adminUsers = [],
   }: Props = $props();
 
-  let fullName: string = $state(ticket.fullName);
-  let email: string = $state(ticket.email);
-  let inquiry: string = $state(ticket.inquiry);
-  let assignedTo: string | null = $state(ticket.assignedTo);
-  let notes: string | null = $state(ticket.notes);
-  let markResolved: boolean = $state(ticket.resolvedAt !== '' && ticket.resolvedAt !== null);
+  let fullName: string = $state('');
+  let email: string = $state('');
+  let inquiry: string = $state('');
+  let assignedTo: string | null = $state(null);
+  let notes: string | null = $state(null);
+  let markResolved: boolean = $state(false);
+
+  $effect(() => {
+    fullName = ticket.fullName;
+    email = ticket.email;
+    inquiry = ticket.inquiry;
+    assignedTo = ticket.assignedTo;
+    notes = ticket.notes;
+    markResolved = ticket.resolvedAt !== '' && ticket.resolvedAt !== null;
+  });
 
   function onSubmit() {
     handleUpdate(ticket.id, { fullName, email, inquiry, assignedTo, notes, markResolved });

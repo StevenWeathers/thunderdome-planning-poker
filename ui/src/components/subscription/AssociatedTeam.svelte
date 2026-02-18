@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { NotificationService } from '../../types/notifications';
+  import { onMount } from 'svelte';
 
   interface Props {
     teamId?: string;
@@ -14,14 +15,16 @@
     name: '',
   });
 
-  xfetch(`/api/teams/${teamId}`)
-    .then(res => res.json())
-    .then(function (result) {
-      team = result.data.team;
-    })
-    .catch(function () {
-      notifications.danger('Error getting associated team');
-    });
+  onMount(() => {
+    xfetch(`/api/teams/${teamId}`)
+      .then(res => res.json())
+      .then(function (result) {
+        team = result.data.team;
+      })
+      .catch(function () {
+        notifications.danger('Error getting associated team');
+      });
+  });
 </script>
 
 {team.name}

@@ -301,40 +301,46 @@
     }
   };
 
-  const ws = new Sockette(`${getWebsocketAddress()}/api/retro/${retroId}`, {
-    timeout: 2e3,
-    maxAttempts: 15,
-    onmessage: onSocketMessage,
-    onerror: () => {
-      socketError = true;
-    },
-    onclose: e => {
-      if (e.code === 4004) {
-        router.route(appRoutes.retros);
-      } else if (e.code === 4001) {
-        user.delete();
-        router.route(`${loginOrRegister}/retro/${retroId}`);
-      } else if (e.code === 4003) {
-        notifications.danger($LL.duplicateRetroSession());
-        router.route(`${appRoutes.retros}`);
-      } else if (e.code === 4002) {
-        router.route(appRoutes.retros);
-      } else {
-        socketReconnecting = true;
-      }
-    },
-    onopen: () => {
-      isLoading = false;
-      socketError = false;
-      socketReconnecting = false;
-    },
-    onmaximum: () => {
-      socketReconnecting = false;
-    },
+  let ws: any;
+
+  onMount(() => {
+    ws = new Sockette(`${getWebsocketAddress()}/api/retro/${retroId}`, {
+      timeout: 2e3,
+      maxAttempts: 15,
+      onmessage: onSocketMessage,
+      onerror: () => {
+        socketError = true;
+      },
+      onclose: e => {
+        if (e.code === 4004) {
+          router.route(appRoutes.retros);
+        } else if (e.code === 4001) {
+          user.delete();
+          router.route(`${loginOrRegister}/retro/${retroId}`);
+        } else if (e.code === 4003) {
+          notifications.danger($LL.duplicateRetroSession());
+          router.route(`${appRoutes.retros}`);
+        } else if (e.code === 4002) {
+          router.route(appRoutes.retros);
+        } else {
+          socketReconnecting = true;
+        }
+      },
+      onopen: () => {
+        isLoading = false;
+        socketError = false;
+        socketReconnecting = false;
+      },
+      onmaximum: () => {
+        socketReconnecting = false;
+      },
+    });
   });
 
   onDestroy(() => {
-    ws.close();
+    if (ws) {
+      ws.close();
+    }
   });
 
   let isFacilitator = $derived(retro.facilitators && retro.facilitators.includes($user.id));

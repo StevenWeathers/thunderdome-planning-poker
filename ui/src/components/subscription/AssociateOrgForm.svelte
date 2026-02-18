@@ -27,14 +27,16 @@
   let organizations = $state([]);
   let selectedOrganization = $state('');
 
-  xfetch(`/api/users/${$user.id}/organizations?limit=1000&offset=0`)
-    .then(res => res.json())
-    .then(function (result) {
-      organizations = result.data;
-    })
-    .catch(function () {
-      notifications.danger($LL.getOrganizationsError());
-    });
+  onMount(() => {
+    xfetch(`/api/users/${$user.id}/organizations?limit=1000&offset=0`)
+      .then(res => res.json())
+      .then(function (result) {
+        organizations = result.data;
+      })
+      .catch(function () {
+        notifications.danger($LL.getOrganizationsError());
+      });
+  });
 
   function handleSubmit(event) {
     event.preventDefault();
