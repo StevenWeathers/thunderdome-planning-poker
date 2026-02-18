@@ -115,7 +115,7 @@
 </script>
 
 <svelte:head>
-  <title>{$LL.subscriptions()} {$LL.admin()} | {$LL.appName()}</title>
+  <title>{$LL.adminPageSubscriptions()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="subscriptions">

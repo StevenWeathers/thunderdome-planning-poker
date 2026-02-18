@@ -25,6 +25,7 @@
   let { xfetch, router, notifications, organizationId, departmentId, teamId }: Props = $props();
 
   const usersPageLimit = 1000;
+  let usersPage = $state(1);
 
   let invitesList = $state();
 
@@ -156,7 +157,7 @@
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <InvitesList {xfetch} {notifications} pageType="team" {teamPrefix} bind:this={invitesList} />
+      <InvitesList {xfetch} {router} {notifications} pageType="team" {teamPrefix} bind:this={invitesList} />
     </div>
   {/if}
 

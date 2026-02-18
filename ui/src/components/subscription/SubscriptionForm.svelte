@@ -64,11 +64,6 @@
       return false;
     }
 
-    if (active === '') {
-      notifications.danger('active field required');
-      return false;
-    }
-
     const body = {
       user_id,
       team_id,

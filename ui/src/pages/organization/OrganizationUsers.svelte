@@ -94,7 +94,14 @@
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <InvitesList {xfetch} {notifications} pageType="organization" teamPrefix={orgPrefix} bind:this={invitesList} />
+      <InvitesList
+        {xfetch}
+        {router}
+        {notifications}
+        pageType="organization"
+        teamPrefix={orgPrefix}
+        bind:this={invitesList}
+      />
     </div>
   {/if}
 
