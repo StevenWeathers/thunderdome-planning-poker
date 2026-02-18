@@ -19,14 +19,25 @@
   import Toggle from '../../components/forms/Toggle.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
   import type { TeamUser, TeamCheckin as BaseTeamCheckin } from '../../types/team';
+  import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
   // Local type override - the API returns user as a single object, not an array
   interface TeamCheckin extends Omit<BaseTeamCheckin, 'user'> {
     user: TeamUser;
   }
 
+  interface Props {
+    xfetch: ApiClient;
+    router: any;
+    notifications: NotificationService;
+    teamId: string;
+    organizationId?: string;
+    departmentId?: string;
+  }
+
   // Props using Svelte 5 syntax
-  let { xfetch, router, notifications, organizationId, departmentId, teamId } = $props();
+  let { xfetch, router, notifications, teamId, organizationId, departmentId }: Props = $props();
 
   // State variables using $state()
   let timezone = $state(getTimezoneName());
@@ -58,9 +69,15 @@
   });
 
   $effect(() => {
-    team.id = teamId;
-    organization.id = organizationId;
-    department.id = departmentId;
+    if (teamId) {
+      team.id = teamId;
+    }
+    if (organizationId) {
+      organization.id = organizationId;
+    }
+    if (departmentId) {
+      department.id = departmentId;
+    }
   });
   let users = $state<TeamUser[]>([]);
   let userCount = $state(1);
