@@ -80,7 +80,7 @@
   let showColorLegendForm = $state(false);
   let showPersonas = $state(false);
   let editColumn: StoryboardColumn | null = $state(null);
-  let activeStory: StoryboardStory | null = $state(null);
+  let activeStoryId: string | null = $state(null);
   let showDeleteStoryboard = $state(false);
   let showEditStoryboard = $state(false);
   let showExportStoryboard = $state(false);
@@ -390,7 +390,7 @@
       if (columnOrderEditMode) {
         return;
       }
-      activeStory = activeStory != null ? null : story;
+      activeStoryId = activeStoryId != null ? null : story?.id || null;
     };
 
   const toggleColumnOrderEdit = () => {
@@ -416,6 +416,15 @@
   }
 
   let isFacilitator = $derived(storyboard.facilitators.length > 0 && storyboard.facilitators.includes($user.id));
+
+  let activeStory = $derived(
+    activeStoryId
+      ? storyboard.goals
+          .flatMap(goal => goal.columns || [])
+          .flatMap(column => column.stories || [])
+          .find(story => story?.id === activeStoryId) || null
+      : null,
+  );
 
   onMount(() => {
     if (!$user.id) {
@@ -603,7 +612,7 @@
 
 {#if activeStory}
   <StoryForm
-    toggleStoryForm={toggleStoryForm(null)()}
+    toggleStoryForm={toggleStoryForm(null)}
     story={activeStory}
     {sendSocketEvent}
     {notifications}

@@ -23,7 +23,7 @@
     toggleStoryForm = () => {},
     sendSocketEvent = () => {},
     notifications,
-    story = $bindable({}),
+    story = {},
     colorLegend = [],
     users = [],
   }: Props = $props();
@@ -36,6 +36,7 @@
   let actionsHidden = $state(true);
   let discussionHidden = $state(true);
   let focusInput: any = $state();
+  let storyPoints = $state(0);
 
   let userMap = $derived(
     users.reduce((prev, usr) => {
@@ -90,12 +91,13 @@
     );
   };
 
-  const updateContent = () => {
+  const updateContent = (content?: string) => {
+    const contentToSend = content ?? story.content;
     sendSocketEvent(
       'update_story_content',
       JSON.stringify({
         storyId: story.id,
-        content: story.content,
+        content: contentToSend,
       }),
     );
   };
@@ -168,6 +170,12 @@
   onMount(() => {
     focusInput?.focus();
   });
+
+  $effect(() => {
+    if (story?.points !== undefined) {
+      storyPoints = story.points;
+    }
+  });
 </script>
 
 <Modal
@@ -235,8 +243,7 @@
               placeholder="Enter story content"
               id="storyDescription"
               handleTextChange={c => {
-                story.content = c;
-                updateContent();
+                updateContent(c);
               }}
             />
           </div>
@@ -283,7 +290,7 @@
               type="number"
               min="0"
               max="999"
-              bind:value={story.points}
+              bind:value={storyPoints}
               onchange={updatePoints}
               placeholder="Enter story points e.g. 1, 2, 3, 5,
                                         8"
