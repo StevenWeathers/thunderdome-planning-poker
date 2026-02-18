@@ -80,18 +80,20 @@
 
   function getLastCheckin() {
     xfetch(`${teamPrefix}/checkins/users/${userId}/last`)
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 204) {
+          return null;
+        }
+        return res.json();
+      })
       .then(result => {
-        if (!result.data) {
+        if (!result || !result.data) {
           return;
         }
         lastCheckin = result.data;
       })
-      .catch(([err, response]) => {
-        if (response.status === 204) {
-          return;
-        }
-        notifications.danger('Error getting last checkin');
+      .catch(() => {
+        // Silently handle errors for missing checkin
       });
   }
 
