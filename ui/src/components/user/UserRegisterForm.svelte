@@ -7,23 +7,28 @@
   import Checkbox from '../forms/Checkbox.svelte';
   import { user } from '../../stores';
   import TextInput from '../forms/TextInput.svelte';
+  import type { NotificationService } from '../../types/notifications';
 
-  export let notifications;
+  export let notifications: NotificationService;
   export let wasInvited = false;
   export let email = '';
   export let userName = '';
   export let fullOnly = false;
-  export let handleGuestRegistration;
-  export let handleFullAccountRegistration;
+  export let handleGuestRegistration: (userName: string) => void;
+  export let handleFullAccountRegistration: (
+    userName: string,
+    email: string,
+    password1: string,
+    password2: string,
+  ) => void;
   export let isAdmin = false;
 
   let password1 = '';
   let password2 = '';
 
-  /** @type {TextInput} */
-  let userNameTextInput;
+  let userNameTextInput: TextInput | undefined;
 
-  function onSubmit(e) {
+  function onSubmit(e: Event) {
     e.preventDefault();
 
     const validName = validateName(userName);

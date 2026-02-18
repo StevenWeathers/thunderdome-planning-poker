@@ -56,12 +56,12 @@
   });
   let departmentRole = $state('');
   let organizationRole = $state('');
-  let teams = $state([]);
-  let users = $state([]);
-  let invites = [];
+  let teams = $state<any[]>([]);
+  let users = $state<any[]>([]);
+  let invites: any[] = [];
   let showCreateTeam = $state(false);
   let showDeleteTeam = $state(false);
-  let deleteTeamId = null;
+  let deleteTeamId = $state<string | null>(null);
   let teamsPage = 1;
   let usersPage = 1;
 
@@ -69,7 +69,7 @@
     showCreateTeam = !showCreateTeam;
   }
 
-  const toggleDeleteTeam = teamId => () => {
+  const toggleDeleteTeam = (teamId: string | null) => () => {
     showDeleteTeam = !showDeleteTeam;
     deleteTeamId = teamId;
   };
@@ -119,7 +119,7 @@
       });
   }
 
-  function createTeamHandler(name) {
+  function createTeamHandler(name: string) {
     const body = {
       name,
     };
@@ -157,14 +157,14 @@
   let selectedTeam = $state({ ...defaultTeam });
   let showTeamUpdate = $state(false);
 
-  function toggleUpdateTeam(team) {
+  function toggleUpdateTeam(team: any) {
     return () => {
       selectedTeam = team;
       showTeamUpdate = !showTeamUpdate;
     };
   }
 
-  function updateTeamHandler(name) {
+  function updateTeamHandler(name: string) {
     const body = {
       name,
     };
@@ -281,7 +281,14 @@
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <InvitesList {xfetch} {notifications} pageType="department" teamPrefix={deptPrefix} bind:this={invitesList} />
+      <InvitesList
+        {xfetch}
+        {router}
+        {notifications}
+        pageType="department"
+        teamPrefix={deptPrefix}
+        bind:this={invitesList}
+      />
     </div>
   {/if}
 

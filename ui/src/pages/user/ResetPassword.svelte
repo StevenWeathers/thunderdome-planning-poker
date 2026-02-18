@@ -21,7 +21,7 @@
   let warriorPassword1 = $state('');
   let warriorPassword2 = $state('');
 
-  function resetWarriorPassword(e) {
+  function resetWarriorPassword(e: Event) {
     e.preventDefault();
     const body = {
       resetId,

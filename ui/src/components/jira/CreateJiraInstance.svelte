@@ -24,7 +24,7 @@
 
   let jira_data_center = $state(false);
 
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (host === '') {
@@ -55,14 +55,14 @@
     };
 
     xfetch(`/api/users/${$user.id}/jira-instances`, { body })
-      .then(res => res.json())
+      .then((res: Response) => res.json())
       .then(function () {
         handleCreate();
         toggleClose();
       })
-      .catch(function (error) {
+      .catch(function (error: any) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
               user.update({
                 id: $user.id,

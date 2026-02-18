@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type { ComponentType } from 'svelte';
-  import { HelpCircle } from '@lucide/svelte';
+  import type { Component } from 'svelte';
+  import { HelpCircle, type IconProps } from '@lucide/svelte';
 
   interface Props {
     metrics: Array<{
       key: string;
       name: string;
       value: number | string;
-      icon: ComponentType;
+      icon: Component<IconProps>;
     }>;
   }
 

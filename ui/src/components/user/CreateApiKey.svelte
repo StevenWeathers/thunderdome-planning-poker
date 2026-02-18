@@ -26,7 +26,7 @@
   let keyName = $state('');
   let apiKey = $state('');
 
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (keyName === '') {
@@ -39,14 +39,14 @@
     };
 
     xfetch(`/api/users/${$user.id}/apikeys`, { body })
-      .then(res => res.json())
-      .then(function (result) {
+      .then((res: Response) => res.json())
+      .then(function (result: any) {
         handleApiKeyCreate();
         apiKey = result.data.apiKey;
       })
-      .catch(function (error, response) {
+      .catch(function (error: any, response: any) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             let errMessage;
             switch (result.error) {
               case 'USER_APIKEY_LIMIT_REACHED':
@@ -68,14 +68,14 @@
   }
 
   function copyKey() {
-    const apk = document.getElementById('apiKey');
+    const apk = document.getElementById('apiKey') as HTMLInputElement;
 
     if (!navigator.clipboard) {
-      apk.select();
+      apk?.select();
       document.execCommand('copy');
     } else {
       navigator.clipboard
-        .writeText(apk.value)
+        .writeText(apk?.value ?? '')
         .then(function () {
           notifications.success($LL.apikeyCopySuccess());
         })

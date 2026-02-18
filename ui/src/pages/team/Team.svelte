@@ -35,6 +35,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { RetroAction } from '../../types/retro';
   import TeamPageLayout from '../../components/team/TeamPageLayout.svelte';
 
   interface Props {
@@ -80,7 +81,7 @@
   let users = $state([]);
   let battles = $state([]);
   let retros = $state([]);
-  let retroActions = $state([]);
+  let retroActions = $state<RetroAction[]>([]);
   let storyboards = $state([]);
   let estimationScales = $state([]);
   let showCreateBattle = $state(false);
@@ -90,9 +91,9 @@
   let showRemoveRetro = $state(false);
   let showRemoveStoryboard = $state(false);
   let showDeleteTeam = $state(false);
-  let removeBattleId = $state(null);
-  let removeRetroId = $state(null);
-  let removeStoryboardId = $state(null);
+  let removeBattleId = $state<string | null>(null);
+  let removeRetroId = $state<string | null>(null);
+  let removeStoryboardId = $state<string | null>(null);
   let usersPage = $state(1);
   let battlesPage = $state(1);
   let retrosPage = $state(1);
@@ -137,17 +138,17 @@
     showCreateStoryboard = !showCreateStoryboard;
   }
 
-  const toggleRemoveBattle = battleId => () => {
+  const toggleRemoveBattle = (battleId: string | null) => () => {
     showRemoveBattle = !showRemoveBattle;
     removeBattleId = battleId;
   };
 
-  const toggleRemoveRetro = retroId => () => {
+  const toggleRemoveRetro = (retroId: string | null) => () => {
     showRemoveRetro = !showRemoveRetro;
     removeRetroId = retroId;
   };
 
-  const toggleRemoveStoryboard = storyboardId => () => {
+  const toggleRemoveStoryboard = (storyboardId: string | null) => () => {
     showRemoveStoryboard = !showRemoveStoryboard;
     removeStoryboardId = storyboardId;
   };
@@ -160,7 +161,7 @@
   let scaleCount = $state(0);
   let scalesPage = $state(1);
 
-  const changeScalesPage = evt => {
+  const changeScalesPage = (evt: CustomEvent) => {
     scalesPage = evt.detail;
     getEstimationScales();
   };
@@ -189,7 +190,7 @@
   let retroTemplateCount = 0;
   let retroTemplatesPage = $state(1);
 
-  const changeRetroTemplatesPage = evt => {
+  const changeRetroTemplatesPage = (evt: CustomEvent) => {
     retroTemplatesPage = evt.detail;
     getRetroTemplates();
   };
@@ -213,8 +214,8 @@
   }
 
   let showRetroActionComments = $state(false);
-  let selectedRetroAction = $state(null);
-  const toggleRetroActionComments = id => () => {
+  let selectedRetroAction = $state<string | null>(null);
+  const toggleRetroActionComments = (id: string | null) => () => {
     showRetroActionComments = !showRetroActionComments;
     selectedRetroAction = id;
   };
@@ -301,7 +302,8 @@
         .then(function (result) {
           retroActions = result.data;
           totalRetroActions = result.meta.count;
-          selectedAction = selectedAction !== null ? retroActions.find(r => r.id === selectedAction.id) : null;
+          const currentId = selectedAction?.id;
+          selectedAction = currentId ? (retroActions.find(r => r.id === currentId) ?? null) : null;
         })
         .catch(function () {
           notifications.danger($LL.teamGetRetroActionsError());
@@ -375,7 +377,7 @@
       });
   }
 
-  const changeRetroActionPage = evt => {
+  const changeRetroActionPage = (evt: CustomEvent) => {
     retroActionsPage = evt.detail;
     getRetrosActions();
   };
@@ -386,13 +388,13 @@
   };
 
   let showRetroActionEdit = $state(false);
-  let selectedAction = $state(null);
-  const toggleRetroActionEdit = (retroId, id) => () => {
+  let selectedAction = $state<RetroAction | null>(null);
+  const toggleRetroActionEdit = (retroId: string | null, id?: string) => () => {
     showRetroActionEdit = !showRetroActionEdit;
-    selectedAction = retroId !== null ? retroActions.find(r => r.id === id) : null;
+    selectedAction = retroId !== null && id ? (retroActions.find(r => r.id === id) ?? null) : null;
   };
 
-  function handleRetroActionEdit(action) {
+  function handleRetroActionEdit(action: RetroAction) {
     xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
       method: 'PUT',
       body: {
@@ -410,7 +412,7 @@
       });
   }
 
-  function handleRetroActionDelete(action) {
+  function handleRetroActionDelete(action: RetroAction) {
     return () => {
       xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
         method: 'DELETE',
@@ -426,7 +428,7 @@
     };
   }
 
-  function handleRetroActionAssigneeAdd(retroId, actionId, userId) {
+  function handleRetroActionAssigneeAdd(retroId: string, actionId: string, userId: string) {
     xfetch(`/api/retros/${retroId}/actions/${actionId}/assignees`, {
       method: 'POST',
       body: {
@@ -437,7 +439,7 @@
     });
   }
 
-  function handleRetroActionAssigneeRemove(retroId, actionId, userId) {
+  function handleRetroActionAssigneeRemove(retroId: string, actionId: string, userId: string) {
     return () => {
       xfetch(`/api/retros/${retroId}/actions/${actionId}/assignees`, {
         method: 'DELETE',

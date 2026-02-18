@@ -20,7 +20,7 @@
   let password1 = $state('');
   let password2 = $state('');
 
-  function updatePassword(e) {
+  function updatePassword(e: Event) {
     e.preventDefault();
 
     const validPasswords = validatePasswords(password1, password2);

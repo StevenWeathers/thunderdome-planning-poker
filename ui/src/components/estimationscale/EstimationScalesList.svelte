@@ -23,9 +23,9 @@
   interface Props {
     xfetch: ApiClient;
     notifications: NotificationService;
-    organizationId: any;
-    teamId: any;
-    departmentId: any;
+    organizationId?: any;
+    teamId?: any;
+    departmentId?: any;
     isEntityAdmin?: boolean;
     scales?: any;
     apiPrefix?: string;
@@ -39,9 +39,9 @@
   let {
     xfetch,
     notifications,
-    organizationId,
-    teamId,
-    departmentId,
+    organizationId = null,
+    teamId = null,
+    departmentId = null,
     isEntityAdmin = false,
     scales = [],
     apiPrefix = '/api',
@@ -56,9 +56,9 @@
 
   let showAddScale = $state(false);
   let showUpdateScale = $state(false);
-  let updateScale = $state({});
+  let updateScale = $state<any>({});
   let showRemoveScale = $state(false);
-  let removeScaleId = $state(null);
+  let removeScaleId = $state<string | null>(null);
 
   function handleCreateScale() {
     getScales();
@@ -88,12 +88,12 @@
     showAddScale = !showAddScale;
   }
 
-  const toggleUpdateScale = scale => () => {
+  const toggleUpdateScale = (scale: any) => () => {
     updateScale = scale;
     showUpdateScale = !showUpdateScale;
   };
 
-  const toggleRemoveScale = scaleId => () => {
+  const toggleRemoveScale = (scaleId: string | null) => () => {
     showRemoveScale = !showRemoveScale;
     removeScaleId = scaleId;
   };

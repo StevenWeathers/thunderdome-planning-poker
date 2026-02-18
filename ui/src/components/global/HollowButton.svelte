@@ -3,6 +3,7 @@
     disabled?: boolean;
     color?: string;
     additionalClasses?: string;
+    class?: string;
     type?: string;
     onClick?: any;
     href?: string;
@@ -18,6 +19,7 @@
     disabled = false,
     color = 'green',
     additionalClasses = '',
+    class: className = '',
     type = 'button',
     onClick = () => {},
     href = '',
@@ -28,6 +30,9 @@
     fullWidth = false,
     children,
   }: Props = $props();
+
+  // Combine additionalClasses and class prop
+  const combinedClasses = $derived(`${additionalClasses} ${className}`.trim());
 
   /**
    * Keyboard interaction for label-as-button scenario.
@@ -53,7 +58,7 @@
 
 {#if type === 'label'}
   <label
-    class="btn-hollow btn-hollow-{color} cursor-pointer inline-block {additionalClasses}"
+    class="btn-hollow btn-hollow-{color} cursor-pointer inline-block {combinedClasses}"
     class:btn-hollow-large={size === 'large'}
     class:btn-hollow-full={fullWidth}
     class:disabled
@@ -71,7 +76,7 @@
   <button
     class="btn-hollow btn-hollow-{color}
         {disabled ? 'disabled' : ''}
-        {additionalClasses}"
+        {combinedClasses}"
     class:btn-hollow-large={size === 'large'}
     class:btn-hollow-full={fullWidth}
     onclick={onClick}
@@ -85,7 +90,7 @@
 {:else}
   <a
     {href}
-    class="btn-hollow btn-hollow-{color} inline-block no-underline {additionalClasses}"
+    class="btn-hollow btn-hollow-{color} inline-block no-underline {combinedClasses}"
     class:btn-hollow-large={size === 'large'}
     class:btn-hollow-full={fullWidth}
     class:disabled

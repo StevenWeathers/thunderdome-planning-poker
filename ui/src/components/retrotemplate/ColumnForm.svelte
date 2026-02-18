@@ -61,7 +61,7 @@
     if (field === 'name') {
       value = validateColumnName(value);
     }
-    format.columns[index][field] = value;
+    (format.columns[index][field] as string) = value;
     format.columns = [...format.columns];
     dispatch('update', format);
   }

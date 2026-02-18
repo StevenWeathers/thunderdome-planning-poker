@@ -35,7 +35,7 @@
       });
   });
 
-  function onSubmit(e) {
+  function onSubmit(e: Event) {
     e.preventDefault();
     xfetch('/api/auth/mfa/setup/validate', { body: { secret, passcode } })
       .then(res => res.json())

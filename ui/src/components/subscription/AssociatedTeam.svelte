@@ -17,8 +17,8 @@
 
   onMount(() => {
     xfetch(`/api/teams/${teamId}`)
-      .then(res => res.json())
-      .then(function (result) {
+      .then((res: any) => res.json())
+      .then(function (result: any) {
         team = result.data.team;
       })
       .catch(function () {

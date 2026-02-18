@@ -15,9 +15,9 @@
   interface Props {
     toggleUpdate?: any;
     handleUpdate?: any;
-    organizationId: any;
-    teamId: any;
-    departmentId: any;
+    organizationId?: any;
+    teamId?: any;
+    departmentId?: any;
     apiPrefix: any;
     xfetch: ApiClient;
     notifications: NotificationService;
@@ -32,9 +32,9 @@
   let {
     toggleUpdate = () => {},
     handleUpdate = () => {},
-    organizationId,
-    teamId,
-    departmentId,
+    organizationId = null,
+    teamId = null,
+    departmentId = null,
     apiPrefix,
     xfetch,
     notifications,
@@ -53,7 +53,13 @@
   function onSubmit(e: Event) {
     e.preventDefault();
 
-    const body = {
+    const body: {
+      name: string;
+      description: string;
+      defaultTemplate: boolean;
+      format: any;
+      isPublic?: boolean;
+    } = {
       name,
       description,
       defaultTemplate,
@@ -61,7 +67,7 @@
     };
 
     if (isAdmin) {
-      body['isPublic'] = isPublic;
+      body.isPublic = isPublic;
     }
 
     xfetch(`${apiPrefix}/retro-templates/${templateId}`, {

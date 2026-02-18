@@ -9,22 +9,37 @@
   import AssociateTeamForm from './AssociateTeamForm.svelte';
   import AssociateOrgForm from './AssociateOrgForm.svelte';
 
-  export let notifications;
-  export let xfetch = async (url: string, ...options: any) => {};
+  import type { NotificationService } from '../../types/notifications';
+  import type { ApiClient } from '../../types/apiclient';
 
-  let userSubscriptions = [];
-  let showAssociateTeam = false;
-  let showAssociateOrganization = false;
-  let selectedSubscriptionId = null;
+  interface Props {
+    notifications: NotificationService;
+    xfetch?: ApiClient;
+  }
 
-  const toggleAssociateTeam = subId => () => {
+  interface Subscription {
+    id: string;
+    type: string;
+    team_id: string;
+    organization_id: string;
+    expires: string;
+  }
+
+  let { notifications, xfetch = async (url: string, ...options: any) => new Response() }: Props = $props();
+
+  let userSubscriptions = $state<Subscription[]>([]);
+  let showAssociateTeam = $state(false);
+  let showAssociateOrganization = $state(false);
+  let selectedSubscriptionId = $state<string | undefined>(undefined);
+
+  const toggleAssociateTeam = (subId: string | null) => () => {
     showAssociateTeam = !showAssociateTeam;
-    selectedSubscriptionId = subId;
+    selectedSubscriptionId = subId ?? undefined;
   };
 
-  const toggleAssociateOrganization = subId => () => {
+  const toggleAssociateOrganization = (subId: string | null) => () => {
     showAssociateOrganization = !showAssociateOrganization;
-    selectedSubscriptionId = subId;
+    selectedSubscriptionId = subId ?? undefined;
   };
 
   function getSubscriptions() {
@@ -101,12 +116,7 @@
                           Associate to Organization
                         </HollowButton>
                       {:else}
-                        <AssociatedOrganization
-                          userId={$user.id}
-                          organizationId={sub.organization_id}
-                          {xfetch}
-                          {notifications}
-                        />
+                        <AssociatedOrganization organizationId={sub.organization_id} {xfetch} {notifications} />
                       {/if}
                     {:else}
                       <span class="text-gray-300 dark:text-gray-400">N/A</span>

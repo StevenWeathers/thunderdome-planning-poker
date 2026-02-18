@@ -15,9 +15,9 @@
   interface Props {
     toggleCreate?: any;
     handleCreate?: any;
-    organizationId: any;
-    teamId: any;
-    departmentId: any;
+    organizationId?: any;
+    teamId?: any;
+    departmentId?: any;
     apiPrefix?: string;
     xfetch: ApiClient;
     notifications: NotificationService;
@@ -26,9 +26,9 @@
   let {
     toggleCreate = () => {},
     handleCreate = () => {},
-    organizationId,
-    teamId,
-    departmentId,
+    organizationId = null,
+    teamId = null,
+    departmentId = null,
     apiPrefix = '/api',
     xfetch,
     notifications,
@@ -50,7 +50,14 @@
   function onSubmit(e: Event) {
     e.preventDefault();
 
-    const body = {
+    const body: {
+      name: string;
+      description: string;
+      values: string[];
+      defaultScale: boolean;
+      isPublic?: boolean;
+      scaleType?: string;
+    } = {
       name,
       description,
       values,
@@ -58,8 +65,8 @@
     };
 
     if (isAdmin) {
-      body['isPublic'] = isPublic;
-      body['scaleType'] = scaleType;
+      body.isPublic = isPublic;
+      body.scaleType = scaleType;
     }
 
     xfetch(`${apiPrefix}/estimation-scales`, {

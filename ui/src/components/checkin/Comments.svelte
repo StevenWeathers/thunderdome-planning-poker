@@ -30,7 +30,7 @@
     showComments = !showComments;
   }
 
-  function onSubmit(e) {
+  function onSubmit(e: Event) {
     e.preventDefault();
 
     handleCreate(checkin.id, {

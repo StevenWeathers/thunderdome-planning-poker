@@ -22,19 +22,19 @@
   }
 
   let { xfetch, router, notifications, teamPrefix = '', pageType = '' }: Props = $props();
-  export const f = event => {
+  export const f = (event: string) => {
     if (event === 'user-invited') {
       getInvites();
     }
   };
 
-  let invites = $state([]);
+  let invites = $state<any[]>([]);
   let showDeleteInvite = $state(false);
   let deleteInviteId = '';
 
-  const toggleDeleteInvite = inviteId => () => {
+  const toggleDeleteInvite = (inviteId: string | null) => () => {
     showDeleteInvite = !showDeleteInvite;
-    deleteInviteId = inviteId;
+    deleteInviteId = inviteId || '';
   };
 
   function getInvites() {

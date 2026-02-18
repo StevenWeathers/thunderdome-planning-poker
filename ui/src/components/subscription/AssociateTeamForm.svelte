@@ -6,6 +6,7 @@
   import { user } from '../../stores';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { Team } from '../../types/team';
   import { onMount } from 'svelte';
 
   interface Props {
@@ -19,18 +20,18 @@
   let {
     handleUpdate = () => {},
     toggleClose = () => {},
-    xfetch = async (url, ...options) => {},
+    xfetch = async (url: string, ...options: any[]) => {},
     notifications,
     subscriptionId = '',
   }: Props = $props();
 
-  let teams = $state([]);
+  let teams = $state<Team[]>([]);
   let selectedTeam = $state('');
 
   onMount(() => {
     xfetch(`/api/users/${$user.id}/teams?limit=1000&offset=0`)
-      .then(res => res.json())
-      .then(function (result) {
+      .then((res: any) => res.json())
+      .then(function (result: any) {
         teams = result.data;
       })
       .catch(function () {
@@ -38,7 +39,7 @@
       });
   });
 
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (selectedTeam === '') {

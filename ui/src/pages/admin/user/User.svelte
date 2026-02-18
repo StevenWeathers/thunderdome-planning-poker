@@ -23,6 +23,27 @@
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
 
+  interface Battle {
+    id: string;
+    name: string;
+    createdDate: string;
+    updatedDate: string;
+  }
+
+  interface Retro {
+    id: string;
+    name: string;
+    createdDate: string;
+    updatedDate: string;
+  }
+
+  interface Storyboard {
+    id: string;
+    name: string;
+    createdDate: string;
+    updatedDate: string;
+  }
+
   interface Props {
     xfetch: ApiClient;
     router: any;
@@ -42,6 +63,7 @@
     email: '',
     rank: '',
     avatar: '',
+    gravatarHash: '',
     verified: false,
     notificationsEnabled: true,
     country: '',
@@ -70,7 +92,7 @@
 
   const battlesPageLimit = 100;
   let battleCount = $state(0);
-  let battles = $state([]);
+  let battles = $state<Battle[]>([]);
   let battlesPage = $state(1);
 
   function getBattles() {
@@ -86,14 +108,14 @@
       });
   }
 
-  const changeBattlesPage = evt => {
+  const changeBattlesPage = (evt: CustomEvent) => {
     battlesPage = evt.detail;
     getBattles();
   };
 
   const retrosPageLimit = 100;
   let retroCount = $state(0);
-  let retros = $state([]);
+  let retros = $state<Retro[]>([]);
   let retrosPage = $state(1);
 
   function getRetros() {
@@ -105,18 +127,18 @@
         retroCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getRetrosError());
+        notifications.danger($LL.getRetrosErrorMessage());
       });
   }
 
-  const changeRetrosPage = evt => {
+  const changeRetrosPage = (evt: CustomEvent) => {
     retrosPage = evt.detail;
     getRetros();
   };
 
   const storyboardsPageLimit = 100;
   let storyboardCount = $state(0);
-  let storyboards = $state([]);
+  let storyboards = $state<Storyboard[]>([]);
   let storyboardsPage = $state(1);
 
   function getStoryboards() {
@@ -128,16 +150,16 @@
         storyboardCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getStoryboardsError());
+        notifications.danger($LL.getStoryboardsErrorMessage());
       });
   }
 
-  const changeStoryboardsPage = evt => {
+  const changeStoryboardsPage = (evt: CustomEvent) => {
     storyboardsPage = evt.detail;
     getStoryboards();
   };
 
-  function updatePassword(password1, password2) {
+  function updatePassword(password1: string, password2: string) {
     const body = {
       password1,
       password2,
@@ -214,7 +236,7 @@
                       warriorId={userDetails.id}
                       avatar={userDetails.avatar}
                       gravatarHash={userDetails.gravatarHash}
-                      userName={user.name}
+                      userName={userDetails.name}
                       width={48}
                       class="h-10 w-10 rounded-full"
                     />

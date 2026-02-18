@@ -17,6 +17,7 @@
     User,
     Users,
     Vote,
+    type IconProps,
   } from '@lucide/svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import EstimationScalesList from '../../components/estimationscale/EstimationScalesList.svelte';
@@ -131,7 +132,7 @@
   let scaleCount = 0;
   let scalesPage = $state(1);
 
-  const changeScalesPage = evt => {
+  const changeScalesPage = (evt: any) => {
     scalesPage = evt.detail;
     getEstimationScales();
   };
@@ -158,7 +159,7 @@
   let retroTemplateCount = 0;
   let retroTemplatesPage = $state(1);
 
-  const changeRetroTemplatesPage = evt => {
+  const changeRetroTemplatesPage = (evt: any) => {
     retroTemplatesPage = evt.detail;
     getRetroTemplates();
   };

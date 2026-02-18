@@ -19,6 +19,20 @@
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
 
+  interface ApiKey {
+    id: string;
+    name: string;
+    prefix: string;
+    active: boolean;
+    updatedDate: string;
+  }
+
+  interface JiraInstance {
+    id: string;
+    host: string;
+    client_mail: string;
+  }
+
   interface Props {
     xfetch: ApiClient;
     router: any;
@@ -27,10 +41,10 @@
 
   let { xfetch, router, notifications }: Props = $props();
 
-  let userProfile = $state({});
+  let userProfile = $state<any>({});
   let userCredential = $state(null);
-  let apiKeys = $state([]);
-  let jiraInstances = $state([]);
+  let apiKeys = $state<ApiKey[]>([]);
+  let jiraInstances = $state<JiraInstance[]>([]);
   let showApiKeyCreate = $state(false);
   let showAccountDeletion = $state(false);
 
@@ -72,7 +86,7 @@
       });
   }
 
-  function updateUserProfile(p) {
+  function updateUserProfile(p: any) {
     const body = {
       ...p,
     };
@@ -95,7 +109,7 @@
         } else {
           localStorage.removeItem('theme');
         }
-        window.setTheme();
+        (window as any).setTheme();
 
         notifications.success($LL.profileUpdateSuccess());
       })
@@ -104,7 +118,7 @@
       });
   }
 
-  function updateUserPassword(password1, password2) {
+  function updateUserPassword(password1: string, password2: string) {
     const body = {
       password1,
       password2,
@@ -139,7 +153,7 @@
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
               user.update({
                 id: $user.id,
@@ -164,7 +178,7 @@
       });
   }
 
-  function deleteApiKey(apk) {
+  function deleteApiKey(apk: string) {
     return function () {
       xfetch(`/api/users/${$user.id}/apikeys/${apk}`, {
         method: 'DELETE',
@@ -180,7 +194,7 @@
     };
   }
 
-  function toggleApiKeyActiveStatus(apk, active) {
+  function toggleApiKeyActiveStatus(apk: string, active: boolean) {
     return function () {
       const body = {
         active: !active,
@@ -226,7 +240,7 @@
     showJiraInstanceCreate = !showJiraInstanceCreate;
   }
 
-  function deleteJiraInstance(id) {
+  function deleteJiraInstance(id: string) {
     return function () {
       xfetch(`/api/users/${$user.id}/jira-instances/${id}`, {
         method: 'DELETE',
@@ -238,7 +252,7 @@
         })
         .catch(function (error) {
           if (Array.isArray(error)) {
-            error[1].json().then(function (result) {
+            error[1].json().then(function (result: any) {
               if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
                 user.update({
                   id: $user.id,

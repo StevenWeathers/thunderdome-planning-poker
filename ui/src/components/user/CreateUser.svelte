@@ -16,6 +16,12 @@
 
 <Modal closeModal={toggleCreate} ariaLabel={$LL.modalCreateUser()}>
   <div class="pt-10">
-    <UserRegisterForm handleFullAccountRegistration={handleCreate} {notifications} fullOnly={true} isAdmin={true} />
+    <UserRegisterForm
+      handleFullAccountRegistration={handleCreate}
+      handleGuestRegistration={() => {}}
+      {notifications}
+      fullOnly={true}
+      isAdmin={true}
+    />
   </div>
 </Modal>

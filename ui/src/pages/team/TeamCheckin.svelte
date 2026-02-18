@@ -18,7 +18,12 @@
   import Picker from '../../components/timezone-picker/Picker.svelte';
   import Toggle from '../../components/forms/Toggle.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
-  import type { TeamUser } from '../../types/team';
+  import type { TeamUser, TeamCheckin as BaseTeamCheckin } from '../../types/team';
+
+  // Local type override - the API returns user as a single object, not an array
+  interface TeamCheckin extends Omit<BaseTeamCheckin, 'user'> {
+    user: TeamUser;
+  }
 
   // Props using Svelte 5 syntax
   let { xfetch, router, notifications, organizationId, departmentId, teamId } = $props();
@@ -27,9 +32,9 @@
   let timezone = $state(getTimezoneName());
   let showCheckin = $state(false);
   let now = $state(new Date());
-  let maxNegativeDate = $state();
-  let selectedDate = $state();
-  let selectedCheckin = $state();
+  let maxNegativeDate = $state<string>('');
+  let selectedDate = $state<string>('');
+  let selectedCheckin = $state<TeamCheckin | null>(null);
   let stats = $state({
     participants: 0,
     pPerc: 0,
@@ -57,15 +62,15 @@
     organization.id = organizationId;
     department.id = departmentId;
   });
-  let users = $state([]);
+  let users = $state<TeamUser[]>([]);
   let userCount = $state(1);
 
   let organizationRole = $state('');
   let departmentRole = $state('');
   let teamRole = $state('');
 
-  let checkins = $state([]);
-  let checkinColumns = $state([]);
+  let checkins = $state<TeamCheckin[]>([]);
+  let checkinColumns = $state<Array<{ checkins: TeamCheckin[] }>>([]);
   let showOnlyDiscussionItems = $state(false);
   let userMap: Map<string, TeamUser> = $state(new Map());
 
@@ -76,7 +81,7 @@
     getCheckins();
   }
 
-  function divideCheckins(checkins): void {
+  function divideCheckins(checkins: TeamCheckin[]): void {
     const half = Math.ceil(checkins.length / 2);
 
     const checkins1 = checkins.slice(0, half);
@@ -107,8 +112,8 @@
 
   function getTeam() {
     xfetch(teamPrefix)
-      .then(res => res.json())
-      .then(function (result) {
+      .then((res: Response) => res.json())
+      .then(function (result: any) {
         team = result.data.team;
         teamRole = result.data.teamRole;
 
@@ -128,8 +133,8 @@
 
   function getCheckins() {
     xfetch(`${teamPrefix}/checkins?date=${selectedDate}&tz=${timezone}`)
-      .then(res => res.json())
-      .then(function (result) {
+      .then((res: Response) => res.json())
+      .then(function (result: any) {
         checkins = result.data;
         calculateCheckinStats();
         filterCheckins();
@@ -141,21 +146,24 @@
 
   function getUsers() {
     xfetch(`${teamPrefix}/users?limit=1000&offset=0`)
-      .then(res => res.json())
-      .then(function (result) {
+      .then((res: Response) => res.json())
+      .then(function (result: any) {
         users = result.data;
         userCount = result.meta.count;
-        userMap = users.reduce((prev, cur) => {
-          prev[cur.id] = cur;
-          return prev;
-        }, {});
+        userMap = users.reduce(
+          (prev: Record<string, TeamUser>, cur: TeamUser) => {
+            prev[cur.id] = cur;
+            return prev;
+          },
+          {} as Record<string, TeamUser>,
+        ) as any;
       })
       .catch(function () {
         notifications.danger($LL.teamGetUsersError());
       });
   }
 
-  function toggleCheckin(checkin) {
+  function toggleCheckin(checkin?: TeamCheckin) {
     showCheckin = !showCheckin;
     if (checkin) {
       selectedCheckin = checkin;
@@ -164,19 +172,19 @@
     }
   }
 
-  function handleCheckin(checkin) {
+  function handleCheckin(checkin: any) {
     const body = {
       ...checkin,
     };
 
     xfetch(`${teamPrefix}/checkins`, { body })
-      .then(res => res.json())
+      .then((res: Response) => res.json())
       .then(function () {
         toggleCheckin();
       })
-      .catch(function (error) {
+      .catch(function (error: any) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             if (result.error === 'REQUIRES_TEAM_USER') {
               notifications.danger($LL.teamUserRequiredToCheckin());
             } else {
@@ -189,12 +197,12 @@
       });
   }
 
-  function handleCheckinEdit(checkinId, checkin) {
+  function handleCheckinEdit(checkinId: string, checkin: any) {
     xfetch(`${teamPrefix}/checkins/${checkinId}`, {
       body: checkin,
       method: 'PUT',
     })
-      .then(res => res.json())
+      .then((res: Response) => res.json())
       .then(function () {
         toggleCheckin();
       })
@@ -203,24 +211,24 @@
       });
   }
 
-  function handleCheckinDelete(checkinId) {
+  function handleCheckinDelete(checkinId: string) {
     xfetch(`${teamPrefix}/checkins/${checkinId}`, { method: 'DELETE' })
-      .then(res => res.json())
+      .then((res: Response) => res.json())
       .catch(function () {
         notifications.danger($LL.deleteCheckinError());
       });
   }
 
-  function handleCheckinComment(checkinId, comment) {
+  function handleCheckinComment(checkinId: string, comment: any) {
     const body = {
       ...comment,
     };
 
     xfetch(`${teamPrefix}/checkins/${checkinId}/comments`, { body })
-      .then(res => res.json())
-      .catch(function (error) {
+      .then((res: Response) => res.json())
+      .catch(function (error: any) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             if (result.error === 'REQUIRES_TEAM_USER') {
               notifications.danger($LL.teamUserRequiredToComment());
             } else {
@@ -233,7 +241,7 @@
       });
   }
 
-  function handleCheckinCommentEdit(checkinId, commentId, comment) {
+  function handleCheckinCommentEdit(checkinId: string, commentId: string, comment: any) {
     const body = {
       ...comment,
     };
@@ -242,10 +250,10 @@
       body,
       method: 'PUT',
     })
-      .then(res => res.json())
-      .catch(function (error) {
+      .then((res: Response) => res.json())
+      .catch(function (error: any) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             if (result.error === 'REQUIRES_TEAM_USER') {
               notifications.danger($LL.teamUserRequiredToComment());
             } else {
@@ -258,17 +266,17 @@
       });
   }
 
-  const handleCommentDelete = (checkinId, commentId) => () => {
+  const handleCommentDelete = (checkinId: string, commentId: string) => () => {
     xfetch(`${teamPrefix}/checkins/${checkinId}/comments/${commentId}`, {
       method: 'DELETE',
     })
-      .then(res => res.json())
+      .then((res: Response) => res.json())
       .catch(function () {
         notifications.danger($LL.checkinCommentDeleteError());
       });
   };
 
-  const onSocketMessage = function (evt) {
+  const onSocketMessage = function (evt: MessageEvent) {
     const parsedEvent = JSON.parse(evt.data);
 
     switch (parsedEvent.type) {
@@ -310,7 +318,7 @@
     }
   });
 
-  const sendSocketEvent = (type, value) => {
+  const sendSocketEvent = (type: string, value: any) => {
     ws.send(
       JSON.stringify({
         type,
@@ -320,11 +328,11 @@
   };
 
   function calculateCheckinStats() {
-    const ucs = [];
+    const ucs: string[] = [];
     stats.blocked = 0;
     stats.goals = 0;
 
-    checkins.map(c => {
+    checkins.map((c: TeamCheckin) => {
       // @todo - remove once multiple same day checkins are prevented
       if (!ucs.includes(c.user.id)) {
         ucs.push(c.user.id);
@@ -353,7 +361,9 @@
 
   const isTeamMember = $derived(organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole !== '');
 
-  const alreadyCheckedIn = $derived(checkins && checkins.find(c => c.user.id === $user.id) !== undefined);
+  const alreadyCheckedIn = $derived(
+    checkins && checkins.find((c: TeamCheckin) => c.user.id === $user.id) !== undefined,
+  );
 
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
@@ -400,7 +410,7 @@
             class="bg-transparent text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white cursor-pointer"
           />
           <div>
-            <Picker {timezone} onUpdate={updateTimezone} />
+            <Picker timezone={timezone || ''} onUpdate={(tz: string | null) => tz && updateTimezone(tz)} />
           </div>
         </div>
       </div>
@@ -528,7 +538,7 @@
                         class="w-full h-full rounded-full overflow-hidden ring-3 ring-white dark:ring-gray-700 shadow-lg"
                       >
                         <UserAvatar
-                          width="80"
+                          width={80}
                           warriorId={checkin.user.id}
                           avatar={checkin.user.avatar}
                           gravatarHash={checkin.user.gravatarHash}
@@ -548,9 +558,9 @@
                           <div class="w-full h-full rounded-full bg-emerald-500 flex items-center justify-center">
                             <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                               <path
-                                fillRule="evenodd"
+                                fill-rule="evenodd"
                                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
+                                clip-rule="evenodd"
                               />
                             </svg>
                           </div>
@@ -658,9 +668,9 @@
                         {$LL.blockers()}
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                           <path
-                            fillRule="evenodd"
+                            fill-rule="evenodd"
                             d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                            clipRule="evenodd"
+                            clip-rule="evenodd"
                           />
                         </svg>
                       </span>
@@ -685,9 +695,9 @@
                         {$LL.discuss()}
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                           <path
-                            fillRule="evenodd"
+                            fill-rule="evenodd"
                             d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
-                            clipRule="evenodd"
+                            clip-rule="evenodd"
                           />
                         </svg>
                       </span>

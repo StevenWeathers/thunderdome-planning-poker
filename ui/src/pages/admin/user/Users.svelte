@@ -24,6 +24,7 @@
 
   import type { NotificationService } from '../../../types/notifications';
   import type { ApiClient } from '../../../types/apiclient';
+  import type { User } from '../../../types/user';
 
   interface Props {
     xfetch: ApiClient;
@@ -36,16 +37,16 @@
   const usersPageLimit = 100;
 
   let totalUsers = $state(0);
-  let users = $state([]);
+  let users = $state<User[]>([]);
   let showCreateUser = $state(false);
   let usersPage = $state(1);
-  let userDeleteId = null;
+  let userDeleteId: string | null = null;
   let showUserDeletion = $state(false);
   let searchEmail = '';
   let showUserEdit = $state(false);
-  let selectedUserProfile = $state({});
+  let selectedUserProfile = $state<Partial<User>>({});
 
-  const toggleDeleteUser = id => () => {
+  const toggleDeleteUser = (id: string | null) => () => {
     showUserDeletion = !showUserDeletion;
     userDeleteId = id;
   };
@@ -54,12 +55,12 @@
     showCreateUser = !showCreateUser;
   }
 
-  const toggleUserEdit = profile => () => {
+  const toggleUserEdit = (profile: Partial<User>) => () => {
     showUserEdit = !showUserEdit;
     selectedUserProfile = profile;
   };
 
-  function createUser(warriorName, warriorEmail, warriorPassword1, warriorPassword2) {
+  function createUser(warriorName: string, warriorEmail: string, warriorPassword1: string, warriorPassword2: string) {
     const body = {
       name: warriorName,
       email: warriorEmail,
@@ -98,8 +99,8 @@
       });
   }
 
-  function handleUserEdit(p) {
-    xfetch(`/api/users/${selectedUserProfile.id}`, {
+  function handleUserEdit(p: Partial<User>) {
+    xfetch(`/api/users/${(selectedUserProfile as User).id}`, {
       body: p,
       method: 'PUT',
     })
@@ -114,7 +115,7 @@
       });
   }
 
-  function promoteUser(userId) {
+  function promoteUser(userId: string) {
     return function () {
       xfetch(`/api/admin/users/${userId}/promote`, { method: 'PATCH' })
         .then(function () {
@@ -126,7 +127,7 @@
     };
   }
 
-  function demoteUser(userId) {
+  function demoteUser(userId: string) {
     return function () {
       xfetch(`/api/admin/users/${userId}/demote`, { method: 'PATCH' })
         .then(function () {
@@ -138,7 +139,7 @@
     };
   }
 
-  function disableUser(userId) {
+  function disableUser(userId: string) {
     return function () {
       xfetch(`/api/admin/users/${userId}/disable`, { method: 'PATCH' })
         .then(function () {
@@ -150,7 +151,7 @@
     };
   }
 
-  function enableUser(userId) {
+  function enableUser(userId: string) {
     return function () {
       xfetch(`/api/admin/users/${userId}/enable`, { method: 'PATCH' })
         .then(function () {
@@ -173,13 +174,13 @@
       });
   }
 
-  function onSearchSubmit(term) {
+  function onSearchSubmit(term: string) {
     searchEmail = term;
     usersPage = 1;
     getUsers();
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent) => {
     usersPage = evt.detail;
     getUsers();
   };
@@ -323,12 +324,19 @@
   </TableContainer>
 
   {#if showCreateUser}
-    <CreateUser toggleCreate={toggleCreateUser} handleCreate={createUser} notifications />
+    <CreateUser toggleCreate={toggleCreateUser} handleCreate={createUser} {notifications} />
   {/if}
 
   {#if showUserEdit}
     <Modal closeModal={toggleUserEdit({})}>
-      <ProfileForm profile={selectedUserProfile} handleUpdate={handleUserEdit} {xfetch} {notifications} />
+      <ProfileForm
+        profile={selectedUserProfile}
+        handleUpdate={handleUserEdit}
+        {xfetch}
+        {notifications}
+        credential={null}
+        toggleUpdatePassword={() => {}}
+      />
     </Modal>
   {/if}
 

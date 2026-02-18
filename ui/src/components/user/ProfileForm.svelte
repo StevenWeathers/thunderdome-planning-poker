@@ -67,9 +67,9 @@
     govatar: ['male', 'female', 'none'],
   };
 
-  let avatars = isAvatarConfigurable ? avatarOptions[AvatarService] : [];
+  let avatars = isAvatarConfigurable ? avatarOptions[AvatarService as keyof typeof avatarOptions] : [];
 
-  function handleSubmit(e) {
+  function handleSubmit(e: Event) {
     e.preventDefault();
     const validName = validateName(profile.name);
     let p = {
@@ -120,7 +120,7 @@
       });
   }
 
-  function requestVerifyEmail(e) {
+  function requestVerifyEmail(e: Event) {
     e.preventDefault();
     xfetch(`/api/users/${profile.id}/request-verify`, { method: 'POST' })
       .then(function () {
@@ -131,7 +131,7 @@
       });
   }
 
-  function requestEmailChange(e) {
+  function requestEmailChange(e: Event) {
     e.preventDefault();
     xfetch(`/api/users/${profile.id}/email-change`, { method: 'POST' })
       .then(function () {

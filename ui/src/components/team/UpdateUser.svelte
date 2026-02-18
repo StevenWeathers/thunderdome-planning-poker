@@ -24,7 +24,7 @@
 
   const roles = ['ADMIN', 'MEMBER'];
 
-  function onSubmit(e) {
+  function onSubmit(e: Event) {
     e.preventDefault();
 
     handleUpdate(userId, role);
