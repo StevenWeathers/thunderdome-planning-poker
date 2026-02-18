@@ -1,6 +1,6 @@
 <script lang="ts">
   import { afterUpdate } from 'svelte';
-  import Snap, { mina } from 'snapsvg-cjs';
+  import Snap from 'snapsvg-cjs';
 
   export let percentage = 100;
   export let text = '';
@@ -45,7 +45,7 @@
         arc.attr('d', path);
       },
       1500,
-      mina.easeinout,
+      (globalThis as any).mina.easeinout,
     );
   };
 
