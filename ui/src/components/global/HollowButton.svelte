@@ -101,7 +101,7 @@
   </a>
 {/if}
 
-<style>
+<style lang="postcss">
   .btn-hollow {
     @apply leading-tight;
     @apply font-semibold;

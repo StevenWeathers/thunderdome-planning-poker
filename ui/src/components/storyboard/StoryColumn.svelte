@@ -31,42 +31,46 @@
     sendSocketEvent,
   }: Props = $props();
 
-  function handleDndConsider(e) {
-    const goalIndex = e.target.dataset.goalindex;
-    const columnIndex = e.target.dataset.columnindex;
+  function handleDndConsider(e: CustomEvent) {
+    const goalIndex = Number((e.target as HTMLElement)?.dataset.goalindex);
+    const columnIndex = Number((e.target as HTMLElement)?.dataset.columnindex);
 
-    goals[goalIndex].columns[columnIndex].stories = e.detail.items;
-    goals = goals;
+    if (!isNaN(goalIndex) && !isNaN(columnIndex)) {
+      goals[goalIndex].columns[columnIndex].stories = e.detail.items;
+      goals = goals;
+    }
   }
 
-  function handleDndFinalize(e) {
-    const goalIndex = e.target.dataset.goalindex;
-    const columnIndex = e.target.dataset.columnindex;
+  function handleDndFinalize(e: CustomEvent) {
+    const goalIndex = Number((e.target as HTMLElement)?.dataset.goalindex);
+    const columnIndex = Number((e.target as HTMLElement)?.dataset.columnindex);
     const storyId = e.detail.info.id;
 
-    goals[goalIndex].columns[columnIndex].stories = e.detail.items;
-    goals = goals;
+    if (!isNaN(goalIndex) && !isNaN(columnIndex)) {
+      goals[goalIndex].columns[columnIndex].stories = e.detail.items;
+      goals = goals;
 
-    const matchedStory = goals[goalIndex].columns[columnIndex].stories.find((i: StoryboardStory) => i.id === storyId);
+      const matchedStory = goals[goalIndex].columns[columnIndex].stories.find((i: StoryboardStory) => i.id === storyId);
 
-    if (matchedStory) {
-      const goalId = goals[goalIndex].id;
-      const columnId = goals[goalIndex].columns[columnIndex].id;
+      if (matchedStory) {
+        const goalId = goals[goalIndex].id;
+        const columnId = goals[goalIndex].columns[columnIndex].id;
 
-      // determine what story to place story before in target column
-      const matchedStoryIndex = goals[goalIndex].columns[columnIndex].stories.indexOf(matchedStory);
-      const sibling = goals[goalIndex].columns[columnIndex].stories[matchedStoryIndex + 1];
-      const placeBefore = sibling ? sibling.id : '';
+        // determine what story to place story before in target column
+        const matchedStoryIndex = goals[goalIndex].columns[columnIndex].stories.indexOf(matchedStory);
+        const sibling = goals[goalIndex].columns[columnIndex].stories[matchedStoryIndex + 1];
+        const placeBefore = sibling ? sibling.id : '';
 
-      sendSocketEvent(
-        'move_story',
-        JSON.stringify({
-          storyId,
-          goalId,
-          columnId,
-          placeBefore,
-        }),
-      );
+        sendSocketEvent(
+          'move_story',
+          JSON.stringify({
+            storyId,
+            goalId,
+            columnId,
+            placeBefore,
+          }),
+        );
+      }
     }
   }
 </script>
@@ -121,8 +125,8 @@
     data-columnindex={columnIndex}
     use:dndzone={{
       items: goalColumn.stories,
-      type: 'story',
-      dropTargetStyle: '',
+      type: 'story' as const,
+      dropTargetStyle: {},
       dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
       dragDisabled: columnOrderEditMode,
     }}

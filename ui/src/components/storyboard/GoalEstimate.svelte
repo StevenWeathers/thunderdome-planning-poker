@@ -5,14 +5,15 @@
 
   let { columns = [] }: Props = $props();
 
-  type story = {
+  type Story = {
     points: number;
   };
-  type column = {
-    stories: story;
+  type Column = {
+    stories: Array<Story>;
+    sort_order?: string;
   };
 
-  function calculateGoalEstimate(goalColumns: Array<column>) {
+  function calculateGoalEstimate(goalColumns: Array<Column>) {
     let estimate: number = 0;
     for (let column of goalColumns) {
       for (let story of column.stories) {

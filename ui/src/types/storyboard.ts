@@ -23,7 +23,7 @@ export type StoryboardColumn = {
   id: string;
   name: string;
   personas: Array<StoryboardPersona>;
-  sort_order: number;
+  sort_order: string;
   stories: Array<StoryboardStory>;
 };
 
@@ -32,7 +32,7 @@ export type StoryboardGoal = {
   id: string;
   name: string;
   personas: Array<StoryboardPersona>;
-  sort_order: number;
+  sort_order: string;
 };
 
 export type StoryboardPersona = {
@@ -61,7 +61,7 @@ export type StoryboardStory = {
   link: string;
   name: string;
   points: number;
-  sort_order: number;
+  sort_order: string;
 };
 
 export type StoryboardUser = {

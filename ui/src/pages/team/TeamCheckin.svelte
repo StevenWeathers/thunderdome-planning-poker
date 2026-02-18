@@ -294,30 +294,6 @@
     }
   };
 
-  onMount(() => {
-    ws = new Sockette(`${getWebsocketAddress()}/api/teams/${teamId}/checkin`, {
-      timeout: 2e3,
-      maxAttempts: 15,
-      onmessage: onSocketMessage,
-      onclose: e => {
-        if (e.code === 4005) {
-          ws.close();
-        } else if (e.code === 4004) {
-          router.route(appRoutes.teams);
-        } else if (e.code === 4001) {
-          user.delete();
-          router.route(appRoutes.login);
-        }
-      },
-    });
-  });
-
-  onDestroy(() => {
-    if (ws) {
-      ws.close();
-    }
-  });
-
   const sendSocketEvent = (type: string, value: any) => {
     ws.send(
       JSON.stringify({
@@ -376,10 +352,28 @@
 
     getTeam();
     getUsers();
+
+    ws = new Sockette(`${getWebsocketAddress()}/api/teams/${teamId}/checkin`, {
+      timeout: 2e3,
+      maxAttempts: 15,
+      onmessage: onSocketMessage,
+      onclose: e => {
+        if (e.code === 4005) {
+          ws.close();
+        } else if (e.code === 4004) {
+          router.route(appRoutes.teams);
+        } else if (e.code === 4001) {
+          user.delete();
+          router.route(appRoutes.login);
+        }
+      },
+    });
   });
 
   onDestroy(() => {
-    ws.close();
+    if (ws) {
+      ws.close();
+    }
   });
 </script>
 

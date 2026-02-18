@@ -77,7 +77,7 @@
   </div>
 </div>
 
-<style global>
+<style global lang="postcss">
   .gauge {
     --tw-aspect-h: 1;
     --tw-aspect-w: 2;

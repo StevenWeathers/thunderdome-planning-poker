@@ -21,9 +21,11 @@
       comments: [],
       closed: false,
       sort_order: 'a1',
+      content: '',
+      annotations: [],
     },
-    goalColumn = { id: '', name: '', order: 0, stories: [] },
-    goal = { id: '', name: '', order: 0, columns: [] },
+    goalColumn = { id: '', name: '', sort_order: '', stories: [], personas: [] },
+    goal = { id: '', name: '', sort_order: '', columns: [], personas: [] },
     columnOrderEditMode = false,
     toggleStoryForm = (story: StoryboardStory) => () => {},
   }: Props = $props();
@@ -84,7 +86,7 @@
       </div>
     </div>
   </div>
-  {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+  {#if (story as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
     <div
       class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
                                 story-{story.color} border
@@ -144,7 +146,7 @@
   {/if}
 </div>
 
-<style>
+<style lang="postcss">
   .story-gray {
     @apply border-gray-400;
   }

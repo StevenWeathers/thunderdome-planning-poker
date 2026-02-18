@@ -250,7 +250,7 @@
   </div>
 </Modal>
 
-<style>
+<style lang="postcss">
   .persona-list {
     @apply overflow-y-auto;
   }

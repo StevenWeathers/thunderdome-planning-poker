@@ -22,6 +22,7 @@
   let qrCode = $state('');
   let secret = $state('');
   let passcode = $state('');
+  let focusInput: any = $state();
 
   onMount(() => {
     xfetch('/api/auth/mfa/setup/generate', { method: 'POST' })
@@ -33,6 +34,8 @@
       .catch(() => {
         notifications.danger($LL.mfaGenerateFailed());
       });
+
+    focusInput?.focus();
   });
 
   function onSubmit(e: Event) {
@@ -53,11 +56,6 @@
   }
 
   let submitDisabled = $derived(passcode === '');
-
-  let focusInput: any = $state();
-  onMount(() => {
-    focusInput?.focus();
-  });
 </script>
 
 <Modal

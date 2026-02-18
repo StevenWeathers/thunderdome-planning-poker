@@ -27,6 +27,7 @@
 
   let organizations = $state<Organization[]>([]);
   let selectedOrganization = $state('');
+  let focusInput: any = $state();
 
   onMount(() => {
     xfetch(`/api/users/${$user.id}/organizations?limit=1000&offset=0`)
@@ -37,6 +38,8 @@
       .catch(function () {
         notifications.danger($LL.getOrganizationsError());
       });
+
+    focusInput?.focus();
   });
 
   function handleSubmit(event: Event) {
@@ -64,11 +67,6 @@
         notifications.danger('failed to associate organization to subscription');
       });
   }
-
-  let focusInput: any = $state();
-  onMount(() => {
-    focusInput?.focus();
-  });
 </script>
 
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalAssociateOrganizationToSubscription()}>

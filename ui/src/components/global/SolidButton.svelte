@@ -50,7 +50,7 @@
   </button>
 {/if}
 
-<style>
+<style lang="postcss">
   .btn {
     @apply text-white;
     @apply inline-flex;

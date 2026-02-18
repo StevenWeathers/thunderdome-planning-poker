@@ -286,6 +286,11 @@
   };
 
   onMount(() => {
+    if (!$user.id) {
+      router.route(`${loginOrRegister}/battle/${battleId}`);
+      return;
+    }
+
     ws = new Sockette(`${getWebsocketAddress()}/api/arena/${battleId}`, {
       timeout: 2e3,
       maxAttempts: 15,
@@ -325,7 +330,7 @@
     }
   });
 
-  const sendSocketEvent = (type, value) => {
+  const sendSocketEvent = (type: string, value: any) => {
     ws.send(
       JSON.stringify({
         type,
@@ -352,7 +357,7 @@
   };
 
   // Determine if the warrior has voted on active Plan yet
-  function didVote(warriorId) {
+  function didVote(warriorId: string) {
     if (pokerGame.activePlanId === '' || (pokerGame.votingLocked && pokerGame.hideVoterIdentity)) {
       return false;
     }
@@ -363,7 +368,7 @@
   }
 
   // Determine if we are showing users vote
-  function showVote(warriorId) {
+  function showVote(warriorId: string) {
     if (pokerGame.hideVoterIdentity || pokerGame.activePlanId === '' || pokerGame.votingLocked === false) {
       return '';
     }
@@ -375,7 +380,7 @@
 
   // get highest vote from active story
   function getHighestVote() {
-    const voteCounts = {};
+    const voteCounts: Record<string, number> = {};
     points.forEach(p => {
       voteCounts[p] = 0;
     });
@@ -435,13 +440,13 @@
     showDeleteGame = !showDeleteGame;
   };
 
-  function handleGameEdit(revisedBattle) {
+  function handleGameEdit(revisedBattle: any) {
     sendSocketEvent('revise_battle', JSON.stringify(revisedBattle));
     toggleEditGame();
     pokerGame.leaderCode = revisedBattle.leaderCode;
   }
 
-  function authBattle(joinPasscode) {
+  function authBattle(joinPasscode: string) {
     sendSocketEvent('auth_game', joinPasscode);
   }
 
@@ -449,17 +454,10 @@
     showEndGameModal = !showEndGameModal;
   }
 
-  function handleEndGame({ endGameReason }) {
+  function handleEndGame({ endGameReason }: any) {
     sendSocketEvent('end_game', JSON.stringify({ endReason: endGameReason }));
     toggleEndGame();
   }
-
-  onMount(() => {
-    if (!$user.id) {
-      router.route(`${loginOrRegister}/battle/${battleId}`);
-      return;
-    }
-  });
 </script>
 
 <svelte:head>
