@@ -23,9 +23,9 @@
     "prettier": "prettier --check --plugin prettier-plugin-svelte \"**/*.{ts,json,css,html,svelte}\"",
     "prettier:fix": "prettier --write --plugin prettier-plugin-svelte \"**/*.{ts,json,css,html,svelte}\"",
     "format": "npm run prettier:fix",
-    "test": "jest ui/src",
-    "test:watch": "npm run test -- --watch",
-    "test:snapshot": "npm test -- -u",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:snapshot": "vitest run -u",
     "locales": "npx typesafe-i18n --no-watch",
     "locales:watch": "typesafe-i18n"
   },
@@ -45,13 +45,16 @@
   "devDependencies": {
     "@jest/globals": "^30.2.0",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/svelte": "^5.3.1",
     "@tsconfig/svelte": "^5.0.4",
     "@types/js-cookie": "^3.0.3",
+    "@vitest/browser": "^4.0.18",
+    "@vitest/browser-playwright": "^4.0.18",
+    "@vitest/browser-preview": "^4.0.18",
+    "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.4.14",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
+    "playwright": "^1.58.2",
     "postcss": "^8.4.31",
     "postcss-import": "^16.1.1",
     "postcss-nesting": "^14.0.0",
@@ -65,7 +68,9 @@
     "tslib": "^2.6.0",
     "typesafe-i18n": "^5.24.3",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18",
+    "vitest-browser-svelte": "^2.0.2"
   },
   "prettier": {
     "singleQuote": true,

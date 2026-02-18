@@ -25,3 +25,31 @@ jobs:
 
       - name: Test
         run: go test `go list ./... | grep -v docs/swagger`
+
+  ui:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ "24.13" ]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        working-directory: ui
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: ui
+        run: npx playwright install --with-deps
+
+      - name: Run UI tests
+        working-directory: ui
+        run: npm test

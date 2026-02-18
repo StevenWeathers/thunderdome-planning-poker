@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 
 import {
   nameLenError,
@@ -74,53 +74,53 @@ describe('Validation Utils', () => {
 
   describe('validateUserIsAdmin', () => {
     it('should return true for ADMIN rank user', () => {
-      expect(validateUserIsAdmin({ rank: 'ADMIN' })).toEqual(true);
+      expect(validateUserIsAdmin({ rank: 'ADMIN' } as any)).toEqual(true);
     });
 
     it('should return true for GENERAL rank user', () => {
-      expect(validateUserIsAdmin({ rank: 'GENERAL' })).toEqual(true);
+      expect(validateUserIsAdmin({ rank: 'GENERAL' } as any)).toEqual(true);
     });
 
     it('should return false for REGISTERED rank user', () => {
-      expect(validateUserIsAdmin({ rank: 'REGISTERED' })).toEqual(false);
+      expect(validateUserIsAdmin({ rank: 'REGISTERED' } as any)).toEqual(false);
     });
 
     it('should return false for CORPORAL rank user', () => {
-      expect(validateUserIsAdmin({ rank: 'CORPORAL' })).toEqual(false);
+      expect(validateUserIsAdmin({ rank: 'CORPORAL' } as any)).toEqual(false);
     });
 
     it('should return false for GUEST rank user', () => {
-      expect(validateUserIsAdmin({ rank: 'GUEST' })).toEqual(false);
+      expect(validateUserIsAdmin({ rank: 'GUEST' } as any)).toEqual(false);
     });
 
     it('should return false for PRIVATE rank user', () => {
-      expect(validateUserIsAdmin({ rank: 'PRIVATE' })).toEqual(false);
+      expect(validateUserIsAdmin({ rank: 'PRIVATE' } as any)).toEqual(false);
     });
   });
 
   describe('validateUserIsRegistered', () => {
     it('should return true for ADMIN rank user', () => {
-      expect(validateUserIsRegistered({ rank: 'ADMIN' })).toEqual(true);
+      expect(validateUserIsRegistered({ rank: 'ADMIN' } as any)).toEqual(true);
     });
 
     it('should return true for GENERAL rank user', () => {
-      expect(validateUserIsRegistered({ rank: 'GENERAL' })).toEqual(true);
+      expect(validateUserIsRegistered({ rank: 'GENERAL' } as any)).toEqual(true);
     });
 
     it('should return true for REGISTERED rank user', () => {
-      expect(validateUserIsRegistered({ rank: 'REGISTERED' })).toEqual(true);
+      expect(validateUserIsRegistered({ rank: 'REGISTERED' } as any)).toEqual(true);
     });
 
     it('should return true for CORPORAL rank user', () => {
-      expect(validateUserIsRegistered({ rank: 'CORPORAL' })).toEqual(true);
+      expect(validateUserIsRegistered({ rank: 'CORPORAL' } as any)).toEqual(true);
     });
 
     it('should return false for GUEST rank user', () => {
-      expect(validateUserIsRegistered({ rank: 'GUEST' })).toEqual(false);
+      expect(validateUserIsRegistered({ rank: 'GUEST' } as any)).toEqual(false);
     });
 
     it('should return false for PRIVATE rank user', () => {
-      expect(validateUserIsRegistered({ rank: 'PRIVATE' })).toEqual(false);
+      expect(validateUserIsRegistered({ rank: 'PRIVATE' } as any)).toEqual(false);
     });
   });
 });
