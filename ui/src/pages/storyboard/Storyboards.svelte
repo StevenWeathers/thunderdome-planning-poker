@@ -22,9 +22,9 @@
 
   let storyboards = $state([]);
   const storyboardsPageLimit = 10;
-  let storyboardCount = $state(0);
-  let storyboardsPage = $state(1);
-  let loading = $state(true);
+  let storyboardCount: number = $state(0);
+  let storyboardsPage: number = $state(1);
+  let loading: boolean = $state(true);
 
   function getStoryboards() {
     const retrosOffset = (storyboardsPage - 1) * storyboardsPageLimit;
@@ -36,13 +36,13 @@
         storyboardCount = result.meta.count;
         loading = false;
       })
-      .catch(function (error) {
+      .catch(() => {
         notifications.danger($LL.getStoryboardsErrorMessage());
         loading = false;
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent<number>) => {
     storyboardsPage = evt.detail;
     getStoryboards();
   };

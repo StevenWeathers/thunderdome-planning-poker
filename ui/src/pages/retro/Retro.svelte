@@ -378,20 +378,20 @@
   };
 
   let showActionEdit = $state(false);
-  let selectedAction = $state(null);
-  const toggleActionEdit = id => () => {
+  let selectedAction: { id: string; content: string; completed: boolean } | null = $state(null);
+  const toggleActionEdit = (id: string | null) => () => {
     showActionEdit = !showActionEdit;
-    selectedAction = retro.actionItems.find(r => r.id === id);
+    selectedAction = retro.actionItems.find(r => r.id === id) || null;
   };
 
-  const handleUserReady = userId => () => {
+  const handleUserReady = (userId: string) => () => {
     sendSocketEvent(`user_ready`, userId);
   };
-  const handleUserUnReady = userId => () => {
+  const handleUserUnReady = (userId: string) => () => {
     sendSocketEvent(`user_unready`, userId);
   };
 
-  const handleItemGroupChange = (itemId, groupId) => {
+  const handleItemGroupChange = (itemId: string, groupId: string) => {
     sendSocketEvent(
       `group_item`,
       JSON.stringify({
@@ -401,7 +401,7 @@
     );
   };
 
-  const handleGroupNameChange = (groupId, name) => {
+  const handleGroupNameChange = (groupId: string, name: string) => {
     sendSocketEvent(
       `group_name_change`,
       JSON.stringify({
@@ -411,7 +411,7 @@
     );
   };
 
-  const handleActionItem = evt => {
+  const handleActionItem = (evt: Event) => {
     evt.preventDefault();
 
     sendSocketEvent(
@@ -423,7 +423,7 @@
     actionItem = '';
   };
 
-  const handleActionUpdate = (id, completed, content) => () => {
+  const handleActionUpdate = (id: string, completed: boolean, content: string) => () => {
     sendSocketEvent(
       'update_action',
       JSON.stringify({
@@ -434,12 +434,12 @@
     );
   };
 
-  const handleActionEdit = ({ id, content, completed }) => {
+  const handleActionEdit = ({ id, content, completed }: { id: string; content: string; completed: boolean }) => {
     handleActionUpdate(id, !completed, content)();
     toggleActionEdit(null)();
   };
 
-  const handleAssigneeAdd = (retroId, actionId, userId) => {
+  const handleAssigneeAdd = (retroId: string, actionId: string, userId: string) => {
     sendSocketEvent(
       'action_assignee_add',
       JSON.stringify({
@@ -448,7 +448,7 @@
       }),
     );
   };
-  const handleAssigneeRemove = (retroId, actionId, userId) => () => {
+  const handleAssigneeRemove = (retroId: string, actionId: string, userId: string) => () => {
     sendSocketEvent(
       'action_assignee_remove',
       JSON.stringify({
@@ -490,7 +490,7 @@
     );
   };
 
-  const handleVote = groupId => {
+  const handleVote = (groupId: string) => {
     sendSocketEvent(
       `group_vote`,
       JSON.stringify({
@@ -499,7 +499,7 @@
     );
   };
 
-  const handleVoteSubtract = groupId => {
+  const handleVoteSubtract = (groupId: string) => {
     sendSocketEvent(
       `group_vote_subtract`,
       JSON.stringify({
@@ -508,7 +508,7 @@
     );
   };
 
-  const handleAddFacilitator = userId => () => {
+  const handleAddFacilitator = (userId: string) => () => {
     sendSocketEvent(
       'add_facilitator',
       JSON.stringify({
@@ -517,7 +517,7 @@
     );
   };
 
-  const handleRemoveFacilitator = userId => () => {
+  const handleRemoveFacilitator = (userId: string) => () => {
     if (retro.facilitators.length === 1) {
       notifications.danger($LL.removeOnlyFacilitatorError());
       return;
@@ -531,7 +531,7 @@
     );
   };
 
-  function authRetro(joinPasscode) {
+  function authRetro(joinPasscode: string) {
     sendSocketEvent('auth_retro', joinPasscode);
   }
 
@@ -549,7 +549,7 @@
 
   let showBecomeFacilitator = $state(false);
 
-  function becomeFacilitator(facilitatorCode) {
+  function becomeFacilitator(facilitatorCode: string) {
     sendSocketEvent('self_facilitator', facilitatorCode);
     toggleBecomeFacilitator();
   }

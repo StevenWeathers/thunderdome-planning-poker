@@ -44,12 +44,12 @@
   $effect(() => {
     organization.id = organizationId;
   });
-  let role = $state('MEMBER');
+  let role: string = $state('MEMBER');
   let teams: Team[] = $state([]);
-  let showCreateTeam = $state(false);
-  let showDeleteTeam = $state(false);
+  let showCreateTeam: boolean = $state(false);
+  let showDeleteTeam: boolean = $state(false);
   let deleteTeamId = $state<string | null>(null);
-  let teamsPage = $state(1);
+  let teamsPage: number = $state(1);
 
   function toggleCreateTeam() {
     showCreateTeam = !showCreateTeam;
