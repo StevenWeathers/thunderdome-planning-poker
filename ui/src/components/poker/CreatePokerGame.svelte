@@ -52,8 +52,7 @@
   let departmentPokerSettings = {};
   let orgPokerSettings = {};
 
-  /** @type {TextInput} */
-  let battleNameTextInput = $state();
+  let battleNameTextInput: TextInput | null = $state(null);
 
   let checkedPointColor =
     'border-green-500 bg-green-50 text-green-700 dark:bg-lime-50 dark:text-lime-700 dark:border-lime-500';
@@ -289,7 +288,7 @@
     };
   };
 
-  const updatePointValues = event => {
+  const updatePointValues = (event: CustomEvent) => {
     const scale = event.detail;
     selectedEstimationScale = scale.id;
     allowedPointValues = scale.values;
@@ -316,7 +315,7 @@
     getPublicEstimateScales();
 
     // Focus the battle name input field
-    battleNameTextInput.focus();
+    battleNameTextInput?.focus();
   });
 </script>
 
@@ -426,7 +425,7 @@
     <SelectInput bind:value={pokerSettings.pointAverageRounding} id="averageRounding" name="averageRounding">
       {#each allowedPointAverages as item}
         <option value={item}>
-          {$LL.averageRoundingOptions[item]()}
+          {$LL.averageRoundingOptions[item as keyof typeof $LL.averageRoundingOptions]()}
         </option>
       {/each}
     </SelectInput>

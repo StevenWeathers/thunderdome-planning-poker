@@ -25,15 +25,15 @@
     sendSocketEvent = (event: string, value: any) => {},
   }: Props = $props();
 
-  function handleDndConsider(e) {
-    const groupIndex = e.target.dataset.groupindex;
+  function handleDndConsider(e: CustomEvent) {
+    const groupIndex = (e.target as HTMLElement).dataset.groupindex;
 
     groups[groupIndex].items = e.detail.items;
     groups = groups;
   }
 
-  function handleDndFinalize(e) {
-    const groupIndex = e.target.dataset.groupindex;
+  function handleDndFinalize(e: CustomEvent) {
+    const groupIndex = (e.target as HTMLElement).dataset.groupindex;
     const itemId = e.detail.info.id;
     const groupId = groups[groupIndex].id;
 
@@ -55,7 +55,7 @@
       use:dndzone={{
         items: group.items,
         type: 'item',
-        dropTargetStyle: '',
+        dropTargetStyle: {},
         dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
       }}
       onconsider={handleDndConsider}

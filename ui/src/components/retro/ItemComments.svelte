@@ -53,7 +53,7 @@
     userComment = '';
   }
 
-  const handleCommentDelete = commentId => () => {
+  const handleCommentDelete = (commentId: string) => () => {
     sendSocketEvent(
       'item_comment_delete',
       JSON.stringify({

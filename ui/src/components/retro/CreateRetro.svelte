@@ -68,7 +68,7 @@
     },
   ];
 
-  function createRetro(e) {
+  function createRetro(e: Event) {
     e.preventDefault();
     let endpoint = scope === 'project' ? `${apiPrefix}/retros` : `${apiPrefix}/users/${$user.id}/retros`;
 
@@ -106,7 +106,7 @@
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             notifications.danger(`${$LL.createRetroErrorMessage()} : ${result.error}`);
           });
         } else {
@@ -264,7 +264,7 @@
     });
   };
 
-  const updateSelectedTemplate = event => {
+  const updateSelectedTemplate = (event: Event) => {
     retroSettings.templateId = event.detail.id;
   };
 

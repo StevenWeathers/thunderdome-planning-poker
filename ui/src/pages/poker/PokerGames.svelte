@@ -21,10 +21,10 @@
   let { xfetch, notifications, router }: Props = $props();
 
   const battlesPageLimit = 10;
-  let battleCount = $state(0);
-  let battlesPage = $state(1);
+  let battleCount: number = $state(0);
+  let battlesPage: number = $state(1);
   let battles = $state([]);
-  let loading = $state(true);
+  let loading: boolean = $state(true);
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
@@ -42,7 +42,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent<number>) => {
     battlesPage = evt.detail;
     getBattles();
   };

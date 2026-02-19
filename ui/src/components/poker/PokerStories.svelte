@@ -97,7 +97,7 @@
     showImport = !showImport;
   };
 
-  const toggleAddPlan = planId => () => {
+  const toggleAddPlan = (planId: string | null) => () => {
     if (planId) {
       selectedPlan = plans.find(p => p.id === planId);
     } else {
@@ -106,7 +106,7 @@
     showAddPlan = !showAddPlan;
   };
 
-  const togglePlanView = planId => () => {
+  const togglePlanView = (planId: string | null) => () => {
     if (planId) {
       selectedPlan = plans.find(p => p.id === planId);
     } else {
@@ -119,7 +119,7 @@
     sendSocketEvent('add_plan', JSON.stringify(newPlan));
   };
 
-  const activatePlan = id => () => {
+  const activatePlan = (id: string) => () => {
     sendSocketEvent('activate_plan', id);
   };
 
@@ -127,11 +127,11 @@
     sendSocketEvent('revise_plan', JSON.stringify(updatedPlan));
   };
 
-  const handlePlanDeletion = planId => () => {
+  const handlePlanDeletion = (planId: string) => () => {
     sendSocketEvent('burn_plan', planId);
   };
 
-  const toggleShow = show => () => {
+  const toggleShow = (show: string) => () => {
     storysShow = show;
   };
 
@@ -145,11 +145,11 @@
   let unpointedPlans = $derived(plans.filter(p => p.points === ''));
 
   // event handlers
-  function handleDndConsider(e) {
+  function handleDndConsider(e: CustomEvent) {
     plans = e.detail.items;
   }
 
-  function handleDndFinalize(e) {
+  function handleDndFinalize(e: CustomEvent) {
     const storyId = e.detail.info.id;
 
     plans = e.detail.items;

@@ -50,7 +50,7 @@
       });
   }
 
-  const importStory = idx => () => {
+  const importStory = (idx: number) => () => {
     handleImport(game.plans[idx]);
   };
 

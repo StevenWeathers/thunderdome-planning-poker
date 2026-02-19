@@ -31,7 +31,7 @@
   /** @type {TextInput} */
   let storyboardNameTextInput = $state();
 
-  function createStoryboard(e) {
+  function createStoryboard(e: SubmitEvent) {
     e.preventDefault();
     let endpoint = scope === 'project' ? `${apiPrefix}/storyboards` : `${apiPrefix}/users/${$user.id}/storyboards`;
     const body = {
@@ -51,7 +51,7 @@
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             notifications.danger(`Error encountered creating storyboard : ${result.error}`);
           });
         } else {

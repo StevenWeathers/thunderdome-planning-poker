@@ -47,7 +47,7 @@
     },
   ];
 
-  function saveRetro(e) {
+  function saveRetro(e: Event) {
     e.preventDefault();
 
     const retro = {

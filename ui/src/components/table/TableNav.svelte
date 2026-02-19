@@ -19,13 +19,13 @@
     createBtnTestId = '',
     searchEnabled = false,
     searchPlaceholder = '',
-    searchHandler = term => {},
+    searchHandler = (term: string) => {},
     children,
   }: Props = $props();
 
   let searchTerm = $state('');
 
-  function onSearchSubmit(e) {
+  function onSearchSubmit(e: SubmitEvent) {
     e.preventDefault();
 
     searchHandler(searchTerm);

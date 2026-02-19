@@ -1,6 +1,7 @@
 <script lang="ts">
   import { activeAlerts, dismissedAlerts } from '../../stores';
   import { X } from '@lucide/svelte';
+  import type { GlobalAlert } from '../../types/global-alerts';
 
   interface Props {
     registered?: boolean;
@@ -8,8 +9,8 @@
 
   let { registered = false }: Props = $props();
 
-  let alerts = $state([]);
-  let dismissed = $state([]);
+  let alerts = $state<GlobalAlert[]>([]);
+  let dismissed = $state<string[]>([]);
 
   activeAlerts.subscribe(a => {
     alerts = a;
@@ -18,11 +19,14 @@
     dismissed = d;
   });
 
-  const dismissAlert = alertId => () => {
-    dismissedAlerts.dismiss([...alerts], [...$dismissedAlerts, alertId]);
+  const dismissAlert = (alertId: string) => () => {
+    dismissedAlerts.dismiss(
+      alerts.map(a => a.id),
+      [...dismissed, alertId],
+    );
   };
 
-  const showAlert = (dismissedAlerts, isRegistered, alert) => {
+  const showAlert = (dismissedAlerts: string[], isRegistered: boolean, alert: GlobalAlert) => {
     const meetsAllowDesmissed = alert.allowDismiss ? !dismissedAlerts.includes(alert.id) : true;
     const meetsRegisteredOnly = alert.registeredOnly ? isRegistered : true;
 

@@ -66,7 +66,7 @@
       });
   }
 
-  const handleCommentDelete = commentId => () => {
+  const handleCommentDelete = (commentId: string) => () => {
     xfetch(`/api/retros/${selectedAction.retroId}/actions/${selectedAction.id}/comments/${commentId}`, {
       method: 'DELETE',
     })

@@ -52,7 +52,7 @@
     sendSocketEvent('jab_warrior', warrior.id);
   }
 
-  function becomeFacilitator(leaderCode) {
+  function becomeFacilitator(leaderCode: string) {
     sendSocketEvent('become_leader', leaderCode);
     toggleBecomeFacilitator();
   }

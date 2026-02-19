@@ -21,10 +21,10 @@
   let { xfetch, notifications, router }: Props = $props();
 
   let retros = $state([]);
-  const retrosPageLimit = 10;
-  let retroCount = $state(0);
-  let retrosPage = $state(1);
-  let loading = $state(true);
+  const retrosPageLimit: number = 10;
+  let retroCount: number = $state(0);
+  let retrosPage: number = $state(1);
+  let loading: boolean = $state(true);
 
   function getRetros() {
     const retrosOffset = (retrosPage - 1) * retrosPageLimit;
@@ -42,7 +42,7 @@
       });
   }
 
-  const changePage = evt => {
+  const changePage = (evt: CustomEvent<number>) => {
     retrosPage = evt.detail;
     getRetros();
   };

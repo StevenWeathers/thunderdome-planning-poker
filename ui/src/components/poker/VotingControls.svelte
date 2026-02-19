@@ -44,7 +44,7 @@
     sendSocketEvent('activate_plan', planId);
   };
 
-  function handleSubmit(event) {
+  function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
 
     sendSocketEvent(

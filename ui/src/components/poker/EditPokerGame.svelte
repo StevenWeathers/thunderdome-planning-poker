@@ -65,10 +65,10 @@
       });
   }
 
-  function saveBattle(e) {
+  function saveBattle(e: Event) {
     e.preventDefault();
 
-    const pointValuesAllowed = allowedPointValues.filter(pv => {
+    const pointValuesAllowed = allowedPointValues.filter((pv: string) => {
       return points.includes(pv);
     });
 
@@ -145,7 +145,7 @@
         <SelectInput bind:value={pointAverageRounding} id="averageRounding" name="averageRounding">
           {#each allowedPointAverages as item}
             <option value={item}>
-              {$LL.averageRoundingOptions[item]()}
+              {$LL.averageRoundingOptions[item as keyof typeof $LL.averageRoundingOptions]()}
             </option>
           {/each}
         </SelectInput>

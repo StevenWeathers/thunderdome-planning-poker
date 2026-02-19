@@ -9,6 +9,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { SessionUser } from '../../types/user';
 
   const dispatch = createEventDispatcher();
 
@@ -60,7 +61,7 @@
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
               user.update({
                 id: $user.id,
@@ -73,7 +74,7 @@
                 locale: $user.locale,
                 theme: $user.theme,
                 subscribed: false,
-              });
+              } as SessionUser);
               notifications.danger('subscription(s) expired');
             } else {
               notifications.danger('error getting jira instances');
@@ -85,7 +86,7 @@
       });
   }
 
-  function handleJQLSearch(event) {
+  function handleJQLSearch(event: Event) {
     event.preventDefault();
 
     if (searchJQL === '') {
@@ -122,7 +123,7 @@
                 locale: $user.locale,
                 theme: $user.theme,
                 subscribed: false,
-              });
+              } as SessionUser);
               jqlError = 'subscription(s) expired';
             } else {
               jqlError = `Jira JQL Search Error: ${result.error}`;
@@ -147,7 +148,7 @@
     return str.endsWith('/') ? str.slice(0, -1) : str;
   }
 
-  function importStory(idx) {
+  function importStory(idx: number) {
     return function () {
       const story = jiraStories[idx];
       handleImport({

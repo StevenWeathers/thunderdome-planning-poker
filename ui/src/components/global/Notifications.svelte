@@ -12,8 +12,8 @@
     default: '#aaaaaa',
   };
 
-  function animateOut(node, { delay = 0, duration = 300 }) {
-    function vhTOpx(value) {
+  function animateOut(node: HTMLElement, { delay = 0, duration = 300 }: { delay?: number; duration?: number }) {
+    function vhTOpx(value: number) {
       var w = window,
         d = document,
         e = d.documentElement,
@@ -30,8 +30,8 @@
     };
   }
 
-  function createToast(msg, theme, timeout) {
-    const background = themes[theme] || themes['default'];
+  function createToast(msg: string, theme: string, timeout: number) {
+    const background = themes[theme as keyof typeof themes] || themes['default'];
 
     timeout = timeout || defaultTimeout;
 
@@ -46,27 +46,27 @@
     count = count + 1;
   }
 
-  export function removeToast(id) {
+  export function removeToast(id: number) {
     toasts = toasts.filter(t => t.id != id);
   }
 
-  export function show(msg, timeout, theme = 'default') {
+  export function show(msg: string, timeout: number, theme: string = 'default') {
     createToast(msg, theme, timeout);
   }
 
-  export function danger(msg, timeout) {
+  export function danger(msg: string, timeout: number) {
     show(msg, timeout, 'danger');
   }
 
-  export function warning(msg, timeout) {
+  export function warning(msg: string, timeout: number) {
     show(msg, timeout, 'warning');
   }
 
-  export function info(msg, timeout) {
+  export function info(msg: string, timeout: number) {
     show(msg, timeout, 'info');
   }
 
-  export function success(msg, timeout) {
+  export function success(msg: string, timeout: number) {
     show(msg, timeout, 'success');
   }
 </script>

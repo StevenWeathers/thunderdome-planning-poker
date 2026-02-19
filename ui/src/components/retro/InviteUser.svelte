@@ -11,7 +11,7 @@
   let { hostname = '', retroId = '' }: Props = $props();
 
   function copyRetrospectiveLink() {
-    const retrospectiveLink = document.getElementById('RetrospectiveLink');
+    const retrospectiveLink: HTMLInputElement = document.getElementById('RetrospectiveLink') as HTMLInputElement;
     retrospectiveLink.select();
     document.execCommand('copy');
   }

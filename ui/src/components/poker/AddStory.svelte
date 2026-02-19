@@ -69,14 +69,13 @@
     priority = $bindable(99),
   }: Props = $props();
 
-  /** @type {TextInput} */
-  let planNameTextInput = $state();
+  let planNameTextInput: TextInput | null = $state(null);
 
   const isAbsolute = new RegExp('^([a-z]+://|//)', 'i');
   let descriptionExpanded = $state(false);
   let acceptanceExpanded = $state(false);
 
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
     let invalidPlan = false;
 
@@ -109,7 +108,7 @@
 
   // Focus the plan name input field when the modal is opened
   onMount(() => {
-    planNameTextInput.focus();
+    planNameTextInput?.focus();
   });
 </script>
 
@@ -173,7 +172,7 @@
     <div>
       <div class="font-bold mb-2">
         <button
-          onclick={e => {
+          onclick={(e: Event) => {
             e.preventDefault();
             descriptionExpanded = !descriptionExpanded;
           }}
@@ -193,7 +192,7 @@
               content={description}
               placeholder={$LL.planDescriptionPlaceholder()}
               id="storyDescription"
-              handleTextChange={c => (description = c)}
+              handleTextChange={(c: string) => (description = c)}
             />
           </div>
         </div>
@@ -202,7 +201,7 @@
     <div>
       <div class="font-bold mb-2">
         <button
-          onclick={e => {
+          onclick={(e: Event) => {
             e.preventDefault();
             acceptanceExpanded = !acceptanceExpanded;
           }}
@@ -222,7 +221,7 @@
               content={acceptanceCriteria}
               placeholder={$LL.planAcceptanceCriteriaPlaceholder()}
               id="acceptanceCriteria"
-              handleTextChange={c => (acceptanceCriteria = c)}
+              handleTextChange={(c: string) => (acceptanceCriteria = c)}
             />
           </div>
         </div>

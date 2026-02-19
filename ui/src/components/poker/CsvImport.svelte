@@ -16,8 +16,9 @@
 
   let plans = [];
 
-  function uploadFile() {
-    let file = this.files[0];
+  function uploadFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
     if (!file) {
       return;
     }

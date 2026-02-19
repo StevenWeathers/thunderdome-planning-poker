@@ -21,10 +21,10 @@
 
   let {
     toggleEdit = () => {},
-    handleEdit = action => {},
+    handleEdit = (action: any) => {},
     handleDelete = () => {},
-    handleAssigneeAdd = (retroId, actionId, userId) => {},
-    handleAssigneeRemove = (retroId, actionId, userId) => () => {},
+    handleAssigneeAdd = (retroId: string, actionId: string, userId: string) => {},
+    handleAssigneeRemove = (retroId: string, actionId: string, userId: string) => () => {},
     assignableUsers = [],
     action = {
       id: '',
@@ -51,7 +51,7 @@
     editAction.completed = action.completed;
   });
 
-  const handleSubmit = e => {
+  const handleSubmit = (e: Event) => {
     e.preventDefault();
 
     handleEdit(editAction);

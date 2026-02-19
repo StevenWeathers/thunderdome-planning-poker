@@ -35,7 +35,7 @@
   let selectedPersona = $state('');
   let focusInput: any = $state();
 
-  function handleSubmit(event) {
+  function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
 
     const c = {

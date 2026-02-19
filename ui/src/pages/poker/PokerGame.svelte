@@ -93,7 +93,7 @@
 
   let ws: any;
 
-  const onSocketMessage = function (evt) {
+  const onSocketMessage = function (evt: MessageEvent) {
     isLoading = false;
     const parsedEvent = JSON.parse(evt.data);
 
@@ -339,7 +339,7 @@
     );
   };
 
-  const handleVote = event => {
+  const handleVote = (event: CustomEvent<{ point: string }>) => {
     vote = event.detail.point;
     const voteValue = {
       planId: pokerGame.activePlanId,

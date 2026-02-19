@@ -46,3 +46,26 @@ export type SupportTicket = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type SessionUser = {
+  avatar?: string;
+  company?: string;
+  country?: string;
+  createdDate: string;
+  disabled?: boolean;
+  email?: string;
+  gravatarHash?: string;
+  picture?: string;
+  id: string;
+  jobTitle?: string;
+  lastActive: string;
+  locale: string;
+  mfaEnabled?: boolean;
+  name: string;
+  notificationsEnabled?: boolean;
+  rank: string;
+  updatedDate: string;
+  verified?: boolean;
+  theme?: string;
+  subscribed: boolean;
+};
