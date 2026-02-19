@@ -2,6 +2,8 @@ import { derived, writable } from 'svelte/store';
 import Cookies from 'js-cookie';
 import { AppConfig, rtlLanguages } from './config';
 import { locale } from './i18n/i18n-svelte';
+import type { GlobalAlert } from './types/global-alerts';
+import type { SessionUser } from './types/user';
 
 const { PathPrefix, CookieName } = AppConfig;
 const cookiePath = `${PathPrefix}/`;
@@ -15,7 +17,7 @@ function initWarrior() {
 
   return {
     subscribe,
-    create: warrior => {
+    create: (warrior: SessionUser) => {
       Cookies.set(CookieName, JSON.stringify(warrior), {
         expires: 365,
         SameSite: 'strict',
@@ -23,7 +25,7 @@ function initWarrior() {
       });
       set(warrior);
     },
-    update: warrior => {
+    update: (warrior: SessionUser) => {
       Cookies.set(CookieName, JSON.stringify(warrior), {
         expires: 365,
         SameSite: 'strict',
@@ -46,7 +48,7 @@ function initActiveAlerts() {
 
   return {
     subscribe,
-    update: alerts => {
+    update: (alerts: GlobalAlert[]) => {
       update(a => (a = alerts));
     },
   };
@@ -56,14 +58,15 @@ export const activeAlerts = initActiveAlerts();
 
 function initDismissedAlerts() {
   const dismissKey = 'dismissed_alerts';
-  const dismissedAlerts = JSON.parse(localStorage.getItem(dismissKey)) || [];
+  const dismissedAlerts = JSON.parse(localStorage.getItem(dismissKey) || '[]') as string[];
   const { subscribe, update } = writable(dismissedAlerts);
 
   return {
     subscribe,
-    dismiss: (actives, dismisses) => {
-      const validAlerts = actives.map((prev, alert) => alert.id);
-      let alertsToDismiss = [...dismisses.filter(alert => validAlerts.includes(alert.id))];
+    dismiss: (actives: string[], dismisses: string[]) => {
+      // Only store valid alert IDs
+      const validAlerts = actives;
+      let alertsToDismiss = [...dismisses.filter(id => validAlerts.includes(id))];
       localStorage.setItem(dismissKey, JSON.stringify(alertsToDismiss));
       update((a: any) => (a = alertsToDismiss));
     },

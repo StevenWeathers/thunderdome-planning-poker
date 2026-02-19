@@ -12,7 +12,7 @@
   import { AppConfig, appRoutes } from './config';
   import apiclient from './apiclient';
   import type { ApiClient } from './types/apiclient';
-  import type { User } from './types/user';
+  import type { SessionUser } from './types/user';
   import type { NotificationService } from './types/notifications';
   import { dir, user } from './stores';
 
@@ -94,7 +94,7 @@
   loadLocale(selectedLocale);
   setLocale(selectedLocale);
 
-  let activeWarrior: User | undefined = $state();
+  let activeWarrior: SessionUser | undefined = $state();
   user.subscribe((w: any) => {
     activeWarrior = w;
 

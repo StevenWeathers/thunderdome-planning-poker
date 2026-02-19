@@ -7,6 +7,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { SessionUser } from '../../types/user';
 
   interface Props {
     router: any;
@@ -80,7 +81,7 @@
           name: newWarrior.name,
           rank: newWarrior.rank,
           notificationsEnabled: newWarrior.notificationsEnabled,
-        });
+        } as SessionUser);
 
         router.route(targetPage(), true);
       })
@@ -108,7 +109,7 @@
           rank: newWarrior.rank,
           notificationsEnabled: newWarrior.notificationsEnabled,
           subscribed: false,
-        });
+        } as SessionUser);
 
         router.route(targetPage(), true);
       })

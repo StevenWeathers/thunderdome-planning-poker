@@ -8,6 +8,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { SessionUser } from '../../types/user';
 
   interface Props {
     registerLink?: string;
@@ -83,7 +84,7 @@
           mfaUser = newUser;
           mfaSessionId = result.data.sessionId;
         } else {
-          user.create(newUser);
+          user.create(newUser as SessionUser);
           if (u.theme !== 'auto') {
             localStorage.setItem('theme', u.theme);
           } else {

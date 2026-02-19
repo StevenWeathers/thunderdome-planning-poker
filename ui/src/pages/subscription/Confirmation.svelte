@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { user } from '../../stores';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
+  import type { SessionUser } from '../../types/user';
 
   interface Props {
     router: any;
@@ -28,7 +29,7 @@
       locale: $user.locale,
       theme: $user.theme,
       subscribed: true,
-    });
+    } as SessionUser);
   });
 </script>
 

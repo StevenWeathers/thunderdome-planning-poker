@@ -8,6 +8,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import { onMount } from 'svelte';
+  import type { SessionUser } from '../../types/user';
 
   interface Props {
     handleCreate?: any;
@@ -75,7 +76,7 @@
                 locale: $user.locale,
                 theme: $user.theme,
                 subscribed: false,
-              });
+              } as SessionUser);
               notifications.danger('subscription(s) expired');
             } else {
               notifications.danger('failed to create jira instance');

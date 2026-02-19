@@ -18,6 +18,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { SessionUser } from '../../types/user';
 
   interface ApiKey {
     id: string;
@@ -102,7 +103,7 @@
           avatar: p.avatar,
           notificationsEnabled: p.notificationsEnabled,
           locale: p.locale,
-        });
+        } as SessionUser);
 
         if (p.theme !== 'auto') {
           localStorage.setItem('theme', p.theme);
@@ -166,7 +167,7 @@
                 locale: $user.locale,
                 theme: $user.theme,
                 subscribed: false,
-              });
+              } as SessionUser);
               notifications.danger('subscription(s) expired');
             } else {
               notifications.danger('error getting jira instances');
@@ -265,7 +266,7 @@
                   locale: $user.locale,
                   theme: $user.theme,
                   subscribed: false,
-                });
+                } as SessionUser);
                 notifications.danger('subscription(s) expired');
               } else {
                 notifications.danger('Failed to delete Jira instance');
