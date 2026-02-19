@@ -172,7 +172,7 @@
     <div>
       <div class="font-bold mb-2">
         <button
-          onclick={e => {
+          onclick={(e: Event) => {
             e.preventDefault();
             descriptionExpanded = !descriptionExpanded;
           }}
@@ -192,7 +192,7 @@
               content={description}
               placeholder={$LL.planDescriptionPlaceholder()}
               id="storyDescription"
-              handleTextChange={c => (description = c)}
+              handleTextChange={(c: string) => (description = c)}
             />
           </div>
         </div>
@@ -201,7 +201,7 @@
     <div>
       <div class="font-bold mb-2">
         <button
-          onclick={e => {
+          onclick={(e: Event) => {
             e.preventDefault();
             acceptanceExpanded = !acceptanceExpanded;
           }}
@@ -221,7 +221,7 @@
               content={acceptanceCriteria}
               placeholder={$LL.planAcceptanceCriteriaPlaceholder()}
               id="acceptanceCriteria"
-              handleTextChange={c => (acceptanceCriteria = c)}
+              handleTextChange={(c: string) => (acceptanceCriteria = c)}
             />
           </div>
         </div>

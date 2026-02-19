@@ -70,7 +70,7 @@
 
   let showRetroActionComments = $state(false);
   let selectedRetroAction = $state(null);
-  const toggleRetroActionComments = id => () => {
+  const toggleRetroActionComments = (id: string) => () => {
     showRetroActionComments = !showRetroActionComments;
     selectedRetroAction = id;
   };

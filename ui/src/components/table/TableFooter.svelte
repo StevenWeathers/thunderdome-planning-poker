@@ -12,7 +12,7 @@
 
   let arr_pages = [];
 
-  function buildArr(c, n) {
+  function buildArr(c: number, n: number) {
     if (n <= 7) {
       return [...Array(n)].map((_, i) => i + 1);
     } else {
@@ -43,7 +43,7 @@
     current = current || 1;
   }
 
-  function setCurrent(i) {
+  function setCurrent(i: number) {
     if (isNaN(i)) return;
     current = i;
     dispatch('navigate', current);

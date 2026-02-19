@@ -19,7 +19,7 @@
     createBtnTestId = '',
     searchEnabled = false,
     searchPlaceholder = '',
-    searchHandler = term => {},
+    searchHandler = (term: string) => {},
     children,
   }: Props = $props();
 

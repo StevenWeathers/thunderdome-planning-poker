@@ -24,7 +24,7 @@
 
   let focusInput: any = $state();
 
-  function saveStoryboard(e) {
+  function saveStoryboard(e: Event) {
     e.preventDefault();
 
     const storyboard = {

@@ -68,7 +68,7 @@
     },
   ];
 
-  function createRetro(e) {
+  function createRetro(e: Event) {
     e.preventDefault();
     let endpoint = scope === 'project' ? `${apiPrefix}/retros` : `${apiPrefix}/users/${$user.id}/retros`;
 
@@ -264,7 +264,7 @@
     });
   };
 
-  const updateSelectedTemplate = event => {
+  const updateSelectedTemplate = (event: Event) => {
     retroSettings.templateId = event.detail.id;
   };
 

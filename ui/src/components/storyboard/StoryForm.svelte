@@ -242,7 +242,7 @@
               content={story.content}
               placeholder="Enter story content"
               id="storyDescription"
-              handleTextChange={c => {
+              handleTextChange={(c: string) => {
                 updateContent(c);
               }}
             />
