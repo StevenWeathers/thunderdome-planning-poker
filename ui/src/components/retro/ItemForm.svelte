@@ -32,7 +32,7 @@
     columnColors = {},
   }: Props = $props();
 
-  const handleFormSubmit = evt => {
+  const handleFormSubmit = (evt: Event) => {
     evt.preventDefault();
 
     sendSocketEvent(

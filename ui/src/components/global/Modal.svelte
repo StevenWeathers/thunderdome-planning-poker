@@ -21,11 +21,11 @@
     ariaDescribedby,
   }: Props = $props();
 
-  const handle_keydown = e => {
+  const handle_keydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') return closeModal();
   };
 
-  let modalElement: any;
+  let modalElement: HTMLElement;
   let focusTrap: any;
 
   onMount(() => {

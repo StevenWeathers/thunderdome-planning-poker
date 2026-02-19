@@ -24,6 +24,15 @@
 
 {#each groups as group, i (group.id)}
   {#if group.items.length > 0}
-    <RetroFeedbackGroup {phase} {group} {users} {isFacilitator} {sendSocketEvent} {columnColors} />
+    <RetroFeedbackGroup
+      {phase}
+      {group}
+      {users}
+      {isFacilitator}
+      {sendSocketEvent}
+      {columnColors}
+      handleVote={() => {}}
+      handleVoteSubtract={() => {}}
+    />
   {/if}
 {/each}

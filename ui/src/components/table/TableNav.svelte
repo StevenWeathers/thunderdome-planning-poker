@@ -25,7 +25,7 @@
 
   let searchTerm = $state('');
 
-  function onSearchSubmit(e) {
+  function onSearchSubmit(e: SubmitEvent) {
     e.preventDefault();
 
     searchHandler(searchTerm);

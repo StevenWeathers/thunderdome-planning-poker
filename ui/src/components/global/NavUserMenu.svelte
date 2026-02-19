@@ -10,6 +10,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { User as UserType } from '../../types/user';
 
   interface Props {
     currentPage: any;
@@ -20,7 +21,7 @@
 
   let { currentPage, notifications, router, xfetch }: Props = $props();
 
-  let profile = $state({});
+  let profile: UserType = $state({} as UserType);
 
   function goToProfile(toggleSubmenu?: () => void) {
     return () => {
@@ -60,7 +61,7 @@
         .then(function () {
           user.delete();
           localStorage.removeItem('theme');
-          window.setTheme();
+          (window as any).setTheme();
           toggleSubmenu?.();
           router.route(appRoutes.landing, true);
         })

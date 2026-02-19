@@ -69,14 +69,13 @@
     priority = $bindable(99),
   }: Props = $props();
 
-  /** @type {TextInput} */
-  let planNameTextInput = $state();
+  let planNameTextInput: TextInput | null = $state(null);
 
   const isAbsolute = new RegExp('^([a-z]+://|//)', 'i');
   let descriptionExpanded = $state(false);
   let acceptanceExpanded = $state(false);
 
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
     let invalidPlan = false;
 
@@ -109,7 +108,7 @@
 
   // Focus the plan name input field when the modal is opened
   onMount(() => {
-    planNameTextInput.focus();
+    planNameTextInput?.focus();
   });
 </script>
 

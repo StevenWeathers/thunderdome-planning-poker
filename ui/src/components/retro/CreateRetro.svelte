@@ -106,7 +106,7 @@
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
-          error[1].json().then(function (result) {
+          error[1].json().then(function (result: any) {
             notifications.danger(`${$LL.createRetroErrorMessage()} : ${result.error}`);
           });
         } else {

@@ -14,6 +14,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { SessionUser } from '../../types/user';
 
   interface Props {
     xfetch: ApiClient;
@@ -64,7 +65,7 @@
           notificationsEnabled: u.notificationsEnabled,
         };
 
-        user.create(newUser);
+        user.create(newUser as SessionUser);
         setupI18n(newUser.locale);
         router.route(appRoutes.games, true);
       })

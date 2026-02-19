@@ -51,11 +51,7 @@
   let users = $state([]);
   let usersPage = 1;
 
-  let organizationRole = '';
-  let departmentRole = '';
-  let teamRole = '';
   let isAdmin = false;
-  let isTeamMember = false;
 
   function getTeamOpenActionItems() {
     const offset = (retroActionsPage - 1) * retroActionsPageLimit;
@@ -80,10 +76,10 @@
   };
 
   let showRetroActionEdit = $state(false);
-  let selectedAction = $state(null);
-  const toggleRetroActionEdit = (retroId, id) => () => {
+  let selectedAction: string | null = $state(null);
+  const toggleRetroActionEdit = (retroId: string | null, id: string | null) => () => {
     showRetroActionEdit = !showRetroActionEdit;
-    selectedAction = retroId !== null ? actionItems.find(r => r.id === id) : null;
+    selectedAction = retroId !== null ? (actionItems.find(r => r.id === id) ?? null) : null;
   };
 
   function handleRetroActionEdit(action) {
@@ -111,7 +107,7 @@
       })
         .then(function () {
           getTeamOpenActionItems();
-          toggleRetroActionEdit(null)();
+          toggleRetroActionEdit(null, null)();
           notifications.success($LL.deleteActionItemSuccess());
         })
         .catch(function () {
@@ -120,7 +116,7 @@
     };
   }
 
-  function handleRetroActionAssigneeAdd(retroId, actionId, userId) {
+  function handleRetroActionAssigneeAdd(retroId: string, actionId: string, userId: string) {
     xfetch(`/api/retros/${retroId}/actions/${actionId}/assignees`, {
       method: 'POST',
       body: {
@@ -133,7 +129,7 @@
       .catch(function () {});
   }
 
-  function handleRetroActionAssigneeRemove(retroId, actionId, userId) {
+  function handleRetroActionAssigneeRemove(retroId: string, actionId: string, userId: string) {
     return () => {
       xfetch(`/api/retros/${retroId}/actions/${actionId}/assignees`, {
         method: 'DELETE',
@@ -146,7 +142,7 @@
     };
   }
 
-  const changeRetroActionPage = evt => {
+  const changeRetroActionPage = (evt: CustomEvent) => {
     retroActionsPage = evt.detail;
     getTeamOpenActionItems();
   };

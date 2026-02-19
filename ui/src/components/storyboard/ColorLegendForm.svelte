@@ -19,7 +19,7 @@
     isFacilitator = false,
   }: Props = $props();
 
-  function handleSubmit(event) {
+  function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
 
     handleLegendRevision(colorLegend);

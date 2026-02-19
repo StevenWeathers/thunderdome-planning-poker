@@ -22,7 +22,7 @@
     id: '',
     goals: [],
   });
-  let selectedGoalIdx = $state('');
+  let selectedGoalIdx: number | '' = $state('');
 
   function getStoryboards() {
     xfetch(`/api/users/${$user.id}/storyboards?limit=${9999}&offset=${0}`)

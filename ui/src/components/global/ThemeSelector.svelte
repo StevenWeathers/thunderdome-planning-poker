@@ -12,7 +12,7 @@
     } else {
       localStorage.removeItem('theme');
     }
-    window.setTheme();
+    (window as any).setTheme();
     toggleSubmenu?.();
   };
 </script>

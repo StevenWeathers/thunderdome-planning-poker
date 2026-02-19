@@ -70,7 +70,7 @@
     );
   }
 
-  const changeColor = color => () => {
+  const changeColor = (color: string) => () => {
     sendSocketEvent(
       'update_story_color',
       JSON.stringify({
@@ -80,8 +80,8 @@
     );
   };
 
-  const updateName = evt => {
-    const name = evt.target.value;
+  const updateName = (evt: Event) => {
+    const name = (evt.target as HTMLInputElement).value;
     sendSocketEvent(
       'update_story_name',
       JSON.stringify({
@@ -102,8 +102,8 @@
     );
   };
 
-  const updatePoints = evt => {
-    const points = parseInt(evt.target.value, 10);
+  const updatePoints = (evt: Event) => {
+    const points = parseInt((evt.target as HTMLInputElement).value, 10);
     sendSocketEvent(
       'update_story_points',
       JSON.stringify({
@@ -113,8 +113,8 @@
     );
   };
 
-  const updateLink = evt => {
-    const link = evt.target.value;
+  const updateLink = (evt: Event) => {
+    const link = (evt.target as HTMLInputElement).value;
     if (link !== '' && !isAbsolute.test(link)) {
       notifications.danger('Link must be an absolute URL');
       return;
