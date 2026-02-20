@@ -6,6 +6,7 @@
   import UserAvatar from '../user/UserAvatar.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
+  import GrowingTextArea from '../global/GrowingTextArea.svelte';
   import { Trash2 } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
@@ -44,6 +45,8 @@
     completed: false,
   });
 
+  let textareaComponent: any;
+
   $effect(() => {
     editAction.id = action.id;
     editAction.retroId = action.retroId;
@@ -56,14 +59,14 @@
 
     handleEdit(editAction);
   };
+
   const addAssignee = () => {
     handleAssigneeAdd(action.retroId, action.id, selectedAssignee);
     selectedAssignee = '';
   };
 
-  let focusInput: any;
   onMount(() => {
-    focusInput?.focus();
+    textareaComponent?.focus();
   });
 </script>
 
@@ -74,16 +77,12 @@
         {$LL.actionItem()}
       </label>
       <div class="control">
-        <input
+        <GrowingTextArea
+          bind:this={textareaComponent}
           bind:value={editAction.content}
-          bind:this={focusInput}
           placeholder={$LL.actionItemPlaceholder()}
-          class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
-                px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
-                focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
           id="actionItem"
           name="actionItem"
-          type="text"
           required
         />
       </div>

@@ -2,17 +2,7 @@
   import Sockette from 'sockette';
   import { onDestroy, onMount } from 'svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import {
-    Check,
-    ChevronRight,
-    Crown,
-    ExternalLink,
-    LogOut,
-    Pencil,
-    Settings,
-    SquareCheckBig,
-    Trash,
-  } from '@lucide/svelte';
+  import { Check, ChevronRight, Crown, ExternalLink, LogOut, Pencil, Settings, Trash } from '@lucide/svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditRetro from '../../components/retro/EditRetro.svelte';
@@ -25,6 +15,7 @@
   import GroupPhase from '../../components/retro/GroupPhase.svelte';
   import VotePhase from '../../components/retro/VotePhase.svelte';
   import GroupedItems from '../../components/retro/GroupedItems.svelte';
+  import RetroActionForm from '../../components/retro/RetroActionForm.svelte';
   import UserCard from '../../components/retro/UserCard.svelte';
   import InviteUser from '../../components/retro/InviteUser.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
@@ -89,7 +80,6 @@
     hideVotesDuringVoting: false,
   });
   let showDeleteRetro = $state(false);
-  let actionItem = $state('');
   let showExport = $state(false);
   let groupedItems = $state([]);
   let JoinPassRequired = $state(false);
@@ -411,16 +401,13 @@
     );
   };
 
-  const handleActionItem = (evt: Event) => {
-    evt.preventDefault();
-
+  const handleActionItem = (content: string) => {
     sendSocketEvent(
       'create_action',
       JSON.stringify({
-        content: actionItem,
+        content,
       }),
     );
-    actionItem = '';
   };
 
   const handleActionUpdate = (id: string, completed: boolean, content: string) => () => {
@@ -865,33 +852,13 @@
           <div class="w-full md:w-1/3">
             <div class="ps-4">
               {#if retro.phase === 'action'}
-                <div class="flex items-center mb-4">
-                  <div class="flex-shrink pe-2">
-                    <SquareCheckBig class="w-8 h-8 text-indigo-500 dark:text-violet-400" />
-                  </div>
-                  <div class="flex-grow">
-                    <form onsubmit={handleActionItem}>
-                      <input
-                        bind:value={actionItem}
-                        placeholder={$LL.actionItemPlaceholder()}
-                        class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
-                    px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
-                    focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
-                        id="actionItem"
-                        name="actionItem"
-                        type="text"
-                        required
-                      />
-                      <button type="submit" class="hidden">submit</button>
-                    </form>
-                  </div>
-                </div>
+                <RetroActionForm onsubmit={handleActionItem} />
               {/if}
               {#each retro.actionItems as item, i}
                 <div
                   class="mb-2 p-2 bg-white dark:bg-gray-800 shadow border-s-4 border-indigo-500 dark:border-violet-400"
                 >
-                  <div class="flex items-center">
+                  <div class="flex items-start">
                     <div class="flex-shrink">
                       <button
                         onclick={toggleActionEdit(item.id)}
@@ -913,10 +880,10 @@
                             class="inline-block me-2"
                           />
                         {/each}
-                        {item.content}
+                        <span class="whitespace-pre-wrap break-words">{item.content}</span>
                       </div>
                     </div>
-                    <div class="flex-shrink">
+                    <div class="flex-shrink pt-1">
                       <input
                         type="checkbox"
                         id="{i}Completed"

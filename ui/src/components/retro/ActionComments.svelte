@@ -133,7 +133,7 @@
             </div>
           </div>
         {:else}
-          <div class="py-2">
+          <div class="py-2 whitespace-pre-wrap break-words">
             {comment.comment}
           </div>
         {/if}
