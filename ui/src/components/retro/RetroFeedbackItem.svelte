@@ -3,6 +3,7 @@
   import ItemComments from './ItemComments.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
+  import type { RetroItem } from '../../types/retro';
 
   interface Props {
     class?: string;
@@ -34,9 +35,9 @@
   }: Props = $props();
 
   let showComments = $state(false);
-  let selectedItem = $state(null);
+  let selectedItem = $state<RetroItem | null>(null);
 
-  const toggleComments = item => () => {
+  const toggleComments = (item: RetroItem | null) => () => {
     showComments = !showComments;
     selectedItem = item;
   };
@@ -110,7 +111,7 @@
       </button>
     {/if}
   </div>
-  <p data-testid="retro-feedback-item-content">
+  <p data-testid="retro-feedback-item-content" class="whitespace-pre-wrap break-words">
     {#if phase === 'brainstorm' && feedbackVisibility === 'hidden' && item.userId !== $user.id}
       <span class="italic">{$LL.retroFeedbackHidden()}</span>
     {:else if phase === 'brainstorm' && feedbackVisibility === 'concealed' && item.userId !== $user.id}

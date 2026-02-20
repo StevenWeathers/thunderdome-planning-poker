@@ -4,11 +4,12 @@
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import { User } from '@lucide/svelte';
+  import type { RetroAction, RetroActionComment, RetroUser } from '../../types/retro';
 
   interface Props {
     toggleComments?: any;
-    item?: any;
-    users?: any;
+    item?: RetroAction;
+    users?: RetroUser[];
     isFacilitator?: boolean;
     sendSocketEvent?: any;
   }
@@ -17,25 +18,28 @@
     toggleComments = () => {},
     item = {
       id: '',
-      comments: [],
-    },
-    users = [],
+      comments: [] as RetroActionComment[],
+    } as RetroAction,
+    users = [] as RetroUser[],
     isFacilitator = false,
     sendSocketEvent = (event: string, value: any) => {},
   }: Props = $props();
 
-  const userMap = $derived(
-    users.reduce((prev, cur) => {
-      prev[cur.id] = cur.name;
-      return prev;
-    }, {}),
+  const userMap: Record<string, string> = $derived(
+    users.reduce(
+      (prev, cur) => {
+        prev[cur.id] = cur.name;
+        return prev;
+      },
+      {} as Record<string, string>,
+    ),
   );
 
   let userComment = $state('');
-  let selectedComment = $state(null);
+  let selectedComment = $state<{ id: string; comment: string } | null>(null);
   let selectedCommentContent = $state('');
 
-  const toggleCommentEdit = comment => () => {
+  const toggleCommentEdit = (comment: { id: string; comment: string } | null) => () => {
     selectedComment = comment;
     if (comment !== null) {
       selectedCommentContent = comment.comment;
@@ -66,7 +70,7 @@
     sendSocketEvent(
       'item_comment_edit',
       JSON.stringify({
-        comment_id: selectedComment.id,
+        comment_id: selectedComment!.id,
         comment: selectedCommentContent,
       }),
     );
@@ -103,11 +107,11 @@
             </div>
           </div>
         {:else}
-          <div class="py-2">
+          <div class="py-2 whitespace-pre-wrap break-words">
             {comment.comment}
           </div>
         {/if}
-        {#if (comment.user_id === $user.id || comment.user_id === isFacilitator) && !(selectedComment !== null && selectedComment.id === comment.id)}
+        {#if (comment.user_id === $user.id || isFacilitator) && !(selectedComment !== null && selectedComment.id === comment.id)}
           <div class="mb-2 text-right">
             <button class="text-blue-500 hover:text-blue-300 me-1" onclick={toggleCommentEdit(comment)}>
               {$LL.edit()}

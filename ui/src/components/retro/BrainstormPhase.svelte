@@ -8,7 +8,7 @@
     items?: any;
     template?: any;
     users?: any;
-    brainstormVisibility?: boolean;
+    brainstormVisibility?: string;
     columnColors?: any;
   }
 
@@ -23,7 +23,7 @@
       },
     },
     users = [],
-    brainstormVisibility = false,
+    brainstormVisibility = 'visible',
     columnColors = {},
   }: Props = $props();
 

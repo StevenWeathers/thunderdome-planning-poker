@@ -17,6 +17,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { RetroAction } from '../../types/retro';
 
   interface Props {
     xfetch: ApiClient;
@@ -47,7 +48,7 @@
 
   let totalRetroActions = $state(0);
   let retroActionsPage = $state(1);
-  let actionItems = $state([]);
+  let actionItems: RetroAction[] = $state([]);
   let users = $state([]);
   let usersPage = 1;
 
@@ -69,20 +70,20 @@
   }
 
   let showRetroActionComments = $state(false);
-  let selectedRetroAction = $state(null);
-  const toggleRetroActionComments = (id: string) => () => {
+  let selectedRetroAction = $state<RetroAction | null>(null);
+  const toggleRetroActionComments = (id: string | null) => () => {
     showRetroActionComments = !showRetroActionComments;
-    selectedRetroAction = id;
+    selectedRetroAction = id !== null ? (actionItems.find(r => r.id === id) ?? null) : null;
   };
 
   let showRetroActionEdit = $state(false);
-  let selectedAction: string | null = $state(null);
+  let selectedAction: RetroAction | null = $state(null);
   const toggleRetroActionEdit = (retroId: string | null, id: string | null) => () => {
     showRetroActionEdit = !showRetroActionEdit;
     selectedAction = retroId !== null ? (actionItems.find(r => r.id === id) ?? null) : null;
   };
 
-  function handleRetroActionEdit(action) {
+  function handleRetroActionEdit(action: RetroAction) {
     xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
       method: 'PUT',
       body: {
@@ -100,7 +101,7 @@
       });
   }
 
-  function handleRetroActionDelete(action) {
+  function handleRetroActionDelete(action: RetroAction) {
     return () => {
       xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
         method: 'DELETE',
@@ -193,7 +194,7 @@
                         width={24}
                         class="inline-block me-2"
                       />
-                    {/each}{item.content}
+                    {/each}<span class="whitespace-pre-wrap break-words">{item.content}</span>
                   </div>
                 </RowCol>
                 <RowCol>
