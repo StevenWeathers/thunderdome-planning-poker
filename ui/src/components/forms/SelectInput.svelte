@@ -2,11 +2,18 @@
   import { ChevronDown } from '@lucide/svelte';
 
   export let value: string = '';
+
+  let selectElement: HTMLSelectElement;
+
+  export function focus() {
+    selectElement?.focus();
+  }
 </script>
 
 <div class="relative">
   <select
     bind:value
+    bind:this={selectElement}
     on:change
     class="block appearance-none w-full border border-gray-300 dark:border-gray-700
                 text-gray-700 dark:text-gray-300 py-2 px-4 pe-8 rounded leading-tight

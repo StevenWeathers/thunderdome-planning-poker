@@ -1,14 +1,9 @@
 <script lang="ts">
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
-  import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import { user } from '../../stores';
   import { onMount } from 'svelte';
-  import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
-  import Checkbox from '../forms/Checkbox.svelte';
-  import { ChevronDown, Crown, Lock } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
-
   import Modal from '../global/Modal.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import LL from '../../i18n/i18n-svelte';
@@ -65,7 +63,8 @@
   ];
   const maxPhaseTimeLimitMin = 59;
 
-  async function handleSubmit() {
+  async function handleSubmit(event: Event) {
+    event.preventDefault();
     const method = retroSettings.id !== '' ? 'PUT' : 'POST';
 
     // hack because of svelte bug where binding to dynamic number input doesn't keep type
@@ -99,7 +98,7 @@
 </script>
 
 <Modal closeModal={toggleClose} ariaLabel={$LL.modalUpdateRetroSettings()}>
-  <form onsubmit={preventDefault(handleSubmit)} class="mt-6 space-y-6">
+  <form onsubmit={handleSubmit} class="mt-6 space-y-6">
     <div>
       <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="maxVotes">
         {$LL.retroMaxVotesPerUserLabel()}
