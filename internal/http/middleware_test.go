@@ -20,8 +20,9 @@ import (
 	"go.uber.org/zap"
 )
 
+//go:fix inline
 func ptr[T any](v T) *T {
-	return &v
+	return new(v)
 }
 
 // MockTeamDataSvc is a mock implementation of the TeamDataSvc
@@ -2283,7 +2284,7 @@ func TestAdminOnly(t *testing.T) {
 
 			// If the status is Forbidden, check for the correct error message
 			if tt.expectedStatus == http.StatusForbidden {
-				var responseBody map[string]interface{}
+				var responseBody map[string]any
 				err = json.NewDecoder(rr.Body).Decode(&responseBody)
 				assert.NoError(t, err)
 				assert.Equal(t, "REQUIRES_ADMIN", responseBody["error"])
@@ -2352,7 +2353,7 @@ func TestRegisteredUserOnly(t *testing.T) {
 
 			// If the status is Forbidden, check for the correct error message
 			if tt.expectedStatus == http.StatusForbidden {
-				var responseBody map[string]interface{}
+				var responseBody map[string]any
 				err = json.NewDecoder(rr.Body).Decode(&responseBody)
 				assert.NoError(t, err)
 				assert.Equal(t, "REGISTERED_USER_ONLY", responseBody["error"])
@@ -2435,7 +2436,7 @@ func TestEntityUserOnly(t *testing.T) {
 
 			// If the status is not OK, check for the correct error message
 			if tt.expectedStatus != http.StatusOK {
-				var responseBody map[string]interface{}
+				var responseBody map[string]any
 				err = json.NewDecoder(rr.Body).Decode(&responseBody)
 				assert.NoError(t, err)
 

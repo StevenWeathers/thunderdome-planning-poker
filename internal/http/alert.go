@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var ActiveAlerts []interface{}
+var ActiveAlerts []any
 
 type alertRequestBody struct {
 	Name           string `json:"name" validate:"required"`

@@ -133,10 +133,10 @@ type Service struct {
 
 // standardJsonResponse structure used for all restful APIs response body
 type standardJsonResponse struct {
-	Success bool        `json:"success"`
-	Error   string      `json:"error"`
-	Data    interface{} `json:"data" swaggertype:"object"`
-	Meta    interface{} `json:"meta" swaggertype:"object"`
+	Success bool   `json:"success"`
+	Error   string `json:"error"`
+	Data    any    `json:"data" swaggertype:"object"`
+	Meta    any    `json:"meta" swaggertype:"object"`
 }
 
 // pagination meta structure for query result pagination
@@ -173,7 +173,7 @@ type AdminDataSvc interface {
 }
 
 type AlertDataSvc interface {
-	GetActiveAlerts(ctx context.Context) []interface{}
+	GetActiveAlerts(ctx context.Context) []any
 	AlertsList(ctx context.Context, limit int, offset int) ([]*thunderdome.Alert, int, error)
 	AlertsCreate(ctx context.Context, name string, alertType string, content string, active bool, allowDismiss bool, registeredOnly bool) error
 	AlertsUpdate(ctx context.Context, alertID string, name string, alertType string, content string, active bool, allowDismiss bool, registeredOnly bool) error

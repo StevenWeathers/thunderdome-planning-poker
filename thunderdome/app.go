@@ -59,5 +59,5 @@ type AppConfig struct {
 
 type UIConfig struct {
 	AppConfig    AppConfig
-	ActiveAlerts []interface{}
+	ActiveAlerts []any
 }

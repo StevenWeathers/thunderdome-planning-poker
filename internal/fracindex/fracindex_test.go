@@ -13,34 +13,34 @@ func TestKeyBetween(t *testing.T) {
 		exp  *string
 		err  error
 	}{
-		{nil, nil, strPtr("a "), nil},
-		{nil, strPtr("a "), strPtr("Z~"), nil},
-		{nil, strPtr("Z~"), strPtr("Z}"), nil},
-		{strPtr("a "), nil, strPtr("a!"), nil},
-		{strPtr("a!"), nil, strPtr("a\""), nil},
-		{strPtr("a0"), strPtr("a1"), strPtr("a0P"), nil},
-		{strPtr("a1"), strPtr("a2"), strPtr("a1P"), nil},
-		{strPtr("a0V"), strPtr("a1"), strPtr("a0k"), nil},
-		{strPtr("Z~"), strPtr("a "), strPtr("Z~P"), nil},
-		{strPtr("Z~"), strPtr("a!"), strPtr("a "), nil},
-		{nil, strPtr("Y  "), strPtr("X~~~"), nil},
-		{strPtr("b~~"), nil, strPtr("c   "), nil},
-		{strPtr("a0"), strPtr("a0V"), strPtr("a0;"), nil},
-		{strPtr("a0"), strPtr("a0G"), strPtr("a04"), nil},
-		{strPtr("b125"), strPtr("b129"), strPtr("b127"), nil},
-		{strPtr("a0"), strPtr("a1V"), strPtr("a1"), nil},
-		{strPtr("Z~"), strPtr("a 1"), strPtr("a "), nil},
-		{nil, strPtr("a0V"), strPtr("a0"), nil},
-		{nil, strPtr("b999"), strPtr("b99"), nil},
-		{nil, strPtr("A                          "), nil, errors.New("Key is too small")},
+		{nil, nil, new("a "), nil},
+		{nil, new("a "), new("Z~"), nil},
+		{nil, new("Z~"), new("Z}"), nil},
+		{new("a "), nil, new("a!"), nil},
+		{new("a!"), nil, new("a\""), nil},
+		{new("a0"), new("a1"), new("a0P"), nil},
+		{new("a1"), new("a2"), new("a1P"), nil},
+		{new("a0V"), new("a1"), new("a0k"), nil},
+		{new("Z~"), new("a "), new("Z~P"), nil},
+		{new("Z~"), new("a!"), new("a "), nil},
+		{nil, new("Y  "), new("X~~~"), nil},
+		{new("b~~"), nil, new("c   "), nil},
+		{new("a0"), new("a0V"), new("a0;"), nil},
+		{new("a0"), new("a0G"), new("a04"), nil},
+		{new("b125"), new("b129"), new("b127"), nil},
+		{new("a0"), new("a1V"), new("a1"), nil},
+		{new("Z~"), new("a 1"), new("a "), nil},
+		{nil, new("a0V"), new("a0"), nil},
+		{nil, new("b999"), new("b99"), nil},
+		{nil, new("A                          "), nil, errors.New("Key is too small")},
 		// @TODO - fix the implementation to handle this case
 		//{nil, strPtr("A                          !"), strPtr("A                           P"), nil},
-		{strPtr("zzzzzzzzzzzzzzzzzzzzzzzzzzy"), nil, strPtr("zzzzzzzzzzzzzzzzzzzzzzzzzzz"), nil},
-		{strPtr("z~~~~~~~~~~~~~~~~~~~~~~~~~~"), nil, strPtr("z~~~~~~~~~~~~~~~~~~~~~~~~~~P"), nil},
-		{strPtr("a0 "), nil, nil, errors.New("Fractional part should not end with ' ' (space)")},
-		{strPtr("a0 "), strPtr("a1"), nil, errors.New("Fractional part should not end with ' ' (space)")},
-		{strPtr("0"), strPtr("1"), nil, errors.New("head is out of range")},
-		{strPtr("a1"), strPtr("a0"), nil, errors.New("key_between - a must be before b")},
+		{new("zzzzzzzzzzzzzzzzzzzzzzzzzzy"), nil, new("zzzzzzzzzzzzzzzzzzzzzzzzzzz"), nil},
+		{new("z~~~~~~~~~~~~~~~~~~~~~~~~~~"), nil, new("z~~~~~~~~~~~~~~~~~~~~~~~~~~P"), nil},
+		{new("a0 "), nil, nil, errors.New("Fractional part should not end with ' ' (space)")},
+		{new("a0 "), new("a1"), nil, errors.New("Fractional part should not end with ' ' (space)")},
+		{new("0"), new("1"), nil, errors.New("head is out of range")},
+		{new("a1"), new("a0"), nil, errors.New("key_between - a must be before b")},
 	}
 
 	for _, tt := range tests {
@@ -66,7 +66,7 @@ func TestGenerateInsertOrder(t *testing.T) {
 
 	var prev *string
 	var indices []string
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		prev, _ = KeyBetween(prev, nil)
 		indices = append(indices, *prev)
 	}
@@ -90,9 +90,9 @@ func TestGenerateInsertOrder(t *testing.T) {
 
 		var fractIndex *string
 		if toIndex == 0 {
-			fractIndex, _ = KeyBetween(nil, strPtr(indices[toIndex]))
+			fractIndex, _ = KeyBetween(nil, new(indices[toIndex]))
 		} else {
-			fractIndex, _ = KeyBetween(strPtr(indices[toIndex-1]), strPtr(indices[toIndex]))
+			fractIndex, _ = KeyBetween(new(indices[toIndex-1]), new(indices[toIndex]))
 		}
 
 		indices = append(indices[:toIndex], append([]string{*fractIndex}, indices[toIndex:]...)...)
@@ -118,8 +118,4 @@ func vecCompare(va, vb []string) bool {
 		}
 	}
 	return true
-}
-
-func strPtr(s string) *string {
-	return &s
 }
