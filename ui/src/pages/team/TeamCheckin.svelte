@@ -10,7 +10,7 @@
   import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
   import { formatDayForInput, getTimezoneName, subtractDays } from '../../dateUtils';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
@@ -19,6 +19,7 @@
   import Toggle from '../../components/forms/Toggle.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
   import type { TeamUser, TeamCheckin as BaseTeamCheckin } from '../../types/team';
+  import type { UserDisplay } from '../../types/user';
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
 
@@ -89,7 +90,7 @@
   let checkins = $state<TeamCheckin[]>([]);
   let checkinColumns = $state<Array<{ checkins: TeamCheckin[] }>>([]);
   let showOnlyDiscussionItems = $state(false);
-  let userMap: Map<string, TeamUser> = $state(new Map());
+  let userMap: Map<string, UserDisplay> = $state(new Map());
 
   let ws: any;
 
@@ -167,13 +168,16 @@
       .then(function (result: any) {
         users = result.data;
         userCount = result.meta.count;
-        userMap = users.reduce(
-          (prev: Record<string, TeamUser>, cur: TeamUser) => {
-            prev[cur.id] = cur;
-            return prev;
-          },
-          {} as Record<string, TeamUser>,
-        ) as any;
+        userMap = users.reduce((prev: Map<string, UserDisplay>, cur: TeamUser) => {
+          prev.set(cur.id, {
+            id: cur.id,
+            name: cur.name,
+            avatar: cur.avatar,
+            gravatarHash: cur.gravatarHash,
+            pictureUrl: cur.pictureUrl || '',
+          });
+          return prev;
+        }, new Map<string, UserDisplay>());
       })
       .catch(function () {
         notifications.danger($LL.teamGetUsersError());
@@ -283,7 +287,7 @@
       });
   }
 
-  const handleCommentDelete = (checkinId: string, commentId: string) => () => {
+  const handleCommentDelete = (checkinId: string, commentId: string) => {
     xfetch(`${teamPrefix}/checkins/${checkinId}/comments/${commentId}`, {
       method: 'DELETE',
     })
@@ -537,7 +541,7 @@
             aria-labelledby="checkin-user-{checkin.user.id}"
           >
             <!-- Content wrapper -->
-            <div class="relative p-6 sm:p-8">
+            <div class="relative p-4">
               <!-- Header with avatar and user info -->
               <header class="flex items-start gap-4 sm:gap-6 mb-6">
                 <!-- Avatar section -->

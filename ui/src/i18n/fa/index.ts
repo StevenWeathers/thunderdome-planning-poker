@@ -745,6 +745,7 @@ const fa: Translation = {
   getSupportTicketsError: 'خطا در دریافت تیکت‌های پشتیبانی',
   deleteSupportTicketSuccess: 'تیکت پشتیبانی با موفقیت حذف شد',
   deleteSupportTicketError: 'خطا در حذف تیکت پشتیبانی',
+  clear: 'پاک کردن',
 };
 
 export default fa;

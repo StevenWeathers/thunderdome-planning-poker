@@ -69,3 +69,11 @@ export type SessionUser = {
   theme?: string;
   subscribed: boolean;
 };
+
+export type UserDisplay = {
+  id: string;
+  name: string;
+  avatar?: string;
+  gravatarHash?: string;
+  pictureUrl?: string;
+};

@@ -2993,6 +2993,10 @@ type RootTranslation = {
 	 * F​a​i​l​e​d​ ​t​o​ ​d​e​l​e​t​e​ ​s​u​p​p​o​r​t​ ​t​i​c​k​e​t
 	 */
 	deleteSupportTicketError: string
+	/**
+	 * C​l​e​a​r
+	 */
+	clear: string
 }
 
 export type TranslationFunctions = {
@@ -5922,6 +5926,10 @@ export type TranslationFunctions = {
 	 * Failed to delete support ticket
 	 */
 	deleteSupportTicketError: () => LocalizedString
+	/**
+	 * Clear
+	 */
+	clear: () => LocalizedString
 }
 
 export type Formatters = {}

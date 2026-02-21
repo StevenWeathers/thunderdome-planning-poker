@@ -745,6 +745,7 @@ const ru: Translation = {
   getSupportTicketsError: 'Не удалось получить тикеты поддержки',
   deleteSupportTicketSuccess: 'Тикет поддержки успешно удален',
   deleteSupportTicketError: 'Не удалось удалить тикет поддержки',
+  clear: 'Очистить',
 };
 
 export default ru;

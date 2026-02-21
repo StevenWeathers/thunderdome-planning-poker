@@ -749,6 +749,7 @@ const de: Translation = {
   getSupportTicketsError: 'Fehler beim Abrufen der Support-Tickets',
   deleteSupportTicketSuccess: 'Support-Ticket erfolgreich gelöscht',
   deleteSupportTicketError: 'Fehler beim Löschen des Support-Tickets',
+  clear: 'Löschen',
 };
 
 export default de;

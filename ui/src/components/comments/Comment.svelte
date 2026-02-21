@@ -1,24 +1,30 @@
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import { User, Edit3, Trash2, Save, X, MoreHorizontal } from '@lucide/svelte';
+  import { PencilIcon, Trash2, Save, X, EllipsisIcon } from '@lucide/svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
-  import type { TeamUser } from '../../types/team';
+  import type { UserDisplay } from '../../types/user';
   import UserAvatar from '../user/UserAvatar.svelte';
 
+  interface Comment {
+    comment: string;
+    created_date: string;
+    id: string;
+    updated_date: string;
+    user_id: string;
+  }
+
   interface Props {
-    checkinId?: any;
-    comment?: any;
-    userMap?: Map<string, TeamUser>;
+    comment?: Comment;
+    userMap?: Map<string, UserDisplay>;
     isAdmin?: boolean;
-    handleEdit?: any;
-    handleDelete?: any;
+    handleEdit?: (commentId: string, data: { userId: string; comment: string }) => void;
+    handleDelete?: (commentId: string) => void;
   }
 
   let {
-    checkinId = {},
-    comment = {},
-    userMap = new Map<string, TeamUser>(),
+    comment = {} as Comment,
+    userMap = new Map<string, UserDisplay>(),
     isAdmin = false,
     handleEdit = () => {},
     handleDelete = () => {},
@@ -47,7 +53,7 @@
   function onSubmit(e: Event) {
     e.preventDefault();
 
-    handleEdit(checkinId, comment.id, {
+    handleEdit(comment.id, {
       userId: $user.id,
       comment: editcomment,
     });
@@ -76,7 +82,7 @@
 </script>
 
 <article
-  class="group relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 p-4 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200"
+  class="animate-in fade-in-50 duration-200 group relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 p-4 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200"
   data-commentid={comment.id}
   aria-label="Comment by {userMap.get(comment?.user_id)?.name || 'Unknown user'}"
 >
@@ -117,7 +123,7 @@
           aria-label="Comment actions"
           aria-expanded={showActions}
         >
-          <MoreHorizontal class="w-4 h-4" />
+          <EllipsisIcon class="w-4 h-4" />
         </button>
 
         {#if showActions}
@@ -130,7 +136,7 @@
                 onclick={toggleEdit}
                 class="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
               >
-                <Edit3 class="w-4 h-4" />
+                <PencilIcon class="w-4 h-4" />
                 {$LL.edit()}
               </button>
               <button
@@ -211,7 +217,7 @@
     <DeleteConfirmation
       toggleDelete={() => (showDeleteConfirm = false)}
       handleDelete={() => {
-        handleDelete(checkinId, comment.id)();
+        handleDelete(comment.id);
         showDeleteConfirm = false;
       }}
       confirmText={'Are you sure you want to delete this comment?'}
@@ -231,5 +237,22 @@
 <style>
   .prose p {
     margin-bottom: 0;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-in {
+    animation-fill-mode: both;
+  }
+
+  .fade-in-50 {
+    animation: fade-in 0.2s ease-out;
   }
 </style>

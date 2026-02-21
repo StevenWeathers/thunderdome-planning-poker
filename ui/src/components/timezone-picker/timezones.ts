@@ -1,4 +1,4 @@
-const timezones = {
+const timezones: Record<string, Record<string, [string, string, string]>> = {
   Africa: {
     'Africa/Abidjan': ['Abidjan', '+00:00', '+00:00'],
     'Africa/Accra': ['Accra', '+00:00', '+00:00'],
@@ -53,7 +53,7 @@ const timezones = {
     'Africa/Timbuktu': ['Timbuktu', '+00:00', '+00:00'],
     'Africa/Tripoli': ['Tripoli', '+01:00', '+02:00'],
     'Africa/Tunis': ['Tunis', '+01:00', '+01:00'],
-    'Africa/Windhoek': ['Windhoek', '+01:00', '+02:00']
+    'Africa/Windhoek': ['Windhoek', '+01:00', '+02:00'],
   },
   America: {
     'America/Adak': ['Adak', '-10:00', '-09:00'],
@@ -61,26 +61,14 @@ const timezones = {
     'America/Anguilla': ['Anguilla', '-04:00', '-04:00'],
     'America/Antigua': ['Antigua', '-04:00', '-04:00'],
     'America/Araguaina': ['Araguaina', '-03:00', '-03:00'],
-    'America/Argentina/Buenos_Aires': [
-      'Buenos Aires, Argentina',
-      '-03:00',
-      '-03:00'
-    ],
+    'America/Argentina/Buenos_Aires': ['Buenos Aires, Argentina', '-03:00', '-03:00'],
     'America/Argentina/Catamarca': ['Catamarca, Argentina', '-03:00', '-03:00'],
-    'America/Argentina/ComodRivadavia': [
-      'ComodRivadavia, Argentina',
-      '-03:00',
-      '-03:00'
-    ],
+    'America/Argentina/ComodRivadavia': ['ComodRivadavia, Argentina', '-03:00', '-03:00'],
     'America/Argentina/Cordoba': ['Cordoba, Argentina', '-03:00', '-03:00'],
     'America/Argentina/Jujuy': ['Jujuy, Argentina', '-03:00', '-03:00'],
     'America/Argentina/La_Rioja': ['La Rioja, Argentina', '-03:00', '-03:00'],
     'America/Argentina/Mendoza': ['Mendoza, Argentina', '-03:00', '-03:00'],
-    'America/Argentina/Rio_Gallegos': [
-      'Rio Gallegos, Argentina',
-      '-03:00',
-      '-03:00'
-    ],
+    'America/Argentina/Rio_Gallegos': ['Rio Gallegos, Argentina', '-03:00', '-03:00'],
     'America/Argentina/Salta': ['Salta, Argentina', '-03:00', '-03:00'],
     'America/Argentina/San_Juan': ['San Juan, Argentina', '-03:00', '-03:00'],
     'America/Argentina/San_Luis': ['San Luis, Argentina', '-03:00', '-03:00'],
@@ -139,11 +127,7 @@ const timezones = {
     'America/Halifax': ['Halifax', '-04:00', '-03:00'],
     'America/Havana': ['Havana', '-05:00', '-04:00'],
     'America/Hermosillo': ['Hermosillo', '-07:00', '-07:00'],
-    'America/Indiana/Indianapolis': [
-      'Indianapolis, Indiana',
-      '-05:00',
-      '-04:00'
-    ],
+    'America/Indiana/Indianapolis': ['Indianapolis, Indiana', '-05:00', '-04:00'],
     'America/Indiana/Knox': ['Knox, Indiana', '-06:00', '-05:00'],
     'America/Indiana/Marengo': ['Marengo, Indiana', '-05:00', '-04:00'],
     'America/Indiana/Petersburg': ['Petersburg, Indiana', '-05:00', '-04:00'],
@@ -192,11 +176,7 @@ const timezones = {
     'America/Noronha': ['Noronha', '-02:00', '-02:00'],
     'America/North_Dakota/Beulah': ['Beulah, North Dakota', '-06:00', '-05:00'],
     'America/North_Dakota/Center': ['Center, North Dakota', '-06:00', '-05:00'],
-    'America/North_Dakota/New_Salem': [
-      'New Salem, North Dakota',
-      '-06:00',
-      '-05:00'
-    ],
+    'America/North_Dakota/New_Salem': ['New Salem, North Dakota', '-06:00', '-05:00'],
     'America/Ojinaga': ['Ojinaga', '-07:00', '-06:00'],
     'America/Panama': ['Panama', '-05:00', '-05:00'],
     'America/Pangnirtung': ['Pangnirtung', '-05:00', '-04:00'],
@@ -240,7 +220,7 @@ const timezones = {
     'America/Whitehorse': ['Whitehorse', '-08:00', '-07:00'],
     'America/Winnipeg': ['Winnipeg', '-06:00', '-05:00'],
     'America/Yakutat': ['Yakutat', '-09:00', '-08:00'],
-    'America/Yellowknife': ['Yellowknife', '-07:00', '-06:00']
+    'America/Yellowknife': ['Yellowknife', '-07:00', '-06:00'],
   },
   Antarctica: {
     'Antarctica/Casey': ['Casey', '+11:00', '+08:00'],
@@ -254,7 +234,7 @@ const timezones = {
     'Antarctica/South_Pole': ['South Pole', '+12:00', '+13:00'],
     'Antarctica/Syowa': ['Syowa', '+03:00', '+03:00'],
     'Antarctica/Troll': ['Troll', '+00:00', '+02:00'],
-    'Antarctica/Vostok': ['Vostok', '+06:00', '+06:00']
+    'Antarctica/Vostok': ['Vostok', '+06:00', '+06:00'],
   },
   Arctic: { 'Arctic/Longyearbyen': ['Longyearbyen', '+01:00', '+02:00'] },
   Asia: {
@@ -348,7 +328,7 @@ const timezones = {
     'Asia/Vladivostok': ['Vladivostok', '+10:00', '+10:00'],
     'Asia/Yakutsk': ['Yakutsk', '+09:00', '+09:00'],
     'Asia/Yekaterinburg': ['Yekaterinburg', '+05:00', '+05:00'],
-    'Asia/Yerevan': ['Yerevan', '+04:00', '+04:00']
+    'Asia/Yerevan': ['Yerevan', '+04:00', '+04:00'],
   },
   Atlantic: {
     'Atlantic/Azores': ['Azores', '-01:00', '+00:00'],
@@ -362,7 +342,7 @@ const timezones = {
     'Atlantic/Reykjavik': ['Reykjavik', '+00:00', '+00:00'],
     'Atlantic/South_Georgia': ['South Georgia', '-02:00', '-02:00'],
     'Atlantic/St_Helena': ['St Helena', '+00:00', '+00:00'],
-    'Atlantic/Stanley': ['Stanley', '-03:00', '-03:00']
+    'Atlantic/Stanley': ['Stanley', '-03:00', '-03:00'],
   },
   Australia: {
     'Australia/ACT': ['ACT', '+10:00', '+11:00'],
@@ -387,13 +367,13 @@ const timezones = {
     'Australia/Tasmania': ['Tasmania', '+10:00', '+11:00'],
     'Australia/Victoria': ['Victoria', '+10:00', '+11:00'],
     'Australia/West': ['West', '+08:00', '+08:00'],
-    'Australia/Yancowinna': ['Yancowinna', '+09:30', '+10:30']
+    'Australia/Yancowinna': ['Yancowinna', '+09:30', '+10:30'],
   },
   Brazil: {
     'Brazil/Acre': ['Acre', '-05:00', '-05:00'],
     'Brazil/DeNoronha': ['DeNoronha', '-02:00', '-02:00'],
     'Brazil/East': ['East', '-03:00', '-02:00'],
-    'Brazil/West': ['West', '-04:00', '-04:00']
+    'Brazil/West': ['West', '-04:00', '-04:00'],
   },
   Canada: {
     'Canada/Atlantic': ['Atlantic', '-04:00', '-03:00'],
@@ -403,11 +383,11 @@ const timezones = {
     'Canada/Mountain': ['Mountain', '-07:00', '-06:00'],
     'Canada/Newfoundland': ['Newfoundland', '-03:30', '-02:30'],
     'Canada/Saskatchewan': ['Saskatchewan', '-06:00', '-06:00'],
-    'Canada/Yukon': ['Yukon', '-08:00', '-07:00']
+    'Canada/Yukon': ['Yukon', '-08:00', '-07:00'],
   },
   Chile: {
     'Chile/Continental': ['Continental', '-04:00', '-03:00'],
-    'Chile/EasterIsland': ['EasterIsland', '-06:00', '-05:00']
+    'Chile/EasterIsland': ['EasterIsland', '-06:00', '-05:00'],
   },
   Other: {
     Cuba: ['Cuba', '-05:00', '-04:00'],
@@ -442,7 +422,7 @@ const timezones = {
     UTC: ['UTC', '+00:00', '+00:00'],
     Universal: ['Universal', '+00:00', '+00:00'],
     'W-SU': ['W-SU', '+03:00', '+03:00'],
-    Zulu: ['Zulu', '+00:00', '+00:00']
+    Zulu: ['Zulu', '+00:00', '+00:00'],
   },
   Etc: {
     'Etc/GMT': ['GMT', '+00:00', '+00:00'],
@@ -450,7 +430,7 @@ const timezones = {
     'Etc/UCT': ['UCT', '+00:00', '+00:00'],
     'Etc/UTC': ['UTC', '+00:00', '+00:00'],
     'Etc/Universal': ['Universal', '+00:00', '+00:00'],
-    'Etc/Zulu': ['Zulu', '+00:00', '+00:00']
+    'Etc/Zulu': ['Zulu', '+00:00', '+00:00'],
   },
   Europe: {
     'Europe/Amsterdam': ['Amsterdam', '+01:00', '+02:00'],
@@ -511,7 +491,7 @@ const timezones = {
     'Europe/Warsaw': ['Warsaw', '+01:00', '+02:00'],
     'Europe/Zagreb': ['Zagreb', '+01:00', '+02:00'],
     'Europe/Zaporozhye': ['Zaporozhye', '+02:00', '+03:00'],
-    'Europe/Zurich': ['Zurich', '+01:00', '+02:00']
+    'Europe/Zurich': ['Zurich', '+01:00', '+02:00'],
   },
   Indian: {
     'Indian/Antananarivo': ['Antananarivo', '+03:00', '+03:00'],
@@ -524,12 +504,12 @@ const timezones = {
     'Indian/Maldives': ['Maldives', '+05:00', '+05:00'],
     'Indian/Mauritius': ['Mauritius', '+04:00', '+04:00'],
     'Indian/Mayotte': ['Mayotte', '+03:00', '+03:00'],
-    'Indian/Reunion': ['Reunion', '+04:00', '+04:00']
+    'Indian/Reunion': ['Reunion', '+04:00', '+04:00'],
   },
   Mexico: {
     'Mexico/BajaNorte': ['BajaNorte', '-08:00', '-07:00'],
     'Mexico/BajaSur': ['BajaSur', '-07:00', '-06:00'],
-    'Mexico/General': ['General', '-06:00', '-05:00']
+    'Mexico/General': ['General', '-06:00', '-05:00'],
   },
   Pacific: {
     'Pacific/Apia': ['Apia', '+13:00', '+14:00'],
@@ -573,7 +553,7 @@ const timezones = {
     'Pacific/Truk': ['Truk', '+10:00', '+10:00'],
     'Pacific/Wake': ['Wake', '+12:00', '+12:00'],
     'Pacific/Wallis': ['Wallis', '+12:00', '+12:00'],
-    'Pacific/Yap': ['Yap', '+10:00', '+10:00']
+    'Pacific/Yap': ['Yap', '+10:00', '+10:00'],
   },
   US: {
     'US/Alaska': ['Alaska', '-09:00', '-08:00'],
@@ -587,8 +567,8 @@ const timezones = {
     'US/Michigan': ['Michigan', '-05:00', '-04:00'],
     'US/Mountain': ['Mountain', '-07:00', '-06:00'],
     'US/Pacific': ['Pacific', '-08:00', '-07:00'],
-    'US/Samoa': ['Samoa', '-11:00', '-11:00']
-  }
+    'US/Samoa': ['Samoa', '-11:00', '-11:00'],
+  },
 };
 
 export default timezones;
