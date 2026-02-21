@@ -14,10 +14,10 @@
   "author": "Steven Weathers",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@estruyf/github-actions-reporter": "^1.10.0",
-    "@playwright/test": "^1.56.1",
-    "pg": "^8.14.1",
-    "prettier": "^3.5.3",
+    "@estruyf/github-actions-reporter": "^1.11.0",
+    "@playwright/test": "^1.58.2",
+    "pg": "^8.18.0",
+    "prettier": "^3.8.1",
     "ts-node": "^10.9.2"
   }
 }
