@@ -37,10 +37,10 @@ type gooseLogger struct {
 	logger *otelzap.Logger
 }
 
-func (l *gooseLogger) Fatalf(format string, v ...interface{}) {
+func (l *gooseLogger) Fatalf(format string, v ...any) {
 	l.logger.Ctx(context.Background()).Fatal(fmt.Sprintf(format, v...))
 }
-func (l *gooseLogger) Printf(format string, v ...interface{}) {
+func (l *gooseLogger) Printf(format string, v ...any) {
 	l.logger.Ctx(context.Background()).Info(fmt.Sprintf(format, v...))
 }
 

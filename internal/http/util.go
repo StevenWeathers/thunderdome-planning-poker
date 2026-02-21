@@ -77,12 +77,12 @@ func validateUserPassword(pwd1 string, pwd2 string) (updatedPassword string, val
 }
 
 // Success returns the successful response including any data and meta
-func (s *Service) Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
+func (s *Service) Success(w http.ResponseWriter, r *http.Request, code int, data any, meta any) {
 	result := &standardJsonResponse{
 		Success: true,
 		Error:   "",
-		Data:    map[string]interface{}{},
-		Meta:    map[string]interface{}{},
+		Data:    map[string]any{},
+		Meta:    map[string]any{},
 	}
 
 	if meta != nil {
@@ -108,8 +108,8 @@ func (s *Service) Failure(w http.ResponseWriter, r *http.Request, code int, err 
 	result := &standardJsonResponse{
 		Success: false,
 		Error:   errMessage,
-		Data:    map[string]interface{}{},
-		Meta:    map[string]interface{}{},
+		Data:    map[string]any{},
+		Meta:    map[string]any{},
 	}
 
 	response, _ := json.Marshal(result)

@@ -350,8 +350,8 @@ func (s *Service) logErrorWithJSONResponse(err error, errorTitle string, w http.
 		result := &standardJsonResponse{
 			Success: false,
 			Error:   err.Error(),
-			Data:    map[string]interface{}{},
-			Meta:    map[string]interface{}{},
+			Data:    map[string]any{},
+			Meta:    map[string]any{},
 		}
 
 		response, _ := json.Marshal(result)

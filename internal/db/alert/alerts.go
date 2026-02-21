@@ -18,8 +18,8 @@ type Service struct {
 }
 
 // GetActiveAlerts gets a list of active global alerts
-func (d *Service) GetActiveAlerts(ctx context.Context) []interface{} {
-	alerts := make([]interface{}, 0)
+func (d *Service) GetActiveAlerts(ctx context.Context) []any {
+	alerts := make([]any, 0)
 
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, type, content, active, allow_dismiss, registered_only FROM thunderdome.alert WHERE active IS TRUE;`,

@@ -2,6 +2,7 @@ package email
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/matcornic/hermes/v2"
@@ -11,22 +12,22 @@ import (
 // SendRetroOverview sends the retro overview (items, action items) email to attendees
 func (s *Service) SendRetroOverview(retro *thunderdome.Retro, template *thunderdome.RetroTemplate, userName string, userEmail string) error {
 	columnMap := make(map[string]string)
-	var columnsList string
+	var columnsList strings.Builder
 	for _, column := range template.Format.Columns {
 		columnMap[column.Name] = fmt.Sprintf(`
 ## %s
 
 `, column.Label)
 	}
-	var retroActionsList string
+	var retroActionsList strings.Builder
 	for _, action := range retro.ActionItems {
-		retroActionsList += formatRetroActionWithAssignee(action)
+		retroActionsList.WriteString(formatRetroActionWithAssignee(action))
 	}
 	for _, item := range retro.Items {
 		columnMap[item.Type] += formatRetroItemForMarkdownList(item.Content)
 	}
 	for _, column := range template.Format.Columns {
-		columnsList += fmt.Sprintf(`
+		fmt.Fprintf(&columnsList, `
 %s
 
 `, columnMap[column.Name])
@@ -41,8 +42,8 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, template *thunderd
 			},
 			FreeMarkdown: `
 ## Action Items
-` + hermes.Markdown(retroActionsList) + `
-` + hermes.Markdown(columnsList) + `
+` + hermes.Markdown(retroActionsList.String()) + `
+` + hermes.Markdown(columnsList.String()) + `
 
 `,
 		},

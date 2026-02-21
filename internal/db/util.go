@@ -12,6 +12,7 @@ import (
 	"io"
 	"math/big"
 	"regexp"
+	"slices"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -28,13 +29,7 @@ func SanitizeEmail(email string) string {
 
 // Contains checks if a string is present in a slice
 func Contains(s []string, str string) bool {
-	for _, v := range s {
-		if v == str {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(s, str)
 }
 
 // random generates a random secure byte of X length
@@ -46,7 +41,7 @@ func random(length int) ([]byte, error) {
 		return nil, err // out of randomness, should never happen
 	}
 
-	for i := 0; i < length; i++ {
+	for i := range length {
 		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(chars))))
 		if err != nil {
 			return nil, err
