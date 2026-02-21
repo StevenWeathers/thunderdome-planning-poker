@@ -25,9 +25,9 @@ func (s *Service) AssociateStoryboard(ctx context.Context, projectID string, sto
 }
 
 // ListStoryboards retrieves a list of Storyboards associated with a project
-func (d *Service) ListStoryboards(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Storyboard, error) {
+func (s *Service) ListStoryboards(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Storyboard, error) {
 	var storyboards = make([]*thunderdome.Storyboard, 0)
-	rows, err := d.DB.QueryContext(ctx,
+	rows, err := s.DB.QueryContext(ctx,
 		`SELECT s.id, s.name
         FROM thunderdome.project_storyboard ps
 		JOIN thunderdome.storyboard s ON s.id = ps.storyboard_id
@@ -49,14 +49,14 @@ func (d *Service) ListStoryboards(ctx context.Context, projectId string, limit i
 				&tb.ID,
 				&tb.Name,
 			); err != nil {
-				d.Logger.Ctx(ctx).Error("team_storyboard_list query scan error", zap.Error(err))
+				s.Logger.Ctx(ctx).Error("team_storyboard_list query scan error", zap.Error(err))
 				return nil, fmt.Errorf("error scanning storyboard: %v", err)
 			} else {
 				storyboards = append(storyboards, &tb)
 			}
 		}
 	} else {
-		d.Logger.Ctx(ctx).Error("team_storyboard_list query error", zap.Error(err))
+		s.Logger.Ctx(ctx).Error("team_storyboard_list query error", zap.Error(err))
 		return nil, fmt.Errorf("error listing storyboards: %v", err)
 	}
 

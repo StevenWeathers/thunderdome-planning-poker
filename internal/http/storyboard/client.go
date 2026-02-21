@@ -16,12 +16,12 @@ import (
 )
 
 // ServeWs handles websocket requests from the peer.
-func (b *Service) ServeWs() http.HandlerFunc {
-	return b.hub.WebSocketHandler("storyboardId", func(w http.ResponseWriter, r *http.Request, c *wshub.Connection, roomID string) *wshub.AuthError {
+func (s *Service) ServeWs() http.HandlerFunc {
+	return s.hub.WebSocketHandler("storyboardId", func(w http.ResponseWriter, r *http.Request, c *wshub.Connection, roomID string) *wshub.AuthError {
 		ctx := r.Context()
 		var user *thunderdome.User
 
-		sessionID, cookieErr := b.validateSessionCookie(w, r)
+		sessionID, cookieErr := s.validateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "COOKIE_NOT_FOUND" {
 			authErr := wshub.AuthError{
 				Code:    4001,
@@ -32,7 +32,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if sessionID != "" {
 			var userErr error
-			user, userErr = b.AuthService.GetSessionUserByID(ctx, sessionID)
+			user, userErr = s.AuthService.GetSessionUserByID(ctx, sessionID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -41,7 +41,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				return &authErr
 			}
 		} else {
-			userID, err := b.validateUserCookie(w, r)
+			userID, err := s.validateUserCookie(w, r)
 			if err != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -51,7 +51,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			user, userErr = b.UserService.GetGuestUserByID(ctx, userID)
+			user, userErr = s.UserService.GetGuestUserByID(ctx, userID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -62,7 +62,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure storyboard is legit
-		storyboard, storyboardErr := b.StoryboardService.GetStoryboardByID(roomID, user.ID)
+		storyboard, storyboardErr := s.StoryboardService.GetStoryboardByID(roomID, user.ID)
 		if storyboardErr != nil {
 			authErr := wshub.AuthError{
 				Code:    4004,
@@ -72,7 +72,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// check users storyboard active status
-		userErr := b.StoryboardService.GetStoryboardUserActiveStatus(roomID, user.ID)
+		userErr := s.StoryboardService.GetStoryboardUserActiveStatus(roomID, user.ID)
 		userAllowed := userErr == nil || (errors.Is(userErr, sql.ErrNoRows) && storyboard.JoinCode == "")
 		if userErr != nil && !errors.Is(userErr, sql.ErrNoRows) {
 			usrErrMsg := userErr.Error()
@@ -84,7 +84,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 					Message: "duplicate session",
 				}
 			} else {
-				b.logger.Ctx(ctx).Error("error finding user", zap.Error(userErr),
+				s.logger.Ctx(ctx).Error("error finding user", zap.Error(userErr),
 					zap.String("storyboard_id", roomID), zap.String("session_user_id", user.ID))
 				authErr = wshub.AuthError{
 					Code:    4005,
@@ -100,7 +100,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				_, msg, err := c.Ws.ReadMessage()
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-						b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
+						s.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
 							zap.String("storyboard_id", roomID), zap.String("session_user_id", user.ID))
 					}
 					break
@@ -109,7 +109,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				keyVal := make(map[string]string)
 				err = json.Unmarshal(msg, &keyVal)
 				if err != nil {
-					b.logger.Error("unexpected message error", zap.Error(err),
+					s.logger.Error("unexpected message error", zap.Error(err),
 						zap.String("retro_id", roomID), zap.String("session_user_id", user.ID))
 				}
 
@@ -125,9 +125,9 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		if userAllowed {
-			sub := b.hub.NewSubscriber(c.Ws, user.ID, roomID)
+			sub := s.hub.NewSubscriber(c.Ws, user.ID, roomID)
 
-			users, _ := b.StoryboardService.AddUserToStoryboard(roomID, user.ID)
+			users, _ := s.StoryboardService.AddUserToStoryboard(roomID, user.ID)
 			updatedUsers, _ := json.Marshal(users)
 
 			Storyboard, _ := json.Marshal(storyboard)
@@ -135,24 +135,24 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			_ = sub.Conn.Write(websocket.TextMessage, initEvent)
 
 			userJoinedEvent := wshub.CreateSocketEvent("user_joined", string(updatedUsers), user.ID)
-			b.hub.Broadcast(wshub.Message{Data: userJoinedEvent, Room: roomID})
+			s.hub.Broadcast(wshub.Message{Data: userJoinedEvent, Room: roomID})
 
 			go sub.WritePump()
-			go sub.ReadPump(ctx, b.hub)
+			go sub.ReadPump(ctx, s.hub)
 		}
 
 		return nil
 	})
 }
 
-func (b *Service) RetreatUser(roomID string, userID string) string {
-	Users := b.StoryboardService.RetreatStoryboardUser(roomID, userID)
+func (s *Service) RetreatUser(roomID string, userID string) string {
+	Users := s.StoryboardService.RetreatStoryboardUser(roomID, userID)
 	UpdatedUsers, _ := json.Marshal(Users)
 
 	return string(UpdatedUsers)
 }
 
 // APIEvent handles api driven events into the storyboard (if active)
-func (b *Service) APIEvent(ctx context.Context, storyboardID string, userID, eventType string, eventValue string) (any, error) {
-	return b.hub.ProcessAPIEventHandler(ctx, userID, storyboardID, eventType, eventValue)
+func (s *Service) APIEvent(ctx context.Context, storyboardID string, userID, eventType string, eventValue string) (any, error) {
+	return s.hub.ProcessAPIEventHandler(ctx, userID, storyboardID, eventType, eventValue)
 }

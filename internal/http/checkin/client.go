@@ -13,12 +13,12 @@ import (
 )
 
 // ServeWs handles websocket requests from the peer.
-func (b *Service) ServeWs() http.HandlerFunc {
-	return b.hub.WebSocketHandler("teamId", func(w http.ResponseWriter, r *http.Request, c *wshub.Connection, roomID string) *wshub.AuthError {
+func (s *Service) ServeWs() http.HandlerFunc {
+	return s.hub.WebSocketHandler("teamId", func(w http.ResponseWriter, r *http.Request, c *wshub.Connection, roomID string) *wshub.AuthError {
 		ctx := r.Context()
 		var user *thunderdome.User
 
-		sessionID, cookieErr := b.validateSessionCookie(w, r)
+		sessionID, cookieErr := s.validateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "COOKIE_NOT_FOUND" {
 			authErr := wshub.AuthError{
 				Code:    4001,
@@ -29,7 +29,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if sessionID != "" {
 			var userErr error
-			user, userErr = b.AuthService.GetSessionUserByID(ctx, sessionID)
+			user, userErr = s.AuthService.GetSessionUserByID(ctx, sessionID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -38,7 +38,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				return &authErr
 			}
 		} else {
-			userID, err := b.validateUserCookie(w, r)
+			userID, err := s.validateUserCookie(w, r)
 			if err != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -48,7 +48,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			user, userErr = b.UserService.GetGuestUserByID(ctx, userID)
+			user, userErr = s.UserService.GetGuestUserByID(ctx, userID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -59,7 +59,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure team is legit
-		_, retroErr := b.TeamService.TeamGetByID(context.Background(), roomID)
+		_, retroErr := s.TeamService.TeamGetByID(context.Background(), roomID)
 		if retroErr != nil {
 			authErr := wshub.AuthError{
 				Code:    4004,
@@ -69,9 +69,9 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure user is a team user
-		_, UserErr := b.TeamService.TeamUserRoleByUserID(ctx, user.ID, roomID)
+		_, UserErr := s.TeamService.TeamUserRoleByUserID(ctx, user.ID, roomID)
 		if UserErr != nil {
-			b.logger.Ctx(ctx).Error("REQUIRES_TEAM_USER", zap.Error(UserErr),
+			s.logger.Ctx(ctx).Error("REQUIRES_TEAM_USER", zap.Error(UserErr),
 				zap.String("team_id", roomID), zap.String("session_user_id", user.ID))
 
 			authErr := wshub.AuthError{
@@ -81,19 +81,19 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			return &authErr
 		}
 
-		sub := b.hub.NewSubscriber(c.Ws, user.ID, roomID)
+		sub := s.hub.NewSubscriber(c.Ws, user.ID, roomID)
 
 		initEvent := wshub.CreateSocketEvent("init", "", user.ID)
 		_ = sub.Conn.Write(websocket.TextMessage, initEvent)
 
 		go sub.WritePump()
-		go sub.ReadPump(ctx, b.hub)
+		go sub.ReadPump(ctx, s.hub)
 
 		return nil
 	})
 }
 
 // APIEvent handles api driven events into the team checkin (if active)
-func (b *Service) APIEvent(ctx context.Context, teamID string, userID, eventType string, eventValue string) (any, error) {
-	return b.hub.ProcessAPIEventHandler(ctx, userID, teamID, eventType, eventValue)
+func (s *Service) APIEvent(ctx context.Context, teamID string, userID, eventType string, eventValue string) (any, error) {
+	return s.hub.ProcessAPIEventHandler(ctx, userID, teamID, eventType, eventValue)
 }

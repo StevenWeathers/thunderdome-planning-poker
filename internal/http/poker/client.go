@@ -17,12 +17,12 @@ import (
 )
 
 // ServeBattleWs handles websocket requests from the peer.
-func (b *Service) ServeBattleWs() http.HandlerFunc {
-	return b.hub.WebSocketHandler("battleId", func(w http.ResponseWriter, r *http.Request, c *wshub.Connection, roomID string) *wshub.AuthError {
+func (s *Service) ServeBattleWs() http.HandlerFunc {
+	return s.hub.WebSocketHandler("battleId", func(w http.ResponseWriter, r *http.Request, c *wshub.Connection, roomID string) *wshub.AuthError {
 		ctx := r.Context()
 		var user *thunderdome.User
 
-		sessionID, cookieErr := b.validateSessionCookie(w, r)
+		sessionID, cookieErr := s.validateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "COOKIE_NOT_FOUND" {
 			authErr := wshub.AuthError{
 				Code:    4001,
@@ -33,7 +33,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 
 		if sessionID != "" {
 			var userErr error
-			user, userErr = b.AuthService.GetSessionUserByID(ctx, sessionID)
+			user, userErr = s.AuthService.GetSessionUserByID(ctx, sessionID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -42,7 +42,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 				return &authErr
 			}
 		} else {
-			userID, err := b.validateUserCookie(w, r)
+			userID, err := s.validateUserCookie(w, r)
 			if err != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -52,7 +52,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			user, userErr = b.UserService.GetGuestUserByID(ctx, userID)
+			user, userErr = s.UserService.GetGuestUserByID(ctx, userID)
 			if userErr != nil {
 				authErr := wshub.AuthError{
 					Code:    4001,
@@ -63,7 +63,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		}
 
 		// make sure battle is legit
-		battle, battleErr := b.PokerService.GetGameByID(roomID, user.ID)
+		battle, battleErr := s.PokerService.GetGameByID(roomID, user.ID)
 		if battleErr != nil {
 			authErr := wshub.AuthError{
 				Code:    4004,
@@ -73,7 +73,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		}
 
 		// check users battle active status
-		userErr := b.PokerService.GetUserActiveStatus(roomID, user.ID)
+		userErr := s.PokerService.GetUserActiveStatus(roomID, user.ID)
 		userAllowed := userErr == nil || (errors.Is(userErr, sql.ErrNoRows) && battle.JoinCode == "")
 		if userErr != nil && !errors.Is(userErr, sql.ErrNoRows) {
 			usrErrMsg := userErr.Error()
@@ -85,7 +85,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 					Message: "duplicate session",
 				}
 			} else {
-				b.logger.Ctx(ctx).Error("error finding user", zap.Error(userErr),
+				s.logger.Ctx(ctx).Error("error finding user", zap.Error(userErr),
 					zap.String("poker_id", roomID), zap.String("session_user_id", user.ID))
 
 				authErr = wshub.AuthError{
@@ -102,7 +102,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 				_, msg, err := c.Ws.ReadMessage()
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-						b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
+						s.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
 							zap.String("poker_id", roomID), zap.String("session_user_id", user.ID))
 					}
 					break
@@ -111,7 +111,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 				keyVal := make(map[string]string)
 				err = json.Unmarshal(msg, &keyVal)
 				if err != nil {
-					b.logger.Error("unexpected message error", zap.Error(err),
+					s.logger.Error("unexpected message error", zap.Error(err),
 						zap.String("poker_id", roomID), zap.String("session_user_id", user.ID))
 				}
 
@@ -127,9 +127,9 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		}
 
 		if userAllowed {
-			sub := b.hub.NewSubscriber(c.Ws, user.ID, roomID)
+			sub := s.hub.NewSubscriber(c.Ws, user.ID, roomID)
 
-			users, _ := b.PokerService.AddUser(roomID, user.ID)
+			users, _ := s.PokerService.AddUser(roomID, user.ID)
 			updatedUsers, _ := json.Marshal(users)
 
 			Battle, _ := json.Marshal(battle)
@@ -137,24 +137,24 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			_ = sub.Conn.Write(websocket.TextMessage, initEvent)
 
 			userJoinedEvent := wshub.CreateSocketEvent("user_joined", string(updatedUsers), user.ID)
-			b.hub.Broadcast(wshub.Message{Data: userJoinedEvent, Room: roomID})
+			s.hub.Broadcast(wshub.Message{Data: userJoinedEvent, Room: roomID})
 
 			go sub.WritePump()
-			go sub.ReadPump(ctx, b.hub)
+			go sub.ReadPump(ctx, s.hub)
 		}
 
 		return nil
 	})
 }
 
-func (b *Service) RetreatUser(roomID string, userID string) string {
-	users := b.PokerService.RetreatUser(roomID, userID)
+func (s *Service) RetreatUser(roomID string, userID string) string {
+	users := s.PokerService.RetreatUser(roomID, userID)
 	updatedUsers, _ := json.Marshal(users)
 
 	return string(updatedUsers)
 }
 
 // APIEvent handles api driven events into the poker game (if active)
-func (b *Service) APIEvent(ctx context.Context, pokerID string, userID, eventType string, eventValue string) (any, error) {
-	return b.hub.ProcessAPIEventHandler(ctx, userID, pokerID, eventType, eventValue)
+func (s *Service) APIEvent(ctx context.Context, pokerID string, userID, eventType string, eventValue string) (any, error) {
+	return s.hub.ProcessAPIEventHandler(ctx, userID, pokerID, eventType, eventValue)
 }

@@ -7,10 +7,10 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
-func (s *Service) CreateSupportTicket(ctx context.Context, userId, fullName, email, inquiry string) (thunderdome.SupportTicket, error) {
+func (d *Service) CreateSupportTicket(ctx context.Context, userId, fullName, email, inquiry string) (thunderdome.SupportTicket, error) {
 	// make sure user doesn't already have more than 3 pending tickets
 	var existingCount int
-	err := s.DB.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT COUNT(id) FROM thunderdome.support_ticket
 		WHERE user_id = $1 AND resolved_at IS NOT NULL
 	`, userId).Scan(&existingCount)
@@ -29,7 +29,7 @@ func (s *Service) CreateSupportTicket(ctx context.Context, userId, fullName, ema
 		Email:    email,
 		Inquiry:  inquiry,
 	}
-	err = s.DB.QueryRowContext(ctx, `
+	err = d.DB.QueryRowContext(ctx, `
 	INSERT INTO thunderdome.support_ticket (user_id, full_name, email, inquiry)
 	 VALUES ($1, $2, $3, $4)
 	 RETURNING id, created_at, updated_at

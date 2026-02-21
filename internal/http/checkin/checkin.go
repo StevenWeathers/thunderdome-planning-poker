@@ -72,7 +72,7 @@ func New(
 	userService UserDataSvc, authService AuthDataSvc,
 	checkinService CheckinDataSvc, teamService TeamDataSvc,
 ) *Service {
-	c := &Service{
+	s := &Service{
 		config:                config,
 		logger:                logger,
 		validateSessionCookie: validateSessionCookie,
@@ -83,26 +83,26 @@ func New(
 		TeamService:           teamService,
 	}
 
-	c.hub = wshub.NewHub(logger, wshub.Config{
+	s.hub = wshub.NewHub(logger, wshub.Config{
 		AppDomain:          config.AppDomain,
 		WebsocketSubdomain: config.WebsocketSubdomain,
 		WriteWaitSec:       config.WriteWaitSec,
 		PongWaitSec:        config.PongWaitSec,
 		PingPeriodSec:      config.PingPeriodSec,
 	}, map[string]func(context.Context, string, string, string) (any, []byte, error, bool){
-		"checkin_create": c.CheckinCreate,
-		"checkin_update": c.CheckinUpdate,
-		"checkin_delete": c.CheckinDelete,
-		"comment_create": c.CommentCreate,
-		"comment_update": c.CommentUpdate,
-		"comment_delete": c.CommentDelete,
+		"checkin_create": s.CheckinCreate,
+		"checkin_update": s.CheckinUpdate,
+		"checkin_delete": s.CheckinDelete,
+		"comment_create": s.CommentCreate,
+		"comment_update": s.CommentUpdate,
+		"comment_delete": s.CommentDelete,
 	},
 		map[string]struct{}{},
 		nil,
 		nil,
 	)
 
-	go c.hub.Run()
+	go s.hub.Run()
 
-	return c
+	return s
 }

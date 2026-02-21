@@ -13,7 +13,6 @@ linters:
         - -ST1005  # error strings should not end with punctuation or newlines
         - -QF1004  # could use strings.ReplaceAll instead
         - -ST1003  # struct field should be CAPS FOR ACRONYMS
-        - -ST1016  # methods on the same type should have the same receiver name
   exclusions:
     generated: lax
     presets:
