@@ -15,7 +15,7 @@
 
   let facilitatorCode = $state('');
 
-  function handleSubmit(e) {
+  function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
 
     handleBecomeFacilitator(facilitatorCode);
