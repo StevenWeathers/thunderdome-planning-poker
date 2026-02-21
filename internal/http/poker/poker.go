@@ -102,7 +102,7 @@ func New(
 	userService UserDataSvc, authService AuthDataSvc,
 	pokerDataService PokerDataSvc,
 ) *Service {
-	b := &Service{
+	s := &Service{
 		config:                config,
 		logger:                logger,
 		validateSessionCookie: validateSessionCookie,
@@ -112,32 +112,32 @@ func New(
 		PokerService:          pokerDataService,
 	}
 
-	b.hub = wshub.NewHub(logger, wshub.Config{
+	s.hub = wshub.NewHub(logger, wshub.Config{
 		AppDomain:          config.AppDomain,
 		WebsocketSubdomain: config.WebsocketSubdomain,
 		WriteWaitSec:       config.WriteWaitSec,
 		PongWaitSec:        config.PongWaitSec,
 		PingPeriodSec:      config.PingPeriodSec,
 	}, map[string]func(context.Context, string, string, string) (any, []byte, error, bool){
-		"jab_warrior":      b.UserNudge,
-		"vote":             b.UserVote,
-		"retract_vote":     b.UserVoteRetract,
-		"end_voting":       b.StoryVoteEnd,
-		"add_plan":         b.StoryAdd,
-		"revise_plan":      b.StoryRevise,
-		"burn_plan":        b.StoryDelete,
-		"story_arrange":    b.StoryArrange,
-		"activate_plan":    b.StoryActivate,
-		"skip_plan":        b.StorySkip,
-		"finalize_plan":    b.StoryFinalize,
-		"promote_leader":   b.UserPromote,
-		"demote_leader":    b.UserDemote,
-		"become_leader":    b.UserPromoteSelf,
-		"spectator_toggle": b.UserSpectatorToggle,
-		"revise_battle":    b.Revise,
-		"end_game":         b.EndGame,
-		"concede_battle":   b.Delete,
-		"abandon_battle":   b.Abandon,
+		"jab_warrior":      s.UserNudge,
+		"vote":             s.UserVote,
+		"retract_vote":     s.UserVoteRetract,
+		"end_voting":       s.StoryVoteEnd,
+		"add_plan":         s.StoryAdd,
+		"revise_plan":      s.StoryRevise,
+		"burn_plan":        s.StoryDelete,
+		"story_arrange":    s.StoryArrange,
+		"activate_plan":    s.StoryActivate,
+		"skip_plan":        s.StorySkip,
+		"finalize_plan":    s.StoryFinalize,
+		"promote_leader":   s.UserPromote,
+		"demote_leader":    s.UserDemote,
+		"become_leader":    s.UserPromoteSelf,
+		"spectator_toggle": s.UserSpectatorToggle,
+		"revise_battle":    s.Revise,
+		"end_game":         s.EndGame,
+		"concede_battle":   s.Delete,
+		"abandon_battle":   s.Abandon,
 	},
 		map[string]struct{}{
 			"add_plan":       {},
@@ -155,11 +155,11 @@ func New(
 			"end_game":       {},
 			"concede_battle": {},
 		},
-		b.PokerService.ConfirmFacilitator,
-		b.RetreatUser,
+		s.PokerService.ConfirmFacilitator,
+		s.RetreatUser,
 	)
 
-	go b.hub.Run()
+	go s.hub.Run()
 
-	return b
+	return s
 }

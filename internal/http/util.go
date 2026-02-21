@@ -153,8 +153,8 @@ func getSearchFromRequest(r *http.Request) (search string, err error) {
 
 // for logging purposes sanitize strings by removing new lines
 func sanitizeUserInputForLogs(unescapedInput string) string {
-	escapedString := strings.Replace(unescapedInput, "\n", "", -1)
-	escapedString = strings.Replace(escapedString, "\r", "", -1)
+	escapedString := strings.ReplaceAll(unescapedInput, "\n", "")
+	escapedString = strings.ReplaceAll(escapedString, "\r", "")
 	return escapedString
 }
 

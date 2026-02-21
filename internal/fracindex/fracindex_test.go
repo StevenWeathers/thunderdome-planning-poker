@@ -32,13 +32,13 @@ func TestKeyBetween(t *testing.T) {
 		{new("Z~"), new("a 1"), new("a "), nil},
 		{nil, new("a0V"), new("a0"), nil},
 		{nil, new("b999"), new("b99"), nil},
-		{nil, new("A                          "), nil, errors.New("Key is too small")},
+		{nil, new("A                          "), nil, errors.New("key is too small")},
 		// @TODO - fix the implementation to handle this case
 		//{nil, strPtr("A                          !"), strPtr("A                           P"), nil},
 		{new("zzzzzzzzzzzzzzzzzzzzzzzzzzy"), nil, new("zzzzzzzzzzzzzzzzzzzzzzzzzzz"), nil},
 		{new("z~~~~~~~~~~~~~~~~~~~~~~~~~~"), nil, new("z~~~~~~~~~~~~~~~~~~~~~~~~~~P"), nil},
-		{new("a0 "), nil, nil, errors.New("Fractional part should not end with ' ' (space)")},
-		{new("a0 "), new("a1"), nil, errors.New("Fractional part should not end with ' ' (space)")},
+		{new("a0 "), nil, nil, errors.New("fractional part should not end with ' ' (space)")},
+		{new("a0 "), new("a1"), nil, errors.New("fractional part should not end with ' ' (space)")},
 		{new("0"), new("1"), nil, errors.New("head is out of range")},
 		{new("a1"), new("a0"), nil, errors.New("key_between - a must be before b")},
 	}

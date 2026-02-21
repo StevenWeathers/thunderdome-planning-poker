@@ -8,7 +8,7 @@ import (
 )
 
 // CheckinCreate creates a checkin
-func (b *Service) CheckinCreate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) CheckinCreate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
 		UserID    string `json:"userId"`
 		Yesterday string `json:"yesterday"`
@@ -22,7 +22,7 @@ func (b *Service) CheckinCreate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = b.CheckinService.CheckinCreate(context.Background(), teamID, c.UserID, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+	err = s.CheckinService.CheckinCreate(context.Background(), teamID, c.UserID, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -33,7 +33,7 @@ func (b *Service) CheckinCreate(ctx context.Context, teamID string, userID strin
 }
 
 // CheckinUpdate updates a checkin
-func (b *Service) CheckinUpdate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) CheckinUpdate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
 		CheckinID string `json:"checkinId"`
 		Yesterday string `json:"yesterday"`
@@ -47,7 +47,7 @@ func (b *Service) CheckinUpdate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = b.CheckinService.CheckinUpdate(context.Background(), c.CheckinID, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+	err = s.CheckinService.CheckinUpdate(context.Background(), c.CheckinID, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -58,7 +58,7 @@ func (b *Service) CheckinUpdate(ctx context.Context, teamID string, userID strin
 }
 
 // CheckinDelete deletes a checkin
-func (b *Service) CheckinDelete(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) CheckinDelete(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
 		CheckinID string `json:"checkinId"`
 	}
@@ -67,7 +67,7 @@ func (b *Service) CheckinDelete(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = b.CheckinService.CheckinDelete(context.Background(), c.CheckinID)
+	err = s.CheckinService.CheckinDelete(context.Background(), c.CheckinID)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -78,7 +78,7 @@ func (b *Service) CheckinDelete(ctx context.Context, teamID string, userID strin
 }
 
 // CommentCreate creates a checkin comment
-func (b *Service) CommentCreate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) CommentCreate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
 		CheckinID string `json:"checkinId"`
 		UserID    string `json:"userId"`
@@ -89,7 +89,7 @@ func (b *Service) CommentCreate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = b.CheckinService.CheckinComment(ctx, teamID, c.CheckinID, c.UserID, c.Comment)
+	err = s.CheckinService.CheckinComment(ctx, teamID, c.CheckinID, c.UserID, c.Comment)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -100,7 +100,7 @@ func (b *Service) CommentCreate(ctx context.Context, teamID string, userID strin
 }
 
 // CommentUpdate updates a checkin comment
-func (b *Service) CommentUpdate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) CommentUpdate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
 		CommentID string `json:"commentId"`
 		UserID    string `json:"userId"`
@@ -111,7 +111,7 @@ func (b *Service) CommentUpdate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = b.CheckinService.CheckinCommentEdit(ctx, teamID, c.UserID, c.CommentID, c.Comment)
+	err = s.CheckinService.CheckinCommentEdit(ctx, teamID, c.UserID, c.CommentID, c.Comment)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -122,7 +122,7 @@ func (b *Service) CommentUpdate(ctx context.Context, teamID string, userID strin
 }
 
 // CommentDelete deletes a checkin comment
-func (b *Service) CommentDelete(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) CommentDelete(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
 		CommentID string `json:"commentId"`
 	}
@@ -131,7 +131,7 @@ func (b *Service) CommentDelete(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = b.CheckinService.CheckinCommentDelete(ctx, c.CommentID)
+	err = s.CheckinService.CheckinCommentDelete(ctx, c.CommentID)
 	if err != nil {
 		return nil, nil, err, false
 	}

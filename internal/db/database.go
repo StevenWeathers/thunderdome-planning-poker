@@ -80,36 +80,36 @@ func New(adminEmail string, config *Config, logger *otelzap.Logger, instantiate 
 	return d
 }
 
-func (d *Service) Instantiate(ctx context.Context, adminEmail string) {
-	if err := goose.Up(d.DB, migrationsDir, goose.WithAllowMissing()); err != nil {
-		d.Logger.Ctx(ctx).Error("migrations error", zap.Error(err))
+func (s *Service) Instantiate(ctx context.Context, adminEmail string) {
+	if err := goose.Up(s.DB, migrationsDir, goose.WithAllowMissing()); err != nil {
+		s.Logger.Ctx(ctx).Error("migrations error", zap.Error(err))
 	}
 
 	// on server start reset all users to active false for games
-	if _, err := d.DB.Exec(
+	if _, err := s.DB.Exec(
 		`CALL thunderdome.users_deactivate_all();`); err != nil {
-		d.Logger.Ctx(ctx).Error("CALL thunderdome.deactivate_all_users error", zap.Error(err))
+		s.Logger.Ctx(ctx).Error("CALL thunderdome.deactivate_all_users error", zap.Error(err))
 	}
 
 	// on server start if admin email is specified set that user to admin type
 	if adminEmail != "" {
-		if _, err := d.DB.Exec(
+		if _, err := s.DB.Exec(
 			`UPDATE thunderdome.users SET type = 'ADMIN', updated_date = NOW() WHERE email = $1;`,
 			adminEmail,
 		); err != nil {
-			d.Logger.Ctx(ctx).Error("CALL thunderdome.promote_user_by_email error", zap.Error(err), zap.String("admin_email", adminEmail))
+			s.Logger.Ctx(ctx).Error("CALL thunderdome.promote_user_by_email error", zap.Error(err), zap.String("admin_email", adminEmail))
 		}
 	}
 
 	// backwards compatibility for self-hosted instances with custom estimation scale configured
 	// will be removed in v5 and documented in the release notes
-	if len(d.Config.DefaultEstimationScale) > 0 {
-		if _, err := d.DB.Exec(
+	if len(s.Config.DefaultEstimationScale) > 0 {
+		if _, err := s.DB.Exec(
 			`UPDATE thunderdome.estimation_scale SET values = $1 WHERE scale_type = 'thunderdome_default' AND
 		values <> $1;`,
-			d.Config.DefaultEstimationScale,
+			s.Config.DefaultEstimationScale,
 		); err != nil {
-			d.Logger.Ctx(ctx).Error("failed to update thunderdome_default estimation scale", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("failed to update thunderdome_default estimation scale", zap.Error(err))
 		}
 	}
 }

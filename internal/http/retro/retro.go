@@ -102,7 +102,7 @@ func New(
 	retroService RetroDataSvc, templateService RetroTemplateDataSvc,
 	emailService EmailService,
 ) *Service {
-	rs := &Service{
+	s := &Service{
 		config:                config,
 		logger:                logger,
 		validateSessionCookie: validateSessionCookie,
@@ -114,38 +114,38 @@ func New(
 		EmailService:          emailService,
 	}
 
-	rs.hub = wshub.NewHub(logger, wshub.Config{
+	s.hub = wshub.NewHub(logger, wshub.Config{
 		AppDomain:          config.AppDomain,
 		WebsocketSubdomain: config.WebsocketSubdomain,
 		WriteWaitSec:       config.WriteWaitSec,
 		PongWaitSec:        config.PongWaitSec,
 		PingPeriodSec:      config.PingPeriodSec,
 	}, map[string]func(context.Context, string, string, string) (any, []byte, error, bool){
-		"create_item":            rs.CreateItem,
-		"user_ready":             rs.UserMarkReady,
-		"user_unready":           rs.UserUnMarkReady,
-		"group_item":             rs.GroupItem,
-		"group_name_change":      rs.GroupNameChange,
-		"group_vote":             rs.GroupUserVote,
-		"group_vote_subtract":    rs.GroupUserSubtractVote,
-		"delete_item":            rs.DeleteItem,
-		"item_comment_add":       rs.ItemCommentAdd,
-		"item_comment_edit":      rs.ItemCommentEdit,
-		"item_comment_delete":    rs.ItemCommentDelete,
-		"create_action":          rs.CreateAction,
-		"update_action":          rs.UpdateAction,
-		"delete_action":          rs.DeleteAction,
-		"action_assignee_add":    rs.ActionAddAssignee,
-		"action_assignee_remove": rs.ActionRemoveAssignee,
-		"advance_phase":          rs.AdvancePhase,
-		"phase_time_ran_out":     rs.PhaseTimeout,
-		"phase_all_ready":        rs.PhaseAllReady,
-		"add_facilitator":        rs.FacilitatorAdd,
-		"remove_facilitator":     rs.FacilitatorRemove,
-		"self_facilitator":       rs.FacilitatorSelf,
-		"edit_retro":             rs.EditRetro,
-		"concede_retro":          rs.Delete,
-		"abandon_retro":          rs.Abandon,
+		"create_item":            s.CreateItem,
+		"user_ready":             s.UserMarkReady,
+		"user_unready":           s.UserUnMarkReady,
+		"group_item":             s.GroupItem,
+		"group_name_change":      s.GroupNameChange,
+		"group_vote":             s.GroupUserVote,
+		"group_vote_subtract":    s.GroupUserSubtractVote,
+		"delete_item":            s.DeleteItem,
+		"item_comment_add":       s.ItemCommentAdd,
+		"item_comment_edit":      s.ItemCommentEdit,
+		"item_comment_delete":    s.ItemCommentDelete,
+		"create_action":          s.CreateAction,
+		"update_action":          s.UpdateAction,
+		"delete_action":          s.DeleteAction,
+		"action_assignee_add":    s.ActionAddAssignee,
+		"action_assignee_remove": s.ActionRemoveAssignee,
+		"advance_phase":          s.AdvancePhase,
+		"phase_time_ran_out":     s.PhaseTimeout,
+		"phase_all_ready":        s.PhaseAllReady,
+		"add_facilitator":        s.FacilitatorAdd,
+		"remove_facilitator":     s.FacilitatorRemove,
+		"self_facilitator":       s.FacilitatorSelf,
+		"edit_retro":             s.EditRetro,
+		"concede_retro":          s.Delete,
+		"abandon_retro":          s.Abandon,
 	},
 		map[string]struct{}{
 			"advance_phase":      {},
@@ -156,11 +156,11 @@ func New(
 			"phase_time_ran_out": {},
 			"phase_all_ready":    {},
 		},
-		rs.RetroService.RetroConfirmFacilitator,
-		rs.RetreatUser,
+		s.RetroService.RetroConfirmFacilitator,
+		s.RetreatUser,
 	)
 
-	go rs.hub.Run()
+	go s.hub.Run()
 
-	return rs
+	return s
 }

@@ -10,7 +10,7 @@ import (
 )
 
 // UserNudge handles notifying user that they need to vote
-func (b *Service) UserNudge(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) UserNudge(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	msg := wshub.CreateSocketEvent("jab_warrior", eventValue, userID)
 
 	return nil, msg, nil, false
@@ -18,7 +18,7 @@ func (b *Service) UserNudge(ctx context.Context, pokerID string, userID string, 
 
 // UserVote handles the participants vote event by setting their vote
 // and checks if AutoFinishVoting && AllVoted if so ends voting
-func (b *Service) UserVote(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) UserVote(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var msg []byte
 	var wv struct {
 		VoteValue        string `json:"voteValue"`
@@ -30,13 +30,13 @@ func (b *Service) UserVote(ctx context.Context, pokerID string, userID string, e
 		return nil, nil, err, false
 	}
 
-	storys, allVoted := b.PokerService.SetVote(pokerID, userID, wv.StoryID, wv.VoteValue)
+	storys, allVoted := s.PokerService.SetVote(pokerID, userID, wv.StoryID, wv.VoteValue)
 
 	updatedStorys, _ := json.Marshal(storys)
 	msg = wshub.CreateSocketEvent("vote_activity", string(updatedStorys), userID)
 
 	if allVoted && wv.AutoFinishVoting {
-		plans, err := b.PokerService.EndStoryVoting(pokerID, wv.StoryID)
+		plans, err := s.PokerService.EndStoryVoting(pokerID, wv.StoryID)
 		if err != nil {
 			return nil, nil, err, false
 		}
@@ -48,10 +48,10 @@ func (b *Service) UserVote(ctx context.Context, pokerID string, userID string, e
 }
 
 // UserVoteRetract handles retracting a user vote
-func (b *Service) UserVoteRetract(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) UserVoteRetract(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	storyID := eventValue
 
-	plans, err := b.PokerService.RetractVote(pokerID, userID, storyID)
+	plans, err := s.PokerService.RetractVote(pokerID, userID, storyID)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -63,8 +63,8 @@ func (b *Service) UserVoteRetract(ctx context.Context, pokerID string, userID st
 }
 
 // UserPromote handles promoting a user to a facilitator
-func (b *Service) UserPromote(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	leaders, err := b.PokerService.AddFacilitator(pokerID, eventValue)
+func (s *Service) UserPromote(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	leaders, err := s.PokerService.AddFacilitator(pokerID, eventValue)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -76,8 +76,8 @@ func (b *Service) UserPromote(ctx context.Context, pokerID string, userID string
 }
 
 // UserDemote handles demoting a user from a facilitator
-func (b *Service) UserDemote(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	leaders, err := b.PokerService.RemoveFacilitator(pokerID, eventValue)
+func (s *Service) UserDemote(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	leaders, err := s.PokerService.RemoveFacilitator(pokerID, eventValue)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -89,14 +89,14 @@ func (b *Service) UserDemote(ctx context.Context, pokerID string, userID string,
 }
 
 // UserPromoteSelf handles self-promoting a user to a facilitator
-func (b *Service) UserPromoteSelf(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	leaderCode, err := b.PokerService.GetFacilitatorCode(pokerID)
+func (s *Service) UserPromoteSelf(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	leaderCode, err := s.PokerService.GetFacilitatorCode(pokerID)
 	if err != nil {
 		return nil, nil, err, false
 	}
 
 	if eventValue == leaderCode {
-		leaders, err := b.PokerService.AddFacilitator(pokerID, userID)
+		leaders, err := s.PokerService.AddFacilitator(pokerID, userID)
 		if err != nil {
 			return nil, nil, err, false
 		}
@@ -111,7 +111,7 @@ func (b *Service) UserPromoteSelf(ctx context.Context, pokerID string, userID st
 }
 
 // UserSpectatorToggle handles toggling user spectator status
-func (b *Service) UserSpectatorToggle(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) UserSpectatorToggle(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var st struct {
 		Spectator bool `json:"spectator"`
 	}
@@ -119,7 +119,7 @@ func (b *Service) UserSpectatorToggle(ctx context.Context, pokerID string, userI
 	if err != nil {
 		return nil, nil, err, false
 	}
-	users, err := b.PokerService.ToggleSpectator(pokerID, userID, st.Spectator)
+	users, err := s.PokerService.ToggleSpectator(pokerID, userID, st.Spectator)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -131,8 +131,8 @@ func (b *Service) UserSpectatorToggle(ctx context.Context, pokerID string, userI
 }
 
 // StoryVoteEnd handles ending story voting
-func (b *Service) StoryVoteEnd(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	plans, err := b.PokerService.EndStoryVoting(pokerID, eventValue)
+func (s *Service) StoryVoteEnd(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	plans, err := s.PokerService.EndStoryVoting(pokerID, eventValue)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -143,7 +143,7 @@ func (b *Service) StoryVoteEnd(ctx context.Context, pokerID string, userID strin
 }
 
 // Revise handles editing the poker game settings
-func (b *Service) Revise(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) Revise(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var rb struct {
 		BattleName           string   `json:"battleName"`
 		PointValuesAllowed   []string `json:"pointValuesAllowed"`
@@ -159,7 +159,7 @@ func (b *Service) Revise(ctx context.Context, pokerID string, userID string, eve
 		return nil, nil, err, false
 	}
 
-	err = b.PokerService.UpdateGame(
+	err = s.PokerService.UpdateGame(
 		pokerID,
 		rb.BattleName,
 		rb.PointValuesAllowed,
@@ -183,8 +183,8 @@ func (b *Service) Revise(ctx context.Context, pokerID string, userID string, eve
 }
 
 // Delete handles deleting the poker game
-func (b *Service) Delete(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	err := b.PokerService.DeleteGame(pokerID)
+func (s *Service) Delete(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	err := s.PokerService.DeleteGame(pokerID)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -194,7 +194,7 @@ func (b *Service) Delete(ctx context.Context, pokerID string, userID string, eve
 }
 
 // StoryAdd adds a new story to the poker game
-func (b *Service) StoryAdd(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) StoryAdd(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var p struct {
 		Name               string `json:"planName"`
 		Type               string `json:"type"`
@@ -209,7 +209,7 @@ func (b *Service) StoryAdd(ctx context.Context, pokerID string, userID string, e
 		return nil, nil, err, false
 	}
 
-	plans, err := b.PokerService.CreateStory(pokerID, p.Name, p.Type, p.ReferenceID, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
+	plans, err := s.PokerService.CreateStory(pokerID, p.Name, p.Type, p.ReferenceID, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -220,7 +220,7 @@ func (b *Service) StoryAdd(ctx context.Context, pokerID string, userID string, e
 }
 
 // StoryRevise handles editing a poker story
-func (b *Service) StoryRevise(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) StoryRevise(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var p struct {
 		ID                 string `json:"planId"`
 		Name               string `json:"planName"`
@@ -236,7 +236,7 @@ func (b *Service) StoryRevise(ctx context.Context, pokerID string, userID string
 		return nil, nil, err, false
 	}
 
-	stories, err := b.PokerService.UpdateStory(pokerID, p.ID, p.Name, p.Type, p.ReferenceID, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
+	stories, err := s.PokerService.UpdateStory(pokerID, p.ID, p.Name, p.Type, p.ReferenceID, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -247,8 +247,8 @@ func (b *Service) StoryRevise(ctx context.Context, pokerID string, userID string
 }
 
 // StoryDelete handles deleting a story
-func (b *Service) StoryDelete(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	plans, err := b.PokerService.DeleteStory(pokerID, eventValue)
+func (s *Service) StoryDelete(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	plans, err := s.PokerService.DeleteStory(pokerID, eventValue)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -259,7 +259,7 @@ func (b *Service) StoryDelete(ctx context.Context, pokerID string, userID string
 }
 
 // StoryArrange sets the position of the story relative to the beforeStory
-func (b *Service) StoryArrange(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) StoryArrange(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var p struct {
 		StoryID       string `json:"story_id"`
 		BeforeStoryID string `json:"before_story_id"`
@@ -269,7 +269,7 @@ func (b *Service) StoryArrange(ctx context.Context, pokerID string, userID strin
 		return nil, nil, err, false
 	}
 
-	plans, err := b.PokerService.ArrangeStory(pokerID, p.StoryID, p.BeforeStoryID)
+	plans, err := s.PokerService.ArrangeStory(pokerID, p.StoryID, p.BeforeStoryID)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -280,8 +280,8 @@ func (b *Service) StoryArrange(ctx context.Context, pokerID string, userID strin
 }
 
 // StoryActivate handles activating a story for voting
-func (b *Service) StoryActivate(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	plans, err := b.PokerService.ActivateStoryVoting(pokerID, eventValue)
+func (s *Service) StoryActivate(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	plans, err := s.PokerService.ActivateStoryVoting(pokerID, eventValue)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -292,8 +292,8 @@ func (b *Service) StoryActivate(ctx context.Context, pokerID string, userID stri
 }
 
 // StorySkip handles skipping a story voting
-func (b *Service) StorySkip(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	plans, err := b.PokerService.SkipStory(pokerID, eventValue)
+func (s *Service) StorySkip(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	plans, err := s.PokerService.SkipStory(pokerID, eventValue)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -304,7 +304,7 @@ func (b *Service) StorySkip(ctx context.Context, pokerID string, userID string, 
 }
 
 // StoryFinalize handles setting a story point value
-func (b *Service) StoryFinalize(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) StoryFinalize(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var p struct {
 		ID     string `json:"planId"`
 		Points string `json:"planPoints"`
@@ -314,7 +314,7 @@ func (b *Service) StoryFinalize(ctx context.Context, pokerID string, userID stri
 		return nil, nil, err, false
 	}
 
-	plans, err := b.PokerService.FinalizeStory(pokerID, p.ID, p.Points)
+	plans, err := s.PokerService.FinalizeStory(pokerID, p.ID, p.Points)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -325,7 +325,7 @@ func (b *Service) StoryFinalize(ctx context.Context, pokerID string, userID stri
 }
 
 // EndGame ends a poker game with a specified reason
-func (b *Service) EndGame(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+func (s *Service) EndGame(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var p struct {
 		EndReason string `json:"endReason"`
 	}
@@ -339,7 +339,7 @@ func (b *Service) EndGame(ctx context.Context, pokerID string, userID string, ev
 	}
 
 	txCtx := context.WithoutCancel(ctx)
-	reason, endTime, err := b.PokerService.EndGame(txCtx, pokerID, p.EndReason)
+	reason, endTime, err := s.PokerService.EndGame(txCtx, pokerID, p.EndReason)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -357,8 +357,8 @@ func (b *Service) EndGame(ctx context.Context, pokerID string, userID string, ev
 }
 
 // Abandon handles setting abandoned true so game doesn't show up in users poker game list, then leaves game
-func (b *Service) Abandon(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
-	_, err := b.PokerService.AbandonGame(pokerID, userID)
+func (s *Service) Abandon(ctx context.Context, pokerID string, userID string, eventValue string) (any, []byte, error, bool) {
+	_, err := s.PokerService.AbandonGame(pokerID, userID)
 	if err != nil {
 		return nil, nil, err, false
 	}
