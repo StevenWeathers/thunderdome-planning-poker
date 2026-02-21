@@ -83,13 +83,13 @@
 
   $effect(() => {
     if (gameOver) {
-      toggleShow('all')();
+      storysShow = 'all';
     }
   });
 
   onMount(() => {
     if (gameOver) {
-      toggleShow('all')();
+      storysShow = 'all';
     }
   });
 

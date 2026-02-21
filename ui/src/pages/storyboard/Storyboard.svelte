@@ -591,7 +591,7 @@
 {#if showAddGoal}
   <AddGoal
     {handleGoalAdd}
-    toggleAddGoal={toggleAddGoal(undefined)()}
+    toggleAddGoal={toggleAddGoal(undefined)}
     {handleGoalRevision}
     goalId={reviseGoalId}
     goalName={reviseGoalName}
@@ -601,7 +601,7 @@
 {#if editColumn}
   <ColumnForm
     {handleColumnRevision}
-    toggleColumnEdit={toggleColumnEdit(null)()}
+    toggleColumnEdit={toggleColumnEdit(null)}
     column={editColumn}
     personas={storyboard.personas}
     handlePersonaAdd={handleColumnPersonaAdd}
