@@ -47,11 +47,6 @@ const docTemplate = `{
         },
         "/admin/admin-users": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "List admin users with pagination",
                 "produces": [
                     "application/json"
@@ -105,16 +100,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/apikeys": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/apikeys": {
+            "get": {
                 "description": "Get a list of users API Keys",
                 "produces": [
                     "application/json"
@@ -165,16 +160,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/estimation-scales": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/estimation-scales": {
+            "get": {
                 "description": "get list of estimation scales",
                 "produces": [
                     "application/json"
@@ -225,14 +220,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates an estimation scale",
                 "produces": [
                     "application/json"
@@ -277,16 +272,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/estimation-scales/{scaleId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/estimation-scales/{scaleId}": {
+            "put": {
                 "description": "Updates an Estimation Scale",
                 "produces": [
                     "application/json"
@@ -338,14 +333,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes an Estimation Scale",
                 "produces": [
                     "application/json"
@@ -376,16 +371,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/organizations": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/organizations": {
+            "get": {
                 "description": "Get a list of organizations",
                 "produces": [
                     "application/json"
@@ -436,16 +431,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/poker-settings/{id}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/poker-settings/{id}": {
+            "get": {
                 "description": "get poker settings by ID",
                 "produces": [
                     "application/json"
@@ -495,14 +490,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes poker settings for an organization, department, or team",
                 "produces": [
                     "application/json"
@@ -540,16 +535,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/projects": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/projects": {
+            "get": {
                 "description": "get list of projects",
                 "produces": [
                     "application/json"
@@ -601,14 +596,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a project",
                 "produces": [
                     "application/json"
@@ -660,16 +655,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/projects/{projectId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/projects/{projectId}": {
+            "get": {
                 "description": "get a specific project by its ID",
                 "produces": [
                     "application/json"
@@ -719,14 +714,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates a Project",
                 "produces": [
                     "application/json"
@@ -785,14 +780,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a Project",
                 "produces": [
                     "application/json"
@@ -830,16 +825,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/retro-settings/{id}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/retro-settings/{id}": {
+            "get": {
                 "description": "get retro settings by ID",
                 "produces": [
                     "application/json"
@@ -889,14 +884,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes retro settings for an organization, department, or team",
                 "produces": [
                     "application/json"
@@ -934,16 +929,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/retro-templates": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/retro-templates": {
+            "get": {
                 "description": "get list of retro templates",
                 "produces": [
                     "application/json"
@@ -994,14 +989,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a retro template",
                 "produces": [
                     "application/json"
@@ -1052,16 +1047,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/retro-templates/{templateId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/retro-templates/{templateId}": {
+            "get": {
                 "description": "get a specific retro template by its ID",
                 "produces": [
                     "application/json"
@@ -1110,14 +1105,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates a Retro Template",
                 "produces": [
                     "application/json"
@@ -1175,14 +1170,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a Retro Template",
                 "produces": [
                     "application/json"
@@ -1219,16 +1214,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/search/users/email": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/search/users/email": {
+            "get": {
                 "description": "Get list of registered users filtered by Email likeness",
                 "produces": [
                     "application/json"
@@ -1292,16 +1287,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/stats": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/stats": {
+            "get": {
                 "description": "Get application stats such as count of registered users",
                 "produces": [
                     "application/json"
@@ -1338,16 +1333,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/support-tickets": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/support-tickets": {
+            "get": {
                 "description": "List support tickets with pagination",
                 "produces": [
                     "application/json"
@@ -1401,16 +1396,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/support-tickets/{ticketId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/support-tickets/{ticketId}": {
+            "get": {
                 "description": "Get a support ticket by its ID",
                 "produces": [
                     "application/json"
@@ -1459,14 +1454,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Update a support ticket",
                 "consumes": [
                     "application/json"
@@ -1527,14 +1522,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete a support ticket by its ID",
                 "produces": [
                     "application/json"
@@ -1565,16 +1560,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/teams": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/teams": {
+            "get": {
                 "description": "Get a list of teams",
                 "produces": [
                     "application/json"
@@ -1625,16 +1620,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/teams/{teamID}/metrics": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/teams/{teamID}/metrics": {
+            "get": {
                 "description": "Get metrics for a specific team such as user count, poker game count, etc.",
                 "produces": [
                     "application/json"
@@ -1689,16 +1684,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/users": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/users": {
+            "get": {
                 "description": "Get list of registered users",
                 "produces": [
                     "application/json"
@@ -1749,14 +1744,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create a registered user",
                 "produces": [
                     "application/json"
@@ -1807,16 +1802,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/users/{userId}/demote": {
-            "patch": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/users/{userId}/demote": {
+            "patch": {
                 "description": "Demotes a user from admin to registered",
                 "produces": [
                     "application/json"
@@ -1847,16 +1842,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/users/{userId}/disable": {
-            "patch": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/users/{userId}/disable": {
+            "patch": {
                 "description": "Disable a user from logging in",
                 "produces": [
                     "application/json"
@@ -1887,16 +1882,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/users/{userId}/enable": {
-            "patch": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/users/{userId}/enable": {
+            "patch": {
                 "description": "Enable a user to allow login",
                 "produces": [
                     "application/json"
@@ -1927,16 +1922,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/users/{userId}/password": {
-            "patch": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/users/{userId}/password": {
+            "patch": {
                 "description": "Updates the user's password",
                 "tags": [
                     "admin"
@@ -1978,16 +1973,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/admin/users/{userId}/promote/": {
-            "patch": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/admin/users/{userId}/promote/": {
+            "patch": {
                 "description": "Promotes a user to admin\nGrants read and write access to administrative information",
                 "produces": [
                     "application/json"
@@ -2018,16 +2013,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/alerts": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/alerts": {
+            "get": {
                 "description": "get list of alerts (global notices)",
                 "produces": [
                     "application/json"
@@ -2078,14 +2073,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates an alert (global notice)",
                 "produces": [
                     "application/json"
@@ -2133,16 +2128,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/alerts/{alertId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/alerts/{alertId}": {
+            "put": {
                 "description": "Updates an Alert",
                 "produces": [
                     "application/json"
@@ -2197,14 +2192,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes an Alert",
                 "produces": [
                     "application/json"
@@ -2250,7 +2245,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/auth": {
@@ -2779,11 +2779,6 @@ const docTemplate = `{
         },
         "/auth/update-password": {
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Updates the user's password",
                 "produces": [
                     "application/json"
@@ -2821,16 +2816,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/auth/user": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/auth/user": {
+            "get": {
                 "description": "Gets a users profile by session user ID",
                 "produces": [
                     "application/json"
@@ -2871,7 +2866,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/auth/verify": {
@@ -2912,11 +2912,6 @@ const docTemplate = `{
         },
         "/battles": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "get list of poker games",
                 "produces": [
                     "application/json"
@@ -2973,16 +2968,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/battles/{battleId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/battles/{battleId}": {
+            "get": {
                 "description": "get poker game by ID",
                 "produces": [
                     "application/json"
@@ -3031,14 +3026,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a poker game",
                 "produces": [
                     "application/json"
@@ -3075,16 +3070,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/battles/{battleId}/end": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/battles/{battleId}/end": {
+            "post": {
                 "description": "Ends a poker game",
                 "produces": [
                     "application/json"
@@ -3130,16 +3125,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/battles/{battleId}/plans": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/battles/{battleId}/plans": {
+            "post": {
                 "description": "Creates a poker story",
                 "produces": [
                     "application/json"
@@ -3185,16 +3180,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/battles/{battleId}/plans/{planId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/battles/{battleId}/plans/{planId}": {
+            "put": {
                 "description": "Updates a poker story",
                 "produces": [
                     "application/json"
@@ -3247,14 +3242,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a poker story",
                 "produces": [
                     "application/json"
@@ -3298,16 +3293,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/departments/{deptId}/poker-settings": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/departments/{deptId}/poker-settings": {
+            "post": {
                 "description": "Creates new poker settings for a department",
                 "produces": [
                     "application/json"
@@ -3365,7 +3360,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/estimation-scales/public": {
@@ -3478,11 +3478,6 @@ const docTemplate = `{
         },
         "/maintenance/clean-battles": {
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Deletes battles older than {config.cleanup_battles_days_old} based on last activity date",
                 "produces": [
                     "application/json"
@@ -3504,16 +3499,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/maintenance/clean-guests": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/maintenance/clean-guests": {
+            "delete": {
                 "description": "Deletes guest users older than {config.cleanup_guests_days_old} based on last activity date",
                 "produces": [
                     "application/json"
@@ -3535,16 +3530,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/maintenance/clean-retros": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/maintenance/clean-retros": {
+            "delete": {
                 "description": "Deletes retros older than {config.cleanup_retros_days_old} based on last activity date",
                 "produces": [
                     "application/json"
@@ -3566,16 +3561,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/maintenance/clean-storyboards": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/maintenance/clean-storyboards": {
+            "delete": {
                 "description": "Deletes storyboards older than {config.cleanup_storyboards_days_old} based on last activity date",
                 "produces": [
                     "application/json"
@@ -3597,16 +3592,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organization/{orgId}/estimation-scales/{scaleId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organization/{orgId}/estimation-scales/{scaleId}": {
+            "delete": {
                 "description": "Deletes an Organization Estimation Scale",
                 "produces": [
                     "application/json"
@@ -3637,16 +3632,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organization/{orgId}/retro-templates/{templateId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organization/{orgId}/retro-templates/{templateId}": {
+            "put": {
                 "description": "Updates an Organization Retro Template",
                 "produces": [
                     "application/json"
@@ -3711,16 +3706,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}": {
+            "get": {
                 "description": "Get an organization with user role",
                 "produces": [
                     "application/json"
@@ -3769,14 +3764,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Update organization",
                 "produces": [
                     "application/json"
@@ -3834,14 +3829,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete an Organization",
                 "produces": [
                     "application/json"
@@ -3878,16 +3873,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments": {
+            "get": {
                 "description": "get list of organizations departments",
                 "produces": [
                     "application/json"
@@ -3927,14 +3922,14 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create an organization department",
                 "produces": [
                     "application/json"
@@ -3986,16 +3981,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}": {
+            "get": {
                 "description": "Gets an organization department with users role",
                 "produces": [
                     "application/json"
@@ -4045,14 +4040,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Update an organization department",
                 "produces": [
                     "application/json"
@@ -4111,14 +4106,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete a Department",
                 "produces": [
                     "application/json"
@@ -4155,16 +4150,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/invites": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/invites": {
+            "get": {
                 "description": "Get a list of user invites associated to the department",
                 "produces": [
                     "application/json"
@@ -4211,14 +4206,14 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Invite a department User",
                 "produces": [
                     "application/json"
@@ -4265,16 +4260,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/invites/{inviteId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/invites/{inviteId}": {
+            "delete": {
                 "description": "Delete user invite from department",
                 "produces": [
                     "application/json"
@@ -4325,16 +4320,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/projects": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/projects": {
+            "get": {
                 "description": "get list of projects for a department",
                 "produces": [
                     "application/json"
@@ -4393,14 +4388,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a Department project",
                 "produces": [
                     "application/json"
@@ -4465,16 +4460,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/projects/{projectId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/projects/{projectId}": {
+            "put": {
                 "description": "Updates a Department Project",
                 "produces": [
                     "application/json"
@@ -4546,14 +4541,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a Department Project",
                 "produces": [
                     "application/json"
@@ -4604,16 +4599,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/retro-settings": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/retro-settings": {
+            "put": {
                 "description": "Updates retro settings for a specific department",
                 "produces": [
                     "application/json"
@@ -4678,14 +4673,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates new retro settings for a department",
                 "produces": [
                     "application/json"
@@ -4743,16 +4738,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/teams": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/teams": {
+            "get": {
                 "description": "Gets a list of organization department teams",
                 "produces": [
                     "application/json"
@@ -4799,14 +4794,14 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create a department team",
                 "produces": [
                     "application/json"
@@ -4865,16 +4860,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}": {
+            "get": {
                 "description": "Get a department team with users role",
                 "produces": [
                     "application/json"
@@ -4931,16 +4926,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users": {
+            "post": {
                 "description": "Add a User to Department Team",
                 "produces": [
                     "application/json"
@@ -4994,16 +4989,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/users": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/users": {
+            "get": {
                 "description": "Get a list of organization department users",
                 "produces": [
                     "application/json"
@@ -5050,14 +5045,14 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Add a department User",
                 "produces": [
                     "application/json"
@@ -5104,16 +5099,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{departmentId}/users/{userId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/users/{userId}": {
+            "put": {
                 "description": "Update a department User",
                 "produces": [
                     "application/json"
@@ -5167,14 +5162,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Remove a department User",
                 "produces": [
                     "application/json"
@@ -5219,16 +5214,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{deptId}/poker-settings": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{deptId}/poker-settings": {
+            "get": {
                 "description": "get poker settings for a specific department",
                 "produces": [
                     "application/json"
@@ -5284,14 +5279,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates poker settings for a specific department",
                 "produces": [
                     "application/json"
@@ -5356,16 +5351,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/departments/{deptId}/retro-settings": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{deptId}/retro-settings": {
+            "get": {
                 "description": "get retro settings for a specific department",
                 "produces": [
                     "application/json"
@@ -5421,16 +5416,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/estimation-scales": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/estimation-scales": {
+            "get": {
                 "description": "get list of estimation scales for a specific organization",
                 "produces": [
                     "application/json"
@@ -5488,14 +5483,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates an estimation scale for a specific organization",
                 "produces": [
                     "application/json"
@@ -5547,16 +5542,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/invites": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/invites": {
+            "get": {
                 "description": "Get a list of user invites associated to the organization",
                 "produces": [
                     "application/json"
@@ -5596,14 +5591,14 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Invite user to organization",
                 "produces": [
                     "application/json"
@@ -5649,16 +5644,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/invites/{inviteId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/invites/{inviteId}": {
+            "delete": {
                 "description": "Delete user invite from organization",
                 "produces": [
                     "application/json"
@@ -5702,16 +5697,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/metrics": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/metrics": {
+            "get": {
                 "description": "Get metrics for a specific organization such as user count, team count, etc.",
                 "produces": [
                     "application/json"
@@ -5766,16 +5761,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/poker-settings": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/poker-settings": {
+            "get": {
                 "description": "get poker settings for a specific organization",
                 "produces": [
                     "application/json"
@@ -5824,14 +5819,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates poker settings for a specific organization",
                 "produces": [
                     "application/json"
@@ -5889,14 +5884,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates new poker settings for an organization",
                 "produces": [
                     "application/json"
@@ -5954,16 +5949,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/projects": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/projects": {
+            "get": {
                 "description": "get list of projects for an organization",
                 "produces": [
                     "application/json"
@@ -6015,14 +6010,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates an Organization project",
                 "produces": [
                     "application/json"
@@ -6080,16 +6075,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/projects/{projectId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/projects/{projectId}": {
+            "put": {
                 "description": "Updates an Organization Project",
                 "produces": [
                     "application/json"
@@ -6154,14 +6149,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes an Organization Project",
                 "produces": [
                     "application/json"
@@ -6205,16 +6200,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/retro-settings": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/retro-settings": {
+            "get": {
                 "description": "get retro settings for a specific organization",
                 "produces": [
                     "application/json"
@@ -6263,14 +6258,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates retro settings for a specific organization",
                 "produces": [
                     "application/json"
@@ -6328,14 +6323,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates new retro settings for an organization",
                 "produces": [
                     "application/json"
@@ -6393,16 +6388,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/retro-templates": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/retro-templates": {
+            "get": {
                 "description": "get list of retro templates for an organization",
                 "produces": [
                     "application/json"
@@ -6454,14 +6449,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates an Organization retro template",
                 "produces": [
                     "application/json"
@@ -6519,16 +6514,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/retro-templates/{templateId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/retro-templates/{templateId}": {
+            "delete": {
                 "description": "Deletes an Organization Retro Template",
                 "produces": [
                     "application/json"
@@ -6572,16 +6567,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/teams": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/teams": {
+            "get": {
                 "description": "Get a list of organization teams",
                 "produces": [
                     "application/json"
@@ -6627,14 +6622,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create organization team with current user as admin",
                 "produces": [
                     "application/json"
@@ -6692,16 +6687,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/teams/{teamId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/teams/{teamId}": {
+            "get": {
                 "description": "Get an organizations team with users roles",
                 "produces": [
                     "application/json"
@@ -6757,16 +6752,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/teams/{teamId}/users": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/teams/{teamId}/users": {
+            "post": {
                 "description": "Add user to organization team as long as they are already in the organization",
                 "produces": [
                     "application/json"
@@ -6819,16 +6814,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/users": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/users": {
+            "get": {
                 "description": "get a list of organization users",
                 "produces": [
                     "application/json"
@@ -6874,16 +6869,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/organizations/{orgId}/users/{userId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/organizations/{orgId}/users/{userId}": {
+            "put": {
                 "description": "Update organization user",
                 "produces": [
                     "application/json"
@@ -6936,14 +6931,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Remove user from organization including departments and teams",
                 "produces": [
                     "application/json"
@@ -6987,16 +6982,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/projects/{projectId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/projects/{projectId}": {
+            "get": {
                 "description": "get a specific project by its ID",
                 "produces": [
                     "application/json"
@@ -7045,16 +7040,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/projects/{projectId}/poker": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/projects/{projectId}/poker": {
+            "get": {
                 "description": "Retrieve poker games for a specific project",
                 "produces": [
                     "application/json"
@@ -7119,14 +7114,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create a new poker game associated with a specific project",
                 "consumes": [
                     "application/json"
@@ -7194,16 +7189,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/projects/{projectId}/poker/{gameId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/projects/{projectId}/poker/{gameId}": {
+            "delete": {
                 "description": "Remove a poker game from the project",
                 "produces": [
                     "application/json"
@@ -7248,16 +7243,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/projects/{projectId}/retros": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/projects/{projectId}/retros": {
+            "get": {
                 "description": "Retrieve retros for a specific project",
                 "produces": [
                     "application/json"
@@ -7322,14 +7317,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create a retro associated with a project",
                 "produces": [
                     "application/json"
@@ -7387,16 +7382,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/projects/{projectId}/retros/{retroId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/projects/{projectId}/retros/{retroId}": {
+            "delete": {
                 "description": "Remove a retro from the project",
                 "produces": [
                     "application/json"
@@ -7441,16 +7436,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/projects/{projectId}/storyboards": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/projects/{projectId}/storyboards": {
+            "get": {
                 "description": "Retrieve storyboards for a specific project",
                 "produces": [
                     "application/json"
@@ -7514,14 +7509,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create a storyboard associated to the project",
                 "produces": [
                     "application/json"
@@ -7578,16 +7573,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/projects/{projectId}/storyboards/{storyboardId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/projects/{projectId}/storyboards/{storyboardId}": {
+            "delete": {
                 "description": "Remove a storyboard from the project",
                 "produces": [
                     "application/json"
@@ -7632,7 +7627,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/retro-templates/public": {
@@ -7678,11 +7678,6 @@ const docTemplate = `{
         },
         "/retros": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "get list of retros",
                 "produces": [
                     "application/json"
@@ -7739,16 +7734,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/retros/{retroId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/retros/{retroId}": {
+            "get": {
                 "description": "get retro by ID",
                 "produces": [
                     "application/json"
@@ -7797,14 +7792,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete a retro",
                 "produces": [
                     "application/json"
@@ -7841,16 +7836,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/retros/{retroId}/actions/{actionId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/retros/{retroId}/actions/{actionId}": {
+            "put": {
                 "description": "Update a retro action item",
                 "produces": [
                     "application/json"
@@ -7903,14 +7898,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete a retro action item",
                 "produces": [
                     "application/json"
@@ -7954,16 +7949,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/retros/{retroId}/actions/{actionId}/assignees": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/retros/{retroId}/actions/{actionId}/assignees": {
+            "post": {
                 "description": "Add a retro action assignee",
                 "produces": [
                     "application/json"
@@ -8016,14 +8011,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Remove an assignee from a retro action",
                 "produces": [
                     "application/json"
@@ -8076,16 +8071,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/retros/{retroId}/actions/{actionId}/comments": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/retros/{retroId}/actions/{actionId}/comments": {
+            "post": {
                 "description": "Add a comment to a retro action item",
                 "produces": [
                     "application/json"
@@ -8138,16 +8133,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/retros/{retroId}/actions/{actionId}/comments/{commentId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/retros/{retroId}/actions/{actionId}/comments/{commentId}": {
+            "put": {
                 "description": "Edit a retro action item comment",
                 "produces": [
                     "application/json"
@@ -8207,14 +8202,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Delete a comment from a retro action item",
                 "produces": [
                     "application/json"
@@ -8265,16 +8260,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards": {
+            "get": {
                 "description": "get list of storyboards",
                 "produces": [
                     "application/json"
@@ -8331,16 +8326,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}": {
+            "get": {
                 "description": "get storyboard by ID",
                 "produces": [
                     "application/json"
@@ -8389,14 +8384,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete a storyboard",
                 "produces": [
                     "application/json"
@@ -8433,16 +8428,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/columns": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/columns": {
+            "post": {
                 "description": "Add a column to a storyboard goal",
                 "produces": [
                     "application/json"
@@ -8499,16 +8494,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/columns/{columnId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/columns/{columnId}": {
+            "put": {
                 "description": "Update a column in a storyboard",
                 "produces": [
                     "application/json"
@@ -8560,14 +8555,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete a column from a storyboard",
                 "produces": [
                     "application/json"
@@ -8611,16 +8606,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/goals": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/goals": {
+            "post": {
                 "description": "Add a goal to a storyboard",
                 "produces": [
                     "application/json"
@@ -8677,16 +8672,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/goals/{goalId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/goals/{goalId}": {
+            "put": {
                 "description": "Update a goal in a storyboard",
                 "produces": [
                     "application/json"
@@ -8738,14 +8733,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete a goal from a storyboard",
                 "produces": [
                     "application/json"
@@ -8789,16 +8784,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories": {
+            "post": {
                 "description": "Add a story to a storyboard goal column",
                 "produces": [
                     "application/json"
@@ -8855,16 +8850,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories/{storyId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}": {
+            "delete": {
                 "description": "Deletes a story in a storyboard",
                 "produces": [
                     "application/json"
@@ -8908,16 +8903,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories/{storyId}/closed": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/closed": {
+            "put": {
                 "description": "Updates a story closed in a storyboard",
                 "produces": [
                     "application/json"
@@ -8969,16 +8964,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories/{storyId}/color": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/color": {
+            "put": {
                 "description": "Updates a story color in a storyboard",
                 "produces": [
                     "application/json"
@@ -9030,16 +9025,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories/{storyId}/content": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/content": {
+            "put": {
                 "description": "Updates a story content in a storyboard",
                 "produces": [
                     "application/json"
@@ -9091,16 +9086,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories/{storyId}/link": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/link": {
+            "put": {
                 "description": "Updates a story link in a storyboard",
                 "produces": [
                     "application/json"
@@ -9152,16 +9147,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories/{storyId}/move": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/move": {
+            "put": {
                 "description": "Move a story in a storyboard",
                 "produces": [
                     "application/json"
@@ -9213,16 +9208,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories/{storyId}/name": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/name": {
+            "put": {
                 "description": "Updates a story name in a storyboard",
                 "produces": [
                     "application/json"
@@ -9274,16 +9269,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/storyboards/{storyboardId}/stories/{storyId}/points": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/storyboards/{storyboardId}/stories/{storyId}/points": {
+            "put": {
                 "description": "Updates a story points in a storyboard",
                 "produces": [
                     "application/json"
@@ -9335,16 +9330,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/subscriptions": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/subscriptions": {
+            "get": {
                 "description": "get list of subscriptions",
                 "produces": [
                     "application/json"
@@ -9395,14 +9390,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a subscription",
                 "produces": [
                     "application/json"
@@ -9447,16 +9442,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/subscriptions/{subscriptionId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/subscriptions/{subscriptionId}": {
+            "get": {
                 "description": "Get a subscription",
                 "produces": [
                     "application/json"
@@ -9499,14 +9494,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates a Subscription",
                 "produces": [
                     "application/json"
@@ -9558,14 +9553,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a Subscription",
                 "produces": [
                     "application/json"
@@ -9596,16 +9591,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/team/{teamId}/estimation-scales/{scaleId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/team/{teamId}/estimation-scales/{scaleId}": {
+            "delete": {
                 "description": "Deletes an Team Estimation Scale",
                 "produces": [
                     "application/json"
@@ -9636,16 +9631,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{orgId}/estimation-scales/{scaleId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{orgId}/estimation-scales/{scaleId}": {
+            "put": {
                 "description": "Updates an Organization Estimation Scale",
                 "produces": [
                     "application/json"
@@ -9704,16 +9699,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}": {
+            "get": {
                 "description": "Get a team with user role",
                 "produces": [
                     "application/json"
@@ -9756,14 +9751,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates a team",
                 "produces": [
                     "application/json"
@@ -9821,14 +9816,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Delete a Team",
                 "produces": [
                     "application/json"
@@ -9865,16 +9860,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/battles": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/battles": {
+            "get": {
                 "description": "Get a list of battles associated to the team",
                 "produces": [
                     "application/json"
@@ -9914,16 +9909,16 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/battles/{battleId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/battles/{battleId}": {
+            "delete": {
                 "description": "Remove a poker game from the team",
                 "produces": [
                     "application/json"
@@ -9967,16 +9962,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/checkins": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/checkins": {
+            "get": {
                 "description": "Get a list of team checkins",
                 "produces": [
                     "application/json"
@@ -10028,14 +10023,14 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a team user checkin",
                 "produces": [
                     "application/json"
@@ -10081,16 +10076,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/checkins/users/{userId}/last": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/checkins/users/{userId}/last": {
+            "get": {
                 "description": "Get Users last checkin for team",
                 "produces": [
                     "application/json"
@@ -10133,16 +10128,16 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/checkins/{checkinId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/checkins/{checkinId}": {
+            "put": {
                 "description": "Updates a team user checkin",
                 "produces": [
                     "application/json"
@@ -10195,14 +10190,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a team user checkin",
                 "produces": [
                     "application/json"
@@ -10246,16 +10241,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/checkins/{checkinId}/comments": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/checkins/{checkinId}/comments": {
+            "post": {
                 "description": "Creates a team user checkin comment",
                 "produces": [
                     "application/json"
@@ -10308,16 +10303,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/checkins/{checkinId}/comments/{commentId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/checkins/{checkinId}/comments/{commentId}": {
+            "put": {
                 "description": "Edits a team user checkin comment",
                 "produces": [
                     "application/json"
@@ -10377,14 +10372,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a team user checkin comment",
                 "produces": [
                     "application/json"
@@ -10435,16 +10430,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/estimation-scales": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/estimation-scales": {
+            "get": {
                 "description": "get list of estimation scales for a specific team",
                 "produces": [
                     "application/json"
@@ -10502,14 +10497,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates an estimation scale for a specific team",
                 "produces": [
                     "application/json"
@@ -10561,16 +10556,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/estimation-scales/{scaleId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/estimation-scales/{scaleId}": {
+            "put": {
                 "description": "Updates a Team Estimation Scale",
                 "produces": [
                     "application/json"
@@ -10629,16 +10624,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/invites": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/invites": {
+            "get": {
                 "description": "Get a list of user invites associated to the team",
                 "produces": [
                     "application/json"
@@ -10678,14 +10673,14 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Invites a user to the team",
                 "produces": [
                     "application/json"
@@ -10731,16 +10726,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/invites/{inviteId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/invites/{inviteId}": {
+            "delete": {
                 "description": "Delete a user invite from the team",
                 "produces": [
                     "application/json"
@@ -10784,16 +10779,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/poker-settings": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/poker-settings": {
+            "get": {
                 "description": "get poker settings for a specific team",
                 "produces": [
                     "application/json"
@@ -10842,14 +10837,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates poker settings for a specific team",
                 "produces": [
                     "application/json"
@@ -10907,14 +10902,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates new poker settings for a team",
                 "produces": [
                     "application/json"
@@ -10972,16 +10967,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/projects": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/projects": {
+            "get": {
                 "description": "get list of projects for a team via direct team route",
                 "produces": [
                     "application/json"
@@ -11033,14 +11028,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a Team project via direct team route",
                 "produces": [
                     "application/json"
@@ -11098,16 +11093,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/projects/{projectId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/projects/{projectId}": {
+            "put": {
                 "description": "Updates a Team Project via direct team route",
                 "produces": [
                     "application/json"
@@ -11172,14 +11167,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a Team Project via direct team route",
                 "produces": [
                     "application/json"
@@ -11223,16 +11218,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/retro-actions": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/retro-actions": {
+            "get": {
                 "description": "get list of retro actions",
                 "produces": [
                     "application/json"
@@ -11289,16 +11284,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/retro-settings": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/retro-settings": {
+            "get": {
                 "description": "get retro settings for a specific team",
                 "produces": [
                     "application/json"
@@ -11347,14 +11342,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Updates retro settings for a specific team",
                 "produces": [
                     "application/json"
@@ -11412,14 +11407,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates new retro settings for a team",
                 "produces": [
                     "application/json"
@@ -11477,16 +11472,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/retro-templates": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/retro-templates": {
+            "get": {
                 "description": "get list of retro templates for a team",
                 "produces": [
                     "application/json"
@@ -11538,14 +11533,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a Team retro template",
                 "produces": [
                     "application/json"
@@ -11603,16 +11598,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/retro-templates/{templateId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/retro-templates/{templateId}": {
+            "put": {
                 "description": "Updates a Team Retro Template",
                 "produces": [
                     "application/json"
@@ -11677,14 +11672,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a Team Retro Template",
                 "produces": [
                     "application/json"
@@ -11728,16 +11723,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/retros": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/retros": {
+            "get": {
                 "description": "Get a list of retros associated to the team",
                 "produces": [
                     "application/json"
@@ -11777,16 +11772,16 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/retros/{retroId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/retros/{retroId}": {
+            "delete": {
                 "description": "Remove a retro from the team",
                 "produces": [
                     "application/json"
@@ -11830,16 +11825,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/storyboards": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/storyboards": {
+            "get": {
                 "description": "Get a list of storyboards associated to the team",
                 "produces": [
                     "application/json"
@@ -11879,16 +11874,16 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/storyboards/{storyboardId}": {
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/storyboards/{storyboardId}": {
+            "delete": {
                 "description": "Remove a storyboard from the team",
                 "produces": [
                     "application/json"
@@ -11932,16 +11927,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/users": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/users": {
+            "get": {
                 "description": "Get a list of users associated to the team",
                 "produces": [
                     "application/json"
@@ -11981,16 +11976,16 @@ const docTemplate = `{
                             ]
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/users/{userId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/users/{userId}": {
+            "put": {
                 "description": "Updates a team user",
                 "produces": [
                     "application/json"
@@ -12043,14 +12038,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Remove a user from the team",
                 "produces": [
                     "application/json"
@@ -12094,16 +12089,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/users/{userId}/battles": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/users/{userId}/battles": {
+            "post": {
                 "description": "Create a poker game associated to the user",
                 "produces": [
                     "application/json"
@@ -12166,16 +12161,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/users/{userId}/retros": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/users/{userId}/retros": {
+            "post": {
                 "description": "Create a retro associated to the user",
                 "produces": [
                     "application/json"
@@ -12238,16 +12233,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/teams/{teamId}/users/{userId}/storyboards": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/teams/{teamId}/users/{userId}/storyboards": {
+            "post": {
                 "description": "Create a storyboard associated to the user",
                 "produces": [
                     "application/json"
@@ -12310,16 +12305,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/user/{userId}/email-change": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/user/{userId}/email-change": {
+            "post": {
                 "description": "Sends a change email request Email to user",
                 "produces": [
                     "application/json"
@@ -12356,16 +12351,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/user/{userId}/email-change/{changeId}": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/user/{userId}/email-change/{changeId}": {
+            "post": {
                 "description": "Attempts to change the users email\nRequires a valid change ID",
                 "produces": [
                     "application/json"
@@ -12430,16 +12425,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}": {
+            "get": {
                 "description": "Gets a users profile",
                 "produces": [
                     "application/json"
@@ -12488,14 +12483,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "Update a users profile",
                 "produces": [
                     "application/json"
@@ -12553,14 +12548,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a user",
                 "produces": [
                     "application/json"
@@ -12597,16 +12592,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/apikeys": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/apikeys": {
+            "get": {
                 "description": "get list of API keys for the user",
                 "produces": [
                     "application/json"
@@ -12658,14 +12653,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Generates an API key for the user",
                 "produces": [
                     "application/json"
@@ -12723,16 +12718,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/apikeys/{keyID}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/apikeys/{keyID}": {
+            "put": {
                 "description": "Updates the API key of the user",
                 "produces": [
                     "application/json"
@@ -12800,14 +12795,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes the API key",
                 "produces": [
                     "application/json"
@@ -12864,16 +12859,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/battles": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/battles": {
+            "get": {
                 "description": "get list of poker games for the user",
                 "produces": [
                     "application/json"
@@ -12937,14 +12932,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create a poker game associated to the user",
                 "produces": [
                     "application/json"
@@ -13001,16 +12996,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/credential": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/credential": {
+            "get": {
                 "description": "Gets a users credential",
                 "produces": [
                     "application/json"
@@ -13059,7 +13054,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/users/{userId}/invite/department/{inviteId}": {
@@ -13199,11 +13199,6 @@ const docTemplate = `{
         },
         "/users/{userId}/jira-instances": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "get list of Jira instances associated to user",
                 "produces": [
                     "application/json"
@@ -13249,14 +13244,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a Jira Instance associated to user",
                 "produces": [
                     "application/json"
@@ -13308,16 +13303,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/jira-instances/{instanceId}": {
-            "put": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/jira-instances/{instanceId}": {
+            "put": {
                 "description": "Updates a Jira Instance associated to user",
                 "produces": [
                     "application/json"
@@ -13376,14 +13371,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "Deletes a Jira Instance associated to user",
                 "produces": [
                     "application/json"
@@ -13421,16 +13416,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/jira-instances/{instanceId}/jql-story-search": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/jira-instances/{instanceId}/jql-story-search": {
+            "post": {
                 "description": "Queries Jira Instance API for Stories by JQL",
                 "produces": [
                     "application/json"
@@ -13477,16 +13472,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/organizations": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/organizations": {
+            "get": {
                 "description": "Get list of organizations for the authenticated user",
                 "produces": [
                     "application/json"
@@ -13544,14 +13539,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create organization with current user as admin",
                 "produces": [
                     "application/json"
@@ -13609,7 +13604,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/users/{userId}/request-verify": {
@@ -13652,11 +13652,6 @@ const docTemplate = `{
         },
         "/users/{userId}/retros": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "get list of retros for the user",
                 "produces": [
                     "application/json"
@@ -13720,14 +13715,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create a retro associated to the user",
                 "produces": [
                     "application/json"
@@ -13784,16 +13779,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/storyboards": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/storyboards": {
+            "get": {
                 "description": "get list of storyboards for the user",
                 "produces": [
                     "application/json"
@@ -13857,14 +13852,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Create a storyboard associated to the user",
                 "produces": [
                     "application/json"
@@ -13921,16 +13916,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/subscriptions": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/subscriptions": {
+            "get": {
                 "description": "get list of active entity user subscriptions",
                 "produces": [
                     "application/json"
@@ -13976,16 +13971,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/subscriptions/{subscriptionId}": {
-            "patch": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/subscriptions/{subscriptionId}": {
+            "patch": {
                 "description": "get list of active entity user subscriptions",
                 "produces": [
                     "application/json"
@@ -14047,16 +14042,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/support-ticket": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/support-ticket": {
+            "post": {
                 "description": "Creates a support ticket for the session user",
                 "produces": [
                     "application/json"
@@ -14105,16 +14100,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/teams": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/teams": {
+            "get": {
                 "description": "Get a list of teams the user is a part of",
                 "produces": [
                     "application/json"
@@ -14160,14 +14155,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "Creates a team with the current user as the team admin",
                 "produces": [
                     "application/json"
@@ -14225,16 +14220,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/users/{userId}/teams-non-org": {
-            "get": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/users/{userId}/teams-non-org": {
+            "get": {
                 "description": "Get a list of teams the user is a part of that are not associated with an organization",
                 "produces": [
                     "application/json"
@@ -14280,16 +14275,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Create a poker game associated to the user",
                 "produces": [
                     "application/json"
@@ -14364,16 +14359,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Create a retro associated to the user",
                 "produces": [
                     "application/json"
@@ -14448,16 +14443,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards": {
+            "post": {
                 "description": "Create a storyboard associated to the user",
                 "produces": [
                     "application/json"
@@ -14532,16 +14527,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/{orgId}/teams/{teamId}/users/{userId}/battles": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/{orgId}/teams/{teamId}/users/{userId}/battles": {
+            "post": {
                 "description": "Create a poker game associated to the user",
                 "produces": [
                     "application/json"
@@ -14610,16 +14605,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/{orgId}/teams/{teamId}/users/{userId}/retros": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/{orgId}/teams/{teamId}/users/{userId}/retros": {
+            "post": {
                 "description": "Create a retro associated to the user",
                 "produces": [
                     "application/json"
@@ -14688,16 +14683,16 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
-            }
-        },
-        "/{orgId}/teams/{teamId}/users/{userId}/storyboards": {
-            "post": {
+                },
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
-                ],
+                ]
+            }
+        },
+        "/{orgId}/teams/{teamId}/users/{userId}/storyboards": {
+            "post": {
                 "description": "Create a storyboard associated to the user",
                 "produces": [
                     "application/json"
@@ -14766,7 +14761,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         }
     },

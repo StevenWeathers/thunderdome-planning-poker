@@ -614,16 +614,16 @@ func (s *Service) handleDeleteSupportTicket() http.HandlerFunc {
 
 // handleListAdminUsers
 //
-// @Summary		List Admin Users
-// @Description	List admin users with pagination
-// @Tags			admin
-// @Produce		json
-// @Param			limit	query	int	false	"Max number of results to return"
-// @Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
-// @Success		200		object	standardJsonResponse{data=[]thunderdome.User, meta=pagination}
-// @Failure		500		object	standardJsonResponse{}
-// @Security		ApiKeyAuth
-// @Router			/admin/admin-users [get]
+//	@Summary		List Admin Users
+//	@Description	List admin users with pagination
+//	@Tags			admin
+//	@Produce		json
+//	@Param			limit	query	int	false	"Max number of results to return"
+//	@Param			offset	query	int	false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.User, meta=pagination}
+//	@Failure		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/admin/admin-users [get]
 func (s *Service) handleListAdminUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
