@@ -34,13 +34,18 @@
 
   let selectedPersona = $state('');
   let focusInput: any = $state();
+  let columnName = $state(column.name);
+
+  $effect(() => {
+    columnName = column.name;
+  });
 
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
 
     const c = {
       id: column.id,
-      name: column.name,
+      name: columnName,
     };
 
     handleColumnRevision(c);
@@ -64,7 +69,7 @@
       </label>
       <TextInput
         id="columnName"
-        bind:value={column.name}
+        bind:value={columnName}
         placeholder="Enter a column name"
         name="columnName"
         bind:this={focusInput}

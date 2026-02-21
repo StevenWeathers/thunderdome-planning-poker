@@ -71,7 +71,7 @@
 </script>
 
 <div class="mb-4">
-  <SelectInput id="selectedStoryboard" bind:value={selectedStoryboardIdx} on:change={getStoryboardStories}>
+  <SelectInput id="selectedStoryboard" bind:value={selectedStoryboardIdx} onchange={getStoryboardStories}>
     <option value="" disabled>Select storyboard to import from</option>
     {#each storyboards as storyboard, idx}
       <option value={idx}>{storyboard.name}</option>

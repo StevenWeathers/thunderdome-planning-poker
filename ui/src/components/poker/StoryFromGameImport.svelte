@@ -60,7 +60,7 @@
 </script>
 
 <div class="mb-4">
-  <SelectInput id="selectedGame" bind:value={selectedGameIdx} on:change={getGameStories}>
+  <SelectInput id="selectedGame" bind:value={selectedGameIdx} onchange={getGameStories}>
     >
     <option value="" disabled>Select game to import from</option>
     {#each games as game, idx}

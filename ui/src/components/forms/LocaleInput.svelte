@@ -29,7 +29,7 @@
 </script>
 
 <div class="{klass} inline-block">
-  <SelectInput name="locale" on:change={switchLocale} value={selectedLocale}>
+  <SelectInput name="locale" onchange={switchLocale} value={selectedLocale}>
     {#each supportedLocales as locale}
       <option value={locale.value}>{locale.name}</option>
     {/each}

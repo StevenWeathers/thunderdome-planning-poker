@@ -162,39 +162,52 @@
   </div>
 
   <div class="mb-4">
-    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="yourEmail">
-      {$LL.email()}
-      {#if profile.rank && profile.rank !== 'GUEST'}
-        {#if profile.verified}
-          <span
-            class="inline-block font-bold text-green-600
-                                    border-green-500 border py-1 px-2 rounded
-                                    ms-1"
-            data-testid="user-verified"
-          >
-            {$LL.verified()}
-            <BadgeCheck class="inline h-4 w-4" />
-          </span>
-        {:else}
-          <button
-            class="float-right inline-block align-baseline font-bold text-sm text-blue-500
-                                        hover:text-blue-800"
-            onclick={requestVerifyEmail}
-            data-testid="request-verify"
-            type="button"
-            >{$LL.requestVerifyEmail()}
-          </button>
+    <label
+      class="flex items-center justify-between gap-2 text-gray-700 dark:text-gray-400 font-bold mb-2"
+      for="yourEmail"
+    >
+      <span class="inline-flex items-center">
+        {$LL.email()}
+        {#if profile.rank && profile.rank !== 'GUEST'}
+          {#if profile.verified}
+            <span
+              class="inline-block font-bold text-green-600
+                                        border-green-500 border py-1 px-2 rounded
+                                        ms-1"
+              data-testid="user-verified"
+            >
+              {$LL.verified()}
+              <BadgeCheck class="inline h-4 w-4" />
+            </span>
+          {/if}
         {/if}
+      </span>
 
-        {#if !LdapEnabled && !HeaderAuthEnabled && !OIDCAuthEnabled}
-          <button
-            class="float-right inline-block align-baseline font-bold text-sm text-blue-500
-                                        hover:text-blue-800"
-            onclick={requestEmailChange}
-            data-testid="request-email-change"
-            type="button"
-            >{$LL.changeEmail()}
-          </button>
+      {#if profile.rank && profile.rank !== 'GUEST'}
+        {#if !profile.verified || (!LdapEnabled && !HeaderAuthEnabled && !OIDCAuthEnabled)}
+          <span class="inline-flex items-center gap-2">
+            {#if !profile.verified}
+              <button
+                class="inline-block align-baseline font-bold text-sm text-blue-500
+                                                hover:text-blue-800"
+                onclick={requestVerifyEmail}
+                data-testid="request-verify"
+                type="button"
+                >{$LL.requestVerifyEmail()}
+              </button>
+            {/if}
+
+            {#if !LdapEnabled && !HeaderAuthEnabled && !OIDCAuthEnabled}
+              <button
+                class="inline-block align-baseline font-bold text-sm text-blue-500
+                                                hover:text-blue-800"
+                onclick={requestEmailChange}
+                data-testid="request-email-change"
+                type="button"
+                >{$LL.changeEmail()}
+              </button>
+            {/if}
+          </span>
         {/if}
       {/if}
     </label>
