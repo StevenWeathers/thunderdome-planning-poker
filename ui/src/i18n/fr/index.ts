@@ -750,6 +750,7 @@ const fr: Translation = {
   getSupportTicketsError: 'Échec de la récupération des tickets de support',
   deleteSupportTicketSuccess: 'Ticket de support supprimé avec succès',
   deleteSupportTicketError: 'Échec de la suppression du ticket de support',
+  clear: 'Effacer',
 };
 
 export default fr;

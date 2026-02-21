@@ -744,6 +744,7 @@ const en: BaseTranslation = {
   getSupportTicketsError: 'Failed to get support tickets',
   deleteSupportTicketSuccess: 'Support ticket deleted successfully',
   deleteSupportTicketError: 'Failed to delete support ticket',
+  clear: 'Clear',
 };
 
 export default en;

@@ -746,6 +746,7 @@ const es: Translation = {
   getSupportTicketsError: 'Error al obtener los tickets de soporte',
   deleteSupportTicketSuccess: 'Ticket de soporte eliminado exitosamente',
   deleteSupportTicketError: 'Error al eliminar el ticket de soporte',
+  clear: 'Limpiar',
 };
 
 export default es;

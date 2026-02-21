@@ -748,6 +748,7 @@ const it: Translation = {
   getSupportTicketsError: 'Impossibile recuperare i ticket di supporto',
   deleteSupportTicketSuccess: 'Ticket di supporto eliminato con successo',
   deleteSupportTicketError: 'Impossibile eliminare il ticket di supporto',
+  clear: 'Cancella',
 };
 
 export default it;
