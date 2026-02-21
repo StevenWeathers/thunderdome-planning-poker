@@ -118,7 +118,7 @@
         <label class="text-gray-700 dark:text-gray-400 font-bold mb-2" for="orgUser">
           Select an existing user from Organization
         </label>
-        <SelectInput bind:value={selectedUser} on:change={clearEmail} id="orgUser" name="orgUser">
+        <SelectInput bind:value={selectedUser} onchange={clearEmail} id="orgUser" name="orgUser">
           <option value="">Organization Users...</option>
           {#each organizationUsers as orgUser}
             <option value={orgUser.id}>{orgUser.name} ({orgUser.email}) </option>
@@ -131,7 +131,7 @@
         <label class="text-gray-700 dark:text-gray-400 font-bold mb-2" for="deptUser">
           Select an existing user from Department
         </label>
-        <SelectInput bind:value={selectedUser} on:change={clearEmail} id="deptUser" name="deptUser">
+        <SelectInput bind:value={selectedUser} onchange={clearEmail} id="deptUser" name="deptUser">
           <option value="">Department Users...</option>
           {#each departmentUsers as deptUser}
             <option value={deptUser.id}>{deptUser.name} ({deptUser.email}) </option>

@@ -1,11 +1,17 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import SelectInput from '../SelectInput.svelte';
 
-  export let value: string = '';
-  export let name: string = '';
-  export let id: string = '';
-  export let required: boolean = false;
-  export let disabled: boolean = false;
+  interface Props {
+    value?: any;
+    name?: string;
+    id?: string;
+    required?: boolean;
+    disabled?: boolean;
+    onchange?: (event: Event) => void;
+  }
+
+  let { value = $bindable(), name = '', id = '', required = false, disabled = false, onchange }: Props = $props();
 
   let selectRef: SelectInput;
 
@@ -14,7 +20,7 @@
   }
 </script>
 
-<SelectInput bind:value {name} {id} {required} {disabled} bind:this={selectRef}>
+<SelectInput {value} {name} {id} {required} {disabled} {onchange} bind:this={selectRef}>
   <option value="" disabled>Select one</option>
   <option value="one">One</option>
   <option value="two">Two</option>

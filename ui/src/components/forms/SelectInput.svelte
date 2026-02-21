@@ -1,7 +1,15 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { ChevronDown } from '@lucide/svelte';
 
-  export let value: string = '';
+  interface Props {
+    value?: any;
+    children?: Snippet;
+    onchange?: (event: Event) => void;
+    [key: string]: any;
+  }
+
+  let { value = $bindable(), children, onchange, ...restProps }: Props = $props();
 
   let selectElement: HTMLSelectElement;
 
@@ -14,13 +22,13 @@
   <select
     bind:value
     bind:this={selectElement}
-    on:change
+    {onchange}
     class="block appearance-none w-full border border-gray-300 dark:border-gray-700
                 text-gray-700 dark:text-gray-300 py-2 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
-    {...$$restProps}
+    {...restProps}
   >
-    <slot />
+    {@render children?.()}
   </select>
   <div
     class="pointer-events-none absolute inset-y-0 end-0 flex

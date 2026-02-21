@@ -80,7 +80,7 @@
         </legend>
         <div class="-mx-2">
           <div class="mb-2">
-            <SelectInput name="planPoints" bind:value={planPoints} on:change={toggleCustomPointValue} required>
+            <SelectInput name="planPoints" bind:value={planPoints} onchange={toggleCustomPointValue} required>
               <option value="" disabled>
                 {$LL.points()}
               </option>

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 
@@ -32,6 +32,17 @@ describe('SelectInput component', () => {
     await userEvent.selectOptions(select, 'two');
 
     await expect.element(select).toHaveValue('two');
+  });
+
+  it('should call onchange handler when value changes', async () => {
+    const onchange = vi.fn();
+    const { container } = renderWithOptions({ name: 'choice', onchange });
+
+    const select = container.querySelector('select[name="choice"]') as HTMLSelectElement;
+
+    await userEvent.selectOptions(select, 'two');
+
+    expect(onchange).toHaveBeenCalled();
   });
 
   it('should pass through attributes to the select element', () => {
