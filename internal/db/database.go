@@ -58,7 +58,7 @@ func New(adminEmail string, config *Config, logger *otelzap.Logger, instantiate 
 	d.DB.SetMaxIdleConns(d.Config.MaxIdleConns)
 	d.DB.SetConnMaxLifetime(time.Duration(d.Config.ConnMaxLifetime) * time.Minute)
 
-	err := otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
+	_, err := otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
 		semconv.DBSystemPostgreSQL,
 	))
 	if err != nil {
