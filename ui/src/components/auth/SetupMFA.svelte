@@ -4,7 +4,7 @@
 
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
-  import { Shield } from '@lucide/svelte';
+  import { ShieldIcon } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
@@ -79,18 +79,20 @@
     </div>
     <form onsubmit={onSubmit} name="validateMFAPasscode" class="mt-8">
       <div class="mb-4">
-        <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="mfaPasscode">
+        <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="otp">
           {$LL.mfaTokenLabel()}
         </label>
         <TextInput
           bind:value={passcode}
           bind:this={focusInput}
           placeholder={$LL.mfaTokenPlaceholder()}
-          id="mfaPasscode"
-          name="mfaPasscode"
-          type="password"
+          id="otp"
+          name="otp"
           required
-          icon={Shield}
+          icon={ShieldIcon}
+          inputmode="numeric"
+          pattern="[0-9]*"
+          autocomplete="one-time-code"
         />
       </div>
 
