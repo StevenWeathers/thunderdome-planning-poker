@@ -210,7 +210,7 @@ func round(d float64) int {
 // Returns an error if the key is invalid.
 func validateOrderKey(key string) error {
 	if key == SmallestInteger {
-		return errors.New("Key is too small")
+		return errors.New("key is too small")
 	}
 	i, err := getIntegerPart(key)
 	if err != nil {
@@ -218,7 +218,7 @@ func validateOrderKey(key string) error {
 	}
 	f := key[len(i):]
 	if len(f) > 0 && f[len(f)-1] == minCharcode {
-		return errors.New("Fractional part should not end with ' ' (space)")
+		return errors.New("fractional part should not end with ' ' (space)")
 	}
 	return nil
 }

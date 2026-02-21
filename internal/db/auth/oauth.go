@@ -89,7 +89,7 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 		)
 		if userInsertErr != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				return nil, "", fmt.Errorf("insert failed: %v, unable to rollback: %v\n", userInsertErr, rollbackErr)
+				return nil, "", fmt.Errorf("insert failed: %v, unable to rollback: %v", userInsertErr, rollbackErr)
 			}
 			return nil, "", userInsertErr
 		}
@@ -101,7 +101,7 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 		)
 		if identityInsertErr != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				return nil, "", fmt.Errorf("insert failed: %v, unable to rollback: %v\n", identityInsertErr, rollbackErr)
+				return nil, "", fmt.Errorf("insert failed: %v, unable to rollback: %v", identityInsertErr, rollbackErr)
 			}
 			return nil, "", fmt.Errorf("update failed: %v", identityInsertErr)
 		}
@@ -188,13 +188,13 @@ func (d *Service) OauthUpsertUser(ctx context.Context, provider string, sub stri
 			)
 			if userInsertErr != nil {
 				if rollbackErr := tx.Rollback(); rollbackErr != nil {
-					return nil, "", fmt.Errorf("upsert user failed: %v, unable to rollback: %v\n", userInsertErr, rollbackErr)
+					return nil, "", fmt.Errorf("upsert user failed: %v, unable to rollback: %v", userInsertErr, rollbackErr)
 				}
 				return nil, "", userInsertErr
 			}
 		} else if existingUserErr != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				return nil, "", fmt.Errorf("upsert user failed: %v, unable to rollback: %v\n", existingUserErr, rollbackErr)
+				return nil, "", fmt.Errorf("upsert user failed: %v, unable to rollback: %v", existingUserErr, rollbackErr)
 			}
 			return nil, "", fmt.Errorf("upsert user failed: %v", existingUserErr)
 		}
@@ -207,7 +207,7 @@ func (d *Service) OauthUpsertUser(ctx context.Context, provider string, sub stri
 		)
 		if identityInsertErr != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				return nil, "", fmt.Errorf("upsert user failed: %v, unable to rollback: %v\n", identityInsertErr, rollbackErr)
+				return nil, "", fmt.Errorf("upsert user failed: %v, unable to rollback: %v", identityInsertErr, rollbackErr)
 			}
 			return nil, "", fmt.Errorf("upsert user failed: %v", identityInsertErr)
 		}

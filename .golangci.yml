@@ -10,7 +10,6 @@ linters:
       checks:
         - all
         - -QF1008  # could remove embedded field from selector
-        - -ST1005  # error strings should not end with punctuation or newlines
         - -ST1003  # struct field should be CAPS FOR ACRONYMS
   exclusions:
     generated: lax
