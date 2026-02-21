@@ -42,7 +42,6 @@
     "svelte-dnd-action": "^0.9.18"
   },
   "devDependencies": {
-    "@jest/globals": "^30.2.0",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@tsconfig/svelte": "^5.0.4",
     "@types/js-cookie": "^3.0.3",
@@ -52,8 +51,6 @@
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.4.14",
-    "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0",
     "playwright": "^1.58.2",
     "postcss": "^8.4.31",
     "postcss-import": "^16.1.1",
@@ -62,9 +59,7 @@
     "prettier-plugin-svelte": "^3.4.0",
     "svelte": "^5.15.0",
     "svelte-check": "^4.1.1",
-    "svelte-jester": "^5.0.0",
     "tailwindcss": "^3.4.17",
-    "ts-jest": "^29.1.0",
     "tslib": "^2.6.0",
     "typesafe-i18n": "^5.24.3",
     "typescript": "^5.9.3",
