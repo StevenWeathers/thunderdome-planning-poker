@@ -6,7 +6,7 @@
   import { validateName, validateUserIsAdmin } from '../../validationUtils';
   import LL, { locale, setLocale } from '../../i18n/i18n-svelte';
   import UserAvatar from './UserAvatar.svelte';
-  import SetupMFA from './SetupMFA.svelte';
+  import SetupMFA from '../auth/SetupMFA.svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
   import LocaleSwitcher from '../forms/LocaleInput.svelte';
