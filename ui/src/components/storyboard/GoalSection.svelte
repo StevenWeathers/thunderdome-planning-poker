@@ -89,7 +89,7 @@
         <GoalIcon class="w-6 h-6 text-white" />
       </div>
       <h2 class="inline-block font-bold text-2xl leading-tight text-gray-900 dark:text-gray-100">
-        <button onclick={toggleCollapse} class="inline-flex items-center gap-2 group">
+        <button onclick={toggleCollapse} class="inline-flex items-center gap-3 group">
           <span>{goal.name}</span>
           <GoalEstimate columns={goal.columns} />
         </button>
