@@ -4,7 +4,6 @@
 
   import AddGoal from '../../components/storyboard/AddGoal.svelte';
   import ColumnForm from '../../components/storyboard/ColumnForm.svelte';
-  import StoryForm from '../../components/storyboard/StoryForm.svelte';
   import ColorLegendForm from '../../components/storyboard/ColorLegendForm.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
@@ -83,7 +82,6 @@
   let showColorLegendForm = $state(false);
   let showPersonas = $state(false);
   let editColumn: StoryboardColumn | null = $state(null);
-  let activeStoryId: string | null = $state(null);
   let showDeleteStoryboard = $state(false);
   let showEditStoryboard = $state(false);
   let showExportStoryboard = $state(false);
@@ -163,26 +161,7 @@
         break;
       case 'story_updated':
         storyboard.goals = JSON.parse(parsedEvent.value);
-        if (activeStory) {
-          let activeStoryFound = false;
-          for (let goal of storyboard.goals) {
-            for (let column of goal.columns) {
-              for (let story of column.stories) {
-                if (activeStory && story.id === activeStory.id) {
-                  activeStory = story;
-                  activeStoryFound = true;
-                  break;
-                }
-              }
-              if (activeStoryFound) {
-                break;
-              }
-            }
-            if (activeStoryFound) {
-              break;
-            }
-          }
-        }
+
         break;
       case 'story_moved':
         storyboard.goals = JSON.parse(parsedEvent.value);
@@ -391,15 +370,6 @@
     };
   }
 
-  const toggleStoryForm =
-    (story: StoryboardStory | null = null) =>
-    () => {
-      if (columnOrderEditMode) {
-        return;
-      }
-      activeStoryId = activeStoryId != null ? null : story?.id || null;
-    };
-
   const toggleColumnOrderEdit = () => {
     columnOrderEditMode = !columnOrderEditMode;
   };
@@ -430,15 +400,6 @@
   }
 
   let isFacilitator = $derived(storyboard.facilitators.length > 0 && storyboard.facilitators.includes($user.id));
-
-  let activeStory = $derived(
-    activeStoryId
-      ? storyboard.goals
-          .flatMap(goal => goal.columns || [])
-          .flatMap(column => column.stories || [])
-          .find(story => story?.id === activeStoryId) || null
-      : null,
-  );
 
   onMount(() => {
     if (!$user.id) {
@@ -626,8 +587,10 @@
         {columnOrderEditMode}
         {addStory}
         {toggleColumnEdit}
-        {toggleStoryForm}
         {sendSocketEvent}
+        {notifications}
+        colorLegend={storyboard.color_legend}
+        users={storyboard.users}
         {scale}
       />
     </GoalSection>
@@ -653,17 +616,6 @@
     handlePersonaAdd={handleColumnPersonaAdd}
     handlePersonaRemove={handleColumnPersonaRemove}
     {deleteColumn}
-  />
-{/if}
-
-{#if activeStory}
-  <StoryForm
-    toggleStoryForm={toggleStoryForm(null)}
-    story={activeStory}
-    {sendSocketEvent}
-    {notifications}
-    colorLegend={storyboard.color_legend}
-    users={storyboard.users}
   />
 {/if}
 

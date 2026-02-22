@@ -1,7 +1,10 @@
 <script lang="ts">
   import { dndzone } from 'svelte-dnd-action';
   import StoryCard from './StoryCard.svelte';
+  import StoryForm from './StoryForm.svelte';
   import type { StoryboardGoal, StoryboardColumn, StoryboardStory } from '../../types/storyboard';
+  import type { ColorLegend } from '../../types/storyboard';
+  import type { NotificationService } from '../../types/notifications';
   import { Pencil } from '@lucide/svelte';
   import { LL } from '../../i18n/i18n-svelte';
 
@@ -15,8 +18,10 @@
     scale: number;
     toggleColumnEdit: (column: StoryboardColumn) => () => void;
     addStory: (goalId: string, columnId: string) => () => void;
-    toggleStoryForm: (story?: StoryboardStory) => () => void;
     sendSocketEvent: (event: string, data: string) => void;
+    notifications: NotificationService;
+    colorLegend: ColorLegend[];
+    users: any[];
   }
 
   let {
@@ -29,9 +34,41 @@
     scale,
     toggleColumnEdit,
     addStory,
-    toggleStoryForm,
     sendSocketEvent,
+    notifications,
+    colorLegend,
+    users,
   }: Props = $props();
+
+  let activeStoryId: string | null = $state(null);
+  let storyDiscussionExpanded = $state(false);
+  let additionalDetailsExpanded = $state(false);
+
+  const toggleStoryForm =
+    (
+      story: StoryboardStory | null = null,
+      options?: { discussionExpanded?: boolean; additionalDetailsExpanded?: boolean },
+    ) =>
+    () => {
+      if (columnOrderEditMode) {
+        return;
+      }
+      activeStoryId = activeStoryId != null ? null : story?.id || null;
+      if (options?.discussionExpanded) {
+        storyDiscussionExpanded = true;
+      } else {
+        storyDiscussionExpanded = false;
+      }
+      if (options?.additionalDetailsExpanded) {
+        additionalDetailsExpanded = true;
+      } else {
+        additionalDetailsExpanded = false;
+      }
+    };
+
+  let activeStory = $derived(
+    activeStoryId ? goalColumn.stories.find(story => story?.id === activeStoryId) || null : null,
+  );
 
   // Calculate column width based on scale (w-40 = 10rem for scale 1)
   const columnWidth = $derived(`${10 * scale}rem`);
@@ -143,3 +180,16 @@
     {/each}
   </div>
 </div>
+
+{#if activeStory}
+  <StoryForm
+    toggleStoryForm={toggleStoryForm(null)}
+    story={activeStory}
+    {sendSocketEvent}
+    {notifications}
+    {colorLegend}
+    {users}
+    discussionExpanded={storyDiscussionExpanded}
+    {additionalDetailsExpanded}
+  />
+{/if}

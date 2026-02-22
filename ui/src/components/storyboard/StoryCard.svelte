@@ -9,7 +9,10 @@
     goal: StoryboardGoal;
     columnOrderEditMode: boolean;
     scale: number;
-    toggleStoryForm: (story: StoryboardStory) => () => void;
+    toggleStoryForm: (
+      story: StoryboardStory,
+      options?: { discussionExpanded?: boolean; additionalDetailsExpanded?: boolean },
+    ) => () => void;
   }
 
   let {
@@ -36,8 +39,20 @@
   const contentHeight = $derived(`${5 * scale}rem`);
 
   // Handle click on external link to prevent triggering story form
-  function handleLinkClick(e: Event) {
+  function handleExtLinkClick(e: Event) {
     e.stopPropagation();
+  }
+
+  // Handle click on comments button to prevent triggering story form without expanding comments
+  function handleCommentsClick(e: Event) {
+    e.stopPropagation();
+    toggleStoryForm(story, { discussionExpanded: true })();
+  }
+
+  // Handle click on additional details to prevent triggering story form without expanding additional details
+  function handleAdditionalDetailsClick(e: Event) {
+    e.stopPropagation();
+    toggleStoryForm(story, { additionalDetailsExpanded: true })();
   }
 </script>
 
@@ -68,22 +83,23 @@
       <div class="h-10">
         <div class="flex content-center p-2 text-sm">
           <div class="w-1/2 text-gray-600 dark:text-gray-300">
-            {#if story.comments.length > 0}
-              <span
-                class="inline-block align-middle"
+            {#if story.name.length > 0}
+              <button
+                class="inline-block align-middle hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"
                 data-testid="story-comments"
                 title="Story has {story.comments.length} {story.comments.length ? 'comments' : 'comment'}"
+                onclick={handleCommentsClick}
               >
                 {story.comments.length}
                 <MessageSquareMore class="inline-block" />
-              </span>
+              </button>
             {/if}
           </div>
           <div class="w-1/2 flex space-x-2 justify-end">
             {#if story.link !== ''}
               <a
                 href={story.link}
-                onclick={handleLinkClick}
+                onclick={handleExtLinkClick}
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Story has external link"
@@ -92,13 +108,14 @@
               >
             {/if}
             {#if story.points > 0}
-              <span
-                class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
+              <button
+                class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full hover:bg-green-400 dark:hover:bg-lime-400 dark:hover:text-gray-800 transition-all duration-200"
                 data-testid="story-points"
                 title="Story points"
+                onclick={handleAdditionalDetailsClick}
               >
                 {story.points}
-              </span>
+              </button>
             {/if}
           </div>
         </div>
@@ -111,14 +128,11 @@
                                 story-{story.color} border
                                 cursor-pointer"
       style="list-style: none;"
-      role="button"
-      tabindex="0"
+      tabindex="-1"
       data-goalid={goal.id}
       data-columnid={goalColumn.id}
       data-storyid={story.id}
       data-testid="column-story-shadowitem"
-      onclick={toggleStoryForm(story)}
-      onkeypress={toggleStoryForm(story)}
     >
       <div>
         <div>
@@ -146,11 +160,7 @@
               </div>
               <div class="w-1/2 flex space-x-2 justify-end">
                 {#if story.link !== ''}
-                  <span
-                    title="Story has external link"
-                    class="hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"
-                    ><Link class="inline-block w-4 h-4" /></span
-                  >
+                  <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
                 {/if}
                 {#if story.points > 0}
                   <span
