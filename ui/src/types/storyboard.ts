@@ -47,7 +47,7 @@ export type StoryComment = {
   created_date: string;
   id: string;
   story_id: string;
-  updated_date: Date;
+  updated_date: string;
   user_id: string;
 };
 

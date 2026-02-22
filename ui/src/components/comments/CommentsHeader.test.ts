@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 
@@ -30,5 +30,24 @@ describe('CommentsHeader component', () => {
 
     expect(page.getByText('5')).toBeTruthy();
     expect(page.getByText('Activity Feed')).toBeTruthy();
+  });
+
+  it('should render as a button when expandable', async () => {
+    const onToggleExpand = vi.fn();
+    render(CommentsHeader, { props: { commentsCount: 3, onToggleExpand } });
+
+    const button = page.getByRole('button');
+    expect(button).toBeTruthy();
+
+    await button.click();
+    expect(onToggleExpand).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reflect expanded state in aria-expanded', async () => {
+    render(CommentsHeader, { props: { commentsCount: 3, onToggleExpand: () => {}, isExpanded: true } });
+
+    const button = page.getByRole('button');
+    const buttonEl = await button.element();
+    expect(buttonEl.getAttribute('aria-expanded')).toBe('true');
   });
 });

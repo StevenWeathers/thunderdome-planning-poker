@@ -5,44 +5,62 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import Editor from '../forms/Editor.svelte';
-  import { User, MessageCircleMore, ChevronRight, ChevronDown } from '@lucide/svelte';
+  import { ChevronRight, ChevronDown } from '@lucide/svelte';
   import { onMount } from 'svelte';
+  import Comment from '../comments/Comment.svelte';
+  import CommentForm from '../comments/CommentForm.svelte';
 
   import type { NotificationService } from '../../types/notifications';
+  import type { UserDisplay } from '../../types/user';
+  import type { StoryboardStory, StoryboardUser } from '../../types/storyboard';
+  import CommentsHeader from '../comments/CommentsHeader.svelte';
+  import CommentEmptyState from '../comments/CommentEmptyState.svelte';
 
   interface Props {
     toggleStoryForm?: any;
     sendSocketEvent?: any;
     notifications: NotificationService;
-    story?: any;
+    story?: StoryboardStory;
     colorLegend?: any;
-    users?: any;
+    users?: StoryboardUser[];
+    discussionExpanded?: boolean;
+    additionalDetailsExpanded?: boolean;
   }
 
   let {
     toggleStoryForm = () => {},
     sendSocketEvent = () => {},
     notifications,
-    story = {},
+    story = { id: '' } as StoryboardStory,
     colorLegend = [],
     users = [],
+    discussionExpanded = false,
+    additionalDetailsExpanded = false,
   }: Props = $props();
 
   const isAbsolute = new RegExp('^([a-z]+://|//)', 'i');
 
-  let userComment = $state('');
-  let selectedComment = $state(null);
-  let selectedCommentContent = $state('');
-  let actionsHidden = $state(true);
+  let additionalDetailsHidden = $state(true);
   let discussionHidden = $state(true);
   let focusInput: any = $state();
   let storyPoints = $state(0);
 
-  let userMap = $derived(
+  $effect(() => {
+    discussionHidden = !discussionExpanded;
+    additionalDetailsHidden = !additionalDetailsExpanded;
+  });
+
+  const userMap: Map<string, UserDisplay> = $derived(
     users.reduce((prev, usr) => {
-      prev[usr.id] = usr.name;
+      prev.set(usr.id, {
+        id: usr.id,
+        name: usr.name,
+        avatar: usr.avatar,
+        gravatarHash: usr.gravatarHash,
+        pictureUrl: '',
+      });
       return prev;
-    }, {}),
+    }, new Map<string, UserDisplay>()),
   );
 
   function handleStoryDelete() {
@@ -129,38 +147,28 @@
     );
   };
 
-  const handleCommentSubmit = () => {
-    if (userComment !== '') {
-      sendSocketEvent('add_story_comment', JSON.stringify({ storyId: story.id, comment: userComment }));
-      userComment = '';
+  const handleCommentSubmit = (commentText: string) => {
+    if (commentText.trim() !== '') {
+      sendSocketEvent('add_story_comment', JSON.stringify({ storyId: story.id, comment: commentText }));
     }
   };
 
-  const toggleCommentEdit = comment => () => {
-    selectedComment = comment;
-    if (comment !== null) {
-      selectedCommentContent = comment.comment;
-    }
-  };
-
-  const handleCommentEdit = () => {
+  const handleCommentEdit = (commentId: string, data: { userId: string; comment: string }) => {
     sendSocketEvent(
       'edit_story_comment',
       JSON.stringify({
-        commentId: selectedComment.id,
-        comment: selectedCommentContent,
+        commentId,
+        comment: data.comment,
       }),
     );
-    selectedComment = null;
-    selectedCommentContent = '';
   };
 
-  const handleCommentDelete = (commentId: String) => () => {
+  const handleCommentDelete = (commentId: String) => {
     sendSocketEvent('delete_story_comment', JSON.stringify({ commentId }));
   };
 
   const toggleMoreActions = () => {
-    actionsHidden = !actionsHidden;
+    additionalDetailsHidden = !additionalDetailsHidden;
   };
 
   const toggleDiscussion = () => {
@@ -180,7 +188,7 @@
 
 <Modal
   closeModal={toggleStoryForm}
-  widthClasses="w-full md:w-3/4 xl:1/2 2xl:w-2/5"
+  widthClasses="w-full md:w-3/4 xl:2/3 2xl:w-3/5"
   ariaLabel={$LL.modalStoryboardStory()}
 >
   <div class="p-6 overflow-y-auto h-full">
@@ -251,49 +259,43 @@
       </div>
 
       <!-- More Actions Section (Collapsed by default) -->
-      <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+      <div
+        class="flex flex-col gap-3 {additionalDetailsHidden
+          ? 'border-t border-gray-200 dark:border-gray-700 pt-4 lg:pt-6'
+          : 'bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 border border-gray-200/50 dark:border-gray-600/30'}"
+      >
         <button
+          type="button"
           id="more-actions-toggle"
-          class="flex items-center space-x-2 font-bold text-lg lg:text-xl text-gray-800 dark:text-gray-200 hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
+          class="group flex items-center gap-2 w-full text-start rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
           onclick={toggleMoreActions}
+          aria-expanded={!additionalDetailsHidden}
         >
-          {#if actionsHidden}
-            <ChevronRight class="inline-block w-5 h-5" />
-          {:else}
-            <ChevronDown class="inline-block w-5 h-5" />
-          {/if}
-          <span>Additional Details</span>
+          <span
+            class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 group-hover:bg-gray-100 dark:group-hover:bg-gray-700 transition-colors duration-200"
+            aria-hidden="true"
+          >
+            {#if additionalDetailsHidden}
+              <ChevronRight class="w-4 h-4" />
+            {:else}
+              <ChevronDown class="w-4 h-4" />
+            {/if}
+          </span>
+          <span class="font-medium text-gray-900 dark:text-white">Additional Details</span>
         </button>
 
-        <div
-          id="more-actions-content"
-          class="{actionsHidden ? 'hidden' : ''} mt-4 space-y-4 ps-6 border-l-2 border-gray-100 dark:border-gray-700"
-        >
+        <div id="more-actions-content" class="flex flex-col gap-2 {additionalDetailsHidden ? 'hidden' : ''}">
           <!-- Story Points -->
           <div>
-            <label for="storyPoints" class="block text-gray-700 dark:text-gray-300 mb-2 text-lg"> Story Points </label>
-            <!-- <select class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                          <option value="0">0</option>
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="5">5</option>
-                          <option value="8">8</option>
-                          <option value="13">13</option>
-                          <option value="21">21</option>
-                      </select> -->
+            <label for="storyPoints" class="block text-gray-700 dark:text-gray-300 mb-2 text-lg">Story Points</label>
             <input
               class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
               id="storyPoints"
-              type="number"
-              min="0"
-              max="999"
               bind:value={storyPoints}
               onchange={updatePoints}
-              placeholder="Enter story points e.g. 1, 2, 3, 5,
-                                        8"
+              placeholder="Enter story points"
               name="storyPoints"
             />
           </div>
@@ -314,9 +316,6 @@
                 type="url"
                 class="ps-10"
               />
-              <!-- <input 
-                              class="w-full px-4 py-3 ps-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                          > -->
               <svg
                 class="w-5 h-5 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2"
                 fill="none"
@@ -379,104 +378,29 @@
       </div>
 
       <!-- Discussion Section -->
-      <div class="border-t border-gray-200 dark:border-gray-700 pt-4 lg:pt-6">
-        <h3 class="text-lg lg:text-xl text-gray-900 dark:text-white flex items-center mb-4">
-          <button
-            id="discussion-toggle"
-            class="flex items-center space-x-2 font-bold text-gray-800 dark:text-gray-200 hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
-            onclick={toggleDiscussion}
-          >
-            {#if discussionHidden}
-              <ChevronRight class="inline-block w-5 h-5" />
-            {:else}
-              <ChevronDown class="inline-block w-5 h-5" />
-            {/if}
-            <span>Discussion</span><MessageCircleMore class="inline-block ms-2 w-5 h-5" />
-          </button>
+      <div
+        class="flex flex-col gap-3 {discussionHidden
+          ? 'border-t border-gray-200 dark:border-gray-700 pt-4 lg:pt-6'
+          : 'bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 border border-gray-200/50 dark:border-gray-600/30'}"
+      >
+        <CommentsHeader
+          commentsCount={story.comments ? story.comments.length : 0}
+          onToggleExpand={toggleDiscussion}
+          isExpanded={!discussionHidden}
+        />
 
-          <span
-            class="text-normal ms-auto bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 leading-none py-2 {story
-              .comments.length > 9
-              ? 'px-2'
-              : 'px-3'} rounded-full">{story.comments ? `${story.comments.length}` : ''}</span
-          >
-        </h3>
-
-        <div class={discussionHidden ? 'hidden' : ''}>
-          <!-- Comments List -->
-          {#if story.comments}
-            <div class="space-y-4 mb-6">
+        <div class="flex flex-col gap-3 {discussionHidden ? 'hidden' : ''}">
+          {#if story.comments && story.comments.length > 0}
+            <div class="flex flex-col gap-3">
               {#each story.comments as comment}
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-sm" data-commentid={comment.id}>
-                  <div class="flex items-center space-x-2 mb-2">
-                    <div
-                      class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                    >
-                      <User class="h-4 w-4 inline-block" />
-                    </div>
-                    <span class="text-gray-900 dark:text-white">{userMap[comment.user_id]}</span>
-                    <!-- <span class="text-xs text-gray-500 dark:text-gray-400">2 min ago</span> -->
-                  </div>
-                  {#if selectedComment !== null && selectedComment.id === comment.id}
-                    <div class="w-full my-2">
-                      <textarea
-                        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                                      rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                                      focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
-                        bind:value={selectedCommentContent}
-                      ></textarea>
-                      <div class="text-right">
-                        <HollowButton color="blue" onClick={toggleCommentEdit(null)}>
-                          {$LL.cancel()}
-                        </HollowButton>
-                        <HollowButton
-                          color="green"
-                          onClick={handleCommentEdit}
-                          disabled={selectedCommentContent === ''}
-                        >
-                          {$LL.updateComment()}
-                        </HollowButton>
-                      </div>
-                    </div>
-                  {:else}
-                    <p class="text-gray-700 dark:text-gray-300">{comment.comment}</p>
-                  {/if}
-
-                  {#if comment.user_id === $user.id && !(selectedComment !== null && selectedComment.id === comment.id)}
-                    <div class="flex justify-end space-x-2 mt-2">
-                      <button
-                        class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                        onclick={toggleCommentEdit(comment)}>{$LL.edit()}</button
-                      >
-                      <button
-                        class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                        onclick={handleCommentDelete(comment.id)}>{$LL.delete()}</button
-                      >
-                    </div>
-                  {/if}
-                </div>
+                <Comment {comment} {userMap} handleEdit={handleCommentEdit} handleDelete={handleCommentDelete} />
               {/each}
             </div>
+          {:else}
+            <CommentEmptyState description="Be the first to share your thoughts on this story." />
           {/if}
 
-          <!-- Add Comment -->
-          <div>
-            <textarea
-              placeholder="Write a comment..."
-              rows="3"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none mb-3"
-              bind:value={userComment}
-            ></textarea>
-            <div class="flex justify-end">
-              <button
-                class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                onclick={handleCommentSubmit}
-                disabled={userComment === ''}
-              >
-                Post Comment
-              </button>
-            </div>
-          </div>
+          <CommentForm onSubmit={handleCommentSubmit} />
         </div>
       </div>
     </div>

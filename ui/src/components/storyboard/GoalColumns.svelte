@@ -2,7 +2,9 @@
   import { dndzone } from 'svelte-dnd-action';
   import { Grip, User } from '@lucide/svelte';
   import StoryColumn from './StoryColumn.svelte';
-  import type { StoryboardGoal, StoryboardColumn, StoryboardStory } from '../../types/storyboard';
+  import type { StoryboardGoal, StoryboardColumn } from '../../types/storyboard';
+  import type { NotificationService } from '../../types/notifications';
+  import type { ColorLegend } from '../../types/storyboard';
 
   interface Props {
     goals: StoryboardGoal[];
@@ -12,8 +14,10 @@
     scale: number;
     toggleColumnEdit: (column: StoryboardColumn) => () => void;
     addStory: (goalId: string, columnId: string) => () => void;
-    toggleStoryForm: (story?: StoryboardStory) => () => void;
     sendSocketEvent: (event: string, data: string) => void;
+    notifications: NotificationService;
+    colorLegend: ColorLegend[];
+    users: any[];
   }
 
   let {
@@ -24,8 +28,10 @@
     scale,
     toggleColumnEdit,
     addStory,
-    toggleStoryForm,
     sendSocketEvent,
+    notifications,
+    colorLegend,
+    users,
   }: Props = $props();
 
   // Calculate column width based on scale (w-40 = 10rem for scale 1)
@@ -113,11 +119,13 @@
         {columnOrderEditMode}
         {addStory}
         {toggleColumnEdit}
-        {toggleStoryForm}
         {sendSocketEvent}
         {goalColumn}
         {columnIndex}
         {scale}
+        {notifications}
+        {colorLegend}
+        {users}
       />
 
       {#if columnOrderEditMode}
