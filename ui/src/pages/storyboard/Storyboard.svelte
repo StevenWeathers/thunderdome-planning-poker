@@ -18,9 +18,12 @@
     ChevronDown,
     Crown,
     Download,
+    LayoutDashboardIcon,
     LogOut,
+    MinusIcon,
     Pencil,
     Plus,
+    PlusIcon,
     Settings,
     SwatchBook,
     Trash,
@@ -86,6 +89,7 @@
   let showExportStoryboard = $state(false);
   let activeUserCount = $state(0);
   let columnOrderEditMode = $state(false);
+  let scale = $state(1);
 
   let ws: any;
 
@@ -415,6 +419,13 @@
     activeUserCount = storyboard.users.filter((u: StoryboardUser) => u.active).length;
   }
 
+  function increaseScale() {
+    scale = Math.min(scale + 0.1, 1.5);
+  }
+  function decreaseScale() {
+    scale = Math.max(scale - 0.1, 1);
+  }
+
   let isFacilitator = $derived(storyboard.facilitators.length > 0 && storyboard.facilitators.includes($user.id));
 
   let activeStory = $derived(
@@ -489,6 +500,32 @@
     </div>
     <div class="flex justify-end space-x-2">
       {#if !columnOrderEditMode}
+        <div
+          class="flex items-center gap-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-1 shadow-sm"
+        >
+          <button
+            onclick={decreaseScale}
+            disabled={scale <= 1}
+            class="p-2 rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent text-gray-700 dark:text-gray-200"
+            title="Zoom Storyboard out"
+          >
+            <MinusIcon class="w-4 h-4" />
+          </button>
+          <button
+            onclick={increaseScale}
+            disabled={scale >= 2}
+            class="p-2 rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent text-gray-700 dark:text-gray-200"
+            title="Zoom Storyboard in"
+          >
+            <PlusIcon class="w-4 h-4" />
+          </button>
+          <div class="w-px h-6 bg-gray-300 dark:bg-gray-600"></div>
+          <span class="sr-only">Zoom Board</span>
+          <div class="px-1 flex items-center text-gray-600 dark:text-gray-400">
+            <LayoutDashboardIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <div class="w-px h-8 bg-gray-300 dark:bg-gray-600 self-center"></div>
         <SolidButton color="green" onClick={() => toggleAddGoal(undefined)()} testid="goal-add">
           <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
         </SolidButton>
@@ -583,6 +620,7 @@
         {toggleColumnEdit}
         {toggleStoryForm}
         {sendSocketEvent}
+        {scale}
       />
     </GoalSection>
   {/each}

@@ -9,6 +9,7 @@
     goal: StoryboardGoal;
     goalIndex: number;
     columnOrderEditMode: boolean;
+    scale: number;
     toggleColumnEdit: (column: StoryboardColumn) => () => void;
     addStory: (goalId: string, columnId: string) => () => void;
     toggleStoryForm: (story?: StoryboardStory) => () => void;
@@ -20,11 +21,15 @@
     goal,
     goalIndex,
     columnOrderEditMode,
+    scale,
     toggleColumnEdit,
     addStory,
     toggleStoryForm,
     sendSocketEvent,
   }: Props = $props();
+
+  // Calculate column width based on scale (w-40 = 10rem for scale 1)
+  const columnWidth = $derived(`${10 * scale}rem`);
 
   function handleDndConsider(e: CustomEvent) {
     const goalIndex = Number((e.target as HTMLElement)?.dataset.goalindex);
@@ -68,7 +73,7 @@
 
 <div class="flex">
   {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-    <div class="flex-none mx-2 w-40" data-testid="goal-personas">
+    <div class="flex-none mx-2" style="width: {columnWidth}" data-testid="goal-personas">
       <div class="w-full mb-2">
         {#each goalColumn.personas as persona}
           <div class="mt-4 dark:text-gray-300 text-right" data-testid="goal-persona">
@@ -112,6 +117,7 @@
         {sendSocketEvent}
         {goalColumn}
         {columnIndex}
+        {scale}
       />
 
       {#if columnOrderEditMode}
