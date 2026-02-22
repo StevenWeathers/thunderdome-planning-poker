@@ -5,8 +5,6 @@
   import type { StoryboardGoal, StoryboardColumn, StoryboardStory } from '../../types/storyboard';
   import type { ColorLegend } from '../../types/storyboard';
   import type { NotificationService } from '../../types/notifications';
-  import { Pencil } from '@lucide/svelte';
-  import { LL } from '../../i18n/i18n-svelte';
 
   interface Props {
     goals: StoryboardGoal[];
@@ -15,9 +13,8 @@
     goalColumn: StoryboardColumn;
     columnIndex: number;
     columnOrderEditMode: boolean;
+    columnWidth: string;
     scale: number;
-    toggleColumnEdit: (column: StoryboardColumn) => () => void;
-    addStory: (goalId: string, columnId: string) => () => void;
     sendSocketEvent: (event: string, data: string) => void;
     notifications: NotificationService;
     colorLegend: ColorLegend[];
@@ -31,9 +28,8 @@
     columnOrderEditMode,
     goalColumn,
     columnIndex,
+    columnWidth = '10rem',
     scale,
-    toggleColumnEdit,
-    addStory,
     sendSocketEvent,
     notifications,
     colorLegend,
@@ -69,9 +65,6 @@
   let activeStory = $derived(
     activeStoryId ? goalColumn.stories.find(story => story?.id === activeStoryId) || null : null,
   );
-
-  // Calculate column width based on scale (w-40 = 10rem for scale 1)
-  const columnWidth = $derived(`${10 * scale}rem`);
 
   function handleDndConsider(e: CustomEvent) {
     const goalIndex = Number((e.target as HTMLElement)?.dataset.goalindex);
@@ -117,48 +110,9 @@
   }
 </script>
 
-<div class="flex-none my-4 mx-2" style="width: {columnWidth}" data-testid="goal-column">
-  <div class="flex-none">
-    <div class="w-full mb-2">
-      <div class="flex">
-        <span class="font-bold flex-grow truncate dark:text-gray-300" title={goalColumn.name} data-testid="column-name">
-          {goalColumn.name}
-        </span>
-        <button
-          onclick={toggleColumnEdit(goalColumn)}
-          class="flex-none font-bold text-xl
-                                border-dashed border-2 border-gray-400 dark:border-gray-600
-                                hover:border-green-500 text-gray-600 dark:text-gray-400
-                                hover:text-green-500 py-1 px-2"
-          class:cursor-not-allowed={columnOrderEditMode}
-          disabled={columnOrderEditMode}
-          title={$LL.storyboardEditColumn()}
-          data-testid="column-edit"
-        >
-          <Pencil />
-        </button>
-      </div>
-    </div>
-    <div class="w-full">
-      <div class="flex">
-        <button
-          onclick={addStory(goal.id, goalColumn.id)}
-          class="flex-grow font-bold text-xl py-1
-                                px-2 border-dashed border-2
-                                border-gray-400 dark:border-gray-600 hover:border-green-500
-                                text-gray-600 dark:text-gray-400 hover:text-green-500"
-          class:cursor-not-allowed={columnOrderEditMode}
-          disabled={columnOrderEditMode}
-          title={$LL.storyboardAddStoryToColumn()}
-          data-testid="story-add"
-        >
-          +
-        </button>
-      </div>
-    </div>
-  </div>
+<div class="w-full h-full flex flex-col" style="width: {columnWidth}" data-testid="goal-column">
   <div
-    class="w-full relative"
+    class="flex-1 relative flex flex-col gap-4"
     data-testid="column-dropzone"
     style="min-height: 160px;"
     data-goalid={goal.id}

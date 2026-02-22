@@ -5,6 +5,7 @@
   import type { StoryboardGoal, StoryboardColumn } from '../../types/storyboard';
   import type { NotificationService } from '../../types/notifications';
   import type { ColorLegend } from '../../types/storyboard';
+  import ColumnHeader from './ColumnHeader.svelte';
 
   interface Props {
     goals: StoryboardGoal[];
@@ -77,64 +78,82 @@
   }
 </script>
 
-<div class="flex">
-  {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-    <div class="flex-none mx-2" style="width: {columnWidth}" data-testid="goal-personas">
-      <div class="w-full mb-2">
-        {#each goalColumn.personas as persona}
-          <div class="mt-4 dark:text-gray-300 text-right" data-testid="goal-persona">
-            <div class="font-bold" data-testid="persona-name">
-              <User class="inline-block h-4 w-4" />
-              {persona.name}
+<div class="flex flex-col gap-4">
+  <!-- Column Associated Personas -->
+  <div class="flex gap-4 items-stretch">
+    {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+      <div class="flex flex-shrink-0" style="width: {columnWidth}" data-testid="goal-personas">
+        <div class="w-full flex flex-col gap-2">
+          {#each goalColumn.personas as persona}
+            <div class="dark:text-gray-300 text-right" data-testid="goal-persona">
+              <div class="font-bold" data-testid="persona-name">
+                <User class="inline-block h-4 w-4" />
+                {persona.name}
+              </div>
+              <div class="text-sm" data-testid="persona-role">
+                {persona.role}
+              </div>
             </div>
-            <div class="text-sm" data-testid="persona-role">
-              {persona.role}
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
-  {/each}
-</div>
-<div
-  class="flex"
-  data-goalid={goal.id}
-  data-goalindex={goalIndex}
-  use:dndzone={{
-    items: goal.columns,
-    type: 'column' as const,
-    dropTargetStyle: {},
-    dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
-    dragDisabled: !columnOrderEditMode,
-  }}
-  onconsider={handleDndConsider}
-  onfinalize={handleDndFinalize}
->
-  {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-    <div class:relative={columnOrderEditMode} class:cursor-move={columnOrderEditMode}>
-      <StoryColumn
-        bind:goals
-        {goal}
-        {goalIndex}
-        {columnOrderEditMode}
-        {addStory}
-        {toggleColumnEdit}
-        {sendSocketEvent}
-        {goalColumn}
-        {columnIndex}
-        {scale}
-        {notifications}
-        {colorLegend}
-        {users}
-      />
-
-      {#if columnOrderEditMode}
-        <div class="absolute top-0 right-0 bottom-0 left-0 z-5 bg-gray-900 opacity-50" aria-hidden="true"></div>
-        <div class="absolute top-0 right-0 bottom-0 left-0 z-10 flex flex-col items-center justify-center">
-          <Grip class="h-8 w-8 text-white mb-2" />
-          <div class="text-white font-bold">Drag to Reorder</div>
+          {/each}
         </div>
-      {/if}
-    </div>
-  {/each}
+      </div>
+    {/each}
+  </div>
+  <!-- Column Headers -->
+  <div class="flex gap-4 items-stretch">
+    {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+      <div class="flex" style="width: {columnWidth}">
+        <ColumnHeader
+          {goal}
+          {goalColumn}
+          {columnIndex}
+          {columnOrderEditMode}
+          {toggleColumnEdit}
+          {addStory}
+          {columnWidth}
+        />
+      </div>
+    {/each}
+  </div>
+  <div
+    class="flex gap-4 items-stretch"
+    data-goalid={goal.id}
+    data-goalindex={goalIndex}
+    use:dndzone={{
+      items: goal.columns,
+      type: 'column' as const,
+      dropTargetStyle: {},
+      dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
+      dragDisabled: !columnOrderEditMode,
+    }}
+    onconsider={handleDndConsider}
+    onfinalize={handleDndFinalize}
+  >
+    {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+      <div class="self-stretch" class:relative={columnOrderEditMode} class:cursor-move={columnOrderEditMode}>
+        <StoryColumn
+          bind:goals
+          {goal}
+          {goalIndex}
+          {columnOrderEditMode}
+          {sendSocketEvent}
+          {goalColumn}
+          {columnIndex}
+          {scale}
+          {columnWidth}
+          {notifications}
+          {colorLegend}
+          {users}
+        />
+
+        {#if columnOrderEditMode}
+          <div class="absolute top-0 right-0 bottom-0 left-0 z-5 bg-gray-900 opacity-50" aria-hidden="true"></div>
+          <div class="absolute top-0 right-0 bottom-0 left-0 z-10 flex flex-col items-center justify-center">
+            <Grip class="h-8 w-8 text-white mb-2" />
+            <div class="text-white font-bold">Drag to Reorder</div>
+          </div>
+        {/if}
+      </div>
+    {/each}
+  </div>
 </div>

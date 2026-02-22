@@ -133,7 +133,7 @@
     </div>
   </div>
   {#if !collapsed}
-    <section class="px-2" style="overflow-x: scroll">
+    <section class="p-4" style="overflow-x: scroll">
       {@render children?.()}
     </section>
   {/if}
