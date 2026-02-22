@@ -17,6 +17,8 @@
     ChevronDown,
     Crown,
     Download,
+    GoalIcon,
+    KanbanIcon,
     LayoutDashboardIcon,
     LogOut,
     MinusIcon,
@@ -569,6 +571,25 @@
       onRemoveFacilitator={handleRemoveFacilitator}
     />
   {/if}
+  {#if storyboard.goals && storyboard.goals.length === 0}
+    <div
+      class="m-6 p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center text-gray-500 dark:text-gray-400"
+    >
+      <div class="mx-auto h-24 w-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6">
+        <GoalIcon class="h-12 w-12 text-slate-400" />
+      </div>
+      <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">No goals created yet.</p>
+      <p class="text-sm text-slate-500 dark:text-slate-500 max-w-2xl mx-auto">
+        Story mapping goals are the big outcomes or user journeys you want to achieve. Each goal becomes a section where
+        you organize stories into columns to map how work supports that outcome.
+      </p>
+      <div class="mt-6 flex justify-center">
+        <SolidButton color="green" onClick={() => toggleAddGoal(undefined)()} testid="goal-add-empty">
+          <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
+        </SolidButton>
+      </div>
+    </div>
+  {/if}
   {#each storyboard.goals as goal, goalIndex (goal.id)}
     <GoalSection
       {goal}
@@ -580,19 +601,41 @@
       {columnOrderEditMode}
       {toggleColumnOrderEdit}
     >
-      <GoalColumns
-        bind:goals={storyboard.goals}
-        {goal}
-        {goalIndex}
-        {columnOrderEditMode}
-        {addStory}
-        {toggleColumnEdit}
-        {sendSocketEvent}
-        {notifications}
-        colorLegend={storyboard.color_legend}
-        users={storyboard.users}
-        {scale}
-      />
+      {#if goal.columns.length === 0}
+        <div
+          class="m-6 p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center text-gray-500 dark:text-gray-400"
+        >
+          <div
+            class="mx-auto h-24 w-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6"
+          >
+            <KanbanIcon class="h-12 w-12 text-slate-400" />
+          </div>
+          <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">No columns created yet.</p>
+          <p class="text-sm text-slate-500 dark:text-slate-500 max-w-2xl mx-auto">
+            Columns help you organize the stories for this goal. You can create columns for different stages of work,
+            different types of work, or however else you'd like to group your stories.
+          </p>
+          <div class="mt-6 flex justify-center">
+            <SolidButton color="green" onClick={() => addStoryColumn(goal.id)} testid="goal-col-add-empty">
+              <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddColumn()}
+            </SolidButton>
+          </div>
+        </div>
+      {:else}
+        <GoalColumns
+          bind:goals={storyboard.goals}
+          {goal}
+          {goalIndex}
+          {columnOrderEditMode}
+          {addStory}
+          {toggleColumnEdit}
+          {sendSocketEvent}
+          {notifications}
+          colorLegend={storyboard.color_legend}
+          users={storyboard.users}
+          {scale}
+        />
+      {/if}
     </GoalSection>
   {/each}
 </div>
