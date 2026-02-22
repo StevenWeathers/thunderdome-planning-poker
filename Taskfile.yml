@@ -88,24 +88,24 @@ tasks:
     deps: [ build-ui ]
     cmds:
       - task: build
-      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY}} live
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY}} serve --live
 
   dev-go:
     cmds:
       - task: build-go
-      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY}} live
+      - HTTP_SECURE_PROTOCOL="false" SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./{{.BINARY}} serve --live
 
   dev-secure:
     cmds:
       - task: build
       - caddy start --config build/dev.caddyfile
-      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY}} live
+      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY}}  serve --live
 
   dev-secure-go:
     cmds:
       - task: build-go
       - caddy start --config build/dev.caddyfile
-      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY}} live
+      - SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN="thunderdome.localhost" ./{{.BINARY}} serve --live
 
   run:
     cmds:

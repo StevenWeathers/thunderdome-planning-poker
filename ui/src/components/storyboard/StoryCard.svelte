@@ -8,6 +8,7 @@
     goalColumn: StoryboardColumn;
     goal: StoryboardGoal;
     columnOrderEditMode: boolean;
+    scale: number;
     toggleStoryForm: (story: StoryboardStory) => () => void;
   }
 
@@ -27,15 +28,24 @@
     goalColumn = { id: '', name: '', sort_order: '', stories: [], personas: [] },
     goal = { id: '', name: '', sort_order: '', columns: [], personas: [] },
     columnOrderEditMode = false,
+    scale,
     toggleStoryForm = (story: StoryboardStory) => () => {},
   }: Props = $props();
+
+  // Calculate content height based on scale (h-20 = 5rem for scale 1)
+  const contentHeight = $derived(`${5 * scale}rem`);
+
+  // Handle click on external link to prevent triggering story form
+  function handleLinkClick(e: Event) {
+    e.stopPropagation();
+  }
 </script>
 
 <div
-  class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4"
+  class="relative shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4"
+  style="list-style: none;"
   class:cursor-pointer={!columnOrderEditMode}
   class:cursor-not-allowed={columnOrderEditMode}
-  style="list-style: none;"
   role="button"
   tabindex="0"
   data-goalid={goal.id}
@@ -48,7 +58,8 @@
   <div>
     <div>
       <div
-        class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
+        class="p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
+        style="height: {contentHeight}"
         title={story.name}
         data-testid="story-name"
       >
@@ -70,7 +81,15 @@
           </div>
           <div class="w-1/2 flex space-x-2 justify-end">
             {#if story.link !== ''}
-              <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
+              <a
+                href={story.link}
+                onclick={handleLinkClick}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Story has external link"
+                class="hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"
+                ><Link class="inline-block w-4 h-4" /></a
+              >
             {/if}
             {#if story.points > 0}
               <span
@@ -104,7 +123,8 @@
       <div>
         <div>
           <div
-            class="h-20 p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
+            class="p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"
+            style="height: {contentHeight}"
             title={story.name}
             data-testid="shadow-story-name"
           >
@@ -126,7 +146,11 @@
               </div>
               <div class="w-1/2 flex space-x-2 justify-end">
                 {#if story.link !== ''}
-                  <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
+                  <span
+                    title="Story has external link"
+                    class="hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"
+                    ><Link class="inline-block w-4 h-4" /></span
+                  >
                 {/if}
                 {#if story.points > 0}
                   <span

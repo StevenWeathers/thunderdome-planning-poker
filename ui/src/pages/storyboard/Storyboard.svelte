@@ -18,9 +18,12 @@
     ChevronDown,
     Crown,
     Download,
+    LayoutDashboardIcon,
     LogOut,
+    MinusIcon,
     Pencil,
     Plus,
+    PlusIcon,
     Settings,
     SwatchBook,
     Trash,
@@ -86,6 +89,10 @@
   let showExportStoryboard = $state(false);
   let activeUserCount = $state(0);
   let columnOrderEditMode = $state(false);
+  let scale = $state(1);
+
+  const ZOOM_MIN = 1;
+  const ZOOM_MAX = 1.5;
 
   let ws: any;
 
@@ -415,6 +422,13 @@
     activeUserCount = storyboard.users.filter((u: StoryboardUser) => u.active).length;
   }
 
+  function increaseScale() {
+    scale = Math.min(scale + 0.1, ZOOM_MAX);
+  }
+  function decreaseScale() {
+    scale = Math.max(scale - 0.1, ZOOM_MIN);
+  }
+
   let isFacilitator = $derived(storyboard.facilitators.length > 0 && storyboard.facilitators.includes($user.id));
 
   let activeStory = $derived(
@@ -478,17 +492,48 @@
 
 <div class="w-full">
   <div
-    class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
-        flex-wrap gap-y-2"
+    class="px-6 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b border-t border-blue-200 dark:border-gray-700 flex
+        flex-wrap gap-y-2 shadow-sm"
   >
-    <div class="grow">
-      <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
-        <span class="text-2xl text-gray-700 dark:text-gray-400">{$LL.storyboard()}</span>
+    <div class="grow flex items-center gap-2.5">
+      <div
+        class="flex items-center justify-center w-9 h-9 bg-blue-600 dark:bg-blue-500 rounded-lg shadow-md"
+        title={$LL.storyboard()}
+      >
+        <LayoutDashboardIcon class="w-6 h-6 text-white" />
+      </div>
+      <h1 class="text-3xl font-bold leading-tight text-gray-900 dark:text-gray-100">
         {storyboard.name}
       </h1>
     </div>
     <div class="flex justify-end space-x-2">
       {#if !columnOrderEditMode}
+        <div
+          class="flex items-center gap-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-1 shadow-sm"
+        >
+          <button
+            onclick={decreaseScale}
+            disabled={scale <= ZOOM_MIN}
+            class="p-2 rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent text-gray-800 dark:text-gray-100 disabled:text-gray-500 dark:disabled:text-gray-400"
+            title="Zoom Storyboard out"
+          >
+            <MinusIcon class="w-4 h-4" />
+          </button>
+          <button
+            onclick={increaseScale}
+            disabled={scale >= ZOOM_MAX}
+            class="p-2 rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent text-gray-800 dark:text-gray-100 disabled:text-gray-500 dark:disabled:text-gray-400"
+            title="Zoom Storyboard in"
+          >
+            <PlusIcon class="w-4 h-4" />
+          </button>
+          <div class="w-px h-6 bg-gray-300 dark:bg-gray-600"></div>
+          <span class="sr-only">Zoom Board</span>
+          <div class="px-1 flex items-center text-gray-600 dark:text-gray-400">
+            <LayoutDashboardIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <div class="w-px h-8 bg-gray-300 dark:bg-gray-600 self-center"></div>
         <SolidButton color="green" onClick={() => toggleAddGoal(undefined)()} testid="goal-add">
           <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddGoal()}
         </SolidButton>
@@ -583,6 +628,7 @@
         {toggleColumnEdit}
         {toggleStoryForm}
         {sendSocketEvent}
+        {scale}
       />
     </GoalSection>
   {/each}
