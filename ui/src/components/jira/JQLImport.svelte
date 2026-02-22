@@ -10,6 +10,7 @@
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
   import type { SessionUser } from '../../types/user';
+  import { SearchIcon } from '@lucide/svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -19,7 +20,7 @@
     xfetch: ApiClient;
   }
 
-  let { handleImport = story => {}, notifications, xfetch }: Props = $props();
+  let { handleImport = (story: any) => {}, notifications, xfetch }: Props = $props();
 
   // going by common Jira issue types for now
   const planTypes = [
@@ -49,9 +50,11 @@
 
   let jiraInstances = $state([]);
   let jiraStories = $state([]);
-  let selectedJiraInstance = $state('');
-  let searchJQL = $state('');
-  let jqlError = $state('');
+  let selectedJiraInstance: string = $state('');
+  let searchJQL: string = $state('');
+  let jqlError: string = $state('');
+  let importedStoryKeys = $state([]);
+  let searchCompleted: boolean = $state(false);
 
   function getJiraInstances() {
     xfetch(`/api/users/${$user.id}/jira-instances`)
@@ -95,6 +98,8 @@
     }
 
     jiraStories = [];
+    importedStoryKeys = [];
+    searchCompleted = false;
 
     xfetch(`/api/users/${$user.id}/jira-instances/${jiraInstances[selectedJiraInstance].id}/jql-story-search`, {
       body: {
@@ -107,6 +112,7 @@
       .then(function (result) {
         jqlError = '';
         jiraStories = result.data.issues;
+        searchCompleted = true;
       })
       .catch(function (error) {
         if (Array.isArray(error)) {
@@ -128,14 +134,16 @@
             } else {
               jqlError = `Jira JQL Search Error: ${result.error}`;
             }
+            searchCompleted = true;
           });
         } else {
           notifications.danger('Unknown Jira JQL search error');
+          searchCompleted = true;
         }
       });
   }
 
-  function findPlanType(type) {
+  function findPlanType(type: string) {
     return planTypes.includes(type) ? type : 'Story';
   }
 
@@ -144,7 +152,7 @@
     return found ? found.value : 99;
   }
 
-  function stripTrailingSlash(str) {
+  function stripTrailingSlash(str: string) {
     return str.endsWith('/') ? str.slice(0, -1) : str;
   }
 
@@ -159,7 +167,23 @@
         description: '', // @TODO - get description
         priority: findPriority(story.fields.priority.name),
       });
+      importedStoryKeys = [...importedStoryKeys, story.key];
     };
+  }
+
+  function importAllStories() {
+    const storiesToImport = jiraStories.filter(story => !importedStoryKeys.includes(story.key));
+    storiesToImport.forEach(story => {
+      handleImport({
+        name: story.fields.summary,
+        type: findPlanType(story.fields.issuetype.name),
+        referenceId: story.key,
+        link: `${stripTrailingSlash(jiraInstances[selectedJiraInstance].host)}/browse/${story.key}`,
+        description: '', // @TODO - get description
+        priority: findPriority(story.fields.priority.name),
+      });
+      importedStoryKeys = [...importedStoryKeys, story.key];
+    });
   }
 
   onMount(() => {
@@ -173,12 +197,12 @@
   <FeatureSubscribeBanner salesPitch="Import your stories for Poker Planning from Jira Cloud." />
 {:else if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && $user.subscribed)}
   {#if jiraInstances.length === 0}
-    <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
-      Visit your <a href={appRoutes.profile} class="underline" target="_blank">profile page</a> to setup instances of Jira
-      Cloud.
+    <p class="info-banner">
+      Visit your <a href={appRoutes.profile} class="info-banner-link" target="_blank">profile page</a> to setup instances
+      of Jira Cloud.
     </p>
   {:else}
-    <div class="mb-4">
+    <div class="select-wrapper">
       <SelectInput
         id="jirainstance"
         bind:value={selectedJiraInstance}
@@ -186,7 +210,6 @@
           dispatch('instance_selected');
         }}
       >
-        >
         <option value="" disabled>Select Jira Instance to import from</option>
         {#each jiraInstances as ji, idx}
           <option value={idx}>{ji.host}</option>
@@ -195,52 +218,49 @@
     </div>
 
     {#if selectedJiraInstance !== ''}
-      <form onsubmit={handleJQLSearch} class="mb-4">
-        <label for="jql-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-        <div class="relative">
-          <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg
-              class="w-4 h-4 text-gray-500 dark:text-gray-400"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              ></path>
-            </svg>
+      <form onsubmit={handleJQLSearch} class="search-form">
+        <label for="jql-search" class="search-label">Search</label>
+        <div class="search-container">
+          <div class="search-icon-wrapper">
+            <SearchIcon class="w-4 h-4 text-gray-500 dark:text-gray-400" />
           </div>
           <input
             type="search"
             id="jql-search"
-            class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="search-input"
             placeholder="Enter Search JQL..."
             bind:value={searchJQL}
             required
           />
-          <button
-            type="submit"
-            class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Search
-          </button>
+          <button type="submit" class="search-button"> Search </button>
         </div>
       </form>
 
-      <div class="flex flex-wrap">
+      <div class="stories-wrapper">
         {#if jqlError !== ''}
-          <div class="p-4 bg-red-50 border-red-500 text-red-800 font-semibold rounded">
+          <div class="error-message">
             {jqlError}
+          </div>
+        {/if}
+        {#if searchCompleted && jiraStories.length === 0 && jqlError === ''}
+          <p class="no-stories-message">No stories found for this JQL query.</p>
+        {/if}
+        {#if jiraStories.length > 0 && importedStoryKeys.length === jiraStories.length}
+          <p class="all-imported-message">All stories have been imported!</p>
+        {/if}
+        {#if jiraStories.length > 0 && importedStoryKeys.length < jiraStories.length}
+          <div class="search-result-header">
+            <span class="text-lg font-semibold">
+              Search Results {jiraStories.length > 0 ? `(${jiraStories.length - importedStoryKeys.length})` : ''}
+            </span>
+            <SolidButton onClick={importAllStories}>Import All</SolidButton>
           </div>
         {/if}
         {#each jiraStories as story, idx}
           <div
-            class="p-2 w-full flex flex-wrap justify-between bg-gray-200 dark:bg-gray-900 dark:text-white rounded shadow mb-2 items-center"
+            class="story-item"
+            class:hidden={importedStoryKeys.includes(story.key)}
+            aria-hidden={importedStoryKeys.includes(story.key)}
           >
             <div>
               [{story.key}] {story.fields.summary}
@@ -254,3 +274,152 @@
     {/if}
   {/if}
 {/if}
+
+<style lang="postcss">
+  .info-banner {
+    @apply bg-yellow-thunder text-gray-900 p-4 rounded font-bold;
+  }
+
+  :root.dark .info-banner {
+    @apply bg-yellow-600 text-white;
+  }
+
+  .info-banner-link {
+    @apply underline;
+  }
+
+  .select-wrapper {
+    @apply mb-4;
+  }
+
+  .search-form {
+    @apply mb-4;
+  }
+
+  .search-label {
+    @apply mb-2 text-sm font-medium text-gray-900 sr-only;
+  }
+
+  :root.dark .search-label {
+    @apply text-white;
+  }
+
+  .search-container {
+    @apply relative;
+  }
+
+  .search-icon-wrapper {
+    @apply absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none;
+  }
+
+  :root.dark .search-icon-wrapper {
+    @apply text-gray-400;
+  }
+
+  .search-input {
+    @apply block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50;
+  }
+
+  :root.dark .search-input {
+    @apply bg-gray-700 border-gray-600 placeholder-gray-400 text-white;
+  }
+
+  .search-input:focus {
+    @apply ring-blue-500 border-blue-500;
+  }
+
+  :root.dark .search-input:focus {
+    @apply ring-blue-500 border-blue-500;
+  }
+
+  .search-button {
+    @apply text-white absolute end-2.5 bottom-2.5 bg-blue-700 font-medium rounded-lg text-sm px-4 py-2;
+  }
+
+  :root.dark .search-button {
+    @apply bg-blue-600;
+  }
+
+  .search-button:hover {
+    @apply bg-blue-800;
+  }
+
+  :root.dark .search-button:hover {
+    @apply bg-blue-700;
+  }
+
+  .search-button:focus {
+    @apply ring-4 outline-none ring-blue-300;
+  }
+
+  :root.dark .search-button:focus {
+    @apply ring-blue-800;
+  }
+
+  .search-result-header {
+    @apply flex justify-between items-center mb-4 text-gray-700 w-full;
+  }
+
+  :root.dark .search-result-header {
+    @apply text-gray-300;
+  }
+
+  .stories-wrapper {
+    @apply flex flex-wrap;
+  }
+
+  .error-message {
+    @apply p-4 bg-red-50 border-red-500 text-red-800 font-semibold rounded-lg w-full;
+  }
+
+  :root.dark .error-message {
+    @apply bg-red-900 border-red-700 text-red-200;
+  }
+
+  .no-stories-message {
+    @apply p-4 text-gray-700 text-center italic w-full rounded-lg bg-gray-200;
+  }
+
+  :root.dark .no-stories-message {
+    @apply text-gray-200 bg-gray-700;
+  }
+
+  .all-imported-message {
+    @apply p-4 text-green-700 text-center font-semibold bg-green-50 rounded-lg w-full;
+  }
+
+  :root.dark .all-imported-message {
+    @apply text-green-200 bg-green-900;
+  }
+
+  .story-item {
+    padding: 0.5rem;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: theme('colors.gray.200');
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    align-items: center;
+    transition: all 200ms ease-out;
+    margin-bottom: 0.5rem;
+  }
+
+  :root.dark .story-item {
+    background-color: theme('colors.gray.700');
+    color: white;
+  }
+
+  .story-item.hidden {
+    pointer-events: none;
+    max-height: 0;
+    padding: 0;
+    overflow: hidden;
+    margin-bottom: 0;
+    transition:
+      padding 200ms ease-out,
+      max-height 200ms ease-out,
+      margin-bottom 200ms ease-out;
+  }
+</style>
