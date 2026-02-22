@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { ChevronDown, ChevronUp, Pencil, Plus, SendToBack, Settings, Trash } from '@lucide/svelte';
+  import { ChevronDown, ChevronUp, GoalIcon, Pencil, Plus, SendToBack, Settings, Trash } from '@lucide/svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import SubMenu from '../../components/global/SubMenu.svelte';
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import SubscribeButton from '../pricing/SubscribeButton.svelte';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -65,26 +64,36 @@
 
 <div data-goalid={goal.id} data-testid="storyboard-goal">
   <div
-    class="flex flex-wrap gap-y-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b-2 border-gray-400 dark:border-gray-700 {goalIndex >
+    class="flex flex-wrap gap-y-2 px-6 py-2 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 border-b-2 border-red-200 dark:border-gray-700 shadow-sm {goalIndex >
     0
       ? 'border-t-2'
       : ''}"
   >
-    <div class="grow">
-      <div class="font-bold dark:text-gray-200 text-xl">
-        <h2 class="inline-block align-middle pt-1">
-          <button onclick={toggleCollapse} data-testid="goal-expand" data-collapsed={collapsed}>
-            {#if collapsed}
-              <ChevronDown class="me-1 inline-block" />
-            {:else}
-              <ChevronUp class="me-1 inline-block" />
-            {/if}
-            <span class="text-2xl text-gray-700 dark:text-gray-400">Goal</span>
-            {goal.name}
-            <GoalEstimate columns={goal.columns} />
-          </button>
-        </h2>
+    <div class="grow flex items-center gap-2.5">
+      <button
+        onclick={toggleCollapse}
+        data-testid="goal-expand"
+        data-collapsed={collapsed}
+        class="group text-gray-700 dark:text-gray-300"
+      >
+        {#if collapsed}
+          <ChevronUp class="w-6 h-6 transition-transform duration-200 group-hover:rotate-180" />
+        {:else}
+          <ChevronDown class="w-6 h-6 transition-transform duration-200 group-hover:rotate-180" />
+        {/if}
+      </button>
+      <div
+        class="flex items-center justify-center w-9 h-9 bg-red-600 dark:bg-red-500 rounded-full shadow-md"
+        title="Goal"
+      >
+        <GoalIcon class="w-6 h-6 text-white" />
       </div>
+      <h2 class="inline-block font-bold text-2xl leading-tight text-gray-900 dark:text-gray-100">
+        <button onclick={toggleCollapse} class="inline-flex items-center gap-2 group">
+          <span>{goal.name}</span>
+          <GoalEstimate columns={goal.columns} />
+        </button>
+      </h2>
     </div>
     <div class="flex justify-end space-x-2">
       {#if isFacilitator}

@@ -81,9 +81,15 @@
           </div>
           <div class="w-1/2 flex space-x-2 justify-end">
             {#if story.link !== ''}
-              <a href={story.link} onclick={handleLinkClick} target="_blank" rel="noopener noreferrer"
-               title="Story has external link"
-               class="hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"><Link class="inline-block w-4 h-4" /></a>
+              <a
+                href={story.link}
+                onclick={handleLinkClick}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Story has external link"
+                class="hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"
+                ><Link class="inline-block w-4 h-4" /></a
+              >
             {/if}
             {#if story.points > 0}
               <span
@@ -140,7 +146,11 @@
               </div>
               <div class="w-1/2 flex space-x-2 justify-end">
                 {#if story.link !== ''}
-                  <span title="Story has external link" class="hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"><Link class="inline-block w-4 h-4" /></span>
+                  <span
+                    title="Story has external link"
+                    class="hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"
+                    ><Link class="inline-block w-4 h-4" /></span
+                  >
                 {/if}
                 {#if story.points > 0}
                   <span
