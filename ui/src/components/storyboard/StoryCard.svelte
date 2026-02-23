@@ -57,7 +57,7 @@
 </script>
 
 <div
-  class="relative shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border my-4"
+  class="relative shadow bg-white dark:bg-gray-700 dark:text-white border-s-4 story-{story.color} border"
   style="list-style: none;"
   class:cursor-pointer={!columnOrderEditMode}
   class:cursor-not-allowed={columnOrderEditMode}
