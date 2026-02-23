@@ -16,6 +16,7 @@ Becoming a maintainer
   - [We Use Github Flow](#we-use-github-flow)
 3. [Versioning](#versioning)
 4. [Coding Conventions](#coding-conventions)
+  - [Use of AI Agents](#use-of-ai-agents) 
   - [Go code conventions](#go-code-conventions)
   - [UI code conventions](#ui-code-conventions)
   - [End-to-End tests](#end-to-end-tests)
@@ -52,6 +53,8 @@ requests:
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see
 the [tags on this repository](https://github.com/StevenWeathers/thunderdome-planning-poker/tags).
 
+We prefer frequent, smaller releases to reduce the scope and risk of individual deployments. Major version bumps are reserved for significant changes such as breaking changes to the public REST API or drastic changes to dependencies that affect deployments.
+
 ## Coding Conventions
 
 - Thunderdome's priorities in architectural design are SaaS first, self-hosted second, always open-source.
@@ -59,6 +62,15 @@ the [tags on this repository](https://github.com/StevenWeathers/thunderdome-plan
     - Keep the infrastructure requirements minimal, e.g. only requires Postgres, no cloud specific features.
     - Everything should be able to be bundled in the compiled Go binary
         - This includes the UI assets and content
+
+### Use of AI Agents
+
+AI agents and code generation tools may be used thoughtfully to produce quality contributions. However:
+- Generated code must adhere to the established codebase standards and conventions outlined in this guide.
+- Pull requests must not include unnecessary artifacts, verbose comments, or boilerplate that is typical byproducts of AI generation processes.
+- Do not use AI to "vibe code" entire features without careful understanding and review of the generated implementation.
+- All code, whether AI-assisted or manually written, must be reviewed carefully for correctness, maintainability, and alignment with the project's architectural principles.
+- Contributors are responsible for ensuring the quality and appropriateness of any AI-generated code they submit.
 
 ### Go code conventions
 
@@ -76,6 +88,7 @@ the [tags on this repository](https://github.com/StevenWeathers/thunderdome-plan
   with [Typescript](https://www.typescriptlang.org/)
 - CSS framework is [Tailwind](https://tailwindcss.com/)
 - All UI code is linted with `npm run prettier` on every commit.
+- All UI unit tests must pass on every PR before merging.
 
 ### End-to-End tests
 

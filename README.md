@@ -30,6 +30,12 @@
 
 ---
 
+## 🤖 AI-Free by Design
+
+Thunderdome is intentionally built without any AI driven features. We believe authentic human collaboration is essential for meaningful team decision-making and agile planning.  Therefore, we will not be accepting any issue requests or pull requests for AI driven features.
+
+---
+
 ## 💖 Donations
 
 Your support helps keep Thunderdome running and free for everyone. If you find this project valuable or want to contribute to hosting and development costs, please consider making a donation. Every contribution is greatly appreciated and goes directly toward maintaining and improving the platform!
