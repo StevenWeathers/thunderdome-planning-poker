@@ -39,6 +39,38 @@ test.describe("Retro API", { tag: ["@api", "@retro"] }, () => {
     });
   });
 
+  test("POST /users/{userId}/retros creates retro with phase time limit and auto-advance settings", async ({
+    request,
+    registeredApiUser,
+  }) => {
+    const retroName = "Test API Create Retro with Timer";
+    const brainstormVisibility = "visible";
+    const maxVotes = 3;
+    const phaseTimeLimitMin = 15;
+    const phaseAutoAdvance = false;
+
+    const response = await registeredApiUser.context.post(
+      `users/${registeredApiUser.user.id}/retros`,
+      {
+        data: {
+          retroName,
+          brainstormVisibility,
+          maxVotes,
+          phaseTimeLimitMin,
+          phaseAutoAdvance,
+        },
+      },
+    );
+    expect(response.ok()).toBeTruthy();
+    const retro = await response.json();
+    expect(retro.data).toMatchObject({
+      name: retroName,
+      brainstormVisibility,
+      phase_time_limit_min: phaseTimeLimitMin,
+      phase_auto_advance: phaseAutoAdvance,
+    });
+  });
+
   test("GET /users/{userId}/retros returns object in array when retros associated to user", async ({
     request,
     registeredApiUser,

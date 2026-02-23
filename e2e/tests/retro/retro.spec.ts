@@ -11,6 +11,7 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
   let retroPhaseGroup = { id: "" };
   let retroPhaseVote = { id: "" };
   let retroPhaseActionItem = { id: "" };
+  let retroEditSettings = { id: "" };
 
   test.beforeAll(async ({ registeredPage, verifiedPage, adminPage }) => {
     const commonRetro = {
@@ -38,6 +39,9 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
       ...commonRetro,
     });
     retroPhaseActionItem = await registeredPage.createRetro({
+      ...commonRetro,
+    });
+    retroEditSettings = await registeredPage.createRetro({
       ...commonRetro,
     });
   });
@@ -204,5 +208,64 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     await bp.retroActionItemInput.fill(actionItem2);
     await bp.retroActionItemInput.press("Enter");
     expect(await bp.page.getByText(actionItem2));
+  });
+
+  test("facilitator can edit retro settings with phase time limit", async ({
+    registeredPage,
+  }) => {
+    const bp = new RetroPage(registeredPage.page);
+    await bp.goto(retroEditSettings.id);
+
+    // Open retro settings menu and click edit
+    await bp.page.click('[data-testid="retro-settings"]');
+    await bp.page.click('[data-testid="retro-edit"]');
+
+    // Set phase time limit to 15 minutes
+    await bp.page.fill("#phaseTimeLimitMin", "15");
+
+    // Disable auto-advance to test timer without auto-advance
+    await bp.page.uncheck("#phaseAutoAdvance");
+
+    // Save the changes
+    await bp.page.click('button[type="submit"]');
+
+    // Advance to brainstorm phase to test timer visibility
+    await bp.retroNextPhaseBtn.click();
+
+    // Verify timer is visible when phaseTimeLimitMin > 0
+    await expect(bp.page.locator('[data-testid="phase-timer"]')).toBeVisible();
+
+    // Verify timer shows minutes and seconds
+    await expect(bp.page.locator('[data-testid="phase-timer"]')).toContainText(
+      "m",
+    );
+    await expect(bp.page.locator('[data-testid="phase-timer"]')).toContainText(
+      "s",
+    );
+  });
+
+  test("timer does not show when phase time limit is 0", async ({
+    registeredPage,
+  }) => {
+    const bp = new RetroPage(registeredPage.page);
+    await bp.goto(retroEditSettings.id);
+
+    // Open retro settings menu and click edit
+    await bp.page.click('[data-testid="retro-settings"]');
+    await bp.page.click('[data-testid="retro-edit"]');
+
+    // Set phase time limit to 0 (no timer)
+    await bp.page.fill("#phaseTimeLimitMin", "0");
+
+    // Save the changes
+    await bp.page.click('button[type="submit"]');
+
+    // Advance to brainstorm phase
+    await bp.retroNextPhaseBtn.click();
+
+    // Verify timer is not visible when phaseTimeLimitMin = 0
+    await expect(
+      bp.page.locator('[data-testid="phase-timer"]'),
+    ).not.toBeVisible();
   });
 });
