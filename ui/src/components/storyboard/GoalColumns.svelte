@@ -19,6 +19,7 @@
     notifications: NotificationService;
     colorLegend: ColorLegend[];
     users: any[];
+    personas: any[];
   }
 
   let {
@@ -33,6 +34,7 @@
     notifications,
     colorLegend,
     users,
+    personas,
   }: Props = $props();
 
   // Calculate column width based on scale (w-40 = 10rem for scale 1)
@@ -81,9 +83,9 @@
 <div class="flex flex-col gap-4">
   <!-- Column Associated Personas -->
   <div class="flex gap-4 items-stretch">
-    {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+    {#each goal.columns as goalColumn, _columnIndex (goalColumn.id)}
       <div class="flex flex-shrink-0" style="width: {columnWidth}" data-testid="goal-personas">
-        <div class="w-full flex flex-col gap-2">
+        <div class="w-full flex flex-col justify-end gap-2">
           {#each goalColumn.personas as persona}
             <div class="dark:text-gray-300 text-right" data-testid="goal-persona">
               <div class="font-bold" data-testid="persona-name">
@@ -111,6 +113,8 @@
           {toggleColumnEdit}
           {addStory}
           {columnWidth}
+          {sendSocketEvent}
+          {personas}
         />
       </div>
     {/each}

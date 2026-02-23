@@ -133,8 +133,8 @@
 
   /* Green (Lime) variant */
   .btn-hollow-green {
-    border-color: rgb(217 249 157); /* lime-200 */
-    color: rgb(77 124 15); /* lime-700 */
+    border-color: rgb(74 222 128); /* green-400 */
+    color: rgb(22 163 74); /* green-800 */
   }
 
   :global(.dark) .btn-hollow-green {
@@ -143,9 +143,9 @@
   }
 
   .btn-hollow-green:hover:not(.disabled) {
-    background-color: rgb(247 254 231); /* lime-50 */
-    border-color: rgb(190 242 100); /* lime-300 */
-    color: rgb(63 98 18); /* lime-800 */
+    background-color: rgb(240 253 240); /* green-50 */
+    border-color: rgb(134 239 172); /* green-300 */
+    color: rgb(20 83 45); /* green-900 */
   }
 
   :global(.dark) .btn-hollow-green:hover:not(.disabled) {

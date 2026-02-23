@@ -1,8 +1,9 @@
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import { PencilIcon, Trash2, Save, X, EllipsisIcon } from '@lucide/svelte';
+  import { PencilIcon, Trash2, Save, X } from '@lucide/svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
+  import ActionsMenu from '../global/ActionsMenu.svelte';
   import type { UserDisplay } from '../../types/user';
   import UserAvatar from '../user/UserAvatar.svelte';
 
@@ -32,7 +33,6 @@
 
   let showEdit = $state(false);
   let editcomment = $state('');
-  let showActions = $state(false);
 
   $effect(() => {
     editcomment = comment.comment;
@@ -40,14 +40,9 @@
 
   function toggleEdit() {
     showEdit = !showEdit;
-    showActions = false;
     if (showEdit) {
       editcomment = comment.comment;
     }
-  }
-
-  function toggleActions() {
-    showActions = !showActions;
   }
 
   function onSubmit(e: Event) {
@@ -79,6 +74,29 @@
   let canEdit = $derived(comment.user_id === $user.id || isAdmin);
 
   let showDeleteConfirm = $state(false);
+
+  let actions = $derived.by(() => {
+    const menuActions = [];
+
+    if (canEdit) {
+      menuActions.push({
+        label: $LL.edit(),
+        icon: PencilIcon,
+        onclick: toggleEdit,
+      });
+
+      menuActions.push({
+        label: $LL.delete(),
+        icon: Trash2,
+        onclick: () => {
+          showDeleteConfirm = true;
+        },
+        className: 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20',
+      });
+    }
+
+    return menuActions;
+  });
 </script>
 
 <article
@@ -116,43 +134,7 @@
 
     <!-- Actions Menu -->
     {#if canEdit && !showEdit}
-      <div class="relative">
-        <button
-          onclick={toggleActions}
-          class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-          aria-label="Comment actions"
-          aria-expanded={showActions}
-        >
-          <EllipsisIcon class="w-4 h-4" />
-        </button>
-
-        {#if showActions}
-          <!-- Actions Dropdown -->
-          <div
-            class="absolute top-full end-0 rtl:start-0 rtl:end-auto mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10 min-w-32"
-          >
-            <div class="py-1">
-              <button
-                onclick={toggleEdit}
-                class="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
-              >
-                <PencilIcon class="w-4 h-4" />
-                {$LL.edit()}
-              </button>
-              <button
-                onclick={() => {
-                  showDeleteConfirm = true;
-                  showActions = false;
-                }}
-                class="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
-              >
-                <Trash2 class="w-4 h-4" />
-                {$LL.delete()}
-              </button>
-            </div>
-          </div>
-        {/if}
-      </div>
+      <ActionsMenu {actions} ariaLabel="Comment actions" />
     {/if}
   </header>
 
@@ -226,13 +208,6 @@
     />
   {/if}
 </article>
-
-<!-- Click outside to close dropdown -->
-{#if showActions}
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="fixed inset-0 z-0" onclick={() => (showActions = false)} tabindex="-1"></div>
-{/if}
 
 <style>
   .prose p {

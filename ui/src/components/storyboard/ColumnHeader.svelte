@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { PencilIcon } from '@lucide/svelte';
+  import { PencilIcon, SettingsIcon, TrashIcon, UserIcon } from '@lucide/svelte';
   import { LL } from '../../i18n/i18n-svelte';
   import type { StoryboardGoal, StoryboardColumn } from '../../types/storyboard';
+  import ActionsMenu from '../global/ActionsMenu.svelte';
+  import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
+  import ColumnPersonasModal from './ColumnPersonasModal.svelte';
 
   interface Props {
     goal: StoryboardGoal;
@@ -10,7 +13,9 @@
     columnOrderEditMode: boolean;
     columnWidth: string;
     toggleColumnEdit: (column: StoryboardColumn) => () => void;
+    sendSocketEvent: (event: string, data: any) => void;
     addStory: (goalId: string, columnId: string) => () => void;
+    personas: any[];
   }
 
   let {
@@ -19,17 +24,41 @@
     goalColumn,
     columnIndex,
     columnWidth = '10rem',
+    personas = [],
     toggleColumnEdit,
+    sendSocketEvent,
     addStory,
   }: Props = $props();
 
+  let showColumnDeleteConfirmation = $state(false);
+  let showPersonaManagement = $state(false);
   let columnName = $derived(goalColumn.name || `Column ${columnIndex + 1}`);
+
+  function toggleColumnDeleteConfirmation() {
+    showColumnDeleteConfirmation = !showColumnDeleteConfirmation;
+  }
+
+  function handleDeleteColumn() {
+    sendSocketEvent('delete_column', goalColumn.id);
+  }
+
+  function togglePersonaManagement() {
+    showPersonaManagement = !showPersonaManagement;
+  }
+
+  function handlePersonaAdd(data: { column_id: string; persona_id: string }) {
+    sendSocketEvent('column_persona_add', JSON.stringify(data));
+  }
+
+  function handlePersonaRemove(data: { column_id: string; persona_id: string }) {
+    sendSocketEvent('column_persona_remove', JSON.stringify(data));
+  }
 </script>
 
 <div class="w-full flex flex-col gap-2 self-stretch justify-between" style="width: {columnWidth}">
   <div class="w-full flex gap-2 items-start leading-tight">
     <span
-      class="flex-wrap font-bold flex-grow break-words dark:text-gray-300 {goalColumn.name
+      class="font-bold flex-grow min-w-0 break-words dark:text-gray-300 {goalColumn.name
         ? ''
         : 'italic text-gray-500 dark:text-gray-600'}"
       title={columnName}
@@ -37,16 +66,33 @@
     >
       {columnName}
     </span>
-    <button
-      onclick={toggleColumnEdit(goalColumn)}
-      class="flex-none py-1 font-bold text-xl text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-lime-400"
-      class:cursor-not-allowed={columnOrderEditMode}
+    <ActionsMenu
+      actions={[
+        {
+          label: $LL.edit(),
+          icon: PencilIcon,
+          onclick: toggleColumnEdit(goalColumn),
+          testId: 'edit-column-action',
+        },
+        {
+          label: $LL.personas(),
+          icon: UserIcon,
+          onclick: togglePersonaManagement,
+          testId: 'personas-column-action',
+        },
+        {
+          label: $LL.delete(),
+          icon: TrashIcon,
+          onclick: toggleColumnDeleteConfirmation,
+          testId: 'delete-column-action',
+        },
+      ]}
+      ariaLabel="Column actions"
+      testId="column-actions-menu"
+      Icon={SettingsIcon}
+      iconSize="medium"
       disabled={columnOrderEditMode}
-      title={$LL.storyboardEditColumn()}
-      data-testid="column-edit"
-    >
-      <PencilIcon />
-    </button>
+    />
   </div>
   <div class="w-full">
     <div class="flex">
@@ -64,4 +110,23 @@
       </button>
     </div>
   </div>
+
+  {#if showColumnDeleteConfirmation}
+    <DeleteConfirmation
+      toggleDelete={toggleColumnDeleteConfirmation}
+      handleDelete={handleDeleteColumn}
+      confirmText={'Are you sure you want to delete this Column?'}
+      confirmBtnText={'Delete Column'}
+    />
+  {/if}
+
+  {#if showPersonaManagement}
+    <ColumnPersonasModal
+      toggleModal={togglePersonaManagement}
+      column={goalColumn}
+      {personas}
+      onPersonaAdd={handlePersonaAdd}
+      onPersonaRemove={handlePersonaRemove}
+    />
+  {/if}
 </div>
