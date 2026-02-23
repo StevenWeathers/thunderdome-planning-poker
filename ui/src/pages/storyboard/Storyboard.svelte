@@ -221,11 +221,6 @@
     );
   };
 
-  const deleteColumn = (columnId: string) => () => {
-    sendSocketEvent('delete_column', columnId);
-    toggleColumnEdit(null)();
-  };
-
   const handleAddFacilitator = (userId: string) => {
     sendSocketEvent(
       'facilitator_add',
@@ -343,13 +338,6 @@
 
   const handlePersonaAdd = (persona: Omit<StoryboardPersona, 'id'>) => {
     sendSocketEvent('add_persona', JSON.stringify(persona));
-  };
-
-  const handleColumnPersonaAdd = (column_persona: any) => {
-    sendSocketEvent('column_persona_add', JSON.stringify(column_persona));
-  };
-  const handleColumnPersonaRemove = (column_persona: any) => () => {
-    sendSocketEvent('column_persona_remove', JSON.stringify(column_persona));
   };
 
   const handlePersonaRevision = (persona: StoryboardPersona) => {
@@ -634,6 +622,7 @@
           colorLegend={storyboard.color_legend}
           users={storyboard.users}
           {scale}
+          personas={storyboard.personas}
         />
       {/if}
     </GoalSection>
@@ -651,15 +640,7 @@
 {/if}
 
 {#if editColumn}
-  <ColumnForm
-    {handleColumnRevision}
-    toggleColumnEdit={toggleColumnEdit(null)}
-    column={editColumn}
-    personas={storyboard.personas}
-    handlePersonaAdd={handleColumnPersonaAdd}
-    handlePersonaRemove={handleColumnPersonaRemove}
-    {deleteColumn}
-  />
+  <ColumnForm {handleColumnRevision} toggleColumnEdit={toggleColumnEdit(null)} column={editColumn} />
 {/if}
 
 {#if showColorLegendForm}

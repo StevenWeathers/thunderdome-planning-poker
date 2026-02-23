@@ -1556,6 +1556,26 @@ type RootTranslation = {
 	 */
 	storyboardStories: string
 	/**
+	 * C​o​l​u​m​n​ ​P​e​r​s​o​n​a​s
+	 */
+	columnPersonasTitle: string
+	/**
+	 * N​o​ ​p​e​r​s​o​n​a​s​ ​a​d​d​e​d​ ​t​o​ ​t​h​i​s​ ​c​o​l​u​m​n
+	 */
+	columnPersonasEmpty: string
+	/**
+	 * A​v​a​i​l​a​b​l​e​ ​P​e​r​s​o​n​a​s
+	 */
+	availablePersonas: string
+	/**
+	 * N​o​ ​p​e​r​s​o​n​a​s​ ​a​v​a​i​l​a​b​l​e
+	 */
+	availablePersonasEmpty: string
+	/**
+	 * A​l​l​ ​p​e​r​s​o​n​a​s​ ​h​a​v​e​ ​b​e​e​n​ ​a​d​d​e​d​ ​t​o​ ​t​h​i​s​ ​c​o​l​u​m​n
+	 */
+	allPersonasAdded: string
+	/**
 	 * T​e​a​m
 	 */
 	team: string
@@ -4516,6 +4536,26 @@ export type TranslationFunctions = {
 	 * Storyboard Stories
 	 */
 	storyboardStories: () => LocalizedString
+	/**
+	 * Column Personas
+	 */
+	columnPersonasTitle: () => LocalizedString
+	/**
+	 * No personas added to this column
+	 */
+	columnPersonasEmpty: () => LocalizedString
+	/**
+	 * Available Personas
+	 */
+	availablePersonas: () => LocalizedString
+	/**
+	 * No personas available
+	 */
+	availablePersonasEmpty: () => LocalizedString
+	/**
+	 * All personas have been added to this column
+	 */
+	allPersonasAdded: () => LocalizedString
 	/**
 	 * Team
 	 */
