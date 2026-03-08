@@ -910,7 +910,7 @@
       </div>
 
       <div class="w-full self-end mb-4 mt-8">
-        <div class="flex w-full justify-center">
+        <div class="flex flex-wrap w-full justify-center">
           {#each retro.users as usr, index (usr.id)}
             {#if usr.active}
               <UserCard
