@@ -312,7 +312,7 @@
       </label>
       <SelectInput
         bind:value={retroSettings.selectedTeam}
-        on:change={teamSelected}
+        onchange={teamSelected}
         id="selectedTeam"
         name="selectedTeam"
       >

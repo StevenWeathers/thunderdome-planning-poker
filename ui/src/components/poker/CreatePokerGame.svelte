@@ -344,7 +344,7 @@
       </label>
       <SelectInput
         bind:value={pokerSettings.selectedTeam}
-        on:change={handleTeamChange}
+        onchange={handleTeamChange}
         id="selectedTeam"
         name="selectedTeam"
       >
