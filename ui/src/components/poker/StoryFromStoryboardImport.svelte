@@ -83,7 +83,7 @@
   <SelectInput
     id="selectedGoal"
     bind:value={selectedGoalIdx}
-    on:change={getStoryboardStories}
+    onchange={getStoryboardStories}
     disabled={selectedStoryboardIdx === ''}
   >
     <option value="" disabled>Select goal to import from</option>

@@ -206,7 +206,7 @@
       <SelectInput
         id="jirainstance"
         bind:value={selectedJiraInstance}
-        on:change={() => {
+        onchange={() => {
           dispatch('instance_selected');
         }}
       >

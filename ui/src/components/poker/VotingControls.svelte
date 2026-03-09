@@ -84,7 +84,6 @@
               <option value="" disabled>
                 {$LL.points()}
               </option>
-              >
               {#each points as point}
                 <option value={point}>{point}</option>
               {/each}
