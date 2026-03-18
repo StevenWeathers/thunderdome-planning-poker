@@ -950,6 +950,7 @@
     facilitatorCode={retro.facilitatorCode}
     maxVotes={`${retro.maxVotes}`}
     brainstormVisibility={retro.brainstormVisibility}
+    phaseTimeLimitMin={`${retro.phase_time_limit_min}`}
     phaseAutoAdvance={retro.phase_auto_advance}
     hideVotesDuringVoting={retro.hideVotesDuringVoting}
   />
