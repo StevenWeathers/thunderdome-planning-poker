@@ -8,7 +8,7 @@
     id?: string;
   }
 
-  let { content = $bindable(''), placeholder = '', handleTextChange = () => {}, id = '' }: Props = $props();
+  let { content = '', placeholder = '', handleTextChange = () => {}, id = '' }: Props = $props();
 
   function onTextChange(e) {
     handleTextChange(e.detail.html);

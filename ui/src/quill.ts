@@ -2,21 +2,30 @@ import Quill from 'quill';
 
 function quill(node, options) {
   let quill = createQuill(node, options);
+  let isLocalChange = false;
+
+  // Patch text-change to set isLocalChange
+  quill.on('text-change', () => {
+    isLocalChange = true;
+  });
 
   return {
     update(newOptions) {
-      // handle reactive updates if needed
-      // e.g. placeholder/content changes
-      if (newOptions.content !== options.content) {
-        const delta = quill.clipboard.convert(newOptions.content);
+      // Only update if content changed externally
+      const currentHtml = node.getElementsByClassName('ql-editor')[0]?.innerHTML || '';
+      // Remove <p><br></p> for comparison, as in event
+      const normalizedCurrent = currentHtml.replace('<p><br></p>', '');
+      const normalizedNew = (newOptions.content || '').replace('<p><br></p>', '');
+      if (!isLocalChange && normalizedNew !== normalizedCurrent) {
+        const delta = quill.clipboard.convert(newOptions.content || '');
         quill.setContents(delta);
       }
+      isLocalChange = false;
       options = newOptions;
     },
 
     destroy() {
       quill.off('text-change');
-      // optionally clear DOM
       node.innerHTML = '';
     },
   };
