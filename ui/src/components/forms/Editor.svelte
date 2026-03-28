@@ -18,9 +18,9 @@
 <div
   class="w-full"
   use:quill={{
-    placeholder: `${placeholder}`,
-    content: content,
+    placeholder,
+    content,
   }}
-  ontext-change={onTextChange}
+  on:textchange={onTextChange}
   {id}
 ></div>
