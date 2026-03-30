@@ -1,53 +1,34 @@
 import Quill from 'quill';
 
 function quill(node, options) {
-  let quill = createQuill(node, options);
-  let isLocalChange = false;
-
-  // Patch text-change to set isLocalChange
-  quill.on('text-change', () => {
-    isLocalChange = true;
-  });
-
-  return {
-    update(newOptions) {
-      // Only update if content changed externally
-      const currentHtml = node.getElementsByClassName('ql-editor')[0]?.innerHTML || '';
-      // Remove <p><br></p> for comparison, as in event
-      const normalizedCurrent = currentHtml.replace('<p><br></p>', '');
-      const normalizedNew = (newOptions.content || '').replace('<p><br></p>', '');
-      if (!isLocalChange && normalizedNew !== normalizedCurrent) {
-        const delta = quill.clipboard.convert(newOptions.content || '');
-        quill.setContents(delta);
-      }
-      isLocalChange = false;
-      options = newOptions;
-    },
-
-    destroy() {
-      quill.off('text-change');
-      node.innerHTML = '';
-    },
-  };
-}
-
-function createQuill(node, options) {
   const quill = new Quill(node, {
     modules: {
-      /* ... */
+      toolbar: [
+        ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+        ['blockquote', 'code-block'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        [{ script: 'sub' }, { script: 'super' }], // superscript/subscript
+        [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+        [{ align: [] }],
+        ['clean'], // remove formatting button
+      ],
+      clipboard: {
+        matchVisual: false,
+      },
     },
+    placeholder: 'Type something...',
     theme: 'snow',
     ...options,
   });
-
   const container = node.getElementsByClassName('ql-editor')[0];
-
-  if (options.content) {
+  if (options.content !== '') {
     const delta = quill.clipboard.convert(options.content);
     quill.setContents(delta);
   }
 
-  quill.on('text-change', () => {
+  quill.on('text-change', function (delta, oldDelta, source) {
     node.dispatchEvent(
       new CustomEvent('textchange', {
         detail: {
@@ -57,8 +38,6 @@ function createQuill(node, options) {
       }),
     );
   });
-
-  return quill;
 }
 
 export { quill };
