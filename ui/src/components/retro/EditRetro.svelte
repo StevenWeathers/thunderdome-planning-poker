@@ -16,6 +16,7 @@
     facilitatorCode?: string;
     maxVotes?: string;
     brainstormVisibility?: string;
+    phaseTimeLimitMin?: string;
     phaseAutoAdvance?: boolean;
     hideVotesDuringVoting?: boolean;
   }
@@ -28,6 +29,7 @@
     facilitatorCode = $bindable(''),
     maxVotes = $bindable('3'),
     brainstormVisibility = $bindable('visible'),
+    phaseTimeLimitMin = $bindable('0'),
     phaseAutoAdvance = $bindable(true),
     hideVotesDuringVoting = $bindable(false),
   }: Props = $props();
@@ -56,6 +58,7 @@
       facilitatorCode,
       maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
+      phaseTimeLimitMin: parseInt(phaseTimeLimitMin, 10),
       phase_auto_advance: phaseAutoAdvance,
       hideVotesDuringVoting,
     };
@@ -123,6 +126,22 @@
       </label>
       <div class="control">
         <TextInput name="retroName" bind:value={maxVotes} id="maxVotes" type="number" min="1" max="10" required />
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="phaseTimeLimitMin">
+        {$LL.retroPhaseTimeLimitMinLabel()}
+      </label>
+      <div class="control">
+        <TextInput
+          name="phaseTimeLimitMin"
+          bind:value={phaseTimeLimitMin}
+          id="phaseTimeLimitMin"
+          type="number"
+          min="0"
+          max="59"
+        />
       </div>
     </div>
 
