@@ -99,6 +99,49 @@ func (s *Service) ItemCommentDelete(ctx context.Context, RetroID string, UserID 
 	return nil, msg, nil, false
 }
 
+// ItemReactionAdd creates a retro item reaction
+func (s *Service) ItemReactionAdd(ctx context.Context, RetroID string, UserID string, EventValue string) (any, []byte, error, bool) {
+	var rs struct {
+		ItemID   string `json:"item_id"`
+		Reaction string `json:"reaction"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	items, err := s.RetroService.ItemReactionAdd(RetroID, rs.ItemID, UserID, rs.Reaction)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
+
+	return nil, msg, nil, false
+}
+
+// ItemReactionDelete deletes a retro item reaction
+func (s *Service) ItemReactionDelete(ctx context.Context, RetroID string, UserID string, EventValue string) (any, []byte, error, bool) {
+	var rs struct {
+		ReactionID string `json:"reaction_id"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	items, err := s.RetroService.ItemReactionDelete(RetroID, rs.ReactionID)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
+
+	return nil, msg, nil, false
+}
+
 // UserMarkReady marks a user as ready to advance to next phase
 func (s *Service) UserMarkReady(ctx context.Context, RetroID string, UserID string, EventValue string) (any, []byte, error, bool) {
 	readyUsers, err := s.RetroService.MarkUserReady(RetroID, UserID)

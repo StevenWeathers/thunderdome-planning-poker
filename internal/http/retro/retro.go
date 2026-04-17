@@ -66,6 +66,8 @@ type RetroDataSvc interface {
 	ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*thunderdome.RetroItem, error)
 	ItemCommentEdit(retroID string, commentID string, comment string) ([]*thunderdome.RetroItem, error)
 	ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error)
+	ItemReactionAdd(retroID string, itemID string, userID string, reaction string) ([]*thunderdome.RetroItem, error)
+	ItemReactionDelete(retroID string, reactionID string) ([]*thunderdome.RetroItem, error)
 }
 
 type RetroTemplateDataSvc interface {
@@ -132,6 +134,8 @@ func New(
 		"item_comment_add":       s.ItemCommentAdd,
 		"item_comment_edit":      s.ItemCommentEdit,
 		"item_comment_delete":    s.ItemCommentDelete,
+		"item_reaction_add":      s.ItemReactionAdd,
+		"item_reaction_delete":   s.ItemReactionDelete,
 		"create_action":          s.CreateAction,
 		"update_action":          s.UpdateAction,
 		"delete_action":          s.DeleteAction,

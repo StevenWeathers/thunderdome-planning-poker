@@ -36,6 +36,24 @@ export type RetroActionComment = {
   user_id: string;
 };
 
+export type RetroItemComment = {
+  comment: string;
+  created_date: string;
+  id: string;
+  item_id: string;
+  updated_date: string;
+  user_id: string;
+};
+
+export type RetroItemReaction = {
+  created_date: string;
+  id: string;
+  item_id: string;
+  reaction: string;
+  updated_date: string;
+  user_id: string;
+};
+
 export type RetroGroup = {
   id: string;
   name: string;
@@ -44,9 +62,11 @@ export type RetroGroup = {
 };
 
 export type RetroItem = {
+  comments?: Array<RetroItemComment>;
   content: string;
   groupId: string;
   id: string;
+  reactions?: Array<RetroItemReaction>;
   type: string;
   userId: string;
 };

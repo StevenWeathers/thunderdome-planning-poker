@@ -16897,6 +16897,12 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "reactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.RetroItemReaction"
+                    }
+                },
                 "type": {
                     "type": "string"
                 },
@@ -16918,6 +16924,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "item_id": {
+                    "type": "string"
+                },
+                "updated_date": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.RetroItemReaction": {
+            "type": "object",
+            "properties": {
+                "created_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "item_id": {
+                    "type": "string"
+                },
+                "reaction": {
                     "type": "string"
                 },
                 "updated_date": {

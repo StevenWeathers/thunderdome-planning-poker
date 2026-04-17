@@ -53,12 +53,13 @@ type Retro struct {
 
 // RetroItem can be a pro (went well/worked), con (needs improvement), or a question
 type RetroItem struct {
-	ID       string              `json:"id" db:"id"`
-	UserID   string              `json:"userId" db:"user_id"`
-	GroupID  string              `json:"groupId" db:"group_id"`
-	Content  string              `json:"content" db:"content"`
-	Type     string              `json:"type" db:"type"`
-	Comments []*RetroItemComment `json:"comments"`
+	ID        string               `json:"id" db:"id"`
+	UserID    string               `json:"userId" db:"user_id"`
+	GroupID   string               `json:"groupId" db:"group_id"`
+	Content   string               `json:"content" db:"content"`
+	Type      string               `json:"type" db:"type"`
+	Comments  []*RetroItemComment  `json:"comments"`
+	Reactions []*RetroItemReaction `json:"reactions"`
 }
 
 // RetroGroup is a grouping of retro items
@@ -93,6 +94,15 @@ type RetroItemComment struct {
 	ItemID      string `json:"item_id"`
 	UserID      string `json:"user_id"`
 	Comment     string `json:"comment"`
+	CreateDate  string `json:"created_date"`
+	UpdatedDate string `json:"updated_date"`
+}
+
+type RetroItemReaction struct {
+	ID          string `json:"id"`
+	ItemID      string `json:"item_id"`
+	UserID      string `json:"user_id"`
+	Reaction    string `json:"reaction"`
 	CreateDate  string `json:"created_date"`
 	UpdatedDate string `json:"updated_date"`
 }

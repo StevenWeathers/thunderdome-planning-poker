@@ -1,9 +1,11 @@
 <script lang="ts">
   import { MessageSquare, Trash2 } from '@lucide/svelte';
+  import EmojiPicker from '../global/EmojiPicker.svelte';
+  import { DEVELOPER_REACTION_OPTIONS, type EmojiPickerItem, type EmojiPickerOption } from '../global/emoji-picker';
   import ItemComments from './ItemComments.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import type { RetroItem } from '../../types/retro';
+  import type { RetroItem, RetroItemReaction } from '../../types/retro';
 
   interface Props {
     class?: string;
@@ -25,6 +27,7 @@
       type: '',
       content: '',
       comments: [],
+      reactions: [],
     },
     feedbackVisibility = 'visible',
     isFacilitator = false,
@@ -36,6 +39,23 @@
 
   let showComments = $state(false);
   let selectedItem = $state<RetroItem | null>(null);
+
+  const interactionsDisabled = $derived(phase === 'brainstorm' && feedbackVisibility === 'hidden');
+  const itemReactions = $derived((item.reactions ?? []) as RetroItemReaction[]);
+  const reactionSummary = $derived(
+    DEVELOPER_REACTION_OPTIONS.map((option: EmojiPickerOption) => {
+      const matchingReactions = itemReactions.filter(reaction => reaction.reaction === option.value);
+      const currentUserReaction = matchingReactions.find(reaction => reaction.user_id === $user.id);
+
+      return {
+        ...option,
+        count: matchingReactions.length,
+        currentUserReactionId: currentUserReaction?.id,
+        selected: currentUserReaction !== undefined,
+        pickerDisabled: interactionsDisabled || currentUserReaction !== undefined,
+      };
+    }),
+  );
 
   const toggleComments = (item: RetroItem | null) => () => {
     showComments = !showComments;
@@ -49,6 +69,27 @@
         id: item.id,
         type: item.type,
         phase,
+      }),
+    );
+  };
+
+  const handleReactionToggle = (reaction: EmojiPickerItem & { currentUserReactionId?: string }) => {
+    if (reaction.currentUserReactionId) {
+      sendSocketEvent(
+        'item_reaction_delete',
+        JSON.stringify({
+          reaction_id: reaction.currentUserReactionId,
+        }),
+      );
+
+      return;
+    }
+
+    sendSocketEvent(
+      'item_reaction_add',
+      JSON.stringify({
+        item_id: item.id,
+        reaction: reaction.value,
       }),
     );
   };
@@ -93,12 +134,12 @@
       {/if}
       <button
         class="inline-block leading-none text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-sky-400 transition-colors duration-200"
-        class:cursor-not-allowed={phase === 'brainstorm' && feedbackVisibility === 'hidden'}
+        class:cursor-not-allowed={interactionsDisabled}
         onclick={toggleComments(item)}
-        disabled={phase === 'brainstorm' && feedbackVisibility === 'hidden'}
+        disabled={interactionsDisabled}
       >
         <MessageSquare class="inline w-4 h-4" />
-        <span data-testid="retro-feedback-item-comments">{item.comments.length}</span>
+        <span data-testid="retro-feedback-item-comments">{item.comments?.length ?? 0}</span>
       </button>
     </div>
     {#if phase === 'brainstorm' && item.userId === $user.id}
@@ -122,6 +163,16 @@
       {item.content}
     {/if}
   </p>
+  <div class="mt-3 flex flex-wrap items-center gap-2" data-testid="retro-feedback-item-reactions">
+    <EmojiPicker
+      options={reactionSummary}
+      disabled={interactionsDisabled}
+      onToggle={handleReactionToggle}
+      toggleAriaLabel="Open reaction picker"
+      toggleTestId="reaction-picker-toggle"
+      popoverTestId="reaction-picker-popover"
+    />
+  </div>
   {@render children?.()}
 
   {#if showComments}
