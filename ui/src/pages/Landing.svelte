@@ -276,21 +276,21 @@
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
               <span
-                ><strong>Visual user journeys:</strong> Drag-and-drop interface transforms complex backlogs into clear story
-                flows</span
-              >
-            </li>
-            <li class="flex items-start">
-              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span
                 ><strong>Real-time team alignment:</strong> Live collaboration keeps distributed product teams in sync</span
               >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
               <span
-                ><strong>User-value prioritization:</strong> Stop building random features and focus on what users actually
-                need</span
+                ><strong>Surface blockers fast:</strong> Highlight blockers and discussion items so the team can focus on
+                what actually needs attention</span
+              >
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span
+                ><strong>Comment directly on checkins:</strong> Team members can add context, questions, and follow-up notes
+                without derailing the standup</span
               >
             </li>
           </ul>
