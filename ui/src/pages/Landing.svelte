@@ -214,22 +214,22 @@
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
               <span
-                ><strong>Commenting on checkins:</strong> Team members can add comments to any checkin for deeper discussion
-                or clarification.</span
+                ><strong>Intuitive drag-and-drop:</strong> Reorganize stories as easily as moving sticky notes across your
+                map.</span
               >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
               <span
-                ><strong>Highlight blockers & needs discussion:</strong> Instantly flag items that need team attention, so
-                blockers and dependencies stand out.</span
+                ><strong>Flexible story organization:</strong> Structure work with goals, columns, personas, and visual cues
+                that fit your team's workflow.</span
               >
             </li>
             <li class="flex items-start">
               <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
               <span
-                ><strong>Focused standups:</strong> Skip routine status updates and zero in on what matters most for team
-                progress.</span
+                ><strong>Rich story details:</strong> Keep descriptions, acceptance criteria, and estimates together where
+                the whole team can see them.</span
               >
             </li>
           </ul>
