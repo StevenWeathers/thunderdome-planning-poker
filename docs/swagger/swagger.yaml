@@ -1429,6 +1429,10 @@ definitions:
         type: string
       id:
         type: string
+      reactions:
+        items:
+          $ref: '#/definitions/thunderdome.RetroItemReaction'
+        type: array
       type:
         type: string
       userId:
@@ -1443,6 +1447,21 @@ definitions:
       id:
         type: string
       item_id:
+        type: string
+      updated_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  thunderdome.RetroItemReaction:
+    properties:
+      created_date:
+        type: string
+      id:
+        type: string
+      item_id:
+        type: string
+      reaction:
         type: string
       updated_date:
         type: string

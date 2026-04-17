@@ -505,6 +505,8 @@ type RetroDataSvc interface {
 	ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*thunderdome.RetroItem, error)
 	ItemCommentEdit(retroID string, commentID string, comment string) ([]*thunderdome.RetroItem, error)
 	ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error)
+	ItemReactionAdd(retroID string, itemID string, userID string, reaction string) ([]*thunderdome.RetroItem, error)
+	ItemReactionDelete(retroID string, reactionID string) ([]*thunderdome.RetroItem, error)
 
 	GetSettingsByOrganization(ctx context.Context, orgID string) (*thunderdome.RetroSettings, error)
 	GetSettingsByDepartment(ctx context.Context, deptID string) (*thunderdome.RetroSettings, error)

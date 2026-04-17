@@ -74,12 +74,23 @@ func (d *Service) GetRetroItems(retroID string) []*thunderdome.RetroItem {
 		`SELECT
 				ri.id, ri.user_id, ri.group_id, ri.content, ri.type,
 				COALESCE(
-					json_agg(rc ORDER BY rc.created_date) FILTER (WHERE rc.id IS NOT NULL), '[]'
-				) AS comments
+					(
+						SELECT json_agg(rc ORDER BY rc.created_date)
+						FROM thunderdome.retro_item_comment rc
+						WHERE rc.item_id = ri.id
+					),
+					'[]'
+				) AS comments,
+				COALESCE(
+					(
+						SELECT json_agg(rr ORDER BY rr.created_date)
+						FROM thunderdome.retro_item_reaction rr
+						WHERE rr.item_id = ri.id
+					),
+					'[]'
+				) AS reactions
 			FROM thunderdome.retro_item ri
-			LEFT JOIN thunderdome.retro_item_comment rc ON rc.item_id = ri.id
 			WHERE ri.retro_id = $1
-			GROUP BY ri.id, ri.created_date
 			ORDER BY ri.created_date ASC;`,
 		retroID,
 	)
@@ -87,15 +98,21 @@ func (d *Service) GetRetroItems(retroID string) []*thunderdome.RetroItem {
 		defer itemRows.Close()
 		for itemRows.Next() {
 			var comments string
+			var reactions string
 			var ri = &thunderdome.RetroItem{
-				Comments: make([]*thunderdome.RetroItemComment, 0),
+				Comments:  make([]*thunderdome.RetroItemComment, 0),
+				Reactions: make([]*thunderdome.RetroItemReaction, 0),
 			}
-			if err := itemRows.Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type, &comments); err != nil {
+			if err := itemRows.Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type, &comments, &reactions); err != nil {
 				d.Logger.Error("get retro items query scan error", zap.Error(err))
 			} else {
 				jsonErr := json.Unmarshal([]byte(comments), &ri.Comments)
 				if jsonErr != nil {
 					d.Logger.Error("retro item comments json error", zap.Error(jsonErr))
+				}
+				jsonErr = json.Unmarshal([]byte(reactions), &ri.Reactions)
+				if jsonErr != nil {
+					d.Logger.Error("retro item reactions json error", zap.Error(jsonErr))
 				}
 				items = append(items, ri)
 			}
@@ -189,6 +206,36 @@ func (d *Service) ItemCommentDelete(retroID string, commentID string) ([]*thunde
 		commentID,
 	); err != nil {
 		d.Logger.Error("ItemCommentDelete error", zap.Error(err))
+	}
+
+	items := d.GetRetroItems(retroID)
+
+	return items, nil
+}
+
+// ItemReactionAdd adds a reaction to a retro item
+func (d *Service) ItemReactionAdd(retroID string, itemID string, userID string, reaction string) ([]*thunderdome.RetroItem, error) {
+	if _, err := d.DB.Exec(
+		`INSERT INTO thunderdome.retro_item_reaction (item_id, user_id, reaction) VALUES ($1, $2, $3);`,
+		itemID,
+		userID,
+		reaction,
+	); err != nil {
+		d.Logger.Error("ItemReactionAdd error", zap.Error(err))
+	}
+
+	items := d.GetRetroItems(retroID)
+
+	return items, nil
+}
+
+// ItemReactionDelete deletes a retro item reaction
+func (d *Service) ItemReactionDelete(retroID string, reactionID string) ([]*thunderdome.RetroItem, error) {
+	if _, err := d.DB.Exec(
+		`DELETE FROM thunderdome.retro_item_reaction WHERE id = $1;`,
+		reactionID,
+	); err != nil {
+		d.Logger.Error("ItemReactionDelete error", zap.Error(err))
 	}
 
 	items := d.GetRetroItems(retroID)
