@@ -13,6 +13,7 @@ export type EmojiPickerItem = EmojiPickerOption & {
 
 export const DEVELOPER_REACTION_OPTIONS: EmojiPickerOption[] = [
   { key: 'rocket', value: '🚀', label: 'rocket' },
+  { key: 'fire', value: '🔥', label: 'fire' },
   { key: 'thumbsdown', value: '👎', label: 'thumbs down' },
   { key: 'thumbsup', value: '👍', label: 'thumbs up' },
   { key: 'laugh', value: '😄', label: 'laugh' },
