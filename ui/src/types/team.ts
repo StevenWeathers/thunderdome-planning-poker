@@ -20,6 +20,7 @@ export type TeamUser = {
 
 export type TeamCheckin = {
   blockers: string;
+  checkinDate: string;
   comments: Array<CheckinComment>;
   createdDate: string;
   discuss: string;

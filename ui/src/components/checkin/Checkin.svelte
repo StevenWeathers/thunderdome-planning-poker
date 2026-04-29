@@ -6,7 +6,6 @@
   import Toggle from '../forms/Toggle.svelte';
   import { AppConfig } from '../../config';
   import { user } from '../../stores';
-  import { onMount } from 'svelte';
   import FeatureSubscribeBanner from '../global/FeatureSubscribeBanner.svelte';
 
   import type { NotificationService } from '../../types/notifications';
@@ -27,6 +26,8 @@
     notifications: NotificationService;
     xfetch: ApiClient;
     teamPrefix?: string;
+    selectedDate?: string;
+    timeZone?: string;
   }
 
   let {
@@ -43,6 +44,8 @@
     notifications,
     xfetch,
     teamPrefix = '',
+    selectedDate = '',
+    timeZone = '',
   }: Props = $props();
 
   let userSubscribed = $state(false);
@@ -79,7 +82,24 @@
   }
 
   function getLastCheckin() {
-    xfetch(`${teamPrefix}/checkins/users/${userId}/last`)
+    lastCheckin = {
+      id: '',
+      yesterday: '',
+      today: '',
+      blockers: '',
+      discuss: '',
+      goalsMet: false,
+    };
+
+    const query = new URLSearchParams();
+    if (selectedDate) {
+      query.set('date', selectedDate);
+    }
+    if (timeZone) {
+      query.set('tz', timeZone);
+    }
+
+    xfetch(`${teamPrefix}/checkins/users/${userId}/last?${query.toString()}`)
       .then(res => {
         if (res.status === 204) {
           return null;
@@ -97,10 +117,12 @@
       });
   }
 
-  onMount(() => {
+  $effect(() => {
     if (!AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && $user.subscribed)) {
       userSubscribed = true;
       getLastCheckin();
+    } else {
+      userSubscribed = false;
     }
   });
 </script>

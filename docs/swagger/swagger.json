@@ -14980,11 +14980,17 @@
                 "blockers": {
                     "type": "string"
                 },
+                "checkinDate": {
+                    "type": "string"
+                },
                 "discuss": {
                     "type": "string"
                 },
                 "goalsMet": {
                     "type": "boolean"
+                },
+                "timeZone": {
+                    "type": "string"
                 },
                 "today": {
                     "type": "string"
@@ -17488,6 +17494,9 @@
             "type": "object",
             "properties": {
                 "blockers": {
+                    "type": "string"
+                },
+                "checkinDate": {
                     "type": "string"
                 },
                 "comments": {

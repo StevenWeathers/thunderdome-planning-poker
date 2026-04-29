@@ -212,13 +212,13 @@ type AuthDataSvc interface {
 
 type CheckinDataSvc interface {
 	CheckinList(ctx context.Context, teamID string, Date string, TimeZone string) ([]*thunderdome.TeamCheckin, error)
-	CheckinCreate(ctx context.Context, teamID string, userId string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
+	CheckinCreate(ctx context.Context, teamID string, userId string, checkinDate string, timeZone string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
 	CheckinUpdate(ctx context.Context, checkinId string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
 	CheckinDelete(ctx context.Context, checkinId string) error
 	CheckinComment(ctx context.Context, teamID string, checkinId string, userId string, comment string) error
 	CheckinCommentEdit(ctx context.Context, teamID string, userId string, commentId string, comment string) error
 	CheckinCommentDelete(ctx context.Context, commentId string) error
-	CheckinLastByUser(ctx context.Context, teamID string, userId string) (*thunderdome.TeamCheckin, error)
+	CheckinLastByUser(ctx context.Context, teamID string, userId string, date string, timeZone string) (*thunderdome.TeamCheckin, error)
 }
 
 type JiraDataSvc interface {

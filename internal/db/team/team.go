@@ -22,13 +22,38 @@ func (d *Service) TeamGetByID(ctx context.Context, teamID string) (*thunderdome.
 	var team = &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT o.id, o.name, COALESCE(o.organization_id::TEXT, od.organization_id::TEXT, ''),
- COALESCE(o.department_id::TEXT, ''), o.created_date, o.updated_date,
- CASE WHEN s.id IS NOT NULL AND s.expires > NOW() AND s.active = true THEN true ELSE false END AS is_subscribed
-        FROM thunderdome.team o
-        LEFT JOIN thunderdome.subscription s ON o.id = s.team_id
-        LEFT JOIN thunderdome.organization_department od ON o.department_id = od.id
-        WHERE o.id = $1;`,
+		`SELECT
+			o.id,
+			o.name,
+			COALESCE(o.organization_id::TEXT, od.organization_id::TEXT, ''),
+			COALESCE(o.department_id::TEXT, ''),
+			o.created_date,
+			o.updated_date,
+			COALESCE(sub_check.is_subscribed, FALSE) AS is_subscribed
+		FROM thunderdome.team o
+		LEFT JOIN thunderdome.organization_department od ON o.department_id = od.id
+		LEFT JOIN LATERAL (
+			SELECT COALESCE((
+				SELECT TRUE
+				FROM (
+					SELECT TRUE
+					FROM thunderdome.subscription s
+					WHERE s.team_id = o.id
+						AND s.active = TRUE
+						AND s.expires > CURRENT_TIMESTAMP
+
+					UNION ALL
+
+					SELECT TRUE
+					FROM thunderdome.subscription s
+					WHERE s.organization_id = COALESCE(o.organization_id, od.organization_id)
+						AND s.active = TRUE
+						AND s.expires > CURRENT_TIMESTAMP
+				) AS subscriptions
+				LIMIT 1
+			), FALSE) AS is_subscribed
+		) AS sub_check ON TRUE
+		WHERE o.id = $1;`,
 		teamID,
 	).Scan(
 		&team.ID,
