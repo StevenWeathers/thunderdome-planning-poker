@@ -31,6 +31,30 @@
   let inviteProcessed = $state(false);
   let inviteErr = $state('');
 
+  function getTargetPage() {
+    if (inviteType === 'team') {
+      if (inviteDetails.department_id) {
+        return `${appRoutes.organization}/${inviteDetails.organization_id}/department/${inviteDetails.department_id}/team`;
+      }
+
+      if (inviteDetails.organization_id) {
+        return `${appRoutes.organization}/${inviteDetails.organization_id}/team`;
+      }
+
+      return appRoutes.team;
+    }
+
+    if (inviteType === 'department') {
+      return `${appRoutes.organization}/${inviteDetails.organization_id}/department`;
+    }
+
+    if (inviteType === 'organization') {
+      return appRoutes.organization;
+    }
+
+    return '';
+  }
+
   function useInvite() {
     xfetch(`/api/users/${$user.id}/invite/${inviteType}/${inviteId}`, {
       method: 'POST',
@@ -39,20 +63,7 @@
       .then(res => res.json())
       .then(function (result) {
         inviteDetails = result.data;
-        if (inviteType === 'team') {
-          if (inviteDetails.organization_id !== '') {
-            targetPage = `${appRoutes.organization}/${inviteDetails.organization_id}/team`;
-          }
-          if (inviteDetails.department_id !== '') {
-            targetPage = `${appRoutes.organization}/${inviteDetails.organization_id}/department/${inviteDetails.department_id}/team`;
-          }
-        }
-        if (inviteType === 'department') {
-          targetPage = `${appRoutes.organization}/${inviteDetails.organization_id}/department`;
-        }
-        if (inviteType === 'organization') {
-          targetPage = `${appRoutes.organization}`;
-        }
+        targetPage = getTargetPage();
         inviteProcessed = true;
       })
       .catch(function (error) {
