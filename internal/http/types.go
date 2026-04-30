@@ -244,6 +244,7 @@ type OrganizationDataSvc interface {
 	OrganizationUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.OrganizationUserInvite, error)
 	OrganizationDeleteUserInvite(ctx context.Context, inviteID string) error
 	OrganizationGetUserInvites(ctx context.Context, orgID string) ([]thunderdome.OrganizationUserInvite, error)
+	OrganizationGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.OrganizationUserInvite, error)
 	OrganizationTeamList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.Team
 	OrganizationTeamCreate(ctx context.Context, orgID string, teamName string) (*thunderdome.Team, error)
 	OrganizationTeamUserRole(ctx context.Context, userID string, orgID string, teamID string) (string, string, error)
@@ -270,6 +271,7 @@ type OrganizationDataSvc interface {
 	DepartmentUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.DepartmentUserInvite, error)
 	DepartmentDeleteUserInvite(ctx context.Context, inviteID string) error
 	DepartmentGetUserInvites(ctx context.Context, deptID string) ([]thunderdome.DepartmentUserInvite, error)
+	DepartmentGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.DepartmentUserInvite, error)
 }
 
 type TeamDataSvc interface {
@@ -287,6 +289,7 @@ type TeamDataSvc interface {
 	TeamUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.TeamUserInvite, error)
 	TeamDeleteUserInvite(ctx context.Context, inviteID string) error
 	TeamGetUserInvites(ctx context.Context, teamId string) ([]thunderdome.TeamUserInvite, error)
+	TeamGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.TeamUserInvite, error)
 	TeamPokerList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.Poker, int)
 	TeamAddPoker(ctx context.Context, teamID string, pokerID string) error
 	TeamRemovePoker(ctx context.Context, teamID string, pokerID string) error

@@ -107,6 +107,7 @@
           name: newWarrior.name,
           email: newWarrior.email,
           rank: newWarrior.rank,
+          verified: newWarrior.verified,
           notificationsEnabled: newWarrior.notificationsEnabled,
           subscribed: false,
         } as SessionUser);

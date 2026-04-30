@@ -76,6 +76,7 @@
           email: u.email,
           rank: u.rank,
           locale: u.locale,
+          verified: u.verified,
           notificationsEnabled: u.notificationsEnabled,
           subscribed: result.data.subscribed,
         };

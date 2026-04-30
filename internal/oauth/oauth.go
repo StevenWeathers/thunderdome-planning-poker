@@ -208,6 +208,7 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 			Email:                user.Email,
 			Rank:                 user.Type,
 			Locale:               user.Locale,
+			Verified:             user.Verified,
 			NotificationsEnabled: user.NotificationsEnabled,
 			Subscribed:           subscribedErr == nil,
 		}); err != nil {

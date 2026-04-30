@@ -92,3 +92,44 @@ func (d *Service) TeamGetUserInvites(ctx context.Context, teamID string) ([]thun
 
 	return invites, nil
 }
+
+// TeamGetUserPendingInvites gets pending team invites for a user by email
+func (d *Service) TeamGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.TeamUserInvite, error) {
+	var invites = make([]thunderdome.TeamUserInvite, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT tui.invite_id, tui.team_id, t.name, tui.email, tui.role, tui.created_date, tui.expire_date
+				FROM thunderdome.team_user_invite tui
+				LEFT JOIN thunderdome.team t ON tui.team_id = t.id
+				WHERE LOWER(email) = LOWER($1)
+					AND tui.expire_date > CURRENT_TIMESTAMP
+				ORDER BY tui.created_date DESC;`,
+		email,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var invite thunderdome.TeamUserInvite
+
+			if err := rows.Scan(
+				&invite.InviteID,
+				&invite.TeamID,
+				&invite.TeamName,
+				&invite.Email,
+				&invite.Role,
+				&invite.CreatedDate,
+				&invite.ExpireDate,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("TeamGetUserPendingInvites query scan error", zap.Error(err))
+			} else {
+				invites = append(invites, invite)
+			}
+		}
+	} else {
+		if !errors.Is(err, sql.ErrNoRows) {
+			d.Logger.Ctx(ctx).Error("TeamGetUserPendingInvites query error", zap.Error(err))
+		}
+	}
+
+	return invites, nil
+}

@@ -32,6 +32,7 @@ type TeamUser struct {
 type TeamUserInvite struct {
 	InviteID    string    `json:"invite_id"`
 	TeamID      string    `json:"team_id"`
+	TeamName    string    `json:"team_name"`
 	Email       string    `json:"email"`
 	Role        string    `json:"role"`
 	CreatedDate time.Time `json:"created_date"`

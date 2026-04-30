@@ -1,6 +1,7 @@
 <script lang="ts">
   import { AppConfig, appRoutes } from '../config';
   import type { ApiClient } from '../types/apiclient';
+  import type { SessionUser } from '../types/user';
   import LL from '../i18n/i18n-svelte';
   import type { Team } from '../types/team';
   import PokerGame from './poker/PokerGame.svelte';
@@ -10,6 +11,7 @@
   import { user } from '../stores';
   import { onMount } from 'svelte';
   import BoxList from '../components/BoxList.svelte';
+  import HollowButton from '../components/global/HollowButton.svelte';
   import PageLayout from '../components/PageLayout.svelte';
   import {
     ArrowRight,
@@ -22,6 +24,7 @@
     Gamepad2,
     RotateCcw,
     CheckCircle,
+    Mail,
   } from '@lucide/svelte';
   import { validateUserIsRegistered } from '../validationUtils';
 
@@ -43,11 +46,172 @@
   let retroCount: number = $state(0);
   let storyboards: Storyboard[] = $state([]);
   let storyboardCount: number = $state(0);
+  type InviteKind = 'organization' | 'department' | 'team';
+  type BaseInvite = {
+    invite_id: string;
+    email: string;
+    role: string;
+    created_date: string;
+    expire_date: string;
+  };
+  type OrganizationInvite = BaseInvite & { organization_id: string; organization_name: string };
+  type DepartmentInvite = BaseInvite & { department_id: string; department_name: string };
+  type TeamInvite = BaseInvite & { team_id: string; team_name: string };
+  type PendingInvitesResponse = {
+    organizationInvites: OrganizationInvite[];
+    departmentInvites: DepartmentInvite[];
+    teamInvites: TeamInvite[];
+  };
+  type PendingInviteItem = {
+    inviteId: string;
+    inviteType: InviteKind;
+    name: string;
+    role: string;
+    expireDate: string;
+    href: string;
+  };
+
   let selectedTeam: Team | null = $state(null);
   let showTeamDropdown: boolean = $state(false);
+  let isVerifiedUser: boolean = $state(false);
+  let rejectingInviteIds: string[] = $state([]);
+  let pendingInvites: PendingInvitesResponse = $state({
+    organizationInvites: [],
+    departmentInvites: [],
+    teamInvites: [],
+  });
+
+  let pendingInviteItems: PendingInviteItem[] = $derived([
+    ...pendingInvites.organizationInvites.map(invite => ({
+      inviteId: invite.invite_id,
+      inviteType: 'organization' as const,
+      name: invite.organization_name,
+      role: invite.role,
+      expireDate: invite.expire_date,
+      href: `${appRoutes.invite}/organization/${invite.invite_id}`,
+    })),
+    ...pendingInvites.departmentInvites.map(invite => ({
+      inviteId: invite.invite_id,
+      inviteType: 'department' as const,
+      name: invite.department_name,
+      role: invite.role,
+      expireDate: invite.expire_date,
+      href: `${appRoutes.invite}/department/${invite.invite_id}`,
+    })),
+    ...pendingInvites.teamInvites.map(invite => ({
+      inviteId: invite.invite_id,
+      inviteType: 'team' as const,
+      name: invite.team_name,
+      role: invite.role,
+      expireDate: invite.expire_date,
+      href: `${appRoutes.invite}/team/${invite.invite_id}`,
+    })),
+  ]);
 
   function loadDashboardData() {
     Promise.any([loadTeams(), loadGames(), loadRetros(), loadStoryboards()]);
+    loadPendingInvites();
+  }
+
+  $effect(() => {
+    if ($user?.id && validateUserIsRegistered($user) && typeof $user.verified === 'boolean') {
+      isVerifiedUser = $user.verified;
+    }
+  });
+
+  async function resolveVerifiedUser() {
+    if (!validateUserIsRegistered($user) || !$user.id) {
+      isVerifiedUser = false;
+      return false;
+    }
+
+    try {
+      const result = await xfetch(`/api/users/${$user.id}`).then(res => res.json());
+      isVerifiedUser = !!result.data?.verified;
+
+      user.update({
+        ...$user,
+        verified: isVerifiedUser,
+      } as SessionUser);
+
+      return isVerifiedUser;
+    } catch (error) {
+      console.error('Error resolving verified status:', error);
+      isVerifiedUser = false;
+      return false;
+    }
+  }
+
+  function getInviteTypeLabel(inviteType: InviteKind) {
+    switch (inviteType) {
+      case 'organization':
+        return $LL.organization();
+      case 'department':
+        return $LL.department();
+      case 'team':
+        return $LL.team();
+    }
+  }
+
+  function getInviteTypeBadgeClasses(inviteType: InviteKind) {
+    switch (inviteType) {
+      case 'organization':
+        return 'bg-amber-100 text-amber-900 ring-1 ring-amber-300 dark:bg-amber-500/15 dark:text-amber-200 dark:ring-amber-400/30';
+      case 'department':
+        return 'bg-sky-100 text-sky-900 ring-1 ring-sky-300 dark:bg-sky-500/15 dark:text-sky-200 dark:ring-sky-400/30';
+      case 'team':
+        return 'bg-emerald-100 text-emerald-900 ring-1 ring-emerald-300 dark:bg-emerald-500/15 dark:text-emerald-200 dark:ring-emerald-400/30';
+    }
+  }
+
+  function formatInviteDate(date: string) {
+    return new Date(date).toLocaleString([], {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  }
+
+  function getInviteApiPath(invite: PendingInviteItem) {
+    return `/api/users/${$user.id}/invite/${invite.inviteType}/${invite.inviteId}`;
+  }
+
+  function removePendingInvite(invite: PendingInviteItem) {
+    pendingInvites = {
+      organizationInvites:
+        invite.inviteType === 'organization'
+          ? pendingInvites.organizationInvites.filter(item => item.invite_id !== invite.inviteId)
+          : pendingInvites.organizationInvites,
+      departmentInvites:
+        invite.inviteType === 'department'
+          ? pendingInvites.departmentInvites.filter(item => item.invite_id !== invite.inviteId)
+          : pendingInvites.departmentInvites,
+      teamInvites:
+        invite.inviteType === 'team'
+          ? pendingInvites.teamInvites.filter(item => item.invite_id !== invite.inviteId)
+          : pendingInvites.teamInvites,
+    };
+  }
+
+  async function rejectInvite(invite: PendingInviteItem) {
+    if (rejectingInviteIds.includes(invite.inviteId)) {
+      return;
+    }
+
+    rejectingInviteIds = [...rejectingInviteIds, invite.inviteId];
+
+    try {
+      await xfetch(getInviteApiPath(invite), { method: 'DELETE' });
+      removePendingInvite(invite);
+      notifications.success($LL.inviteRejected());
+    } catch (error) {
+      console.error('Error rejecting invite:', error);
+      notifications.danger($LL.inviteRejectError());
+    } finally {
+      rejectingInviteIds = rejectingInviteIds.filter(id => id !== invite.inviteId);
+    }
   }
 
   async function loadTeams() {
@@ -128,6 +292,34 @@
     }
   }
 
+  async function loadPendingInvites() {
+    if (!validateUserIsRegistered($user) || !isVerifiedUser) {
+      pendingInvites = {
+        organizationInvites: [],
+        departmentInvites: [],
+        teamInvites: [],
+      };
+      return Promise.resolve();
+    }
+
+    try {
+      xfetch(`/api/users/${$user.id}/invites`)
+        .then(res => res.json())
+        .then(function (result) {
+          pendingInvites = {
+            organizationInvites: result.data.organizationInvites ?? [],
+            departmentInvites: result.data.departmentInvites ?? [],
+            teamInvites: result.data.teamInvites ?? [],
+          };
+        })
+        .catch(function () {
+          notifications.danger($LL.getUserInvitesError());
+        });
+    } catch (error) {
+      console.error('Error loading pending invites:', error);
+    }
+  }
+
   function selectTeam(team: Team | null) {
     selectedTeam = team;
     showTeamDropdown = false;
@@ -144,11 +336,15 @@
   const {} = AppConfig;
 
   onMount(() => {
-    if (!$user) {
+    if (!$user?.id) {
       router.route('/login');
       return;
     }
-    loadDashboardData();
+
+    void (async () => {
+      await resolveVerifiedUser();
+      loadDashboardData();
+    })();
   });
 </script>
 
@@ -306,6 +502,79 @@
           </div>
         </div>
       {:else}
+        {#if validateUserIsRegistered($user) && isVerifiedUser && !selectedTeam && pendingInviteItems.length > 0}
+          <section class="mb-8">
+            <div
+              class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50 shadow-sm"
+            >
+              <div class="flex items-start justify-between gap-4 mb-6">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20"
+                  >
+                    <Mail class="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+                      {$LL.invites()} ({pendingInviteItems.length})
+                    </h2>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                {#each pendingInviteItems as invite}
+                  <div
+                    class="group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 p-4 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all"
+                  >
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2 mb-2">
+                          <span
+                            class={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] shadow-sm ${getInviteTypeBadgeClasses(
+                              invite.inviteType,
+                            )}`}
+                          >
+                            {getInviteTypeLabel(invite.inviteType)}
+                          </span>
+                        </div>
+                        <div class="text-base font-semibold text-slate-900 dark:text-white">
+                          {invite.name}
+                        </div>
+                        <div class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                          {$LL.expireDate()}: {formatInviteDate(invite.expireDate)}
+                        </div>
+                      </div>
+
+                      <div class="flex items-center justify-end gap-2 shrink-0 self-center">
+                        <HollowButton
+                          onClick={() => rejectInvite(invite)}
+                          disabled={rejectingInviteIds.includes(invite.inviteId)}
+                          color="red"
+                        >
+                          {#if rejectingInviteIds.includes(invite.inviteId)}
+                            {$LL.rejectingInvite()}
+                          {:else}
+                            {$LL.rejectInvite()}
+                          {/if}
+                        </HollowButton>
+                        <HollowButton
+                          href={invite.href}
+                          color="green"
+                          additionalClasses="inline-flex items-center gap-2"
+                        >
+                          {$LL.acceptInvite()}
+                          <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </HollowButton>
+                      </div>
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          </section>
+        {/if}
+
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 grid-rows-1">
           <!-- Poker Games Section -->
           {#if AppConfig.FeaturePoker}
@@ -350,8 +619,8 @@
                   {#if gameCount > 4}
                     <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                       <a
-                        href={appRoutes.games}
                         class="group w-full flex items-center justify-between p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 shadow-sm hover:shadow-md transition-all"
+                        href={appRoutes.games}
                       >
                         <div class="flex items-center space-x-3">
                           <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">

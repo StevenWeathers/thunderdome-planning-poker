@@ -457,6 +457,143 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 	}
 }
 
+// handleRejectUserOrganizationInvite deletes an organization invite for the user
+//
+//	@Summary		Reject User Organization Invite
+//	@Description	Rejects an organization invite for the user
+//	@Tags			user
+//	@Param			userId		path	string	true	"the user ID"
+//	@Param			inviteId	path	string	true	"the invite ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		400			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Router			/users/{userId}/invite/organization/{inviteId} [delete]
+func (s *Service) handleRejectUserOrganizationInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		userID := r.PathValue("userId")
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		inviteID := r.PathValue("inviteId")
+		idErr = validate.Var(inviteID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		user, err := s.UserDataSvc.GetUserByID(ctx, userID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserOrganizationInvite get user error", zap.Error(err),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		invite, err := s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, inviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserOrganizationInvite get invite error", zap.Error(err),
+				zap.String("invite_id", inviteID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		if !strings.EqualFold(user.Email, invite.Email) {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_INVITE"))
+			return
+		}
+
+		err = s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, invite.InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserOrganizationInvite delete invite error", zap.Error(err),
+				zap.String("invite_id", invite.InviteID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+type pendingUserInvitesResponse struct {
+	OrganizationInvites []thunderdome.OrganizationUserInvite `json:"organizationInvites"`
+	DepartmentInvites   []thunderdome.DepartmentUserInvite   `json:"departmentInvites"`
+	TeamInvites         []thunderdome.TeamUserInvite         `json:"teamInvites"`
+}
+
+// handleGetPendingUserInvites gets pending invites for a verified user
+//
+//	@Summary		Get Pending User Invites
+//	@Description	Get all pending organization, department, and team invites for the current verified user
+//	@Tags			user
+//	@Produce		json
+//	@Param			userId	path	string	true	"the user ID"
+//	@Success		200		object	standardJsonResponse{data=pendingUserInvitesResponse}
+//	@Success		400		object	standardJsonResponse{}
+//	@Success		500		object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/invites [get]
+func (s *Service) handleGetPendingUserInvites() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		userID := r.PathValue("userId")
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		user, err := s.UserDataSvc.GetUserByID(ctx, userID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetPendingUserInvites error", zap.Error(err),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		userEmail := strings.ToLower(user.Email)
+
+		organizationInvites, err := s.OrganizationDataSvc.OrganizationGetUserPendingInvites(ctx, userEmail)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetPendingUserInvites organization invites error", zap.Error(err),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		departmentInvites, err := s.OrganizationDataSvc.DepartmentGetUserPendingInvites(ctx, userEmail)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetPendingUserInvites department invites error", zap.Error(err),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		teamInvites, err := s.TeamDataSvc.TeamGetUserPendingInvites(ctx, userEmail)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetPendingUserInvites team invites error", zap.Error(err),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		result := pendingUserInvitesResponse{
+			OrganizationInvites: organizationInvites,
+			DepartmentInvites:   departmentInvites,
+			TeamInvites:         teamInvites,
+		}
+
+		s.Success(w, r, http.StatusOK, result, nil)
+	}
+}
+
 // handleUserDepartmentInvite processes an department invite for the user
 //
 //	@Summary		User Department Invite
@@ -562,6 +699,69 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 	}
 }
 
+// handleRejectUserDepartmentInvite deletes a department invite for the user
+//
+//	@Summary		Reject User Department Invite
+//	@Description	Rejects a department invite for the user
+//	@Tags			user
+//	@Param			userId		path	string	true	"the user ID"
+//	@Param			inviteId	path	string	true	"the invite ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		400			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Router			/users/{userId}/invite/department/{inviteId} [delete]
+func (s *Service) handleRejectUserDepartmentInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		userID := r.PathValue("userId")
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		inviteID := r.PathValue("inviteId")
+		idErr = validate.Var(inviteID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		user, err := s.UserDataSvc.GetUserByID(ctx, userID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserDepartmentInvite get user error", zap.Error(err),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		invite, err := s.OrganizationDataSvc.DepartmentUserGetInviteByID(ctx, inviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserDepartmentInvite get invite error", zap.Error(err),
+				zap.String("invite_id", inviteID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		if !strings.EqualFold(user.Email, invite.Email) {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_INVITE"))
+			return
+		}
+
+		err = s.OrganizationDataSvc.DepartmentDeleteUserInvite(ctx, invite.InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserDepartmentInvite delete invite error", zap.Error(err),
+				zap.String("invite_id", invite.InviteID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 // handleUserTeamInvite processes a team invite for the user
 //
 //	@Summary		User Team Invite
@@ -615,7 +815,6 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 			return
 		}
 
-		// team is associated to organization, upsert user to organization
 		if team.OrganizationID != "" {
 			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, team.OrganizationID, userID, thunderdome.EntityMemberUserType)
 			if orgAddErr != nil {
@@ -629,7 +828,6 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 			}
 		}
 
-		// team is associated to department, upsert user to department and organization
 		if team.DepartmentID != "" {
 			dept, deptErr := s.OrganizationDataSvc.DepartmentGetByID(ctx, team.DepartmentID)
 			if deptErr != nil {
@@ -700,6 +898,69 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, result, nil)
+	}
+}
+
+// handleRejectUserTeamInvite deletes a team invite for the user
+//
+//	@Summary		Reject User Team Invite
+//	@Description	Rejects a team invite for the user
+//	@Tags			user
+//	@Param			userId		path	string	true	"the user ID"
+//	@Param			inviteId	path	string	true	"the invite ID"
+//	@Success		200			object	standardJsonResponse{}
+//	@Success		400			object	standardJsonResponse{}
+//	@Success		500			object	standardJsonResponse{}
+//	@Router			/users/{userId}/invite/team/{inviteId} [delete]
+func (s *Service) handleRejectUserTeamInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		userID := r.PathValue("userId")
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		inviteID := r.PathValue("inviteId")
+		idErr = validate.Var(inviteID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		user, err := s.UserDataSvc.GetUserByID(ctx, userID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserTeamInvite get user error", zap.Error(err),
+				zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		invite, err := s.TeamDataSvc.TeamUserGetInviteByID(ctx, inviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserTeamInvite get invite error", zap.Error(err),
+				zap.String("invite_id", inviteID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		if !strings.EqualFold(user.Email, invite.Email) {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_INVITE"))
+			return
+		}
+
+		err = s.TeamDataSvc.TeamDeleteUserInvite(ctx, invite.InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRejectUserTeamInvite delete invite error", zap.Error(err),
+				zap.String("invite_id", invite.InviteID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
