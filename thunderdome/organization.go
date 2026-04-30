@@ -34,12 +34,13 @@ type OrganizationUser struct {
 }
 
 type OrganizationUserInvite struct {
-	InviteID       string    `json:"invite_id"`
-	OrganizationID string    `json:"organization_id"`
-	Email          string    `json:"email"`
-	Role           string    `json:"role"`
-	CreatedDate    time.Time `json:"created_date"`
-	ExpireDate     time.Time `json:"expire_date"`
+	InviteID         string    `json:"invite_id"`
+	OrganizationID   string    `json:"organization_id"`
+	OrganizationName string    `json:"organization_name"`
+	Email            string    `json:"email"`
+	Role             string    `json:"role"`
+	CreatedDate      time.Time `json:"created_date"`
+	ExpireDate       time.Time `json:"expire_date"`
 }
 
 type Department struct {
@@ -61,12 +62,13 @@ type DepartmentUser struct {
 }
 
 type DepartmentUserInvite struct {
-	InviteID     string    `json:"invite_id"`
-	DepartmentID string    `json:"department_id"`
-	Email        string    `json:"email"`
-	Role         string    `json:"role"`
-	CreatedDate  time.Time `json:"created_date"`
-	ExpireDate   time.Time `json:"expire_date"`
+	InviteID       string    `json:"invite_id"`
+	DepartmentID   string    `json:"department_id"`
+	DepartmentName string    `json:"department_name"`
+	Email          string    `json:"email"`
+	Role           string    `json:"role"`
+	CreatedDate    time.Time `json:"created_date"`
+	ExpireDate     time.Time `json:"expire_date"`
 }
 
 // OrganizationMetrics represents the metrics for a single organization

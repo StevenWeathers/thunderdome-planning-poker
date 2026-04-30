@@ -422,3 +422,44 @@ func (d *OrganizationService) DepartmentGetUserInvites(ctx context.Context, dept
 
 	return invites, nil
 }
+
+// DepartmentGetUserPendingInvites gets pending department invites for a user by email
+func (d *OrganizationService) DepartmentGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.DepartmentUserInvite, error) {
+	var invites = make([]thunderdome.DepartmentUserInvite, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT dui.invite_id, dui.department_id, od.name, dui.email, dui.role, dui.created_date, dui.expire_date
+				FROM thunderdome.department_user_invite dui
+				LEFT JOIN thunderdome.organization_department od ON dui.department_id = od.id
+				WHERE LOWER(dui.email) = LOWER($1)
+					AND dui.expire_date > CURRENT_TIMESTAMP
+				ORDER BY dui.created_date DESC;`,
+		email,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var invite thunderdome.DepartmentUserInvite
+
+			if err := rows.Scan(
+				&invite.InviteID,
+				&invite.DepartmentID,
+				&invite.DepartmentName,
+				&invite.Email,
+				&invite.Role,
+				&invite.CreatedDate,
+				&invite.ExpireDate,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("DepartmentGetUserPendingInvites query scan error", zap.Error(err))
+			} else {
+				invites = append(invites, invite)
+			}
+		}
+	} else {
+		if !errors.Is(err, sql.ErrNoRows) {
+			d.Logger.Ctx(ctx).Error("DepartmentGetUserPendingInvites query error", zap.Error(err))
+		}
+	}
+
+	return invites, nil
+}

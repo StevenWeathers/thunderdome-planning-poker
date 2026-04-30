@@ -33,7 +33,7 @@ func (d *Service) AuthUser(ctx context.Context, userEmail string, userPassword s
 	sanitizedEmail := db.SanitizeEmail(userEmail)
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT u.id, u.name, c.email, u.type, c.password, u.avatar, c.verified, u.notifications_enabled,
+		`SELECT u.id, u.name, c.email, u.type, c.password, u.avatar, c.verified, u.verified, u.notifications_enabled,
  			COALESCE(u.locale, ''), u.disabled, c.mfa_enabled, u.theme, COALESCE(u.picture, '')
 			FROM thunderdome.auth_credential c
 			JOIN thunderdome.users u ON c.user_id = u.id
@@ -47,6 +47,7 @@ func (d *Service) AuthUser(ctx context.Context, userEmail string, userPassword s
 		&passHash,
 		&user.Avatar,
 		&cred.Verified,
+		&user.Verified,
 		&user.NotificationsEnabled,
 		&user.Locale,
 		&user.Disabled,

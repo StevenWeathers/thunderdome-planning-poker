@@ -337,6 +337,21 @@ definitions:
       offset:
         type: integer
     type: object
+  http.pendingUserInvitesResponse:
+    properties:
+      departmentInvites:
+        items:
+          $ref: '#/definitions/thunderdome.DepartmentUserInvite'
+        type: array
+      organizationInvites:
+        items:
+          $ref: '#/definitions/thunderdome.OrganizationUserInvite'
+        type: array
+      teamInvites:
+        items:
+          $ref: '#/definitions/thunderdome.TeamUserInvite'
+        type: array
+    type: object
   http.planRequestBody:
     properties:
       acceptanceCriteria:
@@ -1078,6 +1093,8 @@ definitions:
         type: string
       department_id:
         type: string
+      department_name:
+        type: string
       email:
         type: string
       expire_date:
@@ -1185,6 +1202,8 @@ definitions:
       invite_id:
         type: string
       organization_id:
+        type: string
+      organization_name:
         type: string
       role:
         type: string
@@ -1909,6 +1928,8 @@ definitions:
       role:
         type: string
       team_id:
+        type: string
+      team_name:
         type: string
     type: object
   thunderdome.User:
@@ -10319,6 +10340,35 @@ paths:
       tags:
       - user
   /users/{userId}/invite/department/{inviteId}:
+    delete:
+      description: Rejects a department invite for the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Reject User Department Invite
+      tags:
+      - user
     post:
       description: Processes an department invite for the user
       parameters:
@@ -10349,6 +10399,35 @@ paths:
       tags:
       - user
   /users/{userId}/invite/organization/{inviteId}:
+    delete:
+      description: Rejects an organization invite for the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Reject User Organization Invite
+      tags:
+      - user
     post:
       description: Processes an organization invite for the user
       parameters:
@@ -10379,6 +10458,35 @@ paths:
       tags:
       - user
   /users/{userId}/invite/team/{inviteId}:
+    delete:
+      description: Rejects a team invite for the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Reject User Team Invite
+      tags:
+      - user
     post:
       description: Processes a team invite for the user
       parameters:
@@ -10406,6 +10514,41 @@ paths:
           schema:
             $ref: '#/definitions/http.standardJsonResponse'
       summary: User Team Invite
+      tags:
+      - user
+  /users/{userId}/invites:
+    get:
+      description: Get all pending organization, department, and team invites for
+        the current verified user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.pendingUserInvitesResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Pending User Invites
       tags:
       - user
   /users/{userId}/jira-instances:

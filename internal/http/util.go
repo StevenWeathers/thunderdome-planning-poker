@@ -229,6 +229,7 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, userName string, us
 			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return authedUser, sessionID, err
 		}
+		authedUser.Verified = true
 		sessionID, err = s.AuthDataSvc.CreateSession(ctx, authedUser.ID, true)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
@@ -270,6 +271,7 @@ func (s *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return authedUser, sessionId, err
 		}
+		authedUser.Verified = true
 		sessionId, err = s.AuthDataSvc.CreateSession(ctx, authedUser.ID, true)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))

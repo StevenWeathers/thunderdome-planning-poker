@@ -334,6 +334,47 @@ func (d *OrganizationService) OrganizationGetUserInvites(ctx context.Context, or
 	return invites, nil
 }
 
+// OrganizationGetUserPendingInvites gets pending organization invites for a user by email
+func (d *OrganizationService) OrganizationGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.OrganizationUserInvite, error) {
+	var invites = make([]thunderdome.OrganizationUserInvite, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT oui.invite_id, oui.organization_id, o.name, oui.email, oui.role, oui.created_date, oui.expire_date
+				FROM thunderdome.organization_user_invite oui
+				LEFT JOIN thunderdome.organization o ON oui.organization_id = o.id
+				WHERE LOWER(oui.email) = LOWER($1)
+					AND oui.expire_date > CURRENT_TIMESTAMP
+				ORDER BY oui.created_date DESC;`,
+		email,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var invite thunderdome.OrganizationUserInvite
+
+			if err := rows.Scan(
+				&invite.InviteID,
+				&invite.OrganizationID,
+				&invite.OrganizationName,
+				&invite.Email,
+				&invite.Role,
+				&invite.CreatedDate,
+				&invite.ExpireDate,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("OrganizationGetUserPendingInvites query scan error", zap.Error(err))
+			} else {
+				invites = append(invites, invite)
+			}
+		}
+	} else {
+		if !errors.Is(err, sql.ErrNoRows) {
+			d.Logger.Ctx(ctx).Error("OrganizationGetUserPendingInvites query error", zap.Error(err))
+		}
+	}
+
+	return invites, nil
+}
+
 // OrganizationTeamList gets a list of organization teams
 func (d *OrganizationService) OrganizationTeamList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)

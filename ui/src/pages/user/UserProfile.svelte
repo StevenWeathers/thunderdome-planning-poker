@@ -101,6 +101,7 @@
           email: userProfile.email,
           rank: userProfile.rank,
           avatar: p.avatar,
+          verified: userProfile.verified,
           notificationsEnabled: p.notificationsEnabled,
           locale: p.locale,
         } as SessionUser);

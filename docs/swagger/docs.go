@@ -13105,6 +13105,49 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Rejects a department invite for the user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "Reject User Department Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
             }
         },
         "/users/{userId}/invite/organization/{inviteId}": {
@@ -13114,6 +13157,49 @@ const docTemplate = `{
                     "user"
                 ],
                 "summary": "User Organization Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Rejects an organization invite for the user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "Reject User Organization Invite",
                 "parameters": [
                     {
                         "type": "string",
@@ -13195,6 +13281,107 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Rejects a team invite for the user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "Reject User Team Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/invites": {
+            "get": {
+                "description": "Get all pending organization, department, and team invites for the current verified user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get Pending User Invites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.pendingUserInvitesResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/users/{userId}/jira-instances": {
@@ -15277,6 +15464,29 @@ const docTemplate = `{
                 }
             }
         },
+        "http.pendingUserInvitesResponse": {
+            "type": "object",
+            "properties": {
+                "departmentInvites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.DepartmentUserInvite"
+                    }
+                },
+                "organizationInvites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.OrganizationUserInvite"
+                    }
+                },
+                "teamInvites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.TeamUserInvite"
+                    }
+                }
+            }
+        },
         "http.planRequestBody": {
             "type": "object",
             "properties": {
@@ -16364,6 +16574,9 @@ const docTemplate = `{
                 "department_id": {
                     "type": "string"
                 },
+                "department_name": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -16526,6 +16739,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "organization_id": {
+                    "type": "string"
+                },
+                "organization_name": {
                     "type": "string"
                 },
                 "role": {
@@ -17628,6 +17844,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "team_id": {
+                    "type": "string"
+                },
+                "team_name": {
                     "type": "string"
                 }
             }

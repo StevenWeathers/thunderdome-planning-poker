@@ -2261,6 +2261,10 @@ type RootTranslation = {
 	 */
 	userUpdateError: string
 	/**
+	 * I​n​v​i​t​e​s
+	 */
+	invites: string
+	/**
 	 * U​s​e​r​ ​I​n​v​i​t​e​s
 	 */
 	userInvites: string
@@ -2276,6 +2280,30 @@ type RootTranslation = {
 	 * D​e​l​e​t​e​ ​I​n​v​i​t​e
 	 */
 	userInviteDelete: string
+	/**
+	 * A​c​c​e​p​t​ ​I​n​v​i​t​e
+	 */
+	acceptInvite: string
+	/**
+	 * R​e​j​e​c​t​ ​I​n​v​i​t​e
+	 */
+	rejectInvite: string
+	/**
+	 * R​e​j​e​c​t​i​n​g​.​.​.
+	 */
+	rejectingInvite: string
+	/**
+	 * I​n​v​i​t​e​ ​r​e​j​e​c​t​e​d
+	 */
+	inviteRejected: string
+	/**
+	 * E​r​r​o​r​ ​r​e​j​e​c​t​i​n​g​ ​i​n​v​i​t​e
+	 */
+	inviteRejectError: string
+	/**
+	 * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​u​s​e​r​ ​i​n​v​i​t​e​s
+	 */
+	getUserInvitesError: string
 	/**
 	 * E​x​p​i​r​e​ ​D​a​t​e
 	 */
@@ -5223,6 +5251,10 @@ export type TranslationFunctions = {
 	 */
 	userUpdateError: () => LocalizedString
 	/**
+	 * Invites
+	 */
+	invites: () => LocalizedString
+	/**
 	 * User Invites
 	 */
 	userInvites: () => LocalizedString
@@ -5238,6 +5270,30 @@ export type TranslationFunctions = {
 	 * Delete Invite
 	 */
 	userInviteDelete: () => LocalizedString
+	/**
+	 * Accept Invite
+	 */
+	acceptInvite: () => LocalizedString
+	/**
+	 * Reject Invite
+	 */
+	rejectInvite: () => LocalizedString
+	/**
+	 * Rejecting...
+	 */
+	rejectingInvite: () => LocalizedString
+	/**
+	 * Invite rejected
+	 */
+	inviteRejected: () => LocalizedString
+	/**
+	 * Error rejecting invite
+	 */
+	inviteRejectError: () => LocalizedString
+	/**
+	 * Error getting user invites
+	 */
+	getUserInvitesError: () => LocalizedString
 	/**
 	 * Expire Date
 	 */

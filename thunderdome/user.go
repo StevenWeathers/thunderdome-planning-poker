@@ -17,6 +17,7 @@ type UserUICookie struct {
 	Email                string `json:"email"`
 	Rank                 string `json:"rank"`
 	Locale               string `json:"locale"`
+	Verified             bool   `json:"verified"`
 	NotificationsEnabled bool   `json:"notificationsEnabled"`
 	Subscribed           bool   `json:"subscribed"`
 }
