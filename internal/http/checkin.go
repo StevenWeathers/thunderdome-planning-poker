@@ -212,9 +212,10 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 				if targetDate > todayInLocation {
 					orgID := r.PathValue("orgId")
 					if orgID != "" {
-						subscribed, err := s.OrganizationDataSvc.OrganizationIsSubscribed(ctx, orgID)
-						if err != nil || !subscribed {
-							s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_SUBSCRIPTION_REQUIRED"))
+						orgSubscribed, orgErr := s.OrganizationDataSvc.OrganizationIsSubscribed(ctx, orgID)
+						teamSubscribed, teamErr := s.TeamDataSvc.TeamIsSubscribed(ctx, teamID)
+						if (orgErr != nil || !orgSubscribed) && (teamErr != nil || !teamSubscribed) {
+							s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_OR_TEAM_SUBSCRIPTION_REQUIRED"))
 							return
 						}
 					} else {
