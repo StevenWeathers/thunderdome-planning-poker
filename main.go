@@ -1,6 +1,10 @@
 package main
 
-import "github.com/StevenWeathers/thunderdome-planning-poker/cmd"
+import (
+	_ "time/tzdata"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/cmd"
+)
 
 var (
 	version = "dev"

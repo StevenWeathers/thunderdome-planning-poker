@@ -39,7 +39,7 @@ func (s *Service) handleCheckinsGet() http.HandlerFunc {
 		tz := query.Get("tz")
 
 		if date == "" {
-			date = time.Now().Format("1988-01-02")
+			date = time.Now().Format("2006-01-02")
 		}
 
 		if tz == "" {
