@@ -53,10 +53,7 @@ export default defineConfig({
           }
           if (path.includes('/src/stores.ts')) return 'shared_state';
           if (path.includes('/src/components/admin/')) return 'shared_admin';
-          if (
-            path.includes('/src/components/team/') ||
-            path.includes('/src/components/organization/')
-          )
+          if (path.includes('/src/components/team/') || path.includes('/src/components/organization/'))
             return 'shared_team';
           // Poker and retro route code reference shared modules in ways that break when they are forced apart.
           if (path.includes('/src/pages/poker/') || path.includes('/src/pages/retro/')) return 'poker_retro';
