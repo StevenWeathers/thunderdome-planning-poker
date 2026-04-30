@@ -51,17 +51,24 @@ export default defineConfig({
             if (path.includes('/quill/')) return 'vendor_quill';
             return 'vendor';
           }
-          if (path.includes('/src/pages/poker/')) return 'poker';
-          if (path.includes('/src/pages/retro/')) return 'retro';
+          if (path.includes('/src/stores.ts')) return 'shared_state';
+          if (path.includes('/src/components/admin/')) return 'shared_admin';
+          if (
+            path.includes('/src/components/team/') ||
+            path.includes('/src/components/organization/')
+          )
+            return 'shared_team';
+          // Poker and retro route code reference shared modules in ways that break when they are forced apart.
+          if (path.includes('/src/pages/poker/') || path.includes('/src/pages/retro/')) return 'poker_retro';
           if (path.includes('/src/pages/storyboard/')) return 'storyboard';
           if (path.includes('/src/pages/project/')) return 'project';
-          if (path.includes('/src/pages/admin/')) return 'admin';
+          if (path.includes('/src/pages/admin/')) return 'admin_team';
           if (
             path.includes('/src/pages/organization/') ||
             path.includes('/src/pages/department/') ||
             path.includes('/src/pages/team/')
           )
-            return 'team';
+            return 'admin_team';
           if (path.includes('/src/pages/user/')) return 'user';
           if (path.includes('/src/pages/subscription/')) return 'subscription';
           if (path.includes('/src/pages/support/')) return 'support';
