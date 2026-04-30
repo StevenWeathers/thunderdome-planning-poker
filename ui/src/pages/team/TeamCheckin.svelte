@@ -10,7 +10,7 @@
   import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import { appRoutes } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
   import { formatDayForInput, getTimezoneName, subtractDays } from '../../dateUtils';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
@@ -59,6 +59,7 @@
   let team = $state({
     id: '',
     name: '',
+    subscribed: false,
   });
   let organization = $state({
     id: '',
@@ -196,6 +197,8 @@
   function handleCheckin(checkin: any) {
     const body = {
       ...checkin,
+      checkinDate: selectedDate,
+      timeZone: timezone,
     };
 
     xfetch(`${teamPrefix}/checkins`, { body })
@@ -362,6 +365,10 @@
     checkins && checkins.find((c: TeamCheckin) => c.user.id === $user.id) !== undefined,
   );
 
+  const teamCheckinLocked = $derived(
+    AppConfig.SubscriptionsEnabled && selectedDate !== formatDayForInput(now) && !team.subscribed,
+  );
+
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
@@ -420,7 +427,6 @@
             id="checkindate"
             bind:value={selectedDate}
             min={maxNegativeDate}
-            max={formatDayForInput(now)}
             onchange={getCheckins}
             class="bg-transparent text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white cursor-pointer"
           />
@@ -486,7 +492,7 @@
         additionalClasses="font-rajdhani uppercase text-2xl"
         onClick={toggleCheckin}
         testid="check-in"
-        disabled={selectedDate !== formatDayForInput(now) || alreadyCheckedIn}
+        disabled={alreadyCheckedIn || teamCheckinLocked}
         >{$LL.checkIn()}
       </SolidButton>
     </div>
@@ -765,6 +771,8 @@
         {xfetch}
         {notifications}
         {teamPrefix}
+        {selectedDate}
+        timeZone={timezone}
       />
     {:else}
       <Checkin
@@ -775,6 +783,8 @@
         {teamPrefix}
         {xfetch}
         {notifications}
+        {selectedDate}
+        timeZone={timezone}
       />
     {/if}
   {/if}

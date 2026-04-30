@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -27,11 +28,23 @@ type CheckinService struct {
 func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date string, timeZone string) ([]*thunderdome.TeamCheckin, error) {
 	checkins := make([]*thunderdome.TeamCheckin, 0)
 
+	location, err := time.LoadLocation(timeZone)
+	if err != nil {
+		return nil, fmt.Errorf("checkin list invalid timezone: %v", err)
+	}
+
+	targetDate, err := time.ParseInLocation("2006-01-02", date, location)
+	if err != nil {
+		return nil, fmt.Errorf("checkin list invalid date: %v", err)
+	}
+
+	nextDate := targetDate.AddDate(0, 0, 1)
+
 	rows, err := d.DB.QueryContext(ctx, `SELECT
  		tc.id, u.id, u.name, u.email, u.avatar, COALESCE(u.picture, ''),
  		COALESCE(tc.yesterday, ''), COALESCE(tc.today, ''),
  		COALESCE(tc.blockers, ''), coalesce(tc.discuss, ''),
- 		tc.goals_met, tc.created_date, tc.updated_date,
+		tc.goals_met, tc.checkin_date, tc.created_date, tc.updated_date,
  		COALESCE(
 			json_agg(tcc ORDER BY tcc.created_date) FILTER (WHERE tcc.id IS NOT NULL), '[]'
 		) AS comments
@@ -39,12 +52,13 @@ func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date st
 		LEFT JOIN thunderdome.users u ON tc.user_id = u.id
 		LEFT JOIN thunderdome.team_checkin_comment tcc ON tcc.checkin_id = tc.id
 		WHERE tc.team_id = $1
-		AND date(tc.created_date AT TIME ZONE $3) = $2
+		AND tc.checkin_date >= $2
+		AND tc.checkin_date < $3
 		GROUP BY tc.id, u.id;
 		`,
 		teamID,
-		date,
-		timeZone,
+		targetDate,
+		nextDate,
 	)
 
 	if err == nil {
@@ -66,6 +80,7 @@ func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date st
 				&checkin.Blockers,
 				&checkin.Discuss,
 				&checkin.GoalsMet,
+				&checkin.CheckinDate,
 				&checkin.CreatedDate,
 				&checkin.UpdatedDate,
 				&commentsVal,
@@ -90,20 +105,34 @@ func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date st
 	return checkins, err
 }
 
-// CheckinLastByUser gets the last checkin by a user
-func (d *CheckinService) CheckinLastByUser(ctx context.Context, teamID string, userID string) (*thunderdome.TeamCheckin, error) {
+// CheckinLastByUser gets the last checkin by a user before the requested date
+func (d *CheckinService) CheckinLastByUser(ctx context.Context, teamID string, userID string, date string, timeZone string) (*thunderdome.TeamCheckin, error) {
 	var checkin thunderdome.TeamCheckin
 
-	err := d.DB.QueryRowContext(ctx, `SELECT
- 		tc.id, COALESCE(tc.yesterday, ''), COALESCE(tc.today, ''),
- 		COALESCE(tc.blockers, ''), coalesce(tc.discuss, ''),
- 		tc.goals_met, tc.created_date, tc.updated_date
+	location, err := time.LoadLocation(timeZone)
+	if err != nil {
+		return nil, fmt.Errorf("checkin last by user invalid timezone: %v", err)
+	}
+
+	targetDate, err := time.ParseInLocation("2006-01-02", date, location)
+	if err != nil {
+		return nil, fmt.Errorf("checkin last by user invalid date: %v", err)
+	}
+
+	err = d.DB.QueryRowContext(ctx, `SELECT
+	 		tc.id, COALESCE(tc.yesterday, ''), COALESCE(tc.today, ''),
+	  		COALESCE(tc.blockers, ''), coalesce(tc.discuss, ''),
+			tc.goals_met, tc.checkin_date, tc.created_date, tc.updated_date
 		FROM thunderdome.team_checkin tc
-		WHERE tc.team_id = $1 AND tc.user_id = $2
-		ORDER BY tc.created_date DESC LIMIT 1;
+		WHERE tc.team_id = $1
+		AND tc.user_id = $2
+		AND tc.checkin_date < $3
+		ORDER BY tc.checkin_date DESC, tc.created_date DESC
+		LIMIT 1;
 		`,
 		teamID,
 		userID,
+		targetDate,
 	).Scan(
 		&checkin.ID,
 		&checkin.Yesterday,
@@ -111,6 +140,7 @@ func (d *CheckinService) CheckinLastByUser(ctx context.Context, teamID string, u
 		&checkin.Blockers,
 		&checkin.Discuss,
 		&checkin.GoalsMet,
+		&checkin.CheckinDate,
 		&checkin.CreatedDate,
 		&checkin.UpdatedDate)
 
@@ -127,6 +157,7 @@ func (d *CheckinService) CheckinLastByUser(ctx context.Context, teamID string, u
 func (d *CheckinService) CheckinCreate(
 	ctx context.Context,
 	teamID string, userID string,
+	checkinDate string, timeZone string,
 	yesterday string, today string, blockers string, discuss string,
 	goalsMet bool,
 ) error {
@@ -148,9 +179,12 @@ func (d *CheckinService) CheckinCreate(
 	sanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(blockers)
 	sanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(discuss)
 
-	if _, err := d.DB.Exec(`INSERT INTO thunderdome.team_checkin
-		(team_id, user_id, yesterday, today, blockers, discuss, goals_met)
-		VALUES ($1, $2, $3, $4, $5, $6, $7);
+	if _, err := d.DB.ExecContext(ctx, `INSERT INTO thunderdome.team_checkin
+		(team_id, user_id, yesterday, today, blockers, discuss, goals_met, checkin_date)
+		VALUES (
+			$1, $2, $3, $4, $5, $6, $7,
+			COALESCE((($8::date)::timestamp AT TIME ZONE $9), CURRENT_DATE)
+		);
 		`,
 		teamID,
 		userID,
@@ -159,6 +193,8 @@ func (d *CheckinService) CheckinCreate(
 		sanitizedBlockers,
 		sanitizedDiscuss,
 		goalsMet,
+		sql.NullString{String: checkinDate, Valid: checkinDate != ""},
+		timeZone,
 	); err != nil {
 		return fmt.Errorf("checkin create error: %v", err)
 	}

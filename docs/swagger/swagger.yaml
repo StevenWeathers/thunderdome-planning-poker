@@ -143,10 +143,14 @@ definitions:
     properties:
       blockers:
         type: string
+      checkinDate:
+        type: string
       discuss:
         type: string
       goalsMet:
         type: boolean
+      timeZone:
+        type: string
       today:
         type: string
       userId:
@@ -1822,6 +1826,8 @@ definitions:
   thunderdome.TeamCheckin:
     properties:
       blockers:
+        type: string
+      checkinDate:
         type: string
       comments:
         items:

@@ -14988,11 +14988,17 @@ const docTemplate = `{
                 "blockers": {
                     "type": "string"
                 },
+                "checkinDate": {
+                    "type": "string"
+                },
                 "discuss": {
                     "type": "string"
                 },
                 "goalsMet": {
                     "type": "boolean"
+                },
+                "timeZone": {
+                    "type": "string"
                 },
                 "today": {
                     "type": "string"
@@ -17496,6 +17502,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "blockers": {
+                    "type": "string"
+                },
+                "checkinDate": {
                     "type": "string"
                 },
                 "comments": {

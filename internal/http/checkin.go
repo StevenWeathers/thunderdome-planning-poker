@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/checkin"
@@ -85,12 +86,31 @@ func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, uidErr.Error()))
 			return
 		}
+		query := r.URL.Query()
+		date := query.Get("date")
+		tz := query.Get("tz")
 
-		checkin, err := s.CheckinDataSvc.CheckinLastByUser(ctx, teamID, userID)
+		if tz == "" {
+			tz = "America/New_York"
+		}
+
+		location, tzErr := time.LoadLocation(tz)
+		if tzErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tzErr.Error()))
+			return
+		}
+
+		if date == "" {
+			date = time.Now().In(location).Format("2006-01-02")
+		}
+
+		checkin, err := s.CheckinDataSvc.CheckinLastByUser(ctx, teamID, userID, date, tz)
 		if err != nil && err.Error() != "NO_LAST_CHECKIN" {
 			s.Logger.Ctx(ctx).Error("handleCheckinLastByUser error", zap.Error(err),
 				zap.String("team_id", teamID),
 				zap.String("user_id", userID),
+				zap.String("checkins_date", date),
+				zap.String("checkins_timezone", tz),
 				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -98,6 +118,8 @@ func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Warn("handleCheckinLastByUser NO_LAST_CHECKIN",
 				zap.String("team_id", teamID),
 				zap.String("user_id", userID),
+				zap.String("checkins_date", date),
+				zap.String("checkins_timezone", tz),
 				zap.String("session_user_id", sessionUserID))
 			s.Success(w, r, http.StatusNoContent, nil, nil)
 			return
@@ -108,12 +130,14 @@ func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
 }
 
 type checkinCreateRequestBody struct {
-	UserID    string `json:"userId" validate:"required,uuid"`
-	Yesterday string `json:"yesterday"`
-	Today     string `json:"today"`
-	Blockers  string `json:"blockers"`
-	Discuss   string `json:"discuss"`
-	GoalsMet  bool   `json:"goalsMet"`
+	UserID      string `json:"userId" validate:"required,uuid"`
+	CheckinDate string `json:"checkinDate"`
+	TimeZone    string `json:"timeZone"`
+	Yesterday   string `json:"yesterday"`
+	Today       string `json:"today"`
+	Blockers    string `json:"blockers"`
+	Discuss     string `json:"discuss"`
+	GoalsMet    bool   `json:"goalsMet"`
 }
 
 // handleCheckinCreate handles creating a team user checkin
@@ -158,6 +182,59 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
+
+		if c.CheckinDate != "" {
+			if _, err := time.Parse("2006-01-02", c.CheckinDate); err != nil {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+		}
+
+		if c.TimeZone == "" {
+			c.TimeZone = "America/New_York"
+		}
+
+		if _, err := time.LoadLocation(c.TimeZone); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		if s.Config.SubscriptionsEnabled {
+			userType := ctx.Value(contextKeyUserType).(string)
+			if userType != thunderdome.AdminUserType {
+				location, _ := time.LoadLocation(c.TimeZone)
+				todayInLocation := time.Now().In(location).Format("2006-01-02")
+				targetDate := c.CheckinDate
+				if targetDate == "" {
+					targetDate = todayInLocation
+				}
+
+				if targetDate > todayInLocation {
+					orgID := r.PathValue("orgId")
+					if orgID != "" {
+						orgSubscribed, orgErr := s.OrganizationDataSvc.OrganizationIsSubscribed(ctx, orgID)
+						teamSubscribed, teamErr := s.TeamDataSvc.TeamIsSubscribed(ctx, teamID)
+						if (orgErr != nil || !orgSubscribed) && (teamErr != nil || !teamSubscribed) {
+							s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_OR_TEAM_SUBSCRIPTION_REQUIRED"))
+							return
+						}
+					} else {
+						subscribed, err := s.TeamDataSvc.TeamIsSubscribed(ctx, teamID)
+						if err != nil || !subscribed {
+							s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "TEAM_SUBSCRIPTION_REQUIRED"))
+							return
+						}
+					}
+				}
+			}
+		}
+
+		normalizedBody, marshalErr := json.Marshal(c)
+		if marshalErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, marshalErr.Error()))
+			return
+		}
+		body = normalizedBody
 
 		_, err := tc.APIEvent(ctx, teamID, c.UserID, "checkin_create", string(body))
 		if err != nil {

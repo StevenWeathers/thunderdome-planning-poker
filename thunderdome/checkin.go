@@ -8,6 +8,7 @@ type TeamCheckin struct {
 	Blockers    string            `json:"blockers"`
 	Discuss     string            `json:"discuss"`
 	GoalsMet    bool              `json:"goalsMet"`
+	CheckinDate string            `json:"checkinDate"`
 	CreatedDate string            `json:"createdDate"`
 	UpdatedDate string            `json:"updatedDate"`
 	Comments    []*CheckinComment `json:"comments"`
