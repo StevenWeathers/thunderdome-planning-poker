@@ -46,7 +46,8 @@ func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date st
 		LEFT JOIN thunderdome.team_checkin_comment tcc ON tcc.checkin_id = tc.id
 		WHERE tc.team_id = $1
 		AND tc.checkin_date = $2
-		GROUP BY tc.id, u.id;
+		GROUP BY tc.id, u.id
+		ORDER BY tc.created_date ASC;
 		`,
 		teamID,
 		targetDate,

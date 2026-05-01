@@ -79,6 +79,28 @@ func (s *Service) CheckinDelete(ctx context.Context, teamID string, userID strin
 	return nil, msg, nil, false
 }
 
+// KudoCreate creates a team kudo.
+func (s *Service) KudoCreate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+	var c struct {
+		TargetUserID string `json:"targetUserId"`
+		KudosDate    string `json:"kudosDate"`
+		Comment      string `json:"comment"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &c)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	kudo, err := s.CheckinService.KudoCreate(ctx, teamID, userID, c.TargetUserID, c.KudosDate, c.Comment)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	msg := wshub.CreateSocketEvent("kudo_added", "", "")
+
+	return kudo, msg, nil, false
+}
+
 // CommentCreate creates a checkin comment
 func (s *Service) CommentCreate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
@@ -139,6 +161,49 @@ func (s *Service) CommentDelete(ctx context.Context, teamID string, userID strin
 	}
 
 	msg := wshub.CreateSocketEvent("comment_deleted", "", "")
+
+	return nil, msg, nil, false
+}
+
+// KudoUpdate updates a team kudo.
+func (s *Service) KudoUpdate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+	var c struct {
+		KudoID       string `json:"kudoId"`
+		TargetUserID string `json:"targetUserId"`
+		KudosDate    string `json:"kudosDate"`
+		Comment      string `json:"comment"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &c)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	kudo, err := s.CheckinService.KudoUpdate(ctx, teamID, c.KudoID, c.TargetUserID, c.KudosDate, c.Comment)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	msg := wshub.CreateSocketEvent("kudo_updated", "", "")
+
+	return kudo, msg, nil, false
+}
+
+// KudoDelete deletes a team kudo.
+func (s *Service) KudoDelete(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+	var c struct {
+		KudoID string `json:"kudoId"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &c)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	err = s.CheckinService.KudoDelete(ctx, teamID, c.KudoID)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	msg := wshub.CreateSocketEvent("kudo_deleted", "", "")
 
 	return nil, msg, nil, false
 }

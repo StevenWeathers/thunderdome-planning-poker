@@ -5,8 +5,9 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import Checkin from '../../components/checkin/Checkin.svelte';
+  import KudosModal from '../../components/checkin/KudosModal.svelte';
   import TeamCheckinCard from '../../components/checkin/TeamCheckinCard.svelte';
-  import { Calendar, ChevronRight } from '@lucide/svelte';
+  import { Calendar, ChevronRight, Gift } from '@lucide/svelte';
   import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
@@ -23,6 +24,17 @@
   // Local type override - the API returns user as a single object, not an array
   interface TeamCheckin extends Omit<BaseTeamCheckin, 'user'> {
     user: TeamUser;
+  }
+
+  interface TeamKudo {
+    id: string;
+    teamId: string;
+    user: TeamUser;
+    targetUser: TeamUser;
+    comment: string;
+    kudosDate: string;
+    createdDate: string;
+    updatedDate: string;
   }
 
   interface GaugeDetailItem {
@@ -49,6 +61,7 @@
   // State variables using $state()
   let timezone = $state(getTimezoneName());
   let showCheckin = $state(false);
+  let showKudos = $state(false);
   let now = $state(new Date());
   let maxNegativeDate = $state<string>('');
   let selectedDate = $state<string>('');
@@ -95,6 +108,7 @@
   let teamRole = $state('');
 
   let checkins = $state<TeamCheckin[]>([]);
+  let kudos = $state<TeamKudo[]>([]);
   let checkinColumns = $state<Array<{ checkins: TeamCheckin[] }>>([]);
   let expandedCheckins = $state<Record<string, boolean>>({});
   let showOnlyDiscussionItems = $state(false);
@@ -103,9 +117,14 @@
 
   let ws: any;
 
+  function refreshDailyData(): void {
+    getCheckins();
+    getKudos();
+  }
+
   function updateTimezone(tz: string): void {
     timezone = tz;
-    getCheckins();
+    refreshDailyData();
   }
 
   function openCheckinDatePicker(): void {
@@ -167,6 +186,10 @@
   function toggleDiscussionFilter(): void {
     showOnlyDiscussionItems = !showOnlyDiscussionItems;
     filterCheckins();
+  }
+
+  function toggleKudos(): void {
+    showKudos = !showKudos;
   }
 
   function hasDiscussionItems(checkin: TeamCheckin): boolean {
@@ -287,6 +310,17 @@
       });
   }
 
+  function getKudos() {
+    xfetch(`${teamPrefix}/checkins/kudos?date=${selectedDate}&tz=${timezone}`)
+      .then((res: Response) => res.json())
+      .then(function (result: any) {
+        kudos = result.data;
+      })
+      .catch(function () {
+        notifications.danger($LL.getCheckinsError());
+      });
+  }
+
   function getUsers() {
     xfetch(`${teamPrefix}/users?limit=1000&offset=0`)
       .then((res: Response) => res.json())
@@ -367,6 +401,68 @@
       });
   }
 
+  async function handleKudoCreate(kudo: { targetUserId: string; comment: string }): Promise<boolean> {
+    try {
+      const response = await xfetch(`${teamPrefix}/checkins/kudos`, {
+        body: {
+          ...kudo,
+          kudosDate: selectedDate,
+          timeZone: timezone,
+        },
+      });
+      await response.json();
+      getKudos();
+      return true;
+    } catch (error: any) {
+      if (Array.isArray(error)) {
+        error[1].json().then(function (result: any) {
+          if (result.error === 'KUDO_ALREADY_EXISTS') {
+            notifications.danger('A kudo for that teammate already exists for this day.');
+          } else if (result.error === 'TEAM_SUBSCRIPTION_REQUIRED') {
+            notifications.danger('Kudos require an active team subscription.');
+          } else if (result.error === 'REQUIRES_TEAM_USER') {
+            notifications.danger($LL.teamUserRequiredToCheckin());
+          } else {
+            notifications.danger('Unable to save kudos.');
+          }
+        });
+      } else {
+        notifications.danger('Unable to save kudos.');
+      }
+
+      return false;
+    }
+  }
+
+  function handleKudoUpdate(kudoId: string, kudo: { comment: string }) {
+    xfetch(`${teamPrefix}/checkins/kudos/${kudoId}`, {
+      body: {
+        ...kudo,
+        kudosDate: selectedDate,
+        timeZone: timezone,
+      },
+      method: 'PUT',
+    })
+      .then((res: Response) => res.json())
+      .then(function () {
+        getKudos();
+      })
+      .catch(function () {
+        notifications.danger($LL.updateCheckinError());
+      });
+  }
+
+  function handleKudoDelete(kudoId: string) {
+    xfetch(`${teamPrefix}/checkins/kudos/${kudoId}`, { method: 'DELETE' })
+      .then((res: Response) => res.json())
+      .then(function () {
+        getKudos();
+      })
+      .catch(function () {
+        notifications.danger($LL.deleteCheckinError());
+      });
+  }
+
   function handleCheckinComment(checkinId: string, comment: any) {
     const body = {
       ...comment,
@@ -437,6 +533,11 @@
       case 'comment_deleted':
         getCheckins();
         break;
+      case 'kudo_added':
+      case 'kudo_updated':
+      case 'kudo_deleted':
+        getKudos();
+        break;
       default:
         break;
     }
@@ -500,6 +601,17 @@
   const blockedGaugeDetails = $derived(
     buildGaugeDetails(users, uniqueCheckinsByUser, checkin => (checkin?.blockers || '') !== ''),
   );
+  const kudosCount = $derived(kudos.length);
+  const kudosModalProps: any = $derived({
+    kudos,
+    toggleKudos,
+    currentUserId: $user.id,
+    isAdmin,
+    users,
+    onCreate: handleKudoCreate,
+    onUpdate: handleKudoUpdate,
+    onDelete: handleKudoDelete,
+  });
   let participationGaugeProps: any = $derived({
     text: $LL.participation(),
     percentage: stats.pPerc,
@@ -535,6 +647,7 @@
 
     getTeam();
     getUsers();
+    refreshDailyData();
 
     ws = new Sockette(`${getWebsocketAddress()}/api/teams/${teamId}/checkin`, {
       timeout: 2e3,
@@ -629,7 +742,7 @@
             id="checkindate"
             bind:value={selectedDate}
             min={maxNegativeDate}
-            onchange={getCheckins}
+            onchange={refreshDailyData}
             class="pointer-events-none absolute inset-0 h-full w-full cursor-pointer opacity-0"
             tabindex="-1"
             aria-hidden="true"
@@ -646,7 +759,7 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 my-4">
+  <div class="my-4 grid grid-cols-2 gap-8 lg:grid-cols-3">
     <div class="px-2 md:px-4">
       <Gauge {...participationGaugeProps} />
     </div>
@@ -659,47 +772,46 @@
   </div>
 
   <div
-    class="mt-8 mb-5 flex justify-end rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800/90 sm:px-4"
+    class="mt-8 mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800/90 sm:px-4"
   >
+    {#if (AppConfig.SubscriptionsEnabled && team.subscribed) || !AppConfig.SubscriptionsEnabled}
+      <button
+        type="button"
+        class="inline-flex items-center gap-2 rounded-full border border-indigo-300 bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 transition-colors hover:border-indigo-400 hover:bg-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:border-indigo-400/50 dark:bg-indigo-500/20 dark:text-indigo-200 dark:hover:border-indigo-300/60 dark:hover:bg-indigo-500/30 dark:focus-visible:ring-indigo-400 dark:focus-visible:ring-offset-gray-800"
+        onclick={toggleKudos}
+        aria-haspopup="dialog"
+        aria-expanded={showKudos}
+      >
+        <Gift class="h-4 w-4 text-indigo-500 dark:text-indigo-200" />
+        <span>Kudos</span>
+        <span
+          class="rounded-full bg-white/90 px-2 py-0.5 text-xs font-bold text-indigo-600 ring-1 ring-indigo-200 dark:bg-indigo-400/15 dark:text-indigo-200 dark:ring-indigo-300/35"
+        >
+          {kudosCount}
+        </span>
+      </button>
+    {/if}
+
     <button
       type="button"
-      class={`group inline-flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors duration-200 sm:w-auto sm:min-w-[21rem] ${
+      class={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:ml-auto dark:focus-visible:ring-offset-gray-800 ${
         showOnlyDiscussionItems
-          ? 'border-emerald-200 bg-emerald-50/80 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-100'
-          : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 dark:border-gray-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:border-gray-500'
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-900 hover:border-emerald-300 hover:bg-emerald-100 focus-visible:ring-emerald-400 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-100 dark:hover:border-emerald-400/40 dark:hover:bg-emerald-500/20'
+          : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-slate-100 focus-visible:ring-slate-400 dark:border-gray-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:border-gray-500 dark:hover:bg-gray-700/80'
       }`}
-      role="switch"
-      aria-checked={showOnlyDiscussionItems}
+      aria-pressed={showOnlyDiscussionItems}
       aria-label={$LL.showBlockedCheckins()}
       onclick={toggleDiscussionFilter}
     >
-      <div class="min-w-0 flex-1">
-        <div class="truncate text-sm font-semibold">
-          {$LL.showBlockedCheckins()}
-        </div>
-      </div>
-
+      <span>{$LL.showBlockedCheckins()}</span>
       <span
-        class={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold leading-none ring-1 ${
+        class={`rounded-full px-2 py-0.5 text-xs font-bold ring-1 ${
           showOnlyDiscussionItems
-            ? 'bg-emerald-100 text-emerald-800 ring-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-200 dark:ring-emerald-500/30'
+            ? 'bg-emerald-100 text-emerald-800 ring-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/30'
             : 'bg-slate-200 text-slate-700 ring-slate-300 dark:bg-gray-700 dark:text-slate-200 dark:ring-gray-600'
         }`}
       >
         {discussionCheckinCount}
-      </span>
-
-      <span
-        class={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full p-1 transition-colors duration-200 ${
-          showOnlyDiscussionItems
-            ? 'bg-emerald-500 dark:bg-emerald-400'
-            : 'bg-slate-300 group-hover:bg-slate-400 dark:bg-gray-600 dark:group-hover:bg-gray-500'
-        }`}
-        aria-hidden="true"
-      >
-        <span
-          class={`h-5 w-5 rounded-full bg-white shadow-sm transition duration-200 ${showOnlyDiscussionItems ? 'translate-x-5' : 'translate-x-0'}`}
-        ></span>
       </span>
     </button>
   </div>
@@ -758,6 +870,10 @@
         timeZone={timezone}
       />
     {/if}
+  {/if}
+
+  {#if showKudos}
+    <KudosModal {...kudosModalProps} />
   {/if}
 </PageLayout>
 
