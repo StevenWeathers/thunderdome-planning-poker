@@ -24,7 +24,7 @@ func (s *Service) CheckinCreate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = s.CheckinService.CheckinCreate(context.Background(), teamID, c.UserID, c.CheckinDate, c.TimeZone, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+	err = s.CheckinService.CheckinCreate(context.Background(), teamID, c.UserID, c.CheckinDate, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 	if err != nil {
 		return nil, nil, err, false
 	}

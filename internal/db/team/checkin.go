@@ -25,20 +25,13 @@ type CheckinService struct {
 }
 
 // CheckinList gets a list of team checkins by day
-func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date string, timeZone string) ([]*thunderdome.TeamCheckin, error) {
+func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date string) ([]*thunderdome.TeamCheckin, error) {
 	checkins := make([]*thunderdome.TeamCheckin, 0)
 
-	location, err := time.LoadLocation(timeZone)
-	if err != nil {
-		return nil, fmt.Errorf("checkin list invalid timezone: %v", err)
-	}
-
-	targetDate, err := time.ParseInLocation("2006-01-02", date, location)
+	targetDate, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return nil, fmt.Errorf("checkin list invalid date: %v", err)
 	}
-
-	nextDate := targetDate.AddDate(0, 0, 1)
 
 	rows, err := d.DB.QueryContext(ctx, `SELECT
  		tc.id, u.id, u.name, u.email, u.avatar, COALESCE(u.picture, ''),
@@ -52,13 +45,11 @@ func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date st
 		LEFT JOIN thunderdome.users u ON tc.user_id = u.id
 		LEFT JOIN thunderdome.team_checkin_comment tcc ON tcc.checkin_id = tc.id
 		WHERE tc.team_id = $1
-		AND tc.checkin_date >= $2
-		AND tc.checkin_date < $3
+		AND tc.checkin_date = $2
 		GROUP BY tc.id, u.id;
 		`,
 		teamID,
 		targetDate,
-		nextDate,
 	)
 
 	if err == nil {
@@ -106,15 +97,10 @@ func (d *CheckinService) CheckinList(ctx context.Context, teamID string, date st
 }
 
 // CheckinLastByUser gets the last checkin by a user before the requested date
-func (d *CheckinService) CheckinLastByUser(ctx context.Context, teamID string, userID string, date string, timeZone string) (*thunderdome.TeamCheckin, error) {
+func (d *CheckinService) CheckinLastByUser(ctx context.Context, teamID string, userID string, date string) (*thunderdome.TeamCheckin, error) {
 	var checkin thunderdome.TeamCheckin
 
-	location, err := time.LoadLocation(timeZone)
-	if err != nil {
-		return nil, fmt.Errorf("checkin last by user invalid timezone: %v", err)
-	}
-
-	targetDate, err := time.ParseInLocation("2006-01-02", date, location)
+	targetDate, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return nil, fmt.Errorf("checkin last by user invalid date: %v", err)
 	}
@@ -157,7 +143,7 @@ func (d *CheckinService) CheckinLastByUser(ctx context.Context, teamID string, u
 func (d *CheckinService) CheckinCreate(
 	ctx context.Context,
 	teamID string, userID string,
-	checkinDate string, timeZone string,
+	checkinDate string,
 	yesterday string, today string, blockers string, discuss string,
 	goalsMet bool,
 ) error {
@@ -183,7 +169,7 @@ func (d *CheckinService) CheckinCreate(
 		(team_id, user_id, yesterday, today, blockers, discuss, goals_met, checkin_date)
 		VALUES (
 			$1, $2, $3, $4, $5, $6, $7,
-			COALESCE((($8::date)::timestamp AT TIME ZONE $9), CURRENT_DATE)
+			COALESCE($8::date, CURRENT_DATE)
 		);
 		`,
 		teamID,
@@ -194,7 +180,6 @@ func (d *CheckinService) CheckinCreate(
 		sanitizedDiscuss,
 		goalsMet,
 		sql.NullString{String: checkinDate, Valid: checkinDate != ""},
-		timeZone,
 	); err != nil {
 		return fmt.Errorf("checkin create error: %v", err)
 	}
