@@ -38,15 +38,21 @@ func (s *Service) handleCheckinsGet() http.HandlerFunc {
 		date := query.Get("date")
 		tz := query.Get("tz")
 
-		if date == "" {
-			date = time.Now().Format("2006-01-02")
-		}
-
 		if tz == "" {
 			tz = "America/New_York"
 		}
 
-		checkins, err := s.CheckinDataSvc.CheckinList(ctx, teamID, date, tz)
+		location, tzErr := time.LoadLocation(tz)
+		if tzErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, tzErr.Error()))
+			return
+		}
+
+		if date == "" {
+			date = time.Now().In(location).Format("2006-01-02")
+		}
+
+		checkins, err := s.CheckinDataSvc.CheckinList(ctx, teamID, date)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleCheckinsGet error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("checkins_date", date), zap.String("checkins_timezone", tz),
@@ -104,7 +110,7 @@ func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
 			date = time.Now().In(location).Format("2006-01-02")
 		}
 
-		checkin, err := s.CheckinDataSvc.CheckinLastByUser(ctx, teamID, userID, date, tz)
+		checkin, err := s.CheckinDataSvc.CheckinLastByUser(ctx, teamID, userID, date)
 		if err != nil && err.Error() != "NO_LAST_CHECKIN" {
 			s.Logger.Ctx(ctx).Error("handleCheckinLastByUser error", zap.Error(err),
 				zap.String("team_id", teamID),
@@ -199,15 +205,17 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
+		if c.CheckinDate == "" {
+			location, _ := time.LoadLocation(c.TimeZone)
+			c.CheckinDate = time.Now().In(location).Format("2006-01-02")
+		}
+
 		if s.Config.SubscriptionsEnabled {
 			userType := ctx.Value(contextKeyUserType).(string)
 			if userType != thunderdome.AdminUserType {
 				location, _ := time.LoadLocation(c.TimeZone)
 				todayInLocation := time.Now().In(location).Format("2006-01-02")
 				targetDate := c.CheckinDate
-				if targetDate == "" {
-					targetDate = todayInLocation
-				}
 
 				if targetDate > todayInLocation {
 					orgID := r.PathValue("orgId")

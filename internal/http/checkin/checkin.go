@@ -27,14 +27,14 @@ type Config struct {
 }
 
 type CheckinDataSvc interface {
-	CheckinList(ctx context.Context, teamID string, date string, timeZone string) ([]*thunderdome.TeamCheckin, error)
-	CheckinCreate(ctx context.Context, teamID string, userID string, checkinDate string, timeZone string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
+	CheckinList(ctx context.Context, teamID string, date string) ([]*thunderdome.TeamCheckin, error)
+	CheckinCreate(ctx context.Context, teamID string, userID string, checkinDate string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
 	CheckinUpdate(ctx context.Context, checkinID string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
 	CheckinDelete(ctx context.Context, checkinID string) error
 	CheckinComment(ctx context.Context, teamID string, checkinID string, userID string, comment string) error
 	CheckinCommentEdit(ctx context.Context, teamID string, userID string, commentID string, comment string) error
 	CheckinCommentDelete(ctx context.Context, commentID string) error
-	CheckinLastByUser(ctx context.Context, teamID string, userID string, date string, timeZone string) (*thunderdome.TeamCheckin, error)
+	CheckinLastByUser(ctx context.Context, teamID string, userID string, date string) (*thunderdome.TeamCheckin, error)
 }
 
 type AuthDataSvc interface {
