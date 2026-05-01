@@ -7,7 +7,39 @@ export const getTimezoneName = function () {
   return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York'; // add fallback for users whose timezone is undefined
 };
 
-export const formatDayForInput = function (date) {
+type DatePartsForInput = {
+  year: string;
+  month: string;
+  day: string;
+};
+
+const getDatePartsForTimezone = (date: Date, timeZone: string): DatePartsForInput => {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+
+  return formatter.formatToParts(date).reduce(
+    (parts, part) => {
+      if (part.type === 'year' || part.type === 'month' || part.type === 'day') {
+        parts[part.type] = part.value;
+      }
+
+      return parts;
+    },
+    { year: '', month: '', day: '' },
+  );
+};
+
+export const formatDayForInput = function (date: Date, timeZone?: string): string {
+  if (timeZone) {
+    const { year, month, day } = getDatePartsForTimezone(date, timeZone);
+
+    return [year, month, day].join('-');
+  }
+
   let month, day, year;
   ((month = '' + (date.getMonth() + 1)), (day = '' + date.getDate()), (year = date.getFullYear()));
 
