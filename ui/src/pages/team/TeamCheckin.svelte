@@ -122,8 +122,22 @@
     getKudos();
   }
 
+  function syncDateBounds(referenceDate: Date, targetTimezone: string, resetSelectedDate = false): void {
+    now = referenceDate;
+    maxNegativeDate = formatDayForInput(subtractDays(referenceDate, 60), targetTimezone);
+
+    if (resetSelectedDate) {
+      selectedDate = formatDayForInput(referenceDate, targetTimezone);
+    }
+  }
+
   function updateTimezone(tz: string): void {
+    const referenceDate = new Date();
+    const previousCurrentDate = formatDayForInput(referenceDate, timezone);
+    const shouldFollowCurrentDate = selectedDate === '' || selectedDate === previousCurrentDate;
+
     timezone = tz;
+    syncDateBounds(referenceDate, timezone, shouldFollowCurrentDate);
     refreshDailyData();
   }
 
@@ -587,7 +601,7 @@
   );
 
   const teamCheckinLocked = $derived(
-    AppConfig.SubscriptionsEnabled && selectedDate !== formatDayForInput(now) && !team.subscribed,
+    AppConfig.SubscriptionsEnabled && selectedDate !== formatDayForInput(now, timezone) && !team.subscribed,
   );
 
   const discussionCheckinCount = $derived(checkins.filter(checkin => hasDiscussionItems(checkin)).length);
@@ -642,8 +656,7 @@
       return;
     }
 
-    selectedDate = formatDayForInput(now);
-    maxNegativeDate = formatDayForInput(subtractDays(now, 60));
+    syncDateBounds(new Date(), timezone, true);
 
     getTeam();
     getUsers();
