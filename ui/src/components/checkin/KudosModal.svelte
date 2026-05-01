@@ -133,17 +133,15 @@
         <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Appreciation shared in today&apos;s check-in.</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        {#if availableKudoUsers.length > 0}
-          <HollowButton
-            color="green"
-            size="medium"
-            class="inline-flex items-center gap-2 whitespace-nowrap"
-            onClick={() => (showCreateForm = !showCreateForm)}
-          >
-            <Plus class="h-4 w-4 shrink-0" />
-            <span class="whitespace-nowrap">Give Kudos</span>
-          </HollowButton>
-        {/if}
+        <HollowButton
+          color="green"
+          size="medium"
+          class="inline-flex items-center gap-2 whitespace-nowrap"
+          onClick={() => (showCreateForm = !showCreateForm)}
+        >
+          <Plus class="h-4 w-4 shrink-0" />
+          <span class="whitespace-nowrap">Give Kudos</span>
+        </HollowButton>
       </div>
     </div>
 
