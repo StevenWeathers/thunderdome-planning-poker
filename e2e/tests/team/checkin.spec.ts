@@ -41,7 +41,9 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
         teamPage.page.locator("a", { hasText: testOrgName }),
       ).toBeVisible();
       await expect(
-        teamPage.page.locator("a", { hasText: testTeamName }),
+        teamPage.page.locator(
+          `a[href="/organization/${org.id}/team/${team.id}"]`,
+        ),
       ).toBeVisible();
       await expect(teamPage.page.locator("h1")).toHaveText("Check In");
     });
@@ -70,7 +72,9 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
         teamPage.page.locator("a", { hasText: testDepartmentName }),
       ).toBeVisible();
       await expect(
-        teamPage.page.locator("a", { hasText: testTeamName }),
+        teamPage.page.locator(
+          `a[href="/organization/${org.id}/department/${dept.id}/team/${team.id}"]`,
+        ),
       ).toBeVisible();
       await expect(teamPage.page.locator("h1")).toHaveText("Check In");
     });
@@ -112,6 +116,9 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
       ).not.toBeVisible();
 
       // edit checkin - @TODO separate this into its own test
+      await teamPage.page
+        .locator('[data-testid="checkin-actions-menu"]')
+        .click();
       await teamPage.page.locator('[data-testid="checkin-edit"]').click();
       await teamPage.page
         .locator("#blockers >> p")
@@ -127,6 +134,9 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
       ).toHaveText("Whats next?");
 
       // delete checkin - @TODO separate this into its own test
+      await teamPage.page
+        .locator('[data-testid="checkin-actions-menu"]')
+        .click();
       await teamPage.page.locator('[data-testid="checkin-delete"]').click();
       await expect(
         teamPage.page.locator('[data-testid="check-in"]'),

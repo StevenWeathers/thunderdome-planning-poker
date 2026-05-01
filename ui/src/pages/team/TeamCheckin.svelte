@@ -5,18 +5,15 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import Checkin from '../../components/checkin/Checkin.svelte';
-  import { ChevronRight, Pencil, Trash2 } from '@lucide/svelte';
-  import Comments from '../../components/checkin/Comments.svelte';
+  import TeamCheckinCard from '../../components/checkin/TeamCheckinCard.svelte';
+  import { Calendar, ChevronRight } from '@lucide/svelte';
   import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
   import { formatDayForInput, getTimezoneName, subtractDays } from '../../dateUtils';
-  import UserAvatar from '../../components/user/UserAvatar.svelte';
-  import BlockedPing from '../../components/checkin/BlockedPing.svelte';
   import Picker from '../../components/timezone-picker/Picker.svelte';
-  import Toggle from '../../components/forms/Toggle.svelte';
   import { getWebsocketAddress } from '../../websocketUtil';
   import type { TeamUser, TeamCheckin as BaseTeamCheckin } from '../../types/team';
   import type { UserDisplay } from '../../types/user';
@@ -26,6 +23,15 @@
   // Local type override - the API returns user as a single object, not an array
   interface TeamCheckin extends Omit<BaseTeamCheckin, 'user'> {
     user: TeamUser;
+  }
+
+  interface GaugeDetailItem {
+    id: string;
+    name: string;
+    avatar?: string;
+    gravatarHash?: string;
+    pictureUrl?: string;
+    met: boolean;
   }
 
   interface Props {
@@ -90,14 +96,52 @@
 
   let checkins = $state<TeamCheckin[]>([]);
   let checkinColumns = $state<Array<{ checkins: TeamCheckin[] }>>([]);
+  let expandedCheckins = $state<Record<string, boolean>>({});
   let showOnlyDiscussionItems = $state(false);
   let userMap: Map<string, UserDisplay> = $state(new Map());
+  let checkinDateInput: HTMLInputElement | null = $state(null);
 
   let ws: any;
 
   function updateTimezone(tz: string): void {
     timezone = tz;
     getCheckins();
+  }
+
+  function openCheckinDatePicker(): void {
+    const input = checkinDateInput;
+
+    if (!input) {
+      return;
+    }
+
+    const pickerInput = input as HTMLInputElement & { showPicker?: () => void };
+
+    if (pickerInput.showPicker) {
+      pickerInput.showPicker();
+      return;
+    }
+
+    input.focus();
+    input.click();
+  }
+
+  function formatCheckinDateLabel(dateValue: string): string {
+    if (!dateValue) {
+      return '';
+    }
+
+    const [year, month, day] = dateValue.split('-').map(Number);
+
+    if (!year || !month || !day) {
+      return dateValue;
+    }
+
+    return new Intl.DateTimeFormat(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(new Date(year, month - 1, day));
   }
 
   function divideCheckins(checkins: TeamCheckin[]): void {
@@ -118,6 +162,85 @@
     }
 
     divideCheckins(filteredCheckins);
+  }
+
+  function toggleDiscussionFilter(): void {
+    showOnlyDiscussionItems = !showOnlyDiscussionItems;
+    filterCheckins();
+  }
+
+  function hasDiscussionItems(checkin: TeamCheckin): boolean {
+    return checkin.blockers !== '' || checkin.discuss !== '';
+  }
+
+  function syncExpandedCheckins(nextCheckins: TeamCheckin[]): Record<string, boolean> {
+    const previousDiscussionState = new Map(checkins.map(checkin => [checkin.id, hasDiscussionItems(checkin)]));
+
+    return nextCheckins.reduce((nextExpandedCheckins: Record<string, boolean>, checkin: TeamCheckin) => {
+      const previousExpanded = expandedCheckins[checkin.id];
+
+      if (previousExpanded === undefined) {
+        return nextExpandedCheckins;
+      }
+
+      const previousHadDiscussion = previousDiscussionState.get(checkin.id);
+      const nextHasDiscussion = hasDiscussionItems(checkin);
+
+      if (previousHadDiscussion !== nextHasDiscussion) {
+        return nextExpandedCheckins;
+      }
+
+      nextExpandedCheckins[checkin.id] = previousExpanded;
+      return nextExpandedCheckins;
+    }, {});
+  }
+
+  function isCheckinExpanded(checkin: TeamCheckin): boolean {
+    return expandedCheckins[checkin.id] ?? !hasDiscussionItems(checkin);
+  }
+
+  function toggleCheckinSummary(checkin: TeamCheckin): void {
+    expandedCheckins = {
+      ...expandedCheckins,
+      [checkin.id]: !isCheckinExpanded(checkin),
+    };
+  }
+
+  function getUniqueCheckinsByUser(sourceCheckins: TeamCheckin[]): Map<string, TeamCheckin> {
+    return sourceCheckins.reduce((entries: Map<string, TeamCheckin>, checkin: TeamCheckin) => {
+      if (!entries.has(checkin.user.id)) {
+        entries.set(checkin.user.id, checkin);
+      }
+
+      return entries;
+    }, new Map<string, TeamCheckin>());
+  }
+
+  function buildGaugeDetails(
+    teamUsers: TeamUser[],
+    uniqueCheckins: Map<string, TeamCheckin>,
+    matcher: (checkin: TeamCheckin | undefined) => boolean,
+  ): GaugeDetailItem[] {
+    return [...teamUsers]
+      .map((teamUser: TeamUser) => {
+        const checkin = uniqueCheckins.get(teamUser.id);
+
+        return {
+          id: teamUser.id,
+          name: teamUser.name,
+          avatar: teamUser.avatar,
+          gravatarHash: teamUser.gravatarHash,
+          pictureUrl: teamUser.pictureUrl || '',
+          met: matcher(checkin),
+        };
+      })
+      .sort((left: GaugeDetailItem, right: GaugeDetailItem) => {
+        if (left.met !== right.met) {
+          return left.met ? -1 : 1;
+        }
+
+        return left.name.localeCompare(right.name);
+      });
   }
 
   // Derived values using $derived()
@@ -154,6 +277,7 @@
     xfetch(`${teamPrefix}/checkins?date=${selectedDate}&tz=${timezone}`)
       .then((res: Response) => res.json())
       .then(function (result: any) {
+        expandedCheckins = syncExpandedCheckins(result.data);
         checkins = result.data;
         calculateCheckinStats();
         filterCheckins();
@@ -328,24 +452,20 @@
   };
 
   function calculateCheckinStats() {
-    const ucs: string[] = [];
+    const uniqueCheckins = getUniqueCheckinsByUser(checkins);
+
     stats.blocked = 0;
     stats.goals = 0;
 
-    checkins.map((c: TeamCheckin) => {
-      // @todo - remove once multiple same day checkins are prevented
-      if (!ucs.includes(c.user.id)) {
-        ucs.push(c.user.id);
-
-        if (c.blockers !== '') {
-          ++stats.blocked;
-        }
-        if (c.goalsMet) {
-          ++stats.goals;
-        }
+    uniqueCheckins.forEach((checkin: TeamCheckin) => {
+      if (checkin.blockers !== '') {
+        ++stats.blocked;
+      }
+      if (checkin.goalsMet) {
+        ++stats.goals;
       }
     });
-    stats.participants = ucs.length;
+    stats.participants = uniqueCheckins.size;
 
     stats.pPerc = Math.round((100 * stats.participants) / (userCount || 1));
     stats.gPerc = Math.round((100 * stats.goals) / (stats.participants || 1));
@@ -368,6 +488,41 @@
   const teamCheckinLocked = $derived(
     AppConfig.SubscriptionsEnabled && selectedDate !== formatDayForInput(now) && !team.subscribed,
   );
+
+  const discussionCheckinCount = $derived(checkins.filter(checkin => hasDiscussionItems(checkin)).length);
+  const uniqueCheckinsByUser = $derived(getUniqueCheckinsByUser(checkins));
+  const participationGaugeDetails = $derived(
+    buildGaugeDetails(users, uniqueCheckinsByUser, checkin => checkin !== undefined),
+  );
+  const goalsGaugeDetails = $derived(
+    buildGaugeDetails(users, uniqueCheckinsByUser, checkin => checkin?.goalsMet === true),
+  );
+  const blockedGaugeDetails = $derived(
+    buildGaugeDetails(users, uniqueCheckinsByUser, checkin => (checkin?.blockers || '') !== ''),
+  );
+  let participationGaugeProps: any = $derived({
+    text: $LL.participation(),
+    percentage: stats.pPerc,
+    stat: stats.pPerc,
+    count: `${stats.participants} / ${userCount}`,
+    details: participationGaugeDetails,
+  });
+  let goalsGaugeProps: any = $derived({
+    text: $LL.goalsMet(),
+    percentage: stats.gPerc,
+    color: 'green',
+    stat: stats.gPerc,
+    count: `${stats.goals} / ${stats.participants}`,
+    details: goalsGaugeDetails,
+  });
+  let blockedGaugeProps: any = $derived({
+    text: $LL.blocked(),
+    percentage: stats.bPerc,
+    color: 'red',
+    stat: stats.bPerc,
+    count: `${stats.blocked} / ${stats.participants}`,
+    details: blockedGaugeDetails,
+  });
 
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
@@ -410,34 +565,29 @@
 </svelte:head>
 
 <PageLayout>
-  <div class="flex sm:flex-wrap">
-    <div class="md:grow">
-      <div class="mb-8">
-        <div class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white">
-          <h1>
-            {$LL.checkIn()}
-          </h1>
-        </div>
-        <div class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white">
-          <ChevronRight class="w-8 h-8 inline-block" />
-        </div>
-        <div class="inline-block">
-          <input
-            type="date"
-            id="checkindate"
-            bind:value={selectedDate}
-            min={maxNegativeDate}
-            onchange={getCheckins}
-            class="bg-transparent text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white cursor-pointer"
-          />
-          <div>
-            <Picker timezone={timezone || ''} onUpdate={(tz: string | null) => tz && updateTimezone(tz)} />
-          </div>
-        </div>
+  <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <div class="min-w-0 md:grow">
+      <div class="text-2xl font-semibold font-rajdhani leading-none dark:text-white sm:text-3xl">
+        <span class="uppercase">{$LL.team()}</span>
+        <ChevronRight class="inline-block h-7 w-7 align-middle sm:h-8 sm:w-8" />
+        <a
+          class="align-middle text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+          href={organizationId
+            ? departmentId
+              ? `${appRoutes.organization}/${organization.id}/department/${department.id}/team/${team.id}`
+              : `${appRoutes.organization}/${organization.id}/team/${team.id}`
+            : `${appRoutes.team}/${team.id}`}
+        >
+          {team.name}
+        </a>
+        <ChevronRight class="inline-block h-7 w-7 align-middle sm:h-8 sm:w-8" />
+        <h1 class="inline-block text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white">
+          {$LL.checkIn()}
+        </h1>
       </div>
 
       {#if organizationId}
-        <div class="text-xl font-semibold font-rajdhani dark:text-white">
+        <div class="mt-3 text-lg font-semibold font-rajdhani dark:text-white sm:text-xl">
           <span class="uppercase">{$LL.organization()}</span>
           <ChevronRight class="inline-block" />
           <a
@@ -453,303 +603,124 @@
               class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
               href="{appRoutes.organization}/{organization.id}/department/{department.id}">{department.name}</a
             >
-            <ChevronRight class="inline-block" />
-            <span class="uppercase">{$LL.team()}</span>
-            <ChevronRight class="inline-block" />
-            <a
-              class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-              href="{appRoutes.organization}/{organization.id}/department/{department.id}"
-            >
-              {team.name}
-            </a>
-          {:else}
-            <ChevronRight class="inline-block" />
-            <span class="uppercase">{$LL.team()}</span>
-            <ChevronRight class="inline-block" />
-            <a
-              class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-              href="{appRoutes.organization}/{organization.id}/team/{team.id}"
-            >
-              {team.name}
-            </a>
           {/if}
-        </div>
-      {:else}
-        <div class="text-2xl font-semibold font-rajdhani dark:text-white">
-          <span class="uppercase">{$LL.team()}</span>
-          <ChevronRight class="inline-block" />
-          <a
-            class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-            href="{appRoutes.team}/{team.id}"
-          >
-            {team.name}
-          </a>
         </div>
       {/if}
     </div>
-    <div class="md:ps-2 md:shrink text-right">
-      <SolidButton
-        additionalClasses="font-rajdhani uppercase text-2xl"
-        onClick={toggleCheckin}
-        testid="check-in"
-        disabled={alreadyCheckedIn || teamCheckinLocked}
-        >{$LL.checkIn()}
-      </SolidButton>
+
+    <div class="flex flex-col gap-3 md:items-end md:ps-2">
+      <div class="flex flex-wrap items-center gap-3 md:justify-end">
+        <div class="md:text-right">
+          <Picker timezone={timezone || ''} onUpdate={(tz: string | null) => tz && updateTimezone(tz)} />
+        </div>
+        <div class="relative me-2 md:me-4">
+          <button
+            type="button"
+            class="flex items-center gap-2 bg-transparent text-2xl font-rajdhani font-semibold leading-none uppercase dark:text-white sm:gap-2.5 sm:text-3xl"
+            aria-label="Open check-in date picker"
+            onclick={openCheckinDatePicker}
+          >
+            <span>{formatCheckinDateLabel(selectedDate)}</span>
+            <Calendar class="h-5 w-5 text-emerald-500 dark:text-emerald-400 sm:h-6 sm:w-6" />
+          </button>
+          <input
+            bind:this={checkinDateInput}
+            type="date"
+            id="checkindate"
+            bind:value={selectedDate}
+            min={maxNegativeDate}
+            onchange={getCheckins}
+            class="pointer-events-none absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            tabindex="-1"
+            aria-hidden="true"
+          />
+        </div>
+        <SolidButton
+          additionalClasses="font-rajdhani uppercase text-2xl"
+          onClick={toggleCheckin}
+          testid="check-in"
+          disabled={alreadyCheckedIn || teamCheckinLocked}
+          >{$LL.checkIn()}
+        </SolidButton>
+      </div>
     </div>
   </div>
 
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 my-4">
     <div class="px-2 md:px-4">
-      <Gauge
-        text={$LL.participation()}
-        percentage={stats.pPerc}
-        stat={stats.pPerc}
-        count="{stats.participants} / {userCount}"
-      />
+      <Gauge {...participationGaugeProps} />
     </div>
     <div class="px-2 md:px-4">
-      <Gauge
-        text={$LL.goalsMet()}
-        percentage={stats.gPerc}
-        color="green"
-        stat={stats.gPerc}
-        count="{stats.goals} / {stats.participants}"
-      />
+      <Gauge {...goalsGaugeProps} />
     </div>
     <div class="px-2 md:px-4">
-      <Gauge
-        text={$LL.blocked()}
-        percentage={stats.bPerc}
-        color="red"
-        stat={stats.bPerc}
-        count="{stats.blocked} / {stats.participants}"
-      />
+      <Gauge {...blockedGaugeProps} />
     </div>
   </div>
 
-  <div class="mt-8 mb-4 w-full text-right bg-white dark:bg-gray-800 p-3 shadow-lg rounded-lg">
-    <Toggle
-      name="showOnlyDiscussionItems"
-      id="showOnlyDiscussionItems"
-      bind:checked={showOnlyDiscussionItems}
-      changeHandler={filterCheckins}
-      label={$LL.showBlockedCheckins()}
-    />
+  <div
+    class="mt-8 mb-5 flex justify-end rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800/90 sm:px-4"
+  >
+    <button
+      type="button"
+      class={`group inline-flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors duration-200 sm:w-auto sm:min-w-[21rem] ${
+        showOnlyDiscussionItems
+          ? 'border-emerald-200 bg-emerald-50/80 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-100'
+          : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 dark:border-gray-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:border-gray-500'
+      }`}
+      role="switch"
+      aria-checked={showOnlyDiscussionItems}
+      aria-label={$LL.showBlockedCheckins()}
+      onclick={toggleDiscussionFilter}
+    >
+      <div class="min-w-0 flex-1">
+        <div class="truncate text-sm font-semibold">
+          {$LL.showBlockedCheckins()}
+        </div>
+      </div>
+
+      <span
+        class={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold leading-none ring-1 ${
+          showOnlyDiscussionItems
+            ? 'bg-emerald-100 text-emerald-800 ring-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-200 dark:ring-emerald-500/30'
+            : 'bg-slate-200 text-slate-700 ring-slate-300 dark:bg-gray-700 dark:text-slate-200 dark:ring-gray-600'
+        }`}
+      >
+        {discussionCheckinCount}
+      </span>
+
+      <span
+        class={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full p-1 transition-colors duration-200 ${
+          showOnlyDiscussionItems
+            ? 'bg-emerald-500 dark:bg-emerald-400'
+            : 'bg-slate-300 group-hover:bg-slate-400 dark:bg-gray-600 dark:group-hover:bg-gray-500'
+        }`}
+        aria-hidden="true"
+      >
+        <span
+          class={`h-5 w-5 rounded-full bg-white shadow-sm transition duration-200 ${showOnlyDiscussionItems ? 'translate-x-5' : 'translate-x-0'}`}
+        ></span>
+      </span>
+    </button>
   </div>
 
   <div class="w-full grid gap-6 md:grid-cols-2 xl:grid-cols-2">
     {#each checkinColumns as col}
       <div class="space-y-6">
         {#each col.checkins as checkin, i}
-          <article
-            class="group relative overflow-hidden rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-gray-800 shadow-sm hover:shadow-lg dark:shadow-gray-900/10"
-            data-testid="checkin"
-            aria-labelledby="checkin-user-{checkin.user.id}"
-          >
-            <!-- Content wrapper -->
-            <div class="relative p-4">
-              <!-- Header with avatar and user info -->
-              <header class="flex items-start gap-4 sm:gap-6 mb-6">
-                <!-- Avatar section -->
-                <div class="flex-shrink-0">
-                  <div class="relative">
-                    <!-- Main avatar container -->
-                    <div class="relative w-16 h-16 sm:w-20 sm:h-20">
-                      <div
-                        class="w-full h-full rounded-full overflow-hidden ring-3 ring-white dark:ring-gray-700 shadow-lg"
-                      >
-                        <UserAvatar
-                          width={80}
-                          warriorId={checkin.user.id}
-                          avatar={checkin.user.avatar}
-                          gravatarHash={checkin.user.gravatarHash}
-                          userName={checkin.user.name}
-                          options={{
-                            class:
-                              'w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110',
-                          }}
-                        />
-                      </div>
-
-                      <!-- Status indicators -->
-                      {#if checkin.goalsMet}
-                        <div
-                          class="absolute -bottom-1 -end-1 rtl:-start-1 rtl:end-auto w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white dark:bg-gray-800 p-1 shadow-lg ring-2 ring-white dark:ring-gray-700"
-                        >
-                          <div class="w-full h-full rounded-full bg-emerald-500 flex items-center justify-center">
-                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                              <path
-                                fill-rule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                      {/if}
-
-                      {#if checkin.blockers !== ''}
-                        <div class="absolute -top-1 -end-1 rtl:-start-1 rtl:end-auto">
-                          <BlockedPing />
-                        </div>
-                      {/if}
-                    </div>
-                  </div>
-                </div>
-
-                <!-- User info and actions -->
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-start justify-between gap-3">
-                    <div class="flex-1 min-w-0">
-                      <h3
-                        id="checkin-user-{checkin.user.id}"
-                        class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate mb-1"
-                        data-testid="checkin-username"
-                      >
-                        {checkin.user.name}
-                      </h3>
-                    </div>
-
-                    <!-- Action buttons -->
-                    {#if checkin.user.id === $user.id || isAdmin}
-                      <div class="flex items-center gap-2" role="group" aria-label="Check-in actions">
-                        <button
-                          onclick={() => toggleCheckin(checkin)}
-                          class="group/btn relative p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                          title={$LL.edit()}
-                          data-testid="checkin-edit"
-                          aria-label={`Edit check-in for ${checkin.user.name}`}
-                        >
-                          <Pencil class="w-4 h-4 transition-transform group-hover/btn:rotate-12" />
-                          <span
-                            class="absolute inset-0 rounded-xl bg-blue-600/10 scale-0 group-hover/btn:scale-100 transition-transform duration-200"
-                          ></span>
-                        </button>
-
-                        <button
-                          onclick={() => handleCheckinDelete(checkin.id)}
-                          class="group/btn relative p-2.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                          title="Delete"
-                          data-testid="checkin-delete"
-                          aria-label={`Delete check-in for ${checkin.user.name}`}
-                        >
-                          <Trash2 class="w-4 h-4 transition-transform group-hover/btn:scale-110" />
-                          <span
-                            class="absolute inset-0 rounded-xl bg-red-600/10 scale-0 group-hover/btn:scale-100 transition-transform duration-200"
-                          ></span>
-                        </button>
-                      </div>
-                    {/if}
-                  </div>
-                </div>
-              </header>
-
-              <!-- Check-in content -->
-              <div class="space-y-6">
-                <!-- Yesterday section -->
-                <section class="space-y-2">
-                  <h4
-                    class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide"
-                  >
-                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                    {$LL.yesterday()}
-                  </h4>
-                  <div
-                    class="text-gray-800 dark:text-gray-200 leading-relaxed unreset whitespace-pre-wrap pl-4 border-s-2 border-blue-100 dark:border-blue-900/50"
-                    data-testid="checkin-yesterday"
-                  >
-                    {@html checkin.yesterday}
-                  </div>
-                </section>
-
-                <!-- Today section -->
-                <section class="space-y-2">
-                  <h4
-                    class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide"
-                  >
-                    <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-                    {$LL.today()}
-                  </h4>
-                  <div
-                    class="text-gray-800 dark:text-gray-200 leading-relaxed unreset whitespace-pre-wrap pl-4 border-s-2 border-emerald-100 dark:border-emerald-900/50"
-                    data-testid="checkin-today"
-                  >
-                    {@html checkin.today}
-                  </div>
-                </section>
-
-                <!-- Blockers section -->
-                {#if checkin.blockers !== ''}
-                  <section class="space-y-2">
-                    <h4
-                      class="flex items-center gap-2 text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide"
-                    >
-                      <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                      <span class="flex items-center gap-1">
-                        {$LL.blockers()}
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                          <path
-                            fill-rule="evenodd"
-                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                            clip-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </h4>
-                    <div
-                      class="text-gray-800 dark:text-gray-200 leading-relaxed unreset whitespace-pre-wrap pl-4 border-s-2 border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10 rounded-e-lg py-3"
-                      data-testid="checkin-blockers"
-                    >
-                      {@html checkin.blockers}
-                    </div>
-                  </section>
-                {/if}
-
-                <!-- Discuss section -->
-                {#if checkin.discuss !== ''}
-                  <section class="space-y-2">
-                    <h4
-                      class="flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide"
-                    >
-                      <div class="w-2 h-2 rounded-full bg-amber-500"></div>
-                      <span class="flex items-center gap-1">
-                        {$LL.discuss()}
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                          <path
-                            fill-rule="evenodd"
-                            d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
-                            clip-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </h4>
-                    <div
-                      class="text-gray-800 dark:text-gray-200 leading-relaxed unreset whitespace-pre-wrap pl-4 border-s-2 border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-900/10 rounded-e-lg py-3"
-                      data-testid="checkin-discuss"
-                    >
-                      {@html checkin.discuss}
-                    </div>
-                  </section>
-                {/if}
-
-                <!-- Comments section -->
-                <section class="pt-4">
-                  <div
-                    class="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 border border-gray-200/50 dark:border-gray-600/30"
-                  >
-                    <Comments
-                      {checkin}
-                      {userMap}
-                      {isAdmin}
-                      handleCreate={handleCheckinComment}
-                      handleEdit={handleCheckinCommentEdit}
-                      handleDelete={handleCommentDelete}
-                    />
-                  </div>
-                </section>
-              </div>
-            </div>
-          </article>
+          <TeamCheckinCard
+            {checkin}
+            currentUserId={$user.id}
+            {isAdmin}
+            isExpanded={isCheckinExpanded(checkin)}
+            {userMap}
+            onToggleSummary={toggleCheckinSummary}
+            onEdit={toggleCheckin}
+            onDelete={handleCheckinDelete}
+            onCreateComment={handleCheckinComment}
+            onEditComment={handleCheckinCommentEdit}
+            onDeleteComment={handleCommentDelete}
+          />
         {/each}
       </div>
     {/each}
@@ -789,3 +760,14 @@
     {/if}
   {/if}
 </PageLayout>
+
+<style>
+  #checkindate::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+</style>

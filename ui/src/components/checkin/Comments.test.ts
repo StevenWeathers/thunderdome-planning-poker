@@ -77,7 +77,7 @@ const setup = (overrides?: {
 
 describe('Comments component', () => {
   const getToggleButton = (container: HTMLElement) =>
-    container.querySelector('button[aria-controls="comments-section"]') as HTMLButtonElement;
+    container.querySelector('[data-testid="checkin-comments-toggle"]') as HTMLButtonElement;
 
   it('should render the toggle button with comment count', () => {
     const { container } = setup({ checkin: { id: 'checkin-1', comments: [baseComments[0]] } });
@@ -87,22 +87,21 @@ describe('Comments component', () => {
     expect(toggleButton.textContent).toMatch(/1\s+comment/i);
   });
 
-  it('should toggle the comments section', async () => {
+  it('should open and close the comments modal', async () => {
     const { container } = setup({ checkin: { id: 'checkin-1', comments: [baseComments[0]] } });
 
     const toggleButton = getToggleButton(container);
-    expect(container.querySelector('[role="region"]')).toBeNull();
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
 
     await toggleButton.click();
 
-    const region = page.getByRole('region', { name: 'Comments section' });
-    expect(region).toBeTruthy();
-    expect(page.getByText('Hide conversation')).toBeTruthy();
+    const dialog = page.getByRole('dialog', { name: 'Check-in Comments' });
+    expect(dialog).toBeTruthy();
 
-    await toggleButton.click();
+    const closeButton = page.getByRole('button', { name: 'Close modal' });
+    await closeButton.click();
 
-    expect(container.querySelector('[role="region"]')).toBeNull();
-    expect(page.getByText('View conversation')).toBeTruthy();
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
   });
 
   it('should show empty state when there are no comments', async () => {
