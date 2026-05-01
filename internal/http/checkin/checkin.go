@@ -35,6 +35,11 @@ type CheckinDataSvc interface {
 	CheckinCommentEdit(ctx context.Context, teamID string, userID string, commentID string, comment string) error
 	CheckinCommentDelete(ctx context.Context, commentID string) error
 	CheckinLastByUser(ctx context.Context, teamID string, userID string, date string) (*thunderdome.TeamCheckin, error)
+	KudoList(ctx context.Context, teamID string, date string) ([]*thunderdome.TeamKudo, error)
+	KudoGet(ctx context.Context, teamID string, kudoID string) (*thunderdome.TeamKudo, error)
+	KudoCreate(ctx context.Context, teamID string, userID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
+	KudoUpdate(ctx context.Context, teamID string, kudoID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
+	KudoDelete(ctx context.Context, teamID string, kudoID string) error
 }
 
 type AuthDataSvc interface {
@@ -44,6 +49,7 @@ type AuthDataSvc interface {
 type TeamDataSvc interface {
 	TeamUserRoleByUserID(ctx context.Context, userID string, teamID string) (string, error)
 	TeamGetByID(ctx context.Context, teamID string) (*thunderdome.Team, error)
+	TeamIsSubscribed(ctx context.Context, teamID string) (bool, error)
 }
 
 type UserDataSvc interface {
@@ -93,6 +99,9 @@ func New(
 		"checkin_create": s.CheckinCreate,
 		"checkin_update": s.CheckinUpdate,
 		"checkin_delete": s.CheckinDelete,
+		"kudo_create":    s.KudoCreate,
+		"kudo_update":    s.KudoUpdate,
+		"kudo_delete":    s.KudoDelete,
 		"comment_create": s.CommentCreate,
 		"comment_update": s.CommentUpdate,
 		"comment_delete": s.CommentDelete,

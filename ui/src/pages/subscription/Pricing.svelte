@@ -13,6 +13,7 @@
     BarChart3,
     Package,
     RefreshCw,
+    GiftIcon,
   } from '@lucide/svelte';
   import PayPeriodToggle from '../../components/pricing/PayPeriodToggle.svelte';
   import { onMount } from 'svelte';
@@ -255,6 +256,18 @@
               </div>
               <span class="text-gray-700 dark:text-gray-300 font-medium"
                 >Submit check-ins for past and upcoming days—not just today</span
+              >
+            </li>
+            <li
+              class="group flex items-center p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              <div
+                class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-purple-100 dark:bg-purple-800 rounded-full mr-3 group-hover:scale-110 transition-transform duration-200"
+              >
+                <GiftIcon class="w-4 h-4 text-purple-600 dark:text-purple-300" />
+              </div>
+              <span class="text-gray-700 dark:text-gray-300 font-medium"
+                >Recognize teammates during daily check-ins with shared kudos</span
               >
             </li>
             <li

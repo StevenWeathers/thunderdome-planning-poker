@@ -219,6 +219,11 @@ type CheckinDataSvc interface {
 	CheckinCommentEdit(ctx context.Context, teamID string, userId string, commentId string, comment string) error
 	CheckinCommentDelete(ctx context.Context, commentId string) error
 	CheckinLastByUser(ctx context.Context, teamID string, userId string, date string) (*thunderdome.TeamCheckin, error)
+	KudoList(ctx context.Context, teamID string, date string) ([]*thunderdome.TeamKudo, error)
+	KudoGet(ctx context.Context, teamID string, kudoID string) (*thunderdome.TeamKudo, error)
+	KudoCreate(ctx context.Context, teamID string, userID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
+	KudoUpdate(ctx context.Context, teamID string, kudoID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
+	KudoDelete(ctx context.Context, teamID string, kudoID string) error
 }
 
 type JiraDataSvc interface {

@@ -12,6 +12,27 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/checkin"
 )
 
+func resolveTeamCheckinDate(date string, timezone string) (string, error) {
+	if timezone == "" {
+		timezone = "America/New_York"
+	}
+
+	location, err := time.LoadLocation(timezone)
+	if err != nil {
+		return "", err
+	}
+
+	if date == "" {
+		return time.Now().In(location).Format("2006-01-02"), nil
+	}
+
+	if _, err := time.Parse("2006-01-02", date); err != nil {
+		return "", err
+	}
+
+	return date, nil
+}
+
 // handleCheckinsGet gets a list of team checkins
 //
 //	@Summary		Get Team Checkins
@@ -586,6 +607,248 @@ func (s *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFu
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleCheckinCommentDelete error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("session_user_id", userID), zap.String("comment_id", commentID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+type teamKudoRequestBody struct {
+	KudoID       string `json:"kudoId" swaggerignore:"true"`
+	TargetUserID string `json:"targetUserId" validate:"required,uuid"`
+	KudosDate    string `json:"kudosDate"`
+	TimeZone     string `json:"timeZone"`
+	Comment      string `json:"comment" validate:"required"`
+}
+
+// handleTeamKudosGet gets a list of team kudos.
+func (s *Service) handleTeamKudosGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		teamID := r.PathValue("teamId")
+		if err := validate.Var(teamID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		query := r.URL.Query()
+		date, err := resolveTeamCheckinDate(query.Get("date"), query.Get("tz"))
+		if err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		kudos, err := s.CheckinDataSvc.KudoList(ctx, teamID, date)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamKudosGet error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("kudos_date", date), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, kudos, nil)
+	}
+}
+
+// handleTeamKudoGet gets a single team kudo.
+func (s *Service) handleTeamKudoGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		teamID := r.PathValue("teamId")
+		kudoID := r.PathValue("kudoId")
+		if err := validate.Var(teamID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		if err := validate.Var(kudoID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		kudo, err := s.CheckinDataSvc.KudoGet(ctx, teamID, kudoID)
+		if err != nil {
+			if err.Error() == "NO_TEAM_KUDO" {
+				s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, err.Error()))
+				return
+			}
+			s.Logger.Ctx(ctx).Error("handleTeamKudoGet error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("kudo_id", kudoID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, kudo, nil)
+	}
+}
+
+// handleTeamKudoCreate handles creating a team kudo.
+func (s *Service) handleTeamKudoCreate(tc *checkin.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		teamID := r.PathValue("teamId")
+		if err := validate.Var(teamID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		var kudo teamKudoRequestBody
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+		if err := json.Unmarshal(body, &kudo); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		if err := validate.Struct(kudo); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		resolvedDate, err := resolveTeamCheckinDate(kudo.KudosDate, kudo.TimeZone)
+		if err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		kudo.KudosDate = resolvedDate
+
+		normalizedBody, err := json.Marshal(kudo)
+		if err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		result, err := tc.APIEvent(ctx, teamID, sessionUserID, "kudo_create", string(normalizedBody))
+		if err != nil {
+			if err.Error() == "TEAM_SUBSCRIPTION_REQUIRED" {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, err.Error()))
+				return
+			}
+			if err.Error() == "REQUIRES_TEAM_USER" || err.Error() == "KUDO_ALREADY_EXISTS" {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+			s.Logger.Ctx(ctx).Error("handleTeamKudoCreate error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("target_user_id", kudo.TargetUserID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, result, nil)
+	}
+}
+
+// handleTeamKudoUpdate handles updating a team kudo.
+func (s *Service) handleTeamKudoUpdate(tc *checkin.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		teamID := r.PathValue("teamId")
+		kudoID := r.PathValue("kudoId")
+		if err := validate.Var(teamID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		if err := validate.Var(kudoID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		var kudo teamKudoRequestBody
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+		if err := json.Unmarshal(body, &kudo); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		if err := validate.Struct(kudo); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		resolvedDate, err := resolveTeamCheckinDate(kudo.KudosDate, kudo.TimeZone)
+		if err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		kudo.KudoID = kudoID
+		kudo.KudosDate = resolvedDate
+
+		normalizedBody, err := json.Marshal(kudo)
+		if err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		result, err := tc.APIEvent(ctx, teamID, sessionUserID, "kudo_update", string(normalizedBody))
+		if err != nil {
+			if err.Error() == "TEAM_SUBSCRIPTION_REQUIRED" {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, err.Error()))
+				return
+			}
+			if err.Error() == "NO_TEAM_KUDO" {
+				s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, err.Error()))
+				return
+			}
+			if err.Error() == "REQUIRES_TEAM_USER" || err.Error() == "KUDO_ALREADY_EXISTS" {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+			s.Logger.Ctx(ctx).Error("handleTeamKudoUpdate error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("kudo_id", kudoID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, result, nil)
+	}
+}
+
+// handleTeamKudoDelete handles deleting a team kudo.
+func (s *Service) handleTeamKudoDelete(tc *checkin.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		userID := ctx.Value(contextKeyUserID).(string)
+		teamID := r.PathValue("teamId")
+		kudoID := r.PathValue("kudoId")
+		if err := validate.Var(teamID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+		if err := validate.Var(kudoID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		body, err := json.Marshal(struct {
+			KudoID string `json:"kudoId"`
+		}{KudoID: kudoID})
+		if err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		_, err = tc.APIEvent(ctx, teamID, userID, "kudo_delete", string(body))
+		if err != nil {
+			if err.Error() == "TEAM_SUBSCRIPTION_REQUIRED" {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, err.Error()))
+				return
+			}
+			if err.Error() == "NO_TEAM_KUDO" {
+				s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, err.Error()))
+				return
+			}
+			s.Logger.Ctx(ctx).Error("handleTeamKudoDelete error", zap.Error(err), zap.String("team_id", teamID),
+				zap.String("session_user_id", userID), zap.String("kudo_id", kudoID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

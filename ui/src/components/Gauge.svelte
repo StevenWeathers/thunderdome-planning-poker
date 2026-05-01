@@ -128,13 +128,15 @@
 
   {#if detailsList.length > 0}
     <div
-      class="pointer-events-none absolute inset-x-0 top-full z-30 mt-3 flex justify-center px-2 transition duration-150 {showDetails
-        ? 'opacity-100 translate-y-0'
-        : 'opacity-0 -translate-y-1'}"
+      class="absolute inset-x-0 top-full z-30 mt-3 flex justify-center px-2 transition duration-150 {showDetails
+        ? 'pointer-events-none opacity-100 translate-y-0'
+        : 'pointer-events-none opacity-0 -translate-y-1'}"
       aria-hidden={!showDetails}
     >
       <div
-        class="pointer-events-auto w-full max-w-xs rounded-2xl border border-slate-300 bg-white p-3 shadow-2xl dark:border-gray-600 dark:bg-gray-900"
+        class="w-full max-w-xs rounded-2xl border border-slate-300 bg-white p-3 shadow-2xl {showDetails
+          ? 'pointer-events-auto'
+          : 'pointer-events-none'} dark:border-gray-600 dark:bg-gray-900"
       >
         <div class="mb-2 flex items-center justify-between gap-3">
           <h5 class="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{text}</h5>

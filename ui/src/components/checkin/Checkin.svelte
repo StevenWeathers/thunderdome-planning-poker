@@ -10,7 +10,7 @@
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
-  import { Check, CircleCheck, CircleCheckBig, Save } from '@lucide/svelte';
+  import { CircleCheckBig, Save } from '@lucide/svelte';
 
   interface Props {
     toggleCheckin?: any;
@@ -32,8 +32,6 @@
 
   let {
     toggleCheckin = () => {},
-    handleCheckin = () => {},
-    handleCheckinEdit = () => {},
     userId,
     checkinId,
     today = $bindable(''),
@@ -58,27 +56,53 @@
     goalsMet: false,
   });
 
-  function onSubmit(e: Event) {
+  async function submitCheckinRequest(): Promise<boolean> {
+    const body = {
+      userId,
+      yesterday,
+      today,
+      blockers,
+      discuss,
+      goalsMet,
+      checkinDate: selectedDate,
+      timeZone,
+    };
+
+    try {
+      const response = await xfetch(checkinId ? `${teamPrefix}/checkins/${checkinId}` : `${teamPrefix}/checkins`, {
+        body,
+        method: checkinId ? 'PUT' : 'POST',
+      });
+      await response.json();
+      return true;
+    } catch (error: any) {
+      if (!checkinId && Array.isArray(error)) {
+        error[1].json().then(function (result: any) {
+          if (result.error === 'REQUIRES_TEAM_USER') {
+            notifications.danger($LL.teamUserRequiredToCheckin());
+          } else {
+            notifications.danger($LL.checkinError());
+          }
+        });
+      } else if (checkinId) {
+        notifications.danger($LL.updateCheckinError());
+      } else {
+        notifications.danger($LL.checkinError());
+      }
+
+      return false;
+    }
+  }
+
+  async function onSubmit(e: Event) {
     e.preventDefault();
 
-    if (checkinId) {
-      handleCheckinEdit(checkinId, {
-        yesterday,
-        today,
-        blockers,
-        discuss,
-        goalsMet,
-      });
-    } else {
-      handleCheckin({
-        userId,
-        yesterday,
-        today,
-        blockers,
-        discuss,
-        goalsMet,
-      });
+    const checkinSaved = await submitCheckinRequest();
+    if (!checkinSaved) {
+      return;
     }
+
+    toggleCheckin();
   }
 
   function getLastCheckin() {
