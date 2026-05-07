@@ -89,3 +89,55 @@ func TestRemoveAccents(t *testing.T) {
 		})
 	}
 }
+
+func TestSanitizeEmailName(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "leaves safe characters intact",
+			input:    "Mary-Jane O'Neil",
+			expected: "Mary-Jane O'Neil",
+		},
+		{
+			name:     "removes accents and email punctuation",
+			input:    "Jöhn, Dáe <john@example.com>",
+			expected: "John Dae",
+		},
+		{
+			name:     "strips control characters and collapses whitespace",
+			input:    "Jane\r\n\tDoe",
+			expected: "Jane Doe",
+		},
+		{
+			name:     "removes address delimiters from email-like display name",
+			input:    "test@test.com <test@test.com>",
+			expected: "test",
+		},
+		{
+			name:     "keeps display name before bracketed email",
+			input:    "Jane Doe <jane@example.com>",
+			expected: "Jane Doe",
+		},
+		{
+			name:     "trims empty result",
+			input:    "<>\r\n",
+			expected: "",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output, err := sanitizeEmailName(test.input)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if output != test.expected {
+				t.Fatalf("expected %q, got %q", test.expected, output)
+			}
+		})
+	}
+}

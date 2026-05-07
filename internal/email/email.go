@@ -87,7 +87,11 @@ func (s *Service) send(userName string, userEmail string, subject string, body s
 	if !s.Config.SmtpEnabled {
 		return nil
 	}
-	cleanUsername, err := removeAccents(userName)
+	cleanSenderName, err := sanitizeEmailName(s.Config.SenderName)
+	if err != nil {
+		return fmt.Errorf("failed to clean sender name %s: %v", s.Config.SenderName, err)
+	}
+	cleanUsername, err := sanitizeEmailName(userName)
 	if err != nil {
 		return fmt.Errorf("failed to clean username %s: %v", userName, err)
 	}
@@ -102,7 +106,7 @@ func (s *Service) send(userName string, userEmail string, subject string, body s
 
 	m.Subject(subject)
 	m.SetBodyString(mail.TypeTextHTML, body)
-	if err = m.SetAddrHeader(mail.HeaderFrom, fmt.Sprintf("%s <%s>", s.Config.SenderName, s.Config.SmtpSender)); err != nil {
+	if err = m.SetAddrHeader(mail.HeaderFrom, fmt.Sprintf("%s <%s>", cleanSenderName, s.Config.SmtpSender)); err != nil {
 		return fmt.Errorf("failed to set FROM header: %v", err)
 	}
 	if err = m.SetAddrHeader(mail.HeaderTo, fmt.Sprintf("%s <%s>", cleanUsername, userEmail)); err != nil {
