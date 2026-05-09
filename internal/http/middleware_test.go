@@ -1,14 +1,18 @@
 package http
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest/observer"
 
@@ -334,6 +338,67 @@ func TestTeamUserOnly(t *testing.T) {
 			mockLogger.AssertExpectations(t)
 		})
 	}
+}
+
+func TestRequestBodyLimitRejectsOversizedJSONRequests(t *testing.T) {
+	service := &Service{}
+	nextCalled := false
+	handler := service.requestBodyLimit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		nextCalled = true
+		w.WriteHeader(http.StatusNoContent)
+	}), "")
+
+	req := httptest.NewRequest(http.MethodPost, "/api/auth", bytes.NewReader(bytes.Repeat([]byte("a"), int(maxJSONRequestBodyBytes)+1)))
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	require.False(t, nextCalled)
+	require.Equal(t, http.StatusRequestEntityTooLarge, rr.Code)
+
+	var response standardJsonResponse
+	require.NoError(t, json.NewDecoder(rr.Body).Decode(&response))
+	require.False(t, response.Success)
+	require.Equal(t, "REQUEST_TOO_LARGE", response.Error)
+}
+
+func TestRequestBodyLimitPreservesNormalSizedJSONRequests(t *testing.T) {
+	service := &Service{}
+	expectedBody := `{"email":"user@example.com","password":"secret123"}`
+	var actualBody string
+
+	handler := service.requestBodyLimit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+		actualBody = string(body)
+		w.WriteHeader(http.StatusNoContent)
+	}), "")
+
+	req := httptest.NewRequest(http.MethodPost, "/api/auth", strings.NewReader(expectedBody))
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNoContent, rr.Code)
+	require.Equal(t, expectedBody, actualBody)
+}
+
+func TestRequestBodyLimitAllowsMalformedJSONResponsesToStayBadRequest(t *testing.T) {
+	validate = validator.New()
+	service := &Service{}
+	handler := service.requestBodyLimit(service.handleLogin(), "")
+
+	req := httptest.NewRequest(http.MethodPost, "/api/auth", strings.NewReader("{"))
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusBadRequest, rr.Code)
+
+	var response standardJsonResponse
+	require.NoError(t, json.NewDecoder(rr.Body).Decode(&response))
+	require.False(t, response.Success)
+	require.Contains(t, response.Error, "unexpected end of JSON input")
 }
 
 func TestTeamAdminOnly(t *testing.T) {

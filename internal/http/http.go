@@ -618,6 +618,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	}))
 
 	var handler http.Handler = router
+	handler = a.requestBodyLimit(handler, prefix)
 	handler = a.panicRecovery(handler)
 	handler = otelhttp.NewHandler(handler, "thunderdome")
 	handler = cspMiddleware(handler, secureMiddleware, prefix, a.Config.ExternalAPIEnabled)
