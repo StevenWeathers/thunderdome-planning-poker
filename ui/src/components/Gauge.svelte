@@ -33,8 +33,12 @@
     met: boolean;
   };
 
-  let svgElem: SVGSVGElement;
+  let gaugeWrapElem: HTMLDivElement | undefined = $state();
+  let detailsPanelElem: HTMLDivElement | undefined = $state();
+  let triggerButtonElem: HTMLButtonElement | undefined = $state();
+  let svgElem: SVGSVGElement | undefined = $state();
   let showDetails = $state(false);
+  let closeDetailsTimeout: ReturnType<typeof setTimeout> | undefined;
 
   let polar_to_cartesian: (cx: number, cy: number, radius: number, angle: number) => number[],
     svg_circle_arc_path: (x: number, y: number, radius: number, start_angle: number, end_angle: number) => string,
@@ -76,12 +80,83 @@
   };
 
   $effect(() => {
+    if (!svgElem) {
+      return;
+    }
+
     const perc = percentage <= 100 ? percentage : 100; // account for overage
     animate_arc(perc / 100, Snap(svgElem));
   });
+
+  $effect(() => {
+    return () => {
+      if (closeDetailsTimeout) {
+        clearTimeout(closeDetailsTimeout);
+      }
+    };
+  });
+
+  function openDetails() {
+    if (closeDetailsTimeout) {
+      clearTimeout(closeDetailsTimeout);
+      closeDetailsTimeout = undefined;
+    }
+
+    showDetails = true;
+  }
+
+  function closeDetails() {
+    showDetails = false;
+  }
+
+  function scheduleCloseDetails() {
+    if (closeDetailsTimeout) {
+      clearTimeout(closeDetailsTimeout);
+    }
+
+    closeDetailsTimeout = setTimeout(() => {
+      closeDetails();
+      closeDetailsTimeout = undefined;
+    }, 150);
+  }
+
+  function handleFocusOut(event: FocusEvent) {
+    const nextFocusedElement = event.relatedTarget;
+
+    if (nextFocusedElement instanceof Node && gaugeWrapElem?.contains(nextFocusedElement)) {
+      return;
+    }
+
+    closeDetails();
+  }
+
+  function focusDetailsPanel() {
+    detailsPanelElem?.focus();
+  }
+
+  function focusTriggerButton() {
+    triggerButtonElem?.focus();
+  }
+
+  function handleTriggerKeyDown(event: KeyboardEvent) {
+    if (event.key !== 'Tab' || event.shiftKey || !showDetails || detailsList.length === 0) {
+      return;
+    }
+
+    event.preventDefault();
+    focusDetailsPanel();
+  }
 </script>
 
-<div class="relative gauge-wrap">
+<div
+  class="relative gauge-wrap"
+  role="presentation"
+  bind:this={gaugeWrapElem}
+  onmouseenter={openDetails}
+  onmouseleave={scheduleCloseDetails}
+  onfocusin={openDetails}
+  onfocusout={handleFocusOut}
+>
   <div
     class="relative gauge {color} transition-transform duration-200 hover:-translate-y-1 focus-within:-translate-y-1"
   >
@@ -108,20 +183,13 @@
 
       <button
         type="button"
+        bind:this={triggerButtonElem}
         class="absolute inset-0 z-10 cursor-pointer appearance-none border-0 bg-transparent p-0"
-        onmouseenter={() => {
-          showDetails = true;
-        }}
-        onmouseleave={() => {
-          showDetails = false;
-        }}
-        onfocus={() => {
-          showDetails = true;
-        }}
-        onblur={() => {
-          showDetails = false;
-        }}
         aria-label={text}
+        aria-expanded={showDetails}
+        aria-haspopup={detailsList.length > 0 ? 'dialog' : undefined}
+        aria-controls={detailsList.length > 0 ? `gauge-details-${text}` : undefined}
+        onkeydown={handleTriggerKeyDown}
       ></button>
     </div>
   </div>
@@ -134,9 +202,16 @@
       aria-hidden={!showDetails}
     >
       <div
+        role="dialog"
+        id={`gauge-details-${text}`}
+        bind:this={detailsPanelElem}
+        tabindex="-1"
+        aria-label={`${text} details`}
         class="w-full max-w-xs rounded-2xl border border-slate-300 bg-white p-3 shadow-2xl {showDetails
           ? 'pointer-events-auto'
           : 'pointer-events-none'} dark:border-gray-600 dark:bg-gray-900"
+        onmouseenter={openDetails}
+        onmouseleave={scheduleCloseDetails}
       >
         <div class="mb-2 flex items-center justify-between gap-3">
           <h5 class="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{text}</h5>
