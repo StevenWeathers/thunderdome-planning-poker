@@ -207,6 +207,66 @@ func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 	}
 }
 
+// handleGetUserRetroActions looks up retro actions assigned to userID
+//
+//	@Summary		Get Retro Actions by User
+//	@Description	get list of retro actions assigned to the user
+//	@Tags			retro
+//	@Produce		json
+//	@Param			userId		path	string	true	"the user ID to get retro actions for"
+//	@Param			teamId		query	string	false	"filter retro actions to a single team"
+//	@Param			limit		query	int		false	"Max number of results to return"
+//	@Param			offset		query	int		false	"Starting point to return rows from, should be multiplied by limit or 0"
+//	@Param			completed	query	boolean	false	"Only completed retro actions"
+//	@Success		200			object	standardJsonResponse{data=[]thunderdome.RetroAction}
+//	@Failure		400			object	standardJsonResponse{}
+//	@Failure		403			object	standardJsonResponse{}
+//	@Failure		500			object	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/users/{userId}/retro-actions [get]
+func (s *Service) handleGetUserRetroActions() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+		limit, offset := getLimitOffsetFromRequest(r)
+
+		userID := r.PathValue("userId")
+		idErr := validate.Var(userID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		query := r.URL.Query()
+		teamID := query.Get("teamId")
+		if teamID != "" {
+			idErr = validate.Var(teamID, "uuid")
+			if idErr != nil {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+				return
+			}
+		}
+		completed, _ := strconv.ParseBool(query.Get("completed"))
+
+		actions, count, err := s.RetroDataSvc.GetUserRetroActions(userID, teamID, limit, offset, completed)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetUserRetroActions error", zap.Error(err),
+				zap.Int("limit", limit), zap.Int("offset", offset), zap.Bool("completed", completed),
+				zap.String("entity_user_id", userID), zap.String("team_id", teamID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		meta := &pagination{
+			Count:  count,
+			Offset: offset,
+			Limit:  limit,
+		}
+
+		s.Success(w, r, http.StatusOK, actions, meta)
+	}
+}
+
 // handleGetRetros gets a list of retros
 //
 //	@Summary		Get Retros

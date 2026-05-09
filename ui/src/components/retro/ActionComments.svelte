@@ -34,14 +34,45 @@
     isAdmin = false,
   }: Props = $props();
 
+  let fallbackUsers = $state<TeamUser[]>([]);
+  let fallbackUsersTeamId = $state('');
+
+  let selectedAction = $derived(actions && actions.find((action: RetroAction) => action.id === selectedActionId));
+
+  $effect(() => {
+    if (users.length > 0) {
+      fallbackUsers = [];
+      fallbackUsersTeamId = '';
+      return;
+    }
+
+    const teamId = selectedAction?.teamId ?? '';
+    if (teamId === '' || fallbackUsersTeamId === teamId) {
+      return;
+    }
+
+    fallbackUsersTeamId = teamId;
+
+    xfetch(`/api/teams/${teamId}/users?limit=1000&offset=0`)
+      .then(res => res.json())
+      .then(function (result) {
+        fallbackUsers = result.data ?? [];
+      })
+      .catch(function () {
+        notifications.danger($LL.teamGetUsersError());
+      });
+  });
+
+  const availableUsers = $derived(users.length > 0 ? users : fallbackUsers);
+
   const userMap: Map<string, UserDisplay> = $derived(
-    users.reduce((prev, cur) => {
+    availableUsers.reduce((prev, cur) => {
       prev.set(cur.id, {
         id: cur.id,
         name: cur.name,
         avatar: cur.avatar,
         gravatarHash: cur.gravatarHash,
-        pictureUrl: '',
+        pictureUrl: cur.pictureUrl || '',
       });
       return prev;
     }, new Map<string, UserDisplay>()),
@@ -97,8 +128,6 @@
         notifications.danger($LL.retroActionCommentAddError());
       });
   };
-
-  let selectedAction = $derived(actions && actions.find((a: RetroAction) => a.id === selectedActionId));
 </script>
 
 <Modal closeModal={toggleComments} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2" ariaLabel={$LL.modalRetroActionComments()}>

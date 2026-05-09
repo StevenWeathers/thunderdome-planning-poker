@@ -8,10 +8,11 @@
   import UserAvatar from '../user/UserAvatar.svelte';
   import TableContainer from '../table/TableContainer.svelte';
   import BooleanDisplay from '../global/BooleanDisplay.svelte';
-  import { MessageSquareMore } from '@lucide/svelte';
+  import { MessageSquareMore, UsersRound } from '@lucide/svelte';
   import CrudActions from '../table/CrudActions.svelte';
   import TableFooter from '../table/TableFooter.svelte';
-  import EditActionItem from './EditActionItem.svelte';
+  import ActionItemEdit from './ActionItemEdit.svelte';
+  import ActionItemAssignees from './ActionItemAssignees.svelte';
   import ActionComments from './ActionComments.svelte';
   import Table from '../table/Table.svelte';
 
@@ -78,8 +79,14 @@
 
   let showRetroActionEdit = $state(false);
   let selectedAction: RetroAction | null = $state(null);
+  let showRetroActionAssignees = $state(false);
   const toggleRetroActionEdit = (retroId: string | null, id: string | null) => () => {
     showRetroActionEdit = !showRetroActionEdit;
+    selectedAction = retroId !== null ? (actionItems.find(r => r.id === id) ?? null) : null;
+  };
+
+  const toggleRetroActionAssignees = (retroId: string | null, id: string | null) => () => {
+    showRetroActionAssignees = !showRetroActionAssignees;
     selectedAction = retroId !== null ? (actionItems.find(r => r.id === id) ?? null) : null;
   };
 
@@ -210,7 +217,12 @@
                   <CrudActions
                     editBtnClickHandler={toggleRetroActionEdit(item.retroId, item.id)}
                     deleteBtnEnabled={false}
-                  />
+                  >
+                    <button onclick={toggleRetroActionAssignees(item.retroId, item.id)} class="hover:text-blue-500">
+                      <span class="sr-only">{$LL.assignees()}</span>
+                      <UsersRound />
+                    </button>
+                  </CrudActions>
                 </RowCol>
               </TableRow>
             {/each}
@@ -228,10 +240,19 @@
 </div>
 
 {#if showRetroActionEdit}
-  <EditActionItem
+  <ActionItemEdit
     toggleEdit={toggleRetroActionEdit(null, null)}
     handleEdit={handleRetroActionEdit}
     handleDelete={handleRetroActionDelete}
+    action={selectedAction}
+  />
+{/if}
+
+{#if showRetroActionAssignees}
+  <ActionItemAssignees
+    {xfetch}
+    {notifications}
+    toggleAssignees={toggleRetroActionAssignees(null, null)}
     assignableUsers={users}
     action={selectedAction}
     handleAssigneeAdd={handleRetroActionAssigneeAdd}
@@ -244,7 +265,7 @@
     toggleComments={toggleRetroActionComments(null)}
     actions={actionItems}
     {users}
-    selectedActionId={selectedRetroAction}
+    selectedActionId={selectedRetroAction?.id ?? ''}
     getRetrosActions={getTeamOpenActionItems}
     {xfetch}
     {notifications}

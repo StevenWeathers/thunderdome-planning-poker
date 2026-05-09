@@ -116,6 +116,119 @@ test.describe("Retro API", { tag: ["@api", "@retro"] }, () => {
     );
   });
 
+  test("GET /users/{userId}/retro-actions returns assigned open actions and supports team filtering", async ({
+    registeredApiUser,
+    testDatabase,
+  }) => {
+    const firstTeamResponse = await registeredApiUser.context.post(
+      `users/${registeredApiUser.user.id}/teams`,
+      {
+        data: {
+          name: "retro actions alpha",
+        },
+      },
+    );
+    const { data: firstTeam } = await firstTeamResponse.json();
+
+    const secondTeamResponse = await registeredApiUser.context.post(
+      `users/${registeredApiUser.user.id}/teams`,
+      {
+        data: {
+          name: "retro actions beta",
+        },
+      },
+    );
+    const { data: secondTeam } = await secondTeamResponse.json();
+
+    const firstRetroResponse = await registeredApiUser.context.post(
+      `teams/${firstTeam.id}/users/${registeredApiUser.user.id}/retros`,
+      {
+        data: {
+          retroName: "Alpha retro",
+          brainstormVisibility: "visible",
+          maxVotes: 3,
+        },
+      },
+    );
+    const { data: firstRetro } = await firstRetroResponse.json();
+
+    const secondRetroResponse = await registeredApiUser.context.post(
+      `teams/${secondTeam.id}/users/${registeredApiUser.user.id}/retros`,
+      {
+        data: {
+          retroName: "Beta retro",
+          brainstormVisibility: "visible",
+          maxVotes: 3,
+        },
+      },
+    );
+    const { data: secondRetro } = await secondRetroResponse.json();
+
+    const firstActionResult = await testDatabase.pool.query(
+      `INSERT INTO thunderdome.retro_action (retro_id, content, completed)
+       VALUES ($1, $2, false)
+       RETURNING id`,
+      [firstRetro.id, "Ship dashboard action summary"],
+    );
+    const secondActionResult = await testDatabase.pool.query(
+      `INSERT INTO thunderdome.retro_action (retro_id, content, completed)
+       VALUES ($1, $2, false)
+       RETURNING id`,
+      [secondRetro.id, "Clean up beta follow-up"],
+    );
+    const completedActionResult = await testDatabase.pool.query(
+      `INSERT INTO thunderdome.retro_action (retro_id, content, completed)
+       VALUES ($1, $2, true)
+       RETURNING id`,
+      [firstRetro.id, "Completed item should be hidden"],
+    );
+
+    await testDatabase.pool.query(
+      `INSERT INTO thunderdome.retro_action_assignee (action_id, user_id) VALUES ($1, $2), ($3, $2), ($4, $2)`,
+      [
+        firstActionResult.rows[0].id,
+        registeredApiUser.user.id,
+        secondActionResult.rows[0].id,
+        completedActionResult.rows[0].id,
+      ],
+    );
+
+    const response = await registeredApiUser.context.get(
+      `users/${registeredApiUser.user.id}/retro-actions`,
+    );
+    expect(response.ok()).toBeTruthy();
+    const retroActions = await response.json();
+    expect(retroActions.meta.count).toBe(2);
+    expect(retroActions.data).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          content: "Ship dashboard action summary",
+          teamId: firstTeam.id,
+          teamName: firstTeam.name,
+        }),
+        expect.objectContaining({
+          content: "Clean up beta follow-up",
+          teamId: secondTeam.id,
+          teamName: secondTeam.name,
+        }),
+      ]),
+    );
+
+    const filteredResponse = await registeredApiUser.context.get(
+      `users/${registeredApiUser.user.id}/retro-actions?teamId=${firstTeam.id}`,
+    );
+    expect(filteredResponse.ok()).toBeTruthy();
+    const filteredRetroActions = await filteredResponse.json();
+    expect(filteredRetroActions.meta.count).toBe(1);
+    expect(filteredRetroActions.data).toEqual([
+      expect.objectContaining({
+        content: "Ship dashboard action summary",
+        teamId: firstTeam.id,
+        teamName: firstTeam.name,
+      }),
+    ]);
+  });
+
   test("POST /users/{userId}/retros creates retro with phase time limit and auto-advance settings", async ({
     request,
     registeredApiUser,

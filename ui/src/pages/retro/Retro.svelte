@@ -2,11 +2,13 @@
   import Sockette from 'sockette';
   import { onDestroy, onMount } from 'svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import { Check, ChevronRight, Crown, ExternalLink, LogOut, Pencil, Settings, Trash } from '@lucide/svelte';
+  import { Check, ChevronRight, Crown, ExternalLink, LogOut, Pencil, Settings, Trash, Users } from '@lucide/svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import EditRetro from '../../components/retro/EditRetro.svelte';
-  import EditActionItem from '../../components/retro/EditActionItem.svelte';
+  import ActionItemAssignees from '../../components/retro/ActionItemAssignees.svelte';
+  import ActionItemEdit from '../../components/retro/ActionItemEdit.svelte';
+  import ActionsMenu from '../../components/global/ActionsMenu.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
@@ -31,6 +33,7 @@
   import type { ApiClient } from '../../types/apiclient';
   import SubMenu from '../../components/global/SubMenu.svelte';
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
+  import type { RetroAction } from '../../types/retro';
 
   interface Props {
     retroId: any;
@@ -372,9 +375,15 @@
   };
 
   let showActionEdit = $state(false);
-  let selectedAction: { id: string; content: string; completed: boolean } | null = $state(null);
+  let showActionAssignees = $state(false);
+  let selectedAction: RetroAction | null = $state(null);
   const toggleActionEdit = (id: string | null) => () => {
     showActionEdit = !showActionEdit;
+    selectedAction = retro.actionItems.find(r => r.id === id) || null;
+  };
+
+  const toggleActionAssignees = (id: string | null) => () => {
+    showActionAssignees = !showActionAssignees;
     selectedAction = retro.actionItems.find(r => r.id === id) || null;
   };
 
@@ -864,13 +873,21 @@
                 >
                   <div class="flex items-start">
                     <div class="flex-shrink">
-                      <button
-                        onclick={toggleActionEdit(item.id)}
-                        class="pe-2 pt-1 text-gray-500 dark:text-gray-400
-                                                hover:text-blue-500"
-                      >
-                        <Pencil />
-                      </button>
+                      <ActionsMenu
+                        ariaLabel="Action item actions"
+                        actions={[
+                          {
+                            label: $LL.edit(),
+                            icon: Pencil,
+                            onclick: toggleActionEdit(item.id),
+                          },
+                          {
+                            label: $LL.assignees(),
+                            icon: Users,
+                            onclick: toggleActionAssignees(item.id),
+                          },
+                        ]}
+                      />
                     </div>
                     <div class="flex-grow dark:text-white">
                       <div class="pe-2">
@@ -970,12 +987,21 @@
 {/if}
 
 {#if showActionEdit}
-  <EditActionItem
+  <ActionItemEdit
     toggleEdit={toggleActionEdit(null)}
     handleEdit={handleActionEdit}
     handleDelete={handleActionDelete}
     action={selectedAction}
+  />
+{/if}
+
+{#if showActionAssignees}
+  <ActionItemAssignees
+    {xfetch}
+    {notifications}
+    toggleAssignees={toggleActionAssignees(null)}
     assignableUsers={retro.users}
+    action={selectedAction}
     {handleAssigneeAdd}
     {handleAssigneeRemove}
   />

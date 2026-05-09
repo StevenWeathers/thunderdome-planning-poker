@@ -3,12 +3,13 @@
 
   import HollowButton from '../../components/global/HollowButton.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
-  import { ChevronRight, MessageSquareMore } from '@lucide/svelte';
+  import { ChevronRight, MessageSquareMore, UsersRound } from '@lucide/svelte';
   import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
   import CreateRetro from '../../components/retro/CreateRetro.svelte';
   import CreateStoryboard from '../../components/storyboard/CreateStoryboard.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import ActionComments from '../../components/retro/ActionComments.svelte';
+  import ActionItemAssignees from '../../components/retro/ActionItemAssignees.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
@@ -18,7 +19,7 @@
   import TableRow from '../../components/table/TableRow.svelte';
   import RowCol from '../../components/table/RowCol.svelte';
   import Modal from '../../components/global/Modal.svelte';
-  import EditActionItem from '../../components/retro/EditActionItem.svelte';
+  import ActionItemEdit from '../../components/retro/ActionItemEdit.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import BoxList from '../../components/BoxList.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
@@ -389,8 +390,14 @@
 
   let showRetroActionEdit = $state(false);
   let selectedAction = $state<RetroAction | null>(null);
+  let showRetroActionAssignees = $state(false);
   const toggleRetroActionEdit = (retroId: string | null, id?: string) => () => {
     showRetroActionEdit = !showRetroActionEdit;
+    selectedAction = retroId !== null && id ? (retroActions.find(r => r.id === id) ?? null) : null;
+  };
+
+  const toggleRetroActionAssignees = (retroId: string | null, id?: string) => () => {
+    showRetroActionAssignees = !showRetroActionAssignees;
     selectedAction = retroId !== null && id ? (retroActions.find(r => r.id === id) ?? null) : null;
   };
 
@@ -625,7 +632,15 @@
                         <CrudActions
                           editBtnClickHandler={toggleRetroActionEdit(item.retroId, item.id)}
                           deleteBtnEnabled={false}
-                        />
+                        >
+                          <button
+                            onclick={toggleRetroActionAssignees(item.retroId, item.id)}
+                            class="hover:text-blue-500"
+                          >
+                            <span class="sr-only">{$LL.assignees()}</span>
+                            <UsersRound />
+                          </button>
+                        </CrudActions>
                       </RowCol>
                     </TableRow>
                   {/each}
@@ -819,10 +834,19 @@
   {/if}
 
   {#if showRetroActionEdit}
-    <EditActionItem
+    <ActionItemEdit
       toggleEdit={toggleRetroActionEdit(null)}
       handleEdit={handleRetroActionEdit}
       handleDelete={handleRetroActionDelete}
+      action={selectedAction}
+    />
+  {/if}
+
+  {#if showRetroActionAssignees}
+    <ActionItemAssignees
+      {xfetch}
+      {notifications}
+      toggleAssignees={toggleRetroActionAssignees(null)}
       assignableUsers={users}
       action={selectedAction}
       handleAssigneeAdd={handleRetroActionAssigneeAdd}
@@ -835,7 +859,7 @@
       toggleComments={toggleRetroActionComments(null)}
       actions={retroActions}
       {users}
-      selectedActionId={selectedRetroAction}
+      selectedActionId={selectedRetroAction ?? ''}
       {getRetrosActions}
       {xfetch}
       {notifications}

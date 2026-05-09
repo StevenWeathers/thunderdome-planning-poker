@@ -1,15 +1,20 @@
 <script lang="ts">
   import { AppConfig, appRoutes } from '../config';
   import type { ApiClient } from '../types/apiclient';
+  import type { NotificationService } from '../types/notifications';
   import type { SessionUser } from '../types/user';
   import LL from '../i18n/i18n-svelte';
   import type { Team } from '../types/team';
   import PokerGame from './poker/PokerGame.svelte';
   import type { PokerGame as PokerGameType } from '../types/poker';
-  import type { Retro } from '../types/retro';
+  import type { Retro, RetroAction } from '../types/retro';
   import type { Storyboard } from '../types/storyboard';
   import { user } from '../stores';
   import { onMount } from 'svelte';
+  import ActionComments from '../components/retro/ActionComments.svelte';
+  import ActionItemAssignees from '../components/retro/ActionItemAssignees.svelte';
+  import ActionItemEdit from '../components/retro/ActionItemEdit.svelte';
+  import ActionsMenu from '../components/global/ActionsMenu.svelte';
   import BoxList from '../components/BoxList.svelte';
   import HollowButton from '../components/global/HollowButton.svelte';
   import PageLayout from '../components/PageLayout.svelte';
@@ -25,16 +30,15 @@
     RotateCcw,
     CheckCircle,
     Mail,
+    MessageSquareMore,
+    Pencil,
+    UsersRound,
   } from '@lucide/svelte';
   import { validateUserIsRegistered } from '../validationUtils';
 
   interface Props {
     xfetch: ApiClient;
-    notifications: {
-      success: (msg: string) => void;
-      danger: (msg: string) => void;
-      info: (msg: string) => void;
-    };
+    notifications: NotificationService;
     router: any;
   }
 
@@ -44,6 +48,13 @@
   let gameCount: number = $state(0);
   let retros: Retro[] = $state([]);
   let retroCount: number = $state(0);
+  let retroActions: RetroAction[] = $state([]);
+  let retroActionCount: number = $state(0);
+  let showRetroActionComments: boolean = $state(false);
+  let selectedRetroActionId: string = $state('');
+  let showRetroActionEdit: boolean = $state(false);
+  let showRetroActionAssignees: boolean = $state(false);
+  let selectedRetroAction: RetroAction | null = $state(null);
   let storyboards: Storyboard[] = $state([]);
   let storyboardCount: number = $state(0);
   type InviteKind = 'organization' | 'department' | 'team';
@@ -109,7 +120,7 @@
   ]);
 
   function loadDashboardData() {
-    Promise.any([loadTeams(), loadGames(), loadRetros(), loadStoryboards()]);
+    Promise.any([loadTeams(), loadGames(), loadRetros(), loadRetroActions(), loadStoryboards()]);
     loadPendingInvites();
   }
 
@@ -272,6 +283,40 @@
     }
   }
 
+  async function loadRetroActions() {
+    if (!AppConfig.FeatureRetro || !validateUserIsRegistered($user)) {
+      retroActions = [];
+      retroActionCount = 0;
+      return;
+    }
+
+    try {
+      const params = new URLSearchParams({
+        limit: '100',
+        offset: '0',
+        completed: 'false',
+      });
+
+      if (selectedTeam) {
+        params.set('teamId', selectedTeam.id);
+      }
+
+      xfetch(`/api/users/${$user.id}/retro-actions?${params.toString()}`)
+        .then(res => res.json())
+        .then(function (result) {
+          retroActions = result.data;
+          retroActionCount = result.meta.count;
+          const currentId = selectedRetroAction?.id;
+          selectedRetroAction = currentId ? (retroActions.find(action => action.id === currentId) ?? null) : null;
+        })
+        .catch(function () {
+          notifications.danger('Failed to fetch retro action items.');
+        });
+    } catch (error) {
+      console.error('Error loading retro action items:', error);
+    }
+  }
+
   async function loadStoryboards() {
     if (!AppConfig.FeatureStoryboard) {
       return;
@@ -326,11 +371,108 @@
     // Reload data with new team filter
     loadGames();
     loadRetros();
+    loadRetroActions();
     loadStoryboards();
   }
 
   function toggleTeamDropdown() {
     showTeamDropdown = !showTeamDropdown;
+  }
+
+  function toggleRetroActionComments(actionId: string | null) {
+    showRetroActionComments = !showRetroActionComments;
+    selectedRetroActionId = actionId ?? '';
+  }
+
+  function toggleRetroActionEdit(action: RetroAction | null) {
+    showRetroActionEdit = !showRetroActionEdit;
+    selectedRetroAction = action;
+  }
+
+  function toggleRetroActionAssignees(action: RetroAction | null) {
+    showRetroActionAssignees = !showRetroActionAssignees;
+    selectedRetroAction = action;
+  }
+
+  function handleRetroActionEdit(action: RetroAction) {
+    xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
+      method: 'PUT',
+      body: {
+        content: action.content,
+        completed: action.completed,
+      },
+    })
+      .then(function () {
+        loadRetroActions();
+        toggleRetroActionEdit(null);
+        notifications.success($LL.updateActionItemSuccess());
+      })
+      .catch(function () {
+        notifications.danger($LL.updateActionItemError());
+      });
+  }
+
+  function handleRetroActionDelete(action: RetroAction) {
+    return () => {
+      xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
+        method: 'DELETE',
+      })
+        .then(function () {
+          loadRetroActions();
+          toggleRetroActionEdit(null);
+          notifications.success($LL.deleteActionItemSuccess());
+        })
+        .catch(function () {
+          notifications.danger($LL.deleteActionItemError());
+        });
+    };
+  }
+
+  function handleRetroActionAssigneeAdd(retroId: string, actionId: string, userId: string) {
+    xfetch(`/api/retros/${retroId}/actions/${actionId}/assignees`, {
+      method: 'POST',
+      body: {
+        user_id: userId,
+      },
+    })
+      .then(function () {
+        loadRetroActions();
+      })
+      .catch(function () {
+        notifications.danger($LL.updateActionItemError());
+      });
+  }
+
+  function handleRetroActionAssigneeRemove(retroId: string, actionId: string, userId: string) {
+    return () => {
+      xfetch(`/api/retros/${retroId}/actions/${actionId}/assignees`, {
+        method: 'DELETE',
+        body: {
+          user_id: userId,
+        },
+      })
+        .then(function () {
+          loadRetroActions();
+        })
+        .catch(function () {
+          notifications.danger($LL.updateActionItemError());
+        });
+    };
+  }
+
+  function getRetroActionMenuActions(action: RetroAction) {
+    return [
+      {
+        label: $LL.edit(),
+        icon: Pencil,
+        onclick: () => toggleRetroActionEdit(action),
+      },
+      {
+        label: $LL.assignees(),
+        icon: UsersRound,
+        onclick: () => toggleRetroActionAssignees(action),
+      },
+    ];
   }
 
   const {} = AppConfig;
@@ -573,6 +715,116 @@
               </div>
             </div>
           </section>
+        {/if}
+
+        {#if AppConfig.FeatureRetro && validateUserIsRegistered($user)}
+          <section class="mb-8">
+            <div
+              class="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm p-6 ring-1 ring-slate-200/50 dark:ring-slate-700/50 shadow-sm"
+            >
+              <div class="flex items-start justify-between gap-4 mb-6">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20"
+                  >
+                    <CheckCircle class="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+                      Open action items assigned to you ({retroActionCount})
+                    </h2>
+                    <p class="text-slate-600 dark:text-slate-400">Outstanding commitments from your team retros</p>
+                  </div>
+                </div>
+              </div>
+
+              {#if retroActionCount > 0}
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  {#each retroActions as action}
+                    <div
+                      class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md dark:hover:border-slate-600"
+                    >
+                      <div class="flex items-start gap-4">
+                        <div class="min-w-0 flex-1">
+                          <div class="mb-3 flex flex-wrap items-start justify-between gap-3">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <span
+                                class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-900 ring-1 ring-emerald-300 dark:bg-emerald-500/15 dark:text-emerald-200 dark:ring-emerald-400/30"
+                              >
+                                {action.teamName || selectedTeam?.name || 'Team'}
+                              </span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                              <button
+                                type="button"
+                                class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-sky-700 dark:hover:bg-sky-950/40 dark:hover:text-sky-300"
+                                onclick={() => toggleRetroActionComments(action.id)}
+                                aria-label={`Open comments for action item: ${action.content}`}
+                              >
+                                <MessageSquareMore class="h-4 w-4" />
+                                <span>{action.comments.length}</span>
+                              </button>
+                              <ActionsMenu
+                                actions={getRetroActionMenuActions(action)}
+                                ariaLabel="Action item actions"
+                              />
+                            </div>
+                          </div>
+                          <p
+                            class="text-base font-semibold leading-6 text-slate-900 dark:text-white whitespace-pre-wrap break-words"
+                          >
+                            {action.content}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              {:else}
+                <div
+                  class="rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-900/40 p-8 text-center"
+                >
+                  <p class="text-lg font-semibold text-slate-900 dark:text-white">
+                    {selectedTeam
+                      ? `No open action items are assigned to you in ${selectedTeam.name}.`
+                      : 'No open action items are assigned to you right now.'}
+                  </p>
+                </div>
+              {/if}
+            </div>
+          </section>
+        {/if}
+
+        {#if showRetroActionComments}
+          <ActionComments
+            toggleComments={() => toggleRetroActionComments(null)}
+            actions={retroActions}
+            selectedActionId={selectedRetroActionId}
+            getRetrosActions={loadRetroActions}
+            {xfetch}
+            {notifications}
+          />
+        {/if}
+
+        {#if showRetroActionEdit}
+          <ActionItemEdit
+            toggleEdit={() => toggleRetroActionEdit(null)}
+            handleEdit={handleRetroActionEdit}
+            handleDelete={handleRetroActionDelete}
+            action={selectedRetroAction}
+          />
+        {/if}
+
+        {#if showRetroActionAssignees}
+          <ActionItemAssignees
+            {xfetch}
+            {notifications}
+            toggleAssignees={() => toggleRetroActionAssignees(null)}
+            assignableUsers={[]}
+            action={selectedRetroAction}
+            handleAssigneeAdd={handleRetroActionAssigneeAdd}
+            handleAssigneeRemove={handleRetroActionAssigneeRemove}
+          />
         {/if}
 
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 grid-rows-1">
