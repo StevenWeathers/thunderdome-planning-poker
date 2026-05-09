@@ -1,8 +1,11 @@
 package http
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -10,6 +13,8 @@ import (
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
+
+const maxJSONRequestBodyBytes = int64(65536)
 
 func (s *Service) panicRecovery(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -22,6 +27,45 @@ func (s *Service) panicRecovery(h http.Handler) http.Handler {
 
 		h.ServeHTTP(w, r)
 	})
+}
+
+func (s *Service) requestBodyLimit(h http.Handler, prefix string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !shouldLimitJSONRequestBody(r, prefix) {
+			h.ServeHTTP(w, r)
+			return
+		}
+
+		limitedBody := http.MaxBytesReader(w, r.Body, maxJSONRequestBodyBytes)
+		defer limitedBody.Close()
+
+		body, err := io.ReadAll(limitedBody)
+		if err != nil {
+			var maxErr *http.MaxBytesError
+			if errors.As(err, &maxErr) {
+				s.Failure(w, r, http.StatusRequestEntityTooLarge, Errorf(EINVALID, "REQUEST_TOO_LARGE"))
+				return
+			}
+
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		r.Body = io.NopCloser(bytes.NewReader(body))
+		h.ServeHTTP(w, r)
+	})
+}
+
+func shouldLimitJSONRequestBody(r *http.Request, prefix string) bool {
+	if r.Body == nil || r.Body == http.NoBody {
+		return false
+	}
+
+	if r.Method != http.MethodPost && r.Method != http.MethodPut && r.Method != http.MethodPatch {
+		return false
+	}
+
+	return strings.HasPrefix(r.URL.Path, prefix+"/api/")
 }
 
 // userOnly validates that the request was made by a valid user
