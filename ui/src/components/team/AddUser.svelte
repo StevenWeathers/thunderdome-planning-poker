@@ -2,14 +2,14 @@
   import Modal from '../global/Modal.svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../forms/TextInput.svelte';
+  import MultiSelectInput from '../forms/MultiSelectInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import { AppConfig } from '../../config';
   import { onMount } from 'svelte';
-  import { Mail } from '@lucide/svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
+  import type { AddUserRequest, InviteUserRequest } from '../../types/team';
 
   interface Props {
     toggleAdd?: any;
@@ -37,11 +37,35 @@
   const showDeptUsers = $derived(pageType === 'team' && deptId !== '');
   const showOrgUsers = $derived(pageType === 'department' || (pageType === 'team' && orgId !== ''));
   let userEmail = $state('');
-  let selectedUser = $state('');
+  let selectedOrgUsers = $state<string[]>([]);
+  let selectedDeptUsers = $state<string[]>([]);
   let role = $state('');
 
   let organizationUsers = $state<any[]>([]);
   let departmentUsers = $state<any[]>([]);
+
+  const fallbackEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const selectedUserIds = $derived([...new Set([...selectedOrgUsers, ...selectedDeptUsers])]);
+  const inviteEmailTokens = $derived(
+    userEmail
+      .split(/[\n,;]+/)
+      .map(email => email.trim())
+      .filter(Boolean),
+  );
+  const invalidInviteEmails = $derived.by(() => [...new Set(inviteEmailTokens.filter(email => !isValidEmail(email)))]);
+  const inviteEmails = $derived.by(() => [...new Set(inviteEmailTokens.filter(email => isValidEmail(email)))]);
+
+  function isValidEmail(email: string) {
+    if (typeof document === 'undefined') {
+      return fallbackEmailPattern.test(email);
+    }
+
+    const input = document.createElement('input');
+    input.type = 'email';
+    input.value = email;
+
+    return input.validity.valid;
+  }
 
   function getOrganizationUsers() {
     if (orgId !== '') {
@@ -69,29 +93,56 @@
     }
   }
 
-  function clearEmail() {
+  function clearInviteEmails() {
     userEmail = '';
+  }
+
+  function clearSelectedUsers() {
+    selectedOrgUsers = [];
+    selectedDeptUsers = [];
+  }
+
+  function onInviteInput() {
+    if (userEmail.trim() !== '') {
+      clearSelectedUsers();
+    }
   }
 
   function onSubmit(e: Event) {
     e.preventDefault();
 
-    const user = {
-      id: selectedUser,
-      email: userEmail,
-      role,
-    };
+    if (selectedUserIds.length === 0 && invalidInviteEmails.length > 0) {
+      focusInput?.reportValidity();
+      return;
+    }
 
-    if (selectedUser !== '') {
-      handleAdd(user);
+    if (selectedUserIds.length > 0) {
+      const usersToAdd: AddUserRequest[] = selectedUserIds.map(userId => ({
+        user_id: userId,
+        role,
+      }));
+      handleAdd(usersToAdd);
     } else {
-      handleInvite(user);
+      const usersToAdd: InviteUserRequest[] = inviteEmails.map(email => ({
+        email,
+        role,
+      }));
+      handleInvite(usersToAdd);
     }
   }
 
-  let createDisabled = $derived((userEmail === '' && selectedUser === '') || role === '');
+  let createDisabled = $derived((inviteEmails.length === 0 && selectedUserIds.length === 0) || role === '');
 
-  let focusInput: any = $state();
+  let focusInput: HTMLTextAreaElement | undefined = $state();
+
+  $effect(() => {
+    if (!focusInput) {
+      return;
+    }
+
+    focusInput.setCustomValidity(invalidInviteEmails.length > 0 ? 'Please enter valid email addresses only.' : '');
+  });
+
   onMount(() => {
     getOrganizationUsers();
     getDepartmentUsers();
@@ -116,27 +167,39 @@
     {#if showOrgUsers}
       <div class="mb-4">
         <label class="text-gray-700 dark:text-gray-400 font-bold mb-2" for="orgUser">
-          Select an existing user from Organization
+          Select existing users from Organization
         </label>
-        <SelectInput bind:value={selectedUser} onchange={clearEmail} id="orgUser" name="orgUser">
-          <option value="">Organization Users...</option>
+        <MultiSelectInput
+          bind:value={selectedOrgUsers}
+          onchange={clearInviteEmails}
+          id="orgUser"
+          name="orgUser"
+          size="6"
+        >
           {#each organizationUsers as orgUser}
             <option value={orgUser.id}>{orgUser.name} ({orgUser.email}) </option>
           {/each}
-        </SelectInput>
+        </MultiSelectInput>
+        <div class="mt-2 text-sm text-gray-700 dark:text-gray-400">Select one or more users to add.</div>
       </div>
     {/if}
     {#if showDeptUsers}
       <div class="mb-4">
         <label class="text-gray-700 dark:text-gray-400 font-bold mb-2" for="deptUser">
-          Select an existing user from Department
+          Select existing users from Department
         </label>
-        <SelectInput bind:value={selectedUser} onchange={clearEmail} id="deptUser" name="deptUser">
-          <option value="">Department Users...</option>
+        <MultiSelectInput
+          bind:value={selectedDeptUsers}
+          onchange={clearInviteEmails}
+          id="deptUser"
+          name="deptUser"
+          size="6"
+        >
           {#each departmentUsers as deptUser}
             <option value={deptUser.id}>{deptUser.name} ({deptUser.email}) </option>
           {/each}
-        </SelectInput>
+        </MultiSelectInput>
+        <div class="mt-2 text-sm text-gray-700 dark:text-gray-400">Select one or more users to add.</div>
       </div>
     {/if}
 
@@ -155,16 +218,27 @@
       <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2" for="userEmail">
         {$LL.userEmail()}
       </label>
-      <TextInput
+      <textarea
+        bind:this={focusInput}
         bind:value={userEmail}
         placeholder={$LL.userEmailPlaceholder()}
         id="userEmail"
         name="userEmail"
-        type="email"
-        required={selectedUser === ''}
-        disabled={selectedUser !== ''}
-        icon={Mail}
-      />
+        required={selectedUserIds.length === 0}
+        disabled={selectedUserIds.length !== 0}
+        aria-invalid={invalidInviteEmails.length > 0}
+        rows="4"
+        class="block w-full rounded-lg outline-none transition-all duration-300 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 disabled:cursor-not-allowed px-5 py-3"
+        oninput={onInviteInput}
+      ></textarea>
+      <div class="mt-2 text-sm text-gray-700 dark:text-gray-400">
+        Enter one email per line, or separate multiple emails with commas.
+      </div>
+      {#if invalidInviteEmails.length > 0}
+        <div class="mt-2 text-sm text-red-600 dark:text-red-400" data-testid="invalid-email-message">
+          Invalid email{invalidInviteEmails.length === 1 ? '' : 's'}: {invalidInviteEmails.join(', ')}
+        </div>
+      {/if}
     </div>
 
     <div class="mb-4 text-gray-700 dark:text-gray-400 text-sm">

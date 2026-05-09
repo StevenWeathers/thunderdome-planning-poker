@@ -15,6 +15,7 @@
   import CrudActions from '../table/CrudActions.svelte';
   import { createEventDispatcher } from 'svelte';
 
+  import type { AddUserRequest, InviteUserRequest } from '../../types/team';
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
 
@@ -50,19 +51,21 @@
   let showRemoveUser = $state(false);
   let removeUserId = $state<string | null>(null);
 
-  function handleUserAdd({ id, email, role }: { id: string; email: string; role: string }) {
-    const body = {
-      user_id: id,
-      role,
-    };
+  function handleUserAdd(addUsers: AddUserRequest[]) {
+    const requests = addUsers.map(u => {
+      const body = {
+        user_id: u.user_id,
+        role: u.role,
+      };
 
-    xfetch(`${teamPrefix}/users`, { body })
-      .then(result => result.json())
+      return xfetch(`${teamPrefix}/users`, { body }).then(result => result.json());
+    });
+
+    Promise.all(requests)
       .then(function () {
         toggleAddUser();
         dispatch('user-added');
         notifications.success($LL.userAddSuccess());
-
         getUsers();
       })
       .catch(function () {
@@ -70,15 +73,18 @@
       });
   }
 
-  function handleUserInvite({ id, email, role }: { id: string; email: string; role: string }) {
-    const body = {
-      email,
-      role,
-    };
+  function handleUserInvite(inviteUsers: InviteUserRequest[]) {
+    const requests = inviteUsers.map(u => {
+      const body = {
+        email: u.email,
+        role: u.role,
+      };
 
-    xfetch(`${teamPrefix}/invites`, { body })
-      .then(result => result.json())
-      .then(function (result) {
+      return xfetch(`${teamPrefix}/invites`, { body }).then(result => result.json());
+    });
+
+    Promise.all(requests)
+      .then(function () {
         toggleAddUser();
         dispatch('user-invited');
         notifications.success($LL.userInviteSent());
