@@ -198,7 +198,6 @@
         retro.actionItems = r.actionItems;
         retro.phase = r.phase;
         retro.phase_time_start = new Date(r.phase_time_start);
-        retro.phase_time_limit_min = r.phase_time_limit_min;
         retro.readyUsers = [];
         phaseTimeStart = new Date(r.phase_time_start);
 
@@ -280,6 +279,11 @@
         retro.brainstormVisibility = revisedRetro.brainstormVisibility;
         retro.maxVotes = revisedRetro.maxVotes;
         retro.phase_auto_advance = revisedRetro.phase_auto_advance;
+        retro.hideVotesDuringVoting = revisedRetro.hideVotesDuringVoting;
+        retro.phase_time_limit_min = revisedRetro.phaseTimeLimitMin;
+        retro.phase_time_start = new Date(revisedRetro.phaseTimeStart);
+        phaseTimeLimitMin = revisedRetro.phaseTimeLimitMin;
+        phaseTimeStart = new Date(revisedRetro.phaseTimeStart);
         break;
       case 'conceded':
         // retro over, goodbye.
@@ -622,7 +626,7 @@
             retroId={retro.id}
             timeLimitMin={phaseTimeLimitMin}
             timeStart={phaseTimeStart}
-            on:ended={phaseTimeRanOut}
+            onEnded={phaseTimeRanOut}
           />
         {/if}
 
@@ -952,6 +956,7 @@
     brainstormVisibility={retro.brainstormVisibility}
     phaseAutoAdvance={retro.phase_auto_advance}
     hideVotesDuringVoting={retro.hideVotesDuringVoting}
+    phaseTimeLimitMin={`${retro.phase_time_limit_min}`}
   />
 {/if}
 

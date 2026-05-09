@@ -117,7 +117,7 @@ func (d *Service) CreateRetro(
 // EditRetro updates the retro by ID
 func (d *Service) EditRetro(
 	retroID string, retroName string, joinCode string, facilitatorCode string,
-	maxVotes int, brainstormVisibility string, phaseAutoAdvance bool, hideVotesDuringVoting bool) error {
+	maxVotes int, brainstormVisibility string, phaseAutoAdvance bool, hideVotesDuringVoting bool, phaseTimeLimitMin int) error {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -139,10 +139,10 @@ func (d *Service) EditRetro(
 
 	if _, err := d.DB.Exec(`UPDATE thunderdome.retro
     SET name = $2, join_code = $3, facilitator_code = $4, max_votes = $5,
-        brainstorm_visibility = $6, phase_auto_advance = $7, hide_votes_during_voting = $8, updated_date = NOW()
+        brainstorm_visibility = $6, phase_auto_advance = $7, hide_votes_during_voting = $8, phase_time_limit_min = $9, updated_date = NOW()
     WHERE id = $1;`,
 		retroID, retroName, encryptedJoinCode, encryptedFacilitatorCode,
-		maxVotes, brainstormVisibility, phaseAutoAdvance, hideVotesDuringVoting,
+		maxVotes, brainstormVisibility, phaseAutoAdvance, hideVotesDuringVoting, phaseTimeLimitMin,
 	); err != nil {
 		return fmt.Errorf("edit retro query error: %v", err)
 	}

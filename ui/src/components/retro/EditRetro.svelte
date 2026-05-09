@@ -17,6 +17,7 @@
     maxVotes?: string;
     brainstormVisibility?: string;
     phaseAutoAdvance?: boolean;
+    phaseTimeLimitMin?: string;
     hideVotesDuringVoting?: boolean;
   }
 
@@ -30,6 +31,7 @@
     brainstormVisibility = $bindable('visible'),
     phaseAutoAdvance = $bindable(true),
     hideVotesDuringVoting = $bindable(false),
+    phaseTimeLimitMin = $bindable('0'),
   }: Props = $props();
 
   const brainstormVisibilityOptions = [
@@ -58,6 +60,7 @@
       brainstormVisibility,
       phase_auto_advance: phaseAutoAdvance,
       hideVotesDuringVoting,
+      phaseTimeLimitMin: parseInt(phaseTimeLimitMin, 10),
     };
 
     handleRetroEdit(retro);
@@ -123,6 +126,22 @@
       </label>
       <div class="control">
         <TextInput name="retroName" bind:value={maxVotes} id="maxVotes" type="number" min="1" max="10" required />
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="phaseTimeLimitMin">
+        {$LL.retroPhaseTimeLimitMinLabel()}
+      </label>
+      <div class="control">
+        <TextInput
+          name="phaseTimeLimitMin"
+          bind:value={phaseTimeLimitMin}
+          id="phaseTimeLimitMin"
+          type="number"
+          min="0"
+          max="59"
+        />
       </div>
     </div>
 
