@@ -262,7 +262,7 @@ func (s *Service) UpdateStoryColor(ctx context.Context, storyboardID string, use
 func (s *Service) UpdateStoryPoints(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var rs struct {
 		StoryID string `json:"storyId"`
-		Points  int    `json:"points"`
+		Points  string `json:"points"`
 	}
 	err := json.Unmarshal([]byte(eventValue), &rs)
 	if err != nil {

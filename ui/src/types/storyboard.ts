@@ -60,7 +60,7 @@ export type StoryboardStory = {
   id: string;
   link: string;
   name: string;
-  points: number;
+  points: string;
   sort_order: string;
 };
 

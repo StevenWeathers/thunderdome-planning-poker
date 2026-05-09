@@ -70,7 +70,7 @@ type StoryboardDataSvc interface {
 	ReviseStoryName(storyboardID string, userID string, storyID string, storyName string) ([]*thunderdome.StoryboardGoal, error)
 	ReviseStoryContent(storyboardID string, userID string, storyID string, storyContent string) ([]*thunderdome.StoryboardGoal, error)
 	ReviseStoryColor(storyboardID string, userID string, storyID string, storyColor string) ([]*thunderdome.StoryboardGoal, error)
-	ReviseStoryPoints(storyboardID string, userID string, storyID string, points int) ([]*thunderdome.StoryboardGoal, error)
+	ReviseStoryPoints(storyboardID string, userID string, storyID string, points string) ([]*thunderdome.StoryboardGoal, error)
 	ReviseStoryClosed(storyboardID string, userID string, storyID string, closed bool) ([]*thunderdome.StoryboardGoal, error)
 	ReviseStoryLink(storyboardID string, userID string, storyID string, link string) ([]*thunderdome.StoryboardGoal, error)
 	MoveStoryboardStory(storyboardID string, userID string, storyID string, goalID string, columnID string, placeBefore string) ([]*thunderdome.StoryboardGoal, error)

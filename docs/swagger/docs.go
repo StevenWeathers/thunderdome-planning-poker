@@ -9307,7 +9307,7 @@ const docTemplate = `{
                         "name": "storyboard",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/http.storyboardStoryMoveRequestBody"
+                            "$ref": "#/definitions/http.storyboardStoryPointsRequestBody"
                         }
                     }
                 ],
@@ -16000,6 +16000,15 @@ const docTemplate = `{
                 }
             }
         },
+        "http.storyboardStoryPointsRequestBody": {
+            "type": "object",
+            "properties": {
+                "points": {
+                    "type": "string",
+                    "maxLength": 3
+                }
+            }
+        },
         "http.subscriptionAssociateRequestBody": {
             "type": "object",
             "properties": {
@@ -17576,7 +17585,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "points": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "sort_order": {
                     "type": "string"

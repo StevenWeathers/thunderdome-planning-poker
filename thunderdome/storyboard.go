@@ -53,7 +53,7 @@ type StoryboardStory struct {
 	Name        string          `json:"name"`
 	Content     string          `json:"content"`
 	Color       string          `json:"color"`
-	Points      int             `json:"points"`
+	Points      string          `json:"points"`
 	Closed      bool            `json:"closed"`
 	Link        string          `json:"link"`
 	Annotations []string        `json:"annotations"`
