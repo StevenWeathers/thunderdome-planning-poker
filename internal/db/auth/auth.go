@@ -343,7 +343,7 @@ func (d *Service) MFATokenValidate(ctx context.Context, sessionID string, passco
 	e := d.DB.QueryRowContext(ctx,
 		`SELECT COALESCE(um.secret, '') FROM thunderdome.user_mfa um
  				LEFT JOIN thunderdome.user_session us ON us.user_id = um.user_id
- 				WHERE us.session_id = $1`,
+				WHERE us.session_id = $1 AND us.disabled = true AND NOW() < us.expire_date`,
 		sessionID,
 	).Scan(
 		&encryptedSecret,

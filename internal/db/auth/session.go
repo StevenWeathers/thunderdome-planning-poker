@@ -21,7 +21,7 @@ func (d *Service) CreateSession(ctx context.Context, userID string, enabled bool
 		`,
 		sessionID,
 		userID,
-		enabled,
+		!enabled,
 	); sessionErr != nil {
 		return "", fmt.Errorf("create user session query error: %v", sessionErr)
 	}
@@ -65,7 +65,7 @@ func (d *Service) GetSessionUserByID(ctx context.Context, sessionID string) (*th
         u.last_active
     FROM thunderdome.user_session us
     LEFT JOIN thunderdome.users u ON u.id = us.user_id
-    WHERE us.session_id = $1 AND NOW() < us.expire_date`,
+	WHERE us.session_id = $1 AND us.disabled = false AND NOW() < us.expire_date`,
 		sessionID,
 	).Scan(
 		&user.ID,
