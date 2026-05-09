@@ -47,6 +47,16 @@ db:
 
 For Thunderdome to work correctly the following configuration items are required:
 
+You can validate the active configuration from the CLI before starting the server:
+
+```bash
+thunderdome config --validate
+```
+
+The validation command checks for missing values and security-sensitive defaults such as the application domain,
+cookie hash key, AES hash key, and database credentials. It also validates authentication-provider specific required
+settings when `auth.method` is set to `header`, `ldap`, or `oidc`.
+
 | Option                | Environment Variable | Description                                                                                                                                                                  | Default Value     |
 |-----------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
 | `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions), WebSocket origin check, and creating URLs in emails. | thunderdome.dev   |
