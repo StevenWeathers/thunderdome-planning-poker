@@ -96,6 +96,7 @@
       .then(res => res.json())
       .then(function () {
         user.update({
+          ...$user,
           id: userProfile.id,
           name: p.name,
           email: userProfile.email,
@@ -158,15 +159,7 @@
           error[1].json().then(function (result: any) {
             if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
               user.update({
-                id: $user.id,
-                name: $user.name,
-                email: $user.email,
-                rank: $user.rank,
-                avatar: $user.avatar,
-                verified: $user.verified,
-                notificationsEnabled: $user.notificationsEnabled,
-                locale: $user.locale,
-                theme: $user.theme,
+                ...$user,
                 subscribed: false,
               } as SessionUser);
               notifications.danger('subscription(s) expired');
@@ -257,15 +250,7 @@
             error[1].json().then(function (result: any) {
               if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
                 user.update({
-                  id: $user.id,
-                  name: $user.name,
-                  email: $user.email,
-                  rank: $user.rank,
-                  avatar: $user.avatar,
-                  verified: $user.verified,
-                  notificationsEnabled: $user.notificationsEnabled,
-                  locale: $user.locale,
-                  theme: $user.theme,
+                  ...$user,
                   subscribed: false,
                 } as SessionUser);
                 notifications.danger('subscription(s) expired');

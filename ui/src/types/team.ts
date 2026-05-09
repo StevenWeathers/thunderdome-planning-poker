@@ -40,3 +40,13 @@ export type CheckinComment = {
   updated_date: string;
   user_id: string;
 };
+
+export type InviteUserRequest = {
+  email: string;
+  role: string;
+};
+
+export type AddUserRequest = {
+  user_id: string;
+  role: string;
+};
