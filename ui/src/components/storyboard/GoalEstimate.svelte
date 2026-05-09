@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { StoryboardColumn } from '../../types/storyboard';
+  import { parseStoryboardPoints } from './storyPoints';
 
   interface Props {
     columns?: StoryboardColumn[];
@@ -8,7 +9,7 @@
   let { columns = [] }: Props = $props();
 
   type Story = {
-    points: number;
+    points: string;
   };
   type Column = {
     stories: Array<Story>;
@@ -19,7 +20,10 @@
     let estimate: number = 0;
     for (let column of goalColumns) {
       for (let story of column.stories) {
-        estimate += story.points;
+        const parsedPoints = parseStoryboardPoints(story.points);
+        if (parsedPoints !== null) {
+          estimate += parsedPoints;
+        }
       }
     }
 

@@ -706,6 +706,12 @@ definitions:
     - columnId
     - goalId
     type: object
+  http.storyboardStoryPointsRequestBody:
+    properties:
+      points:
+        maxLength: 3
+        type: string
+    type: object
   http.subscriptionAssociateRequestBody:
     properties:
       organization_id:
@@ -1752,7 +1758,7 @@ definitions:
       name:
         type: string
       points:
-        type: integer
+        type: string
       sort_order:
         type: string
     type: object
@@ -8051,7 +8057,7 @@ paths:
         in: body
         name: storyboard
         schema:
-          $ref: '#/definitions/http.storyboardStoryMoveRequestBody'
+          $ref: '#/definitions/http.storyboardStoryPointsRequestBody'
       produces:
       - application/json
       responses:

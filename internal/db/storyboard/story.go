@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracindex"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -133,7 +134,12 @@ func (d *Service) ReviseStoryColor(storyboardID string, userID string, storyID s
 }
 
 // ReviseStoryPoints updates the story points by ID
-func (d *Service) ReviseStoryPoints(storyboardID string, userID string, storyID string, points int) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryPoints(storyboardID string, userID string, storyID string, points string) ([]*thunderdome.StoryboardGoal, error) {
+	points = strings.TrimSpace(points)
+	if len(points) > 3 {
+		return nil, fmt.Errorf("story points must be 3 characters or less")
+	}
+
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET points = $2, updated_date = NOW() WHERE id = $1;`,
 		storyID,

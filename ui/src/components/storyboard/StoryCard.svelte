@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Link, MessageSquareMore } from '@lucide/svelte';
   import { SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
+  import { hasStoryboardPoints } from './storyPoints';
   import type { StoryboardStory, StoryboardColumn, StoryboardGoal } from '../../types/storyboard';
 
   interface Props {
@@ -20,7 +21,7 @@
       id: '',
       name: '',
       color: '',
-      points: 0,
+      points: '',
       link: '',
       comments: [],
       closed: false,
@@ -107,7 +108,7 @@
                 ><Link class="inline-block w-4 h-4" /></a
               >
             {/if}
-            {#if story.points > 0}
+            {#if hasStoryboardPoints(story.points)}
               <button
                 class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full hover:bg-green-400 dark:hover:bg-lime-400 dark:hover:text-gray-800 transition-all duration-200"
                 data-testid="story-points"
@@ -162,7 +163,7 @@
                 {#if story.link !== ''}
                   <span title="Story has external link"><Link class="inline-block w-4 h-4" /></span>
                 {/if}
-                {#if story.points > 0}
+                {#if hasStoryboardPoints(story.points)}
                   <span
                     class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full"
                     data-testid="story-points"

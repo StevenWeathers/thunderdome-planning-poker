@@ -9,6 +9,7 @@
   import { onMount } from 'svelte';
   import Comment from '../comments/Comment.svelte';
   import CommentForm from '../comments/CommentForm.svelte';
+  import { sanitizeStoryboardPoints, storyboardPointsMaxLength } from './storyPoints';
 
   import type { NotificationService } from '../../types/notifications';
   import type { UserDisplay } from '../../types/user';
@@ -43,7 +44,7 @@
   let additionalDetailsHidden = $state(true);
   let discussionHidden = $state(true);
   let focusInput: any = $state();
-  let storyPoints = $state(0);
+  let storyPoints = $state('');
 
   $effect(() => {
     discussionHidden = !discussionExpanded;
@@ -121,7 +122,8 @@
   };
 
   const updatePoints = (evt: Event) => {
-    const points = parseInt((evt.target as HTMLInputElement).value, 10);
+    const points = sanitizeStoryboardPoints((evt.target as HTMLInputElement).value);
+    storyPoints = points;
     sendSocketEvent(
       'update_story_points',
       JSON.stringify({
@@ -181,7 +183,7 @@
 
   $effect(() => {
     if (story?.points !== undefined) {
-      storyPoints = story.points;
+      storyPoints = sanitizeStoryboardPoints(story.points);
     }
   });
 </script>
@@ -295,6 +297,7 @@
               id="storyPoints"
               bind:value={storyPoints}
               onchange={updatePoints}
+              maxlength={storyboardPointsMaxLength}
               placeholder="Enter story points"
               name="storyPoints"
             />
