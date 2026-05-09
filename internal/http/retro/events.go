@@ -528,6 +528,7 @@ func (s *Service) EditRetro(ctx context.Context, RetroID string, UserID string, 
 		BrainstormVisibility  string `json:"brainstormVisibility"`
 		PhaseAutoAdvance      bool   `json:"phase_auto_advance"`
 		HideVotesDuringVoting bool   `json:"hideVotesDuringVoting"`
+		PhaseTimeLimitMin     int    `json:"phaseTimeLimitMin"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &rb)
 	if err != nil {
@@ -543,6 +544,7 @@ func (s *Service) EditRetro(ctx context.Context, RetroID string, UserID string, 
 		rb.BrainstormVisibility,
 		rb.PhaseAutoAdvance,
 		rb.HideVotesDuringVoting,
+		rb.PhaseTimeLimitMin,
 	)
 	if err != nil {
 		return nil, nil, err, false
