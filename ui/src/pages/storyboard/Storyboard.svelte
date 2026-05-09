@@ -84,6 +84,8 @@
   let showColorLegendForm = $state(false);
   let showPersonas = $state(false);
   let editColumn: StoryboardColumn | null = $state(null);
+  let showColumnForm = $state(false);
+  let columnFormGoalId = $state('');
   let showDeleteStoryboard = $state(false);
   let showEditStoryboard = $state(false);
   let showExportStoryboard = $state(false);
@@ -212,15 +214,6 @@
     );
   };
 
-  const addStoryColumn = (goalId: String) => {
-    sendSocketEvent(
-      'add_column',
-      JSON.stringify({
-        goalId,
-      }),
-    );
-  };
-
   const handleAddFacilitator = (userId: string) => {
     sendSocketEvent(
       'facilitator_add',
@@ -270,9 +263,22 @@
     };
   }
 
+  function closeColumnForm() {
+    showColumnForm = false;
+    columnFormGoalId = '';
+    editColumn = null;
+  }
+
   function toggleColumnEdit(column: StoryboardColumn | null = null) {
     return () => {
-      editColumn = editColumn != null ? null : column;
+      if (column) {
+        editColumn = column;
+        columnFormGoalId = '';
+        showColumnForm = true;
+        return;
+      }
+
+      closeColumnForm();
     };
   }
 
@@ -301,6 +307,7 @@
   let showAddGoal = $state(false);
   let reviseGoalId = $state('');
   let reviseGoalName = $state('');
+  let reviseGoalDefaultStoryColor = $state<string | null>(null);
 
   const toggleAddGoal = (goalId?: string) => () => {
     if (goalId) {
@@ -308,16 +315,18 @@
       if (goal) {
         reviseGoalId = goalId;
         reviseGoalName = goal.name;
+        reviseGoalDefaultStoryColor = goal.default_story_color;
       }
     } else {
       reviseGoalId = '';
       reviseGoalName = '';
+      reviseGoalDefaultStoryColor = null;
     }
     showAddGoal = !showAddGoal;
   };
 
-  const handleGoalAdd = (goalName: string) => {
-    sendSocketEvent('add_goal', goalName);
+  const handleGoalAdd = (goal: { name: string; defaultStoryColor: string | null }) => {
+    sendSocketEvent('add_goal', JSON.stringify(goal));
   };
 
   const handleGoalRevision = (updatedGoal: any) => {
@@ -330,6 +339,17 @@
 
   const handleColumnRevision = (column: StoryboardColumn) => {
     sendSocketEvent('revise_column', JSON.stringify(column));
+  };
+
+  const addColumn = (goalId: string) => {
+    sendSocketEvent(
+      'add_column',
+      JSON.stringify({
+        goalId,
+        name: '',
+        defaultStoryColor: null,
+      }),
+    );
   };
 
   const handleLegendRevision = (legend: ColorLegend[]) => {
@@ -582,7 +602,7 @@
     <GoalSection
       {goal}
       handleDelete={handleGoalDeletion}
-      handleColumnAdd={addStoryColumn}
+      {addColumn}
       toggleEdit={toggleAddGoal}
       {goalIndex}
       {isFacilitator}
@@ -604,7 +624,7 @@
             different types of work, or however else you'd like to group your stories.
           </p>
           <div class="mt-6 flex justify-center">
-            <SolidButton color="green" onClick={() => addStoryColumn(goal.id)} testid="goal-col-add-empty">
+            <SolidButton color="green" onClick={() => addColumn(goal.id)} testid="goal-col-add-empty">
               <Plus class="inline-block w-4 h-4" />&nbsp;{$LL.storyboardAddColumn()}
             </SolidButton>
           </div>
@@ -636,11 +656,19 @@
     {handleGoalRevision}
     goalId={reviseGoalId}
     goalName={reviseGoalName}
+    goalDefaultStoryColor={reviseGoalDefaultStoryColor}
+    colorLegend={storyboard.color_legend}
   />
 {/if}
 
-{#if editColumn}
-  <ColumnForm {handleColumnRevision} toggleColumnEdit={toggleColumnEdit(null)} column={editColumn} />
+{#if showColumnForm && editColumn}
+  <ColumnForm
+    {handleColumnRevision}
+    toggleColumnEdit={closeColumnForm}
+    column={editColumn}
+    goalId={columnFormGoalId}
+    colorLegend={storyboard.color_legend}
+  />
 {/if}
 
 {#if showColorLegendForm}

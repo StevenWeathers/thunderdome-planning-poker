@@ -15893,7 +15893,13 @@ const docTemplate = `{
                 "goalId"
             ],
             "properties": {
+                "defaultStoryColor": {
+                    "type": "string"
+                },
                 "goalId": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -15904,6 +15910,9 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
+                "defaultStoryColor": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }
@@ -15938,6 +15947,9 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
+                "defaultStoryColor": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "minLength": 1
@@ -15950,6 +15962,9 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
+                "defaultStoryColor": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "minLength": 1
@@ -15963,6 +15978,9 @@ const docTemplate = `{
                 "goalId"
             ],
             "properties": {
+                "color": {
+                    "type": "string"
+                },
                 "columnId": {
                     "type": "string"
                 },
@@ -17485,6 +17503,9 @@ const docTemplate = `{
         "thunderdome.StoryboardColumn": {
             "type": "object",
             "properties": {
+                "default_story_color": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -17516,6 +17537,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/thunderdome.StoryboardColumn"
                     }
+                },
+                "default_story_color": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"

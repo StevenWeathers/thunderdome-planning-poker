@@ -11,8 +11,9 @@ import (
 )
 
 type storyboardStoryAddRequestBody struct {
-	GoalID   string `json:"goalId" validate:"required,uuid"`
-	ColumnID string `json:"columnId" validate:"required,uuid"`
+	GoalID   string  `json:"goalId" validate:"required,uuid"`
+	ColumnID string  `json:"columnId" validate:"required,uuid"`
+	Color    *string `json:"color"`
 }
 
 // handleStoryboardStoryAdd handles adding a story to a storyboard goal column

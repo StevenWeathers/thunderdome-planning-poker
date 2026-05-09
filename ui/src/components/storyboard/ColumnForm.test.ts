@@ -58,6 +58,7 @@ describe('ColumnForm component', () => {
     expect(handleColumnRevision).toHaveBeenCalledWith({
       id: 'column-1',
       name: 'In Progress',
+      defaultStoryColor: null,
     });
     expect(handleColumnRevision).toHaveBeenCalledTimes(1);
     expect(toggleColumnEdit).toHaveBeenCalledTimes(1);

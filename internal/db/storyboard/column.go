@@ -11,7 +11,7 @@ import (
 )
 
 // CreateStoryboardColumn adds a new column to a Storyboard
-func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, userID string) (*thunderdome.StoryboardColumn, error) {
+func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, userID string, columnName string, defaultStoryColor *string) (*thunderdome.StoryboardColumn, error) {
 	var betweenAkey *string
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
@@ -60,15 +60,17 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 	}
 
 	column := thunderdome.StoryboardColumn{
-		Personas:  make([]*thunderdome.StoryboardPersona, 0),
-		Stories:   make([]*thunderdome.StoryboardStory, 0),
-		SortOrder: *displayOrder,
+		Name:              columnName,
+		DefaultStoryColor: defaultStoryColor,
+		Personas:          make([]*thunderdome.StoryboardPersona, 0),
+		Stories:           make([]*thunderdome.StoryboardStory, 0),
+		SortOrder:         *displayOrder,
 	}
 
 	if err := tx.QueryRow(
-		`INSERT INTO thunderdome.storyboard_column (storyboard_id, goal_id, display_order)
-		VALUES ($1, $2, $3) RETURNING id;`,
-		storyboardID, goalID, displayOrder,
+		`INSERT INTO thunderdome.storyboard_column (storyboard_id, goal_id, name, display_order, default_story_color)
+		VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
+		storyboardID, goalID, columnName, displayOrder, defaultStoryColor,
 	).Scan(&column.ID); err != nil {
 		logger.Error("CreateStoryboardColumn error",
 			zap.Error(err),
@@ -86,11 +88,16 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 }
 
 // ReviseStoryboardColumn revises a storyboard column
-func (d *Service) ReviseStoryboardColumn(storyboardID string, userID string, columnID string, columnName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryboardColumn(storyboardID string, userID string, columnID string, columnName string, defaultStoryColor *string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_column SET name = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_column
+		SET name = $2,
+			default_story_color = $3,
+			updated_date = NOW()
+		WHERE id = $1;`,
 		columnID,
 		columnName,
+		defaultStoryColor,
 	); err != nil {
 		d.Logger.Error("revise storyboard column error", zap.Error(err))
 	}

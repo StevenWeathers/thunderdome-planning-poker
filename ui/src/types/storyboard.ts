@@ -20,6 +20,7 @@ export type Storyboard = {
 };
 
 export type StoryboardColumn = {
+  default_story_color: string | null;
   id: string;
   name: string;
   personas: Array<StoryboardPersona>;
@@ -29,6 +30,7 @@ export type StoryboardColumn = {
 
 export type StoryboardGoal = {
   columns: Array<StoryboardColumn>;
+  default_story_color: string | null;
   id: string;
   name: string;
   personas: Array<StoryboardPersona>;

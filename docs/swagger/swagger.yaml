@@ -634,13 +634,19 @@ definitions:
     type: object
   http.storyboardColumnAddRequestBody:
     properties:
+      defaultStoryColor:
+        type: string
       goalId:
+        type: string
+      name:
         type: string
     required:
     - goalId
     type: object
   http.storyboardColumnUpdateRequestBody:
     properties:
+      defaultStoryColor:
+        type: string
       name:
         type: string
     required:
@@ -663,6 +669,8 @@ definitions:
     type: object
   http.storyboardGoalAddRequestBody:
     properties:
+      defaultStoryColor:
+        type: string
       name:
         minLength: 1
         type: string
@@ -671,6 +679,8 @@ definitions:
     type: object
   http.storyboardGoalUpdateRequestBody:
     properties:
+      defaultStoryColor:
+        type: string
       name:
         minLength: 1
         type: string
@@ -679,6 +689,8 @@ definitions:
     type: object
   http.storyboardStoryAddRequestBody:
     properties:
+      color:
+        type: string
       columnId:
         type: string
       goalId:
@@ -1692,6 +1704,8 @@ definitions:
     type: object
   thunderdome.StoryboardColumn:
     properties:
+      default_story_color:
+        type: string
       id:
         type: string
       name:
@@ -1713,6 +1727,8 @@ definitions:
         items:
           $ref: '#/definitions/thunderdome.StoryboardColumn'
         type: array
+      default_story_color:
+        type: string
       id:
         type: string
       name:

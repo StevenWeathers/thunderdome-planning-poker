@@ -46,7 +46,10 @@ describe('AddGoal component', () => {
     await userEvent.fill(input, 'New Goal');
     await button.click();
 
-    expect(handleGoalAdd).toHaveBeenCalledWith('New Goal');
+    expect(handleGoalAdd).toHaveBeenCalledWith({
+      name: 'New Goal',
+      defaultStoryColor: null,
+    });
     expect(handleGoalAdd).toHaveBeenCalledTimes(1);
     expect(handleGoalRevision).not.toHaveBeenCalled();
     expect(toggleAddGoal).toHaveBeenCalledTimes(1);
@@ -74,6 +77,7 @@ describe('AddGoal component', () => {
     expect(handleGoalRevision).toHaveBeenCalledWith({
       goalId: 'goal-1',
       name: 'Revised Goal',
+      defaultStoryColor: null,
     });
     expect(handleGoalRevision).toHaveBeenCalledTimes(1);
     expect(handleGoalAdd).not.toHaveBeenCalled();
@@ -106,7 +110,10 @@ describe('AddGoal component', () => {
     const button = page.getByRole('button', { name: /save/i });
     await button.click();
 
-    expect(handleGoalAdd).toHaveBeenCalledWith('');
+    expect(handleGoalAdd).toHaveBeenCalledWith({
+      name: '',
+      defaultStoryColor: null,
+    });
     expect(handleGoalAdd).toHaveBeenCalledTimes(1);
     expect(toggleAddGoal).toHaveBeenCalledTimes(1);
   });
