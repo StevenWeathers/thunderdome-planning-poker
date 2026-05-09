@@ -11,7 +11,8 @@ import (
 )
 
 type storyboardGoalAddRequestBody struct {
-	Name string `json:"name" validate:"required,min=1"`
+	Name              string  `json:"name" validate:"required,min=1"`
+	DefaultStoryColor *string `json:"defaultStoryColor"`
 }
 
 // handleStoryboardGoalAdd handles adding a goal to a storyboard
@@ -58,7 +59,13 @@ func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFu
 			return
 		}
 
-		newGoal, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "add_goal", sbm.Name)
+		eventValue, err := json.Marshal(sbm)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		newGoal, err := sb.APIEvent(ctx, storyboardID, sessionUserID, "add_goal", string(eventValue))
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handle storyboard goal add error",
 				zap.Error(err),
@@ -73,7 +80,8 @@ func (s *Service) handleStoryboardGoalAdd(sb *storyboard.Service) http.HandlerFu
 }
 
 type storyboardGoalUpdateRequestBody struct {
-	Name string `json:"name" validate:"required,min=1"`
+	Name              string  `json:"name" validate:"required,min=1"`
+	DefaultStoryColor *string `json:"defaultStoryColor"`
 }
 
 // handleStoryboardGoalUpdate handles updating a goal in a storyboard
@@ -128,12 +136,14 @@ func (s *Service) handleStoryboardGoalUpdate(sb *storyboard.Service) http.Handle
 		}
 
 		type updateEvent struct {
-			GoalID string `json:"goalId"`
-			Name   string `json:"name"`
+			GoalID            string  `json:"goalId"`
+			Name              string  `json:"name"`
+			DefaultStoryColor *string `json:"defaultStoryColor,omitempty"`
 		}
 		sbue := updateEvent{
-			GoalID: goalID,
-			Name:   sbm.Name,
+			GoalID:            goalID,
+			Name:              sbm.Name,
+			DefaultStoryColor: sbm.DefaultStoryColor,
 		}
 		updateEventJSON, updateEventErr := json.Marshal(sbue)
 		if updateEventErr != nil {

@@ -12,7 +12,7 @@ import (
 )
 
 // CreateStoryboardStory adds a new story to a Storyboard
-func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string) (*thunderdome.StoryboardStory, error) {
+func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string, storyColor *string) (*thunderdome.StoryboardStory, error) {
 	var betweenAkey *string
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
@@ -67,11 +67,22 @@ func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, colu
 		SortOrder:   *displayOrder,
 	}
 
-	if err := d.DB.QueryRow(
-		`INSERT INTO thunderdome.storyboard_story (storyboard_id, goal_id, column_id, display_order)
-		VALUES ($1, $2, $3, $4) RETURNING id;`,
-		storyboardID, goalID, columnID, displayOrder,
-	).Scan(&story.ID); err != nil {
+	if err := tx.QueryRow(
+		`INSERT INTO thunderdome.storyboard_story (storyboard_id, goal_id, column_id, display_order, color)
+		VALUES (
+			$1,
+			$2,
+			$3,
+			$4,
+			COALESCE(
+				$5,
+				(SELECT default_story_color FROM thunderdome.storyboard_column WHERE id = $3),
+				(SELECT default_story_color FROM thunderdome.storyboard_goal WHERE id = $2),
+				'gray'
+			)
+		) RETURNING id, color;`,
+		storyboardID, goalID, columnID, displayOrder, storyColor,
+	).Scan(&story.ID, &story.Color); err != nil {
 		logger.Error(
 			"create story error",
 			zap.Error(err),

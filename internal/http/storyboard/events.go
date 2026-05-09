@@ -10,7 +10,16 @@ import (
 
 // AddGoal handles adding a goal to storyboard
 func (s *Service) AddGoal(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
-	goal, err := s.StoryboardService.CreateStoryboardGoal(storyboardID, userID, eventValue)
+	var goalInput struct {
+		Name              string  `json:"name"`
+		DefaultStoryColor *string `json:"defaultStoryColor"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &goalInput)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	goal, err := s.StoryboardService.CreateStoryboardGoal(storyboardID, userID, goalInput.Name, goalInput.DefaultStoryColor)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -23,15 +32,17 @@ func (s *Service) AddGoal(ctx context.Context, storyboardID string, userID strin
 
 // ReviseGoal handles revising a storyboard goal
 func (s *Service) ReviseGoal(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
-	goalObj := make(map[string]string)
+	var goalObj struct {
+		GoalID            string  `json:"goalId"`
+		Name              string  `json:"name"`
+		DefaultStoryColor *string `json:"defaultStoryColor"`
+	}
 	err := json.Unmarshal([]byte(eventValue), &goalObj)
 	if err != nil {
 		return nil, nil, err, false
 	}
-	goalID := goalObj["goalId"]
-	goalName := goalObj["name"]
 
-	goals, err := s.StoryboardService.ReviseGoalName(storyboardID, userID, goalID, goalName)
+	goals, err := s.StoryboardService.ReviseGoalName(storyboardID, userID, goalObj.GoalID, goalObj.Name, goalObj.DefaultStoryColor)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -55,14 +66,17 @@ func (s *Service) DeleteGoal(ctx context.Context, storyboardID string, userID st
 
 // AddColumn handles adding a column to storyboard goal
 func (s *Service) AddColumn(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
-	goalObj := make(map[string]string)
-	err := json.Unmarshal([]byte(eventValue), &goalObj)
+	var columnInput struct {
+		GoalID            string  `json:"goalId"`
+		Name              string  `json:"name"`
+		DefaultStoryColor *string `json:"defaultStoryColor"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &columnInput)
 	if err != nil {
 		return nil, nil, err, false
 	}
-	goalID := goalObj["goalId"]
 
-	column, err := s.StoryboardService.CreateStoryboardColumn(storyboardID, goalID, userID)
+	column, err := s.StoryboardService.CreateStoryboardColumn(storyboardID, columnInput.GoalID, userID, columnInput.Name, columnInput.DefaultStoryColor)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -75,16 +89,17 @@ func (s *Service) AddColumn(ctx context.Context, storyboardID string, userID str
 
 // ReviseColumn handles revising a storyboard goal column
 func (s *Service) ReviseColumn(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
-	var rs struct {
-		ColumnID string `json:"id"`
-		Name     string `json:"name"`
+	var columnObj struct {
+		ColumnID          string  `json:"id"`
+		Name              string  `json:"name"`
+		DefaultStoryColor *string `json:"defaultStoryColor"`
 	}
-	err := json.Unmarshal([]byte(eventValue), &rs)
+	err := json.Unmarshal([]byte(eventValue), &columnObj)
 	if err != nil {
 		return nil, nil, err, false
 	}
 
-	goals, err := s.StoryboardService.ReviseStoryboardColumn(storyboardID, userID, rs.ColumnID, rs.Name)
+	goals, err := s.StoryboardService.ReviseStoryboardColumn(storyboardID, userID, columnObj.ColumnID, columnObj.Name, columnObj.DefaultStoryColor)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -179,15 +194,16 @@ func (s *Service) ColumnPersonaRemove(ctx context.Context, storyboardID string, 
 // AddStory handles adding a story to storyboard
 func (s *Service) AddStory(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var ns struct {
-		GoalID   string `json:"goalId"`
-		ColumnID string `json:"columnId"`
+		GoalID   string  `json:"goalId"`
+		ColumnID string  `json:"columnId"`
+		Color    *string `json:"color"`
 	}
 	err := json.Unmarshal([]byte(eventValue), &ns)
 	if err != nil {
 		return nil, nil, err, false
 	}
 
-	story, err := s.StoryboardService.CreateStoryboardStory(storyboardID, ns.GoalID, ns.ColumnID, userID)
+	story, err := s.StoryboardService.CreateStoryboardStory(storyboardID, ns.GoalID, ns.ColumnID, userID, ns.Color)
 	if err != nil {
 		return nil, nil, err, false
 	}

@@ -15885,7 +15885,13 @@
                 "goalId"
             ],
             "properties": {
+                "defaultStoryColor": {
+                    "type": "string"
+                },
                 "goalId": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -15896,6 +15902,9 @@
                 "name"
             ],
             "properties": {
+                "defaultStoryColor": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }
@@ -15930,6 +15939,9 @@
                 "name"
             ],
             "properties": {
+                "defaultStoryColor": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "minLength": 1
@@ -15942,6 +15954,9 @@
                 "name"
             ],
             "properties": {
+                "defaultStoryColor": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "minLength": 1
@@ -15955,6 +15970,9 @@
                 "goalId"
             ],
             "properties": {
+                "color": {
+                    "type": "string"
+                },
                 "columnId": {
                     "type": "string"
                 },
@@ -17477,6 +17495,9 @@
         "thunderdome.StoryboardColumn": {
             "type": "object",
             "properties": {
+                "default_story_color": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -17508,6 +17529,9 @@
                     "items": {
                         "$ref": "#/definitions/thunderdome.StoryboardColumn"
                     }
+                },
+                "default_story_color": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"

@@ -31,20 +31,22 @@ type Storyboard struct {
 
 // StoryboardGoal A row in a story mapping board
 type StoryboardGoal struct {
-	ID        string               `json:"id"`
-	Name      string               `json:"name"`
-	Personas  []*StoryboardPersona `json:"personas"`
-	Columns   []*StoryboardColumn  `json:"columns"`
-	SortOrder string               `json:"sort_order"`
+	ID                string               `json:"id"`
+	Name              string               `json:"name"`
+	DefaultStoryColor *string              `json:"default_story_color"`
+	Personas          []*StoryboardPersona `json:"personas"`
+	Columns           []*StoryboardColumn  `json:"columns"`
+	SortOrder         string               `json:"sort_order"`
 }
 
 // StoryboardColumn A column in a storyboard goal
 type StoryboardColumn struct {
-	ID        string               `json:"id"`
-	Name      string               `json:"name"`
-	Personas  []*StoryboardPersona `json:"personas"`
-	Stories   []*StoryboardStory   `json:"stories"`
-	SortOrder string               `json:"sort_order"`
+	ID                string               `json:"id"`
+	Name              string               `json:"name"`
+	DefaultStoryColor *string              `json:"default_story_color"`
+	Personas          []*StoryboardPersona `json:"personas"`
+	Stories           []*StoryboardStory   `json:"stories"`
+	SortOrder         string               `json:"sort_order"`
 }
 
 // StoryboardStory A story in a storyboard goal column

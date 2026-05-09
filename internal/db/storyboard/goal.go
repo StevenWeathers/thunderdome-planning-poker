@@ -2,6 +2,7 @@ package storyboard
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,8 +14,18 @@ import (
 	"go.uber.org/zap"
 )
 
+func nullableStringPointer(value sql.NullString) *string {
+	if !value.Valid {
+		return nil
+	}
+
+	stringValue := value.String
+
+	return &stringValue
+}
+
 // CreateStoryboardGoal adds a new goal to a Storyboard
-func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalName string) (*thunderdome.StoryboardGoal, error) {
+func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalName string, defaultStoryColor *string) (*thunderdome.StoryboardGoal, error) {
 	var betweenAkey *string
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
@@ -63,18 +74,19 @@ func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalN
 	}
 
 	goal := thunderdome.StoryboardGoal{
-		Name:      goalName,
-		Personas:  make([]*thunderdome.StoryboardPersona, 0),
-		Columns:   make([]*thunderdome.StoryboardColumn, 0),
-		SortOrder: *displayOrder,
+		Name:              goalName,
+		DefaultStoryColor: defaultStoryColor,
+		Personas:          make([]*thunderdome.StoryboardPersona, 0),
+		Columns:           make([]*thunderdome.StoryboardColumn, 0),
+		SortOrder:         *displayOrder,
 	}
 
 	if err := tx.QueryRow(
 		`INSERT INTO
         thunderdome.storyboard_goal
-        (storyboard_id, name, display_order)
-        VALUES ($1, $2, $3) RETURNING id;`,
-		storyboardID, goalName, displayOrder,
+		(storyboard_id, name, display_order, default_story_color)
+		VALUES ($1, $2, $3, $4) RETURNING id;`,
+		storyboardID, goalName, displayOrder, defaultStoryColor,
 	).Scan(&goal.ID); err != nil {
 		logger.Error("create storyboard goal error",
 			zap.Error(err),
@@ -92,11 +104,16 @@ func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalN
 }
 
 // ReviseGoalName updates the plan name by ID
-func (d *Service) ReviseGoalName(storyboardID string, userID string, goalID string, goalName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseGoalName(storyboardID string, userID string, goalID string, goalName string, defaultStoryColor *string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_goal SET name = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_goal
+		SET name = $2,
+			default_story_color = $3,
+			updated_date = NOW()
+		WHERE id = $1;`,
 		goalID,
 		goalName,
+		defaultStoryColor,
 	); err != nil {
 		d.Logger.Error("update storyboard goal error", zap.Error(err))
 	}
@@ -127,6 +144,7 @@ func (d *Service) GetStoryboardGoals(storyboardID string) []*thunderdome.Storybo
             sg.id,
             sg.display_order,
             sg.name,
+			sg.default_story_color,
             COALESCE(json_agg(to_jsonb(t) - 'goal_id' ORDER BY t.display_order) FILTER (WHERE t.id IS NOT NULL), '[]') AS columns,
             (SELECT COALESCE(json_agg(to_jsonb(sp)) FILTER (WHERE gp.goal_id IS NOT NULL), '[]') AS personas
             FROM thunderdome.storyboard_goal_persona gp
@@ -167,15 +185,18 @@ func (d *Service) GetStoryboardGoals(storyboardID string) []*thunderdome.Storybo
 		for goalRows.Next() {
 			var columns string
 			var personas string
+			var defaultStoryColor sql.NullString
 			var sg = &thunderdome.StoryboardGoal{
-				ID:        "",
-				Name:      "",
-				SortOrder: "",
-				Columns:   make([]*thunderdome.StoryboardColumn, 0),
+				ID:                "",
+				Name:              "",
+				DefaultStoryColor: nil,
+				SortOrder:         "",
+				Columns:           make([]*thunderdome.StoryboardColumn, 0),
 			}
-			if err := goalRows.Scan(&sg.ID, &sg.SortOrder, &sg.Name, &columns, &personas); err != nil {
+			if err := goalRows.Scan(&sg.ID, &sg.SortOrder, &sg.Name, &defaultStoryColor, &columns, &personas); err != nil {
 				d.Logger.Error("get_storyboard_goals query scan error", zap.Error(err))
 			} else {
+				sg.DefaultStoryColor = nullableStringPointer(defaultStoryColor)
 				goalColumns := make([]*thunderdome.StoryboardColumn, 0)
 				jsonErr := json.Unmarshal([]byte(columns), &goalColumns)
 				if jsonErr != nil {
@@ -199,20 +220,23 @@ func (d *Service) GetStoryboardGoals(storyboardID string) []*thunderdome.Storybo
 // GetStoryboardGoal retrieves a specific goal by ID
 func (d *Service) GetStoryboardGoal(storyboardID string, goalID string) (*thunderdome.StoryboardGoal, error) {
 	var sg = &thunderdome.StoryboardGoal{
-		ID:        "",
-		Name:      "",
-		SortOrder: "",
-		Columns:   make([]*thunderdome.StoryboardColumn, 0),
-		Personas:  make([]*thunderdome.StoryboardPersona, 0),
+		ID:                "",
+		Name:              "",
+		DefaultStoryColor: nil,
+		SortOrder:         "",
+		Columns:           make([]*thunderdome.StoryboardColumn, 0),
+		Personas:          make([]*thunderdome.StoryboardPersona, 0),
 	}
 	var columns string
 	var personas string
+	var defaultStoryColor sql.NullString
 
 	goalErr := d.DB.QueryRow(
 		`SELECT
             sg.id,
             sg.display_order,
             sg.name,
+			sg.default_story_color,
             COALESCE(json_agg(to_jsonb(t) - 'goal_id' ORDER BY t.display_order) FILTER (WHERE t.id IS NOT NULL), '[]') AS columns,
             (SELECT COALESCE(json_agg(to_jsonb(sp)) FILTER (WHERE gp.goal_id IS NOT NULL), '[]') AS personas
             FROM thunderdome.storyboard_goal_persona gp
@@ -247,11 +271,12 @@ func (d *Service) GetStoryboardGoal(storyboardID string, goalID string) (*thunde
         GROUP BY sg.id, sg.display_order
         ORDER BY sg.display_order;`,
 		storyboardID, goalID,
-	).Scan(&sg.ID, &sg.SortOrder, &sg.Name, &columns, &personas)
+	).Scan(&sg.ID, &sg.SortOrder, &sg.Name, &defaultStoryColor, &columns, &personas)
 	if goalErr != nil {
 		d.Logger.Error("get_storyboard_goal query scan error", zap.Error(goalErr))
 		return sg, goalErr
 	}
+	sg.DefaultStoryColor = nullableStringPointer(defaultStoryColor)
 
 	goalColumns := make([]*thunderdome.StoryboardColumn, 0)
 	jsonErr := json.Unmarshal([]byte(columns), &goalColumns)

@@ -5,6 +5,7 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import Editor from '../forms/Editor.svelte';
+  import StoryColorSelector from './StoryColorSelector.svelte';
   import { ChevronRight, ChevronDown } from '@lucide/svelte';
   import { onMount } from 'svelte';
   import Comment from '../comments/Comment.svelte';
@@ -45,10 +46,12 @@
   let discussionHidden = $state(true);
   let focusInput: any = $state();
   let storyPoints = $state('');
+  let selectedStoryColor = $state('');
 
   $effect(() => {
     discussionHidden = !discussionExpanded;
     additionalDetailsHidden = !additionalDetailsExpanded;
+    selectedStoryColor = story.color;
   });
 
   const userMap: Map<string, UserDisplay> = $derived(
@@ -220,19 +223,7 @@
       <!-- Story Points and Color -->
       <div>
         <div class="block text-gray-700 dark:text-gray-300 mb-2 text-lg">Story Color</div>
-        <div class="flex space-x-2 pt-1">
-          {#each colorLegend as color}
-            <button
-              onclick={changeColor(color.color)}
-              class="w-8 h-8 rounded-full colorcard-{color.color}
-                  hover:scale-110 transition-transform dark:ring-offset-gray-800 {story.color === color.color
-                ? `ring-2 ring-offset-2`
-                : ''}"
-              title="{color.color}{color.legend !== '' ? ` - ${color.legend}` : ''}"
-              ><span class="hidden">change color</span></button
-            >
-          {/each}
-        </div>
+        <StoryColorSelector bind:value={selectedStoryColor} {colorLegend} onSelect={color => changeColor(color)()} />
       </div>
 
       <!-- Story Content -->
@@ -409,105 +400,3 @@
     </div>
   </div>
 </Modal>
-
-<style lang="postcss">
-  .colorcard-gray {
-    @apply bg-gray-400;
-    @apply ring-gray-400;
-  }
-
-  .colorcard-gray:hover {
-    @apply bg-gray-600;
-    @apply ring-gray-600;
-  }
-
-  .colorcard-red {
-    @apply bg-red-400;
-    @apply ring-red-400;
-  }
-
-  .colorcard-red:hover {
-    @apply bg-red-600;
-    @apply ring-red-600;
-  }
-
-  .colorcard-orange {
-    @apply bg-orange-400;
-    @apply ring-orange-400;
-  }
-
-  .colorcard-orange:hover {
-    @apply bg-orange-600;
-    @apply ring-orange-600;
-  }
-
-  .colorcard-yellow {
-    @apply bg-yellow-400;
-    @apply ring-yellow-400;
-  }
-
-  .colorcard-yellow:hover {
-    @apply bg-yellow-600;
-    @apply ring-yellow-600;
-  }
-
-  .colorcard-green {
-    @apply bg-green-400;
-    @apply ring-green-400;
-  }
-
-  .colorcard-green:hover {
-    @apply bg-green-600;
-    @apply ring-green-600;
-  }
-
-  .colorcard-teal {
-    @apply bg-teal-400;
-    @apply ring-teal-400;
-  }
-
-  .colorcard-teal:hover {
-    @apply bg-teal-600;
-    @apply ring-teal-600;
-  }
-
-  .colorcard-blue {
-    @apply bg-blue-400;
-    @apply ring-blue-400;
-  }
-
-  .colorcard-blue:hover {
-    @apply bg-blue-600;
-    @apply ring-blue-600;
-  }
-
-  .colorcard-indigo {
-    @apply bg-indigo-400;
-    @apply ring-indigo-400;
-  }
-
-  .colorcard-indigo:hover {
-    @apply bg-indigo-600;
-    @apply ring-indigo-600;
-  }
-
-  .colorcard-purple {
-    @apply bg-purple-400;
-    @apply ring-purple-400;
-  }
-
-  .colorcard-purple:hover {
-    @apply bg-purple-600;
-    @apply ring-purple-600;
-  }
-
-  .colorcard-pink {
-    @apply bg-pink-400;
-    @apply ring-pink-400;
-  }
-
-  .colorcard-pink:hover {
-    @apply bg-pink-600;
-    @apply ring-pink-600;
-  }
-</style>

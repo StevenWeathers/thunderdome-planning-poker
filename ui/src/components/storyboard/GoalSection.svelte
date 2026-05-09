@@ -13,7 +13,7 @@
     goalIndex: number;
     isFacilitator: boolean;
     handleDelete: any;
-    handleColumnAdd: any;
+    addColumn: any;
     toggleEdit: any;
     columnOrderEditMode: any;
     toggleColumnOrderEdit: any;
@@ -23,7 +23,7 @@
     children,
     toggleEdit = (goalId: String) => () => {},
     handleDelete = (goalId: String) => {},
-    handleColumnAdd = (goalId: String) => {},
+    addColumn = (goalId: String) => {},
     goal = { id: '', columns: [] },
     goalIndex = 0,
     isFacilitator = false,
@@ -53,7 +53,7 @@
   };
 
   const handleColAdd = () => {
-    handleColumnAdd(goal.id);
+    addColumn(goal.id);
   };
 
   const handleToggleColumnOrderEdit = (toggleSubmenu?: () => void) => () => {

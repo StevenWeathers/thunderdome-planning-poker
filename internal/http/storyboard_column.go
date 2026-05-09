@@ -11,7 +11,9 @@ import (
 )
 
 type storyboardColumnAddRequestBody struct {
-	GoalID string `json:"goalId" validate:"required,uuid"`
+	GoalID            string  `json:"goalId" validate:"required,uuid"`
+	Name              string  `json:"name"`
+	DefaultStoryColor *string `json:"defaultStoryColor"`
 }
 
 // handleStoryboardColumnAdd handles adding a column to a storyboard goal
@@ -79,7 +81,8 @@ func (s *Service) handleStoryboardColumnAdd(sb *storyboard.Service) http.Handler
 }
 
 type storyboardColumnUpdateRequestBody struct {
-	Name string `json:"name" validate:"required"`
+	Name              string  `json:"name" validate:"required"`
+	DefaultStoryColor *string `json:"defaultStoryColor"`
 }
 
 // handleStoryboardColumnUpdate handles updating a column in a storyboard
@@ -134,12 +137,14 @@ func (s *Service) handleStoryboardColumnUpdate(sb *storyboard.Service) http.Hand
 		}
 
 		type updateEvent struct {
-			ColumnID string `json:"id"`
-			Name     string `json:"name"`
+			ColumnID          string  `json:"id"`
+			Name              string  `json:"name"`
+			DefaultStoryColor *string `json:"defaultStoryColor,omitempty"`
 		}
 		sbue := updateEvent{
-			ColumnID: columnID,
-			Name:     sbm.Name,
+			ColumnID:          columnID,
+			Name:              sbm.Name,
+			DefaultStoryColor: sbm.DefaultStoryColor,
 		}
 		updateEventJSON, updateEventErr := json.Marshal(sbue)
 		if updateEventErr != nil {
