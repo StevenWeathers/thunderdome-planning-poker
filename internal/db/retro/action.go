@@ -172,6 +172,112 @@ func (d *Service) GetTeamRetroActions(teamID string, limit int, offset int, comp
 	return actions, count, nil
 }
 
+// GetUserRetroActions retrieves retro actions assigned to the user, optionally filtered to a single team
+func (d *Service) GetUserRetroActions(userID string, teamID string, limit int, offset int, completed bool) ([]*thunderdome.RetroAction, int, error) {
+	var actions = make([]*thunderdome.RetroAction, 0)
+	var count int
+
+	e := d.DB.QueryRow(
+		`WITH user_teams AS (
+				SELECT t.id
+				FROM thunderdome.team_user tu
+				JOIN thunderdome.team t ON t.id = tu.team_id
+				WHERE tu.user_id = $1
+			),
+			filtered_teams AS (
+				SELECT id
+				FROM user_teams
+				WHERE $2 = '' OR id = $2::uuid
+			)
+			SELECT COUNT(DISTINCT ra.id)
+			FROM thunderdome.retro_action ra
+			JOIN thunderdome.retro r ON r.id = ra.retro_id
+			JOIN filtered_teams ft ON ft.id = r.team_id
+			JOIN thunderdome.retro_action_assignee raa ON raa.action_id = ra.id
+			WHERE raa.user_id = $1 AND ra.completed = $3;`,
+		userID,
+		teamID,
+		completed,
+	).Scan(
+		&count,
+	)
+	if e != nil {
+		return nil, count, fmt.Errorf("get user retro actions count query error: %v", e)
+	}
+
+	actionRows, err := d.DB.Query(
+		`WITH user_teams AS (
+				SELECT t.id, t.name
+				FROM thunderdome.team_user tu
+				JOIN thunderdome.team t ON t.id = tu.team_id
+				WHERE tu.user_id = $1
+			),
+			filtered_teams AS (
+				SELECT id, name
+				FROM user_teams
+				WHERE $2 = '' OR id = $2::uuid
+			)
+			SELECT ra.id, ra.content, ra.completed, ra.retro_id, r.team_id, ft.name,
+				(SELECT COALESCE(
+					json_agg(rac ORDER BY rac.created_date) FILTER (WHERE rac.id IS NOT NULL), '[]'
+				) AS comments
+				FROM thunderdome.retro_action_comment rac
+				WHERE rac.action_id = ra.id) AS comments,
+				COALESCE(json_agg(json_build_object('id', u.id, 'name', u.name, 'email', COALESCE(u.email, ''), 'avatar', u.avatar))
+		 			FILTER (WHERE u.id IS NOT NULL), '[]') AS assignees
+			FROM thunderdome.retro_action ra
+			JOIN thunderdome.retro r ON r.id = ra.retro_id
+			JOIN filtered_teams ft ON ft.id = r.team_id
+			JOIN thunderdome.retro_action_assignee current_assignee ON current_assignee.action_id = ra.id AND current_assignee.user_id = $1
+			LEFT JOIN thunderdome.retro_action_assignee t ON t.action_id = ra.id
+			LEFT JOIN thunderdome.users u ON t.user_id = u.id
+			WHERE ra.completed = $3
+			GROUP BY ra.id, ra.created_date, r.team_id, ft.name
+			ORDER BY ra.created_date DESC
+			LIMIT $4 OFFSET $5;`,
+		userID,
+		teamID,
+		completed,
+		limit,
+		offset,
+	)
+	if err == nil {
+		defer actionRows.Close()
+		for actionRows.Next() {
+			var ri = &thunderdome.RetroAction{
+				Comments:  make([]*thunderdome.RetroActionComment, 0),
+				Assignees: make([]*thunderdome.User, 0),
+			}
+			var comments string
+			var assignees string
+			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed, &ri.RetroID, &ri.TeamID, &ri.TeamName, &comments, &assignees); err != nil {
+				d.Logger.Error("get user retro actions error", zap.Error(err))
+			} else {
+				jsonErr := json.Unmarshal([]byte(comments), &ri.Comments)
+				if jsonErr != nil {
+					d.Logger.Error("user retro action comments json error", zap.Error(jsonErr))
+				}
+				jsonErr = json.Unmarshal([]byte(assignees), &ri.Assignees)
+				if jsonErr != nil {
+					d.Logger.Error("user retro action assignees json error", zap.Error(jsonErr))
+				}
+				for i, assignee := range ri.Assignees {
+					if assignee.Email != "" {
+						ri.Assignees[i].GravatarHash = db.CreateGravatarHash(assignee.Email)
+					} else {
+						ri.Assignees[i].GravatarHash = db.CreateGravatarHash(assignee.ID)
+					}
+				}
+				actions = append(actions, ri)
+			}
+		}
+	} else {
+		return actions, count, fmt.Errorf("get user retro actions error: %v", err)
+	}
+
+	return actions, count, nil
+}
+
 // RetroActionCommentAdd adds a comment to a retro action
 func (d *Service) RetroActionCommentAdd(retroID string, actionID string, userID string, comment string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(

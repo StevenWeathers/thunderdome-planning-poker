@@ -495,6 +495,7 @@ type RetroDataSvc interface {
 	DeleteRetroAction(retroID string, userID string, actionID string) ([]*thunderdome.RetroAction, error)
 	GetRetroActions(retroID string) []*thunderdome.RetroAction
 	GetTeamRetroActions(teamID string, limit int, offset int, completed bool) ([]*thunderdome.RetroAction, int, error)
+	GetUserRetroActions(userID string, teamID string, limit int, offset int, completed bool) ([]*thunderdome.RetroAction, int, error)
 	RetroActionCommentAdd(retroID string, actionID string, userID string, comment string) ([]*thunderdome.RetroAction, error)
 	RetroActionCommentEdit(retroID string, actionID string, commentID string, comment string) ([]*thunderdome.RetroAction, error)
 	RetroActionCommentDelete(retroID string, actionID string, commentID string) ([]*thunderdome.RetroAction, error)

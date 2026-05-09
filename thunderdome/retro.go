@@ -71,6 +71,8 @@ type RetroGroup struct {
 // RetroAction is an action the team can take based on retro feedback
 type RetroAction struct {
 	RetroID   string                `json:"retroId,omitempty"`
+	TeamID    string                `json:"teamId,omitempty"`
+	TeamName  string                `json:"teamName,omitempty"`
 	ID        string                `json:"id" db:"id"`
 	Content   string                `json:"content" db:"content"`
 	Completed bool                  `json:"completed" db:"completed"`

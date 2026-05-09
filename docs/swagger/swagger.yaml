@@ -1435,6 +1435,10 @@ definitions:
         type: string
       retroId:
         type: string
+      teamId:
+        type: string
+      teamName:
+        type: string
     type: object
   thunderdome.RetroActionComment:
     properties:
@@ -10851,6 +10855,63 @@ paths:
       summary: Request Verification Email
       tags:
       - user
+  /users/{userId}/retro-actions:
+    get:
+      description: get list of retro actions assigned to the user
+      parameters:
+      - description: the user ID to get retro actions for
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: filter retro actions to a single team
+        in: query
+        name: teamId
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      - description: Only completed retro actions
+        in: query
+        name: completed
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroAction'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retro Actions by User
+      tags:
+      - retro
   /users/{userId}/retros:
     get:
       description: get list of retros for the user

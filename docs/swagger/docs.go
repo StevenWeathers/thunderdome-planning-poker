@@ -13837,6 +13837,97 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{userId}/retro-actions": {
+            "get": {
+                "description": "get list of retro actions assigned to the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retro"
+                ],
+                "summary": "Get Retro Actions by User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID to get retro actions for",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter retro actions to a single team",
+                        "name": "teamId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Only completed retro actions",
+                        "name": "completed",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.RetroAction"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
         "/users/{userId}/retros": {
             "get": {
                 "description": "get list of retros for the user",
@@ -17090,6 +17181,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "retroId": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "string"
+                },
+                "teamName": {
                     "type": "string"
                 }
             }

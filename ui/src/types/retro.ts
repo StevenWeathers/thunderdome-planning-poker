@@ -25,6 +25,8 @@ export type RetroAction = {
   assignees: Array<RetroUser>;
   id: string;
   retroId: string;
+  teamId?: string;
+  teamName?: string;
 };
 
 export type RetroActionComment = {

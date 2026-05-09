@@ -409,6 +409,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	if a.Config.FeatureRetro {
 		router.Handle("POST "+prefix+"/api/users/{userId}/retros", a.userOnly(a.entityUserOnly(a.handleRetroCreate())))
 		router.Handle("GET "+prefix+"/api/users/{userId}/retros", a.userOnly(a.entityUserOnly(a.handleRetrosGetByUser())))
+		router.Handle("GET "+prefix+"/api/users/{userId}/retro-actions", a.userOnly(a.entityUserOnly(a.handleGetUserRetroActions())))
 		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retros", a.userOnly(a.teamUserOnly(a.handleGetTeamRetros())))
 		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retros/{retroId}", a.userOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRemoveRetro()))))
 		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-actions", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroActions())))
