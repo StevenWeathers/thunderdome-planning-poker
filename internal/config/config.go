@@ -19,14 +19,14 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.AddConfigPath("$HOME/.config/thunderdome/")
 	viper.AddConfigPath(".")
 
-	viper.SetDefault("http.cookie_hashkey", "strongest-avenger")
+	viper.SetDefault("http.cookie_hashkey", defaultHTTPCookieHashkey)
 	viper.SetDefault("http.port", "8080")
 	viper.SetDefault("http.secure_cookie", true)
 	viper.SetDefault("http.backend_cookie_name", "warriorId")
 	viper.SetDefault("http.session_cookie_name", "sessionId")
 	viper.SetDefault("http.frontend_cookie_name", "warrior")
 	viper.SetDefault("http.auth_state_cookie_name", "authState")
-	viper.SetDefault("http.domain", "thunderdome.dev")
+	viper.SetDefault("http.domain", defaultHTTPDomain)
 	viper.SetDefault("http.secure_protocol", true)
 	viper.SetDefault("http.path_prefix", "")
 	viper.SetDefault("http.write_timeout", 5)
@@ -45,8 +45,8 @@ func InitConfig(logger *otelzap.Logger) Config {
 
 	viper.SetDefault("db.host", "db")
 	viper.SetDefault("db.port", 5432)
-	viper.SetDefault("db.user", "thor")
-	viper.SetDefault("db.pass", "odinson")
+	viper.SetDefault("db.user", defaultDBUser)
+	viper.SetDefault("db.pass", defaultDBPass)
 	viper.SetDefault("db.name", "thunderdome")
 	viper.SetDefault("db.sslmode", "disable")
 	viper.SetDefault("db.max_open_conns", 25)
@@ -63,7 +63,7 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("smtp.pass", "")
 	viper.SetDefault("smtp.auth", "PLAIN")
 
-	viper.SetDefault("config.aes_hashkey", "therevengers")
+	viper.SetDefault("config.aes_hashkey", defaultConfigAESHashkey)
 	viper.SetDefault("config.allowedPointValues",
 		[]string{"0", "1/2", "1", "2", "3", "5", "8", "13", "20", "21", "34", "40", "55", "100", "?", "☕️"})
 	viper.SetDefault("config.defaultPointValues",
@@ -118,7 +118,7 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("feature.storyboard", true)
 	viper.SetDefault("feature.project", false) // work-in-progress
 
-	viper.SetDefault("auth.method", "normal")
+	viper.SetDefault("auth.method", defaultAuthMethod)
 	viper.SetDefault("auth.ldap.url", "")
 	viper.SetDefault("auth.ldap.use_tls", true)
 	viper.SetDefault("auth.ldap.bindname", "")
