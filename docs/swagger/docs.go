@@ -3881,6 +3881,257 @@ const docTemplate = `{
                 ]
             }
         },
+        "/organizations/{orgId}/color-legend-templates": {
+            "get": {
+                "description": "get list of color legend templates for an organization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Get Organization Color Legend Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates an organization color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Create Organization Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new color legend template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.colorLegendTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/color-legend-templates/{templateId}": {
+            "put": {
+                "description": "Updates an organization color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Update Organization Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the color legend template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "color legend template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.colorLegendTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes an organization color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Delete Organization Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the color legend template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
         "/organizations/{orgId}/departments": {
             "get": {
                 "description": "get list of organizations departments",
@@ -4918,6 +5169,257 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/color-legend-templates": {
+            "get": {
+                "description": "get list of color legend templates for a team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Get Team Color Legend Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Create Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new color legend template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.colorLegendTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/color-legend-templates/{templateId}": {
+            "put": {
+                "description": "Updates a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Update Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the color legend template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "color legend template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.colorLegendTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Delete Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the color legend template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     },
                     "500": {
@@ -6742,6 +7244,257 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/teams/{teamId}/color-legend-templates": {
+            "get": {
+                "description": "get list of color legend templates for a team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Get Team Color Legend Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Create Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new color legend template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.colorLegendTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/teams/{teamId}/color-legend-templates/{templateId}": {
+            "put": {
+                "description": "Updates a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Update Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the color legend template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "color legend template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.colorLegendTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Delete Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the color legend template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -10420,6 +11173,257 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/color-legend-templates": {
+            "get": {
+                "description": "get list of color legend templates for a team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Get Team Color Legend Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Create Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new color legend template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.colorLegendTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/color-legend-templates/{templateId}": {
+            "put": {
+                "description": "Updates a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Update Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the color legend template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "color legend template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.colorLegendTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.ColorLegendTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes a team color legend template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "colorLegendTemplate"
+                ],
+                "summary": "Delete Team Color Legend Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the color legend template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -15309,6 +16313,46 @@ const docTemplate = `{
                 }
             }
         },
+        "http.colorLegendTemplateColorRequestBody": {
+            "type": "object",
+            "required": [
+                "color"
+            ],
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1
+                },
+                "legend": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "http.colorLegendTemplateRequestBody": {
+            "type": "object",
+            "required": [
+                "colorLegend",
+                "name"
+            ],
+            "properties": {
+                "colorLegend": {
+                    "type": "array",
+                    "maxItems": 32,
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/http.colorLegendTemplateColorRequestBody"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "http.departmentResponse": {
             "type": "object",
             "properties": {
@@ -15978,6 +17022,23 @@ const docTemplate = `{
                 }
             }
         },
+        "http.storyboardColorRequestBody": {
+            "type": "object",
+            "required": [
+                "color"
+            ],
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1
+                },
+                "legend": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "http.storyboardColumnAddRequestBody": {
             "type": "object",
             "required": [
@@ -16015,6 +17076,13 @@ const docTemplate = `{
                 "storyboardName"
             ],
             "properties": {
+                "colorLegend": {
+                    "type": "array",
+                    "maxItems": 32,
+                    "items": {
+                        "$ref": "#/definitions/http.storyboardColorRequestBody"
+                    }
+                },
                 "facilitatorCode": {
                     "type": "string"
                 },
@@ -16610,6 +17678,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "legend": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.ColorLegendTemplate": {
+            "type": "object",
+            "properties": {
+                "colorLegend": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.Color"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organizationId": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

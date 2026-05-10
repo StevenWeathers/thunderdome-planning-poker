@@ -21,8 +21,20 @@ type Service struct {
 	AESHashKey string
 }
 
-// CreateStoryboard adds a new storyboard
-func (d *Service) CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string) (*thunderdome.Storyboard, error) {
+func buildStoryboardColorLegendJSON(colorLegend []*thunderdome.Color) ([]byte, error) {
+	if len(colorLegend) == 0 {
+		return nil, nil
+	}
+
+	encodedColorLegend, err := json.Marshal(colorLegend)
+	if err != nil {
+		return nil, fmt.Errorf("marshal storyboard color legend error: %w", err)
+	}
+
+	return encodedColorLegend, nil
+}
+
+func (d *Service) createStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, teamID *string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -42,68 +54,81 @@ func (d *Service) CreateStoryboard(ctx context.Context, ownerID string, storyboa
 		encryptedFacilitatorCode = encryptedCode
 	}
 
-	var b = &thunderdome.Storyboard{
+	encodedColorLegend, err := buildStoryboardColorLegendJSON(colorLegend)
+	if err != nil {
+		return nil, err
+	}
+
+	storyboard := &thunderdome.Storyboard{
 		ID:      "",
 		OwnerID: ownerID,
 		Name:    storyboardName,
 		Users:   make([]*thunderdome.StoryboardUser, 0),
 	}
 
-	err := d.DB.QueryRowContext(ctx,
-		`SELECT * FROM thunderdome.sb_create($1, $2, $3, $4, null);`,
-		ownerID,
-		storyboardName,
-		encryptedJoinCode,
-		encryptedFacilitatorCode,
-	).Scan(&b.ID)
+	tx, err := d.DB.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, fmt.Errorf("create storyboard query error: %v", err)
+		return nil, fmt.Errorf("create storyboard begin transaction error: %v", err)
+	}
+	defer tx.Rollback()
+
+	if encodedColorLegend == nil {
+		err = tx.QueryRowContext(ctx,
+			`INSERT INTO thunderdome.storyboard (owner_id, name, join_code, facilitator_code, team_id)
+			VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
+			ownerID,
+			storyboardName,
+			encryptedJoinCode,
+			encryptedFacilitatorCode,
+			teamID,
+		).Scan(&storyboard.ID)
+	} else {
+		err = tx.QueryRowContext(ctx,
+			`INSERT INTO thunderdome.storyboard (owner_id, name, join_code, facilitator_code, team_id, color_legend)
+			VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;`,
+			ownerID,
+			storyboardName,
+			encryptedJoinCode,
+			encryptedFacilitatorCode,
+			teamID,
+			encodedColorLegend,
+		).Scan(&storyboard.ID)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("create storyboard insert error: %v", err)
 	}
 
-	return b, nil
+	if _, err = tx.ExecContext(ctx,
+		`INSERT INTO thunderdome.storyboard_facilitator (storyboard_id, user_id) VALUES ($1, $2);`,
+		storyboard.ID,
+		ownerID,
+	); err != nil {
+		return nil, fmt.Errorf("create storyboard facilitator insert error: %v", err)
+	}
+
+	if _, err = tx.ExecContext(ctx,
+		`INSERT INTO thunderdome.storyboard_user (storyboard_id, user_id) VALUES ($1, $2);`,
+		storyboard.ID,
+		ownerID,
+	); err != nil {
+		return nil, fmt.Errorf("create storyboard user insert error: %v", err)
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("create storyboard commit error: %v", err)
+	}
+
+	return storyboard, nil
+}
+
+// CreateStoryboard adds a new storyboard
+func (d *Service) CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
+	return d.createStoryboard(ctx, ownerID, storyboardName, joinCode, facilitatorCode, nil, colorLegend)
 }
 
 // TeamCreateStoryboard adds a new storyboard associated to a team
-func (d *Service) TeamCreateStoryboard(ctx context.Context, teamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string) (*thunderdome.Storyboard, error) {
-	var encryptedJoinCode string
-	var encryptedFacilitatorCode string
-
-	if joinCode != "" {
-		encryptedCode, codeErr := db.Encrypt(joinCode, d.AESHashKey)
-		if codeErr != nil {
-			return nil, fmt.Errorf("team create storyboard encrypt join_code error: %v", codeErr)
-		}
-		encryptedJoinCode = encryptedCode
-	}
-
-	if facilitatorCode != "" {
-		encryptedCode, codeErr := db.Encrypt(facilitatorCode, d.AESHashKey)
-		if codeErr != nil {
-			return nil, fmt.Errorf("team create storyboard encrypt facilitator_code error: %v", codeErr)
-		}
-		encryptedFacilitatorCode = encryptedCode
-	}
-
-	var b = &thunderdome.Storyboard{
-		ID:      "",
-		OwnerID: ownerID,
-		Name:    storyboardName,
-		Users:   make([]*thunderdome.StoryboardUser, 0),
-	}
-
-	err := d.DB.QueryRowContext(ctx,
-		`SELECT * FROM thunderdome.sb_create($1, $2, $3, $4, $5);`,
-		ownerID,
-		storyboardName,
-		encryptedJoinCode,
-		encryptedFacilitatorCode,
-		teamID,
-	).Scan(&b.ID)
-	if err != nil {
-		return nil, fmt.Errorf("create storyboard query error: %v", err)
-	}
-
-	return b, nil
+func (d *Service) TeamCreateStoryboard(ctx context.Context, teamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
+	return d.createStoryboard(ctx, ownerID, storyboardName, joinCode, facilitatorCode, &teamID, colorLegend)
 }
 
 // EditStoryboard updates the storyboard by ID

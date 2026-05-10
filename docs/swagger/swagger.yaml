@@ -173,6 +173,34 @@ definitions:
       yesterday:
         type: string
     type: object
+  http.colorLegendTemplateColorRequestBody:
+    properties:
+      color:
+        maxLength: 32
+        minLength: 1
+        type: string
+      legend:
+        maxLength: 255
+        type: string
+    required:
+    - color
+    type: object
+  http.colorLegendTemplateRequestBody:
+    properties:
+      colorLegend:
+        items:
+          $ref: '#/definitions/http.colorLegendTemplateColorRequestBody'
+        maxItems: 32
+        minItems: 1
+        type: array
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - colorLegend
+    - name
+    type: object
   http.departmentResponse:
     properties:
       department:
@@ -632,6 +660,18 @@ definitions:
       type:
         type: string
     type: object
+  http.storyboardColorRequestBody:
+    properties:
+      color:
+        maxLength: 32
+        minLength: 1
+        type: string
+      legend:
+        maxLength: 255
+        type: string
+    required:
+    - color
+    type: object
   http.storyboardColumnAddRequestBody:
     properties:
       defaultStoryColor:
@@ -654,6 +694,11 @@ definitions:
     type: object
   http.storyboardCreateRequestBody:
     properties:
+      colorLegend:
+        items:
+          $ref: '#/definitions/http.storyboardColorRequestBody'
+        maxItems: 32
+        type: array
       facilitatorCode:
         type: string
       joinCode:
@@ -1058,6 +1103,31 @@ definitions:
       color:
         type: string
       legend:
+        type: string
+    type: object
+  thunderdome.ColorLegendTemplate:
+    properties:
+      colorLegend:
+        items:
+          $ref: '#/definitions/thunderdome.Color'
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      organizationId:
+        type: string
+      teamId:
+        type: string
+      updatedAt:
         type: string
     type: object
   thunderdome.Credential:
@@ -4726,6 +4796,159 @@ paths:
       summary: Update Organization
       tags:
       - organization
+  /organizations/{orgId}/color-legend-templates:
+    get:
+      description: get list of color legend templates for an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Color Legend Templates
+      tags:
+      - colorLegendTemplate
+    post:
+      description: Creates an organization color legend template
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new color legend template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.colorLegendTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Color Legend Template
+      tags:
+      - colorLegendTemplate
+  /organizations/{orgId}/color-legend-templates/{templateId}:
+    delete:
+      description: Deletes an organization color legend template
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the color legend template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Organization Color Legend Template
+      tags:
+      - colorLegendTemplate
+    put:
+      description: Updates an organization color legend template
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the color legend template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: color legend template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.colorLegendTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Color Legend Template
+      tags:
+      - colorLegendTemplate
   /organizations/{orgId}/departments:
     get:
       description: get list of organizations departments
@@ -5369,6 +5592,159 @@ paths:
       summary: Get Department Team
       tags:
       - organization
+  /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/color-legend-templates:
+    get:
+      description: get list of color legend templates for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Color Legend Templates
+      tags:
+      - colorLegendTemplate
+    post:
+      description: Creates a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new color legend template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.colorLegendTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Color Legend Template
+      tags:
+      - colorLegendTemplate
+  /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/color-legend-templates/{templateId}:
+    delete:
+      description: Deletes a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the color legend template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Color Legend Template
+      tags:
+      - colorLegendTemplate
+    put:
+      description: Updates a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the color legend template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: color legend template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.colorLegendTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Color Legend Template
+      tags:
+      - colorLegendTemplate
   /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users:
     post:
       description: Add a User to Department Team
@@ -6482,6 +6858,159 @@ paths:
       summary: Get Organization Team
       tags:
       - organization
+  /organizations/{orgId}/teams/{teamId}/color-legend-templates:
+    get:
+      description: get list of color legend templates for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Color Legend Templates
+      tags:
+      - colorLegendTemplate
+    post:
+      description: Creates a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new color legend template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.colorLegendTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Color Legend Template
+      tags:
+      - colorLegendTemplate
+  /organizations/{orgId}/teams/{teamId}/color-legend-templates/{templateId}:
+    delete:
+      description: Deletes a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the color legend template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Color Legend Template
+      tags:
+      - colorLegendTemplate
+    put:
+      description: Updates a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the color legend template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: color legend template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.colorLegendTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Color Legend Template
+      tags:
+      - colorLegendTemplate
   /organizations/{orgId}/teams/{teamId}/users:
     post:
       description: Add user to organization team as long as they are already in the
@@ -8774,6 +9303,159 @@ paths:
       summary: Get Users last checkin for team
       tags:
       - team
+  /teams/{teamId}/color-legend-templates:
+    get:
+      description: get list of color legend templates for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Color Legend Templates
+      tags:
+      - colorLegendTemplate
+    post:
+      description: Creates a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new color legend template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.colorLegendTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Color Legend Template
+      tags:
+      - colorLegendTemplate
+  /teams/{teamId}/color-legend-templates/{templateId}:
+    delete:
+      description: Deletes a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the color legend template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Color Legend Template
+      tags:
+      - colorLegendTemplate
+    put:
+      description: Updates a team color legend template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the color legend template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: color legend template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.colorLegendTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.ColorLegendTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Color Legend Template
+      tags:
+      - colorLegendTemplate
   /teams/{teamId}/estimation-scales:
     get:
       description: get list of estimation scales for a specific team

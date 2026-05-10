@@ -33,6 +33,7 @@
   import RetroTemplatesList from '../../components/retrotemplate/RetroTemplatesList.svelte';
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
+  import ColorLegendTemplatesList from '../../components/colorlegendtemplate/ColorLegendTemplatesList.svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
@@ -85,6 +86,7 @@
   let retroActions = $state<RetroAction[]>([]);
   let storyboards = $state([]);
   let estimationScales = $state([]);
+  let colorLegendTemplates = $state([]);
   let showCreateBattle = $state(false);
   let showCreateRetro = $state(false);
   let showCreateStoryboard = $state(false);
@@ -214,6 +216,23 @@
     }
   }
 
+  function getColorLegendTemplates() {
+    if (
+      FeatureStoryboard &&
+      (!AppConfig.SubscriptionsEnabled ||
+        (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed)))
+    ) {
+      xfetch(`${teamPrefix}/color-legend-templates`)
+        .then(res => res.json())
+        .then(function (result) {
+          colorLegendTemplates = result.data;
+        })
+        .catch(function () {
+          notifications.danger('Failed to get color legend templates');
+        });
+    }
+  }
+
   let showRetroActionComments = $state(false);
   let selectedRetroAction = $state<string | null>(null);
   const toggleRetroActionComments = (id: string | null) => () => {
@@ -247,6 +266,7 @@
         getUsers();
         getEstimationScales();
         getRetroTemplates();
+        getColorLegendTemplates();
       })
       .catch(function () {
         notifications.danger($LL.teamGetError());
@@ -695,9 +715,35 @@
 
     {#if showCreateStoryboard}
       <Modal closeModal={toggleCreateStoryboard}>
-        <CreateStoryboard apiPrefix={teamPrefix} {notifications} {router} {xfetch} />
+        <CreateStoryboard
+          apiPrefix={teamPrefix}
+          scope={'team'}
+          {teamId}
+          organizationId={organization.id}
+          subscribed={team.subscribed || organization.subscribed}
+          {notifications}
+          {router}
+          {xfetch}
+        />
       </Modal>
     {/if}
+  {/if}
+
+  {#if FeatureStoryboard}
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && (team.subscribed || organization.subscribed))}
+        <ColorLegendTemplatesList
+          {xfetch}
+          {notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={teamPrefix}
+          templates={colorLegendTemplates}
+          getTemplates={getColorLegendTemplates}
+        />
+      {:else}
+        <FeatureSubscribeBanner salesPitch="Create reusable storyboard color legend templates for your team." />
+      {/if}
+    </div>
   {/if}
 
   {#if FeaturePoker}

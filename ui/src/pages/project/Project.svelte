@@ -34,6 +34,8 @@
     projectKey: '',
     name: '',
     description: '',
+    organizationId: '',
+    teamId: '',
   });
 
   const apiPrefix = '/api';
@@ -304,7 +306,16 @@
 
         {#if showCreateStoryboard}
           <Modal closeModal={toggleCreateStoryboard}>
-            <CreateStoryboard apiPrefix={projectPrefix} scope={'project'} {notifications} {router} {xfetch} />
+            <CreateStoryboard
+              apiPrefix={projectPrefix}
+              scope={'project'}
+              organizationId={project.organizationId}
+              teamId={project.teamId}
+              subscribed={true}
+              {notifications}
+              {router}
+              {xfetch}
+            />
           </Modal>
         {/if}
       {/if}

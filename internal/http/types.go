@@ -107,28 +107,29 @@ type Config struct {
 }
 
 type Service struct {
-	Config               *Config
-	Cookie               CookieManager
-	UIConfig             thunderdome.UIConfig
-	Handler              http.Handler
-	Email                EmailService
-	Logger               *otelzap.Logger
-	UserDataSvc          UserDataSvc
-	ApiKeyDataSvc        APIKeyDataSvc
-	AlertDataSvc         AlertDataSvc
-	AuthDataSvc          AuthDataSvc
-	PokerDataSvc         PokerDataSvc
-	CheckinDataSvc       CheckinDataSvc
-	RetroDataSvc         RetroDataSvc
-	StoryboardDataSvc    StoryboardDataSvc
-	TeamDataSvc          TeamDataSvc
-	OrganizationDataSvc  OrganizationDataSvc
-	AdminDataSvc         AdminDataSvc
-	JiraDataSvc          JiraDataSvc
-	SubscriptionDataSvc  SubscriptionDataSvc
-	RetroTemplateDataSvc RetroTemplateDataSvc
-	SubscriptionSvc      *subscription.Service
-	ProjectDataSvc       ProjectDataSvc
+	Config                     *Config
+	Cookie                     CookieManager
+	UIConfig                   thunderdome.UIConfig
+	Handler                    http.Handler
+	Email                      EmailService
+	Logger                     *otelzap.Logger
+	UserDataSvc                UserDataSvc
+	ApiKeyDataSvc              APIKeyDataSvc
+	AlertDataSvc               AlertDataSvc
+	AuthDataSvc                AuthDataSvc
+	PokerDataSvc               PokerDataSvc
+	CheckinDataSvc             CheckinDataSvc
+	RetroDataSvc               RetroDataSvc
+	StoryboardDataSvc          StoryboardDataSvc
+	TeamDataSvc                TeamDataSvc
+	OrganizationDataSvc        OrganizationDataSvc
+	AdminDataSvc               AdminDataSvc
+	JiraDataSvc                JiraDataSvc
+	SubscriptionDataSvc        SubscriptionDataSvc
+	RetroTemplateDataSvc       RetroTemplateDataSvc
+	ColorLegendTemplateDataSvc ColorLegendTemplateDataSvc
+	SubscriptionSvc            *subscription.Service
+	ProjectDataSvc             ProjectDataSvc
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -562,9 +563,19 @@ type RetroTemplateDataSvc interface {
 	DeleteTeamTemplate(ctx context.Context, teamID string, templateID string) error
 }
 
+type ColorLegendTemplateDataSvc interface {
+	GetColorLegendTemplatesByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.ColorLegendTemplate, error)
+	GetColorLegendTemplatesByTeam(ctx context.Context, teamID string) ([]*thunderdome.ColorLegendTemplate, error)
+	CreateColorLegendTemplate(ctx context.Context, template *thunderdome.ColorLegendTemplate) (*thunderdome.ColorLegendTemplate, error)
+	UpdateOrganizationColorLegendTemplate(ctx context.Context, template *thunderdome.ColorLegendTemplate) (*thunderdome.ColorLegendTemplate, error)
+	UpdateTeamColorLegendTemplate(ctx context.Context, template *thunderdome.ColorLegendTemplate) (*thunderdome.ColorLegendTemplate, error)
+	DeleteOrganizationColorLegendTemplate(ctx context.Context, organizationID string, templateID string) error
+	DeleteTeamColorLegendTemplate(ctx context.Context, teamID string, templateID string) error
+}
+
 type StoryboardDataSvc interface {
-	CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string) (*thunderdome.Storyboard, error)
-	TeamCreateStoryboard(ctx context.Context, TeamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string) (*thunderdome.Storyboard, error)
+	CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error)
+	TeamCreateStoryboard(ctx context.Context, TeamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error)
 	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string) error
 	GetStoryboardByID(storyboardID string, userID string) (*thunderdome.Storyboard, error)
 	GetStoryboardsByUser(userID string, limit int, offset int) ([]*thunderdome.Storyboard, int, error)

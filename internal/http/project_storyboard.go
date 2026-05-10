@@ -87,7 +87,14 @@ func (s *Service) handleCreateProjectStoryboard() http.HandlerFunc {
 			return
 		}
 
-		newStoryboard, err := s.StoryboardDataSvc.CreateStoryboard(ctx, sessionUserID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode)
+		newStoryboard, err := s.StoryboardDataSvc.CreateStoryboard(
+			ctx,
+			sessionUserID,
+			sb.StoryboardName,
+			sb.JoinCode,
+			sb.FacilitatorCode,
+			storyboardBuildLegendFromRequest(sb.ColorLegend),
+		)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleStoryboardCreate error", zap.Error(err),
 				zap.String("entity_user_id", sessionUserID), zap.String("session_user_id", sessionUserID),

@@ -10,6 +10,41 @@ describe('ColorLegendForm component', () => {
     { color: 'blue', legend: 'Low priority' },
   ];
 
+  const notifications = {
+    success: vi.fn(),
+    danger: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  } as any;
+
+  const buildXfetch = ({ subscribed = false, orgId = '', templates = [] as any[], orgTemplates = [] as any[] } = {}) =>
+    vi.fn((endpoint: string) => {
+      if (endpoint === '/api/teams/team-1') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: {
+                team: { subscribed, organization_id: orgId },
+              },
+            }),
+        } as Response);
+      }
+
+      if (endpoint === '/api/teams/team-1/color-legend-templates') {
+        return Promise.resolve({
+          json: () => Promise.resolve({ data: templates }),
+        } as Response);
+      }
+
+      if (endpoint === `/api/organizations/${orgId}/color-legend-templates`) {
+        return Promise.resolve({
+          json: () => Promise.resolve({ data: orgTemplates }),
+        } as Response);
+      }
+
+      return Promise.reject(new Error(`Unexpected endpoint: ${endpoint}`));
+    });
+
   it('should render successfully', () => {
     const handleLegendRevision = vi.fn();
     const toggleEditLegend = vi.fn();
@@ -17,6 +52,9 @@ describe('ColorLegendForm component', () => {
       handleLegendRevision,
       toggleEditLegend,
       colorLegend: legend,
+      xfetch: buildXfetch(),
+      teamId: 'team-1',
+      notifications,
     });
 
     const form = page.getByRole('form', { name: 'colorLegend' });
@@ -30,6 +68,9 @@ describe('ColorLegendForm component', () => {
       handleLegendRevision,
       toggleEditLegend,
       colorLegend: legend,
+      xfetch: buildXfetch(),
+      teamId: 'team-1',
+      notifications,
     });
 
     const modal = container.querySelector('[role="dialog"]');
@@ -43,6 +84,9 @@ describe('ColorLegendForm component', () => {
       handleLegendRevision,
       toggleEditLegend,
       colorLegend: legend,
+      xfetch: buildXfetch(),
+      teamId: 'team-1',
+      notifications,
     });
 
     const inputs = container.querySelectorAll('input[name^="legend-"]');
@@ -59,6 +103,9 @@ describe('ColorLegendForm component', () => {
       toggleEditLegend,
       colorLegend: legend,
       isFacilitator: false,
+      xfetch: buildXfetch(),
+      teamId: 'team-1',
+      notifications,
     });
 
     const inputs = Array.from(container.querySelectorAll('input[name^="legend-"]'));
@@ -74,6 +121,9 @@ describe('ColorLegendForm component', () => {
       toggleEditLegend,
       colorLegend: legend,
       isFacilitator: true,
+      xfetch: buildXfetch(),
+      teamId: 'team-1',
+      notifications,
     });
 
     const inputs = Array.from(container.querySelectorAll('input[name^="legend-"]'));
@@ -89,6 +139,9 @@ describe('ColorLegendForm component', () => {
       toggleEditLegend,
       colorLegend: legend,
       isFacilitator: true,
+      xfetch: buildXfetch(),
+      teamId: 'team-1',
+      notifications,
     });
 
     const input = container.querySelector('input[name="legend-red"]') as HTMLInputElement;
@@ -111,6 +164,9 @@ describe('ColorLegendForm component', () => {
       toggleEditLegend,
       colorLegend: legend,
       isFacilitator: true,
+      xfetch: buildXfetch(),
+      teamId: 'team-1',
+      notifications,
     });
 
     const input = container.querySelector('input[name="legend-blue"]') as HTMLInputElement;
@@ -119,5 +175,78 @@ describe('ColorLegendForm component', () => {
     await userEvent.fill(input, 'Changed');
 
     await expect.element(input).toHaveValue('Changed');
+  });
+
+  it('should show the copy from template button only when subscribed', async () => {
+    const handleLegendRevision = vi.fn();
+    const toggleEditLegend = vi.fn();
+
+    render(ColorLegendForm, {
+      handleLegendRevision,
+      toggleEditLegend,
+      colorLegend: legend,
+      isFacilitator: true,
+      xfetch: buildXfetch({ subscribed: true }),
+      teamId: 'team-1',
+      notifications,
+    });
+
+    await expect.element(page.getByRole('button', { name: 'Copy From Template' })).toBeVisible();
+  });
+
+  it('should copy legend values from a selected template', async () => {
+    const handleLegendRevision = vi.fn();
+    const toggleEditLegend = vi.fn();
+    const xfetch = buildXfetch({
+      subscribed: true,
+      orgId: 'org-1',
+      templates: [
+        {
+          id: 'team-template',
+          name: 'Team Template',
+          description: '',
+          teamId: 'team-1',
+          colorLegend: [
+            { color: 'red', legend: 'Urgent' },
+            { color: 'blue', legend: 'Backlog' },
+          ],
+        },
+      ],
+      orgTemplates: [
+        {
+          id: 'org-template',
+          name: 'Org Template',
+          description: 'Shared legend',
+          organizationId: 'org-1',
+          colorLegend: [
+            { color: 'red', legend: 'Critical' },
+            { color: 'blue', legend: 'Nice to have' },
+          ],
+        },
+      ],
+    });
+
+    const { container } = render(ColorLegendForm, {
+      handleLegendRevision,
+      toggleEditLegend,
+      colorLegend: legend,
+      isFacilitator: true,
+      xfetch,
+      teamId: 'team-1',
+      notifications,
+    });
+
+    await userEvent.click(page.getByRole('button', { name: 'Copy From Template' }));
+
+    await vi.waitFor(() => {
+      expect(page.getByRole('button', { name: 'Select a color legend template...' })).toBeTruthy();
+    });
+    await userEvent.click(page.getByRole('button', { name: 'Select a color legend template...' }));
+    await userEvent.click(page.getByRole('button', { name: /Team: Team Template/i }));
+
+    await expect.element(container.querySelector('input[name="legend-red"]') as HTMLInputElement).toHaveValue('Urgent');
+    await expect
+      .element(container.querySelector('input[name="legend-blue"]') as HTMLInputElement)
+      .toHaveValue('Backlog');
   });
 });
