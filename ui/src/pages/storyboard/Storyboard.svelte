@@ -49,14 +49,16 @@
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
   import type { NotificationService } from '../../types/notifications';
   import GoalColumns from '../../components/storyboard/GoalColumns.svelte';
+  import type { ApiClient } from '../../types/apiclient';
 
   interface Props {
     router: any;
     storyboardId: string;
     notifications: NotificationService;
+    xfetch: ApiClient;
   }
 
-  let { storyboardId, notifications, router }: Props = $props();
+  let { storyboardId, notifications, router, xfetch }: Props = $props();
 
   const { AllowGuests } = AppConfig;
   const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
@@ -677,6 +679,9 @@
     toggleEditLegend={toggleEditLegend()}
     colorLegend={storyboard.color_legend}
     {isFacilitator}
+    teamId={storyboard.teamId}
+    {xfetch}
+    {notifications}
   />
 {/if}
 

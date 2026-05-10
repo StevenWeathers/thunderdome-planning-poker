@@ -27,6 +27,7 @@
   import RetroTemplatesList from '../../components/retrotemplate/RetroTemplatesList.svelte';
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
+  import ColorLegendTemplatesList from '../../components/colorlegendtemplate/ColorLegendTemplatesList.svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
@@ -70,6 +71,7 @@
 
         getEstimationScales();
         getRetroTemplates();
+        getColorLegendTemplates();
       })
       .catch(function () {
         notifications.danger($LL.organizationGetError());
@@ -158,6 +160,7 @@
   let retroTemplates = $state([]);
   let retroTemplateCount = 0;
   let retroTemplatesPage = $state(1);
+  let colorLegendTemplates = $state([]);
 
   const changeRetroTemplatesPage = (evt: any) => {
     retroTemplatesPage = evt.detail;
@@ -177,6 +180,22 @@
         })
         .catch(function () {
           notifications.danger('Failed to get retro templates');
+        });
+    }
+  }
+
+  function getColorLegendTemplates() {
+    if (
+      AppConfig.FeatureStoryboard &&
+      (!AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed))
+    ) {
+      xfetch(`${orgPrefix}/color-legend-templates`)
+        .then(res => res.json())
+        .then(function (result) {
+          colorLegendTemplates = result.data;
+        })
+        .catch(function () {
+          notifications.danger('Failed to get color legend templates');
         });
     }
   }
@@ -277,6 +296,23 @@
         <FeatureSubscribeBanner
           salesPitch="Tailor your Organization's reflection process with custom retrospective templates."
         />
+      {/if}
+    </div>
+  {/if}
+
+  {#if AppConfig.FeatureStoryboard}
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <ColorLegendTemplatesList
+          {xfetch}
+          {notifications}
+          isEntityAdmin={isAdmin}
+          apiPrefix={orgPrefix}
+          templates={colorLegendTemplates}
+          getTemplates={getColorLegendTemplates}
+        />
+      {:else}
+        <FeatureSubscribeBanner salesPitch="Create reusable storyboard color legend templates for your Organization." />
       {/if}
     </div>
   {/if}

@@ -501,6 +501,25 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle("DELETE "+prefix+"/api/maintenance/clean-storyboards", a.userOnly(a.adminOnly(a.handleCleanStoryboards())))
 		router.Handle("GET "+prefix+"/api/storyboards", a.userOnly(a.adminOnly(a.handleGetStoryboards())))
 		router.Handle("GET "+prefix+"/api/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardGet()))
+
+		// Storyboard color legend templates
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/color-legend-templates", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationColorLegendTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/color-legend-templates", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationColorLegendTemplateCreate()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationColorLegendTemplateUpdate()))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationColorLegendTemplateDelete()))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/color-legend-templates", a.userOnly(a.subscribedOrgOnly(a.departmentUserOnly(a.handleGetTeamColorLegendTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/color-legend-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateDelete())))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/color-legend-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamColorLegendTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/color-legend-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateDelete())))))
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/color-legend-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamColorLegendTemplates()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/color-legend-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/teams/{teamId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateDelete())))))
+
 		// Storyboard operations
 		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardDelete(storyboardSvc)))
 		// Storyboard goal operations

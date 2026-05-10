@@ -79,3 +79,32 @@ export type ColorLegend = {
   color: string;
   legend: string;
 };
+
+export type ColorLegendTemplate = {
+  id: string;
+  name: string;
+  description: string;
+  colorLegend: Array<ColorLegend>;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  organizationId?: string;
+  teamId?: string;
+};
+
+export const storyboardTemplateColors = [
+  'gray',
+  'red',
+  'orange',
+  'yellow',
+  'green',
+  'teal',
+  'blue',
+  'indigo',
+  'purple',
+  'pink',
+];
+
+export function buildDefaultColorLegendTemplate(): Array<ColorLegend> {
+  return storyboardTemplateColors.map(color => ({ color, legend: '' }));
+}

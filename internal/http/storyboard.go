@@ -13,10 +13,28 @@ import (
 )
 
 type storyboardCreateRequestBody struct {
-	StoryboardName  string   `json:"storyboardName" validate:"required"`
-	JoinCode        string   `json:"joinCode"`
-	FacilitatorCode string   `json:"facilitatorCode"`
-	ProjectIds      []string `json:"projectIds"`
+	StoryboardName  string                       `json:"storyboardName" validate:"required"`
+	JoinCode        string                       `json:"joinCode"`
+	FacilitatorCode string                       `json:"facilitatorCode"`
+	ProjectIds      []string                     `json:"projectIds"`
+	ColorLegend     []storyboardColorRequestBody `json:"colorLegend" validate:"omitempty,max=32,dive"`
+}
+
+type storyboardColorRequestBody struct {
+	Color  string `json:"color" validate:"required,lowercase,min=1,max=32"`
+	Legend string `json:"legend" validate:"max=255"`
+}
+
+func storyboardBuildLegendFromRequest(requestColors []storyboardColorRequestBody) []*thunderdome.Color {
+	colors := make([]*thunderdome.Color, 0, len(requestColors))
+	for _, color := range requestColors {
+		colors = append(colors, &thunderdome.Color{
+			Color:  color.Color,
+			Legend: color.Legend,
+		})
+	}
+
+	return colors
 }
 
 // handleStoryboardCreate handles creating a storyboard (arena)
@@ -76,10 +94,11 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 
 		var newStoryboard *thunderdome.Storyboard
 		var err error
+		colorLegend := storyboardBuildLegendFromRequest(sb.ColorLegend)
 		// if storyboard created with team association
 		if teamID != "" {
 			if isTeamUserOrAnAdmin(r) {
-				newStoryboard, err = s.StoryboardDataSvc.TeamCreateStoryboard(ctx, teamID, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode)
+				newStoryboard, err = s.StoryboardDataSvc.TeamCreateStoryboard(ctx, teamID, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode, colorLegend)
 
 				if err != nil {
 					s.Logger.Ctx(ctx).Error("handleStoryboardCreate error", zap.Error(err),
@@ -93,7 +112,7 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newStoryboard, err = s.StoryboardDataSvc.CreateStoryboard(ctx, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode)
+			newStoryboard, err = s.StoryboardDataSvc.CreateStoryboard(ctx, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode, colorLegend)
 			if err != nil {
 				s.Logger.Ctx(ctx).Error("handleStoryboardCreate error", zap.Error(err),
 					zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID),
