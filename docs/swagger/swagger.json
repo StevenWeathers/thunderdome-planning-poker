@@ -16822,6 +16822,9 @@
                     "type": "string",
                     "example": "sprint 10 retro"
                 },
+                "skipPrimeDirective": {
+                    "type": "boolean"
+                },
                 "templateId": {
                     "type": "string"
                 }
@@ -16862,6 +16865,9 @@
                     "type": "integer",
                     "maximum": 59,
                     "minimum": 0
+                },
+                "skipPrimeDirective": {
+                    "type": "boolean"
                 },
                 "templateId": {
                     "type": "string"
@@ -18439,6 +18445,9 @@
                 },
                 "phaseTimeLimit": {
                     "type": "integer"
+                },
+                "skipPrimeDirective": {
+                    "type": "boolean"
                 },
                 "teamId": {
                     "type": "string"

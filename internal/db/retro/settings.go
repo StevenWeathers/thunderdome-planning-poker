@@ -18,13 +18,13 @@ func (d *Service) GetSettingsByOrganization(ctx context.Context, orgID string) (
 
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, organization_id, max_votes, allow_multiple_votes, brainstorm_visibility,
-		       phase_time_limit_min, phase_auto_advance, allow_cumulative_voting, template_id,
+		       phase_time_limit_min, phase_auto_advance, allow_cumulative_voting, skip_prime_directive, template_id,
 		       join_code, facilitator_code, created_at, updated_at
 		FROM thunderdome.retro_settings
 		WHERE organization_id = $1`, orgID).Scan(
 		&settings.ID, &settings.OrganizationID, &settings.MaxVotes, &settings.AllowMultipleVotes,
 		&settings.BrainstormVisibility, &settings.PhaseTimeLimit, &settings.PhaseAutoAdvance,
-		&settings.AllowCumulativeVoting, &settings.TemplateID, &joinCode,
+		&settings.AllowCumulativeVoting, &settings.SkipPrimeDirective, &settings.TemplateID, &joinCode,
 		&facilitatorCode, &settings.CreatedAt, &settings.UpdatedAt)
 
 	if err == sql.ErrNoRows {
@@ -61,13 +61,13 @@ func (d *Service) GetSettingsByDepartment(ctx context.Context, deptID string) (*
 
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, department_id, max_votes, allow_multiple_votes, brainstorm_visibility,
-		       phase_time_limit_min, phase_auto_advance, allow_cumulative_voting, template_id,
+		       phase_time_limit_min, phase_auto_advance, allow_cumulative_voting, skip_prime_directive, template_id,
 		       join_code, facilitator_code, created_at, updated_at
 		FROM thunderdome.retro_settings
 		WHERE department_id = $1`, deptID).Scan(
 		&settings.ID, &settings.DepartmentID, &settings.MaxVotes, &settings.AllowMultipleVotes,
 		&settings.BrainstormVisibility, &settings.PhaseTimeLimit, &settings.PhaseAutoAdvance,
-		&settings.AllowCumulativeVoting, &settings.TemplateID, &joinCode,
+		&settings.AllowCumulativeVoting, &settings.SkipPrimeDirective, &settings.TemplateID, &joinCode,
 		&facilitatorCode, &settings.CreatedAt, &settings.UpdatedAt)
 
 	if err == sql.ErrNoRows {
@@ -104,13 +104,13 @@ func (d *Service) GetSettingsByTeam(ctx context.Context, teamID string) (*thunde
 
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, team_id, max_votes, allow_multiple_votes, brainstorm_visibility,
-		       phase_time_limit_min, phase_auto_advance, allow_cumulative_voting, template_id,
+		       phase_time_limit_min, phase_auto_advance, allow_cumulative_voting, skip_prime_directive, template_id,
 		       join_code, facilitator_code, created_at, updated_at
 		FROM thunderdome.retro_settings
 		WHERE team_id = $1`, teamID).Scan(
 		&settings.ID, &settings.TeamID, &settings.MaxVotes, &settings.AllowMultipleVotes,
 		&settings.BrainstormVisibility, &settings.PhaseTimeLimit, &settings.PhaseAutoAdvance,
-		&settings.AllowCumulativeVoting, &settings.TemplateID, &joinCode,
+		&settings.AllowCumulativeVoting, &settings.SkipPrimeDirective, &settings.TemplateID, &joinCode,
 		&facilitatorCode, &settings.CreatedAt, &settings.UpdatedAt)
 
 	if err == sql.ErrNoRows {
@@ -164,12 +164,12 @@ func (d *Service) CreateSettings(ctx context.Context, settings *thunderdome.Retr
 		INSERT INTO thunderdome.retro_settings (
 			organization_id, department_id, team_id, max_votes, allow_multiple_votes,
 			brainstorm_visibility, phase_time_limit_min, phase_auto_advance,
-			allow_cumulative_voting, template_id, join_code, facilitator_code
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, created_at, updated_at`,
+			allow_cumulative_voting, skip_prime_directive, template_id, join_code, facilitator_code
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id, created_at, updated_at`,
 		settings.OrganizationID, settings.DepartmentID, settings.TeamID, settings.MaxVotes,
 		settings.AllowMultipleVotes, settings.BrainstormVisibility, settings.PhaseTimeLimit,
-		settings.PhaseAutoAdvance, settings.AllowCumulativeVoting, settings.TemplateID,
-		encryptedJoinCode, encryptedFacilitatorCode).Scan(
+		settings.PhaseAutoAdvance, settings.AllowCumulativeVoting, settings.SkipPrimeDirective,
+		settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode).Scan(
 		&settings.ID, &settings.CreatedAt, &settings.UpdatedAt,
 	)
 	if err != nil {
@@ -204,11 +204,11 @@ func (d *Service) UpdateSettings(ctx context.Context, settings *thunderdome.Retr
 		UPDATE thunderdome.retro_settings
 		SET max_votes = $1, allow_multiple_votes = $2, brainstorm_visibility = $3,
 		    phase_time_limit_min = $4, phase_auto_advance = $5, allow_cumulative_voting = $6,
-		    template_id = $7, join_code = $8, facilitator_code = $9, updated_at = CURRENT_TIMESTAMP
-		WHERE id = $10 RETURNING created_at, updated_at, organization_id, department_id, team_id`,
+		    skip_prime_directive = $7, template_id = $8, join_code = $9, facilitator_code = $10, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $11 RETURNING created_at, updated_at, organization_id, department_id, team_id`,
 		settings.MaxVotes, settings.AllowMultipleVotes, settings.BrainstormVisibility,
 		settings.PhaseTimeLimit, settings.PhaseAutoAdvance, settings.AllowCumulativeVoting,
-		settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode, settings.ID).Scan(
+		settings.SkipPrimeDirective, settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode, settings.ID).Scan(
 		&settings.CreatedAt, &settings.UpdatedAt, &settings.OrganizationID, &settings.DepartmentID, &settings.TeamID,
 	)
 	if err != nil {
@@ -243,11 +243,11 @@ func (d *Service) UpdateOrganizationSettings(ctx context.Context, settings *thun
 		UPDATE thunderdome.retro_settings
 		SET max_votes = $1, allow_multiple_votes = $2, brainstorm_visibility = $3,
 		    phase_time_limit_min = $4, phase_auto_advance = $5, allow_cumulative_voting = $6,
-		    template_id = $7, join_code = $8, facilitator_code = $9, updated_at = CURRENT_TIMESTAMP
-		WHERE organization_id = $10 RETURNING id, created_at, updated_at`,
+		    skip_prime_directive = $7, template_id = $8, join_code = $9, facilitator_code = $10, updated_at = CURRENT_TIMESTAMP
+		WHERE organization_id = $11 RETURNING id, created_at, updated_at`,
 		settings.MaxVotes, settings.AllowMultipleVotes, settings.BrainstormVisibility,
 		settings.PhaseTimeLimit, settings.PhaseAutoAdvance, settings.AllowCumulativeVoting,
-		settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode, settings.OrganizationID).Scan(
+		settings.SkipPrimeDirective, settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode, settings.OrganizationID).Scan(
 		&settings.ID, &settings.CreatedAt, &settings.UpdatedAt,
 	)
 	if err != nil {
@@ -282,11 +282,11 @@ func (d *Service) UpdateDepartmentSettings(ctx context.Context, settings *thunde
 		UPDATE thunderdome.retro_settings
 		SET max_votes = $1, allow_multiple_votes = $2, brainstorm_visibility = $3,
 		    phase_time_limit_min = $4, phase_auto_advance = $5, allow_cumulative_voting = $6,
-		    template_id = $7, join_code = $8, facilitator_code = $9, updated_at = CURRENT_TIMESTAMP
-		WHERE department_id = $10 RETURNING id, created_at, updated_at`,
+		    skip_prime_directive = $7, template_id = $8, join_code = $9, facilitator_code = $10, updated_at = CURRENT_TIMESTAMP
+		WHERE department_id = $11 RETURNING id, created_at, updated_at`,
 		settings.MaxVotes, settings.AllowMultipleVotes, settings.BrainstormVisibility,
 		settings.PhaseTimeLimit, settings.PhaseAutoAdvance, settings.AllowCumulativeVoting,
-		settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode, settings.DepartmentID).Scan(
+		settings.SkipPrimeDirective, settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode, settings.DepartmentID).Scan(
 		&settings.ID, &settings.CreatedAt, &settings.UpdatedAt,
 	)
 	if err != nil {
@@ -321,11 +321,11 @@ func (d *Service) UpdateTeamSettings(ctx context.Context, settings *thunderdome.
 		UPDATE thunderdome.retro_settings
 		SET max_votes = $1, allow_multiple_votes = $2, brainstorm_visibility = $3,
 		    phase_time_limit_min = $4, phase_auto_advance = $5, allow_cumulative_voting = $6,
-		    template_id = $7, join_code = $8, facilitator_code = $9, updated_at = CURRENT_TIMESTAMP
-		WHERE team_id = $10 RETURNING id, created_at, updated_at`,
+		    skip_prime_directive = $7, template_id = $8, join_code = $9, facilitator_code = $10, updated_at = CURRENT_TIMESTAMP
+		WHERE team_id = $11 RETURNING id, created_at, updated_at`,
 		settings.MaxVotes, settings.AllowMultipleVotes, settings.BrainstormVisibility,
 		settings.PhaseTimeLimit, settings.PhaseAutoAdvance, settings.AllowCumulativeVoting,
-		settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode, settings.TeamID).Scan(
+		settings.SkipPrimeDirective, settings.TemplateID, encryptedJoinCode, encryptedFacilitatorCode, settings.TeamID).Scan(
 		&settings.ID, &settings.CreatedAt, &settings.UpdatedAt,
 	)
 	if err != nil {
@@ -350,14 +350,14 @@ func (d *Service) GetSettingsByID(ctx context.Context, id string) (*thunderdome.
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, organization_id, department_id, team_id, max_votes, allow_multiple_votes,
 		       brainstorm_visibility, phase_time_limit_min, phase_auto_advance,
-		       allow_cumulative_voting, template_id, join_code, facilitator_code,
+		       allow_cumulative_voting, skip_prime_directive, template_id, join_code, facilitator_code,
 		       created_at, updated_at
 		FROM thunderdome.retro_settings
 		WHERE id = $1`, id).Scan(
 		&settings.ID, &settings.OrganizationID, &settings.DepartmentID, &settings.TeamID,
 		&settings.MaxVotes, &settings.AllowMultipleVotes, &settings.BrainstormVisibility,
 		&settings.PhaseTimeLimit, &settings.PhaseAutoAdvance, &settings.AllowCumulativeVoting,
-		&settings.TemplateID, &joinCode, &facilitatorCode,
+		&settings.SkipPrimeDirective, &settings.TemplateID, &joinCode, &facilitatorCode,
 		&settings.CreatedAt, &settings.UpdatedAt)
 
 	if err == sql.ErrNoRows {

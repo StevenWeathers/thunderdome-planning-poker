@@ -43,6 +43,7 @@
     phaseTimeLimit: 0,
     phaseAutoAdvance: false,
     allowCumulativeVoting: false,
+    skipPrimeDirective: false,
     templateId: null,
     joinCode: '',
     facilitatorCode: '',
@@ -95,6 +96,7 @@
           <HeadCol>{$LL.retroPhaseTimeLimitMinLabel()}</HeadCol>
           <HeadCol>{$LL.phaseAutoAdvanceLabel()}</HeadCol>
           <HeadCol>{$LL.allowCumulativeVotingLabel()}</HeadCol>
+          <HeadCol>Skip Prime Directive</HeadCol>
           <!--                <HeadCol>TemplateId</HeadCol>-->
           <HeadCol>{$LL.joinCodeLabelOptional()}</HeadCol>
           <HeadCol>{$LL.facilitatorCodeOptional()}</HeadCol>
@@ -118,6 +120,9 @@
               </RowCol>
               <RowCol>
                 <BooleanDisplay boolValue={defaultSettings.allowCumulativeVoting} />
+              </RowCol>
+              <RowCol>
+                <BooleanDisplay boolValue={defaultSettings.skipPrimeDirective} />
               </RowCol>
               <!--                    <RowCol>-->
               <!--                        {defaultSettings.templateId}-->

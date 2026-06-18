@@ -17,6 +17,7 @@ type retroSettingsRequestBody struct {
 	PhaseTimeLimit        int16   `json:"phaseTimeLimit" validate:"gte=0,lte=59"`
 	PhaseAutoAdvance      bool    `json:"phaseAutoAdvance"`
 	AllowCumulativeVoting bool    `json:"allowCumulativeVoting"`
+	SkipPrimeDirective    bool    `json:"skipPrimeDirective"`
 	TemplateID            *string `json:"templateId" validate:"omitempty,uuid"`
 	JoinCode              string  `json:"joinCode"`
 	FacilitatorCode       string  `json:"facilitatorCode"`
@@ -74,6 +75,7 @@ func (s *Service) handleCreateOrganizationRetroSettings() http.HandlerFunc {
 			PhaseTimeLimit:        settingsReq.PhaseTimeLimit,
 			PhaseAutoAdvance:      settingsReq.PhaseAutoAdvance,
 			AllowCumulativeVoting: settingsReq.AllowCumulativeVoting,
+			SkipPrimeDirective:    settingsReq.SkipPrimeDirective,
 			TemplateID:            settingsReq.TemplateID,
 			JoinCode:              settingsReq.JoinCode,
 			FacilitatorCode:       settingsReq.FacilitatorCode,
@@ -143,6 +145,7 @@ func (s *Service) handleCreateTeamRetroSettings() http.HandlerFunc {
 			PhaseTimeLimit:        settingsReq.PhaseTimeLimit,
 			PhaseAutoAdvance:      settingsReq.PhaseAutoAdvance,
 			AllowCumulativeVoting: settingsReq.AllowCumulativeVoting,
+			SkipPrimeDirective:    settingsReq.SkipPrimeDirective,
 			TemplateID:            settingsReq.TemplateID,
 			JoinCode:              settingsReq.JoinCode,
 			FacilitatorCode:       settingsReq.FacilitatorCode,
@@ -212,6 +215,7 @@ func (s *Service) handleCreateDepartmentRetroSettings() http.HandlerFunc {
 			PhaseTimeLimit:        settingsReq.PhaseTimeLimit,
 			PhaseAutoAdvance:      settingsReq.PhaseAutoAdvance,
 			AllowCumulativeVoting: settingsReq.AllowCumulativeVoting,
+			SkipPrimeDirective:    settingsReq.SkipPrimeDirective,
 			TemplateID:            settingsReq.TemplateID,
 			JoinCode:              settingsReq.JoinCode,
 			FacilitatorCode:       settingsReq.FacilitatorCode,
@@ -317,6 +321,7 @@ func (s *Service) handleOrganizationRetroSettingsUpdate() http.HandlerFunc {
 			PhaseTimeLimit:        settingsReq.PhaseTimeLimit,
 			PhaseAutoAdvance:      settingsReq.PhaseAutoAdvance,
 			AllowCumulativeVoting: settingsReq.AllowCumulativeVoting,
+			SkipPrimeDirective:    settingsReq.SkipPrimeDirective,
 			TemplateID:            settingsReq.TemplateID,
 			JoinCode:              settingsReq.JoinCode,
 			FacilitatorCode:       settingsReq.FacilitatorCode,
@@ -422,6 +427,7 @@ func (s *Service) handleTeamRetroSettingsUpdate() http.HandlerFunc {
 			PhaseTimeLimit:        settingsReq.PhaseTimeLimit,
 			PhaseAutoAdvance:      settingsReq.PhaseAutoAdvance,
 			AllowCumulativeVoting: settingsReq.AllowCumulativeVoting,
+			SkipPrimeDirective:    settingsReq.SkipPrimeDirective,
 			TemplateID:            settingsReq.TemplateID,
 			JoinCode:              settingsReq.JoinCode,
 			FacilitatorCode:       settingsReq.FacilitatorCode,
@@ -529,6 +535,7 @@ func (s *Service) handleDepartmentRetroSettingsUpdate() http.HandlerFunc {
 			PhaseTimeLimit:        settingsReq.PhaseTimeLimit,
 			PhaseAutoAdvance:      settingsReq.PhaseAutoAdvance,
 			AllowCumulativeVoting: settingsReq.AllowCumulativeVoting,
+			SkipPrimeDirective:    settingsReq.SkipPrimeDirective,
 			TemplateID:            settingsReq.TemplateID,
 			JoinCode:              settingsReq.JoinCode,
 			FacilitatorCode:       settingsReq.FacilitatorCode,
