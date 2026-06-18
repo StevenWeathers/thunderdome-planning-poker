@@ -43,7 +43,7 @@
     avatar?: string;
     gravatarHash?: string;
     pictureUrl?: string;
-    met: boolean;
+    status: 'met' | 'unmet' | 'absent';
   }
 
   interface Props {
@@ -257,10 +257,16 @@
     teamUsers: TeamUser[],
     uniqueCheckins: Map<string, TeamCheckin>,
     matcher: (checkin: TeamCheckin | undefined) => boolean,
+    sortMatchedFirst = true,
+    omitWithoutCheckin = false,
+    omitUnmatched = false,
+    unmatchedStatus: GaugeDetailItem['status'] = 'unmet',
   ): GaugeDetailItem[] {
     return [...teamUsers]
       .map((teamUser: TeamUser) => {
         const checkin = uniqueCheckins.get(teamUser.id);
+        const status: GaugeDetailItem['status'] =
+          checkin === undefined ? 'absent' : matcher(checkin) ? 'met' : unmatchedStatus;
 
         return {
           id: teamUser.id,
@@ -268,12 +274,23 @@
           avatar: teamUser.avatar,
           gravatarHash: teamUser.gravatarHash,
           pictureUrl: teamUser.pictureUrl || '',
-          met: matcher(checkin),
+          status,
         };
       })
+      .filter((item: GaugeDetailItem) => {
+        if (omitWithoutCheckin && item.status === 'absent') {
+          return false;
+        }
+
+        if (omitUnmatched && item.status !== 'met') {
+          return false;
+        }
+
+        return true;
+      })
       .sort((left: GaugeDetailItem, right: GaugeDetailItem) => {
-        if (left.met !== right.met) {
-          return left.met ? -1 : 1;
+        if ((left.status === 'met') !== (right.status === 'met')) {
+          return sortMatchedFirst ? (left.status === 'met' ? -1 : 1) : left.status === 'met' ? 1 : -1;
         }
 
         return left.name.localeCompare(right.name);
@@ -610,10 +627,18 @@
     buildGaugeDetails(users, uniqueCheckinsByUser, checkin => checkin !== undefined),
   );
   const goalsGaugeDetails = $derived(
-    buildGaugeDetails(users, uniqueCheckinsByUser, checkin => checkin?.goalsMet === true),
+    buildGaugeDetails(users, uniqueCheckinsByUser, checkin => checkin?.goalsMet === true, false, true),
   );
   const blockedGaugeDetails = $derived(
-    buildGaugeDetails(users, uniqueCheckinsByUser, checkin => (checkin?.blockers || '') !== ''),
+    buildGaugeDetails(
+      users,
+      uniqueCheckinsByUser,
+      checkin => (checkin?.blockers || '') !== '',
+      true,
+      true,
+      false,
+      'absent',
+    ),
   );
   const kudosCount = $derived(kudos.length);
   const kudosModalProps: any = $derived({

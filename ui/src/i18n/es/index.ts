@@ -186,6 +186,7 @@ const es: Translation = {
   getUserError: 'Error al obtener el usuario',
   getUsersError: 'Error al obtener los usuarios',
   goalsMet: 'Objetivos alcanzados',
+  goalsNotMet: 'Objetivos no alcanzados',
   group: 'Grupo',
   groupName: 'Nombre del grupo',
   groupPhaseDescription: 'Arrastre y suelte los comentarios para agruparlos',

@@ -187,6 +187,7 @@ const it: Translation = {
   getUserError: "Errore durante l'ottenimento dell'utente",
   getUsersError: "Errore durante l'ottenimento degli utenti",
   goalsMet: 'Obiettivi raggiunti',
+  goalsNotMet: 'Obiettivi non raggiunti',
   group: 'Gruppo',
   groupName: 'Nome del Gruppo',
   groupPhaseDescription: 'Trascina e raccogli i commenti simili',

@@ -113,6 +113,12 @@
                     >
                       {$LL.goalsMet()}
                     </span>
+                  {:else}
+                    <span
+                      class="whitespace-nowrap rounded-full bg-red-50 px-2.5 py-1 text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                    >
+                      {$LL.goalsNotMet()}
+                    </span>
                   {/if}
                   {#if checkin.blockers !== ''}
                     <span

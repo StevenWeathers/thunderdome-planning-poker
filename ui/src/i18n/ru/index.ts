@@ -186,6 +186,7 @@ const ru: Translation = {
   getUserError: 'Error getting user',
   getUsersError: 'Error getting users',
   goalsMet: 'Goals Met',
+  goalsNotMet: 'Цели не достигнуты',
   group: 'Group',
   groupName: 'Group Name',
   groupPhaseDescription: 'Drag and drop comments to group them together',

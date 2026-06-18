@@ -1,6 +1,6 @@
 <script lang="ts">
   import Snap from 'snapsvg-cjs';
-  import { Check, Minus } from '@lucide/svelte';
+  import { Check, Minus, X } from '@lucide/svelte';
   import UserAvatar from './user/UserAvatar.svelte';
 
   interface Props {
@@ -15,7 +15,7 @@
       avatar?: string;
       gravatarHash?: string;
       pictureUrl?: string;
-      met: boolean;
+      status?: 'met' | 'unmet' | 'absent';
     }>;
   }
 
@@ -30,7 +30,7 @@
     avatar?: string;
     gravatarHash?: string;
     pictureUrl?: string;
-    met: boolean;
+    status?: 'met' | 'unmet' | 'absent';
   };
 
   let gaugeWrapElem: HTMLDivElement | undefined = $state();
@@ -218,16 +218,18 @@
           <span
             class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-700 dark:bg-gray-700 dark:text-slate-200"
           >
-            {detailsList.filter((item: GaugeDetail) => item.met).length}/{detailsList.length}
+            {detailsList.filter((item: GaugeDetail) => item.status === 'met').length}/{detailsList.length}
           </span>
         </div>
 
         <div class="max-h-60 space-y-2 overflow-y-auto pe-1">
           {#each detailsList as item}
             <div
-              class="flex items-center gap-2 rounded-xl px-2 py-1.5 {item.met
+              class="flex items-center gap-2 rounded-xl px-2 py-1.5 {item.status === 'met'
                 ? 'bg-emerald-50/80 dark:bg-emerald-500/10'
-                : 'bg-slate-50 dark:bg-gray-700/60'}"
+                : item.status === 'unmet'
+                  ? 'bg-red-50/80 dark:bg-red-500/10'
+                  : 'bg-slate-50 dark:bg-gray-700/60'}"
             >
               <UserAvatar
                 warriorId={item.id}
@@ -239,20 +241,26 @@
                 class="h-7 w-7 rounded-full"
               />
               <span
-                class="min-w-0 flex-1 truncate text-sm font-medium {item.met
+                class="min-w-0 flex-1 truncate text-sm font-medium {item.status === 'met'
                   ? 'text-slate-900 dark:text-slate-100'
-                  : 'text-slate-500 dark:text-slate-300'}"
+                  : item.status === 'unmet'
+                    ? 'text-red-900 dark:text-red-100'
+                    : 'text-slate-500 dark:text-slate-300'}"
               >
                 {item.name}
               </span>
               <span
-                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full {item.met
+                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full {item.status === 'met'
                   ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
-                  : 'bg-slate-200 text-slate-500 dark:bg-gray-600 dark:text-slate-300'}"
+                  : item.status === 'unmet'
+                    ? 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'
+                    : 'bg-slate-200 text-slate-500 dark:bg-gray-600 dark:text-slate-300'}"
                 aria-hidden="true"
               >
-                {#if item.met}
+                {#if item.status === 'met'}
                   <Check class="h-3.5 w-3.5" />
+                {:else if item.status === 'unmet'}
+                  <X class="h-3.5 w-3.5" />
                 {:else}
                   <Minus class="h-3.5 w-3.5" />
                 {/if}

@@ -766,6 +766,10 @@ type RootTranslation = {
 	 */
 	goalsMet: string
 	/**
+	 * G​o​a​l​s​ ​N​o​t​ ​M​e​t
+	 */
+	goalsNotMet: string
+	/**
 	 * G​r​o​u​p
 	 */
 	group: string
@@ -3788,6 +3792,10 @@ export type TranslationFunctions = {
 	 * Goals Met
 	 */
 	goalsMet: () => LocalizedString
+	/**
+	 * Goals Not Met
+	 */
+	goalsNotMet: () => LocalizedString
 	/**
 	 * Group
 	 */

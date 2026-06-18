@@ -186,6 +186,7 @@ const en: BaseTranslation = {
   getUserError: 'Error getting user',
   getUsersError: 'Error getting users',
   goalsMet: 'Goals Met',
+  goalsNotMet: 'Goals Not Met',
   group: 'Group',
   groupName: 'Group Name',
   groupPhaseDescription: 'Drag and drop comments to group them together',
