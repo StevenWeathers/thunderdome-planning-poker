@@ -271,6 +271,10 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
+			if err.Error() == "CHECKIN_ALREADY_EXISTS" {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
 			s.Logger.Ctx(ctx).Error("handleCheckinCreate error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("entity_user_id", c.UserID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)

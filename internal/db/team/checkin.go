@@ -11,6 +11,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
@@ -22,6 +23,17 @@ type CheckinService struct {
 	DB                  *sql.DB
 	Logger              *otelzap.Logger
 	HTMLSanitizerPolicy *bluemonday.Policy
+}
+
+const errCheckinAlreadyExists = "CHECKIN_ALREADY_EXISTS"
+
+func isCheckinAlreadyExistsError(err error) bool {
+	var pgErr *pgconn.PgError
+	if !errors.As(err, &pgErr) {
+		return false
+	}
+
+	return pgErr.Code == "23505" && pgErr.ConstraintName == "team_checkin_team_id_user_id_checkin_date_uidx"
 }
 
 // CheckinList gets a list of team checkins by day
@@ -182,6 +194,10 @@ func (d *CheckinService) CheckinCreate(
 		goalsMet,
 		sql.NullString{String: checkinDate, Valid: checkinDate != ""},
 	); err != nil {
+		if isCheckinAlreadyExistsError(err) {
+			return errors.New(errCheckinAlreadyExists)
+		}
+
 		return fmt.Errorf("checkin create error: %v", err)
 	}
 
