@@ -187,6 +187,7 @@ const fa: Translation = {
   getUserError: 'خطا در دریافت کاربر',
   getUsersError: 'خطا در دریافت کاربران',
   goalsMet: 'اهداف برآورده شد',
+  goalsNotMet: 'اهداف برآورده نشد',
   group: 'گروه',
   groupName: 'نام گروه',
   groupPhaseDescription: 'برای گروه‌بندی نظرات، آن‌ها را درگ اند دراپ کنید',

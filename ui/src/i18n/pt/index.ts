@@ -186,6 +186,7 @@ const pt: Translation = {
   getUserError: 'Erro ao obter usuário',
   getUsersError: 'Erro ao obter usuários',
   goalsMet: 'Objetivos atingidas',
+  goalsNotMet: 'Objetivos não atingidos',
   group: 'Grupo',
   groupName: 'Nome do grupo',
   groupPhaseDescription: 'Arraste e solte comentários para agrupá-los',

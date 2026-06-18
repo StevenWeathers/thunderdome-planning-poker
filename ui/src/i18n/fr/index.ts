@@ -187,6 +187,7 @@ const fr: Translation = {
   getUserError: "Erreur lors de la récupération de l'utilisateur",
   getUsersError: 'Erreur lors de la récupération des utilisateurs',
   goalsMet: 'Objectifs atteints',
+  goalsNotMet: 'Objectifs non atteints',
   group: 'Groupe',
   groupName: 'Nom du groupe',
   groupPhaseDescription: 'Faites glisser et déposez les commentaires pour les regrouper',

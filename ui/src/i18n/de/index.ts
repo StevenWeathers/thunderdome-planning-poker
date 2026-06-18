@@ -186,6 +186,7 @@ const de: Translation = {
   getUserError: 'Fehler beim Abrufen des Benutzers',
   getUsersError: 'Fehler beim Abrufen der Benutzer',
   goalsMet: 'Ziele erreicht',
+  goalsNotMet: 'Ziele nicht erreicht',
   group: 'Gruppe',
   groupName: 'Gruppenname',
   groupPhaseDescription: 'Ziehen Sie Kommentare per Drag & Drop, um sie zu gruppieren',
