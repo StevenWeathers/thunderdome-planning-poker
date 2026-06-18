@@ -128,6 +128,7 @@ type RetroSettings struct {
 	PhaseTimeLimit        int16     `json:"phaseTimeLimit"`
 	PhaseAutoAdvance      bool      `json:"phaseAutoAdvance"`
 	AllowCumulativeVoting bool      `json:"allowCumulativeVoting"`
+	SkipPrimeDirective    bool      `json:"skipPrimeDirective"`
 	TemplateID            *string   `json:"templateId"`
 	JoinCode              string    `json:"joinCode"`
 	FacilitatorCode       string    `json:"facilitatorCode"`

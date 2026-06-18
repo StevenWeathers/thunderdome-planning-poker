@@ -24,14 +24,18 @@ type Service struct {
 func (d *Service) CreateRetro(
 	ctx context.Context, ownerID, teamID string, retroName, joinCode,
 	facilitatorCode string, maxVotes int, brainstormVisibility string, phaseTimeLimitMin int,
-	phaseAutoAdvance bool, allowCumulativeVoting bool, hideVotesDuringVoting bool, templateID string) (*thunderdome.Retro, error) {
+	phaseAutoAdvance bool, allowCumulativeVoting bool, hideVotesDuringVoting bool, skipPrimeDirective bool, templateID string) (*thunderdome.Retro, error) {
 	var encryptedFacilitatorCode string
 	var encryptedJoinCode string
+	phase := "intro"
+	if skipPrimeDirective {
+		phase = "brainstorm"
+	}
 	var retro = &thunderdome.Retro{
 		OwnerID:               ownerID,
 		TeamID:                teamID,
 		Name:                  retroName,
-		Phase:                 "intro",
+		Phase:                 phase,
 		PhaseTimeLimitMin:     phaseTimeLimitMin,
 		PhaseAutoAdvance:      phaseAutoAdvance,
 		Users:                 make([]*thunderdome.RetroUser, 0),
@@ -69,13 +73,13 @@ func (d *Service) CreateRetro(
 
 	err = tx.QueryRowContext(ctx, `
 		INSERT INTO thunderdome.retro (
-			owner_id, team_id, name, join_code, facilitator_code,
+			owner_id, team_id, name, phase, join_code, facilitator_code,
 			max_votes, brainstorm_visibility, phase_time_limit_min, phase_auto_advance,
 			allow_cumulative_voting, hide_votes_during_voting, template_id
 		)
-		VALUES ($1, NULLIF($2::text, '')::uuid, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+		VALUES ($1, NULLIF($2::text, '')::uuid, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 		RETURNING id, created_date, updated_date;
-	`, ownerID, teamID, retroName, encryptedJoinCode, encryptedFacilitatorCode, maxVotes, brainstormVisibility,
+	`, ownerID, teamID, retroName, phase, encryptedJoinCode, encryptedFacilitatorCode, maxVotes, brainstormVisibility,
 		phaseTimeLimitMin, phaseAutoAdvance, allowCumulativeVoting, hideVotesDuringVoting, templateID).Scan(
 		&retro.ID, &retro.CreatedDate, &retro.UpdatedDate,
 	)

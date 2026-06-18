@@ -522,6 +522,8 @@ definitions:
       retroName:
         example: sprint 10 retro
         type: string
+      skipPrimeDirective:
+        type: boolean
       templateId:
         type: string
     required:
@@ -555,6 +557,8 @@ definitions:
         maximum: 59
         minimum: 0
         type: integer
+      skipPrimeDirective:
+        type: boolean
       templateId:
         type: string
     type: object
@@ -1609,6 +1613,8 @@ definitions:
         type: boolean
       phaseTimeLimit:
         type: integer
+      skipPrimeDirective:
+        type: boolean
       teamId:
         type: string
       templateId:

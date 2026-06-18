@@ -44,6 +44,7 @@
     phaseAutoAdvance: true,
     allowCumulativeVoting: false,
     hideVotesDuringVoting: false,
+    skipPrimeDirective: false,
   };
   let retroSettings = $state({ ...defaultRetroSettings });
   let orgRetroSettings = $state({});
@@ -93,6 +94,7 @@
       allowCumulativeVoting: retroSettings.allowCumulativeVoting,
       templateId: retroSettings.templateId,
       hideVotesDuringVoting: retroSettings.hideVotesDuringVoting,
+      skipPrimeDirective: retroSettings.skipPrimeDirective,
     };
 
     if (scope !== 'project' && retroSettings.selectedTeam !== '') {
@@ -438,6 +440,15 @@
       id="hideVotesDuringVoting"
       name="hideVotesDuringVoting"
       label={`Hide Votes During Voting Phase`}
+    />
+  </div>
+
+  <div class="mb-4">
+    <Checkbox
+      bind:checked={retroSettings.skipPrimeDirective}
+      id="skipPrimeDirective"
+      name="skipPrimeDirective"
+      label={`Skip Prime Directive phase`}
     />
   </div>
 

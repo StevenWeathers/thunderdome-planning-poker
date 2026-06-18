@@ -40,6 +40,7 @@
       phaseTimeLimit: 0,
       phaseAutoAdvance: true,
       allowCumulativeVoting: false,
+      skipPrimeDirective: false,
       templateId: null,
       joinCode: '',
       facilitatorCode: '',
@@ -166,6 +167,15 @@
         id="phaseAutoAdvance"
         name="phaseAutoAdvance"
         label={$LL.phaseAutoAdvanceLabel()}
+      />
+    </div>
+
+    <div>
+      <Checkbox
+        bind:checked={retroSettings.skipPrimeDirective}
+        id="skipPrimeDirective"
+        name="skipPrimeDirective"
+        label={`Skip Prime Directive phase`}
       />
     </div>
 

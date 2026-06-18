@@ -16830,6 +16830,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "sprint 10 retro"
                 },
+                "skipPrimeDirective": {
+                    "type": "boolean"
+                },
                 "templateId": {
                     "type": "string"
                 }
@@ -16870,6 +16873,9 @@ const docTemplate = `{
                     "type": "integer",
                     "maximum": 59,
                     "minimum": 0
+                },
+                "skipPrimeDirective": {
+                    "type": "boolean"
                 },
                 "templateId": {
                     "type": "string"
@@ -18447,6 +18453,9 @@ const docTemplate = `{
                 },
                 "phaseTimeLimit": {
                     "type": "integer"
+                },
+                "skipPrimeDirective": {
+                    "type": "boolean"
                 },
                 "teamId": {
                     "type": "string"
