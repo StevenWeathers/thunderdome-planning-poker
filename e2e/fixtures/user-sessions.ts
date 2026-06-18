@@ -30,47 +30,35 @@ class UserPage {
   }
 
   public async createPokerGame(game) {
-    const b = await this.page.request.post(
-      `/api/users/${this.user.id}/battles`,
-      {
-        data: game,
-      },
-    );
+    const b = await this.page.request.post(`/api/users/${this.user.id}/battles`, {
+      data: game,
+    });
     const res = await b.json();
     return res.data;
   }
 
   public async createRetro(retro) {
-    const b = await this.page.request.post(
-      `/api/users/${this.user.id}/retros`,
-      {
-        data: retro,
-      },
-    );
+    const b = await this.page.request.post(`/api/users/${this.user.id}/retros`, {
+      data: retro,
+    });
     const res = await b.json();
     return res.data;
   }
 
   public async createStoryboard(storyboard) {
-    const b = await this.page.request.post(
-      `/api/users/${this.user.id}/storyboards`,
-      {
-        data: storyboard,
-      },
-    );
+    const b = await this.page.request.post(`/api/users/${this.user.id}/storyboards`, {
+      data: storyboard,
+    });
     const res = await b.json();
     return res.data;
   }
 
   public async createOrg(name: string) {
-    const ruo = await this.page.request.post(
-      `/api/users/${this.user.id}/organizations`,
-      {
-        data: {
-          name: name,
-        },
+    const ruo = await this.page.request.post(`/api/users/${this.user.id}/organizations`, {
+      data: {
+        name: name,
       },
-    );
+    });
     const regUserOrg = await ruo.json();
     return regUserOrg.data;
   }
@@ -86,27 +74,21 @@ class UserPage {
   }
 
   public async createOrgTeam(orgId, name) {
-    const t = await this.page.request.post(
-      `/api/organizations/${orgId}/teams`,
-      {
-        data: {
-          name: name,
-        },
+    const t = await this.page.request.post(`/api/organizations/${orgId}/teams`, {
+      data: {
+        name: name,
       },
-    );
+    });
     const team = await t.json();
     return team.data;
   }
 
   public async createOrgDepartment(orgId, name) {
-    const d = await this.page.request.post(
-      `/api/organizations/${orgId}/departments`,
-      {
-        data: {
-          name: name,
-        },
+    const d = await this.page.request.post(`/api/organizations/${orgId}/departments`, {
+      data: {
+        name: name,
       },
-    );
+    });
     const department = await d.json();
     return department.data;
   }
@@ -125,14 +107,11 @@ class UserPage {
   }
 
   public async createApikey(name) {
-    const k = await this.page.request.post(
-      `/api/users/${this.user.id}/apikeys`,
-      {
-        data: {
-          name,
-        },
+    const k = await this.page.request.post(`/api/users/${this.user.id}/apikeys`, {
+      data: {
+        name,
       },
-    );
+    });
     const res = await k.json();
     return res.data;
   }
@@ -152,30 +131,19 @@ export const test = base.extend<MyFixtures>({
     await use(await UserPage.create(browser, "storage/adminStorageState.json"));
   },
   registeredPage: async ({ browser }, use) => {
-    await use(
-      await UserPage.create(browser, "storage/registeredStorageState.json"),
-    );
+    await use(await UserPage.create(browser, "storage/registeredStorageState.json"));
   },
   verifiedPage: async ({ browser }, use) => {
-    await use(
-      await UserPage.create(browser, "storage/verifiedStorageState.json"),
-    );
+    await use(await UserPage.create(browser, "storage/verifiedStorageState.json"));
   },
   guestPage: async ({ browser }, use) => {
     await use(await UserPage.create(browser, "storage/guestStorageState.json"));
   },
   deleteGuestPage: async ({ browser }, use) => {
-    await use(
-      await UserPage.create(browser, "storage/deleteGuestStorageState.json"),
-    );
+    await use(await UserPage.create(browser, "storage/deleteGuestStorageState.json"));
   },
   deleteRegisteredPage: async ({ browser }, use) => {
-    await use(
-      await UserPage.create(
-        browser,
-        "storage/deleteRegisteredStorageState.json",
-      ),
-    );
+    await use(await UserPage.create(browser, "storage/deleteRegisteredStorageState.json"));
   },
 });
 

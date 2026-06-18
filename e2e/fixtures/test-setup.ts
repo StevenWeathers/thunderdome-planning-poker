@@ -30,11 +30,7 @@ export type TestFixtures = {
 
 const createApiUserFixture = (userName: keyof TestUsers) => {
   return async (
-    {
-      playwright,
-      testUsers,
-      baseURL,
-    }: { playwright: any; testUsers: TestUsers },
+    { playwright, testUsers, baseURL }: { playwright: any; testUsers: TestUsers },
     use: (arg: ApiUser) => Promise<void>,
   ) => {
     const apiUser = testUsers[userName];

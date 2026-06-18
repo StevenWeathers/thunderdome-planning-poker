@@ -21,15 +21,10 @@ test.describe("Department page", { tag: "@department" }, () => {
       const testDepartmentName = "E2E TEST DEPARTMENT";
       const departmentPage = new DepartmentPage(registeredPage.page);
       const org = await registeredPage.createOrg(testOrgName);
-      const dept = await registeredPage.createOrgDepartment(
-        org.id,
-        testDepartmentName,
-      );
+      const dept = await registeredPage.createOrgDepartment(org.id, testDepartmentName);
 
       await departmentPage.goto(org.id, dept.id);
-      await expect(departmentPage.page.locator("h1")).toContainText(
-        testDepartmentName,
-      );
+      await expect(departmentPage.page.locator("h1")).toContainText(testDepartmentName);
     });
   });
 });

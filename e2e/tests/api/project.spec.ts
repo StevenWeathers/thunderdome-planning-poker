@@ -3,9 +3,7 @@ import { expect, test } from "@fixtures/test-setup";
 test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
   // Admin Project Operations
   test.describe("GET /admin/projects", () => {
-    test("returns paginated list of projects for Global Admin", async ({
-      adminApiUser,
-    }) => {
+    test("returns paginated list of projects for Global Admin", async ({ adminApiUser }) => {
       const response = await adminApiUser.context.get("admin/projects");
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
@@ -19,18 +17,14 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       });
     });
 
-    test("returns forbidden for non-admin user", async ({
-      registeredApiUser,
-    }) => {
+    test("returns forbidden for non-admin user", async ({ registeredApiUser }) => {
       const response = await registeredApiUser.context.get("admin/projects");
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
 
     test("supports pagination parameters", async ({ adminApiUser }) => {
-      const response = await adminApiUser.context.get(
-        "admin/projects?limit=5&offset=0",
-      );
+      const response = await adminApiUser.context.get("admin/projects?limit=5&offset=0");
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const projects = await response.json();
@@ -65,10 +59,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       });
     });
 
-    test("creates project with team association", async ({
-      adminApiUser,
-      teamAdminApiUser,
-    }) => {
+    test("creates project with team association", async ({ adminApiUser, teamAdminApiUser }) => {
       const projectData = {
         projectKey: "TEAMPROJ",
         name: "Test Team Project",
@@ -103,10 +94,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       expect(response.status()).toBe(400);
     });
 
-    test("fails with invalid project key format", async ({
-      adminApiUser,
-      orgOwnerApiUser,
-    }) => {
+    test("fails with invalid project key format", async ({ adminApiUser, orgOwnerApiUser }) => {
       const projectData = {
         projectKey: "x", // Too short
         name: "Invalid Key Project",
@@ -120,10 +108,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       expect(response.status()).toBe(400);
     });
 
-    test("returns forbidden for non-admin user", async ({
-      registeredApiUser,
-      orgOwnerApiUser,
-    }) => {
+    test("returns forbidden for non-admin user", async ({ registeredApiUser, orgOwnerApiUser }) => {
       const projectData = {
         projectKey: "FORBIDDEN",
         name: "Unauthorized Project",
@@ -150,9 +135,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         orgOwnerApiUser.user.orgs[0].id,
       );
 
-      const response = await adminApiUser.context.get(
-        `admin/projects/${project.id}`,
-      );
+      const response = await adminApiUser.context.get(`admin/projects/${project.id}`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const projectData = await response.json();
@@ -165,9 +148,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
 
     test("returns 404 for non-existent project", async ({ adminApiUser }) => {
       const fakeId = "00000000-0000-0000-0000-000000000000";
-      const response = await adminApiUser.context.get(
-        `admin/projects/${fakeId}`,
-      );
+      const response = await adminApiUser.context.get(`admin/projects/${fakeId}`);
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(404);
     });
@@ -183,9 +164,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         orgOwnerApiUser.user.orgs[0].id,
       );
 
-      const response = await registeredApiUser.context.get(
-        `admin/projects/${project.id}`,
-      );
+      const response = await registeredApiUser.context.get(`admin/projects/${project.id}`);
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -210,10 +189,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         organizationId: orgOwnerApiUser.user.orgs[0].id,
       };
 
-      const response = await adminApiUser.context.put(
-        `admin/projects/${project.id}`,
-        { data: updateData },
-      );
+      const response = await adminApiUser.context.put(`admin/projects/${project.id}`, {
+        data: updateData,
+      });
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const updatedProject = await response.json();
@@ -241,10 +219,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         organizationId: orgOwnerApiUser.user.orgs[0].id,
       };
 
-      const response = await registeredApiUser.context.put(
-        `admin/projects/${project.id}`,
-        { data: updateData },
-      );
+      const response = await registeredApiUser.context.put(`admin/projects/${project.id}`, {
+        data: updateData,
+      });
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -262,9 +239,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         orgOwnerApiUser.user.orgs[0].id,
       );
 
-      const response = await adminApiUser.context.delete(
-        `admin/projects/${project.id}`,
-      );
+      const response = await adminApiUser.context.delete(`admin/projects/${project.id}`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
     });
@@ -280,9 +255,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         orgOwnerApiUser.user.orgs[0].id,
       );
 
-      const response = await registeredApiUser.context.delete(
-        `admin/projects/${project.id}`,
-      );
+      const response = await registeredApiUser.context.delete(`admin/projects/${project.id}`);
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -290,13 +263,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
 
   // Organization Project Operations
   test.describe("GET /organizations/{orgId}/projects", () => {
-    test("Organization Admin can view organization projects", async ({
-      orgAdminApiUser,
-    }) => {
+    test("Organization Admin can view organization projects", async ({ orgAdminApiUser }) => {
       const orgId = orgAdminApiUser.user.orgs[0].id;
-      const response = await orgAdminApiUser.context.get(
-        `organizations/${orgId}/projects`,
-      );
+      const response = await orgAdminApiUser.context.get(`organizations/${orgId}/projects`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const projects = await response.json();
@@ -304,13 +273,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       expect(Array.isArray(projects.data)).toBeTruthy();
     });
 
-    test("Organization Member can view organization projects", async ({
-      orgOwnerApiUser,
-    }) => {
+    test("Organization Member can view organization projects", async ({ orgOwnerApiUser }) => {
       const orgId = orgOwnerApiUser.user.orgs[0].id;
-      const response = await orgOwnerApiUser.context.get(
-        `organizations/${orgId}/projects`,
-      );
+      const response = await orgOwnerApiUser.context.get(`organizations/${orgId}/projects`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const projects = await response.json();
@@ -322,9 +287,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       orgOwnerApiUser,
     }) => {
       const orgId = orgOwnerApiUser.user.orgs[0].id;
-      const response = await registeredApiUser.context.get(
-        `organizations/${orgId}/projects`,
-      );
+      const response = await registeredApiUser.context.get(`organizations/${orgId}/projects`);
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -334,18 +297,14 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       orgOwnerApiUser,
     }) => {
       const orgId = orgOwnerApiUser.user.orgs[0].id;
-      const response = await adminApiUser.context.get(
-        `organizations/${orgId}/projects`,
-      );
+      const response = await adminApiUser.context.get(`organizations/${orgId}/projects`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
     });
   });
 
   test.describe("POST /organizations/{orgId}/projects", () => {
-    test("Organization Admin can create organization project", async ({
-      orgAdminApiUser,
-    }) => {
+    test("Organization Admin can create organization project", async ({ orgAdminApiUser }) => {
       const orgId = orgAdminApiUser.user.orgs[0].id;
       const projectData = {
         projectKey: "ORGPROJ",
@@ -353,10 +312,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         description: "Created by org admin",
       };
 
-      const response = await orgAdminApiUser.context.post(
-        `organizations/${orgId}/projects`,
-        { data: projectData },
-      );
+      const response = await orgAdminApiUser.context.post(`organizations/${orgId}/projects`, {
+        data: projectData,
+      });
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const project = await response.json();
@@ -376,10 +334,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         name: "No Permission Project",
       };
 
-      const response = await orgOwnerApiUser.context.post(
-        `organizations/${orgId}/projects`,
-        { data: projectData },
-      );
+      const response = await orgOwnerApiUser.context.post(`organizations/${orgId}/projects`, {
+        data: projectData,
+      });
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -394,10 +351,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         name: "Not Member Project",
       };
 
-      const response = await registeredApiUser.context.post(
-        `organizations/${orgId}/projects`,
-        { data: projectData },
-      );
+      const response = await registeredApiUser.context.post(`organizations/${orgId}/projects`, {
+        data: projectData,
+      });
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -501,10 +457,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       testDatabase,
     }) => {
       const orgId = deptAdminApiUser.user.orgs[0].id;
-      const department = await testDatabase.seeder.createDepartment(
-        "Test Dept DAP",
-        orgId,
-      );
+      const department = await testDatabase.seeder.createDepartment("Test Dept DAP", orgId);
 
       const response = await deptAdminApiUser.context.get(
         `organizations/${orgId}/departments/${department.id}/projects`,
@@ -520,10 +473,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       testDatabase,
     }) => {
       const orgId = deptTeamApiUser.user.orgs[0].id;
-      const department = await testDatabase.seeder.createDepartment(
-        "Test Dept DMDP",
-        orgId,
-      );
+      const department = await testDatabase.seeder.createDepartment("Test Dept DMDP", orgId);
 
       const response = await deptTeamApiUser.context.get(
         `organizations/${orgId}/departments/${department.id}/projects`,
@@ -538,10 +488,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       orgOwnerApiUser,
     }) => {
       const orgId = orgOwnerApiUser.user.orgs[0].id;
-      const department = await testDatabase.seeder.createDepartment(
-        "Test Dept NMM",
-        orgId,
-      );
+      const department = await testDatabase.seeder.createDepartment("Test Dept NMM", orgId);
 
       const response = await registeredApiUser.context.get(
         `organizations/${orgId}/departments/${department.id}/projects`,
@@ -557,10 +504,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       testDatabase,
     }) => {
       const orgId = deptAdminApiUser.user.orgs[0].id;
-      const department = await testDatabase.seeder.createDepartment(
-        "Test Dept DAD",
-        orgId,
-      );
+      const department = await testDatabase.seeder.createDepartment("Test Dept DAD", orgId);
 
       const projectData = {
         projectKey: "DEPTPROJ",
@@ -587,10 +531,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       testDatabase,
     }) => {
       const orgId = deptTeamApiUser.user.orgs[0].id;
-      const department = await testDatabase.seeder.createDepartment(
-        "Test Dept DMP",
-        orgId,
-      );
+      const department = await testDatabase.seeder.createDepartment("Test Dept DMP", orgId);
 
       const projectData = {
         projectKey: "NOPERM",
@@ -610,9 +551,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
   test.describe("GET /teams/{teamId}/projects", () => {
     test("Team Admin can view team projects", async ({ teamAdminApiUser }) => {
       const teamId = teamAdminApiUser.user.teams[0].id;
-      const response = await teamAdminApiUser.context.get(
-        `teams/${teamId}/projects`,
-      );
+      const response = await teamAdminApiUser.context.get(`teams/${teamId}/projects`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const projects = await response.json();
@@ -622,9 +561,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
 
     test("Team Member can view team projects", async ({ orgTeamApiUser }) => {
       const teamId = orgTeamApiUser.user.teams[0].id;
-      const response = await orgTeamApiUser.context.get(
-        `teams/${teamId}/projects`,
-      );
+      const response = await orgTeamApiUser.context.get(`teams/${teamId}/projects`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const projects = await response.json();
@@ -636,30 +573,21 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       teamAdminApiUser,
     }) => {
       const teamId = teamAdminApiUser.user.teams[0].id;
-      const response = await registeredApiUser.context.get(
-        `teams/${teamId}/projects`,
-      );
+      const response = await registeredApiUser.context.get(`teams/${teamId}/projects`);
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
 
-    test("Global Admin can view any team projects", async ({
-      adminApiUser,
-      teamAdminApiUser,
-    }) => {
+    test("Global Admin can view any team projects", async ({ adminApiUser, teamAdminApiUser }) => {
       const teamId = teamAdminApiUser.user.teams[0].id;
-      const response = await adminApiUser.context.get(
-        `teams/${teamId}/projects`,
-      );
+      const response = await adminApiUser.context.get(`teams/${teamId}/projects`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
     });
   });
 
   test.describe("POST /teams/{teamId}/projects", () => {
-    test.skip("Team Admin can create team project", async ({
-      teamAdminApiUser,
-    }) => {
+    test.skip("Team Admin can create team project", async ({ teamAdminApiUser }) => {
       const teamId = teamAdminApiUser.user.teams[0].id;
       const projectData = {
         projectKey: "TEAMPROJ",
@@ -667,10 +595,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         description: "Created by team admin",
       };
 
-      const response = await teamAdminApiUser.context.post(
-        `teams/${teamId}/projects`,
-        { data: projectData },
-      );
+      const response = await teamAdminApiUser.context.post(`teams/${teamId}/projects`, {
+        data: projectData,
+      });
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const project = await response.json();
@@ -681,19 +608,16 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       });
     });
 
-    test("Team Member cannot create team project", async ({
-      orgTeamApiUser,
-    }) => {
+    test("Team Member cannot create team project", async ({ orgTeamApiUser }) => {
       const teamId = orgTeamApiUser.user.teams[0].id;
       const projectData = {
         projectKey: "NOPERM",
         name: "No Permission Project",
       };
 
-      const response = await orgTeamApiUser.context.post(
-        `teams/${teamId}/projects`,
-        { data: projectData },
-      );
+      const response = await orgTeamApiUser.context.post(`teams/${teamId}/projects`, {
+        data: projectData,
+      });
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -708,20 +632,16 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         name: "Not Member Project",
       };
 
-      const response = await registeredApiUser.context.post(
-        `teams/${teamId}/projects`,
-        { data: projectData },
-      );
+      const response = await registeredApiUser.context.post(`teams/${teamId}/projects`, {
+        data: projectData,
+      });
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
   });
 
   test.describe("PUT /teams/{teamId}/projects/{projectId}", () => {
-    test.skip("Team Admin can update team project", async ({
-      teamAdminApiUser,
-      testDatabase,
-    }) => {
+    test.skip("Team Admin can update team project", async ({ teamAdminApiUser, testDatabase }) => {
       const teamId = teamAdminApiUser.user.teams[0].id;
       const project = await testDatabase.seeder.createTeamProject(
         "TEAMUPDATE",
@@ -745,10 +665,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       expect(updatedProject.data.name).toBe("Updated Team Project");
     });
 
-    test("Team Member cannot update team project", async ({
-      orgTeamApiUser,
-      testDatabase,
-    }) => {
+    test("Team Member cannot update team project", async ({ orgTeamApiUser, testDatabase }) => {
       const teamId = orgTeamApiUser.user.teams[0].id;
       const project = await testDatabase.seeder.createTeamProject(
         "NOUPDATE",
@@ -761,10 +678,9 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         name: "Should Not Update",
       };
 
-      const response = await orgTeamApiUser.context.put(
-        `teams/${teamId}/projects/${project.id}`,
-        { data: updateData },
-      );
+      const response = await orgTeamApiUser.context.put(`teams/${teamId}/projects/${project.id}`, {
+        data: updateData,
+      });
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -796,10 +712,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
   });
 
   test.describe("DELETE /teams/{teamId}/projects/{projectId}", () => {
-    test("Team Admin can delete team project", async ({
-      teamAdminApiUser,
-      testDatabase,
-    }) => {
+    test("Team Admin can delete team project", async ({ teamAdminApiUser, testDatabase }) => {
       const teamId = teamAdminApiUser.user.teams[0].id;
       const project = await testDatabase.seeder.createTeamProject(
         "TEAMDELETE",
@@ -814,10 +727,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
       expect(response.status()).toBe(200);
     });
 
-    test("Team Member cannot delete team project", async ({
-      orgTeamApiUser,
-      testDatabase,
-    }) => {
+    test("Team Member cannot delete team project", async ({ orgTeamApiUser, testDatabase }) => {
       const teamId = orgTeamApiUser.user.teams[0].id;
       const project = await testDatabase.seeder.createTeamProject(
         "NODELETE",
@@ -863,9 +773,7 @@ test.describe.skip("Project API", { tag: ["@api", "@project"] }, () => {
         teamId,
       );
 
-      const response = await adminApiUser.context.delete(
-        `teams/${teamId}/projects/${project.id}`,
-      );
+      const response = await adminApiUser.context.delete(`teams/${teamId}/projects/${project.id}`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
     });

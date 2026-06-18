@@ -16,8 +16,6 @@ export class AdminTeamPage {
   }
 
   async gotoOrgDeptTeam(orgId, deptId, teamId) {
-    await this.page.goto(
-      `/admin/organizations/${orgId}/department/${deptId}/team/${teamId}`,
-    );
+    await this.page.goto(`/admin/organizations/${orgId}/department/${deptId}/team/${teamId}`);
   }
 }

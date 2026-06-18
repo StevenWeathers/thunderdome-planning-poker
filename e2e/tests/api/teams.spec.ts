@@ -5,9 +5,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
     test("returns empty array when no teams associated to user for Entity User", async ({
       orgAdminApiUser,
     }) => {
-      const response = await orgAdminApiUser.context.get(
-        `users/${orgAdminApiUser.user.id}/teams`,
-      );
+      const response = await orgAdminApiUser.context.get(`users/${orgAdminApiUser.user.id}/teams`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const teams = await response.json();
@@ -18,9 +16,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
       orgAdminApiUser,
       adminApiUser,
     }) => {
-      const response = await adminApiUser.context.get(
-        `users/${orgAdminApiUser.user.id}/teams`,
-      );
+      const response = await adminApiUser.context.get(`users/${orgAdminApiUser.user.id}/teams`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const teams = await response.json();
@@ -31,9 +27,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
       orgOwnerApiUser,
     }) => {
       const team = orgOwnerApiUser.user.teams[0];
-      const response = await orgOwnerApiUser.context.get(
-        `users/${orgOwnerApiUser.user.id}/teams`,
-      );
+      const response = await orgOwnerApiUser.context.get(`users/${orgOwnerApiUser.user.id}/teams`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const teams = await response.json();
@@ -50,9 +44,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
       orgOwnerApiUser,
     }) => {
       const team = orgOwnerApiUser.user.teams[0];
-      const response = await adminApiUser.context.get(
-        `users/${orgOwnerApiUser.user.id}/teams`,
-      );
+      const response = await adminApiUser.context.get(`users/${orgOwnerApiUser.user.id}/teams`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const teams = await response.json();
@@ -95,9 +87,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
   test.describe("GET /teams/{teamId}", () => {
     test("Team Admin can view team details", async ({ teamAdminApiUser }) => {
       const team = teamAdminApiUser.user.teams[0];
-      const getResponse = await teamAdminApiUser.context.get(
-        `teams/${team.id}`,
-      );
+      const getResponse = await teamAdminApiUser.context.get(`teams/${team.id}`);
       expect(getResponse.ok()).toBeTruthy();
       expect(getResponse.status()).toBe(200);
       const tr = await getResponse.json();
@@ -115,10 +105,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
       expect(tr.data.team.id).toBe(team.id);
     });
 
-    test("Global Admin can view any team", async ({
-      adminApiUser,
-      orgTeamApiUser,
-    }) => {
+    test("Global Admin can view any team", async ({ adminApiUser, orgTeamApiUser }) => {
       const team = orgTeamApiUser.user.teams[0];
       const response = await adminApiUser.context.get(`teams/${team.id}`);
       expect(response.ok()).toBeTruthy();
@@ -139,9 +126,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
   });
 
   test.describe("PUT /teams/{teamId}", () => {
-    test("Team Member cannot update team details", async ({
-      orgTeamApiUser,
-    }) => {
+    test("Team Member cannot update team details", async ({ orgTeamApiUser }) => {
       const updatedName = "Unauthorized Update";
       const response = await orgTeamApiUser.context.put(
         `teams/${orgTeamApiUser.user.teams[0].id}`,
@@ -162,11 +147,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
         "teamToUpdate",
         registeredApiUser.user.id,
       );
-      await testDatabase.seeder.addUserToTeam(
-        teamAdminApiUser.user.id,
-        team.id,
-        "ADMIN",
-      );
+      await testDatabase.seeder.addUserToTeam(teamAdminApiUser.user.id, team.id, "ADMIN");
       const updatedName = "Admin Updated Team";
       const response = await teamAdminApiUser.context.put(`teams/${team.id}`, {
         data: { name: updatedName },
@@ -196,10 +177,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
       expect(updatedTeam.data.name).toBe(updatedName);
     });
 
-    test("Non-team member cannot update team", async ({
-      orgTeamApiUser,
-      registeredApiUser,
-    }) => {
+    test("Non-team member cannot update team", async ({ orgTeamApiUser, registeredApiUser }) => {
       const updatedName = "Unauthorized Update";
       const response = await registeredApiUser.context.put(
         `teams/${orgTeamApiUser.user.teams[0].id}`,
@@ -222,14 +200,8 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
         "teamToUpdate",
         registeredApiUser.user.id,
       );
-      await testDatabase.seeder.addUserToTeam(
-        teamAdminApiUser.user.id,
-        team.id,
-        "ADMIN",
-      );
-      const response = await teamAdminApiUser.context.delete(
-        `teams/${team.id}`,
-      );
+      await testDatabase.seeder.addUserToTeam(teamAdminApiUser.user.id, team.id, "ADMIN");
+      const response = await teamAdminApiUser.context.delete(`teams/${team.id}`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
     });
@@ -256,10 +228,7 @@ test.describe("Team API", { tag: ["@api", "@team"] }, () => {
       expect(response.status()).toBe(403);
     });
 
-    test("Non-team member cannot delete team", async ({
-      orgTeamApiUser,
-      registeredApiUser,
-    }) => {
+    test("Non-team member cannot delete team", async ({ orgTeamApiUser, registeredApiUser }) => {
       const response = await registeredApiUser.context.delete(
         `teams/${orgTeamApiUser.user.teams[0].id}`,
       );

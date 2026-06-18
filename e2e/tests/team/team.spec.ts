@@ -14,18 +14,14 @@ test.describe("Team page", { tag: ["@team"] }, () => {
     },
   );
 
-  test(
-    "Registered user loads team page",
-    { tag: ["@registered"] },
-    async ({ registeredPage }) => {
-      const testTeamName = "E2E TEST TEAM";
-      const teamPage = new TeamPage(registeredPage.page);
-      const team = await registeredPage.createTeam(testTeamName);
+  test("Registered user loads team page", { tag: ["@registered"] }, async ({ registeredPage }) => {
+    const testTeamName = "E2E TEST TEAM";
+    const teamPage = new TeamPage(registeredPage.page);
+    const team = await registeredPage.createTeam(testTeamName);
 
-      await teamPage.goto(team.id);
-      await expect(teamPage.page.locator("h1")).toContainText(testTeamName);
-    },
-  );
+    await teamPage.goto(team.id);
+    await expect(teamPage.page.locator("h1")).toContainText(testTeamName);
+  });
 
   test(
     "Registered user loads organization team page",
@@ -38,9 +34,7 @@ test.describe("Team page", { tag: ["@team"] }, () => {
       const team = await registeredPage.createTeam(testTeamName);
 
       await teamPage.gotoOrgTeam(org.id, team.id);
-      await expect(
-        teamPage.page.locator("a", { hasText: testOrgName }),
-      ).toBeVisible();
+      await expect(teamPage.page.locator("a", { hasText: testOrgName })).toBeVisible();
       await expect(teamPage.page.locator("h1")).toContainText(testTeamName);
     },
   );
@@ -54,23 +48,12 @@ test.describe("Team page", { tag: ["@team"] }, () => {
       const testOrgName = "E2E TEST ORGANIZATION";
       const teamPage = new TeamPage(registeredPage.page);
       const org = await registeredPage.createOrg(testOrgName);
-      const dept = await registeredPage.createOrgDepartment(
-        org.id,
-        testDepartmentName,
-      );
-      const team = await registeredPage.createDepartmentTeam(
-        org.id,
-        dept.id,
-        testTeamName,
-      );
+      const dept = await registeredPage.createOrgDepartment(org.id, testDepartmentName);
+      const team = await registeredPage.createDepartmentTeam(org.id, dept.id, testTeamName);
 
       await teamPage.gotoOrgDeptTeam(org.id, dept.id, team.id);
-      await expect(
-        teamPage.page.locator("a", { hasText: testOrgName }),
-      ).toBeVisible();
-      await expect(
-        teamPage.page.locator("a", { hasText: testDepartmentName }),
-      ).toBeVisible();
+      await expect(teamPage.page.locator("a", { hasText: testOrgName })).toBeVisible();
+      await expect(teamPage.page.locator("a", { hasText: testDepartmentName })).toBeVisible();
       await expect(teamPage.page.locator("h1")).toContainText(testTeamName);
     },
   );
@@ -86,9 +69,7 @@ test.describe("Team page", { tag: ["@team"] }, () => {
 
     await teamPage.page.locator('[data-testid="user-add"]').click();
     await teamPage.page.locator('input[name="userEmail"]').fill(verifiedEmail);
-    await teamPage.page
-      .locator('select[name="userRole"]')
-      .selectOption("MEMBER");
+    await teamPage.page.locator('select[name="userRole"]').selectOption("MEMBER");
     await teamPage.page.locator('[data-testid="useradd-confirm"]').click();
 
     await expect(

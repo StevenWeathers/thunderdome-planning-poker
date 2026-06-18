@@ -7,9 +7,7 @@ export class PokerGamesPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.gameNameFormField = page.locator(
-      'form[name="createBattle"] [name="battleName"]',
-    );
+    this.gameNameFormField = page.locator('form[name="createBattle"] [name="battleName"]');
     this.gameCardName = page.locator('[data-testid="battle-name"]');
   }
 
@@ -31,10 +29,7 @@ export class PokerGamesPage {
           name: "Add Story",
         })
         .click();
-      await this.page
-        .getByPlaceholder("Enter a story name")
-        .first()
-        .fill(story);
+      await this.page.getByPlaceholder("Enter a story name").first().fill(story);
     }
 
     await this.gameNameFormField.press("Enter");

@@ -5,18 +5,13 @@ test.describe("Poker API", { tag: ["@api", "@poker"] }, () => {
     request,
     adminApiUser,
   }) => {
-    const response = await adminApiUser.context.get(
-      `users/${adminApiUser.user.id}/battles`,
-    );
+    const response = await adminApiUser.context.get(`users/${adminApiUser.user.id}/battles`);
     expect(response.ok()).toBeTruthy();
     const battles = await response.json();
     expect(battles.data).toEqual([]);
   });
 
-  test("POST /users/{userId}/battles creates game", async ({
-    request,
-    registeredApiUser,
-  }) => {
+  test("POST /users/{userId}/battles creates game", async ({ request, registeredApiUser }) => {
     const pointValuesAllowed = ["0", "1/2", "1", "2", "3", "5", "8", "13"];
     const battleName = "Test API Create Game";
     const pointAverageRounding = "floor";
@@ -52,17 +47,14 @@ test.describe("Poker API", { tag: ["@api", "@poker"] }, () => {
     const pointAverageRounding = "ceil";
     const autoFinishVoting = true;
 
-    await registeredApiUser.context.post(
-      `users/${registeredApiUser.user.id}/battles`,
-      {
-        data: {
-          name: battleName,
-          pointValuesAllowed,
-          pointAverageRounding,
-          autoFinishVoting,
-        },
+    await registeredApiUser.context.post(`users/${registeredApiUser.user.id}/battles`, {
+      data: {
+        name: battleName,
+        pointValuesAllowed,
+        pointAverageRounding,
+        autoFinishVoting,
       },
-    );
+    });
 
     const response = await registeredApiUser.context.get(
       `users/${registeredApiUser.user.id}/battles`,
@@ -118,9 +110,7 @@ test.describe("Poker API", { tag: ["@api", "@poker"] }, () => {
       autoFinishVoting,
     });
 
-    const battlesResponse = await registeredApiUser.context.get(
-      `teams/${team.id}/battles`,
-    );
+    const battlesResponse = await registeredApiUser.context.get(`teams/${team.id}/battles`);
     expect(battlesResponse.ok()).toBeTruthy();
     const battles = await battlesResponse.json();
     expect(battles.data).toContainEqual(

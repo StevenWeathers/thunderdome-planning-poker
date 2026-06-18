@@ -11,9 +11,7 @@ test.describe("Retros page", { tag: ["@retro"] }, () => {
       await retrosPage.goto();
 
       const title = retrosPage.page.locator("h1");
-      await expect(title).toHaveText(
-        "Turn Retrospectives into Real Progress with Thunderdome",
-      );
+      await expect(title).toHaveText("Turn Retrospectives into Real Progress with Thunderdome");
     });
   });
 

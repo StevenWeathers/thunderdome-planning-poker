@@ -10,9 +10,7 @@ export class DepartmentPage {
     this.createTeamButton = page.locator("button", {
       hasText: "Create Team",
     });
-    this.teamNameField = page.locator(
-      'form[name="createTeam"] [name="teamName"]',
-    );
+    this.teamNameField = page.locator('form[name="createTeam"] [name="teamName"]');
   }
 
   async goto(orgId, deptId) {

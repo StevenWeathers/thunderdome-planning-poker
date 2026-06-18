@@ -9,12 +9,7 @@ export const apiUser = {
 
 const seed = async (pool) => {
   const seeder = new ThunderdomeSeeder(pool);
-  const { id } = await seeder.createUser(
-    apiUser.name,
-    apiUser.email,
-    apiUser.type,
-    true,
-  );
+  const { id } = await seeder.createUser(apiUser.name, apiUser.email, apiUser.type, true);
 
   await seeder.addUserAPIKey(
     id,

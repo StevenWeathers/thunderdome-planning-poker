@@ -18,9 +18,7 @@ export class TeamsPage {
     this.organizationNameField = page.locator(
       'form[name="createOrganization"] [name="organizationName"]',
     );
-    this.teamNameField = page.locator(
-      'form[name="createTeam"] [name="teamName"]',
-    );
+    this.teamNameField = page.locator('form[name="createTeam"] [name="teamName"]');
   }
 
   async goto() {

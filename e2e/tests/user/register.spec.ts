@@ -41,17 +41,10 @@ test.describe("Register page", () => {
       const registerPage = new RegisterPage(page);
 
       try {
-        await registerPage.createRegisteredUser(
-          userName,
-          userEmail,
-          userPass,
-          userPass,
-        );
+        await registerPage.createRegisteredUser(userName, userEmail, userPass, userPass);
 
         const dashboardTitle = page.locator("h1");
-        await expect(dashboardTitle).toHaveText(
-          "Welcome back, Registered Test User",
-        );
+        await expect(dashboardTitle).toHaveText("Welcome back, Registered Test User");
       } finally {
         const u = await request.get("/api/auth/user");
         const user = await u.json();
@@ -59,10 +52,7 @@ test.describe("Register page", () => {
       }
     });
 
-    test("should allow user registration from guest session", async ({
-      context,
-      page,
-    }) => {
+    test("should allow user registration from guest session", async ({ context, page }) => {
       const userName = "Registered From Guest Test User";
       const userEmail = "registeredfromguest@thunderdome.dev";
       const userPass = "testreguserpassword";
@@ -80,11 +70,7 @@ test.describe("Register page", () => {
         const title = page.locator("h1");
         await expect(title).toHaveText(registerPageTitle);
 
-        await registerPage.createRegisteredUserFromGuest(
-          userEmail,
-          userPass,
-          userPass,
-        );
+        await registerPage.createRegisteredUserFromGuest(userEmail, userPass, userPass);
 
         const dashboardTitle2 = page.locator("h1");
         await expect(dashboardTitle2).toHaveText("Welcome back, TestGuestUser");

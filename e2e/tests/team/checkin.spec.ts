@@ -23,9 +23,7 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
       const teamPage = new TeamCheckinPage(registeredPage.page);
 
       await teamPage.goto(sharedTeam.id);
-      await expect(
-        teamPage.page.locator("a", { hasText: sharedTestTeamName }),
-      ).toBeVisible();
+      await expect(teamPage.page.locator("a", { hasText: sharedTestTeamName })).toBeVisible();
       await expect(teamPage.page.locator("h1")).toHaveText("Check In");
     });
 
@@ -37,13 +35,9 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
       const team = await registeredPage.createTeam(testTeamName);
 
       await teamPage.gotoOrg(org.id, team.id);
+      await expect(teamPage.page.locator("a", { hasText: testOrgName })).toBeVisible();
       await expect(
-        teamPage.page.locator("a", { hasText: testOrgName }),
-      ).toBeVisible();
-      await expect(
-        teamPage.page.locator(
-          `a[href="/organization/${org.id}/team/${team.id}"]`,
-        ),
+        teamPage.page.locator(`a[href="/organization/${org.id}/team/${team.id}"]`),
       ).toBeVisible();
       await expect(teamPage.page.locator("h1")).toHaveText("Check In");
     });
@@ -54,23 +48,12 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
       const testOrgName = "E2E TEST ORGANIZATION";
       const teamPage = new TeamCheckinPage(registeredPage.page);
       const org = await registeredPage.createOrg(testOrgName);
-      const dept = await registeredPage.createOrgDepartment(
-        org.id,
-        testDepartmentName,
-      );
-      const team = await registeredPage.createDepartmentTeam(
-        org.id,
-        dept.id,
-        testTeamName,
-      );
+      const dept = await registeredPage.createOrgDepartment(org.id, testDepartmentName);
+      const team = await registeredPage.createDepartmentTeam(org.id, dept.id, testTeamName);
 
       await teamPage.gotoOrgDept(org.id, dept.id, team.id);
-      await expect(
-        teamPage.page.locator("a", { hasText: testOrgName }),
-      ).toBeVisible();
-      await expect(
-        teamPage.page.locator("a", { hasText: testDepartmentName }),
-      ).toBeVisible();
+      await expect(teamPage.page.locator("a", { hasText: testOrgName })).toBeVisible();
+      await expect(teamPage.page.locator("a", { hasText: testDepartmentName })).toBeVisible();
       await expect(
         teamPage.page.locator(
           `a[href="/organization/${org.id}/department/${dept.id}/team/${team.id}"]`,
@@ -88,62 +71,40 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
 
       // check in
       await teamPage.page.locator('[data-testid="check-in"]').click();
-      await teamPage.page
-        .locator("#yesterday >> p")
-        .fill("Yesterday I fixed bugs");
-      await teamPage.page
-        .locator("#today >> p")
-        .fill("Today I will write e2e tests");
+      await teamPage.page.locator("#yesterday >> p").fill("Yesterday I fixed bugs");
+      await teamPage.page.locator("#today >> p").fill("Today I will write e2e tests");
       await teamPage.page.locator("data-testid=save").click();
 
-      await expect(
-        teamPage.page.locator('[data-testid="check-in"]'),
-      ).toBeDisabled();
-      await expect(
-        teamPage.page.locator('[data-testid="checkin"]'),
-      ).toBeVisible();
-      await expect(
-        teamPage.page.locator('[data-testid="checkin-yesterday"]'),
-      ).toHaveText("Yesterday I fixed bugs");
-      await expect(
-        teamPage.page.locator('[data-testid="checkin-today"]'),
-      ).toHaveText("Today I will write e2e tests");
-      await expect(
-        teamPage.page.locator('[data-testid="checkin-blockers"]'),
-      ).not.toBeVisible();
-      await expect(
-        teamPage.page.locator('[data-testid="checkin-discuss"]'),
-      ).not.toBeVisible();
+      await expect(teamPage.page.locator('[data-testid="check-in"]')).toBeDisabled();
+      await expect(teamPage.page.locator('[data-testid="checkin"]')).toBeVisible();
+      await expect(teamPage.page.locator('[data-testid="checkin-yesterday"]')).toHaveText(
+        "Yesterday I fixed bugs",
+      );
+      await expect(teamPage.page.locator('[data-testid="checkin-today"]')).toHaveText(
+        "Today I will write e2e tests",
+      );
+      await expect(teamPage.page.locator('[data-testid="checkin-blockers"]')).not.toBeVisible();
+      await expect(teamPage.page.locator('[data-testid="checkin-discuss"]')).not.toBeVisible();
 
       // edit checkin - @TODO separate this into its own test
-      await teamPage.page
-        .locator('[data-testid="checkin-actions-menu"]')
-        .click();
+      await teamPage.page.locator('[data-testid="checkin-actions-menu"]').click();
       await teamPage.page.locator('[data-testid="checkin-edit"]').click();
-      await teamPage.page
-        .locator("#blockers >> p")
-        .fill("Blocked by procrastination");
+      await teamPage.page.locator("#blockers >> p").fill("Blocked by procrastination");
       await teamPage.page.locator("#discuss >> p").fill("Whats next?");
       await teamPage.page.locator("data-testid=save").click();
 
-      await expect(
-        teamPage.page.locator('[data-testid="checkin-blockers"]'),
-      ).toHaveText("Blocked by procrastination");
-      await expect(
-        teamPage.page.locator('[data-testid="checkin-discuss"]'),
-      ).toHaveText("Whats next?");
+      await expect(teamPage.page.locator('[data-testid="checkin-blockers"]')).toHaveText(
+        "Blocked by procrastination",
+      );
+      await expect(teamPage.page.locator('[data-testid="checkin-discuss"]')).toHaveText(
+        "Whats next?",
+      );
 
       // delete checkin - @TODO separate this into its own test
-      await teamPage.page
-        .locator('[data-testid="checkin-actions-menu"]')
-        .click();
+      await teamPage.page.locator('[data-testid="checkin-actions-menu"]').click();
       await teamPage.page.locator('[data-testid="checkin-delete"]').click();
-      await expect(
-        teamPage.page.locator('[data-testid="check-in"]'),
-      ).not.toBeDisabled();
-      await expect(
-        teamPage.page.locator('[data-testid="checkin"]'),
-      ).not.toBeVisible();
+      await expect(teamPage.page.locator('[data-testid="check-in"]')).not.toBeDisabled();
+      await expect(teamPage.page.locator('[data-testid="checkin"]')).not.toBeVisible();
     });
   });
 });

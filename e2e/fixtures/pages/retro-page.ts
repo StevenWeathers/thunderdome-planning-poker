@@ -46,9 +46,7 @@ export class RetroPage {
     this.retroPhaseDoneBtn = page.getByRole("button", { name: "Done" });
     this.retroExportBtn = page.getByRole("button", { name: "Export" });
     this.retroWorkedWellInput = page.getByPlaceholder("What worked well...");
-    this.retroNeedsImprovementInput = page.getByPlaceholder(
-      "What needs improvement...",
-    );
+    this.retroNeedsImprovementInput = page.getByPlaceholder("What needs improvement...");
     this.retroQuestionInput = page.getByPlaceholder("I want to ask...");
     this.retroGroupNameInput = page.getByPlaceholder("Group Name");
     this.retroActionItemInput = page.getByPlaceholder("Action item...");

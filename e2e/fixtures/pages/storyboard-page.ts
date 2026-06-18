@@ -9,12 +9,8 @@ export class StoryboardPage {
 
   constructor(page: Page) {
     this.storyboardTitle = page.locator("h1");
-    this.storyboardDeleteBtn = page.locator(
-      '[data-testid="storyboard-delete"]',
-    );
-    this.storyboardDeleteConfirmBtn = page.locator(
-      "data-testid=confirm-confirm",
-    );
+    this.storyboardDeleteBtn = page.locator('[data-testid="storyboard-delete"]');
+    this.storyboardDeleteConfirmBtn = page.locator("data-testid=confirm-confirm");
     this.storyboardDeleteCancelBtn = page.locator("data-testid=confirm-cancel");
 
     this.page = page;

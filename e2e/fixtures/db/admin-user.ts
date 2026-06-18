@@ -8,12 +8,7 @@ const adminUser = {
 
 const seed = async (pool) => {
   const seeder = new ThunderdomeSeeder(pool);
-  const { id } = await seeder.createUser(
-    adminUser.name,
-    adminUser.email,
-    adminUser.type,
-    true,
-  );
+  const { id } = await seeder.createUser(adminUser.name, adminUser.email, adminUser.type, true);
 
   return {
     ...adminUser,

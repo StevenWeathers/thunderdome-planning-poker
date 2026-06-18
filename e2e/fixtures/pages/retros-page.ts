@@ -7,9 +7,7 @@ export class RetrosPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.retroNameFormField = page.locator(
-      'form[name="createRetro"] [name="retroName"]',
-    );
+    this.retroNameFormField = page.locator('form[name="createRetro"] [name="retroName"]');
     this.retroCardName = page.locator('[data-testid="retro-name"]');
   }
 
