@@ -143,14 +143,11 @@ const ungroup = timezones => Object.values(timezones).reduce((values, zone) => (
  * @returns {string[]}
  */
 const filter = (search, zoneGroups) =>
-  Object.entries(zoneGroups).reduce(
-    (zones, [zone, details]) => {
-      if (details[0].toLowerCase().includes(search.toLowerCase())) {
-        zones.push(zone);
-      }
-      return zones;
-    },
-    /** @type {string[]} */ [],
-  );
+  Object.entries(zoneGroups).reduce((zones, [zone, details]) => {
+    if (details[0].toLowerCase().includes(search.toLowerCase())) {
+      zones.push(zone);
+    }
+    return zones;
+  }, /** @type {string[]} */ []);
 
 export { scrollIntoView, uid, slugify, keyCodes, ungroup, filter, pick };
