@@ -47,6 +47,7 @@
   }: Props = $props();
 
   let userSubscribed = $state(false);
+  let isSubmitting = $state(false);
   let lastCheckin = $state({
     id: '',
     yesterday: '',
@@ -97,12 +98,22 @@
   async function onSubmit(e: Event) {
     e.preventDefault();
 
-    const checkinSaved = await submitCheckinRequest();
-    if (!checkinSaved) {
+    if (isSubmitting) {
       return;
     }
 
-    toggleCheckin();
+    isSubmitting = true;
+
+    try {
+      const checkinSaved = await submitCheckinRequest();
+      if (!checkinSaved) {
+        return;
+      }
+
+      toggleCheckin();
+    } finally {
+      isSubmitting = false;
+    }
   }
 
   function getLastCheckin() {
@@ -446,7 +457,7 @@
 
     <!-- Submit Button -->
     <div class="flex justify-end pt-6">
-      <SolidButton type="submit" testid="save">
+      <SolidButton type="submit" testid="save" disabled={isSubmitting}>
         <div class="flex items-center space-x-2">
           <Save class="w-5 h-5" />
           <span>{$LL.save()}</span>
