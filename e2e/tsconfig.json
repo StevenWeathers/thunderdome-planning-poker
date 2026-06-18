@@ -5,22 +5,12 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@fixtures/*": [
-        "fixtures/*"
-      ]
+      "@fixtures/*": ["fixtures/*"]
     },
-    "types": [
-      "node",
-      "@playwright/test"
-    ],
+    "types": ["node", "@playwright/test"],
     "esModuleInterop": true,
     "strict": true,
-    "include": [
-      "tests/**/*.ts",
-      "playwright.config.ts"
-    ]
+    "include": ["tests/**/*.ts", "playwright.config.ts"]
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

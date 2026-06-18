@@ -1,9 +1,6 @@
 module.exports = {
   darkMode: 'class',
-  content: [
-    './src/**/*.{svelte,ts,js}',
-    './public/**/*.html',
-  ],
+  content: ['./src/**/*.{svelte,ts,js}', './public/**/*.html'],
   theme: {
     extend: {
       colors: {
@@ -11,7 +8,7 @@ module.exports = {
       },
       fontFamily: {
         rajdhani: ['Rajdhani', 'Arial Narrow', 'sans-serif'],
-      }
-    }
-  }
-}
+      },
+    },
+  },
+};

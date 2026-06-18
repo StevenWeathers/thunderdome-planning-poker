@@ -53,9 +53,7 @@ test.describe("Organization API", { tag: ["@api", "@organization"] }, () => {
       orgTeamApiUser,
     }) => {
       const org = orgTeamApiUser.user.orgs[0];
-      const response = await orgTeamApiUser.context.get(
-        `organizations/${org.id}`,
-      );
+      const response = await orgTeamApiUser.context.get(`organizations/${org.id}`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const orgData = await response.json();
@@ -70,9 +68,7 @@ test.describe("Organization API", { tag: ["@api", "@organization"] }, () => {
       { tag: ["@admin"] },
       async ({ request, adminApiUser, orgTeamApiUser }) => {
         const org = orgTeamApiUser.user.orgs[0];
-        const response = await adminApiUser.context.get(
-          `organizations/${org.id}`,
-        );
+        const response = await adminApiUser.context.get(`organizations/${org.id}`);
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
         const orgData = await response.json();
@@ -89,34 +85,24 @@ test.describe("Organization API", { tag: ["@api", "@organization"] }, () => {
       orgTeamApiUser,
     }) => {
       const org = orgTeamApiUser.user.orgs[0];
-      const response = await registeredApiUser.context.get(
-        `organizations/${org.id}`,
-      );
+      const response = await registeredApiUser.context.get(`organizations/${org.id}`);
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
   });
 
   test.describe("DELETE /api/organizations/{orgId}", () => {
-    test("returns 200 for org admin", async ({
-      request,
-      orgOwnerApiUser,
-      testDatabase,
-    }) => {
+    test("returns 200 for org admin", async ({ request, orgOwnerApiUser, testDatabase }) => {
       const org = await testDatabase.seeder.createOrganization(
         "orgToDeleteOwner",
         orgOwnerApiUser.user.id,
       );
 
-      const response = await orgOwnerApiUser.context.delete(
-        `organizations/${org.id}`,
-      );
+      const response = await orgOwnerApiUser.context.delete(`organizations/${org.id}`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
 
-      const confirmOrgDeleted = await testDatabase.seeder.getOrganizationById(
-        org.id,
-      );
+      const confirmOrgDeleted = await testDatabase.seeder.getOrganizationById(org.id);
       expect(confirmOrgDeleted).toBeNull();
     });
 
@@ -129,27 +115,18 @@ test.describe("Organization API", { tag: ["@api", "@organization"] }, () => {
           orgOwnerApiUser.user.id,
         );
 
-        const response = await adminApiUser.context.delete(
-          `organizations/${org.id}`,
-        );
+        const response = await adminApiUser.context.delete(`organizations/${org.id}`);
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
 
-        const confirmOrgDeleted = await testDatabase.seeder.getOrganizationById(
-          org.id,
-        );
+        const confirmOrgDeleted = await testDatabase.seeder.getOrganizationById(org.id);
         expect(confirmOrgDeleted).toBeNull();
       },
     );
 
-    test("returns 403 Forbidden for non org admin", async ({
-      request,
-      orgTeamApiUser,
-    }) => {
+    test("returns 403 Forbidden for non org admin", async ({ request, orgTeamApiUser }) => {
       const org = orgTeamApiUser.user.orgs[0];
-      const response = await orgTeamApiUser.context.delete(
-        `organizations/${org.id}`,
-      );
+      const response = await orgTeamApiUser.context.delete(`organizations/${org.id}`);
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBe(403);
     });
@@ -161,9 +138,7 @@ test.describe("Organization API", { tag: ["@api", "@organization"] }, () => {
       orgOwnerApiUser,
     }) => {
       const org = orgAdminApiUser.user.orgs[0];
-      const response = await orgAdminApiUser.context.get(
-        `organizations/${org.id}/teams`,
-      );
+      const response = await orgAdminApiUser.context.get(`organizations/${org.id}/teams`);
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
       const teams = await response.json();

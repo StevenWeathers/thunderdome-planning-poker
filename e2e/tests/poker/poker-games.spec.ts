@@ -75,9 +75,7 @@ test.describe("Poker Games page", { tag: "@poker" }, () => {
       await expect(battleTitle).toHaveText(battleName);
     });
 
-    test("should allow creating a game with stories", async ({
-      registeredPage,
-    }) => {
+    test("should allow creating a game with stories", async ({ registeredPage }) => {
       const battleName = "Test Game with Stories";
       const story1 = "Test Story 1";
       const story2 = "Test Story 2";

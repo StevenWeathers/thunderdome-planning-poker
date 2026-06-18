@@ -5,9 +5,7 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
     request,
     adminApiUser,
   }) => {
-    const response = await adminApiUser.context.get(
-      `users/${adminApiUser.user.id}/storyboards`,
-    );
+    const response = await adminApiUser.context.get(`users/${adminApiUser.user.id}/storyboards`);
     expect(response.ok()).toBeTruthy();
     const storyboards = await response.json();
     expect(storyboards.data).toEqual([]);
@@ -40,14 +38,11 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
   }) => {
     const storyboardName = "Test API Storyboards";
 
-    await registeredApiUser.context.post(
-      `users/${registeredApiUser.user.id}/storyboards`,
-      {
-        data: {
-          storyboardName,
-        },
+    await registeredApiUser.context.post(`users/${registeredApiUser.user.id}/storyboards`, {
+      data: {
+        storyboardName,
       },
-    );
+    });
 
     const response = await registeredApiUser.context.get(
       `users/${registeredApiUser.user.id}/storyboards`,
@@ -128,19 +123,14 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
     }) => {
       const goalName = "Test API Create Goal";
 
-      const goalResp = await registeredApiUser.context.post(
-        `storyboards/${storyboard.id}/goals`,
-        {
-          data: {
-            name: goalName,
-          },
+      const goalResp = await registeredApiUser.context.post(`storyboards/${storyboard.id}/goals`, {
+        data: {
+          name: goalName,
         },
-      );
+      });
       expect(goalResp.ok()).toBeTruthy();
 
-      const updatedStoryboard = await registeredApiUser.context.get(
-        `storyboards/${storyboard.id}`,
-      );
+      const updatedStoryboard = await registeredApiUser.context.get(`storyboards/${storyboard.id}`);
       expect(updatedStoryboard.ok()).toBeTruthy();
       const storyboardWithGoal = await updatedStoryboard.json();
       expect(storyboardWithGoal.data).toMatchObject(
@@ -169,9 +159,7 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
       );
       expect(columnResp.ok()).toBeTruthy();
 
-      const updatedStoryboard = await registeredApiUser.context.get(
-        `storyboards/${storyboard.id}`,
-      );
+      const updatedStoryboard = await registeredApiUser.context.get(`storyboards/${storyboard.id}`);
       expect(updatedStoryboard.ok()).toBeTruthy();
       const storyboardWithCol = await updatedStoryboard.json();
       expect(storyboardWithCol.data).toMatchObject(
@@ -197,20 +185,15 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
       request,
       registeredApiUser,
     }) => {
-      const resp = await registeredApiUser.context.post(
-        `storyboards/${storyboard.id}/stories`,
-        {
-          data: {
-            goalId: storyboard.goals[0].id,
-            columnId: storyboard.goals[0].columns[0].id,
-          },
+      const resp = await registeredApiUser.context.post(`storyboards/${storyboard.id}/stories`, {
+        data: {
+          goalId: storyboard.goals[0].id,
+          columnId: storyboard.goals[0].columns[0].id,
         },
-      );
+      });
       expect(resp.ok()).toBeTruthy();
 
-      const updatedStoryboard = await registeredApiUser.context.get(
-        `storyboards/${storyboard.id}`,
-      );
+      const updatedStoryboard = await registeredApiUser.context.get(`storyboards/${storyboard.id}`);
       expect(updatedStoryboard.ok()).toBeTruthy();
       const storyboardWithStory = await updatedStoryboard.json();
       expect(storyboardWithStory.data).toMatchObject(
@@ -292,12 +275,12 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
         );
         expect(updatedStoryboard2.ok()).toBeTruthy();
         const storyboardWithMovedStory = await updatedStoryboard2.json();
-        expect(
-          storyboardWithMovedStory.data.goals[0].columns[0].stories[0].id,
-        ).toEqual(storyToMoveID);
-        expect(
-          storyboardWithMovedStory.data.goals[0].columns[0].stories[1].id,
-        ).toEqual(storyPlaceBeforeID);
+        expect(storyboardWithMovedStory.data.goals[0].columns[0].stories[0].id).toEqual(
+          storyToMoveID,
+        );
+        expect(storyboardWithMovedStory.data.goals[0].columns[0].stories[1].id).toEqual(
+          storyPlaceBeforeID,
+        );
         storyboard = storyboardWithMovedStory.data;
       });
 
@@ -321,12 +304,12 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
         );
         expect(updatedStoryboard2.ok()).toBeTruthy();
         const storyboardWithMovedStory = await updatedStoryboard2.json();
-        expect(
-          storyboardWithMovedStory.data.goals[0].columns[0].stories[1].id,
-        ).toEqual(storyToMoveID);
-        expect(
-          storyboardWithMovedStory.data.goals[0].columns[0].stories[2].id,
-        ).toEqual(storyPlaceBeforeID);
+        expect(storyboardWithMovedStory.data.goals[0].columns[0].stories[1].id).toEqual(
+          storyToMoveID,
+        );
+        expect(storyboardWithMovedStory.data.goals[0].columns[0].stories[2].id).toEqual(
+          storyPlaceBeforeID,
+        );
         storyboard = storyboardWithMovedStory.data;
       });
 
@@ -350,9 +333,9 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
         );
         expect(updatedStoryboard2.ok()).toBeTruthy();
         const storyboardWithMovedStory = await updatedStoryboard2.json();
-        expect(
-          storyboardWithMovedStory.data.goals[0].columns[0].stories[2].id,
-        ).toEqual(storyToMoveID);
+        expect(storyboardWithMovedStory.data.goals[0].columns[0].stories[2].id).toEqual(
+          storyToMoveID,
+        );
         storyboard = storyboardWithMovedStory.data;
       });
 
@@ -394,9 +377,9 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
         );
         expect(updatedStoryboard2.ok()).toBeTruthy();
         const storyboardWithMovedStory = await updatedStoryboard2.json();
-        expect(
-          storyboardWithMovedStory.data.goals[0].columns[1].stories[0].id,
-        ).toEqual(storyToMoveID);
+        expect(storyboardWithMovedStory.data.goals[0].columns[1].stories[0].id).toEqual(
+          storyToMoveID,
+        );
         storyboard = storyboardWithMovedStory.data;
       });
 
@@ -456,9 +439,9 @@ test.describe("Storyboard API", { tag: ["@api", "@storyboard"] }, () => {
         );
         expect(updatedStoryboard2.ok()).toBeTruthy();
         const storyboardWithMovedStory = await updatedStoryboard2.json();
-        expect(
-          storyboardWithMovedStory.data.goals[1].columns[0].stories[0].id,
-        ).toEqual(storyToMoveID);
+        expect(storyboardWithMovedStory.data.goals[1].columns[0].stories[0].id).toEqual(
+          storyToMoveID,
+        );
         storyboard = storyboardWithMovedStory.data;
       });
     });

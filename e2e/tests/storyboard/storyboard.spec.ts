@@ -38,16 +38,12 @@ test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
     },
   );
 
-  test(
-    "guest user successfully loads",
-    { tag: ["@guest"] },
-    async ({ guestPage }) => {
-      const bp = new StoryboardPage(guestPage.page);
-      await bp.goto(storyboard.id);
+  test("guest user successfully loads", { tag: ["@guest"] }, async ({ guestPage }) => {
+    const bp = new StoryboardPage(guestPage.page);
+    await bp.goto(storyboard.id);
 
-      await expect(bp.storyboardTitle).toContainText(storyboard.name);
-    },
-  );
+    await expect(bp.storyboardTitle).toContainText(storyboard.name);
+  });
 
   test(
     "registered user successfully loads",

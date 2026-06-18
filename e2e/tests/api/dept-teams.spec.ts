@@ -10,9 +10,7 @@ test.describe(
         deptTeamApiUser,
       }) => {
         const departmentTeam = deptTeamApiUser.user.deptTeams[0];
-        const response = await deptAdminApiUser.context.get(
-          `teams/${departmentTeam.id}`,
-        );
+        const response = await deptAdminApiUser.context.get(`teams/${departmentTeam.id}`);
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
         const tr = await response.json();
@@ -24,9 +22,7 @@ test.describe(
         deptTeamAdminApiUser,
       }) => {
         const departmentTeam = deptTeamApiUser.user.deptTeams[0];
-        const getResponse = await deptTeamAdminApiUser.context.get(
-          `teams/${departmentTeam.id}`,
-        );
+        const getResponse = await deptTeamAdminApiUser.context.get(`teams/${departmentTeam.id}`);
         expect(getResponse.ok()).toBeTruthy();
         expect(getResponse.status()).toBe(200);
         const tr = await getResponse.json();
@@ -39,9 +35,7 @@ test.describe(
         deptTeamApiUser,
       }) => {
         const departmentTeam = deptTeamApiUser.user.deptTeams[0];
-        const response = await deptTeamApiUser.context.get(
-          `teams/${departmentTeam.id}`,
-        );
+        const response = await deptTeamApiUser.context.get(`teams/${departmentTeam.id}`);
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
         const tr = await response.json();
@@ -53,9 +47,7 @@ test.describe(
         deptTeamApiUser,
       }) => {
         const departmentTeam = deptTeamApiUser.user.deptTeams[0];
-        const response = await adminApiUser.context.get(
-          `teams/${departmentTeam.id}`,
-        );
+        const response = await adminApiUser.context.get(`teams/${departmentTeam.id}`);
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
         const tr = await response.json();
@@ -67,9 +59,7 @@ test.describe(
         deptTeamApiUser,
       }) => {
         const departmentTeam = deptTeamApiUser.user.deptTeams[0];
-        const response = await registeredApiUser.context.get(
-          `teams/${departmentTeam.id}`,
-        );
+        const response = await registeredApiUser.context.get(`teams/${departmentTeam.id}`);
         expect(response.ok()).toBeFalsy();
         expect(response.status()).toBe(403);
       });
@@ -88,12 +78,9 @@ test.describe(
           dept.id,
         );
         const updatedName = "Dept Admin Updated Team";
-        const response = await deptAdminApiUser.context.put(
-          `teams/${departmentTeam.id}`,
-          {
-            data: { name: updatedName },
-          },
-        );
+        const response = await deptAdminApiUser.context.put(`teams/${departmentTeam.id}`, {
+          data: { name: updatedName },
+        });
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
         const updatedDepartmentTeam = await response.json();
@@ -115,12 +102,9 @@ test.describe(
           otherDept.id,
         );
         const updatedName = "Unauthorized Update";
-        const response = await deptAdminApiUser.context.put(
-          `teams/${otherDeptTeam.id}`,
-          {
-            data: { name: updatedName },
-          },
-        );
+        const response = await deptAdminApiUser.context.put(`teams/${otherDeptTeam.id}`, {
+          data: { name: updatedName },
+        });
         expect(response.ok()).toBeFalsy();
         expect(response.status()).toBe(403);
       });
@@ -156,12 +140,9 @@ test.describe(
           "ADMIN",
         );
         const updatedName = "Admin Updated Department Team";
-        const response = await deptTeamAdminApiUser.context.put(
-          `teams/${departmentTeam.id}`,
-          {
-            data: { name: updatedName },
-          },
-        );
+        const response = await deptTeamAdminApiUser.context.put(`teams/${departmentTeam.id}`, {
+          data: { name: updatedName },
+        });
         // expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
         const updatedDepartmentTeam = await response.json();
@@ -180,12 +161,9 @@ test.describe(
           dept.id,
         );
         const updatedName = "Global Admin Updated Department Team";
-        const response = await adminApiUser.context.put(
-          `teams/${departmentTeam.id}`,
-          {
-            data: { name: updatedName },
-          },
-        );
+        const response = await adminApiUser.context.put(`teams/${departmentTeam.id}`, {
+          data: { name: updatedName },
+        });
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
         const updatedDepartmentTeam = await response.json();
@@ -220,9 +198,7 @@ test.describe(
           orgOwnerApiUser.user.orgs[0].id,
           dept.id,
         );
-        const response = await deptAdminApiUser.context.delete(
-          `teams/${departmentTeam.id}`,
-        );
+        const response = await deptAdminApiUser.context.delete(`teams/${departmentTeam.id}`);
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
       });
@@ -241,9 +217,7 @@ test.describe(
           orgOwnerApiUser.user.orgs[0].id,
           otherDept.id,
         );
-        const response = await deptAdminApiUser.context.delete(
-          `teams/${otherDeptTeam.id}`,
-        );
+        const response = await deptAdminApiUser.context.delete(`teams/${otherDeptTeam.id}`);
         expect(response.ok()).toBeFalsy();
         expect(response.status()).toBe(403);
       });
@@ -264,9 +238,7 @@ test.describe(
           departmentTeam.id,
           "ADMIN",
         );
-        const response = await deptTeamAdminApiUser.context.delete(
-          `teams/${departmentTeam.id}`,
-        );
+        const response = await deptTeamAdminApiUser.context.delete(`teams/${departmentTeam.id}`);
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
       });
@@ -282,16 +254,12 @@ test.describe(
           orgOwnerApiUser.user.orgs[0].id,
           dept.id,
         );
-        const response = await adminApiUser.context.delete(
-          `teams/${departmentTeam.id}`,
-        );
+        const response = await adminApiUser.context.delete(`teams/${departmentTeam.id}`);
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
       });
 
-      test("Department Team Member cannot delete department team", async ({
-        deptTeamApiUser,
-      }) => {
+      test("Department Team Member cannot delete department team", async ({ deptTeamApiUser }) => {
         const response = await deptTeamApiUser.context.delete(
           `teams/${deptTeamApiUser.user.deptTeams[0].id}`,
         );

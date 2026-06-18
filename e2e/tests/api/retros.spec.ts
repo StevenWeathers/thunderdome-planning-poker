@@ -5,18 +5,13 @@ test.describe("Retro API", { tag: ["@api", "@retro"] }, () => {
     request,
     adminApiUser,
   }) => {
-    const response = await adminApiUser.context.get(
-      `users/${adminApiUser.user.id}/retros`,
-    );
+    const response = await adminApiUser.context.get(`users/${adminApiUser.user.id}/retros`);
     expect(response.ok()).toBeTruthy();
     const retros = await response.json();
     expect(retros.data).toEqual([]);
   });
 
-  test("POST /users/{userId}/retros creates retro", async ({
-    request,
-    registeredApiUser,
-  }) => {
+  test("POST /users/{userId}/retros creates retro", async ({ request, registeredApiUser }) => {
     const retroName = "Test API Create Retro";
     const brainstormVisibility = "visible";
     const maxVotes = 3;
@@ -39,9 +34,7 @@ test.describe("Retro API", { tag: ["@api", "@retro"] }, () => {
     });
   });
 
-  test("POST /users/{userId}/retros can skip prime directive", async ({
-    registeredApiUser,
-  }) => {
+  test("POST /users/{userId}/retros can skip prime directive", async ({ registeredApiUser }) => {
     const response = await registeredApiUser.context.post(
       `users/${registeredApiUser.user.id}/retros`,
       {
@@ -70,16 +63,13 @@ test.describe("Retro API", { tag: ["@api", "@retro"] }, () => {
     const brainstormVisibility = "hidden";
     const maxVotes = 3;
 
-    await registeredApiUser.context.post(
-      `users/${registeredApiUser.user.id}/retros`,
-      {
-        data: {
-          retroName,
-          brainstormVisibility,
-          maxVotes,
-        },
+    await registeredApiUser.context.post(`users/${registeredApiUser.user.id}/retros`, {
+      data: {
+        retroName,
+        brainstormVisibility,
+        maxVotes,
       },
-    );
+    });
 
     const response = await registeredApiUser.context.get(
       `users/${registeredApiUser.user.id}/retros`,
@@ -127,9 +117,7 @@ test.describe("Retro API", { tag: ["@api", "@retro"] }, () => {
       name: retroName,
     });
 
-    const retrosResponse = await registeredApiUser.context.get(
-      `teams/${team.id}/retros`,
-    );
+    const retrosResponse = await registeredApiUser.context.get(`teams/${team.id}/retros`);
     expect(retrosResponse.ok()).toBeTruthy();
     const retros = await retrosResponse.json();
     expect(retros.data).toContainEqual(

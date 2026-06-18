@@ -2,22 +2,22 @@
   "name": "thunderdome-e2e-test",
   "version": "0.0.0",
   "description": "End to end testing for Thunderdome",
+  "license": "Apache-2.0",
+  "author": "Steven Weathers",
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
-    "prettier": "prettier --check \"**/*.ts\"",
-    "prettier:fix": "prettier --write \"**/*.ts\"",
+    "prettier": "oxfmt --check \"**/*.ts\"",
+    "prettier:fix": "oxfmt --write \"**/*.ts\"",
     "format": "npm run prettier:fix",
     "test:api": "npx playwright test --grep \"@api\"",
     "test:ui": "npx playwright test --grep-invert \"@api\""
   },
-  "author": "Steven Weathers",
-  "license": "Apache-2.0",
   "devDependencies": {
-    "@estruyf/github-actions-reporter": "^1.11.0",
-    "@playwright/test": "^1.58.2",
-    "pg": "^8.18.0",
-    "prettier": "^3.8.1",
+    "@estruyf/github-actions-reporter": "^1.12.0",
+    "@playwright/test": "^1.61.0",
+    "oxfmt": "^0.55.0",
+    "pg": "^8.21.0",
     "ts-node": "^10.9.2"
   }
 }

@@ -58,16 +58,12 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     },
   );
 
-  test(
-    "guest user successfully loads",
-    { tag: ["@guest"] },
-    async ({ guestPage }) => {
-      const bp = new RetroPage(guestPage.page);
-      await bp.goto(retro.id);
+  test("guest user successfully loads", { tag: ["@guest"] }, async ({ guestPage }) => {
+    const bp = new RetroPage(guestPage.page);
+    await bp.goto(retro.id);
 
-      await expect(bp.retroTitle).toHaveText(retro.name);
-    },
-  );
+    await expect(bp.retroTitle).toHaveText(retro.name);
+  });
 
   test(
     "registered user successfully loads",
@@ -89,9 +85,7 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     await expect(bp.page.locator("h1")).toHaveText("My Retros");
   });
 
-  test("delete retro confirmation cancel does not delete retro", async ({
-    registeredPage,
-  }) => {
+  test("delete retro confirmation cancel does not delete retro", async ({ registeredPage }) => {
     const bp = new RetroPage(registeredPage.page);
     await bp.goto(retroCancelDelete.id);
 
@@ -123,20 +117,14 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     await expect(bp.page.getByText("Add your comments below")).toBeVisible();
 
     await bp.retroNextPhaseBtn.click();
-    await expect(
-      bp.page.getByText("Drag and drop comments to group them together"),
-    ).toBeVisible();
+    await expect(bp.page.getByText("Drag and drop comments to group them together")).toBeVisible();
+
+    await bp.retroNextPhaseBtn.click();
+    await expect(bp.page.getByText("Vote for the groups you'd like to discuss most")).toBeVisible();
 
     await bp.retroNextPhaseBtn.click();
     await expect(
-      bp.page.getByText("Vote for the groups you'd like to discuss most"),
-    ).toBeVisible();
-
-    await bp.retroNextPhaseBtn.click();
-    await expect(
-      bp.page.getByText(
-        "Add action items, you can no longer group or vote comments",
-      ),
+      bp.page.getByText("Add action items, you can no longer group or vote comments"),
     ).toBeVisible();
 
     await bp.retroNextPhaseBtn.click();
@@ -188,9 +176,7 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     await group1Input.focus();
     await group1Input.fill(firstGroupName);
     await bp.page.keyboard.press("Tab");
-    expect(await bp.retroGroupNameInput.first().inputValue()).toEqual(
-      firstGroupName,
-    );
+    expect(await bp.retroGroupNameInput.first().inputValue()).toEqual(firstGroupName);
   });
 
   test("action phase can add items", async ({ registeredPage }) => {
@@ -210,9 +196,7 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     expect(await bp.page.getByText(actionItem2));
   });
 
-  test("facilitator can edit retro settings with phase time limit", async ({
-    registeredPage,
-  }) => {
+  test("facilitator can edit retro settings with phase time limit", async ({ registeredPage }) => {
     const bp = new RetroPage(registeredPage.page);
     await bp.goto(retroEditSettings.id);
 
@@ -236,17 +220,11 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     await expect(bp.page.locator('[data-testid="phase-timer"]')).toBeVisible();
 
     // Verify timer shows minutes and seconds
-    await expect(bp.page.locator('[data-testid="phase-timer"]')).toContainText(
-      "m",
-    );
-    await expect(bp.page.locator('[data-testid="phase-timer"]')).toContainText(
-      "s",
-    );
+    await expect(bp.page.locator('[data-testid="phase-timer"]')).toContainText("m");
+    await expect(bp.page.locator('[data-testid="phase-timer"]')).toContainText("s");
   });
 
-  test("timer does not show when phase time limit is 0", async ({
-    registeredPage,
-  }) => {
+  test("timer does not show when phase time limit is 0", async ({ registeredPage }) => {
     const bp = new RetroPage(registeredPage.page);
     await bp.goto(retroEditSettings.id);
 
@@ -264,8 +242,6 @@ test.describe("Retro page", { tag: ["@retro"] }, () => {
     await bp.retroNextPhaseBtn.click();
 
     // Verify timer is not visible when phaseTimeLimitMin = 0
-    await expect(
-      bp.page.locator('[data-testid="phase-timer"]'),
-    ).not.toBeVisible();
+    await expect(bp.page.locator('[data-testid="phase-timer"]')).not.toBeVisible();
   });
 });

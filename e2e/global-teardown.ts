@@ -64,9 +64,7 @@ async function globalTeardown(config: FullConfig) {
     const deleteGuestPage = await deleteGuestContext.newPage();
     const dgu = await deleteGuestPage.request.get(`/api/auth/user`);
     const deleteGuestUser = await dgu.json();
-    await deleteGuestPage.request.delete(
-      `/api/users/${deleteGuestUser.data.id}`,
-    );
+    await deleteGuestPage.request.delete(`/api/users/${deleteGuestUser.data.id}`);
   } catch (error) {
     console.error("Error deleting delete-guest user");
   }
@@ -79,9 +77,7 @@ async function globalTeardown(config: FullConfig) {
     const deleteRegisteredPage = await deleteRegisteredContext.newPage();
     const dru = await deleteRegisteredPage.request.get(`/api/auth/user`);
     const deleteRegisteredUser = await dru.json();
-    await deleteRegisteredPage.request.delete(
-      `/api/users/${deleteRegisteredUser.data.id}`,
-    );
+    await deleteRegisteredPage.request.delete(`/api/users/${deleteRegisteredUser.data.id}`);
   } catch (error) {
     console.error("Error deleting delete-registered user");
   }

@@ -32,32 +32,16 @@ async function globalSetup(config: FullConfig) {
   const orgOwnerUserName = "E2EOrgOwner";
   await seeder.deleteUserByName(orgOwnerUserName);
   const orgOwnerUserEmail = seeder.generateEmail(orgOwnerUserName);
-  const orgOwnerUser = await seeder.createUser(
-    orgOwnerUserName,
-    orgOwnerUserEmail,
-  );
+  const orgOwnerUser = await seeder.createUser(orgOwnerUserName, orgOwnerUserEmail);
   await seeder.addUserAPIKey(
     orgOwnerUser.id,
     "fi5gnBQt.a8c02d29f3984bd33b2a80bb88257e92d56886b840d51897211fc5159e75c668",
     "E2E API Key",
   );
-  const org = await seeder.createOrganization(
-    `${orgOwnerUserName} Org`,
-    orgOwnerUser.id,
-  );
-  const dept = await seeder.createDepartment(
-    `${orgOwnerUserName} Org Dept`,
-    org.id,
-  );
-  const orgTeam = await seeder.createOrgTeam(
-    `${orgOwnerUserName} Org Team`,
-    org.id,
-  );
-  const deptTeam = await seeder.createOrgTeam(
-    `${orgOwnerUserName} Org Dept Team`,
-    org.id,
-    dept.id,
-  );
+  const org = await seeder.createOrganization(`${orgOwnerUserName} Org`, orgOwnerUser.id);
+  const dept = await seeder.createDepartment(`${orgOwnerUserName} Org Dept`, org.id);
+  const orgTeam = await seeder.createOrgTeam(`${orgOwnerUserName} Org Team`, org.id);
+  const deptTeam = await seeder.createOrgTeam(`${orgOwnerUserName} Org Dept Team`, org.id, dept.id);
   const nonOrgTeam = await seeder.createUserTeam(
     `${orgOwnerUserName} Non-Org Team`,
     orgOwnerUser.id,
@@ -77,10 +61,7 @@ async function globalSetup(config: FullConfig) {
   const orgTeamUserName = "E2EOrgTeamUser1";
   await seeder.deleteUserByName(orgTeamUserName);
   const orgTeamUserEmail = seeder.generateEmail(orgTeamUserName);
-  const orgTeamUser = await seeder.createUser(
-    orgTeamUserName,
-    orgTeamUserEmail,
-  );
+  const orgTeamUser = await seeder.createUser(orgTeamUserName, orgTeamUserEmail);
   await seeder.addUserAPIKey(
     orgTeamUser.id,
     "0DIvRK3H.54e51a06bac4e9b3dcf815282b7955f6e8e2a2cfef7b191ef6d596ea88eb6e0a",
@@ -104,10 +85,7 @@ async function globalSetup(config: FullConfig) {
   const deptTeamUserName = "E2EOrgDeptTeamUser1";
   await seeder.deleteUserByName(deptTeamUserName);
   const deptTeamUserEmail = seeder.generateEmail(deptTeamUserName);
-  const deptTeamUser = await seeder.createUser(
-    deptTeamUserName,
-    deptTeamUserEmail,
-  );
+  const deptTeamUser = await seeder.createUser(deptTeamUserName, deptTeamUserEmail);
   await seeder.addUserAPIKey(
     deptTeamUser.id,
     "rSFqCQ_6.24bf955b6f66556171e111a8ce492a0b24aa7dbfbeb6c3fa0ec9a7e66f048763",
@@ -131,10 +109,7 @@ async function globalSetup(config: FullConfig) {
   const orgAdminUserName = "E2EOrgAdmin1";
   await seeder.deleteUserByName(orgAdminUserName);
   const orgAdminUserEmail = seeder.generateEmail(orgAdminUserName);
-  const orgAdminUser = await seeder.createUser(
-    orgAdminUserName,
-    orgAdminUserEmail,
-  );
+  const orgAdminUser = await seeder.createUser(orgAdminUserName, orgAdminUserEmail);
   await seeder.addUserAPIKey(
     orgAdminUser.id,
     "Kgc_ujA_.19b8ddc3dcf9af62b91ec00e0f170b2b99ae01392aad9c2fc5140553463219f4",
@@ -156,10 +131,7 @@ async function globalSetup(config: FullConfig) {
   const deptAdminUserName = "E2EOrgDeptAdmin1";
   await seeder.deleteUserByName(deptAdminUserName);
   const deptAdminUserEmail = seeder.generateEmail(deptAdminUserName);
-  const deptAdminUser = await seeder.createUser(
-    deptAdminUserName,
-    deptAdminUserEmail,
-  );
+  const deptAdminUser = await seeder.createUser(deptAdminUserName, deptAdminUserEmail);
   await seeder.addUserAPIKey(
     deptAdminUser.id,
     "+JEDJS1o.b787661dff2eb536eaa99b217ebf6747e4c511a0a5a97def388a67d449f68c65",
@@ -182,10 +154,7 @@ async function globalSetup(config: FullConfig) {
   const teamAdminUserName = "E2ETeamAdmin1";
   await seeder.deleteUserByName(teamAdminUserName);
   const teamAdminUserEmail = seeder.generateEmail(teamAdminUserName);
-  const teamAdminUser = await seeder.createUser(
-    teamAdminUserName,
-    teamAdminUserEmail,
-  );
+  const teamAdminUser = await seeder.createUser(teamAdminUserName, teamAdminUserEmail);
   await seeder.addUserAPIKey(
     teamAdminUser.id,
     "WSpBNDzh.19a1813c398a2f56da96ad0567341e779b37d36b85ccc508511331eaee9d9a3c",
@@ -207,10 +176,7 @@ async function globalSetup(config: FullConfig) {
   const orgTeamAdminName = "E2EOrgTeamAdmin1";
   await seeder.deleteUserByName(orgTeamAdminName);
   const orgTeamAdminEmail = seeder.generateEmail(orgTeamAdminName);
-  const orgTeamAdmin = await seeder.createUser(
-    orgTeamAdminName,
-    orgTeamAdminEmail,
-  );
+  const orgTeamAdmin = await seeder.createUser(orgTeamAdminName, orgTeamAdminEmail);
   await seeder.addUserAPIKey(
     orgTeamAdmin.id,
     "Q+PSuFMl.74f05388d298e72ad4b20b6c581303e3c3230cb0242376a07e025a8d3bbb4039",
@@ -232,10 +198,7 @@ async function globalSetup(config: FullConfig) {
   const deptTeamAdminUserName = "E2EOrgDeptTeamAdmin1";
   await seeder.deleteUserByName(deptTeamAdminUserName);
   const deptTeamAdminUserEmail = seeder.generateEmail(deptTeamAdminUserName);
-  const deptTeamAdminUser = await seeder.createUser(
-    deptTeamAdminUserName,
-    deptTeamAdminUserEmail,
-  );
+  const deptTeamAdminUser = await seeder.createUser(deptTeamAdminUserName, deptTeamAdminUserEmail);
   await seeder.addUserAPIKey(
     deptTeamAdminUser.id,
     "s8GQVacj.566b998dd2b0966bef4092fdda4a5d40b68ddcca46860ed512ce34d2a0acef59",
@@ -272,9 +235,7 @@ async function globalSetup(config: FullConfig) {
   const adminLoginPage = new LoginPage(adminPage);
   await adminLoginPage.goto();
   await adminLoginPage.login(au.email, "kentRules!");
-  await expect(adminLoginPage.page.locator("h1")).toHaveText(
-    "Welcome back, E2E ADMIN",
-  );
+  await expect(adminLoginPage.page.locator("h1")).toHaveText("Welcome back, E2E ADMIN");
   await adminLoginPage.page.context().storageState({
     path: path.resolve(__dirname, "storage", "adminStorageState.json"),
   });
@@ -302,9 +263,7 @@ async function globalSetup(config: FullConfig) {
   const userVerifiedPage = new LoginPage(verifiedPage);
   await userVerifiedPage.goto();
   await userVerifiedPage.login(vu.email, "kentRules!");
-  await expect(userVerifiedPage.page.locator("h1")).toHaveText(
-    "Welcome back, E2E Verified User",
-  );
+  await expect(userVerifiedPage.page.locator("h1")).toHaveText("Welcome back, E2E Verified User");
   await userVerifiedPage.page.context().storageState({
     path: path.resolve(__dirname, "storage", "verifiedStorageState.json"),
   });
@@ -315,9 +274,7 @@ async function globalSetup(config: FullConfig) {
   const guestRegisterPage = new RegisterPage(guestPage);
   await guestRegisterPage.goto();
   await guestRegisterPage.createGuestUser("E2E Guest");
-  await expect(guestRegisterPage.page.locator("h1")).toHaveText(
-    "Welcome back, E2E Guest",
-  );
+  await expect(guestRegisterPage.page.locator("h1")).toHaveText("Welcome back, E2E Guest");
   await guestRegisterPage.page.context().storageState({
     path: path.resolve(__dirname, "storage", "guestStorageState.json"),
   });
@@ -343,15 +300,9 @@ async function globalSetup(config: FullConfig) {
   const deleteRegisteredPage = new LoginPage(deleteRegPage);
   await deleteRegisteredPage.goto();
   await deleteRegisteredPage.login(dru.email, "kentRules!");
-  await expect(deleteRegisteredPage.page.locator("h1")).toHaveText(
-    "Welcome back, E2E Delete User",
-  );
+  await expect(deleteRegisteredPage.page.locator("h1")).toHaveText("Welcome back, E2E Delete User");
   await deleteRegisteredPage.page.context().storageState({
-    path: path.resolve(
-      __dirname,
-      "storage",
-      "deleteRegisteredStorageState.json",
-    ),
+    path: path.resolve(__dirname, "storage", "deleteRegisteredStorageState.json"),
   });
 
   await browser.close();

@@ -18,9 +18,7 @@ export class OrganizationPage {
     this.departmentNameFormField = page.locator(
       'form[name="createDepartment"] [name="departmentName"]',
     );
-    this.teamNameField = page.locator(
-      'form[name="createTeam"] [name="teamName"]',
-    );
+    this.teamNameField = page.locator('form[name="createTeam"] [name="teamName"]');
   }
 
   async goto(id) {

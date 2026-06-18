@@ -12,8 +12,7 @@ export class ThunderdomeSeeder {
   }
 
   async createUser(name, email, type = "REGISTERED", verified = false) {
-    const hashedPass =
-      "$2a$10$3CvuzyoGIme3dJ4v9BnvyOIKFxEaYyjV2Lfunykv0VokGf/twxi9m"; // kentRules!
+    const hashedPass = "$2a$10$3CvuzyoGIme3dJ4v9BnvyOIKFxEaYyjV2Lfunykv0VokGf/twxi9m"; // kentRules!
     const { rows } = await this.pool.query(
       `
       INSERT INTO thunderdome.users (name, email, type, verified)
@@ -271,12 +270,7 @@ export class ThunderdomeSeeder {
   }
 
   // Create a project with organization association (explicit method)
-  async createOrganizationProject(
-    projectKey,
-    name,
-    organizationId,
-    description = null,
-  ) {
+  async createOrganizationProject(projectKey, name, organizationId, description = null) {
     const uniqueKey = await this.generateUniqueProjectKeyForScope(
       projectKey,
       "organization_id",
@@ -304,12 +298,7 @@ export class ThunderdomeSeeder {
   }
 
   // Create a project with department association
-  async createDepartmentProject(
-    projectKey,
-    name,
-    departmentId,
-    description = null,
-  ) {
+  async createDepartmentProject(projectKey, name, departmentId, description = null) {
     const uniqueKey = await this.generateUniqueProjectKeyForScope(
       projectKey,
       "department_id",
@@ -338,11 +327,7 @@ export class ThunderdomeSeeder {
 
   // Create a project with team association
   async createTeamProject(projectKey, name, teamId, description = null) {
-    const uniqueKey = await this.generateUniqueProjectKeyForScope(
-      projectKey,
-      "team_id",
-      teamId,
-    );
+    const uniqueKey = await this.generateUniqueProjectKeyForScope(projectKey, "team_id", teamId);
 
     const { rows } = await this.pool.query(
       `
@@ -402,12 +387,7 @@ export class ThunderdomeSeeder {
   }
 
   // Create a project with multiple associations (for admin tests)
-  async createProjectWithAssociations(
-    projectKey,
-    name,
-    associations = {},
-    description = null,
-  ) {
+  async createProjectWithAssociations(projectKey, name, associations = {}, description = null) {
     const { organizationId, departmentId, teamId } = associations;
 
     // Determine which scope to use for uniqueness check
@@ -454,11 +434,7 @@ export class ThunderdomeSeeder {
       };
     }
 
-    const uniqueKey = await this.generateUniqueProjectKeyForScope(
-      projectKey,
-      scopeColumn,
-      scopeId,
-    );
+    const uniqueKey = await this.generateUniqueProjectKeyForScope(projectKey, scopeColumn, scopeId);
 
     const { rows } = await this.pool.query(
       `
@@ -466,14 +442,7 @@ export class ThunderdomeSeeder {
     VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING id, project_key, name, description, organization_id, department_id, team_id, created_at, updated_at
   `,
-      [
-        uniqueKey,
-        name,
-        description,
-        organizationId || null,
-        departmentId || null,
-        teamId || null,
-      ],
+      [uniqueKey, name, description, organizationId || null, departmentId || null, teamId || null],
     );
 
     return {

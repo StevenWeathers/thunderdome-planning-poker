@@ -68,15 +68,9 @@ test.describe("Teams page", { tag: ["@team"] }, () => {
 
         await teamsPage.createTeam({ name: "Test Team" });
 
-        await expect(
-          teamsPage.page.locator("h2", { hasText: "Games" }),
-        ).toBeVisible();
-        await expect(
-          teamsPage.page.locator("h2", { hasText: "Retros" }),
-        ).toBeVisible();
-        await expect(
-          teamsPage.page.locator("h2", { hasText: "Storyboards" }),
-        ).toBeVisible();
+        await expect(teamsPage.page.locator("h2", { hasText: "Games" })).toBeVisible();
+        await expect(teamsPage.page.locator("h2", { hasText: "Retros" })).toBeVisible();
+        await expect(teamsPage.page.locator("h2", { hasText: "Storyboards" })).toBeVisible();
         await expect(
           teamsPage.page.locator('[data-testid="team-nav-item"]', {
             hasText: "Users",
