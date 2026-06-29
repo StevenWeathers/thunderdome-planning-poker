@@ -215,6 +215,14 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 
 			subscription, err := s.dataSvc.GetSubscriptionBySubscriptionID(ctx, sub.ID)
 			if err != nil {
+				if sub.Status == stripe.SubscriptionStatusIncomplete || sub.Status == stripe.SubscriptionStatusIncompleteExpired {
+					logger.Info(
+						fmt.Sprintf("Skipping subscription update for untracked incomplete subscription %s", sub.ID),
+						zap.String("eventId", event.ID),
+						zap.String("subscriptionStatus", string(sub.Status)),
+					)
+					break
+				}
 				logger.Error(fmt.Sprintf("Error getting subscription id %s subscription: %v", sub.ID, err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
