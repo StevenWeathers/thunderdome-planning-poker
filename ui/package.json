@@ -45,7 +45,7 @@
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tsconfig/svelte": "^5.0.8",
     "@types/js-cookie": "^3.0.6",
-    "@vitest/browser": "^4.1.9",
+    "@vitest/browser": "^4.1.10",
     "@vitest/browser-playwright": "^4.1.9",
     "@vitest/browser-preview": "^4.1.9",
     "@vitest/coverage-v8": "^4.0.18",
