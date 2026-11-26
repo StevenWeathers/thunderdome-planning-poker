@@ -24,11 +24,6 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:fix inline
-func ptr[T any](v T) *T {
-	return new(v)
-}
-
 // MockTeamDataSvc is a mock implementation of the TeamDataSvc
 type MockTeamDataSvc struct {
 	mock.Mock
@@ -422,7 +417,7 @@ func TestTeamAdminOnly(t *testing.T) {
 		{
 			name:             "Team Admin",
 			userType:         thunderdome.RegisteredUserType,
-			teamRole:         ptr(thunderdome.AdminUserType),
+			teamRole:         new(thunderdome.AdminUserType),
 			departmentRole:   nil,
 			organizationRole: nil,
 			expectedStatus:   http.StatusOK,
@@ -431,7 +426,7 @@ func TestTeamAdminOnly(t *testing.T) {
 			name:             "Department Admin",
 			userType:         thunderdome.RegisteredUserType,
 			teamRole:         nil,
-			departmentRole:   ptr(thunderdome.AdminUserType),
+			departmentRole:   new(thunderdome.AdminUserType),
 			organizationRole: nil,
 			expectedStatus:   http.StatusOK,
 		},
@@ -440,13 +435,13 @@ func TestTeamAdminOnly(t *testing.T) {
 			userType:         thunderdome.RegisteredUserType,
 			teamRole:         nil,
 			departmentRole:   nil,
-			organizationRole: ptr(thunderdome.AdminUserType),
+			organizationRole: new(thunderdome.AdminUserType),
 			expectedStatus:   http.StatusOK,
 		},
 		{
 			name:             "Non-Admin User",
 			userType:         thunderdome.RegisteredUserType,
-			teamRole:         ptr(thunderdome.EntityMemberUserType),
+			teamRole:         new(thunderdome.EntityMemberUserType),
 			departmentRole:   nil,
 			organizationRole: nil,
 			expectedStatus:   http.StatusForbidden,
