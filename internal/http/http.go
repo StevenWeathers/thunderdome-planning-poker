@@ -62,6 +62,10 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 			cspbuilder.ImgSrc:      {"data:", "*"},
 			cspbuilder.ConnectSrc:  connectSrcCsp,
 			cspbuilder.ManifestSrc: {"'self'"},
+			// the next three limit what injected HTML can do, default-src doesn't cover base-uri or form-action
+			cspbuilder.ObjectSrc:  {"'none'"},
+			cspbuilder.BaseURI:    {"'self'"},
+			cspbuilder.FormAction: {"'self'"},
 		},
 	}
 

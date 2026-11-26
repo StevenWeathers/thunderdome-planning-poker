@@ -23,6 +23,7 @@ import (
 	subscriptionData "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/team"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/user"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/sanitize"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http"
 	"github.com/StevenWeathers/thunderdome-planning-poker/ui"
@@ -129,13 +130,17 @@ func serve(embedUseOS bool) {
 	apkService := &apikey.Service{DB: d.DB, Logger: logger}
 	alertService := &alert.Service{DB: d.DB, Logger: logger}
 	authService := &auth.Service{DB: d.DB, Logger: logger, AESHashkey: d.Config.AESHashkey}
+	richTextPolicy := sanitize.RichTextPolicy()
 	battleService := &poker.Service{
 		DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey,
-		HTMLSanitizerPolicy: d.HTMLSanitizerPolicy,
+		HTMLSanitizerPolicy: richTextPolicy,
 	}
 	checkinService := &team.CheckinService{DB: d.DB, Logger: logger, HTMLSanitizerPolicy: d.HTMLSanitizerPolicy}
 	retroService := &retro.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
-	storyboardService := &storyboard.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
+	storyboardService := &storyboard.Service{
+		DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey,
+		HTMLSanitizerPolicy: richTextPolicy,
+	}
 	teamService := &team.Service{DB: d.DB, Logger: logger}
 	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
