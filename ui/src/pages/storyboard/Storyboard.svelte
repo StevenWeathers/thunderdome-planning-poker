@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Sockette from 'sockette';
+  import Sockette from '../../lib/sockette';
   import { onDestroy, onMount } from 'svelte';
 
   import AddGoal from '../../components/storyboard/AddGoal.svelte';

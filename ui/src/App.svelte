@@ -6,7 +6,7 @@
   import './unreset.css';
   import '../node_modules/quill/dist/quill.core.css';
   import '../node_modules/quill/dist/quill.snow.css';
-  import Navaid from 'navaid';
+  import Navaid from './lib/navaid';
   import { onDestroy } from 'svelte';
 
   import { AppConfig, appRoutes } from './config';
