@@ -1,5 +1,5 @@
 <script lang="ts">
-  import he from 'he';
+  import { decode } from 'he';
 
   import HollowButton from '../global/HollowButton.svelte';
   import { AppConfig } from '../../config';
@@ -41,7 +41,7 @@
           const totalItems = items.length;
           for (let i = 0; i < totalItems; i++) {
             const item = items[i];
-            const decodedDescription = he.decode(item.querySelector('description').innerHTML);
+            const decodedDescription = decode(item.querySelector('description').innerHTML);
             const customFields = item.querySelectorAll('customfields>customfield');
             let acceptanceCriteria = '';
 

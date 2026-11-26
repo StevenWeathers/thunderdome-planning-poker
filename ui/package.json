@@ -44,6 +44,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.2",
     "@tsconfig/svelte": "^5.0.9",
+    "@types/he": "^1.2.3",
     "@types/js-cookie": "^3.0.6",
     "@vitest/browser": "^4.1.12",
     "@vitest/browser-playwright": "^4.1.12",
