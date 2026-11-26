@@ -16,7 +16,7 @@
   "devDependencies": {
     "@estruyf/github-actions-reporter": "^1.14.1",
     "@playwright/test": "^1.65.1",
-    "oxfmt": "^0.55.0",
+    "oxfmt": "^0.80.0",
     "pg": "^8.23.1",
     "ts-node": "^10.9.2"
   }
