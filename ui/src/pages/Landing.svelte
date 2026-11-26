@@ -1,12 +1,13 @@
 <script lang="ts">
   import { AppConfig, appRoutes } from '../config';
   import { user } from '../stores';
-  import { Github, Users, Zap } from '@lucide/svelte';
+  import { Users, Zap } from '@lucide/svelte';
   import LL from '../i18n/i18n-svelte';
   import Countries from '../components/user/Countries.svelte';
   import BrowserMock from '../components/global/BrowserMock.svelte';
   import { onMount } from 'svelte';
   import type { ApiClient } from '../types/apiclient';
+  import GithubIcon from '../components/icons/Github.svelte';
 
   interface Props {
     xfetch: ApiClient;
@@ -337,7 +338,7 @@
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 text-gray-800 dark:text-white">
           <div class="text-indigo-500 text-4xl mb-4">
-            <Github class="h-12 w-12 mx-auto" />
+            <GithubIcon class="h-12 w-12 mx-auto" />
           </div>
           <h3 class="text-xl font-semibold mb-2">Open Source</h3>
           <p>
