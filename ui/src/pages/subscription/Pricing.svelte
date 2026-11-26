@@ -21,7 +21,7 @@
   import { appRoutes } from '../../config';
   import PlanBoxRecommended from '../../components/pricing/PlanBoxRecommended.svelte';
   import PlanBox from '../../components/pricing/PlanBox.svelte';
-  import Github from '../../components/icons/Github.svelte';
+  import GithubIcon from '../../components/icons/Github.svelte';
 
   const { RepoURL } = AppConfig;
 
@@ -450,7 +450,7 @@
                 href={RepoURL}
                 target="_blank"
                 class="border-2 border-white text-white hover:bg-white hover:text-indigo-600 font-bold py-3 px-6 rounded-full transition duration-300"
-                ><Github class="me-2" width={22} /> View on GitHub</a
+                ><GithubIcon class="me-2" width={22} /> View on GitHub</a
               >
             </div>
           </div>
