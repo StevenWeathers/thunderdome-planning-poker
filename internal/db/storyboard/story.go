@@ -119,7 +119,7 @@ func (d *Service) ReviseStoryContent(storyboardID string, userID string, storyID
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET content = $2, updated_date = NOW() WHERE id = $1;`,
 		storyID,
-		storyContent,
+		d.HTMLSanitizerPolicy.Sanitize(storyContent),
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_content error", zap.Error(err))
 	}

@@ -10,6 +10,8 @@ import (
 
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
+	_ "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/migrations" // registers Go migrations
+
 	"github.com/XSAM/otelsql"
 	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 

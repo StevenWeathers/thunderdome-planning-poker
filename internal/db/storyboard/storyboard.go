@@ -9,6 +9,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"go.uber.org/zap"
@@ -16,9 +17,10 @@ import (
 
 // Service represents the storyboard database service
 type Service struct {
-	DB         *sql.DB
-	Logger     *otelzap.Logger
-	AESHashKey string
+	DB                  *sql.DB
+	Logger              *otelzap.Logger
+	AESHashKey          string
+	HTMLSanitizerPolicy *bluemonday.Policy
 }
 
 func buildStoryboardColorLegendJSON(colorLegend []*thunderdome.Color) ([]byte, error) {

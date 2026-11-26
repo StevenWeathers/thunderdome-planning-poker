@@ -110,35 +110,7 @@ func (d *Service) CreateGame(ctx context.Context, facilitatorID string, name str
 		return nil, fmt.Errorf("failed to create poker game: %v", commitErr)
 	}
 
-	for _, story := range stories {
-		story.Votes = make([]*thunderdome.Vote, 0)
-		priority := story.Priority
-		// default priority should be 99 for sort order purposes
-		if priority == 0 {
-			priority = 99
-		}
-
-		e := d.DB.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, priority, position)
-					VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (
-					  coalesce(
-						(select max(position) from thunderdome.poker_story where poker_id = $1),
-						-1
-					  ) + 1
-					)) RETURNING id`,
-			b.ID,
-			story.Name,
-			story.Type,
-			story.ReferenceID,
-			story.Link,
-			story.Description,
-			story.AcceptanceCriteria,
-			priority,
-		).Scan(&story.ID)
-		if e != nil {
-			d.Logger.Error("insert stories error", zap.Error(e))
-		}
-	}
+	d.insertInitialStories(ctx, b.ID, stories)
 
 	b.Stories = stories
 
@@ -234,7 +206,23 @@ func (d *Service) TeamCreateGame(ctx context.Context, teamID string, facilitator
 		return nil, fmt.Errorf("failed to create poker game: %v", commitErr)
 	}
 
+	d.insertInitialStories(ctx, b.ID, stories)
+
+	b.Stories = stories
+
+	return b, nil
+}
+
+// sanitizeStory strips unsafe HTML from the story fields that the UI renders as raw HTML
+func (d *Service) sanitizeStory(story *thunderdome.Story) {
+	story.Description = d.HTMLSanitizerPolicy.Sanitize(story.Description)
+	story.AcceptanceCriteria = d.HTMLSanitizerPolicy.Sanitize(story.AcceptanceCriteria)
+}
+
+// insertInitialStories adds the stories submitted along with a new poker game
+func (d *Service) insertInitialStories(ctx context.Context, pokerID string, stories []*thunderdome.Story) {
 	for _, story := range stories {
+		d.sanitizeStory(story)
 		story.Votes = make([]*thunderdome.Vote, 0)
 		priority := story.Priority
 		// default priority should be 99 for sort order purposes
@@ -250,7 +238,7 @@ func (d *Service) TeamCreateGame(ctx context.Context, teamID string, facilitator
 						-1
 					  ) + 1
 					)) RETURNING id`,
-			b.ID,
+			pokerID,
 			story.Name,
 			story.Type,
 			story.ReferenceID,
@@ -263,10 +251,6 @@ func (d *Service) TeamCreateGame(ctx context.Context, teamID string, facilitator
 			d.Logger.Error("insert stories error", zap.Error(e))
 		}
 	}
-
-	b.Stories = stories
-
-	return b, nil
 }
 
 // UpdateGame updates the game by ID
