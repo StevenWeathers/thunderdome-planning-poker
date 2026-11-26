@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import Sockette from 'sockette';
+  import Sockette from '../../lib/sockette';
 
   import PageLayout from '../../components/PageLayout.svelte';
   import PointCard from '../../components/poker/PointCard.svelte';

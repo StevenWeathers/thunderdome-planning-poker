@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Sockette from 'sockette';
+  import Sockette from '../../lib/sockette';
   import { onDestroy, onMount } from 'svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import { Check, ChevronRight, Crown, ExternalLink, LogOut, Pencil, Settings, Trash, Users } from '@lucide/svelte';
