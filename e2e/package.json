@@ -14,10 +14,10 @@
     "test:ui": "npx playwright test --grep-invert \"@api\""
   },
   "devDependencies": {
-    "@estruyf/github-actions-reporter": "^1.12.0",
-    "@playwright/test": "^1.61.0",
+    "@estruyf/github-actions-reporter": "^1.14.1",
+    "@playwright/test": "^1.65.1",
     "oxfmt": "^0.55.0",
-    "pg": "^8.21.0",
+    "pg": "^8.23.1",
     "ts-node": "^10.9.2"
   }
 }
