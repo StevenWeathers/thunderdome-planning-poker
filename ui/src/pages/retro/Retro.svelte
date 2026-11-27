@@ -16,6 +16,7 @@
   import Export from '../../components/retro/Export.svelte';
   import GroupPhase from '../../components/retro/GroupPhase.svelte';
   import VotePhase from '../../components/retro/VotePhase.svelte';
+  import { isPhaseComplete, type PhaseUser } from '../../components/retro/phaseReady';
   import GroupedItems from '../../components/retro/GroupedItems.svelte';
   import RetroActionForm from '../../components/retro/RetroActionForm.svelte';
   import UserCard from '../../components/retro/UserCard.svelte';
@@ -86,12 +87,14 @@
   let showExport = $state(false);
   let groupedItems = $state([]);
   let JoinPassRequired = $state(false);
-  let allUsersVoted = false;
   let showEditRetro = $state(false);
   let phaseTimeStart = $state(new Date());
   let phaseTimeLimitMin = $state(0);
   let team = $state(null);
   let columnColors = $state({});
+  // a page refresh looks like leaving, so give users this long to return before moving on without them
+  const departureGraceMs = 10000;
+  const departingUsers = new Map<string, ReturnType<typeof setTimeout>>();
 
   function getAssociatedTeam() {
     if (retro.teamId) {
@@ -120,15 +123,12 @@
     }, {});
     let userVoteCount = 0;
     let result = [];
-    let voteCount = 0;
-    const playerCount = retro.users.filter(u => u.active).length;
 
     retro.items.map(item => {
       groupMap[item.groupId].items.push(item);
     });
 
     retro.votes.map(vote => {
-      voteCount = voteCount + vote.count;
       groupMap[vote.groupId].voteCount = groupMap[vote.groupId].voteCount + vote.count;
       groupMap[vote.groupId].votes.push(vote);
       if (vote.userId === $user.id) {
@@ -136,9 +136,6 @@
         groupMap[vote.groupId].userVoted = true;
       }
     });
-
-    allUsersVoted = voteCount === playerCount * retro.maxVotes;
-    phaseReadyCheck();
 
     result = Object.values(groupMap);
     if (retro.phase === 'action' || retro.phase === 'completed') {
@@ -182,6 +179,7 @@
         break;
       case 'user_joined': {
         retro.users = JSON.parse(parsedEvent.value) || [];
+        cancelDeparture(parsedEvent.userId);
         const joinedUser = retro.users.find(u => u.id === parsedEvent.userId);
         notifications.success(`${joinedUser.name} joined.`);
         break;
@@ -189,6 +187,7 @@
       case 'user_left': {
         const leftUser = retro.users.find(w => w.id === parsedEvent.userId);
         retro.users = JSON.parse(parsedEvent.value);
+        handleDeparture(parsedEvent.userId);
 
         notifications.danger(`${leftUser.name} left.`);
         break;
@@ -265,6 +264,7 @@
         retro.votes = parsedValue;
         if (retro.phase === 'vote') {
           groupedItems = organizeItemsByGroup();
+          phaseReadyCheck();
         }
         break;
       }
@@ -340,6 +340,7 @@
   });
 
   onDestroy(() => {
+    departingUsers.forEach(timeout => clearTimeout(timeout));
     if (ws) {
       ws.close();
     }
@@ -565,28 +566,45 @@
     }
   }
 
-  function phaseReadyCheck() {
-    const activeUsers = retro.users.filter(u => u.active);
-    let allReady = retro.readyUsers.length === activeUsers.length;
+  function isEveryoneDone() {
+    // users still within their grace period are treated as present
+    const users = (retro.users as PhaseUser[]).map(u => (departingUsers.has(u.id) ? { ...u, active: true } : u));
 
-    if (isFacilitator && retro.phase_auto_advance) {
-      if (retro.phase === 'brainstorm' && allReady) {
-        sendSocketEvent(
-          'phase_all_ready',
-          JSON.stringify({
-            phase: 'group',
-          }),
-        );
-      }
-      if (retro.phase === 'vote' && allUsersVoted) {
-        sendSocketEvent(
-          'phase_all_ready',
-          JSON.stringify({
-            phase: 'action',
-          }),
-        );
-      }
+    return isPhaseComplete({ ...retro, users });
+  }
+
+  // Only call in response to user activity, never on load or phase change,
+  // otherwise refreshing or going back to a finished phase would immediately advance it
+  function phaseReadyCheck() {
+    if (isFacilitator && retro.phase_auto_advance && isEveryoneDone()) {
+      sendSocketEvent(
+        'phase_all_ready',
+        JSON.stringify({
+          phase: retro.phase === 'brainstorm' ? 'group' : 'action',
+        }),
+      );
     }
+  }
+
+  function cancelDeparture(userId: string) {
+    clearTimeout(departingUsers.get(userId));
+    departingUsers.delete(userId);
+  }
+
+  function handleDeparture(userId: string) {
+    cancelDeparture(userId);
+    departingUsers.set(
+      userId,
+      setTimeout(() => {
+        const wasDone = isEveryoneDone();
+        departingUsers.delete(userId);
+
+        // only advance if the user who left was the one being waited on
+        if (!wasDone) {
+          phaseReadyCheck();
+        }
+      }, departureGraceMs),
+    );
   }
 
   function toggleBecomeFacilitator(toggleSubmenu?: () => void) {

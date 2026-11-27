@@ -130,6 +130,9 @@ func (s *Service) ServeWs() http.HandlerFunc {
 			users, _ := s.RetroService.RetroAddUser(roomID, user.ID)
 			updatedUsers, _ := json.Marshal(users)
 
+			// retro was loaded before this user was marked active, send the current user list
+			retro.Users = users
+
 			Retro, _ := json.Marshal(retro)
 			initEvent := wshub.CreateSocketEvent("init", string(Retro), user.ID)
 			_ = sub.Conn.Write(websocket.TextMessage, initEvent)
