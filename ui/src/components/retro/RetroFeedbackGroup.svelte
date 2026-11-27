@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ThumbsUp, ThumbsDown, Info, AlertCircle } from '@lucide/svelte';
+  import { Check, Minus, Plus, ThumbsUp, X } from '@lucide/svelte';
   import RetroFeedbackItem from './RetroFeedbackItem.svelte';
 
   interface Props {
@@ -37,129 +37,46 @@
     hideVotesDuringVoting = false,
   }: Props = $props();
 
-  let showTooltip = $state(false);
-  let tooltipTimeout: NodeJS.Timeout;
-  let voteLimitReached = $derived(() => userVotesUsed === voteLimit);
+  // >= because the facilitator can lower the limit after votes are cast
+  const voteLimitReached = $derived(userVotesUsed >= voteLimit);
+  const hasVoted = $derived(userVotesOnThisGroup > 0);
 
-  const handleVoteUpClick = () => {
-    if (allowCumulativeVoting) {
-      // Cumulative voting: add vote if not at limit
-      if (voteLimitReached()) {
-        showTooltip = true;
-        clearTimeout(tooltipTimeout);
-        tooltipTimeout = setTimeout(() => {
-          showTooltip = false;
-        }, 3000);
-        return;
-      }
-      handleVote(group.id);
-    } else {
-      // Non-cumulative voting: add vote if user hasn't voted on this group and not at limit
-      if (voteLimitReached() && userVotesOnThisGroup === 0) {
-        showTooltip = true;
-        clearTimeout(tooltipTimeout);
-        tooltipTimeout = setTimeout(() => {
-          showTooltip = false;
-        }, 3000);
-        return;
-      }
+  const addVoteLabel = $derived(
+    voteLimitReached ? `Cannot add vote to ${group.name}, no votes remaining` : `Add a vote to ${group.name}`,
+  );
+  const removeVoteLabel = $derived(
+    hasVoted ? `Remove a vote from ${group.name}` : `Cannot remove vote, you have no votes on ${group.name}`,
+  );
+  const toggleVoteLabel = $derived(
+    hasVoted
+      ? `Remove your vote from ${group.name}`
+      : voteLimitReached
+        ? `Cannot vote for ${group.name}, no votes remaining`
+        : `Vote for ${group.name}`,
+  );
 
-      // Only allow voting if user hasn't voted on this group yet
-      if (userVotesOnThisGroup === 0) {
-        handleVote(group.id);
-      }
-    }
-  };
-
-  const handleVoteDownClick = () => {
-    // Remove vote if user has votes on this group
-    if (userVotesOnThisGroup > 0) {
+  const handleToggleVoteClick = () => {
+    if (hasVoted) {
       handleVoteSubtract(group.id);
-    }
-  };
-
-  const canVoteUp = () => {
-    if (allowCumulativeVoting) {
-      return !voteLimitReached();
     } else {
-      return userVotesOnThisGroup === 0 && !voteLimitReached();
+      handleVote(group.id);
     }
   };
 
-  const canVoteDown = () => {
-    return userVotesOnThisGroup > 0;
-  };
-
-  const getVoteUpButtonClasses = () => {
-    const baseClasses =
-      'relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800';
-
-    if (!canVoteUp()) {
-      return `${baseClasses} bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed border-2 border-gray-200 dark:border-gray-600`;
-    }
-
-    // Show active state if user has votes on this group
-    if (userVotesOnThisGroup > 0) {
-      return `${baseClasses} bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 border-2 border-blue-300 dark:border-blue-700`;
-    }
-
-    return `${baseClasses} bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 active:scale-95 border-2 border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600`;
-  };
-
-  const getVoteDownButtonClasses = () => {
-    const baseClasses =
-      'relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800';
-
-    if (!canVoteDown()) {
-      return `${baseClasses} bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed border-2 border-gray-200 dark:border-gray-600`;
-    }
-
-    return `${baseClasses} bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 active:scale-95 border-2 border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600`;
-  };
-
-  const getVoteUpAriaLabel = () => {
-    if (allowCumulativeVoting) {
-      if (!canVoteUp()) {
-        return `Cannot add vote. Vote limit reached (${userVotesUsed}/${voteLimit} votes used)`;
-      }
-      return `Add a vote to ${group.name}. Current votes: ${group.voteCount}`;
-    } else {
-      if (userVotesOnThisGroup > 0) {
-        return `Cannot add vote. You already voted on ${group.name}`;
-      }
-      if (!canVoteUp()) {
-        return `Cannot vote. Vote limit reached (${userVotesUsed}/${voteLimit} votes used)`;
-      }
-      return `Vote for ${group.name}. Current votes: ${group.voteCount}`;
-    }
-  };
-
-  const getVoteDownAriaLabel = () => {
-    if (!canVoteDown()) {
-      return `Cannot remove vote. You have no votes on ${group.name}`;
-    }
-    return `Remove a vote from ${group.name}. You have ${userVotesOnThisGroup} vote${userVotesOnThisGroup === 1 ? '' : 's'} on this group`;
-  };
-
-  const getTooltipMessage = () => {
-    if (allowCumulativeVoting) {
-      return `Vote limit reached (${userVotesUsed}/${voteLimit})`;
-    } else {
-      if (userVotesOnThisGroup > 0) {
-        return `You already voted on this group`;
-      }
-      return `Vote limit reached (${userVotesUsed}/${voteLimit})`;
-    }
-  };
+  const stepButtonClasses =
+    'inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg border-2 transition-colors duration-200 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 bg-white dark:bg-gray-800 enabled:hover:bg-blue-100 dark:enabled:hover:bg-blue-900/40 disabled:cursor-not-allowed disabled:border-gray-200 dark:disabled:border-gray-600 disabled:text-gray-400 dark:disabled:text-gray-500';
 </script>
 
 <div
-  class="group p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700"
+  class="group p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col text-gray-800 dark:text-white border {phase ===
+    'vote' && hasVoted
+    ? 'border-blue-500 dark:border-blue-400 ring-1 ring-blue-500 dark:ring-blue-400'
+    : 'border-gray-200 dark:border-gray-700'}"
   role="article"
   aria-labelledby="group-title-{group.id || 'default'}"
 >
   <!-- Header -->
-  <header class="flex items-start justify-between gap-4 mb-6">
+  <header class="flex items-start justify-between gap-4 mb-4">
     <h2
       id="group-title-{group.id || 'default'}"
       class="text-lg md:text-xl font-bold text-gray-900 dark:text-white flex-1 min-w-0"
@@ -168,126 +85,91 @@
       {group.name || 'Group'}
     </h2>
 
-    <!-- Vote Section -->
-    <div class="flex items-center gap-3 flex-shrink-0" dir="ltr">
-      {#if phase === 'vote'}
-        <!-- Unified Dual Button Interface -->
-        <div class="flex items-center gap-2">
-          <!-- Vote Down Button -->
-          <button
-            onclick={handleVoteDownClick}
-            disabled={!canVoteDown()}
-            class={getVoteDownButtonClasses()}
-            aria-label={getVoteDownAriaLabel()}
+    <!-- Total votes from all users -->
+    {#if phase !== 'vote' || !hideVotesDuringVoting}
+      <div class="flex items-center gap-2 flex-shrink-0" dir="ltr">
+        <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+          <ThumbsUp class="w-5 h-5 text-green-600 dark:text-green-400" aria-hidden="true" />
+        </div>
+        <div class="flex items-center gap-1">
+          <span
+            class="font-bold text-lg md:text-xl text-green-600 dark:text-green-400 tabular-nums"
+            aria-label="{group.voteCount} total votes"
           >
-            <ThumbsDown class="w-5 h-5" aria-hidden="true" />
-          </button>
-
-          <!-- Vote Up Button -->
-          <div class="relative">
-            <button
-              onclick={handleVoteUpClick}
-              disabled={!canVoteUp()}
-              class={getVoteUpButtonClasses()}
-              aria-label={getVoteUpAriaLabel()}
-              tabindex="0"
-            >
-              <ThumbsUp class="w-5 h-5" aria-hidden="true" />
-
-              <!-- Vote limit indicator -->
-              {#if !canVoteUp() && (voteLimitReached() || (!allowCumulativeVoting && userVotesOnThisGroup > 0))}
-                <AlertCircle class="w-3 h-3 absolute -top-1 -end-1 text-red-500 dark:text-red-400" aria-hidden="true" />
-              {/if}
-            </button>
-
-            <!-- Tooltip for disabled state -->
-            {#if showTooltip && !canVoteUp()}
-              <div
-                class="absolute bottom-full mb-2 start-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg whitespace-nowrap z-10 animate-in fade-in slide-in-from-bottom-2 duration-200"
-                role="tooltip"
-                aria-live="polite"
-              >
-                {getTooltipMessage()}
-                <div
-                  class="absolute top-full start-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"
-                ></div>
-              </div>
-            {/if}
-          </div>
-        </div>
-
-        <!-- Vote count with better visual hierarchy -->
-        {#if !hideVotesDuringVoting}
-          <div class="flex items-center gap-1">
-            <span
-              class="font-bold text-lg md:text-xl text-green-600 dark:text-green-400 tabular-nums"
-              aria-label="{group.voteCount} votes"
-            >
-              {group.voteCount}
-            </span>
-            <span class="text-sm text-gray-600 dark:text-gray-400 hidden sm:inline">
-              {group.voteCount === 1 ? 'vote' : 'votes'}
-            </span>
-          </div>
-        {/if}
-      {:else}
-        <!-- Non-voting phase display -->
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-            <ThumbsUp class="w-5 h-5 text-green-600 dark:text-green-400" aria-hidden="true" />
-          </div>
-          <div class="flex items-center gap-1">
-            <span
-              class="font-bold text-lg md:text-xl text-green-600 dark:text-green-400 tabular-nums"
-              aria-label="{group.voteCount} votes"
-            >
-              {group.voteCount}
-            </span>
-            <span class="text-sm text-gray-600 dark:text-gray-400 hidden sm:inline">
-              {group.voteCount === 1 ? 'vote' : 'votes'}
-            </span>
-          </div>
-        </div>
-      {/if}
-    </div>
-  </header>
-
-  <!-- Vote status info (mobile-friendly) -->
-  {#if phase === 'vote' && (voteLimitReached() || userVotesUsed > 0)}
-    <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-      <div class="flex items-start gap-2">
-        <Info class="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
-        <div class="text-sm text-blue-700 dark:text-blue-300">
-          <p>
-            You have used <strong>{userVotesUsed}</strong> of <strong>{voteLimit}</strong> votes
-            {#if userVotesOnThisGroup > 0}
-              <br /><span class="text-blue-600 dark:text-blue-400 font-medium">
-                {userVotesOnThisGroup} vote{userVotesOnThisGroup === 1 ? '' : 's'} on this group
-              </span>
-            {/if}
-            {#if voteLimitReached()}
-              <br /><span class="text-amber-600 dark:text-amber-400 font-medium">
-                Vote limit reached
-                {#if userVotesOnThisGroup > 0}
-                  (you can still remove votes from this group)
-                {/if}
-              </span>
-            {:else if allowCumulativeVoting}
-              <br /><span class="text-green-600 dark:text-green-400 font-medium">
-                You can vote multiple times on this group
-              </span>
-            {:else if userVotesOnThisGroup === 0}
-              <br /><span class="text-green-600 dark:text-green-400 font-medium">
-                You can vote once on this group
-              </span>
-            {:else}
-              <br /><span class="text-blue-600 dark:text-blue-400 font-medium">
-                You have already voted on this group
-              </span>
-            {/if}
-          </p>
+            {group.voteCount}
+          </span>
+          <span class="text-sm text-gray-600 dark:text-gray-400 hidden sm:inline">
+            {group.voteCount === 1 ? 'vote' : 'votes'}
+          </span>
         </div>
       </div>
+    {/if}
+  </header>
+
+  <!-- Current user's vote controls -->
+  {#if phase === 'vote'}
+    <div class="mb-4" dir="ltr">
+      {#if allowCumulativeVoting}
+        <div
+          class="flex items-center justify-between gap-2 p-1 rounded-xl bg-blue-50 dark:bg-blue-900/20"
+          role="group"
+          aria-label="Your votes on {group.name}"
+        >
+          <button
+            type="button"
+            onclick={() => handleVoteSubtract(group.id)}
+            disabled={!hasVoted}
+            class={stepButtonClasses}
+            aria-label={removeVoteLabel}
+            title="Remove a vote"
+          >
+            <Minus class="w-5 h-5" aria-hidden="true" />
+          </button>
+
+          <span class="flex flex-col items-center leading-tight text-blue-700 dark:text-blue-300" aria-live="polite">
+            <strong class="text-lg tabular-nums" data-testid="user-group-votes">{userVotesOnThisGroup}</strong>
+            <span class="text-xs">yours</span>
+          </span>
+
+          <button
+            type="button"
+            onclick={() => handleVote(group.id)}
+            disabled={voteLimitReached}
+            class={stepButtonClasses}
+            aria-label={addVoteLabel}
+            title={voteLimitReached ? 'No votes remaining' : 'Add a vote'}
+          >
+            <Plus class="w-5 h-5" aria-hidden="true" />
+          </button>
+        </div>
+      {:else}
+        <button
+          type="button"
+          onclick={handleToggleVoteClick}
+          disabled={!hasVoted && voteLimitReached}
+          class="w-full min-h-[44px] px-3 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-lg border-2 font-semibold transition-colors duration-200 {hasVoted
+            ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700'
+            : 'bg-white dark:bg-gray-800 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 enabled:hover:bg-blue-50 dark:enabled:hover:bg-blue-900/40 disabled:cursor-not-allowed disabled:border-gray-200 dark:disabled:border-gray-600 disabled:text-gray-400 dark:disabled:text-gray-500'}"
+          aria-label={toggleVoteLabel}
+          title={!hasVoted && voteLimitReached ? 'No votes remaining' : undefined}
+        >
+          {#if hasVoted}
+            <span class="inline-flex items-center gap-1">
+              <Check class="w-5 h-5" aria-hidden="true" />
+              Voted
+            </span>
+            <span class="inline-flex items-center gap-1 text-sm font-normal underline">
+              <X class="w-4 h-4" aria-hidden="true" />
+              Remove
+            </span>
+          {:else}
+            <span class="inline-flex items-center gap-1">
+              <Plus class="w-5 h-5" aria-hidden="true" />
+              Vote
+            </span>
+          {/if}
+        </button>
+      {/if}
     </div>
   {/if}
 
@@ -315,39 +197,6 @@
   button:focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 2px;
-  }
-
-  /* Smooth animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideInFromBottom {
-    from {
-      transform: translateY(8px) translateX(-50%);
-    }
-    to {
-      transform: translateY(0) translateX(-50%);
-    }
-  }
-
-  .animate-in {
-    animation: fadeIn 0.2s ease-out;
-  }
-
-  .fade-in {
-    animation: fadeIn 0.2s ease-out;
-  }
-
-  .slide-in-from-bottom-2 {
-    animation: slideInFromBottom 0.2s ease-out;
   }
 
   /* High contrast mode support */

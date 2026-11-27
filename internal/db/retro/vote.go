@@ -172,17 +172,32 @@ func (d *Service) GroupUserSubtractVote(retroID string, groupID string, userID s
 	}
 	defer tx.Rollback() // Rollback if not committed
 
-	// Check if cumulative voting is enabled and get the current vote count
+	// First, check if the user is authorized to vote in this retro
+	authorized, err := isUserAuthorizedForRetro(tx, retroID, userID)
+	if err != nil {
+		d.Logger.Error("error checking user authorization", zap.Error(err))
+		return nil, fmt.Errorf("error checking user authorization: %w", err)
+	}
+	if !authorized {
+		return nil, &UnauthorizedUserError{}
+	}
+
+	// Check the phase and if cumulative voting is enabled, and get the current vote count
+	var phase string
 	var allowCumulativeVoting bool
 	var currentVoteCount int
 	err = tx.QueryRow(`
-        SELECT r.allow_cumulative_voting, COALESCE(rgv.vote_count, 0)
+        SELECT r.phase, r.allow_cumulative_voting, COALESCE(rgv.vote_count, 0)
         FROM thunderdome.retro r
         LEFT JOIN thunderdome.retro_group_vote rgv ON r.id = rgv.retro_id AND rgv.group_id = $2 AND rgv.user_id = $3
         WHERE r.id = $1
-    `, retroID, groupID, userID).Scan(&allowCumulativeVoting, &currentVoteCount)
+    `, retroID, groupID, userID).Scan(&phase, &allowCumulativeVoting, &currentVoteCount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get retro and vote information: %w", err)
+	}
+
+	if phase != "vote" {
+		return nil, &VotePhaseNotActiveError{}
 	}
 
 	if currentVoteCount == 0 {
