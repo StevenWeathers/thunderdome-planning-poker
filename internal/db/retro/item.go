@@ -72,7 +72,7 @@ func (d *Service) GetRetroItems(retroID string) []*thunderdome.RetroItem {
 
 	itemRows, itemsErr := d.DB.Query(
 		`SELECT
-				ri.id, ri.user_id, ri.group_id, ri.content, ri.type,
+				ri.id, ri.user_id, ri.group_id, ri.content, ri.type, array_to_json(ri.tags) AS tags,
 				COALESCE(
 					(
 						SELECT json_agg(rc ORDER BY rc.created_date)
@@ -97,16 +97,22 @@ func (d *Service) GetRetroItems(retroID string) []*thunderdome.RetroItem {
 	if itemsErr == nil {
 		defer itemRows.Close()
 		for itemRows.Next() {
+			var tags string
 			var comments string
 			var reactions string
 			var ri = &thunderdome.RetroItem{
+				Tags:      make([]string, 0),
 				Comments:  make([]*thunderdome.RetroItemComment, 0),
 				Reactions: make([]*thunderdome.RetroItemReaction, 0),
 			}
-			if err := itemRows.Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type, &comments, &reactions); err != nil {
+			if err := itemRows.Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type, &tags, &comments, &reactions); err != nil {
 				d.Logger.Error("get retro items query scan error", zap.Error(err))
 			} else {
-				jsonErr := json.Unmarshal([]byte(comments), &ri.Comments)
+				jsonErr := json.Unmarshal([]byte(tags), &ri.Tags)
+				if jsonErr != nil {
+					d.Logger.Error("retro item tags json error", zap.Error(jsonErr))
+				}
+				jsonErr = json.Unmarshal([]byte(comments), &ri.Comments)
 				if jsonErr != nil {
 					d.Logger.Error("retro item comments json error", zap.Error(jsonErr))
 				}
@@ -166,6 +172,38 @@ func (d *Service) GroupNameChange(retroID string, groupID string, name string) (
 	}
 
 	return rg, nil
+}
+
+// ItemTagAdd adds a tag to a retro item, ignoring tags it already has (regardless of case)
+func (d *Service) ItemTagAdd(retroID string, itemID string, tag string) ([]*thunderdome.RetroItem, error) {
+	// a single statement so that concurrent changes to the same item don't overwrite each other
+	if _, err := d.DB.Exec(
+		`UPDATE thunderdome.retro_item SET tags = array_append(tags, $3::text), updated_date = NOW()
+		WHERE retro_id = $1 AND id = $2 AND cardinality(tags) < $4
+			AND NOT EXISTS (SELECT 1 FROM unnest(tags) AS existing WHERE lower(existing) = lower($3::text));`,
+		retroID, itemID, tag, thunderdome.RetroItemMaxTags,
+	); err != nil {
+		return nil, fmt.Errorf("ItemTagAdd query error: %v", err)
+	}
+
+	items := d.GetRetroItems(retroID)
+
+	return items, nil
+}
+
+// ItemTagRemove removes a tag from a retro item
+func (d *Service) ItemTagRemove(retroID string, itemID string, tag string) ([]*thunderdome.RetroItem, error) {
+	if _, err := d.DB.Exec(
+		`UPDATE thunderdome.retro_item SET tags = array_remove(tags, $3::text), updated_date = NOW()
+		WHERE retro_id = $1 AND id = $2;`,
+		retroID, itemID, tag,
+	); err != nil {
+		return nil, fmt.Errorf("ItemTagRemove query error: %v", err)
+	}
+
+	items := d.GetRetroItems(retroID)
+
+	return items, nil
 }
 
 // ItemCommentAdd adds a comment to a retro item

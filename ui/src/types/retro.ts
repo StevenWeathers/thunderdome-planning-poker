@@ -69,8 +69,17 @@ export type RetroItem = {
   groupId: string;
   id: string;
   reactions?: Array<RetroItemReaction>;
+  tags?: Array<string>;
   type: string;
   userId: string;
+};
+
+export type RetroTag = {
+  id: string;
+  name: string;
+  isPublic: boolean;
+  organizationId: string | null;
+  teamId: string | null;
 };
 
 export type RetroUser = {

@@ -24,7 +24,7 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, template *thunderd
 		retroActionsList.WriteString(formatRetroActionWithAssignee(action))
 	}
 	for _, item := range retro.Items {
-		columnMap[item.Type] += formatRetroItemForMarkdownList(item.Content)
+		columnMap[item.Type] += formatRetroItemWithTags(item)
 	}
 	for _, column := range template.Format.Columns {
 		fmt.Fprintf(&columnsList, `

@@ -39,12 +39,14 @@ const setup = (overrides?: {
   item?: typeof baseItem;
   phase?: string;
   feedbackVisibility?: string;
+  isFacilitator?: boolean;
   sendSocketEvent?: (event: string, value: any) => void;
 }) => {
   const {
     item = baseItem,
     phase = 'group',
     feedbackVisibility = 'visible',
+    isFacilitator = false,
     sendSocketEvent = vi.fn(),
   } = overrides || {};
 
@@ -59,6 +61,7 @@ const setup = (overrides?: {
       item,
       phase,
       feedbackVisibility,
+      isFacilitator,
       sendSocketEvent,
       users: [],
       columnColors: {},
@@ -149,5 +152,36 @@ describe('RetroFeedbackItem component reactions', () => {
 
     const thumbsDownReaction = page.getByTestId('reaction-picker-option-thumbsdown');
     expect(thumbsDownReaction).toBeDisabled();
+  });
+});
+
+describe('RetroFeedbackItem component tags', () => {
+  const taggedItem = { ...baseItem, tags: ['Blocked'] };
+
+  it('shows tags on the item', () => {
+    setup({ item: taggedItem });
+
+    expect(page.getByTestId('retro-item-tag').element()).toHaveTextContent('Blocked');
+  });
+
+  it('lets only the facilitator edit tags', () => {
+    setup({ item: taggedItem, isFacilitator: true });
+
+    expect(page.getByTestId('retro-item-tag-toggle').query()).not.toBeNull();
+    expect(page.getByLabelText('Remove tag Blocked').query()).not.toBeNull();
+  });
+
+  it('shows participants the tags without editing controls', () => {
+    setup({ item: taggedItem });
+
+    expect(page.getByTestId('retro-item-tag').element()).toHaveTextContent('Blocked');
+    expect(page.getByTestId('retro-item-tag-toggle').query()).toBeNull();
+    expect(page.getByLabelText('Remove tag Blocked').query()).toBeNull();
+  });
+
+  it('hides tags on feedback from others while it is hidden during brainstorming', () => {
+    setup({ item: { ...taggedItem, userId: 'user-2' }, phase: 'brainstorm', feedbackVisibility: 'hidden' });
+
+    expect(page.getByTestId('retro-item-tag').query()).toBeNull();
   });
 });

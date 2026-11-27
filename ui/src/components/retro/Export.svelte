@@ -23,6 +23,9 @@
             {#if item.type === column.name}
               <li>
                 &bull; {item.content}
+                {#each item.tags ?? [] as tag}
+                  <span class="ms-1 text-sm text-gray-600 dark:text-gray-400">[{tag}]</span>
+                {/each}
               </li>
             {/if}
           {/each}

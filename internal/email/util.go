@@ -2,6 +2,7 @@ package email
 
 import (
 	"fmt"
+	"html"
 	"regexp"
 	"strings"
 	"unicode"
@@ -17,6 +18,18 @@ var emailNamePattern = regexp.MustCompile(`[^\s<>"@]+@[^\s<>"]+`)
 // formatRetroItemForMarkdownList formats a retro item for a markdown list
 func formatRetroItemForMarkdownList(item string) string {
 	return fmt.Sprintf("- %s\n", item)
+}
+
+// formatRetroItemWithTags formats a retro item and its tags for a markdown list
+func formatRetroItemWithTags(item *thunderdome.RetroItem) string {
+	content := item.Content
+
+	for _, tag := range item.Tags {
+		// escaped as the markdown renderer passes HTML through
+		content += fmt.Sprintf(" [%s]", html.EscapeString(tag))
+	}
+
+	return formatRetroItemForMarkdownList(content)
 }
 
 // formatRetroActionWithAssignee formats a retro action with assignee for a markdown list

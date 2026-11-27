@@ -32,6 +32,7 @@ type Retro struct {
 	Items                 []*RetroItem   `json:"items"`
 	ActionItems           []*RetroAction `json:"actionItems"`
 	Votes                 []*RetroVote   `json:"votes"`
+	TagOptions            []string       `json:"tagOptions"`
 	ReadyUsers            []string       `json:"readyUsers"`
 	Facilitators          []string       `json:"facilitators"`
 	Phase                 string         `json:"phase" db:"phase"`
@@ -58,6 +59,7 @@ type RetroItem struct {
 	GroupID   string               `json:"groupId" db:"group_id"`
 	Content   string               `json:"content" db:"content"`
 	Type      string               `json:"type" db:"type"`
+	Tags      []string             `json:"tags" db:"tags"`
 	Comments  []*RetroItemComment  `json:"comments"`
 	Reactions []*RetroItemReaction `json:"reactions"`
 }

@@ -2,6 +2,8 @@ package email
 
 import (
 	"testing"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
 // Test for removeAccents function
@@ -139,5 +141,13 @@ func TestSanitizeEmailName(t *testing.T) {
 				t.Fatalf("expected %q, got %q", test.expected, output)
 			}
 		})
+	}
+}
+
+func TestFormatRetroItemWithTags(t *testing.T) {
+	got := formatRetroItemWithTags(&thunderdome.RetroItem{Content: "Slow builds", Tags: []string{"Blocked", "<img src=x>"}})
+	want := "- Slow builds [Blocked] [&lt;img src=x&gt;]\n"
+	if got != want {
+		t.Errorf("formatRetroItemWithTags() = %q, want %q", got, want)
 	}
 }

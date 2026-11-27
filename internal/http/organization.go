@@ -334,10 +334,10 @@ func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 		}
 
 		newTeam, err := s.OrganizationDataSvc.OrganizationTeamCreate(ctx, orgID, team.Name)
-		s.Logger.Ctx(ctx).Error(
-			"handleCreateOrganizationTeam error", zap.Error(err), zap.String("organization_id", orgID),
-			zap.String("session_user_id", sessionUserID), zap.String("team_name", team.Name))
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCreateOrganizationTeam error", zap.Error(err), zap.String("organization_id", orgID),
+				zap.String("session_user_id", sessionUserID), zap.String("team_name", team.Name))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

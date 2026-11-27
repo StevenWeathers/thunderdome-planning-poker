@@ -27,6 +27,7 @@
   import RetroTemplatesList from '../../components/retrotemplate/RetroTemplatesList.svelte';
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
+  import RetroTagsList from '../../components/retrotag/RetroTagsList.svelte';
   import ColorLegendTemplatesList from '../../components/colorlegendtemplate/ColorLegendTemplatesList.svelte';
 
   import type { NotificationService } from '../../types/notifications';
@@ -296,6 +297,14 @@
         <FeatureSubscribeBanner
           salesPitch="Tailor your Organization's reflection process with custom retrospective templates."
         />
+      {/if}
+    </div>
+
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <RetroTagsList {xfetch} {notifications} isEntityAdmin={isAdmin} apiPrefix={orgPrefix} />
+      {:else}
+        <FeatureSubscribeBanner salesPitch="Create custom retrospective tags for your Organization." />
       {/if}
     </div>
   {/if}

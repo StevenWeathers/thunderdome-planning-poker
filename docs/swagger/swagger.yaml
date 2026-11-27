@@ -562,6 +562,13 @@ definitions:
       templateId:
         type: string
     type: object
+  http.retroTagRequestBody:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
   http.retroTemplateFormatRequestBody:
     properties:
       columns:
@@ -1472,6 +1479,10 @@ definitions:
         items:
           type: string
         type: array
+      tagOptions:
+        items:
+          type: string
+        type: array
       teamId:
         type: string
       teamName:
@@ -1552,6 +1563,10 @@ definitions:
         items:
           $ref: '#/definitions/thunderdome.RetroItemReaction'
         type: array
+      tags:
+        items:
+          type: string
+        type: array
       type:
         type: string
       userId:
@@ -1618,6 +1633,25 @@ definitions:
       teamId:
         type: string
       templateId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  thunderdome.RetroTag:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      id:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      organizationId:
+        type: string
+      teamId:
         type: string
       updatedAt:
         type: string
@@ -2999,6 +3033,150 @@ paths:
       tags:
       - admin
       - retro-settings
+  /admin/retro-tags:
+    get:
+      description: get list of global default retro tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTag'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Global Retro Tags
+      tags:
+      - retroTag
+    post:
+      description: Creates a global default retro tag
+      parameters:
+      - description: new retro tag object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Global Retro Tag
+      tags:
+      - retroTag
+  /admin/retro-tags/{tagId}:
+    delete:
+      description: Deletes a global default retro tag
+      parameters:
+      - description: the retro tag ID to delete
+        in: path
+        name: tagId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Global Retro Tag
+      tags:
+      - retroTag
+    put:
+      description: Updates a global default retro tag
+      parameters:
+      - description: the retro tag ID to update
+        in: path
+        name: tagId
+        required: true
+        type: string
+      - description: retro tag object to update
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Global Retro Tag
+      tags:
+      - retroTag
   /admin/retro-templates:
     get:
       description: get list of retro templates
@@ -5751,6 +5929,175 @@ paths:
       summary: Update Team Color Legend Template
       tags:
       - colorLegendTemplate
+  /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-tags:
+    get:
+      description: get list of retro tags for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTag'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Retro Tags
+      tags:
+      - retroTag
+    post:
+      description: Creates a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new retro tag object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Retro Tag
+      tags:
+      - retroTag
+  /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-tags/{tagId}:
+    delete:
+      description: Deletes a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the retro tag ID to delete
+        in: path
+        name: tagId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Retro Tag
+      tags:
+      - retroTag
+    put:
+      description: Updates a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the retro tag ID to update
+        in: path
+        name: tagId
+        required: true
+        type: string
+      - description: retro tag object to update
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Retro Tag
+      tags:
+      - retroTag
   /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users:
     post:
       description: Add a User to Department Team
@@ -6645,6 +6992,175 @@ paths:
       summary: Update Organization Retro Settings
       tags:
       - retro-settings
+  /organizations/{orgId}/retro-tags:
+    get:
+      description: get list of retro tags for an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTag'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Retro Tags
+      tags:
+      - retroTag
+    post:
+      description: Creates an organization retro tag
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new retro tag object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Retro Tag
+      tags:
+      - retroTag
+  /organizations/{orgId}/retro-tags/{tagId}:
+    delete:
+      description: Deletes an organization retro tag
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the retro tag ID to delete
+        in: path
+        name: tagId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Organization Retro Tag
+      tags:
+      - retroTag
+    put:
+      description: Updates an organization retro tag
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the retro tag ID to update
+        in: path
+        name: tagId
+        required: true
+        type: string
+      - description: retro tag object to update
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Retro Tag
+      tags:
+      - retroTag
   /organizations/{orgId}/retro-templates:
     get:
       description: get list of retro templates for an organization
@@ -7017,6 +7533,175 @@ paths:
       summary: Update Team Color Legend Template
       tags:
       - colorLegendTemplate
+  /organizations/{orgId}/teams/{teamId}/retro-tags:
+    get:
+      description: get list of retro tags for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTag'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Retro Tags
+      tags:
+      - retroTag
+    post:
+      description: Creates a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new retro tag object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Retro Tag
+      tags:
+      - retroTag
+  /organizations/{orgId}/teams/{teamId}/retro-tags/{tagId}:
+    delete:
+      description: Deletes a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the retro tag ID to delete
+        in: path
+        name: tagId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Retro Tag
+      tags:
+      - retroTag
+    put:
+      description: Updates a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the retro tag ID to update
+        in: path
+        name: tagId
+        required: true
+        type: string
+      - description: retro tag object to update
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Retro Tag
+      tags:
+      - retroTag
   /organizations/{orgId}/teams/{teamId}/users:
     post:
       description: Add user to organization team as long as they are already in the
@@ -10092,6 +10777,175 @@ paths:
       summary: Update Team Retro Settings
       tags:
       - retro-settings
+  /teams/{teamId}/retro-tags:
+    get:
+      description: get list of retro tags for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroTag'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Retro Tags
+      tags:
+      - retroTag
+    post:
+      description: Creates a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new retro tag object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Retro Tag
+      tags:
+      - retroTag
+  /teams/{teamId}/retro-tags/{tagId}:
+    delete:
+      description: Deletes a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the retro tag ID to delete
+        in: path
+        name: tagId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Retro Tag
+      tags:
+      - retroTag
+    put:
+      description: Updates a team retro tag
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the retro tag ID to update
+        in: path
+        name: tagId
+        required: true
+        type: string
+      - description: retro tag object to update
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/http.retroTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.RetroTag'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Retro Tag
+      tags:
+      - retroTag
   /teams/{teamId}/retro-templates:
     get:
       description: get list of retro templates for a team

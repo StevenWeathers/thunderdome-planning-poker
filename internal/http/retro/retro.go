@@ -24,6 +24,9 @@ type Config struct {
 
 	// Websocket Subdomain (for Websocket origin check)
 	WebsocketSubdomain string
+
+	// Whether team and organization features require a subscription
+	SubscriptionsEnabled bool
 }
 
 type AuthDataSvc interface {
@@ -68,6 +71,9 @@ type RetroDataSvc interface {
 	ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error)
 	ItemReactionAdd(retroID string, itemID string, userID string, reaction string) ([]*thunderdome.RetroItem, error)
 	ItemReactionDelete(retroID string, reactionID string) ([]*thunderdome.RetroItem, error)
+	ItemTagAdd(retroID string, itemID string, tag string) ([]*thunderdome.RetroItem, error)
+	ItemTagRemove(retroID string, itemID string, tag string) ([]*thunderdome.RetroItem, error)
+	GetRetroTagOptions(ctx context.Context, retroID string, subscriptionsEnabled bool) ([]string, error)
 }
 
 type RetroTemplateDataSvc interface {
@@ -136,6 +142,8 @@ func New(
 		"item_comment_delete":    s.ItemCommentDelete,
 		"item_reaction_add":      s.ItemReactionAdd,
 		"item_reaction_delete":   s.ItemReactionDelete,
+		"item_tag_add":           s.ItemTagAdd,
+		"item_tag_remove":        s.ItemTagRemove,
 		"create_action":          s.CreateAction,
 		"update_action":          s.UpdateAction,
 		"delete_action":          s.DeleteAction,
@@ -159,6 +167,8 @@ func New(
 			"concede_retro":      {},
 			"phase_time_ran_out": {},
 			"phase_all_ready":    {},
+			"item_tag_add":       {},
+			"item_tag_remove":    {},
 		},
 		s.RetroService.RetroConfirmFacilitator,
 		s.RetreatUser,
