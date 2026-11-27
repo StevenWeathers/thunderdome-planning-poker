@@ -127,6 +127,7 @@ type Service struct {
 	JiraDataSvc                JiraDataSvc
 	SubscriptionDataSvc        SubscriptionDataSvc
 	RetroTemplateDataSvc       RetroTemplateDataSvc
+	RetroTagDataSvc            RetroTagDataSvc
 	ColorLegendTemplateDataSvc ColorLegendTemplateDataSvc
 	SubscriptionSvc            *subscription.Service
 	ProjectDataSvc             ProjectDataSvc
@@ -517,6 +518,9 @@ type RetroDataSvc interface {
 	ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error)
 	ItemReactionAdd(retroID string, itemID string, userID string, reaction string) ([]*thunderdome.RetroItem, error)
 	ItemReactionDelete(retroID string, reactionID string) ([]*thunderdome.RetroItem, error)
+	ItemTagAdd(retroID string, itemID string, tag string) ([]*thunderdome.RetroItem, error)
+	ItemTagRemove(retroID string, itemID string, tag string) ([]*thunderdome.RetroItem, error)
+	GetRetroTagOptions(ctx context.Context, retroID string, subscriptionsEnabled bool) ([]string, error)
 
 	GetSettingsByOrganization(ctx context.Context, orgID string) (*thunderdome.RetroSettings, error)
 	GetSettingsByDepartment(ctx context.Context, deptID string) (*thunderdome.RetroSettings, error)
@@ -561,6 +565,13 @@ type RetroTemplateDataSvc interface {
 	DeleteOrganizationTemplate(ctx context.Context, orgID string, templateID string) error
 	// DeleteTeamTemplate deletes a team retro template by its ID
 	DeleteTeamTemplate(ctx context.Context, teamID string, templateID string) error
+}
+
+type RetroTagDataSvc interface {
+	GetRetroTags(ctx context.Context, organizationID string, teamID string) ([]*thunderdome.RetroTag, error)
+	CreateRetroTag(ctx context.Context, tag *thunderdome.RetroTag) error
+	UpdateRetroTag(ctx context.Context, tag *thunderdome.RetroTag) error
+	DeleteRetroTag(ctx context.Context, organizationID string, teamID string, tagID string) error
 }
 
 type ColorLegendTemplateDataSvc interface {

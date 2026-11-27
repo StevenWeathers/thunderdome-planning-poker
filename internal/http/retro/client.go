@@ -133,6 +133,15 @@ func (s *Service) ServeWs() http.HandlerFunc {
 			// retro was loaded before this user was marked active, send the current user list
 			retro.Users = users
 
+			tagOptions, tagErr := s.RetroService.GetRetroTagOptions(ctx, roomID, s.config.SubscriptionsEnabled)
+			if tagErr != nil {
+				// presets are a convenience, custom tags still work without them
+				s.logger.Ctx(ctx).Error("error getting retro tag options", zap.Error(tagErr),
+					zap.String("retro_id", roomID), zap.String("session_user_id", user.ID))
+				tagOptions = make([]string, 0)
+			}
+			retro.TagOptions = tagOptions
+
 			Retro, _ := json.Marshal(retro)
 			initEvent := wshub.CreateSocketEvent("init", string(Retro), user.ID)
 			_ = sub.Conn.Write(websocket.TextMessage, initEvent)

@@ -89,11 +89,12 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		WebsocketSubdomain: a.Config.WebsocketConfig.WebsocketSubdomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.PokerDataSvc)
 	retroSvc := retro.New(retro.Config{
-		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
-		PongWaitSec:        a.Config.WebsocketConfig.PongWaitSec,
-		PingPeriodSec:      a.Config.WebsocketConfig.PingPeriodSec,
-		AppDomain:          a.Config.AppDomain,
-		WebsocketSubdomain: a.Config.WebsocketConfig.WebsocketSubdomain,
+		WriteWaitSec:         a.Config.WebsocketConfig.WriteWaitSec,
+		PongWaitSec:          a.Config.WebsocketConfig.PongWaitSec,
+		PingPeriodSec:        a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:            a.Config.AppDomain,
+		WebsocketSubdomain:   a.Config.WebsocketConfig.WebsocketSubdomain,
+		SubscriptionsEnabled: a.Config.SubscriptionsEnabled,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc,
 		a.RetroDataSvc, a.RetroTemplateDataSvc, a.Email)
 	storyboardSvc := storyboard.New(storyboard.Config{
@@ -485,6 +486,28 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		// Admin retro settings routes
 		router.Handle("GET "+prefix+"/api/admin/retro-settings/{id}", a.userOnly(a.adminOnly(a.handleGetRetroSettingsByID())))
 		router.Handle("DELETE "+prefix+"/api/admin/retro-settings/{id}", a.userOnly(a.adminOnly(a.handleDeleteRetroSettings())))
+
+		// Retro Tags (preset tags for retro items)
+		router.Handle("GET "+prefix+"/api/admin/retro-tags", a.userOnly(a.adminOnly(a.handleGetAdminRetroTags())))
+		router.Handle("POST "+prefix+"/api/admin/retro-tags", a.userOnly(a.adminOnly(a.handleAdminRetroTagCreate())))
+		router.Handle("PUT "+prefix+"/api/admin/retro-tags/{tagId}", a.userOnly(a.adminOnly(a.handleAdminRetroTagUpdate())))
+		router.Handle("DELETE "+prefix+"/api/admin/retro-tags/{tagId}", a.userOnly(a.adminOnly(a.handleAdminRetroTagDelete())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/retro-tags", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationRetroTags()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/retro-tags", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTagCreate()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/retro-tags/{tagId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTagUpdate()))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/retro-tags/{tagId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationRetroTagDelete()))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-tags", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamRetroTags()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-tags", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-tags/{tagId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-tags/{tagId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagDelete())))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-tags", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamRetroTags()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-tags", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-tags/{tagId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/retro-tags/{tagId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagDelete())))))
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/retro-tags", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamRetroTags()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/retro-tags", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagCreate())))))
+		router.Handle("PUT "+prefix+"/api/teams/{teamId}/retro-tags/{tagId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/retro-tags/{tagId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamRetroTagDelete())))))
 
 		// Retro websocket
 		router.Handle(prefix+"/api/retro/{retroId}", retroSvc.ServeWs())

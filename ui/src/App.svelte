@@ -69,6 +69,7 @@
   import PokerLanding from './pages/poker/PokerLanding.svelte';
   import StoryboardLanding from './pages/storyboard/StoryboardLanding.svelte';
   import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
+  import RetroTags from './pages/admin/retro/RetroTags.svelte';
   import ChangeEmail from './pages/user/ChangeEmail.svelte';
   import Projects from './pages/admin/project/Projects.svelte';
   import OrganizationProjects from './pages/organization/OrganizationProjects.svelte';
@@ -605,6 +606,13 @@
         route: AdminRetro,
         params: params,
         name: 'admin-retro',
+      };
+    });
+    router.on(`${appRoutes.adminRetroTags}`, () => {
+      currentPage = {
+        route: RetroTags,
+        params: {},
+        name: 'admin-retro-tags',
       };
     });
     router.on(`${appRoutes.adminRetroTemplates}`, () => {

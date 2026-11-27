@@ -35,6 +35,7 @@
   import SubMenu from '../../components/global/SubMenu.svelte';
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import type { RetroAction } from '../../types/retro';
+  import { buildTagSuggestions, setTagSuggestions } from '../../components/retro/retroTags';
 
   interface Props {
     retroId: any;
@@ -72,6 +73,7 @@
     facilitatorCode: '',
     joinCode: '',
     readyUsers: [],
+    tagOptions: [],
     template: {
       id: '',
       name: '',
@@ -83,6 +85,8 @@
     allowCumulativeVoting: false,
     hideVotesDuringVoting: false,
   });
+  const tagSuggestions = $derived(buildTagSuggestions(retro.tagOptions, retro.items));
+  setTagSuggestions(() => tagSuggestions);
   let showDeleteRetro = $state(false);
   let showExport = $state(false);
   let groupedItems = $state([]);

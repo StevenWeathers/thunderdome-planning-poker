@@ -142,6 +142,55 @@ func (s *Service) ItemReactionDelete(ctx context.Context, RetroID string, UserID
 	return nil, msg, nil, false
 }
 
+// ItemTagAdd adds a tag to a retro item
+func (s *Service) ItemTagAdd(ctx context.Context, RetroID string, UserID string, EventValue string) (any, []byte, error, bool) {
+	var rs struct {
+		ItemID string `json:"item_id"`
+		Tag    string `json:"tag"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	tag, err := thunderdome.NormalizeRetroTag(rs.Tag)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	items, err := s.RetroService.ItemTagAdd(RetroID, rs.ItemID, tag)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
+
+	return nil, msg, nil, false
+}
+
+// ItemTagRemove removes a tag from a retro item
+func (s *Service) ItemTagRemove(ctx context.Context, RetroID string, UserID string, EventValue string) (any, []byte, error, bool) {
+	var rs struct {
+		ItemID string `json:"item_id"`
+		Tag    string `json:"tag"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	items, err := s.RetroService.ItemTagRemove(RetroID, rs.ItemID, rs.Tag)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := wshub.CreateSocketEvent("items_updated", string(updatedItems), "")
+
+	return nil, msg, nil, false
+}
+
 // UserMarkReady marks a user as ready to advance to next phase
 func (s *Service) UserMarkReady(ctx context.Context, RetroID string, UserID string, EventValue string) (any, []byte, error, bool) {
 	readyUsers, err := s.RetroService.MarkUserReady(RetroID, UserID)

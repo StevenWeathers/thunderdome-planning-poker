@@ -3,6 +3,7 @@
   import EmojiPicker from '../global/EmojiPicker.svelte';
   import { DEVELOPER_REACTION_OPTIONS, type EmojiPickerItem, type EmojiPickerOption } from '../global/emoji-picker';
   import ItemComments from './ItemComments.svelte';
+  import ItemTags from './ItemTags.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import type { RetroItem, RetroItemReaction } from '../../types/retro';
@@ -28,6 +29,7 @@
       content: '',
       comments: [],
       reactions: [],
+      tags: [],
     },
     feedbackVisibility = 'visible',
     isFacilitator = false,
@@ -41,6 +43,9 @@
   let selectedItem = $state<RetroItem | null>(null);
 
   const interactionsDisabled = $derived(phase === 'brainstorm' && feedbackVisibility === 'hidden');
+  // tags would hint at the content of feedback that is still hidden from this user
+  const showTags = $derived(!interactionsDisabled || item.userId === $user.id);
+  const canEditTags = $derived(isFacilitator && !interactionsDisabled);
   const itemReactions = $derived((item.reactions ?? []) as RetroItemReaction[]);
   const reactionSummary = $derived(
     DEVELOPER_REACTION_OPTIONS.map((option: EmojiPickerOption) => {
@@ -163,6 +168,11 @@
       {item.content}
     {/if}
   </p>
+  {#if showTags && (canEditTags || item.tags?.length)}
+    <div class="mt-2">
+      <ItemTags itemId={item.id} tags={item.tags ?? []} disabled={!canEditTags} {sendSocketEvent} />
+    </div>
+  {/if}
   <div class="mt-3 flex flex-wrap items-center gap-2" data-testid="retro-feedback-item-reactions">
     <EmojiPicker
       options={reactionSummary}

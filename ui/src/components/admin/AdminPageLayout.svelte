@@ -13,6 +13,7 @@
     RefreshCcw,
     Settings,
     SquareDashedKanban,
+    Tag,
     User,
     Users,
     Package,
@@ -135,6 +136,13 @@
             label: $LL.retroTemplates(),
             path: appRoutes.adminRetroTemplates,
             icon: SquareDashedKanban,
+            enabled: FeatureRetro,
+          },
+          {
+            name: 'Retro Tags',
+            label: 'Retro Tags',
+            path: appRoutes.adminRetroTags,
+            icon: Tag,
             enabled: FeatureRetro,
           },
         ]
