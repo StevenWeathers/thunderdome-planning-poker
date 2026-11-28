@@ -625,7 +625,6 @@ type StoryboardDataSvc interface {
 	ReviseGoalName(storyboardID string, userID string, goalID string, goalName string, defaultStoryColor *string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardGoal(storyboardID string, userID string, goalID string) ([]*thunderdome.StoryboardGoal, error)
 	GetStoryboardGoals(storyboardID string) []*thunderdome.StoryboardGoal
-	GetStoryboardGoal(storyboardID string, goalID string) (*thunderdome.StoryboardGoal, error)
 
 	CreateStoryboardColumn(storyboardID string, goalID string, userID string, columnName string, defaultStoryColor *string) (*thunderdome.StoryboardColumn, error)
 	ReviseStoryboardColumn(storyboardID string, userID string, columnID string, columnName string, defaultStoryColor *string) ([]*thunderdome.StoryboardGoal, error)

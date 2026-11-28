@@ -1524,6 +1524,10 @@ type RootTranslation = {
 	 */
 	storyboardDeleted: string
 	/**
+	 * D​r​o​p​ ​c​o​l​u​m​n​ ​h​e​r​e
+	 */
+	storyboardDropColumnHere: string
+	/**
 	 * D​e​l​e​t​e​ ​S​t​o​r​i​e​s
 	 */
 	storyboardDeleteStories: string
@@ -4554,6 +4558,10 @@ export type TranslationFunctions = {
 	 * Storyboard deleted
 	 */
 	storyboardDeleted: () => LocalizedString
+	/**
+	 * Drop column here
+	 */
+	storyboardDropColumnHere: () => LocalizedString
 	/**
 	 * Delete Stories
 	 */

@@ -6,6 +6,7 @@
   import type { NotificationService } from '../../types/notifications';
   import type { ColorLegend } from '../../types/storyboard';
   import ColumnHeader from './ColumnHeader.svelte';
+  import { LL } from '../../i18n/i18n-svelte';
 
   interface Props {
     goals: StoryboardGoal[];
@@ -158,48 +159,60 @@
       </div>
     {/each}
   </div>
-  <div
-    class="flex gap-4 items-stretch"
-    data-goalid={goal.id}
-    data-goalindex={goalIndex}
-    use:dndzone={{
-      items: goal.columns,
-      type: 'column' as const,
-      dropTargetStyle: {},
-      dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
-      dragDisabled: !columnOrderEditMode,
-    }}
-    onconsider={handleDndConsider}
-    onfinalize={handleDndFinalize}
-  >
-    {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-      <div class="self-stretch" class:relative={columnOrderEditMode} class:cursor-move={columnOrderEditMode}>
-        <StoryColumn
-          bind:goals
-          {goal}
-          {goalIndex}
-          {columnOrderEditMode}
-          {sendSocketEvent}
-          {goalColumn}
-          {columnIndex}
-          {scale}
-          {columnWidth}
-          {notifications}
-          {colorLegend}
-          {users}
-          selectionMode={selectionColumnId === goalColumn.id}
-          {selectedStoryIds}
-          {toggleStorySelection}
-        />
-
-        {#if columnOrderEditMode}
-          <div class="absolute top-0 right-0 bottom-0 left-0 z-5 bg-gray-900 opacity-50" aria-hidden="true"></div>
-          <div class="absolute top-0 right-0 bottom-0 left-0 z-10 flex flex-col items-center justify-center">
-            <Grip class="h-8 w-8 text-white mb-2" />
-            <div class="text-white font-bold">Drag to Reorder</div>
-          </div>
-        {/if}
+  <div class="relative">
+    <!-- a sibling of the drop zone, as every child of the zone is treated as a draggable item -->
+    {#if columnOrderEditMode && goal.columns.length === 0}
+      <div
+        class="absolute inset-0 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 pointer-events-none"
+        data-testid="column-drop-hint"
+      >
+        {$LL.storyboardDropColumnHere()}
       </div>
-    {/each}
+    {/if}
+    <div
+      class="flex gap-4 items-stretch {columnOrderEditMode ? 'min-h-40' : ''}"
+      data-goalid={goal.id}
+      data-goalindex={goalIndex}
+      data-testid="goal-columns-dropzone"
+      use:dndzone={{
+        items: goal.columns,
+        type: 'column' as const,
+        dropTargetStyle: {},
+        dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
+        dragDisabled: !columnOrderEditMode,
+      }}
+      onconsider={handleDndConsider}
+      onfinalize={handleDndFinalize}
+    >
+      {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+        <div class="self-stretch" class:relative={columnOrderEditMode} class:cursor-move={columnOrderEditMode}>
+          <StoryColumn
+            bind:goals
+            {goal}
+            {goalIndex}
+            {columnOrderEditMode}
+            {sendSocketEvent}
+            {goalColumn}
+            {columnIndex}
+            {scale}
+            {columnWidth}
+            {notifications}
+            {colorLegend}
+            {users}
+            selectionMode={selectionColumnId === goalColumn.id}
+            {selectedStoryIds}
+            {toggleStorySelection}
+          />
+
+          {#if columnOrderEditMode}
+            <div class="absolute top-0 right-0 bottom-0 left-0 z-5 bg-gray-900 opacity-50" aria-hidden="true"></div>
+            <div class="absolute top-0 right-0 bottom-0 left-0 z-10 flex flex-col items-center justify-center">
+              <Grip class="h-8 w-8 text-white mb-2" />
+              <div class="text-white font-bold">Drag to Reorder</div>
+            </div>
+          {/if}
+        </div>
+      {/each}
+    </div>
   </div>
 </div>

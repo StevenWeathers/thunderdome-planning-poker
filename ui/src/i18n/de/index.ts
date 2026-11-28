@@ -376,6 +376,7 @@ const de: Translation = {
   storyboardAddSuccess: 'Storyboard erfolgreich hinzugefügt.',
   storyboardColumns: 'Storyboard-Spalten',
   storyboardDeleted: 'Storyboard gelöscht',
+  storyboardDropColumnHere: 'Spalte hier ablegen',
   storyboardDeleteStories: 'Storys löschen',
   storyboardSelectAll: 'Alle auswählen',
   storyboardDeleteSelected: 'Löschen ({count})',

@@ -375,6 +375,7 @@ const ru: Translation = {
   storyboardAddSuccess: 'Storyboard added successfully.',
   storyboardColumns: 'Storyboard Columns',
   storyboardDeleted: 'Storyboard deleted',
+  storyboardDropColumnHere: 'Перетащите колонку сюда',
   storyboardDeleteStories: 'Удалить истории',
   storyboardSelectAll: 'Выбрать все',
   storyboardDeleteSelected: 'Удалить ({count})',

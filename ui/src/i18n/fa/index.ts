@@ -376,6 +376,7 @@ const fa: Translation = {
   storyboardAddSuccess: 'استوری‌بورد با موفقیت افزوده شد.',
   storyboardColumns: 'ستون‌های استوری‌بورد',
   storyboardDeleted: 'استوری‌بورد حذف شد',
+  storyboardDropColumnHere: 'ستون را اینجا رها کنید',
   storyboardDeleteStories: 'حذف داستان‌ها',
   storyboardSelectAll: 'انتخاب همه',
   storyboardDeleteSelected: 'حذف ({count})',

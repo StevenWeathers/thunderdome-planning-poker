@@ -160,8 +160,7 @@
         }
         break;
       case 'column_moved':
-        const updatedGoal = JSON.parse(parsedEvent.value);
-        storyboard.goals = storyboard.goals.map(goal => (goal.id === updatedGoal.id ? updatedGoal : goal));
+        storyboard.goals = JSON.parse(parsedEvent.value);
         break;
       case 'story_added':
         storyboard.goals = JSON.parse(parsedEvent.value);
@@ -621,7 +620,8 @@
       {columnOrderEditMode}
       {toggleColumnOrderEdit}
     >
-      {#if goal.columns.length === 0}
+      <!-- in column order edit mode an empty goal still renders GoalColumns, which provides the drop target -->
+      {#if goal.columns.length === 0 && !columnOrderEditMode}
         <div
           class="m-6 p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center text-gray-500 dark:text-gray-400"
         >

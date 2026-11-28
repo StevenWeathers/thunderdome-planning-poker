@@ -375,6 +375,7 @@ const en: BaseTranslation = {
   storyboardAddSuccess: 'Storyboard added successfully.',
   storyboardColumns: 'Storyboard Columns',
   storyboardDeleted: 'Storyboard deleted',
+  storyboardDropColumnHere: 'Drop column here',
   storyboardDeleteStories: 'Delete Stories',
   storyboardSelectAll: 'Select all',
   storyboardDeleteSelected: 'Delete ({count:number})',

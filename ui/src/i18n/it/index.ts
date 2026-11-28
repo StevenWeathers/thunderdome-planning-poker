@@ -376,6 +376,7 @@ const it: Translation = {
   storyboardAddSuccess: 'Storyboard aggiunto con successo.',
   storyboardColumns: 'Colonne dello storyboard',
   storyboardDeleted: 'Storyboard eliminato',
+  storyboardDropColumnHere: 'Rilascia qui la colonna',
   storyboardDeleteStories: 'Elimina Storie',
   storyboardSelectAll: 'Seleziona tutto',
   storyboardDeleteSelected: 'Elimina ({count})',
