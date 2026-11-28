@@ -64,7 +64,7 @@ func (d *Service) CreateRetro(
 		encryptedFacilitatorCode = encryptedCode
 	}
 
-	tx, err := d.DB.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	tx, err := d.DB.BeginTx(ctx, nil)
 	if err != nil {
 		d.Logger.Error("create retro error", zap.Error(err))
 		return nil, fmt.Errorf("failed to start transaction: %v", err)
