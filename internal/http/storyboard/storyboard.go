@@ -60,6 +60,7 @@ type StoryboardDataSvc interface {
 	CreateStoryboardGoal(storyboardID string, userID string, goalName string, defaultStoryColor *string) (*thunderdome.StoryboardGoal, error)
 	ReviseGoalName(storyboardID string, userID string, goalID string, goalName string, defaultStoryColor *string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardGoal(storyboardID string, userID string, goalID string) ([]*thunderdome.StoryboardGoal, error)
+	MoveStoryboardGoal(storyboardID string, userID string, goalID string, placeBeforeID string) error
 	GetStoryboardGoals(storyboardID string) []*thunderdome.StoryboardGoal
 
 	CreateStoryboardColumn(storyboardID string, goalID string, userID string, columnName string, defaultStoryColor *string) (*thunderdome.StoryboardColumn, error)
@@ -125,6 +126,7 @@ func New(
 		"add_goal":              sb.AddGoal,
 		"revise_goal":           sb.ReviseGoal,
 		"delete_goal":           sb.DeleteGoal,
+		"move_goal":             sb.MoveGoal,
 		"add_column":            sb.AddColumn,
 		"revise_column":         sb.ReviseColumn,
 		"delete_column":         sb.DeleteColumn,

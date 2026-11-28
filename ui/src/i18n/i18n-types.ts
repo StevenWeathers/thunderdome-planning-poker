@@ -1528,6 +1528,18 @@ type RootTranslation = {
 	 */
 	storyboardDropColumnHere: string
 	/**
+	 * D​r​a​g​ ​g​o​a​l​s​ ​t​o​ ​c​h​a​n​g​e​ ​t​h​e​i​r​ ​o​r​d​e​r
+	 */
+	storyboardDragToReorderGoals: string
+	/**
+	 * E​d​i​t​ ​G​o​a​l​s​ ​O​r​d​e​r
+	 */
+	storyboardEditGoalsOrder: string
+	/**
+	 * E​n​d​ ​G​o​a​l​ ​O​r​d​e​r​ ​E​d​i​t​ ​M​o​d​e
+	 */
+	storyboardEndGoalOrderEdit: string
+	/**
 	 * D​e​l​e​t​e​ ​S​t​o​r​i​e​s
 	 */
 	storyboardDeleteStories: string
@@ -4655,6 +4667,18 @@ export type TranslationFunctions = {
 	 * Drop column here
 	 */
 	storyboardDropColumnHere: () => LocalizedString
+	/**
+	 * Drag goals to change their order
+	 */
+	storyboardDragToReorderGoals: () => LocalizedString
+	/**
+	 * Edit Goals Order
+	 */
+	storyboardEditGoalsOrder: () => LocalizedString
+	/**
+	 * End Goal Order Edit Mode
+	 */
+	storyboardEndGoalOrderEdit: () => LocalizedString
 	/**
 	 * Delete Stories
 	 */

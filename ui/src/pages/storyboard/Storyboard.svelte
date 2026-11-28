@@ -25,6 +25,7 @@
     Pencil,
     Plus,
     PlusIcon,
+    SendToBack,
     Settings,
     SwatchBook,
     Trash,
@@ -37,6 +38,7 @@
   import SubMenuItem from '../../components/global/SubMenuItem.svelte';
   import Personas from '../../components/storyboard/Personas.svelte';
   import GoalSection from '../../components/storyboard/GoalSection.svelte';
+  import GoalOrder from '../../components/storyboard/GoalOrder.svelte';
   import type {
     StoryboardPersona,
     PersonaTemplate,
@@ -94,6 +96,7 @@
   let showExportStoryboard = $state(false);
   let activeUserCount = $state(0);
   let columnOrderEditMode = $state(false);
+  let goalOrderEditMode = $state(false);
   let scale = $state(1);
 
   const ZOOM_MIN = 1;
@@ -142,6 +145,9 @@
         storyboard.goals = JSON.parse(parsedEvent.value);
         break;
       case 'goal_deleted':
+        storyboard.goals = JSON.parse(parsedEvent.value);
+        break;
+      case 'goal_moved':
         storyboard.goals = JSON.parse(parsedEvent.value);
         break;
       case 'column_added':
@@ -395,6 +401,10 @@
     columnOrderEditMode = !columnOrderEditMode;
   };
 
+  const toggleGoalOrderEdit = () => {
+    goalOrderEditMode = !goalOrderEditMode;
+  };
+
   let showBecomeFacilitator = $state(false);
 
   function becomeFacilitator(facilitatorCode: string) {
@@ -421,6 +431,9 @@
   }
 
   let isFacilitator = $derived(storyboard.facilitators.length > 0 && storyboard.facilitators.includes($user.id));
+
+  // falls back to the board if the user stops being a facilitator while reordering
+  let showGoalOrder = $derived(goalOrderEditMode && isFacilitator);
 
   onMount(() => {
     if (!$user.id) {
@@ -489,7 +502,11 @@
       </h1>
     </div>
     <div class="flex justify-end space-x-2">
-      {#if !columnOrderEditMode}
+      {#if showGoalOrder}
+        <SolidButton color="yellow" onClick={toggleGoalOrderEdit} testid="goal-order-done">
+          <SendToBack class="inline-block w-4 h-4 me-1" />{$LL.storyboardEndGoalOrderEdit()}
+        </SolidButton>
+      {:else if !columnOrderEditMode}
         <div
           class="flex items-center gap-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-1 shadow-sm"
         >
@@ -609,7 +626,10 @@
       </div>
     </div>
   {/if}
-  {#each storyboard.goals as goal, goalIndex (goal.id)}
+  {#if showGoalOrder}
+    <GoalOrder bind:goals={storyboard.goals} {sendSocketEvent} />
+  {/if}
+  {#each showGoalOrder ? [] : storyboard.goals as goal, goalIndex (goal.id)}
     <GoalSection
       {goal}
       handleDelete={handleGoalDeletion}
@@ -619,6 +639,7 @@
       {isFacilitator}
       {columnOrderEditMode}
       {toggleColumnOrderEdit}
+      {toggleGoalOrderEdit}
     >
       <!-- in column order edit mode an empty goal still renders GoalColumns, which provides the drop target -->
       {#if goal.columns.length === 0 && !columnOrderEditMode}

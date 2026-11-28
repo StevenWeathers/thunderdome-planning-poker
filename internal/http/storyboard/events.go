@@ -64,6 +64,29 @@ func (s *Service) DeleteGoal(ctx context.Context, storyboardID string, userID st
 	return nil, msg, nil, false
 }
 
+// MoveGoal handles reordering a storyboard goal
+func (s *Service) MoveGoal(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
+	var moveGoalInput struct {
+		GoalID      string `json:"goalId"`
+		PlaceBefore string `json:"placeBefore"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &moveGoalInput)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	err = s.StoryboardService.MoveStoryboardGoal(storyboardID, userID, moveGoalInput.GoalID, moveGoalInput.PlaceBefore)
+	if err != nil {
+		return nil, nil, err, false
+	}
+
+	goals := s.StoryboardService.GetStoryboardGoals(storyboardID)
+	updatedGoals, _ := json.Marshal(goals)
+	msg := wshub.CreateSocketEvent("goal_moved", string(updatedGoals), "")
+
+	return nil, msg, nil, false
+}
+
 // AddColumn handles adding a column to storyboard goal
 func (s *Service) AddColumn(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var columnInput struct {
