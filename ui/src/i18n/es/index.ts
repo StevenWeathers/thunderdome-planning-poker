@@ -922,6 +922,7 @@ const es: Translation = {
   teamHealthCheckTemplates: 'Plantillas de health check del equipo',
   pageLoadError: 'No se pudo cargar esta página.',
   pageLoadReload: 'Recargar',
+  newVersionAvailable: 'Hay una nueva versión disponible.',
 };
 
 export default es;

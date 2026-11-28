@@ -81,6 +81,11 @@ definitions:
       active:
         type: boolean
     type: object
+  http.appVersionResponse:
+    properties:
+      version:
+        type: string
+    type: object
   http.battleRequestBody:
     properties:
       autoFinishVoting:
@@ -15069,6 +15074,24 @@ paths:
       summary: Get User Teams Non Org
       tags:
       - team
+  /version:
+    get:
+      description: Gets the version of the running application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.appVersionResponse'
+              type: object
+      summary: Get App Version
+      tags:
+      - app
 securityDefinitions:
   ApiKeyAuth:
     in: header

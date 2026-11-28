@@ -920,6 +920,7 @@ const en: BaseTranslation = {
   teamHealthCheckTemplates: 'Team Health Check Templates',
   pageLoadError: 'This page failed to load.',
   pageLoadReload: 'Reload',
+  newVersionAvailable: 'A new version is available.',
 };
 
 export default en;

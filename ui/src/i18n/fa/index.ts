@@ -918,6 +918,7 @@ const fa: Translation = {
   teamHealthCheckTemplates: 'قالب‌های بررسی سلامت تیم',
   pageLoadError: 'بارگیری این صفحه ناموفق بود.',
   pageLoadReload: 'بارگیری مجدد',
+  newVersionAvailable: 'نسخه جدیدی در دسترس است.',
 };
 
 export default fa;

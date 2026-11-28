@@ -19901,6 +19901,38 @@ const docTemplate = `{
                 ]
             }
         },
+        "/version": {
+            "get": {
+                "description": "Gets the version of the running application",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get App Version",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.appVersionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles": {
             "post": {
                 "description": "Create a poker game associated to the user",
@@ -20508,6 +20540,14 @@ const docTemplate = `{
             "properties": {
                 "active": {
                     "type": "boolean"
+                }
+            }
+        },
+        "http.appVersionResponse": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string"
                 }
             }
         },
