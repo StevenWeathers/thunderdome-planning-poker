@@ -926,6 +926,7 @@ const de: Translation = {
   teamHealthCheckTemplates: 'Team Health-Check-Vorlagen',
   pageLoadError: 'Diese Seite konnte nicht geladen werden.',
   pageLoadReload: 'Neu laden',
+  newVersionAvailable: 'Eine neue Version ist verfügbar.',
 };
 
 export default de;

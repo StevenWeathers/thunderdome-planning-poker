@@ -4,6 +4,7 @@
   import './unreset.css';
   import Navaid from './lib/navaid';
   import { onDestroy } from 'svelte';
+  import { get } from 'svelte/store';
 
   import { AppConfig, appRoutes } from './config';
   import apiclient from './apiclient';
@@ -12,7 +13,7 @@
   import type { NotificationService } from './types/notifications';
   import type { Locales } from './i18n/i18n-types';
   import type { ModuleLoader, Page } from './pageLoader';
-  import { dir, user } from './stores';
+  import { dir, newVersion, user } from './stores';
 
   import Notifications from './components/global/Notifications.svelte';
   import GlobalHeader from './components/global/GlobalHeader.svelte';
@@ -20,10 +21,12 @@
   import GlobalFooter from './components/global/GlobalFooter.svelte';
   import FullpageLoader from './components/global/FullpageLoader.svelte';
   import SolidButton from './components/global/SolidButton.svelte';
+  import NewVersionBanner from './components/global/NewVersionBanner.svelte';
   import LL, { setLocale } from './i18n/i18n-svelte';
   import { detectLocale, isLocale } from './i18n/i18n-util';
   import { loadLocaleAsync } from './i18n/i18n-util.async';
   import { createPageLoader, reloadOnce } from './pageLoader';
+  import { reloadForNewVersion, startVersionCheck } from './versionCheck';
 
   const {
     FeaturePoker,
@@ -33,6 +36,7 @@
     FeatureHealthCheck,
     SubscriptionsEnabled,
     DefaultLocale,
+    AppVersion,
   } = AppConfig;
 
   let notifications: NotificationService | undefined = $state();
@@ -93,6 +97,8 @@
 
   function showPage(load: ModuleLoader, params: any, name: string) {
     pageRequested = true;
+    // the URL has already changed, so a reload here lands on the requested page
+    if (reloadForNewVersion(get(newVersion))) return;
     loadPage(load, params, name);
   }
 
@@ -439,7 +445,14 @@
     }
   }
 
+  const stopVersionCheck = startVersionCheck({
+    xfetch,
+    currentVersion: AppVersion,
+    onNewVersion: version => newVersion.set(version),
+  });
+
   onDestroy(() => {
+    stopVersionCheck();
     if (router.unlisten) {
       router.unlisten();
     }
@@ -450,6 +463,8 @@
   <Notifications bind:this={notifications} />
 
   <header class="w-full">
+    <NewVersionBanner />
+
     <GlobalAlerts registered={!!activeWarrior?.name || false} />
 
     <GlobalHeader {router} {xfetch} {notifications} currentPage={currentPage?.name ?? ''} />

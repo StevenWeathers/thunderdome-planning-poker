@@ -926,6 +926,7 @@ const fr: Translation = {
   teamHealthCheckTemplates: "Modèles de bilan de santé de l'équipe",
   pageLoadError: 'Impossible de charger cette page.',
   pageLoadReload: 'Recharger',
+  newVersionAvailable: 'Une nouvelle version est disponible.',
 };
 
 export default fr;

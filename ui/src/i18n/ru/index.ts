@@ -921,6 +921,7 @@ const ru: Translation = {
   teamHealthCheckTemplates: 'Шаблоны проверки здоровья команд',
   pageLoadError: 'Не удалось загрузить эту страницу.',
   pageLoadReload: 'Перезагрузить',
+  newVersionAvailable: 'Доступна новая версия.',
 };
 
 export default ru;

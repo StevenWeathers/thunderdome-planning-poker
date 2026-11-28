@@ -76,3 +76,6 @@ function initDismissedAlerts() {
 export const dir = derived(locale, $locale => (rtlLanguages.includes($locale) ? 'rtl' : 'ltr'));
 
 export const dismissedAlerts = initDismissedAlerts();
+
+// set once the server reports a version other than the one this tab is running
+export const newVersion = writable('');

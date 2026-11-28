@@ -924,6 +924,7 @@ const it: Translation = {
   teamHealthCheckTemplates: 'Template Health Check Team',
   pageLoadError: 'Impossibile caricare questa pagina.',
   pageLoadReload: 'Ricarica',
+  newVersionAvailable: 'È disponibile una nuova versione.',
 };
 
 export default it;
