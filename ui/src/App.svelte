@@ -70,6 +70,7 @@
   import StoryboardLanding from './pages/storyboard/StoryboardLanding.svelte';
   import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
   import RetroTags from './pages/admin/retro/RetroTags.svelte';
+  import PersonaTemplates from './pages/admin/storyboard/PersonaTemplates.svelte';
   import ChangeEmail from './pages/user/ChangeEmail.svelte';
   import Projects from './pages/admin/project/Projects.svelte';
   import OrganizationProjects from './pages/organization/OrganizationProjects.svelte';
@@ -606,6 +607,13 @@
         route: AdminRetro,
         params: params,
         name: 'admin-retro',
+      };
+    });
+    router.on(`${appRoutes.adminPersonaTemplates}`, () => {
+      currentPage = {
+        route: PersonaTemplates,
+        params: {},
+        name: 'admin-persona-templates',
       };
     });
     router.on(`${appRoutes.adminRetroTags}`, () => {

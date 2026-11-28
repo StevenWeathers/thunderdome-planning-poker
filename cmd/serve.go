@@ -269,6 +269,7 @@ func serve(embedUseOS bool) {
 		JiraDataSvc:                jiraDataSvc,
 		RetroTemplateDataSvc:       retroTemplateDataSvc,
 		ColorLegendTemplateDataSvc: storyboardService,
+		PersonaTemplateDataSvc:     storyboardService,
 		RetroTagDataSvc:            retroService,
 		SubscriptionSvc:            subscriptionService,
 		ProjectDataSvc:             projectDataSvc,

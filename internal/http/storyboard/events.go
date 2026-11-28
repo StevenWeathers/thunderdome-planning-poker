@@ -489,6 +489,18 @@ func (s *Service) DeletePersona(ctx context.Context, storyboardID string, userID
 	return nil, msg, nil, false
 }
 
+// LoadPersonaTemplate handles adding the personas of a template to a storyboard
+func (s *Service) LoadPersonaTemplate(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
+	personas, err := s.StoryboardService.AddStoryboardPersonasFromTemplate(ctx, storyboardID, eventValue, s.config.SubscriptionsEnabled)
+	if err != nil {
+		return nil, nil, err, false
+	}
+	updatedPersonas, _ := json.Marshal(personas)
+	msg := wshub.CreateSocketEvent("personas_updated", string(updatedPersonas), "")
+
+	return nil, msg, nil, false
+}
+
 // FacilitatorAdd handles adding a storyboard facilitator
 func (s *Service) FacilitatorAdd(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var rs struct {

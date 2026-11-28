@@ -98,11 +98,12 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc,
 		a.RetroDataSvc, a.RetroTemplateDataSvc, a.Email)
 	storyboardSvc := storyboard.New(storyboard.Config{
-		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
-		PongWaitSec:        a.Config.WebsocketConfig.PongWaitSec,
-		PingPeriodSec:      a.Config.WebsocketConfig.PingPeriodSec,
-		AppDomain:          a.Config.AppDomain,
-		WebsocketSubdomain: a.Config.WebsocketConfig.WebsocketSubdomain,
+		SubscriptionsEnabled: a.Config.SubscriptionsEnabled,
+		WriteWaitSec:         a.Config.WebsocketConfig.WriteWaitSec,
+		PongWaitSec:          a.Config.WebsocketConfig.PongWaitSec,
+		PingPeriodSec:        a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:            a.Config.AppDomain,
+		WebsocketSubdomain:   a.Config.WebsocketConfig.WebsocketSubdomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.StoryboardDataSvc)
 	checkinSvc := checkin.New(checkin.Config{
 		WriteWaitSec:       a.Config.WebsocketConfig.WriteWaitSec,
@@ -546,6 +547,29 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle("POST "+prefix+"/api/teams/{teamId}/color-legend-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateCreate())))))
 		router.Handle("PUT "+prefix+"/api/teams/{teamId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateUpdate())))))
 		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/color-legend-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamColorLegendTemplateDelete())))))
+
+		// Persona Templates
+		router.Handle("GET "+prefix+"/api/admin/persona-templates", a.userOnly(a.adminOnly(a.handleGetAdminPersonaTemplates())))
+		router.Handle("POST "+prefix+"/api/admin/persona-templates", a.userOnly(a.adminOnly(a.handleAdminPersonaTemplateCreate())))
+		router.Handle("PUT "+prefix+"/api/admin/persona-templates/{templateId}", a.userOnly(a.adminOnly(a.handleAdminPersonaTemplateUpdate())))
+		router.Handle("DELETE "+prefix+"/api/admin/persona-templates/{templateId}", a.userOnly(a.adminOnly(a.handleAdminPersonaTemplateDelete())))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/persona-templates", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationPersonaTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/persona-templates", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationPersonaTemplateCreate()))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/persona-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationPersonaTemplateUpdate()))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/persona-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.orgAdminOnly(a.handleOrganizationPersonaTemplateDelete()))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/persona-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamPersonaTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/persona-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/persona-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/persona-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateDelete())))))
+		router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/persona-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.handleGetTeamPersonaTemplates()))))
+		router.Handle("POST "+prefix+"/api/organizations/{orgId}/teams/{teamId}/persona-templates", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/persona-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/persona-templates/{templateId}", a.userOnly(a.subscribedOrgOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateDelete())))))
+		router.Handle("GET "+prefix+"/api/teams/{teamId}/persona-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.handleGetTeamPersonaTemplates()))))
+		router.Handle("POST "+prefix+"/api/teams/{teamId}/persona-templates", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateCreate())))))
+		router.Handle("PUT "+prefix+"/api/teams/{teamId}/persona-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateUpdate())))))
+		router.Handle("DELETE "+prefix+"/api/teams/{teamId}/persona-templates/{templateId}", a.userOnly(a.subscribedTeamOnly(a.teamUserOnly(a.teamAdminOnly(a.handleTeamPersonaTemplateDelete())))))
+		router.Handle("GET "+prefix+"/api/storyboards/{storyboardId}/persona-templates", a.userOnly(a.handleGetStoryboardPersonaTemplates()))
 
 		// Storyboard operations
 		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardDelete(storyboardSvc)))

@@ -380,6 +380,39 @@ definitions:
           $ref: '#/definitions/thunderdome.TeamUserInvite'
         type: array
     type: object
+  http.personaTemplatePersonaRequestBody:
+    properties:
+      description:
+        maxLength: 2000
+        type: string
+      name:
+        maxLength: 256
+        type: string
+      role:
+        maxLength: 256
+        type: string
+    required:
+    - name
+    type: object
+  http.personaTemplateRequestBody:
+    properties:
+      description:
+        maxLength: 2000
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      personas:
+        items:
+          $ref: '#/definitions/http.personaTemplatePersonaRequestBody'
+        maxItems: 32
+        minItems: 1
+        type: array
+        uniqueItems: true
+    required:
+    - name
+    - personas
+    type: object
   http.planRequestBody:
     properties:
       acceptanceCriteria:
@@ -1303,6 +1336,40 @@ definitions:
       organization_id:
         type: string
       organization_name:
+        type: string
+      role:
+        type: string
+    type: object
+  thunderdome.PersonaTemplate:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      organizationId:
+        type: string
+      personas:
+        items:
+          $ref: '#/definitions/thunderdome.PersonaTemplatePersona'
+        type: array
+      teamId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  thunderdome.PersonaTemplatePersona:
+    properties:
+      description:
+        type: string
+      name:
         type: string
       role:
         type: string
@@ -2729,6 +2796,142 @@ paths:
       summary: Get Organizations
       tags:
       - admin
+  /admin/persona-templates:
+    get:
+      description: get list of global default persona templates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.PersonaTemplate'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Global Persona Templates
+      tags:
+      - personaTemplate
+    post:
+      description: Creates a global default persona template
+      parameters:
+      - description: new persona template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Global Persona Template
+      tags:
+      - personaTemplate
+  /admin/persona-templates/{templateId}:
+    delete:
+      description: Deletes a global default persona template
+      parameters:
+      - description: the persona template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Global Persona Template
+      tags:
+      - personaTemplate
+    put:
+      description: Updates a global default persona template
+      parameters:
+      - description: the persona template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: persona template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Global Persona Template
+      tags:
+      - personaTemplate
   /admin/poker-settings/{id}:
     delete:
       description: Deletes poker settings for an organization, department, or team
@@ -5929,6 +6132,167 @@ paths:
       summary: Update Team Color Legend Template
       tags:
       - colorLegendTemplate
+  /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/persona-templates:
+    get:
+      description: get list of persona templates for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.PersonaTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Persona Templates
+      tags:
+      - personaTemplate
+    post:
+      description: Creates a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new persona template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Persona Template
+      tags:
+      - personaTemplate
+  /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/persona-templates/{templateId}:
+    delete:
+      description: Deletes a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the persona template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Persona Template
+      tags:
+      - personaTemplate
+    put:
+      description: Updates a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the persona template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: persona template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Persona Template
+      tags:
+      - personaTemplate
   /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-tags:
     get:
       description: get list of retro tags for a team
@@ -6615,6 +6979,167 @@ paths:
       summary: Get Organization Metrics
       tags:
       - admin
+  /organizations/{orgId}/persona-templates:
+    get:
+      description: get list of persona templates for an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.PersonaTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Persona Templates
+      tags:
+      - personaTemplate
+    post:
+      description: Creates an organization persona template
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new persona template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Persona Template
+      tags:
+      - personaTemplate
+  /organizations/{orgId}/persona-templates/{templateId}:
+    delete:
+      description: Deletes an organization persona template
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the persona template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Organization Persona Template
+      tags:
+      - personaTemplate
+    put:
+      description: Updates an organization persona template
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the persona template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: persona template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Persona Template
+      tags:
+      - personaTemplate
   /organizations/{orgId}/poker-settings:
     get:
       description: get poker settings for a specific organization
@@ -7533,6 +8058,167 @@ paths:
       summary: Update Team Color Legend Template
       tags:
       - colorLegendTemplate
+  /organizations/{orgId}/teams/{teamId}/persona-templates:
+    get:
+      description: get list of persona templates for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.PersonaTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Persona Templates
+      tags:
+      - personaTemplate
+    post:
+      description: Creates a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new persona template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Persona Template
+      tags:
+      - personaTemplate
+  /organizations/{orgId}/teams/{teamId}/persona-templates/{templateId}:
+    delete:
+      description: Deletes a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the persona template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Persona Template
+      tags:
+      - personaTemplate
+    put:
+      description: Updates a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the persona template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: persona template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Persona Template
+      tags:
+      - personaTemplate
   /organizations/{orgId}/teams/{teamId}/retro-tags:
     get:
       description: get list of retro tags for a team
@@ -8972,6 +9658,47 @@ paths:
       summary: Storyboard Goal Update
       tags:
       - storyboard
+  /storyboards/{storyboardId}/persona-templates:
+    get:
+      description: get the persona templates that can be loaded into a storyboard
+        (facilitator only)
+      parameters:
+      - description: Storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.PersonaTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Storyboard Persona Templates
+      tags:
+      - personaTemplate
   /storyboards/{storyboardId}/stories:
     post:
       description: Add a story to a storyboard goal column
@@ -10360,6 +11087,167 @@ paths:
       summary: Deletes Team User Invite
       tags:
       - team
+  /teams/{teamId}/persona-templates:
+    get:
+      description: get list of persona templates for a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.PersonaTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Persona Templates
+      tags:
+      - personaTemplate
+    post:
+      description: Creates a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new persona template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Persona Template
+      tags:
+      - personaTemplate
+  /teams/{teamId}/persona-templates/{templateId}:
+    delete:
+      description: Deletes a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the persona template ID to delete
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Persona Template
+      tags:
+      - personaTemplate
+    put:
+      description: Updates a team persona template
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the persona template ID to update
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: persona template object to update
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.personaTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.PersonaTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Persona Template
+      tags:
+      - personaTemplate
   /teams/{teamId}/poker-settings:
     get:
       description: get poker settings for a specific team

@@ -28,6 +28,7 @@
   import PokerSettings from '../../components/poker/PokerSettings.svelte';
   import RetroSettings from '../../components/retro/RetroSettings.svelte';
   import RetroTagsList from '../../components/retrotag/RetroTagsList.svelte';
+  import PersonaTemplatesList from '../../components/personatemplate/PersonaTemplatesList.svelte';
   import ColorLegendTemplatesList from '../../components/colorlegendtemplate/ColorLegendTemplatesList.svelte';
 
   import type { NotificationService } from '../../types/notifications';
@@ -322,6 +323,14 @@
         />
       {:else}
         <FeatureSubscribeBanner salesPitch="Create reusable storyboard color legend templates for your Organization." />
+      {/if}
+    </div>
+
+    <div class="mt-8">
+      {#if !AppConfig.SubscriptionsEnabled || (AppConfig.SubscriptionsEnabled && organization.subscribed)}
+        <PersonaTemplatesList {xfetch} {notifications} isEntityAdmin={isAdmin} apiPrefix={orgPrefix} />
+      {:else}
+        <FeatureSubscribeBanner salesPitch="Create reusable story mapping persona templates for your Organization." />
       {/if}
     </div>
   {/if}
