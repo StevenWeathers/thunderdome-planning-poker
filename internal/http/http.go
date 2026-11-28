@@ -732,6 +732,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	// health check for load balancers, k8s, etc...
 	router.Handle(prefix+"/healthz", a.handleHealthCheck())
 	router.Handle("GET "+prefix+"/api/{$}", a.handleApiIndex())
+	router.Handle("GET "+prefix+"/api/version", a.handleGetAppVersion())
 
 	router.Handle(prefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Don't return the index for API or other path prefixes
@@ -849,6 +850,25 @@ func (s *Service) handleHealthCheck() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status": "ok"}`))
+	}
+}
+
+type appVersionResponse struct {
+	Version string `json:"version"`
+}
+
+// handleGetAppVersion returns the running app version so open tabs can tell they're outdated
+//
+//	@Summary		Get App Version
+//	@Description	Gets the version of the running application
+//	@Tags			app
+//	@Produce		json
+//	@Success		200	object	standardJsonResponse{data=appVersionResponse}
+//	@Router			/version [get]
+func (s *Service) handleGetAppVersion() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		s.Success(w, r, http.StatusOK, appVersionResponse{Version: s.UIConfig.AppConfig.AppVersion}, nil)
 	}
 }
 

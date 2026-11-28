@@ -3686,6 +3686,10 @@ type RootTranslation = {
 	 * R​e​l​o​a​d
 	 */
 	pageLoadReload: string
+	/**
+	 * A​ ​n​e​w​ ​v​e​r​s​i​o​n​ ​i​s​ ​a​v​a​i​l​a​b​l​e​.
+	 */
+	newVersionAvailable: string
 }
 
 export type TranslationFunctions = {
@@ -7299,6 +7303,10 @@ export type TranslationFunctions = {
 	 * Reload
 	 */
 	pageLoadReload: () => LocalizedString
+	/**
+	 * A new version is available.
+	 */
+	newVersionAvailable: () => LocalizedString
 }
 
 export type Formatters = {}
