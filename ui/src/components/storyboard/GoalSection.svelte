@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ChevronDown, ChevronUp, GoalIcon, Pencil, Plus, SendToBack, Settings, Trash } from '@lucide/svelte';
+  import { ArrowUpDown, ChevronDown, ChevronUp, GoalIcon, Pencil, Plus, SendToBack, Settings, Trash } from '@lucide/svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import SubMenu from '../../components/global/SubMenu.svelte';
@@ -17,6 +17,7 @@
     toggleEdit: any;
     columnOrderEditMode: any;
     toggleColumnOrderEdit: any;
+    toggleGoalOrderEdit: () => void;
   }
 
   let {
@@ -29,6 +30,7 @@
     isFacilitator = false,
     columnOrderEditMode = false,
     toggleColumnOrderEdit = () => {},
+    toggleGoalOrderEdit = () => {},
   }: Props = $props();
 
   let collapsed = $state(false);
@@ -58,6 +60,11 @@
 
   const handleToggleColumnOrderEdit = (toggleSubmenu?: () => void) => () => {
     toggleColumnOrderEdit();
+    toggleSubmenu?.();
+  };
+
+  const handleToggleGoalOrderEdit = (toggleSubmenu?: () => void) => () => {
+    toggleGoalOrderEdit();
     toggleSubmenu?.();
   };
 </script>
@@ -119,6 +126,12 @@
                 testId="toggle-edit-goal-column-order"
                 icon={SendToBack}
                 label={`Edit Columns Order`}
+              />
+              <SubMenuItem
+                onClickHandler={handleToggleGoalOrderEdit(toggleSubmenu)}
+                testId="toggle-edit-goal-order"
+                icon={ArrowUpDown}
+                label={$LL.storyboardEditGoalsOrder()}
               />
               <SubMenuItem
                 onClickHandler={toggleDeleteConfirmation(toggleSubmenu)}

@@ -65,6 +65,49 @@ test.describe("Storyboard page", { tag: ["@storyboard"] }, () => {
     await expect(bp.page.locator("h1")).toHaveText("My Storyboards");
   });
 
+  test("facilitator can reorder goals", async ({ registeredPage }) => {
+    const { id } = await registeredPage.createStoryboard({ storyboardName: "e2e goal order" });
+    for (const name of ["First", "Second", "Third"]) {
+      const res = await registeredPage.page.request.post(`/api/storyboards/${id}/goals`, {
+        data: { name },
+      });
+      expect(res.ok()).toBeTruthy();
+    }
+
+    const bp = new StoryboardPage(registeredPage.page);
+    await bp.goto(id);
+
+    const goals = bp.page.getByTestId("goal-order-item");
+    const startReorder = async () => {
+      await bp.page.getByTestId("goal-settings").first().click();
+      await bp.page.getByTestId("toggle-edit-goal-order").click();
+    };
+
+    await startReorder();
+    await expect(goals).toHaveText(["First", "Second", "Third"]);
+
+    // keyboard drag and drop: pick up the last goal, move it up twice, then drop it
+    await goals.nth(2).focus();
+    await bp.page.keyboard.press("Enter");
+    await bp.page.keyboard.press("ArrowUp");
+    await expect(goals).toHaveText(["First", "Third", "Second"]);
+    await bp.page.keyboard.press("ArrowUp");
+    await expect(goals).toHaveText(["Third", "First", "Second"]);
+    await bp.page.keyboard.press("Enter");
+
+    // the new order is persisted
+    await bp.page.reload();
+    await startReorder();
+    await expect(goals).toHaveText(["Third", "First", "Second"]);
+
+    await bp.page.getByTestId("goal-order-done").click();
+    await expect(bp.page.getByTestId("storyboard-goal")).toContainText([
+      "Third",
+      "First",
+      "Second",
+    ]);
+  });
+
   test("delete storyboard confirmation cancel does not delete storyboard", async ({
     registeredPage,
   }) => {

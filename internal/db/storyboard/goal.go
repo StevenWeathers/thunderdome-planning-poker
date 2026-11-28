@@ -125,6 +125,89 @@ func (d *Service) DeleteStoryboardGoal(storyboardID string, userID string, goalI
 	return goals, nil
 }
 
+// MoveStoryboardGoal repositions a goal within a storyboard, an empty placeBeforeID moves it to the end
+func (d *Service) MoveStoryboardGoal(storyboardID string, userID string, goalID string, placeBeforeID string) error {
+	var betweenAkey sql.NullString
+	var betweenBkey sql.NullString
+	var logger = d.Logger.With(
+		zap.String("user_id", userID),
+		zap.String("storyboard_id", storyboardID),
+		zap.String("goal_id", goalID),
+		zap.String("place_before_id", placeBeforeID),
+	)
+
+	tx, err := d.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		logger.Error("begin transaction error", zap.Error(err))
+		return err
+	}
+	defer tx.Rollback()
+
+	if placeBeforeID == "" {
+		if err := tx.QueryRow(
+			`SELECT MAX(display_order)
+			FROM thunderdome.storyboard_goal
+			WHERE storyboard_id = $1 AND id != $2;`,
+			storyboardID, goalID,
+		).Scan(&betweenAkey); err != nil {
+			logger.Error("get display_order between query error", zap.Error(err))
+			return err
+		}
+	} else {
+		if err := tx.QueryRow(
+			`WITH next_goal AS (
+				SELECT display_order
+				FROM thunderdome.storyboard_goal
+				WHERE storyboard_id = $1 AND id = $2
+			),
+			preceding_goal AS (
+				SELECT display_order
+				FROM thunderdome.storyboard_goal
+				WHERE storyboard_id = $1
+				AND id != $3
+				AND display_order < (SELECT display_order FROM next_goal)
+				ORDER BY display_order DESC
+				LIMIT 1
+			)
+			SELECT
+				ng.display_order AS next_display_order,
+				pg.display_order AS preceding_display_order
+			FROM next_goal ng
+			LEFT JOIN preceding_goal pg ON true;`,
+			storyboardID, placeBeforeID, goalID,
+		).Scan(&betweenBkey, &betweenAkey); err != nil {
+			logger.Error("get display_order between query error", zap.Error(err))
+			return err
+		}
+	}
+
+	displayOrder, err := fracdex.KeyBetween(betweenAkey.String, betweenBkey.String)
+	if err != nil {
+		logger.Error("get display_order between error",
+			zap.Error(err),
+			zap.String("display_order_a", betweenAkey.String),
+			zap.String("display_order_b", betweenBkey.String),
+		)
+		return err
+	}
+
+	if _, err := tx.Exec(
+		`UPDATE thunderdome.storyboard_goal SET display_order = $1, updated_date = NOW()
+		WHERE id = $2 AND storyboard_id = $3;`,
+		displayOrder, goalID, storyboardID,
+	); err != nil {
+		logger.Error("move storyboard goal error", zap.Error(err))
+		return err
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		logger.Error("move storyboard goal: unable to commit", zap.Error(commitErr))
+		return fmt.Errorf("failed to update storyboard goal display_order: %v", commitErr)
+	}
+
+	return nil
+}
+
 // GetStoryboardGoals retrieves goals for given storyboard from db
 func (d *Service) GetStoryboardGoals(storyboardID string) []*thunderdome.StoryboardGoal {
 	var goals = make([]*thunderdome.StoryboardGoal, 0)
