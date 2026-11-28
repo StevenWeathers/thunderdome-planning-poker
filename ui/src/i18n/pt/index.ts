@@ -887,6 +887,20 @@ const pt: Translation = {
   healthCheckTemplateDeleteSuccess: 'Modelo de verificação excluído.',
   healthCheckTemplateDeleteError: 'Erro ao excluir o modelo de verificação.',
   healthCheckTemplatesGetError: 'Erro ao obter os modelos de verificação.',
+  healthCheckAboutTitle: 'O que é um Squad Health Check?',
+  healthCheckAboutLink: 'Ler o artigo do Spotify sobre o modelo (em inglês)',
+  healthCheckOpensNewTab: '(abre em uma nova aba)',
+  healthCheckAboutIntro:
+    'Uma autoavaliação baseada no modelo do Spotify que ajuda a equipe a ver o que funciona e o que não funciona. Cada membro avalia áreas como entrega de valor, diversão e aprendizado e informa se cada uma está melhorando, estável ou piorando.',
+  healthCheckAboutRatings: 'Como avaliar',
+  healthCheckAboutGreen:
+    'A equipe está satisfeita e não vê grande necessidade de melhorar agora. Não precisa estar perfeito.',
+  healthCheckAboutYellow: 'Há problemas importantes a resolver, mas não é um desastre.',
+  healthCheckAboutRed: 'Isso está muito ruim e precisa melhorar.',
+  healthCheckAboutTips: 'Como aproveitar melhor',
+  healthCheckAboutTipDiscuss: 'Discutam os resultados juntos. A maior parte do valor está na conversa.',
+  healthCheckAboutTipSupport: 'Usem-nos para apoiar e melhorar, nunca para julgar ou comparar equipes.',
+  healthCheckAboutTipCadence: 'Uma vez por trimestre é um bom começo.',
 };
 
 export default pt;

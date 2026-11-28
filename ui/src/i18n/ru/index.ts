@@ -885,6 +885,21 @@ const ru: Translation = {
   healthCheckTemplateDeleteSuccess: 'Шаблон проверки удалён.',
   healthCheckTemplateDeleteError: 'Ошибка удаления шаблона проверки.',
   healthCheckTemplatesGetError: 'Ошибка получения шаблонов проверок.',
+  healthCheckAboutTitle: 'Что такое Squad Health Check?',
+  healthCheckAboutLink: 'Статья Spotify об этой модели (на английском)',
+  healthCheckOpensNewTab: '(откроется в новой вкладке)',
+  healthCheckAboutIntro:
+    'Самооценка по модели Spotify, которая помогает команде увидеть, что получается, а что нет. Каждый участник оценивает такие области, как создаваемая ценность, удовольствие от работы и обучение, и отмечает, становится ли лучше, без изменений или хуже.',
+  healthCheckAboutRatings: 'Как оценивать',
+  healthCheckAboutGreen:
+    'Команда довольна и пока не видит серьёзной необходимости что-то менять. Это не значит, что всё идеально.',
+  healthCheckAboutYellow: 'Есть важные проблемы, которыми нужно заняться, но это не катастрофа.',
+  healthCheckAboutRed: 'Всё действительно плохо, и это нужно исправлять.',
+  healthCheckAboutTips: 'Как извлечь максимум пользы',
+  healthCheckAboutTipDiscuss: 'Обсуждайте результаты вместе. Основная польза именно в разговоре.',
+  healthCheckAboutTipSupport:
+    'Используйте их для поддержки и улучшений, а не для того, чтобы судить или сравнивать команды.',
+  healthCheckAboutTipCadence: 'Для начала хорошо проводить проверку раз в квартал.',
 };
 
 export default ru;

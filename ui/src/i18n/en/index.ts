@@ -885,6 +885,20 @@ const en: BaseTranslation = {
   healthCheckTemplateDeleteSuccess: 'Health check template deleted.',
   healthCheckTemplateDeleteError: 'Error deleting health check template.',
   healthCheckTemplatesGetError: 'Error getting health check templates.',
+  healthCheckAboutTitle: 'What is a Squad Health Check?',
+  healthCheckAboutLink: "Read Spotify's article about the model",
+  healthCheckOpensNewTab: '(opens in a new tab)',
+  healthCheckAboutIntro:
+    "A self-assessment, based on Spotify's model, that helps a team see what is working and what isn't. Each member rates areas such as delivering value, fun and learning, and says whether each is improving, stable or getting worse.",
+  healthCheckAboutRatings: 'How to rate',
+  healthCheckAboutGreen:
+    "The team is happy and sees no major need to improve right now. It doesn't have to be perfect.",
+  healthCheckAboutYellow: "There are important problems to address, but it's not a disaster.",
+  healthCheckAboutRed: 'This is really bad and needs to be improved.',
+  healthCheckAboutTips: 'Getting the most from it',
+  healthCheckAboutTipDiscuss: 'Discuss the results together. Most of the value is in the conversation.',
+  healthCheckAboutTipSupport: 'Use them to support and improve, never to judge or compare teams.',
+  healthCheckAboutTipCadence: 'Quarterly is a good place to start.',
 };
 
 export default en;

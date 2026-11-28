@@ -884,6 +884,19 @@ const fa: Translation = {
   healthCheckTemplateDeleteSuccess: 'الگوی بررسی سلامت حذف شد.',
   healthCheckTemplateDeleteError: 'خطا در حذف الگوی بررسی سلامت.',
   healthCheckTemplatesGetError: 'خطا در دریافت الگوهای بررسی سلامت.',
+  healthCheckAboutTitle: 'بررسی سلامت تیم چیست؟',
+  healthCheckAboutLink: 'مقاله Spotify درباره این مدل را بخوانید (انگلیسی)',
+  healthCheckOpensNewTab: '(در برگه جدید باز می‌شود)',
+  healthCheckAboutIntro:
+    'یک خودارزیابی بر پایه مدل Spotify که به تیم کمک می‌کند ببیند چه چیزی خوب پیش می‌رود و چه چیزی نه. هر عضو حوزه‌هایی مانند ارائه ارزش، سرگرمی و یادگیری را ارزیابی می‌کند و می‌گوید هر کدام رو به بهبود، ثابت یا رو به بدتر شدن است.',
+  healthCheckAboutRatings: 'شیوه امتیازدهی',
+  healthCheckAboutGreen: 'تیم راضی است و اکنون نیاز مهمی به بهبود نمی‌بیند. لازم نیست بی‌نقص باشد.',
+  healthCheckAboutYellow: 'مشکلات مهمی هست که باید رسیدگی شود، اما فاجعه نیست.',
+  healthCheckAboutRed: 'وضعیت واقعاً بد است و باید بهبود یابد.',
+  healthCheckAboutTips: 'بیشترین بهره از آن',
+  healthCheckAboutTipDiscuss: 'نتایج را با هم بررسی کنید. بیشترین ارزش در گفتگو است.',
+  healthCheckAboutTipSupport: 'از نتایج برای پشتیبانی و بهبود استفاده کنید، نه هرگز برای قضاوت یا مقایسه تیم‌ها.',
+  healthCheckAboutTipCadence: 'هر سه ماه یک بار برای شروع مناسب است.',
 };
 
 export default fa;

@@ -3553,6 +3553,54 @@ type RootTranslation = {
 	 * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​ ​t​e​m​p​l​a​t​e​s​.
 	 */
 	healthCheckTemplatesGetError: string
+	/**
+	 * W​h​a​t​ ​i​s​ ​a​ ​S​q​u​a​d​ ​H​e​a​l​t​h​ ​C​h​e​c​k​?
+	 */
+	healthCheckAboutTitle: string
+	/**
+	 * R​e​a​d​ ​S​p​o​t​i​f​y​'​s​ ​a​r​t​i​c​l​e​ ​a​b​o​u​t​ ​t​h​e​ ​m​o​d​e​l
+	 */
+	healthCheckAboutLink: string
+	/**
+	 * (​o​p​e​n​s​ ​i​n​ ​a​ ​n​e​w​ ​t​a​b​)
+	 */
+	healthCheckOpensNewTab: string
+	/**
+	 * A​ ​s​e​l​f​-​a​s​s​e​s​s​m​e​n​t​,​ ​b​a​s​e​d​ ​o​n​ ​S​p​o​t​i​f​y​'​s​ ​m​o​d​e​l​,​ ​t​h​a​t​ ​h​e​l​p​s​ ​a​ ​t​e​a​m​ ​s​e​e​ ​w​h​a​t​ ​i​s​ ​w​o​r​k​i​n​g​ ​a​n​d​ ​w​h​a​t​ ​i​s​n​'​t​.​ ​E​a​c​h​ ​m​e​m​b​e​r​ ​r​a​t​e​s​ ​a​r​e​a​s​ ​s​u​c​h​ ​a​s​ ​d​e​l​i​v​e​r​i​n​g​ ​v​a​l​u​e​,​ ​f​u​n​ ​a​n​d​ ​l​e​a​r​n​i​n​g​,​ ​a​n​d​ ​s​a​y​s​ ​w​h​e​t​h​e​r​ ​e​a​c​h​ ​i​s​ ​i​m​p​r​o​v​i​n​g​,​ ​s​t​a​b​l​e​ ​o​r​ ​g​e​t​t​i​n​g​ ​w​o​r​s​e​.
+	 */
+	healthCheckAboutIntro: string
+	/**
+	 * H​o​w​ ​t​o​ ​r​a​t​e
+	 */
+	healthCheckAboutRatings: string
+	/**
+	 * T​h​e​ ​t​e​a​m​ ​i​s​ ​h​a​p​p​y​ ​a​n​d​ ​s​e​e​s​ ​n​o​ ​m​a​j​o​r​ ​n​e​e​d​ ​t​o​ ​i​m​p​r​o​v​e​ ​r​i​g​h​t​ ​n​o​w​.​ ​I​t​ ​d​o​e​s​n​'​t​ ​h​a​v​e​ ​t​o​ ​b​e​ ​p​e​r​f​e​c​t​.
+	 */
+	healthCheckAboutGreen: string
+	/**
+	 * T​h​e​r​e​ ​a​r​e​ ​i​m​p​o​r​t​a​n​t​ ​p​r​o​b​l​e​m​s​ ​t​o​ ​a​d​d​r​e​s​s​,​ ​b​u​t​ ​i​t​'​s​ ​n​o​t​ ​a​ ​d​i​s​a​s​t​e​r​.
+	 */
+	healthCheckAboutYellow: string
+	/**
+	 * T​h​i​s​ ​i​s​ ​r​e​a​l​l​y​ ​b​a​d​ ​a​n​d​ ​n​e​e​d​s​ ​t​o​ ​b​e​ ​i​m​p​r​o​v​e​d​.
+	 */
+	healthCheckAboutRed: string
+	/**
+	 * G​e​t​t​i​n​g​ ​t​h​e​ ​m​o​s​t​ ​f​r​o​m​ ​i​t
+	 */
+	healthCheckAboutTips: string
+	/**
+	 * D​i​s​c​u​s​s​ ​t​h​e​ ​r​e​s​u​l​t​s​ ​t​o​g​e​t​h​e​r​.​ ​M​o​s​t​ ​o​f​ ​t​h​e​ ​v​a​l​u​e​ ​i​s​ ​i​n​ ​t​h​e​ ​c​o​n​v​e​r​s​a​t​i​o​n​.
+	 */
+	healthCheckAboutTipDiscuss: string
+	/**
+	 * U​s​e​ ​t​h​e​m​ ​t​o​ ​s​u​p​p​o​r​t​ ​a​n​d​ ​i​m​p​r​o​v​e​,​ ​n​e​v​e​r​ ​t​o​ ​j​u​d​g​e​ ​o​r​ ​c​o​m​p​a​r​e​ ​t​e​a​m​s​.
+	 */
+	healthCheckAboutTipSupport: string
+	/**
+	 * Q​u​a​r​t​e​r​l​y​ ​i​s​ ​a​ ​g​o​o​d​ ​p​l​a​c​e​ ​t​o​ ​s​t​a​r​t​.
+	 */
+	healthCheckAboutTipCadence: string
 }
 
 export type TranslationFunctions = {
@@ -7034,6 +7082,54 @@ export type TranslationFunctions = {
 	 * Error getting health check templates.
 	 */
 	healthCheckTemplatesGetError: () => LocalizedString
+	/**
+	 * What is a Squad Health Check?
+	 */
+	healthCheckAboutTitle: () => LocalizedString
+	/**
+	 * Read Spotify's article about the model
+	 */
+	healthCheckAboutLink: () => LocalizedString
+	/**
+	 * (opens in a new tab)
+	 */
+	healthCheckOpensNewTab: () => LocalizedString
+	/**
+	 * A self-assessment, based on Spotify's model, that helps a team see what is working and what isn't. Each member rates areas such as delivering value, fun and learning, and says whether each is improving, stable or getting worse.
+	 */
+	healthCheckAboutIntro: () => LocalizedString
+	/**
+	 * How to rate
+	 */
+	healthCheckAboutRatings: () => LocalizedString
+	/**
+	 * The team is happy and sees no major need to improve right now. It doesn't have to be perfect.
+	 */
+	healthCheckAboutGreen: () => LocalizedString
+	/**
+	 * There are important problems to address, but it's not a disaster.
+	 */
+	healthCheckAboutYellow: () => LocalizedString
+	/**
+	 * This is really bad and needs to be improved.
+	 */
+	healthCheckAboutRed: () => LocalizedString
+	/**
+	 * Getting the most from it
+	 */
+	healthCheckAboutTips: () => LocalizedString
+	/**
+	 * Discuss the results together. Most of the value is in the conversation.
+	 */
+	healthCheckAboutTipDiscuss: () => LocalizedString
+	/**
+	 * Use them to support and improve, never to judge or compare teams.
+	 */
+	healthCheckAboutTipSupport: () => LocalizedString
+	/**
+	 * Quarterly is a good place to start.
+	 */
+	healthCheckAboutTipCadence: () => LocalizedString
 }
 
 export type Formatters = {}

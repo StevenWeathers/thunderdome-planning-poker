@@ -2,6 +2,7 @@
   import { untrack } from 'svelte';
 
   import SolidButton from '../global/SolidButton.svelte';
+  import HealthCheckRatingGuide from './HealthCheckRatingGuide.svelte';
   import LL from '../../i18n/i18n-svelte';
 
   import type {
@@ -68,6 +69,12 @@
 </script>
 
 <form onsubmit={onSubmit} name="healthCheckResponse" class="space-y-4">
+  <div
+    class="rounded-lg border border-blue-200 dark:border-gray-700 bg-blue-50 dark:bg-gray-800 p-4 text-gray-700 dark:text-gray-300"
+  >
+    <HealthCheckRatingGuide />
+  </div>
+
   {#each areas as area, i (area.name)}
     <fieldset class="rounded-lg bg-white dark:bg-gray-800 shadow p-4 space-y-3">
       <legend class="sr-only">{area.name}</legend>

@@ -64,8 +64,7 @@ INSERT INTO thunderdome.health_check_template (name, description, is_public, are
         {"name": "Pawns or players", "healthy": "We control our own destiny and decide what to build and how.", "unhealthy": "We are told what to do and have no say."},
         {"name": "Speed", "healthy": "We get things done quickly without waiting or delays.", "unhealthy": "We never seem to finish anything and keep getting stuck or interrupted."},
         {"name": "Suitable process", "healthy": "Our way of working fits us.", "unhealthy": "Our way of working gets in our way."},
-        {"name": "Support", "healthy": "We get help and support when we ask for it.", "unhealthy": "We keep getting stuck because we cannot get the help we ask for."},
-        {"name": "Teamwork", "healthy": "We work together well and help each other.", "unhealthy": "We work as individuals and do not know what others are doing."}
+        {"name": "Support", "healthy": "We get help and support when we ask for it.", "unhealthy": "We keep getting stuck because we cannot get the help we ask for."}
     ]'
 );
 

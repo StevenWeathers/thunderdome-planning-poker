@@ -10,6 +10,13 @@ const areas = [
 ];
 
 describe('HealthCheckResponseForm component', () => {
+  it('explains what each rating means', async () => {
+    render(HealthCheckResponseForm, { areas, handleSubmit: vi.fn() });
+
+    await expect.element(page.getByRole('heading', { name: 'How to rate' })).toBeInTheDocument();
+    await expect.element(page.getByText("It doesn't have to be perfect.", { exact: false })).toBeInTheDocument();
+  });
+
   it('requires a rating for every area before submitting', async () => {
     const handleSubmit = vi.fn();
     render(HealthCheckResponseForm, { areas, handleSubmit });

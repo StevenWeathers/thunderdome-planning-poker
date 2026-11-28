@@ -1,11 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { ExternalLink } from '@lucide/svelte';
 
   import TeamPageLayout from '../../components/team/TeamPageLayout.svelte';
   import FeatureSubscribeBanner from '../../components/global/FeatureSubscribeBanner.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import Pagination from '../../components/global/Pagination.svelte';
   import HealthCheckForm from '../../components/healthcheck/HealthCheckForm.svelte';
+  import HealthCheckRatingGuide from '../../components/healthcheck/HealthCheckRatingGuide.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
@@ -28,6 +30,7 @@
   let { xfetch, router, notifications, organizationId, departmentId, teamId }: Props = $props();
 
   const pageLimit = 20;
+  const spotifyArticleUrl = 'https://engineering.atspotify.com/2014/9/squad-health-check-model';
 
   let teamName = $state('');
   let isTeamMember = $state(false);
@@ -123,6 +126,37 @@
       </SolidButton>
     {/if}
   </div>
+
+  <section
+    class="mb-6 rounded-lg border border-blue-200 dark:border-gray-700 bg-blue-50 dark:bg-gray-800 p-4 text-gray-700 dark:text-gray-300"
+    aria-labelledby="health-check-about"
+  >
+    <h2 id="health-check-about" class="text-xl font-semibold font-rajdhani mb-2 dark:text-white">
+      {$LL.healthCheckAboutTitle()}
+    </h2>
+    <p class="mb-4">{$LL.healthCheckAboutIntro()}</p>
+    <div class="grid gap-4 lg:grid-cols-2 mb-4">
+      <HealthCheckRatingGuide />
+      <div>
+        <h3 class="font-bold mb-1">{$LL.healthCheckAboutTips()}</h3>
+        <ul class="list-disc ps-5 space-y-1">
+          <li>{$LL.healthCheckAboutTipDiscuss()}</li>
+          <li>{$LL.healthCheckAboutTipSupport()}</li>
+          <li>{$LL.healthCheckAboutTipCadence()}</li>
+        </ul>
+      </div>
+    </div>
+    <a
+      class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-300 underline"
+      href={spotifyArticleUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {$LL.healthCheckAboutLink()}
+      <ExternalLink class="w-4 h-4" aria-hidden="true" />
+      <span class="sr-only">{$LL.healthCheckOpensNewTab()}</span>
+    </a>
+  </section>
 
   {#if subscriptionRequired}
     <FeatureSubscribeBanner salesPitch={$LL.healthCheckSubscribePitch()} />

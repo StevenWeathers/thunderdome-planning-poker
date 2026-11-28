@@ -320,22 +320,22 @@
             <div class="title-line bg-yellow-thunder"></div>
             <h2 class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6">Squad Health Checks</h2>
             <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
-              Find out how your team is really doing. Everyone rates what is working and what is not, so you can spend
-              your time on what to improve.
+              See what is working and what isn't, then decide together what to improve. A health check is there to
+              support your team, not to grade it.
             </p>
             <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8">
-            <li class="flex items-start">
-              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Honest answers:</strong> Responses are anonymous, and results appear only after the deadline once at least three people reply</span>
-            </li>
-            <li class="flex items-start">
-              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Async by design:</strong> Set a deadline, email your team the link, and review the results together when you meet</span>
-            </li>
-            <li class="flex items-start">
-              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
-              <span><strong>Your questions:</strong> Start with the areas from the Spotify Squad Health Check model or build templates for your team and organization</span>
-            </li>
+              <li class="flex items-start">
+                <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+                <span><strong>Honest answers:</strong> Responses are anonymous, and results appear only after the deadline once at least three people reply</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+                <span><strong>Built for conversation:</strong> Collect ratings and trends ahead of time, then spend your meeting discussing them</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+                <span><strong>Make it yours:</strong> Start with areas based on Spotify's Squad Health Check model, or build templates for your team and organization</span>
+              </li>
             </ul>
             {#if SubscriptionsEnabled}
               <p class="text-gray-600 dark:text-gray-400 mb-8">

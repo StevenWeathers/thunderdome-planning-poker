@@ -891,6 +891,20 @@ const fr: Translation = {
   healthCheckTemplateDeleteSuccess: 'Modèle de bilan supprimé.',
   healthCheckTemplateDeleteError: 'Erreur lors de la suppression du modèle de bilan.',
   healthCheckTemplatesGetError: 'Erreur lors du chargement des modèles de bilan.',
+  healthCheckAboutTitle: "Qu'est-ce qu'un Squad Health Check ?",
+  healthCheckAboutLink: "Lire l'article de Spotify sur le modèle (en anglais)",
+  healthCheckOpensNewTab: "(s'ouvre dans un nouvel onglet)",
+  healthCheckAboutIntro:
+    "Une auto-évaluation inspirée du modèle de Spotify qui aide l'équipe à voir ce qui fonctionne ou non. Chaque membre évalue des domaines comme la valeur livrée, le plaisir et l'apprentissage, et indique si chacun s'améliore, reste stable ou se dégrade.",
+  healthCheckAboutRatings: 'Comment évaluer',
+  healthCheckAboutGreen:
+    "L'équipe est satisfaite et ne voit pas de besoin majeur d'amélioration pour l'instant. Pas besoin que ce soit parfait.",
+  healthCheckAboutYellow: "Il y a des problèmes importants à régler, mais ce n'est pas une catastrophe.",
+  healthCheckAboutRed: 'Cela va vraiment mal et doit être amélioré.',
+  healthCheckAboutTips: 'Pour en tirer le meilleur',
+  healthCheckAboutTipDiscuss: "Discutez des résultats ensemble. L'essentiel de la valeur vient de la conversation.",
+  healthCheckAboutTipSupport: 'Servez-vous-en pour soutenir et améliorer, jamais pour juger ou comparer les équipes.',
+  healthCheckAboutTipCadence: 'Une fois par trimestre est un bon point de départ.',
 };
 
 export default fr;

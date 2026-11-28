@@ -890,6 +890,21 @@ const de: Translation = {
   healthCheckTemplateDeleteSuccess: 'Vorlage gelöscht.',
   healthCheckTemplateDeleteError: 'Fehler beim Löschen der Vorlage.',
   healthCheckTemplatesGetError: 'Fehler beim Laden der Vorlagen.',
+  healthCheckAboutTitle: 'Was ist ein Squad Health Check?',
+  healthCheckAboutLink: 'Spotifys Artikel zum Modell lesen (Englisch)',
+  healthCheckOpensNewTab: '(öffnet in neuem Tab)',
+  healthCheckAboutIntro:
+    'Eine Selbsteinschätzung nach dem Modell von Spotify, mit der ein Team erkennt, was gut läuft und was nicht. Jedes Mitglied bewertet Bereiche wie gelieferten Wert, Spaß und Lernen und gibt an, ob sie besser werden, gleich bleiben oder schlechter werden.',
+  healthCheckAboutRatings: 'So bewertest du',
+  healthCheckAboutGreen:
+    'Das Team ist zufrieden und sieht derzeit keinen großen Verbesserungsbedarf. Perfekt muss es nicht sein.',
+  healthCheckAboutYellow: 'Es gibt wichtige Probleme, die angegangen werden sollten, aber keine Katastrophe.',
+  healthCheckAboutRed: 'Das läuft richtig schlecht und muss verbessert werden.',
+  healthCheckAboutTips: 'So holt ihr am meisten heraus',
+  healthCheckAboutTipDiscuss: 'Besprecht die Ergebnisse gemeinsam. Der größte Nutzen entsteht im Gespräch.',
+  healthCheckAboutTipSupport:
+    'Nutzt sie, um zu unterstützen und zu verbessern, niemals um Teams zu beurteilen oder zu vergleichen.',
+  healthCheckAboutTipCadence: 'Einmal pro Quartal ist ein guter Anfang.',
 };
 
 export default de;
