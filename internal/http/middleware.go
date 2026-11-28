@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"io"
@@ -116,6 +117,40 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 		ctx = context.WithValue(ctx, contextKeyUserType, user.Type)
 
 		h(w, r.WithContext(ctx))
+	}
+}
+
+// storyboardUserOnly validates that the session user may change the {storyboardId} storyboard (or is ADMIN)
+func (s *Service) storyboardUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		storyboardID := r.PathValue("storyboardId")
+		idErr := validate.Var(storyboardID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		if userType != thunderdome.AdminUserType {
+			allowed, err := s.StoryboardDataSvc.CanUserAccessStoryboard(ctx, storyboardID, userID)
+			if errors.Is(err, sql.ErrNoRows) {
+				s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARD_NOT_FOUND"))
+				return
+			} else if err != nil {
+				s.Logger.Ctx(ctx).Error("storyboardUserOnly error", zap.Error(err),
+					zap.String("storyboard_id", storyboardID), zap.String("session_user_id", userID))
+				s.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
+			if !allowed {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_STORYBOARD"))
+				return
+			}
+		}
+
+		h(w, r)
 	}
 }
 

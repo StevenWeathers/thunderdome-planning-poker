@@ -69,18 +69,20 @@ func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, colu
 
 	if err := tx.QueryRow(
 		`INSERT INTO thunderdome.storyboard_story (storyboard_id, goal_id, column_id, display_order, color)
-		VALUES (
-			$1,
-			$2,
-			$3,
-			$4,
+		SELECT
+			c.storyboard_id,
+			c.goal_id,
+			c.id,
+			$4::text,
 			COALESCE(
-				$5,
-				(SELECT default_story_color FROM thunderdome.storyboard_column WHERE id = $3),
-				(SELECT default_story_color FROM thunderdome.storyboard_goal WHERE id = $2),
+				$5::text,
+				c.default_story_color,
+				(SELECT default_story_color FROM thunderdome.storyboard_goal WHERE id = c.goal_id),
 				'gray'
 			)
-		) RETURNING id, color;`,
+		FROM thunderdome.storyboard_column c
+		WHERE c.id = $3 AND c.goal_id = $2 AND c.storyboard_id = $1
+		RETURNING id, color;`,
 		storyboardID, goalID, columnID, displayOrder, storyColor,
 	).Scan(&story.ID, &story.Color); err != nil {
 		logger.Error(
@@ -102,9 +104,10 @@ func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, colu
 // ReviseStoryName updates the story name by ID
 func (d *Service) ReviseStoryName(storyboardID string, userID string, storyID string, storyName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_story SET name = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_story SET name = $2, updated_date = NOW() WHERE id = $1 AND storyboard_id = $3;`,
 		storyID,
 		storyName,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_name error", zap.Error(err))
 	}
@@ -117,9 +120,10 @@ func (d *Service) ReviseStoryName(storyboardID string, userID string, storyID st
 // ReviseStoryContent updates the story content by ID
 func (d *Service) ReviseStoryContent(storyboardID string, userID string, storyID string, storyContent string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_story SET content = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_story SET content = $2, updated_date = NOW() WHERE id = $1 AND storyboard_id = $3;`,
 		storyID,
 		d.HTMLSanitizerPolicy.Sanitize(storyContent),
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_content error", zap.Error(err))
 	}
@@ -132,9 +136,10 @@ func (d *Service) ReviseStoryContent(storyboardID string, userID string, storyID
 // ReviseStoryColor updates the story color by ID
 func (d *Service) ReviseStoryColor(storyboardID string, userID string, storyID string, storyColor string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_story SET color = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_story SET color = $2, updated_date = NOW() WHERE id = $1 AND storyboard_id = $3;`,
 		storyID,
 		storyColor,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_color error", zap.Error(err))
 	}
@@ -152,9 +157,10 @@ func (d *Service) ReviseStoryPoints(storyboardID string, userID string, storyID 
 	}
 
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_story SET points = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_story SET points = $2, updated_date = NOW() WHERE id = $1 AND storyboard_id = $3;`,
 		storyID,
 		points,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_points error", zap.Error(err))
 	}
@@ -167,9 +173,10 @@ func (d *Service) ReviseStoryPoints(storyboardID string, userID string, storyID 
 // ReviseStoryClosed updates the story closed status by ID
 func (d *Service) ReviseStoryClosed(storyboardID string, userID string, storyID string, closed bool) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_story SET closed = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_story SET closed = $2, updated_date = NOW() WHERE id = $1 AND storyboard_id = $3;`,
 		storyID,
 		closed,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.update_story_closed error", zap.Error(err))
 	}
@@ -182,9 +189,10 @@ func (d *Service) ReviseStoryClosed(storyboardID string, userID string, storyID 
 // ReviseStoryLink updates the story link by ID
 func (d *Service) ReviseStoryLink(storyboardID string, userID string, storyID string, link string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_story SET link = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_story SET link = $2, updated_date = NOW() WHERE id = $1 AND storyboard_id = $3;`,
 		storyID,
 		link,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.sb_story_link_edit error", zap.Error(err))
 	}
@@ -281,8 +289,12 @@ func (d *Service) MoveStoryboardStory(storyboardID string, userID string, storyI
 
 	if _, err := tx.Exec(
 		`UPDATE thunderdome.storyboard_story
-		SET display_order = $1, column_id = $2, goal_id = $3, updated_date = NOW() WHERE id = $4;`,
-		displayOrder, columnID, goalID, storyID,
+		SET display_order = $1, column_id = $2, goal_id = $3, updated_date = NOW()
+		WHERE id = $4 AND storyboard_id = $5 AND EXISTS (
+			SELECT 1 FROM thunderdome.storyboard_column c
+			WHERE c.id = $2 AND c.goal_id = $3 AND c.storyboard_id = $5
+		);`,
+		displayOrder, columnID, goalID, storyID, storyboardID,
 	); err != nil {
 		logger.Error(
 			"update story display_order",
@@ -339,7 +351,10 @@ func (d *Service) DeleteStoryboardStories(storyboardID string, userID string, st
 // AddStoryComment adds a comment to a story
 func (d *Service) AddStoryComment(storyboardID string, userID string, storyID string, comment string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.storyboard_story_comment (storyboard_id, story_id, user_id, comment) VALUES ($1, $2, $3, $4);`,
+		`INSERT INTO thunderdome.storyboard_story_comment (storyboard_id, story_id, user_id, comment)
+		SELECT s.storyboard_id, s.id, $3::uuid, $4::text
+		FROM thunderdome.storyboard_story s
+		WHERE s.storyboard_id = $1 AND s.id = $2;`,
 		storyboardID,
 		storyID,
 		userID,
@@ -357,9 +372,10 @@ func (d *Service) AddStoryComment(storyboardID string, userID string, storyID st
 func (d *Service) EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story_comment SET comment = $2
-        WHERE id = $1;`,
+	        WHERE id = $1 AND storyboard_id = $3;`,
 		commentID,
 		comment,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.story_comment_edit error", zap.Error(err))
 	}
@@ -372,8 +388,9 @@ func (d *Service) EditStoryComment(storyboardID string, commentID string, commen
 // DeleteStoryComment deletes a story comment
 func (d *Service) DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_story_comment WHERE id = $1;`,
+		`DELETE FROM thunderdome.storyboard_story_comment WHERE id = $1 AND storyboard_id = $2;`,
 		commentID,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.story_comment_delete error", zap.Error(err))
 	}

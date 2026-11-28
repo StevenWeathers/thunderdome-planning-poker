@@ -607,6 +607,7 @@ type StoryboardDataSvc interface {
 	AddUserToStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
 	RetreatStoryboardUser(storyboardID string, userID string) []*thunderdome.StoryboardUser
 	GetStoryboardUserActiveStatus(storyboardID string, userID string) error
+	CanUserAccessStoryboard(ctx context.Context, storyboardID string, userID string) (bool, error)
 	AbandonStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
 	StoryboardFacilitatorAdd(StoryboardId string, userID string) (*thunderdome.Storyboard, error)
 	StoryboardFacilitatorRemove(StoryboardId string, userID string) (*thunderdome.Storyboard, error)

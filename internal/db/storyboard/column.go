@@ -69,7 +69,10 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 
 	if err := tx.QueryRow(
 		`INSERT INTO thunderdome.storyboard_column (storyboard_id, goal_id, name, display_order, default_story_color)
-		VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
+		SELECT g.storyboard_id, g.id, $3::text, $4::text, $5::text
+		FROM thunderdome.storyboard_goal g
+		WHERE g.storyboard_id = $1 AND g.id = $2
+		RETURNING id;`,
 		storyboardID, goalID, columnName, displayOrder, defaultStoryColor,
 	).Scan(&column.ID); err != nil {
 		logger.Error("CreateStoryboardColumn error",
@@ -94,10 +97,11 @@ func (d *Service) ReviseStoryboardColumn(storyboardID string, userID string, col
 		SET name = $2,
 			default_story_color = $3,
 			updated_date = NOW()
-		WHERE id = $1;`,
+		WHERE id = $1 AND storyboard_id = $4;`,
 		columnID,
 		columnName,
 		defaultStoryColor,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("revise storyboard column error", zap.Error(err))
 	}
@@ -110,7 +114,7 @@ func (d *Service) ReviseStoryboardColumn(storyboardID string, userID string, col
 // DeleteStoryboardColumn removes a column from the current board by ID
 func (d *Service) DeleteStoryboardColumn(storyboardID string, userID string, columnID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_column WHERE id = $1;`, columnID); err != nil {
+		`DELETE FROM thunderdome.storyboard_column WHERE id = $1 AND storyboard_id = $2;`, columnID, storyboardID); err != nil {
 		d.Logger.Error("delete storyboard column error", zap.Error(err))
 	}
 
@@ -247,8 +251,11 @@ func (d *Service) MoveStoryboardColumn(storyboardID string, userID string, colum
 	}
 
 	if _, err := tx.Exec(
-		`UPDATE thunderdome.storyboard_column SET display_order = $1, goal_id = $2, updated_date = NOW() WHERE id = $3;`,
-		displayOrder, goalID, columnID,
+		`UPDATE thunderdome.storyboard_column SET display_order = $1, goal_id = $2, updated_date = NOW()
+		WHERE id = $3 AND storyboard_id = $4 AND EXISTS (
+			SELECT 1 FROM thunderdome.storyboard_goal g WHERE g.id = $2 AND g.storyboard_id = $4
+		);`,
+		displayOrder, goalID, columnID, storyboardID,
 	); err != nil {
 		logger.Error("move storyboard column error", zap.Error(err))
 		return err
