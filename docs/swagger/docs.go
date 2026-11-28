@@ -4833,7 +4833,7 @@ const docTemplate = `{
         },
         "/organizations/{orgId}/departments": {
             "get": {
-                "description": "get list of organizations departments",
+                "description": "get list of organizations departments, non organization admins only get departments they are a member of",
                 "produces": [
                     "application/json"
                 ],
@@ -5698,7 +5698,7 @@ const docTemplate = `{
         },
         "/organizations/{orgId}/departments/{departmentId}/teams": {
             "get": {
-                "description": "Gets a list of organization department teams",
+                "description": "Gets a list of organization department teams, non organization or department admins only get teams they are a member of",
                 "produces": [
                     "application/json"
                 ],
@@ -9117,7 +9117,7 @@ const docTemplate = `{
         },
         "/organizations/{orgId}/teams": {
             "get": {
-                "description": "Get a list of organization teams",
+                "description": "Get a list of organization teams, non organization admins only get teams they are a member of",
                 "produces": [
                     "application/json"
                 ],
@@ -20585,23 +20585,16 @@ const docTemplate = `{
         "http.checkinCommentRequestBody": {
             "type": "object",
             "required": [
-                "comment",
-                "userId"
+                "comment"
             ],
             "properties": {
                 "comment": {
-                    "type": "string"
-                },
-                "userId": {
                     "type": "string"
                 }
             }
         },
         "http.checkinCreateRequestBody": {
             "type": "object",
-            "required": [
-                "userId"
-            ],
             "properties": {
                 "blockers": {
                     "type": "string"
@@ -20619,9 +20612,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "today": {
-                    "type": "string"
-                },
-                "userId": {
                     "type": "string"
                 },
                 "yesterday": {

@@ -29,17 +29,17 @@ type Config struct {
 type CheckinDataSvc interface {
 	CheckinList(ctx context.Context, teamID string, date string) ([]*thunderdome.TeamCheckin, error)
 	CheckinCreate(ctx context.Context, teamID string, userID string, checkinDate string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
-	CheckinUpdate(ctx context.Context, checkinID string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
-	CheckinDelete(ctx context.Context, checkinID string) error
+	CheckinUpdate(ctx context.Context, teamID string, userID string, checkinID string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
+	CheckinDelete(ctx context.Context, teamID string, userID string, checkinID string) error
 	CheckinComment(ctx context.Context, teamID string, checkinID string, userID string, comment string) error
 	CheckinCommentEdit(ctx context.Context, teamID string, userID string, commentID string, comment string) error
-	CheckinCommentDelete(ctx context.Context, commentID string) error
+	CheckinCommentDelete(ctx context.Context, teamID string, userID string, commentID string) error
 	CheckinLastByUser(ctx context.Context, teamID string, userID string, date string) (*thunderdome.TeamCheckin, error)
 	KudoList(ctx context.Context, teamID string, date string) ([]*thunderdome.TeamKudo, error)
 	KudoGet(ctx context.Context, teamID string, kudoID string) (*thunderdome.TeamKudo, error)
 	KudoCreate(ctx context.Context, teamID string, userID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
-	KudoUpdate(ctx context.Context, teamID string, kudoID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
-	KudoDelete(ctx context.Context, teamID string, kudoID string) error
+	KudoUpdate(ctx context.Context, teamID string, userID string, kudoID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
+	KudoDelete(ctx context.Context, teamID string, userID string, kudoID string) error
 }
 
 type AuthDataSvc interface {

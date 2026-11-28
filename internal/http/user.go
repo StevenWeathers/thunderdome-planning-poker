@@ -428,7 +428,7 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 			return
 		}
 
-		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgInvite.InviteID)
+		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgInvite.OrganizationID, orgInvite.InviteID)
 		if delInviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error deleting user invite to organization",
 				zap.Error(delInviteErr),
@@ -508,7 +508,7 @@ func (s *Service) handleRejectUserOrganizationInvite() http.HandlerFunc {
 			return
 		}
 
-		err = s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, invite.InviteID)
+		err = s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, invite.OrganizationID, invite.InviteID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRejectUserOrganizationInvite delete invite error", zap.Error(err),
 				zap.String("invite_id", invite.InviteID), zap.String("session_user_id", sessionUserID))
@@ -680,7 +680,7 @@ func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
 			return
 		}
 
-		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, deptInvite.InviteID)
+		delInviteErr := s.OrganizationDataSvc.DepartmentDeleteUserInvite(ctx, deptInvite.DepartmentID, deptInvite.InviteID)
 		if delInviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite error deleting user invite to organization",
 				zap.Error(delInviteErr),
@@ -750,7 +750,7 @@ func (s *Service) handleRejectUserDepartmentInvite() http.HandlerFunc {
 			return
 		}
 
-		err = s.OrganizationDataSvc.DepartmentDeleteUserInvite(ctx, invite.InviteID)
+		err = s.OrganizationDataSvc.DepartmentDeleteUserInvite(ctx, invite.DepartmentID, invite.InviteID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRejectUserDepartmentInvite delete invite error", zap.Error(err),
 				zap.String("invite_id", invite.InviteID), zap.String("session_user_id", sessionUserID))
@@ -883,7 +883,7 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 			return
 		}
 
-		delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.InviteID)
+		delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.TeamID, teamInvite.InviteID)
 		if delInviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to team", zap.Error(delInviteErr),
 				zap.String("session_user_id", *sessionUserID),
@@ -952,7 +952,7 @@ func (s *Service) handleRejectUserTeamInvite() http.HandlerFunc {
 			return
 		}
 
-		err = s.TeamDataSvc.TeamDeleteUserInvite(ctx, invite.InviteID)
+		err = s.TeamDataSvc.TeamDeleteUserInvite(ctx, invite.TeamID, invite.InviteID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleRejectUserTeamInvite delete invite error", zap.Error(err),
 				zap.String("invite_id", invite.InviteID), zap.String("session_user_id", sessionUserID))

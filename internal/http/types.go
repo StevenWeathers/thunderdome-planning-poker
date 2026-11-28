@@ -220,29 +220,30 @@ type AuthDataSvc interface {
 type CheckinDataSvc interface {
 	CheckinList(ctx context.Context, teamID string, Date string) ([]*thunderdome.TeamCheckin, error)
 	CheckinCreate(ctx context.Context, teamID string, userId string, checkinDate string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
-	CheckinUpdate(ctx context.Context, checkinId string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
-	CheckinDelete(ctx context.Context, checkinId string) error
+	CheckinUpdate(ctx context.Context, teamID string, userId string, checkinId string, yesterday string, today string, blockers string, discuss string, goalsMet bool) error
+	CheckinDelete(ctx context.Context, teamID string, userId string, checkinId string) error
 	CheckinComment(ctx context.Context, teamID string, checkinId string, userId string, comment string) error
 	CheckinCommentEdit(ctx context.Context, teamID string, userId string, commentId string, comment string) error
-	CheckinCommentDelete(ctx context.Context, commentId string) error
+	CheckinCommentDelete(ctx context.Context, teamID string, userId string, commentId string) error
 	CheckinLastByUser(ctx context.Context, teamID string, userId string, date string) (*thunderdome.TeamCheckin, error)
 	KudoList(ctx context.Context, teamID string, date string) ([]*thunderdome.TeamKudo, error)
 	KudoGet(ctx context.Context, teamID string, kudoID string) (*thunderdome.TeamKudo, error)
 	KudoCreate(ctx context.Context, teamID string, userID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
-	KudoUpdate(ctx context.Context, teamID string, kudoID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
-	KudoDelete(ctx context.Context, teamID string, kudoID string) error
+	KudoUpdate(ctx context.Context, teamID string, userID string, kudoID string, targetUserID string, kudosDate string, comment string) (*thunderdome.TeamKudo, error)
+	KudoDelete(ctx context.Context, teamID string, userID string, kudoID string) error
 }
 
 type JiraDataSvc interface {
 	FindInstancesByUserID(ctx context.Context, userId string) ([]thunderdome.JiraInstance, error)
 	GetInstanceByID(ctx context.Context, instanceId string) (thunderdome.JiraInstance, error)
 	CreateInstance(ctx context.Context, userId string, host string, clientMail string, accessToken string, jiraDataCenter bool) (thunderdome.JiraInstance, error)
-	UpdateInstance(ctx context.Context, instanceId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error)
-	DeleteInstance(ctx context.Context, instanceId string) error
+	UpdateInstance(ctx context.Context, userID string, instanceId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error)
+	DeleteInstance(ctx context.Context, userID string, instanceId string) error
 }
 
 type OrganizationDataSvc interface {
 	OrganizationGetByID(ctx context.Context, orgID string) (*thunderdome.Organization, error)
+	OrganizationPathExists(ctx context.Context, orgID string, departmentID string, teamID string) (bool, error)
 	OrganizationUserRole(ctx context.Context, userID string, orgID string) (string, error)
 	OrganizationListByUser(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserOrganization
 	OrganizationCreate(ctx context.Context, userID string, orgName string) (*thunderdome.Organization, error)
@@ -254,10 +255,11 @@ type OrganizationDataSvc interface {
 	OrganizationRemoveUser(ctx context.Context, organizationID string, userID string) error
 	OrganizationInviteUser(ctx context.Context, orgID string, Email string, Role string) (string, error)
 	OrganizationUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.OrganizationUserInvite, error)
-	OrganizationDeleteUserInvite(ctx context.Context, inviteID string) error
+	OrganizationDeleteUserInvite(ctx context.Context, orgID string, inviteID string) error
 	OrganizationGetUserInvites(ctx context.Context, orgID string) ([]thunderdome.OrganizationUserInvite, error)
 	OrganizationGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.OrganizationUserInvite, error)
 	OrganizationTeamList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.Team
+	OrganizationTeamListByUser(ctx context.Context, orgID string, userID string, limit int, offset int) []*thunderdome.Team
 	OrganizationTeamCreate(ctx context.Context, orgID string, teamName string) (*thunderdome.Team, error)
 	OrganizationTeamUserRole(ctx context.Context, userID string, orgID string, teamID string) (string, string, error)
 	OrganizationDelete(ctx context.Context, orgID string) error
@@ -268,9 +270,11 @@ type OrganizationDataSvc interface {
 	DepartmentUserRole(ctx context.Context, userID string, orgID string, departmentID string) (string, string, error)
 	DepartmentGetByID(ctx context.Context, departmentID string) (*thunderdome.Department, error)
 	OrganizationDepartmentList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.Department
+	OrganizationDepartmentListByUser(ctx context.Context, orgID string, userID string, limit int, offset int) []*thunderdome.Department
 	DepartmentCreate(ctx context.Context, orgID string, orgName string) (*thunderdome.Department, error)
 	DepartmentUpdate(ctx context.Context, deptID string, deptName string) (*thunderdome.Department, error)
 	DepartmentTeamList(ctx context.Context, departmentID string, limit int, offset int) []*thunderdome.Team
+	DepartmentTeamListByUser(ctx context.Context, departmentID string, userID string, limit int, offset int) []*thunderdome.Team
 	DepartmentTeamCreate(ctx context.Context, departmentID string, teamName string) (*thunderdome.Team, error)
 	DepartmentUserList(ctx context.Context, departmentID string, limit int, offset int) []*thunderdome.DepartmentUser
 	DepartmentAddUser(ctx context.Context, departmentID string, userID string, Role string) (string, error)
@@ -281,7 +285,7 @@ type OrganizationDataSvc interface {
 	DepartmentDelete(ctx context.Context, departmentID string) error
 	DepartmentInviteUser(ctx context.Context, deptID string, email string, role string) (string, error)
 	DepartmentUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.DepartmentUserInvite, error)
-	DepartmentDeleteUserInvite(ctx context.Context, inviteID string) error
+	DepartmentDeleteUserInvite(ctx context.Context, departmentID string, inviteID string) error
 	DepartmentGetUserInvites(ctx context.Context, deptID string) ([]thunderdome.DepartmentUserInvite, error)
 	DepartmentGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.DepartmentUserInvite, error)
 }
@@ -299,7 +303,7 @@ type TeamDataSvc interface {
 	TeamRemoveUser(ctx context.Context, teamID string, userID string) error
 	TeamInviteUser(ctx context.Context, teamID string, Email string, role string) (string, error)
 	TeamUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.TeamUserInvite, error)
-	TeamDeleteUserInvite(ctx context.Context, inviteID string) error
+	TeamDeleteUserInvite(ctx context.Context, teamID string, inviteID string) error
 	TeamGetUserInvites(ctx context.Context, teamId string) ([]thunderdome.TeamUserInvite, error)
 	TeamGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.TeamUserInvite, error)
 	TeamPokerList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.Poker, int)
@@ -504,8 +508,9 @@ type RetroDataSvc interface {
 	GetTeamRetroActions(teamID string, limit int, offset int, completed bool) ([]*thunderdome.RetroAction, int, error)
 	GetUserRetroActions(userID string, teamID string, limit int, offset int, completed bool) ([]*thunderdome.RetroAction, int, error)
 	RetroActionCommentAdd(retroID string, actionID string, userID string, comment string) ([]*thunderdome.RetroAction, error)
-	RetroActionCommentEdit(retroID string, actionID string, commentID string, comment string) ([]*thunderdome.RetroAction, error)
-	RetroActionCommentDelete(retroID string, actionID string, commentID string) ([]*thunderdome.RetroAction, error)
+	RetroActionCommentEdit(retroID string, actionID string, commentID string, userID string, comment string) ([]*thunderdome.RetroAction, error)
+	RetroActionCommentDelete(retroID string, actionID string, commentID string, userID string) ([]*thunderdome.RetroAction, error)
+	CanUserAccessRetro(ctx context.Context, retroID string, userID string) (bool, error)
 	RetroActionAssigneeAdd(retroID string, actionID string, userID string) ([]*thunderdome.RetroAction, error)
 	RetroActionAssigneeDelete(retroID string, actionID string, userID string) ([]*thunderdome.RetroAction, error)
 
@@ -519,10 +524,10 @@ type RetroDataSvc interface {
 	GroupUserVote(retroID string, groupID string, userID string) ([]*thunderdome.RetroVote, error)
 	GroupUserSubtractVote(retroID string, groupID string, userID string) ([]*thunderdome.RetroVote, error)
 	ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*thunderdome.RetroItem, error)
-	ItemCommentEdit(retroID string, commentID string, comment string) ([]*thunderdome.RetroItem, error)
-	ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error)
+	ItemCommentEdit(retroID string, userID string, commentID string, comment string) ([]*thunderdome.RetroItem, error)
+	ItemCommentDelete(retroID string, userID string, commentID string) ([]*thunderdome.RetroItem, error)
 	ItemReactionAdd(retroID string, itemID string, userID string, reaction string) ([]*thunderdome.RetroItem, error)
-	ItemReactionDelete(retroID string, reactionID string) ([]*thunderdome.RetroItem, error)
+	ItemReactionDelete(retroID string, userID string, reactionID string) ([]*thunderdome.RetroItem, error)
 	ItemTagAdd(retroID string, itemID string, tag string) ([]*thunderdome.RetroItem, error)
 	ItemTagRemove(retroID string, itemID string, tag string) ([]*thunderdome.RetroItem, error)
 	GetRetroTagOptions(ctx context.Context, retroID string, subscriptionsEnabled bool) ([]string, error)
@@ -651,8 +656,8 @@ type StoryboardDataSvc interface {
 	DeleteStoryboardStory(storyboardID string, userID string, storyID string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardStories(storyboardID string, userID string, storyIDs []string) ([]*thunderdome.StoryboardGoal, error)
 	AddStoryComment(storyboardID string, userID string, storyID string, comment string) ([]*thunderdome.StoryboardGoal, error)
-	EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error)
-	DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error)
+	EditStoryComment(storyboardID string, userID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryComment(storyboardID string, userID string, commentID string) ([]*thunderdome.StoryboardGoal, error)
 }
 
 type EmailService interface {

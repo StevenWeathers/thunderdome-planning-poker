@@ -447,7 +447,7 @@ func (s *Service) EditStoryComment(ctx context.Context, storyboardID string, use
 		return nil, nil, err, false
 	}
 
-	goals, err := s.StoryboardService.EditStoryComment(storyboardID, rs.CommentID, rs.Comment)
+	goals, err := s.StoryboardService.EditStoryComment(storyboardID, userID, rs.CommentID, rs.Comment)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -467,7 +467,7 @@ func (s *Service) DeleteStoryComment(ctx context.Context, storyboardID string, u
 		return nil, nil, err, false
 	}
 
-	goals, err := s.StoryboardService.DeleteStoryComment(storyboardID, rs.CommentID)
+	goals, err := s.StoryboardService.DeleteStoryComment(storyboardID, userID, rs.CommentID)
 	if err != nil {
 		return nil, nil, err, false
 	}

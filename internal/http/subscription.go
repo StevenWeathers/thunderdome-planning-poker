@@ -350,11 +350,22 @@ func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
 			return
 		}
 
+		// the route only proves the session user is {userId}, not that the subscription or target is theirs
+		if sub.UserID != entityUserID {
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "SUBSCRIPTION_NOT_FOUND"))
+			return
+		}
+
 		if sub.Type == "team" {
 			if sar.TeamID == "" {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "MISSING REQUIRED team_id FIELD"))
 				return
 			} else {
+				roles, rolesErr := s.TeamDataSvc.TeamUserRolesByUserID(ctx, entityUserID, sar.TeamID)
+				if rolesErr != nil || roles.AssociationLevel == "NONE" {
+					s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+					return
+				}
 				sub.TeamID = sar.TeamID
 			}
 		}
@@ -364,6 +375,10 @@ func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "MISSING REQUIRED organization_id FIELD"))
 				return
 			} else {
+				if _, roleErr := s.OrganizationDataSvc.OrganizationUserRole(ctx, entityUserID, sar.OrganizationID); roleErr != nil {
+					s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
+					return
+				}
 				sub.OrganizationID = sar.OrganizationID
 			}
 		}

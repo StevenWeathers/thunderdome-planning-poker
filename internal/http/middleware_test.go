@@ -89,7 +89,7 @@ func (m *MockTeamDataSvc) TeamUserGetInviteByID(ctx context.Context, InviteID st
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamDeleteUserInvite(ctx context.Context, InviteID string) error {
+func (m *MockTeamDataSvc) TeamDeleteUserInvite(ctx context.Context, TeamID string, InviteID string) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -709,6 +709,11 @@ func (m *MockOrganizationDataService) OrganizationGetByID(ctx context.Context, O
 	return &to, nil
 }
 
+func (m *MockOrganizationDataService) OrganizationPathExists(ctx context.Context, orgID, departmentID, teamID string) (bool, error) {
+	args := m.Called(ctx, orgID, departmentID, teamID)
+	return args.Bool(0), args.Error(1)
+}
+
 func (m *MockOrganizationDataService) OrganizationUserRole(ctx context.Context, userID, orgID string) (string, error) {
 	args := m.Called(ctx, userID, orgID)
 	return args.String(0), args.Error(1)
@@ -764,7 +769,7 @@ func (m *MockOrganizationDataService) OrganizationUserGetInviteByID(ctx context.
 	panic("implement me")
 }
 
-func (m *MockOrganizationDataService) OrganizationDeleteUserInvite(ctx context.Context, InviteID string) error {
+func (m *MockOrganizationDataService) OrganizationDeleteUserInvite(ctx context.Context, OrgID string, InviteID string) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -775,6 +780,11 @@ func (m *MockOrganizationDataService) OrganizationGetUserInvites(ctx context.Con
 }
 
 func (m *MockOrganizationDataService) OrganizationGetUserPendingInvites(ctx context.Context, email string) ([]thunderdome.OrganizationUserInvite, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockOrganizationDataService) OrganizationTeamListByUser(ctx context.Context, OrgID string, UserID string, Limit int, Offset int) []*thunderdome.Team {
 	//TODO implement me
 	panic("implement me")
 }
@@ -819,6 +829,11 @@ func (m *MockOrganizationDataService) DepartmentGetByID(ctx context.Context, Dep
 	panic("implement me")
 }
 
+func (m *MockOrganizationDataService) OrganizationDepartmentListByUser(ctx context.Context, OrgID string, UserID string, Limit int, Offset int) []*thunderdome.Department {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (m *MockOrganizationDataService) OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Department {
 	//TODO implement me
 	panic("implement me")
@@ -830,6 +845,11 @@ func (m *MockOrganizationDataService) DepartmentCreate(ctx context.Context, OrgI
 }
 
 func (m *MockOrganizationDataService) DepartmentUpdate(ctx context.Context, deptID string, DeptName string) (*thunderdome.Department, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockOrganizationDataService) DepartmentTeamListByUser(ctx context.Context, DepartmentID string, UserID string, Limit int, Offset int) []*thunderdome.Team {
 	//TODO implement me
 	panic("implement me")
 }
@@ -889,7 +909,7 @@ func (m *MockOrganizationDataService) DepartmentUserGetInviteByID(ctx context.Co
 	panic("implement me")
 }
 
-func (m *MockOrganizationDataService) DepartmentDeleteUserInvite(ctx context.Context, InviteID string) error {
+func (m *MockOrganizationDataService) DepartmentDeleteUserInvite(ctx context.Context, DepartmentID string, InviteID string) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -1128,6 +1148,9 @@ func TestDepartmentAdminOnly(t *testing.T) {
 			if tt.setupMocks != nil {
 				tt.setupMocks(mockOrgDataSvc)
 			}
+			if tt.expectedStatusCode == http.StatusOK {
+				mockOrgDataSvc.On("OrganizationPathExists", mock.Anything, tt.orgID, tt.departmentID, "").Return(true, nil).Once()
+			}
 
 			var capturedOrgRole, capturedDeptRole string
 			handler := service.departmentAdminOnly(func(w http.ResponseWriter, r *http.Request) {
@@ -1283,6 +1306,9 @@ func TestDepartmentUserOnly(t *testing.T) {
 
 			if tt.setupMocks != nil {
 				tt.setupMocks(mockOrgDataSvc, mockLogger)
+			}
+			if tt.expectedStatusCode == http.StatusOK {
+				mockOrgDataSvc.On("OrganizationPathExists", mock.Anything, tt.orgID, tt.departmentID, "").Return(true, nil).Once()
 			}
 
 			var capturedOrgRole, capturedDeptRole string

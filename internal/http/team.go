@@ -893,7 +893,7 @@ func (s *Service) handleDeleteTeamUserInvite() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamDataSvc.TeamDeleteUserInvite(ctx, inviteID)
+		err := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamID, inviteID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleDeleteTeamUserInvite error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("invite_id", inviteID), zap.String("session_user_id", sessionUserID))

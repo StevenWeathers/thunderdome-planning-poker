@@ -2,16 +2,37 @@ import { expect, test } from "@fixtures/test-setup";
 
 test.describe("Organization Department API", { tag: ["@api", "@department"] }, () => {
   test.describe("GET /organizations/{orgId}/departments", () => {
-    test("returns departments list for org member", async ({ request, orgTeamApiUser }) => {
-      const org = orgTeamApiUser.user.orgs[0];
-      const response = await orgTeamApiUser.context.get(`organizations/${org.id}/departments`);
-      expect(response.ok()).toBeTruthy();
+    test("returns only the departments an org member belongs to", async ({ deptTeamApiUser }) => {
+      const org = deptTeamApiUser.user.orgs[0];
+      const response = await deptTeamApiUser.context.get(`organizations/${org.id}/departments`);
       expect(response.status()).toBe(200);
       const departments = await response.json();
-      expect(Array.isArray(departments.data)).toBeTruthy();
-      expect(departments.data.length).toBeGreaterThan(0);
-      expect(departments.data[0]).toHaveProperty("id");
-      expect(departments.data[0]).toHaveProperty("name");
+      expect(departments.data.map((d: { id: string }) => d.id)).toEqual([
+        deptTeamApiUser.user.depts[0].id,
+      ]);
+    });
+
+    test("does not expose a department through another organization", async ({
+      orgOwnerApiUser,
+      testDatabase,
+    }) => {
+      const otherOrg = await testDatabase.seeder.createOrganization(
+        "Org Without The Department",
+        orgOwnerApiUser.user.id,
+      );
+
+      const response = await orgOwnerApiUser.context.get(
+        `organizations/${otherOrg.id}/departments/${orgOwnerApiUser.user.depts[0].id}/teams`,
+      );
+      expect(response.status()).toBe(404);
+    });
+
+    test("returns no departments to an org member outside them", async ({ orgTeamApiUser }) => {
+      const org = orgTeamApiUser.user.orgs[0];
+      const response = await orgTeamApiUser.context.get(`organizations/${org.id}/departments`);
+      expect(response.status()).toBe(200);
+      const departments = await response.json();
+      expect(departments.data).toEqual([]);
     });
 
     test("returns departments list for org admin", async ({ request, orgOwnerApiUser }) => {

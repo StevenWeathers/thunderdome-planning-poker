@@ -31,7 +31,7 @@ test.describe("Team page", { tag: ["@team"] }, () => {
       const testOrgName = "E2E TEST ORGANIZATION";
       const teamPage = new TeamPage(registeredPage.page);
       const org = await registeredPage.createOrg(testOrgName);
-      const team = await registeredPage.createTeam(testTeamName);
+      const team = await registeredPage.createOrgTeam(org.id, testTeamName);
 
       await teamPage.gotoOrgTeam(org.id, team.id);
       await expect(teamPage.page.locator("a", { hasText: testOrgName })).toBeVisible();

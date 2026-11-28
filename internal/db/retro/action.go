@@ -1,7 +1,9 @@
 package retro
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
@@ -27,7 +29,8 @@ func (d *Service) CreateRetroAction(retroID string, userID string, content strin
 // UpdateRetroAction updates an actions status
 func (d *Service) UpdateRetroAction(retroID string, actionID string, content string, completed bool) (Actions []*thunderdome.RetroAction, DeleteError error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.retro_action SET completed = $2, content = $3, updated_date = NOW() WHERE id = $1;`, actionID, completed, content); err != nil {
+		`UPDATE thunderdome.retro_action SET completed = $2, content = $3, updated_date = NOW()
+		WHERE id = $1 AND retro_id = $4;`, actionID, completed, content, retroID); err != nil {
 		d.Logger.Error("update retro_action error", zap.Error(err))
 	}
 
@@ -39,7 +42,7 @@ func (d *Service) UpdateRetroAction(retroID string, actionID string, content str
 // DeleteRetroAction removes a goal from the current board by ID
 func (d *Service) DeleteRetroAction(retroID string, userID string, actionID string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.retro_action WHERE id = $1;`, actionID); err != nil {
+		`DELETE FROM thunderdome.retro_action WHERE id = $1 AND retro_id = $2;`, actionID, retroID); err != nil {
 		d.Logger.Error("delete retro_action error", zap.Error(err))
 	}
 
@@ -281,10 +284,12 @@ func (d *Service) GetUserRetroActions(userID string, teamID string, limit int, o
 // RetroActionCommentAdd adds a comment to a retro action
 func (d *Service) RetroActionCommentAdd(retroID string, actionID string, userID string, comment string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.retro_action_comment (action_id, user_id, comment) VALUES ($1, $2, $3);`,
+		`INSERT INTO thunderdome.retro_action_comment (action_id, user_id, comment)
+		SELECT id, $2::uuid, $3 FROM thunderdome.retro_action WHERE id = $1 AND retro_id = $4;`,
 		actionID,
 		userID,
 		comment,
+		retroID,
 	); err != nil {
 		d.Logger.Error("RetroActionCommentAdd error", zap.Error(err))
 	}
@@ -294,14 +299,25 @@ func (d *Service) RetroActionCommentAdd(retroID string, actionID string, userID 
 	return actions, nil
 }
 
-// RetroActionCommentEdit edits a retro action comment
-func (d *Service) RetroActionCommentEdit(retroID string, actionID string, commentID string, comment string) ([]*thunderdome.RetroAction, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.retro_action_comment SET comment = $2 WHERE id = $1;`,
+// RetroActionCommentEdit edits a retro action comment on behalf of its author or a team admin
+func (d *Service) RetroActionCommentEdit(retroID string, actionID string, commentID string, userID string, comment string) ([]*thunderdome.RetroAction, error) {
+	result, err := d.DB.Exec(
+		`UPDATE thunderdome.retro_action_comment c SET comment = $5
+		FROM thunderdome.retro_action a
+		JOIN thunderdome.retro r ON r.id = a.retro_id
+		WHERE c.id = $1 AND a.id = c.action_id AND a.id = $2 AND a.retro_id = $3
+			AND `+db.AuthorOrTeamAdminCondition("c.user_id", "r.team_id", "$4")+`;`,
 		commentID,
+		actionID,
+		retroID,
+		userID,
 		comment,
-	); err != nil {
-		d.Logger.Error("RetroActionCommentEdit error", zap.Error(err))
+	)
+	if err != nil {
+		return nil, fmt.Errorf("retro action comment edit query error: %v", err)
+	}
+	if err := d.requireActionCommentWrite(result, retroID, actionID, commentID); err != nil {
+		return nil, err
 	}
 
 	actions := d.GetRetroActions(retroID)
@@ -309,26 +325,66 @@ func (d *Service) RetroActionCommentEdit(retroID string, actionID string, commen
 	return actions, nil
 }
 
-// RetroActionCommentDelete deletes a retro action comment
-func (d *Service) RetroActionCommentDelete(retroID string, actionID string, commentID string) ([]*thunderdome.RetroAction, error) {
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.retro_action_comment WHERE id = $1;`,
+// RetroActionCommentDelete deletes a retro action comment on behalf of its author or a team admin
+func (d *Service) RetroActionCommentDelete(retroID string, actionID string, commentID string, userID string) ([]*thunderdome.RetroAction, error) {
+	result, err := d.DB.Exec(
+		`DELETE FROM thunderdome.retro_action_comment c
+		USING thunderdome.retro_action a, thunderdome.retro r
+		WHERE c.id = $1 AND a.id = c.action_id AND a.id = $2 AND a.retro_id = $3 AND r.id = a.retro_id
+			AND `+db.AuthorOrTeamAdminCondition("c.user_id", "r.team_id", "$4")+`;`,
 		commentID,
-	); err != nil {
-		d.Logger.Error("RetroActionCommentDelete error", zap.Error(err))
+		actionID,
+		retroID,
+		userID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("retro action comment delete query error: %v", err)
+	}
+	if err := d.requireActionCommentWrite(result, retroID, actionID, commentID); err != nil {
+		return nil, err
 	}
 
 	actions := d.GetRetroActions(retroID)
 
 	return actions, nil
+}
+
+// requireActionCommentWrite tells apart a missing comment from one the user may not change
+func (d *Service) requireActionCommentWrite(result sql.Result, retroID string, actionID string, commentID string) error {
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("retro action comment rows affected error: %v", err)
+	}
+	if rows > 0 {
+		return nil
+	}
+
+	var exists bool
+	if err := d.DB.QueryRow(
+		`SELECT EXISTS (
+			SELECT 1 FROM thunderdome.retro_action_comment c
+			JOIN thunderdome.retro_action a ON a.id = c.action_id
+			WHERE c.id = $1 AND a.id = $2 AND a.retro_id = $3
+		);`,
+		commentID, actionID, retroID,
+	).Scan(&exists); err != nil {
+		return fmt.Errorf("retro action comment lookup query error: %v", err)
+	}
+	if exists {
+		return errors.New("REQUIRES_COMMENT_OWNER")
+	}
+
+	return errors.New("RETRO_ACTION_COMMENT_NOT_FOUND")
 }
 
 // RetroActionAssigneeAdd adds an assignee to a retro action
 func (d *Service) RetroActionAssigneeAdd(retroID string, actionID string, userID string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.retro_action_assignee (action_id, user_id) VALUES ($1, $2);`,
+		`INSERT INTO thunderdome.retro_action_assignee (action_id, user_id)
+		SELECT id, $2::uuid FROM thunderdome.retro_action WHERE id = $1 AND retro_id = $3;`,
 		actionID,
 		userID,
+		retroID,
 	); err != nil {
 		d.Logger.Error("RetroActionAssigneeAdd error", zap.Error(err))
 	}
@@ -341,9 +397,12 @@ func (d *Service) RetroActionAssigneeAdd(retroID string, actionID string, userID
 // RetroActionAssigneeDelete deletes a retro action assignee
 func (d *Service) RetroActionAssigneeDelete(retroID string, actionID string, userID string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.retro_action_assignee WHERE action_id = $1 AND user_id = $2;`,
+		`DELETE FROM thunderdome.retro_action_assignee aa
+		USING thunderdome.retro_action a
+		WHERE aa.action_id = $1 AND aa.user_id = $2 AND a.id = aa.action_id AND a.retro_id = $3;`,
 		actionID,
 		userID,
+		retroID,
 	); err != nil {
 		d.Logger.Error("RetroActionAssigneeDelete error", zap.Error(err))
 	}

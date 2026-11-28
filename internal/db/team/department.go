@@ -99,6 +99,50 @@ func (d *OrganizationService) OrganizationDepartmentList(ctx context.Context, or
 	return departments
 }
 
+// OrganizationDepartmentListByUser gets a list of the organization departments the user is a member of
+func (d *OrganizationService) OrganizationDepartmentListByUser(ctx context.Context, orgID string, userID string, limit int, offset int) []*thunderdome.Department {
+	var departments = make([]*thunderdome.Department, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT d.id, d.name, d.organization_id, d.created_date, d.updated_date
+        FROM thunderdome.organization_department d
+        JOIN thunderdome.department_user du ON du.department_id = d.id AND du.user_id = $2
+        WHERE d.organization_id = $1
+        ORDER BY d.created_date
+		LIMIT $3
+		OFFSET $4;`,
+		orgID,
+		userID,
+		limit,
+		offset,
+	)
+	if err != nil {
+		d.Logger.Ctx(ctx).Error("OrganizationDepartmentListByUser query error", zap.Error(err))
+		return departments
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var department thunderdome.Department
+
+		if err := rows.Scan(
+			&department.ID,
+			&department.Name,
+			&department.OrganizationID,
+			&department.CreatedDate,
+			&department.UpdatedDate,
+		); err != nil {
+			d.Logger.Ctx(ctx).Error("OrganizationDepartmentListByUser query scan error", zap.Error(err))
+		} else {
+			departments = append(departments, &department)
+		}
+	}
+	if err := rows.Err(); err != nil {
+		d.Logger.Ctx(ctx).Error("OrganizationDepartmentListByUser rows error", zap.Error(err))
+	}
+
+	return departments
+}
+
 // DepartmentCreate creates an organization department
 func (d *OrganizationService) DepartmentCreate(ctx context.Context, orgID string, orgName string) (*thunderdome.Department, error) {
 	od := &thunderdome.Department{}
@@ -175,6 +219,23 @@ func (d *OrganizationService) DepartmentTeamList(ctx context.Context, department
 	return teams
 }
 
+// DepartmentTeamListByUser gets a list of the department teams the user is a member of
+func (d *OrganizationService) DepartmentTeamListByUser(ctx context.Context, departmentID string, userID string, limit int, offset int) []*thunderdome.Team {
+	return d.queryTeams(ctx, "DepartmentTeamListByUser",
+		`SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM thunderdome.team t
+        JOIN thunderdome.team_user tu ON tu.team_id = t.id AND tu.user_id = $2
+        WHERE t.department_id = $1
+        ORDER BY t.created_date
+		LIMIT $3
+		OFFSET $4;`,
+		departmentID,
+		userID,
+		limit,
+		offset,
+	)
+}
+
 // DepartmentTeamCreate creates a department team
 func (d *OrganizationService) DepartmentTeamCreate(ctx context.Context, departmentID string, teamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}
@@ -244,10 +305,14 @@ func (d *OrganizationService) DepartmentUserList(ctx context.Context, department
 	return users
 }
 
-// DepartmentAddUser adds a user to an organization department
+// DepartmentAddUser adds a member of the department's organization to the department
 func (d *OrganizationService) DepartmentAddUser(ctx context.Context, departmentID string, userID string, role string) (string, error) {
-	_, err := d.DB.ExecContext(ctx,
-		`SELECT thunderdome.department_user_add($1, $2, $3);`,
+	result, err := d.DB.ExecContext(ctx,
+		`INSERT INTO thunderdome.department_user (department_id, user_id, role)
+		SELECT od.id, ou.user_id, $3::text
+		FROM thunderdome.organization_department od
+		JOIN thunderdome.organization_user ou ON ou.organization_id = od.organization_id AND ou.user_id = $2
+		WHERE od.id = $1;`,
 		departmentID,
 		userID,
 		role,
@@ -255,6 +320,14 @@ func (d *OrganizationService) DepartmentAddUser(ctx context.Context, departmentI
 
 	if err != nil {
 		return "", fmt.Errorf("department add user query error: %v", err)
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return "", fmt.Errorf("department add user rows affected error: %v", err)
+	}
+	if rows == 0 {
+		return "", errors.New("department add user error: user is not a member of the organization")
 	}
 
 	return departmentID, nil
@@ -387,9 +460,10 @@ func (d *OrganizationService) DepartmentUserGetInviteByID(ctx context.Context, i
 }
 
 // DepartmentDeleteUserInvite deletes a user department invite
-func (d *OrganizationService) DepartmentDeleteUserInvite(ctx context.Context, inviteID string) error {
+func (d *OrganizationService) DepartmentDeleteUserInvite(ctx context.Context, departmentID string, inviteID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.department_user_invite where invite_id = $1;`,
+		`DELETE FROM thunderdome.department_user_invite WHERE department_id = $1 AND invite_id = $2;`,
+		departmentID,
 		inviteID,
 	)
 

@@ -133,11 +133,8 @@ definitions:
     properties:
       comment:
         type: string
-      userId:
-        type: string
     required:
     - comment
-    - userId
     type: object
   http.checkinCreateRequestBody:
     properties:
@@ -153,12 +150,8 @@ definitions:
         type: string
       today:
         type: string
-      userId:
-        type: string
       yesterday:
         type: string
-    required:
-    - userId
     type: object
   http.checkinUpdateRequestBody:
     properties:
@@ -5805,7 +5798,8 @@ paths:
       - colorLegendTemplate
   /organizations/{orgId}/departments:
     get:
-      description: get list of organizations departments
+      description: get list of organizations departments, non organization admins
+        only get departments they are a member of
       parameters:
       - description: the organization ID to get departments for
         in: path
@@ -6335,7 +6329,8 @@ paths:
       - retro-settings
   /organizations/{orgId}/departments/{departmentId}/teams:
     get:
-      description: Gets a list of organization department teams
+      description: Gets a list of organization department teams, non organization
+        or department admins only get teams they are a member of
       parameters:
       - description: the organization ID
         in: path
@@ -8425,7 +8420,8 @@ paths:
       - retroTemplate
   /organizations/{orgId}/teams:
     get:
-      description: Get a list of organization teams
+      description: Get a list of organization teams, non organization admins only
+        get teams they are a member of
       parameters:
       - description: organization id
         in: path

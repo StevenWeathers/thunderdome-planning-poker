@@ -127,26 +127,33 @@ func (d *CheckinService) KudoCreate(
 	return d.KudoGet(ctx, teamID, kudoID)
 }
 
-// KudoUpdate updates a team kudo.
+// KudoUpdate updates a team kudo on behalf of its giver or an admin.
 func (d *CheckinService) KudoUpdate(
 	ctx context.Context,
 	teamID string,
+	actorID string,
 	kudoID string,
 	targetUserID string,
 	kudosDate string,
 	comment string,
 ) (*thunderdome.TeamKudo, error) {
 	var userID string
+	var allowed bool
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT user_id FROM thunderdome.team_kudos WHERE id = $1 AND team_id = $2;`,
+		`SELECT tk.user_id, `+db.AuthorOrTeamAdminCondition("tk.user_id", "tk.team_id", "$3")+`
+		FROM thunderdome.team_kudos tk WHERE tk.id = $1 AND tk.team_id = $2;`,
 		kudoID,
 		teamID,
-	).Scan(&userID)
+		actorID,
+	).Scan(&userID, &allowed)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("NO_TEAM_KUDO")
 		}
 		return nil, fmt.Errorf("kudo update load existing query error: %v", err)
+	}
+	if !allowed {
+		return nil, errors.New("REQUIRES_KUDO_OWNER")
 	}
 
 	if err := d.requireTeamUser(ctx, teamID, targetUserID, "kudo update get target team user error"); err != nil {
@@ -209,26 +216,22 @@ func (d *CheckinService) KudoUpdate(
 	return d.KudoGet(ctx, teamID, kudoID)
 }
 
-// KudoDelete deletes a team kudo.
-func (d *CheckinService) KudoDelete(ctx context.Context, teamID string, kudoID string) error {
+// KudoDelete deletes a team kudo on behalf of its giver or an admin.
+func (d *CheckinService) KudoDelete(ctx context.Context, teamID string, userID string, kudoID string) error {
 	result, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.team_kudos WHERE id = $1 AND team_id = $2;`,
+		`DELETE FROM thunderdome.team_kudos tk
+		WHERE tk.id = $1 AND tk.team_id = $2 AND `+db.AuthorOrTeamAdminCondition("tk.user_id", "tk.team_id", "$3")+`;`,
 		kudoID,
 		teamID,
+		userID,
 	)
 	if err != nil {
 		return fmt.Errorf("kudo delete query error: %v", err)
 	}
 
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("kudo delete rows affected error: %v", err)
-	}
-	if rowsAffected == 0 {
-		return fmt.Errorf("NO_TEAM_KUDO")
-	}
-
-	return nil
+	return d.requireOwnedWrite(ctx, result,
+		`SELECT EXISTS (SELECT 1 FROM thunderdome.team_kudos WHERE id = $1 AND team_id = $2);`,
+		kudoID, teamID, "NO_TEAM_KUDO", "REQUIRES_KUDO_OWNER")
 }
 
 func (d *CheckinService) requireTeamUser(ctx context.Context, teamID string, userID string, queryErr string) error {

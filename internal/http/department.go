@@ -30,7 +30,7 @@ type departmentTeamResponse struct {
 // handleGetOrganizationDepartments gets a list of departments associated to the organization
 //
 //	@Summary		Get Departments
-//	@Description	get list of organizations departments
+//	@Description	get list of organizations departments, non organization admins only get departments they are a member of
 //	@Tags			organization
 //	@Produce		json
 //	@Param			orgId	path	string	true	"the organization ID to get departments for"
@@ -52,7 +52,13 @@ func (s *Service) handleGetOrganizationDepartments() http.HandlerFunc {
 		}
 		limit, offset := getLimitOffsetFromRequest(r)
 
-		departments := s.OrganizationDataSvc.OrganizationDepartmentList(ctx, orgID, limit, offset)
+		var departments []*thunderdome.Department
+		if ctx.Value(contextKeyOrgRole).(string) == thunderdome.AdminUserType {
+			departments = s.OrganizationDataSvc.OrganizationDepartmentList(ctx, orgID, limit, offset)
+		} else {
+			sessionUserID := ctx.Value(contextKeyUserID).(string)
+			departments = s.OrganizationDataSvc.OrganizationDepartmentListByUser(ctx, orgID, sessionUserID, limit, offset)
+		}
 
 		s.Success(w, r, http.StatusOK, departments, nil)
 	}
@@ -243,7 +249,7 @@ func (s *Service) handleDepartmentUpdate() http.HandlerFunc {
 // handleGetDepartmentTeams gets a list of teams associated to the department
 //
 //	@Summary		Get Department Teams
-//	@Description	Gets a list of organization department teams
+//	@Description	Gets a list of organization department teams, non organization or department admins only get teams they are a member of
 //	@Tags			organization
 //	@Produce		json
 //	@Param			orgId			path	string	true	"the organization ID"
@@ -266,7 +272,14 @@ func (s *Service) handleGetDepartmentTeams() http.HandlerFunc {
 		}
 		limit, offset := getLimitOffsetFromRequest(r)
 
-		teams := s.OrganizationDataSvc.DepartmentTeamList(ctx, departmentID, limit, offset)
+		var teams []*thunderdome.Team
+		if ctx.Value(contextKeyOrgRole).(string) == thunderdome.AdminUserType ||
+			ctx.Value(contextKeyDepartmentRole).(string) == thunderdome.AdminUserType {
+			teams = s.OrganizationDataSvc.DepartmentTeamList(ctx, departmentID, limit, offset)
+		} else {
+			sessionUserID := ctx.Value(contextKeyUserID).(string)
+			teams = s.OrganizationDataSvc.DepartmentTeamListByUser(ctx, departmentID, sessionUserID, limit, offset)
+		}
 
 		s.Success(w, r, http.StatusOK, teams, nil)
 	}
@@ -851,7 +864,7 @@ func (s *Service) handleDeleteDepartmentUserInvite() http.HandlerFunc {
 			return
 		}
 
-		err := s.OrganizationDataSvc.DepartmentDeleteUserInvite(ctx, inviteID)
+		err := s.OrganizationDataSvc.DepartmentDeleteUserInvite(ctx, deptID, inviteID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleDeleteDepartmentUserInvite error", zap.Error(err),

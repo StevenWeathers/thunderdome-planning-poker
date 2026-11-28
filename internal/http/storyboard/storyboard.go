@@ -82,8 +82,8 @@ type StoryboardDataSvc interface {
 	DeleteStoryboardStory(storyboardID string, userID string, storyID string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardStories(storyboardID string, userID string, storyIDs []string) ([]*thunderdome.StoryboardGoal, error)
 	AddStoryComment(storyboardID string, userID string, storyID string, comment string) ([]*thunderdome.StoryboardGoal, error)
-	EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error)
-	DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error)
+	EditStoryComment(storyboardID string, userID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryComment(storyboardID string, userID string, commentID string) ([]*thunderdome.StoryboardGoal, error)
 }
 
 // Service provides storyboard service

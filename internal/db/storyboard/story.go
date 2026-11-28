@@ -3,10 +3,12 @@ package storyboard
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 	"unicode/utf8"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracdex"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
@@ -351,16 +353,40 @@ func (d *Service) AddStoryComment(storyboardID string, userID string, storyID st
 	return goals, nil
 }
 
+// canModerateStoryComment matches when user $3 wrote the comment (c), facilitates its storyboard (s) or admins its team
+var canModerateStoryComment = `(c.user_id = $3
+	OR EXISTS (SELECT 1 FROM thunderdome.storyboard_facilitator sf WHERE sf.storyboard_id = s.id AND sf.user_id = $3)
+	OR ` + db.TeamAdminCondition("s.team_id", "$3") + `)`
+
+// requireCommentChange fails when a comment write errored or the user may not change that comment
+func requireCommentChange(result sql.Result, execErr error) error {
+	if execErr != nil {
+		return fmt.Errorf("storyboard story comment query error: %v", execErr)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("storyboard story comment rows affected error: %v", err)
+	}
+	if rows == 0 {
+		return errors.New("COMMENT_CHANGE_NOT_ALLOWED")
+	}
+
+	return nil
+}
+
 // EditStoryComment edits a story comment
-func (d *Service) EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_story_comment SET comment = $2
-	        WHERE id = $1 AND storyboard_id = $3;`,
+func (d *Service) EditStoryComment(storyboardID string, userID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error) {
+	result, err := d.DB.Exec(
+		`UPDATE thunderdome.storyboard_story_comment c SET comment = $4
+		FROM thunderdome.storyboard s
+		WHERE c.id = $1 AND c.storyboard_id = $2 AND s.id = c.storyboard_id AND `+canModerateStoryComment+`;`,
 		commentID,
-		comment,
 		storyboardID,
-	); err != nil {
-		d.Logger.Error("CALL thunderdome.story_comment_edit error", zap.Error(err))
+		userID,
+		comment,
+	)
+	if err := requireCommentChange(result, err); err != nil {
+		return nil, err
 	}
 
 	goals := d.GetStoryboardGoals(storyboardID)
@@ -369,13 +395,17 @@ func (d *Service) EditStoryComment(storyboardID string, commentID string, commen
 }
 
 // DeleteStoryComment deletes a story comment
-func (d *Service) DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error) {
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_story_comment WHERE id = $1 AND storyboard_id = $2;`,
+func (d *Service) DeleteStoryComment(storyboardID string, userID string, commentID string) ([]*thunderdome.StoryboardGoal, error) {
+	result, err := d.DB.Exec(
+		`DELETE FROM thunderdome.storyboard_story_comment c
+		USING thunderdome.storyboard s
+		WHERE c.id = $1 AND c.storyboard_id = $2 AND s.id = c.storyboard_id AND `+canModerateStoryComment+`;`,
 		commentID,
 		storyboardID,
-	); err != nil {
-		d.Logger.Error("CALL thunderdome.story_comment_delete error", zap.Error(err))
+		userID,
+	)
+	if err := requireCommentChange(result, err); err != nil {
+		return nil, err
 	}
 
 	goals := d.GetStoryboardGoals(storyboardID)

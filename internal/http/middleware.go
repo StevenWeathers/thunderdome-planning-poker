@@ -154,6 +154,40 @@ func (s *Service) storyboardUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// retroUserOnly validates that the session user may change the {retroId} retro's actions (or is ADMIN)
+func (s *Service) retroUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		userID := ctx.Value(contextKeyUserID).(string)
+		userType := ctx.Value(contextKeyUserType).(string)
+		retroID := r.PathValue("retroId")
+		idErr := validate.Var(retroID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		if userType != thunderdome.AdminUserType {
+			allowed, err := s.RetroDataSvc.CanUserAccessRetro(ctx, retroID, userID)
+			if errors.Is(err, sql.ErrNoRows) {
+				s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "RETRO_NOT_FOUND"))
+				return
+			} else if err != nil {
+				s.Logger.Ctx(ctx).Error("retroUserOnly error", zap.Error(err),
+					zap.String("retro_id", retroID), zap.String("session_user_id", userID))
+				s.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
+			if !allowed {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_RETRO"))
+				return
+			}
+		}
+
+		h(w, r)
+	}
+}
+
 // entityUserOnly validates that the request was made by the session user matching the {userId} of the entity (or ADMIN)
 func (s *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -304,6 +338,44 @@ func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// verifyOrgPath rejects requests whose path department or team does not belong to the path organization,
+// since roles in one organization must not grant access to another's. It writes the failure response.
+func (s *Service) verifyOrgPath(w http.ResponseWriter, r *http.Request) bool {
+	ctx := r.Context()
+	orgID := r.PathValue("orgId")
+	departmentID := r.PathValue("departmentId")
+	teamID := r.PathValue("teamId")
+
+	if orgID == "" || (departmentID == "" && teamID == "") {
+		return true
+	}
+
+	for _, id := range []string{orgID, departmentID, teamID} {
+		if err := validate.Var(id, "omitempty,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return false
+		}
+	}
+
+	exists, err := s.OrganizationDataSvc.OrganizationPathExists(ctx, orgID, departmentID, teamID)
+	if err != nil {
+		s.Logger.Ctx(ctx).Error("verifyOrgPath error", zap.Error(err), zap.String("organization_id", orgID),
+			zap.String("department_id", departmentID), zap.String("team_id", teamID))
+		s.Failure(w, r, http.StatusInternalServerError, err)
+		return false
+	}
+	if !exists {
+		code := "DEPARTMENT_NOT_FOUND"
+		if teamID != "" {
+			code = "TEAM_NOT_FOUND"
+		}
+		s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, code))
+		return false
+	}
+
+	return true
+}
+
 // orgUserOnly validates that the request was made by a valid user of the organization
 func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -337,6 +409,10 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			role = thunderdome.AdminUserType
+		}
+
+		if !s.verifyOrgPath(w, r) {
+			return
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, role)
@@ -373,6 +449,10 @@ func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			role = thunderdome.AdminUserType
+		}
+
+		if !s.verifyOrgPath(w, r) {
+			return
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, role)
@@ -420,6 +500,10 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			departmentRole = thunderdome.AdminUserType
 		}
 
+		if !s.verifyOrgPath(w, r) {
+			return
+		}
+
 		ctx = context.WithValue(ctx, contextKeyOrgRole, orgRole)
 		ctx = context.WithValue(ctx, contextKeyDepartmentRole, departmentRole)
 
@@ -465,6 +549,10 @@ func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 			departmentRole = thunderdome.AdminUserType
 		}
 
+		if !s.verifyOrgPath(w, r) {
+			return
+		}
+
 		ctx = context.WithValue(ctx, contextKeyOrgRole, orgRole)
 		ctx = context.WithValue(ctx, contextKeyDepartmentRole, departmentRole)
 
@@ -502,6 +590,10 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 				zap.Any("team_user_roles", roles),
 				zap.String("user_type", userType))
 			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			return
+		}
+
+		if !s.verifyOrgPath(w, r) {
 			return
 		}
 

@@ -62,7 +62,6 @@ const setup = (overrides?: {
     retroId: string;
   };
   users?: typeof baseUsers;
-  isFacilitator?: boolean;
   sendSocketEvent?: (event: string, value: any) => void;
 }) => {
   const {
@@ -75,7 +74,7 @@ const setup = (overrides?: {
       retroId: 'retro-1',
     },
     users = baseUsers,
-    isFacilitator = false,
+
     sendSocketEvent = vi.fn(),
   } = overrides || {};
 
@@ -89,7 +88,6 @@ const setup = (overrides?: {
     ...render(ItemComments, {
       item,
       users,
-      isFacilitator,
       sendSocketEvent,
     }),
   };
@@ -149,9 +147,16 @@ describe('ItemComments component', () => {
     expect(sendSocketEvent).toHaveBeenCalledTimes(1);
   });
 
+  it("should only offer actions on the current user's own comments", () => {
+    const { container } = setup();
+
+    expect(container.querySelectorAll('button[aria-label="Comment actions"]').length).toBe(1);
+    expect(container.querySelector('[data-commentid="comment-1"] button[aria-label="Comment actions"]')).not.toBeNull();
+  });
+
   it('should send edit socket event from comment actions', async () => {
     const sendSocketEvent = vi.fn();
-    const { container } = setup({ sendSocketEvent, isFacilitator: true, users: baseUsers });
+    const { container } = setup({ sendSocketEvent });
 
     const actionsButtons = container.querySelectorAll('button[aria-label="Comment actions"]');
     await (actionsButtons[0] as HTMLButtonElement).click();
@@ -177,7 +182,7 @@ describe('ItemComments component', () => {
 
   it('should send delete socket event from comment actions', async () => {
     const sendSocketEvent = vi.fn();
-    const { container } = setup({ sendSocketEvent, isFacilitator: true, users: baseUsers });
+    const { container } = setup({ sendSocketEvent });
 
     const actionsButtons = container.querySelectorAll('button[aria-label="Comment actions"]');
     await (actionsButtons[0] as HTMLButtonElement).click();

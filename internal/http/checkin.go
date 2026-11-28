@@ -157,7 +157,6 @@ func (s *Service) handleCheckinLastByUser() http.HandlerFunc {
 }
 
 type checkinCreateRequestBody struct {
-	UserID      string `json:"userId" validate:"required,uuid"`
 	CheckinDate string `json:"checkinDate"`
 	TimeZone    string `json:"timeZone"`
 	Yesterday   string `json:"yesterday"`
@@ -265,7 +264,7 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 		}
 		body = normalizedBody
 
-		_, err := tc.APIEvent(ctx, teamID, c.UserID, "checkin_create", string(body))
+		_, err := tc.APIEvent(ctx, teamID, sessionUserID, "checkin_create", string(body))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -276,7 +275,7 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 				return
 			}
 			s.Logger.Ctx(ctx).Error("handleCheckinCreate error", zap.Error(err), zap.String("team_id", teamID),
-				zap.String("entity_user_id", c.UserID), zap.String("session_user_id", sessionUserID))
+				zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -347,6 +346,9 @@ func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 
 		_, err := tc.APIEvent(ctx, teamID, sessionUserID, "checkin_update", string(cu))
 		if err != nil {
+			if s.ownershipFailure(w, r, err) {
+				return
+			}
 			s.Logger.Ctx(ctx).Error("handleCheckinUpdate error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("session_user_id", sessionUserID), zap.String("checkin_id", checkinID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
@@ -401,6 +403,9 @@ func (s *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 
 		_, err := tc.APIEvent(ctx, teamID, sessionUserID, "checkin_delete", string(cu))
 		if err != nil {
+			if s.ownershipFailure(w, r, err) {
+				return
+			}
 			s.Logger.Ctx(ctx).Error("handleCheckinDelete error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("session_user_id", sessionUserID), zap.String("checkin_id", checkinID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
@@ -411,10 +416,23 @@ func (s *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 	}
 }
 
+// ownershipFailure writes the response when a write was refused or matched nothing, reporting whether it did
+func (s *Service) ownershipFailure(w http.ResponseWriter, r *http.Request, err error) bool {
+	switch err.Error() {
+	case "REQUIRES_COMMENT_OWNER", "REQUIRES_CHECKIN_OWNER", "REQUIRES_KUDO_OWNER":
+		s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, err.Error()))
+	case "CHECKIN_COMMENT_NOT_FOUND", "CHECKIN_NOT_FOUND", "RETRO_ACTION_COMMENT_NOT_FOUND":
+		s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, err.Error()))
+	default:
+		return false
+	}
+
+	return true
+}
+
 type checkinCommentRequestBody struct {
 	CheckinID string `json:"checkinId" swaggerignore:"true"`
 	CommentID string `json:"commentId" swaggerignore:"true"`
-	UserID    string `json:"userId" validate:"required,uuid"`
 	Comment   string `json:"comment" validate:"required"`
 }
 
@@ -475,15 +493,14 @@ func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
-		_, err := tc.APIEvent(ctx, teamID, c.UserID, "comment_create", string(cu))
+		_, err := tc.APIEvent(ctx, teamID, sessionUserID, "comment_create", string(cu))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
 			s.Logger.Ctx(ctx).Error("handleCheckinComment error", zap.Error(err), zap.String("team_id", teamID),
-				zap.String("entity_user_id", c.UserID), zap.String("checkin_id", checkinID),
-				zap.String("session_user_id", sessionUserID))
+				zap.String("checkin_id", checkinID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -550,15 +567,13 @@ func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc
 			return
 		}
 
-		_, err := tc.APIEvent(ctx, teamID, c.UserID, "comment_update", string(cu))
+		_, err := tc.APIEvent(ctx, teamID, sessionUserID, "comment_update", string(cu))
 		if err != nil {
-			if err.Error() == "REQUIRES_TEAM_USER" {
-				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			if s.ownershipFailure(w, r, err) {
 				return
 			}
 			s.Logger.Ctx(ctx).Error("handleCheckinCommentEdit error", zap.Error(err), zap.String("team_id", teamID),
-				zap.String("entity_user_id", c.UserID), zap.String("comment_id", commentID),
-				zap.String("session_user_id", sessionUserID))
+				zap.String("comment_id", commentID), zap.String("session_user_id", sessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -609,6 +624,9 @@ func (s *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFu
 
 		_, err := tc.APIEvent(ctx, teamID, userID, "comment_delete", string(cu))
 		if err != nil {
+			if s.ownershipFailure(w, r, err) {
+				return
+			}
 			s.Logger.Ctx(ctx).Error("handleCheckinCommentDelete error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("session_user_id", userID), zap.String("comment_id", commentID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
@@ -795,6 +813,9 @@ func (s *Service) handleTeamKudoUpdate(tc *checkin.Service) http.HandlerFunc {
 
 		result, err := tc.APIEvent(ctx, teamID, sessionUserID, "kudo_update", string(normalizedBody))
 		if err != nil {
+			if s.ownershipFailure(w, r, err) {
+				return
+			}
 			if err.Error() == "TEAM_SUBSCRIPTION_REQUIRED" {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, err.Error()))
 				return
@@ -843,6 +864,9 @@ func (s *Service) handleTeamKudoDelete(tc *checkin.Service) http.HandlerFunc {
 
 		_, err = tc.APIEvent(ctx, teamID, userID, "kudo_delete", string(body))
 		if err != nil {
+			if s.ownershipFailure(w, r, err) {
+				return
+			}
 			if err.Error() == "TEAM_SUBSCRIPTION_REQUIRED" {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, err.Error()))
 				return
