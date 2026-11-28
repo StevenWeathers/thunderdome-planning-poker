@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { Plus, Edit, Trash2, Users, User } from '@lucide/svelte';
+  import { Plus, Edit, Trash2, Users, User, LayoutTemplate } from '@lucide/svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
   import Modal from '../global/Modal.svelte';
-  import type { StoryboardPersona } from '../../types/storyboard';
+  import HollowButton from '../global/HollowButton.svelte';
+  import PersonaTemplatePicker from './PersonaTemplatePicker.svelte';
+  import type { PersonaTemplate, StoryboardPersona } from '../../types/storyboard';
   import LL from '../../i18n/i18n-svelte';
 
   interface Props {
@@ -11,11 +13,29 @@
     onAdd?: (persona: Omit<StoryboardPersona, 'id'>) => void;
     onUpdate?: (persona: StoryboardPersona) => void;
     onDelete?: (personaId: string) => void;
+    loadTemplates?: () => Promise<PersonaTemplate[]>;
+    onLoadTemplate?: (templateId: string) => void;
     closeModal?: () => void;
     isFacilitator?: boolean;
   }
 
-  let { personas = [], onAdd, onUpdate, onDelete, closeModal, isFacilitator = false }: Props = $props();
+  let {
+    personas = [],
+    onAdd,
+    onUpdate,
+    onDelete,
+    loadTemplates,
+    onLoadTemplate,
+    closeModal,
+    isFacilitator = false,
+  }: Props = $props();
+
+  let showTemplates = $state(false);
+
+  function useTemplate(templateId: string) {
+    onLoadTemplate?.(templateId);
+    showTemplates = false;
+  }
 
   // Local state
   let editingId = $state<string | null>(null);
@@ -70,6 +90,7 @@
   // Show add form
   function showAdd() {
     showAddForm = true;
+    showTemplates = false;
     addForm = { name: '', role: '', description: '' };
   }
 
@@ -108,15 +129,33 @@
 <Modal {closeModal} ariaLabel={$LL.modalStoryboardPersonas()}>
   <div class="persona-list pt-6">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
       <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">Personas</h2>
       {#if isFacilitator}
-        <SolidButton type="button" onClick={showAdd}>
-          <Plus class="w-4 h-4 me-1" />
-          Add Persona
-        </SolidButton>
+        <div class="flex flex-wrap items-center gap-2 whitespace-nowrap">
+          {#if loadTemplates}
+            <HollowButton
+              color="blue"
+              onClick={() => {
+                showTemplates = !showTemplates;
+                showAddForm = false;
+              }}
+            >
+              <LayoutTemplate class="w-4 h-4 me-1 inline" />
+              Load from Template
+            </HollowButton>
+          {/if}
+          <SolidButton type="button" onClick={showAdd}>
+            <Plus class="w-4 h-4 me-1" />
+            Add Persona
+          </SolidButton>
+        </div>
       {/if}
     </div>
+
+    {#if showTemplates && isFacilitator && loadTemplates}
+      <PersonaTemplatePicker {personas} {loadTemplates} onSelect={useTemplate} />
+    {/if}
 
     <!-- Add Form -->
     {#if showAddForm && isFacilitator}

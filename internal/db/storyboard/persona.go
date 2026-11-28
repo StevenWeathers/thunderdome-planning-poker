@@ -50,7 +50,9 @@ func (d *Service) AddStoryboardPersona(storyboardID string, userID string, name 
 // UpdateStoryboardPersona updates a storyboard persona
 func (d *Service) UpdateStoryboardPersona(storyboardID string, userID string, personaID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.storyboard_persona SET name = $2, role = $3, description = $4, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.storyboard_persona SET name = $3, role = $4, description = $5, updated_date = NOW()
+		WHERE storyboard_id = $1 AND id = $2;`,
+		storyboardID,
 		personaID,
 		name,
 		role,
@@ -67,7 +69,8 @@ func (d *Service) UpdateStoryboardPersona(storyboardID string, userID string, pe
 // DeleteStoryboardPersona deletes a storyboard persona
 func (d *Service) DeleteStoryboardPersona(storyboardID string, userID string, personaID string) ([]*thunderdome.StoryboardPersona, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_persona WHERE id = $1;`,
+		`DELETE FROM thunderdome.storyboard_persona WHERE storyboard_id = $1 AND id = $2;`,
+		storyboardID,
 		personaID,
 	); err != nil {
 		d.Logger.Error("CALL thunderdome.persona_delete error", zap.Error(err))

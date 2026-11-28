@@ -92,6 +92,19 @@ export type ColorLegendTemplate = {
   teamId?: string;
 };
 
+export type PersonaTemplate = {
+  id: string;
+  name: string;
+  description: string;
+  personas: Array<Omit<StoryboardPersona, 'id'>>;
+  isPublic: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  organizationId?: string | null;
+  teamId?: string | null;
+};
+
 export const storyboardTemplateColors = [
   'gray',
   'red',

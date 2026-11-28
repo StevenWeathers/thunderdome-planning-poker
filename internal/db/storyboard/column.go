@@ -123,8 +123,10 @@ func (d *Service) DeleteStoryboardColumn(storyboardID string, userID string, col
 func (d *Service) ColumnPersonaAdd(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.storyboard_column_persona (column_id, persona_id, created_date)
-		VALUES ($1, $2, NOW());`,
-		columnID, personaID,
+		SELECT c.id, p.id, NOW()
+		FROM thunderdome.storyboard_column c, thunderdome.storyboard_persona p
+		WHERE c.storyboard_id = $1 AND p.storyboard_id = $1 AND c.id = $2 AND p.id = $3;`,
+		storyboardID, columnID, personaID,
 	); err != nil {
 		d.Logger.Error("ColumnPersonaAdd error", zap.Error(err))
 	}
@@ -137,8 +139,10 @@ func (d *Service) ColumnPersonaAdd(storyboardID string, columnID string, persona
 // ColumnPersonaRemove removes a persona column from a Storyboard column
 func (d *Service) ColumnPersonaRemove(storyboardID string, columnID string, personaID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_column_persona WHERE column_id = $1 AND persona_id = $2;`,
-		columnID, personaID,
+		`DELETE FROM thunderdome.storyboard_column_persona cp
+		USING thunderdome.storyboard_column c
+		WHERE c.id = cp.column_id AND c.storyboard_id = $1 AND cp.column_id = $2 AND cp.persona_id = $3;`,
+		storyboardID, columnID, personaID,
 	); err != nil {
 		d.Logger.Error("ColumnPersonaRemove error", zap.Error(err))
 	}

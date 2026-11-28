@@ -129,6 +129,7 @@ type Service struct {
 	RetroTemplateDataSvc       RetroTemplateDataSvc
 	RetroTagDataSvc            RetroTagDataSvc
 	ColorLegendTemplateDataSvc ColorLegendTemplateDataSvc
+	PersonaTemplateDataSvc     PersonaTemplateDataSvc
 	SubscriptionSvc            *subscription.Service
 	ProjectDataSvc             ProjectDataSvc
 }
@@ -574,6 +575,14 @@ type RetroTagDataSvc interface {
 	DeleteRetroTag(ctx context.Context, organizationID string, teamID string, tagID string) error
 }
 
+type PersonaTemplateDataSvc interface {
+	GetPersonaTemplates(ctx context.Context, organizationID string, teamID string) ([]*thunderdome.PersonaTemplate, error)
+	GetStoryboardPersonaTemplates(ctx context.Context, storyboardID string, subscriptionsEnabled bool) ([]*thunderdome.PersonaTemplate, error)
+	CreatePersonaTemplate(ctx context.Context, template *thunderdome.PersonaTemplate) error
+	UpdatePersonaTemplate(ctx context.Context, template *thunderdome.PersonaTemplate) error
+	DeletePersonaTemplate(ctx context.Context, organizationID string, teamID string, templateID string) error
+}
+
 type ColorLegendTemplateDataSvc interface {
 	GetColorLegendTemplatesByOrganization(ctx context.Context, organizationID string) ([]*thunderdome.ColorLegendTemplate, error)
 	GetColorLegendTemplatesByTeam(ctx context.Context, teamID string) ([]*thunderdome.ColorLegendTemplate, error)
@@ -609,6 +618,7 @@ type StoryboardDataSvc interface {
 	AddStoryboardPersona(storyboardID string, userID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
 	UpdateStoryboardPersona(storyboardID string, userID string, personaID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
 	DeleteStoryboardPersona(storyboardID string, userID string, personaID string) ([]*thunderdome.StoryboardPersona, error)
+	AddStoryboardPersonasFromTemplate(ctx context.Context, storyboardID string, templateID string, subscriptionsEnabled bool) ([]*thunderdome.StoryboardPersona, error)
 
 	CreateStoryboardGoal(storyboardID string, userID string, goalName string, defaultStoryColor *string) (*thunderdome.StoryboardGoal, error)
 	ReviseGoalName(storyboardID string, userID string, goalID string, goalName string, defaultStoryColor *string) ([]*thunderdome.StoryboardGoal, error)

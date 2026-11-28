@@ -439,6 +439,233 @@ const docTemplate = `{
                 ]
             }
         },
+        "/admin/persona-templates": {
+            "get": {
+                "description": "get list of global default persona templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Get Global Persona Templates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a global default persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Create Global Persona Template",
+                "parameters": [
+                    {
+                        "description": "new persona template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/persona-templates/{templateId}": {
+            "put": {
+                "description": "Updates a global default persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Update Global Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "persona template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes a global default persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Delete Global Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/poker-settings/{id}": {
             "get": {
                 "description": "get poker settings by ID",
@@ -5675,6 +5902,269 @@ const docTemplate = `{
                 ]
             }
         },
+        "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/persona-templates": {
+            "get": {
+                "description": "get list of persona templates for a team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Get Team Persona Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Create Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new persona template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/persona-templates/{templateId}": {
+            "put": {
+                "description": "Updates a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Update Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "persona template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Delete Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
         "/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/retro-tags": {
             "get": {
                 "description": "get list of retro tags for a team",
@@ -6757,6 +7247,269 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/persona-templates": {
+            "get": {
+                "description": "get list of persona templates for an organization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Get Organization Persona Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates an organization persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Create Organization Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new persona template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/persona-templates/{templateId}": {
+            "put": {
+                "description": "Updates an organization persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Update Organization Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "persona template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes an organization persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Delete Organization Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     },
                     "400": {
@@ -8284,6 +9037,269 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/teams/{teamId}/persona-templates": {
+            "get": {
+                "description": "get list of persona templates for a team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Get Team Persona Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Create Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new persona template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/teams/{teamId}/persona-templates/{templateId}": {
+            "put": {
+                "description": "Updates a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Update Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "persona template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Delete Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -10609,6 +11625,73 @@ const docTemplate = `{
                 ]
             }
         },
+        "/storyboards/{storyboardId}/persona-templates": {
+            "get": {
+                "description": "get the persona templates that can be loaded into a storyboard (facilitator only)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Get Storyboard Persona Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
         "/storyboards/{storyboardId}/stories": {
             "post": {
                 "description": "Add a story to a storyboard goal column",
@@ -12837,6 +13920,269 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/persona-templates": {
+            "get": {
+                "description": "get list of persona templates for a team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Get Team Persona Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Create Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new persona template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/persona-templates/{templateId}": {
+            "put": {
+                "description": "Updates a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Update Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to update",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "persona template object to update",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.personaTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.PersonaTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes a team persona template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personaTemplate"
+                ],
+                "summary": "Delete Team Persona Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the persona template ID to delete",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -17961,6 +19307,52 @@ const docTemplate = `{
                 }
             }
         },
+        "http.personaTemplatePersonaRequestBody": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 2000
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 256
+                },
+                "role": {
+                    "type": "string",
+                    "maxLength": 256
+                }
+            }
+        },
+        "http.personaTemplateRequestBody": {
+            "type": "object",
+            "required": [
+                "name",
+                "personas"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 2000
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "personas": {
+                    "type": "array",
+                    "maxItems": 32,
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/http.personaTemplatePersonaRequestBody"
+                    }
+                }
+            }
+        },
         "http.planRequestBody": {
             "type": "object",
             "properties": {
@@ -19322,6 +20714,58 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "organization_name": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.PersonaTemplate": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organizationId": {
+                    "type": "string"
+                },
+                "personas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.PersonaTemplatePersona"
+                    }
+                },
+                "teamId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.PersonaTemplatePersona": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "role": {

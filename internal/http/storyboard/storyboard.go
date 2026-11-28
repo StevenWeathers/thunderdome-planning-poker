@@ -25,6 +25,9 @@ type Config struct {
 
 	// Websocket Subdomain (for Websocket origin check)
 	WebsocketSubdomain string
+
+	// Whether team and organization persona templates require a subscription
+	SubscriptionsEnabled bool
 }
 
 type AuthDataSvc interface {
@@ -52,6 +55,7 @@ type StoryboardDataSvc interface {
 	AddStoryboardPersona(storyboardID string, userID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
 	UpdateStoryboardPersona(storyboardID string, userID string, personaID string, name string, role string, description string) ([]*thunderdome.StoryboardPersona, error)
 	DeleteStoryboardPersona(storyboardID string, userID string, personaID string) ([]*thunderdome.StoryboardPersona, error)
+	AddStoryboardPersonasFromTemplate(ctx context.Context, storyboardID string, templateID string, subscriptionsEnabled bool) ([]*thunderdome.StoryboardPersona, error)
 
 	CreateStoryboardGoal(storyboardID string, userID string, goalName string, defaultStoryColor *string) (*thunderdome.StoryboardGoal, error)
 	ReviseGoalName(storyboardID string, userID string, goalID string, goalName string, defaultStoryColor *string) ([]*thunderdome.StoryboardGoal, error)
@@ -142,6 +146,7 @@ func New(
 		"add_persona":           sb.AddPersona,
 		"update_persona":        sb.UpdatePersona,
 		"delete_persona":        sb.DeletePersona,
+		"load_persona_template": sb.LoadPersonaTemplate,
 		"facilitator_add":       sb.FacilitatorAdd,
 		"facilitator_remove":    sb.FacilitatorRemove,
 		"facilitator_self":      sb.FacilitatorSelf,
@@ -151,10 +156,11 @@ func New(
 		"abandon_storyboard":    sb.Abandon,
 	},
 		map[string]struct{}{
-			"facilitator_add":    {},
-			"facilitator_remove": {},
-			"edit_storyboard":    {},
-			"concede_storyboard": {},
+			"facilitator_add":       {},
+			"facilitator_remove":    {},
+			"edit_storyboard":       {},
+			"concede_storyboard":    {},
+			"load_persona_template": {},
 		},
 		sb.StoryboardService.ConfirmStoryboardFacilitator,
 		sb.RetreatUser,

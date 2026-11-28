@@ -39,6 +39,7 @@
   import GoalSection from '../../components/storyboard/GoalSection.svelte';
   import type {
     StoryboardPersona,
+    PersonaTemplate,
     StoryboardUser,
     Storyboard,
     ColorLegend,
@@ -368,6 +369,15 @@
 
   const handleDeletePersona = (personaId: string) => () => {
     sendSocketEvent('delete_persona', personaId);
+  };
+
+  const getPersonaTemplates = (): Promise<PersonaTemplate[]> =>
+    xfetch(`/api/storyboards/${storyboardId}/persona-templates`)
+      .then(res => res.json())
+      .then(result => result.data);
+
+  const handleLoadPersonaTemplate = (templateId: string) => {
+    sendSocketEvent('load_persona_template', templateId);
   };
 
   function handleStoryboardEdit(revisedStoryboard: any) {
@@ -719,6 +729,8 @@
     onDelete={handleDeletePersona}
     onAdd={handlePersonaAdd}
     onUpdate={handlePersonaRevision}
+    loadTemplates={getPersonaTemplates}
+    onLoadTemplate={handleLoadPersonaTemplate}
     {isFacilitator}
   />
 {/if}

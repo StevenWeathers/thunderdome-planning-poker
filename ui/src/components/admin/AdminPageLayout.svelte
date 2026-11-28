@@ -16,6 +16,7 @@
     Tag,
     User,
     Users,
+    UserRound,
     Package,
     InboxIcon,
   } from '@lucide/svelte';
@@ -144,6 +145,13 @@
             path: appRoutes.adminRetroTags,
             icon: Tag,
             enabled: FeatureRetro,
+          },
+          {
+            name: 'Persona Templates',
+            label: 'Persona Templates',
+            path: appRoutes.adminPersonaTemplates,
+            icon: UserRound,
+            enabled: FeatureStoryboard,
           },
         ]
       : [],
