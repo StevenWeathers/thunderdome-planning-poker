@@ -15,7 +15,7 @@
 
   let { xfetch }: Props = $props();
 
-  const { ShowActiveCountries, PathPrefix, RepoURL } = AppConfig;
+  const { ShowActiveCountries, PathPrefix, RepoURL, FeatureHealthCheck, SubscriptionsEnabled } = AppConfig;
 
   const slogans = [
     'Empower Your Agile Teams',
@@ -311,6 +311,69 @@
       </div>
     </div>
   </section>
+
+  {#if FeatureHealthCheck}
+    <section class="bg-white dark:bg-gray-800 py-20" data-testid="landing-health-checks">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+          <div class="md:w-1/2 md:pe-8 mb-8 md:mb-0">
+            <div class="title-line bg-yellow-thunder"></div>
+            <h2 class="text-4xl font-semibold font-rajdhani uppercase dark:text-white mb-6">Squad Health Checks</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+              Find out how your team is really doing. Everyone rates what is working and what is not, so you can spend
+              your time on what to improve.
+            </p>
+            <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8">
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Honest answers:</strong> Responses are anonymous, and results appear only after the deadline once at least three people reply</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Async by design:</strong> Set a deadline, email your team the link, and review the results together when you meet</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 dark:text-indigo-400 me-2">✓</span>
+              <span><strong>Your questions:</strong> Start with the areas from the Spotify Squad Health Check model or build templates for your team and organization</span>
+            </li>
+            </ul>
+            {#if SubscriptionsEnabled}
+              <p class="text-gray-600 dark:text-gray-400 mb-8">
+                Included with
+                <a class="text-blue-600 dark:text-sky-400 underline" href={appRoutes.subscriptionPricing}
+                  >Team and Organization plans</a
+                >.
+              </p>
+            {/if}
+            <a
+              href={$user.id ? appRoutes.teams : appRoutes.register}
+              class="group relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
+            >
+              <span
+                class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+              >
+                {$user.id ? 'Choose a Team' : 'Get Started'}
+              </span>
+            </a>
+          </div>
+          <div class="md:w-1/2">
+            <BrowserMock>
+              <img
+                class="rounded-b-lg hidden dark:block"
+                src="{PathPrefix}/img/previews/health_check_20261128_dark.png"
+                alt="Squad Health Check Results Preview"
+              />
+              <img
+                class="rounded-b-lg dark:hidden"
+                src="{PathPrefix}/img/previews/health_check_20261128_light.png"
+                alt="Squad Health Check Results Preview"
+              />
+            </BrowserMock>
+          </div>
+        </div>
+      </div>
+    </section>
+  {/if}
 
   <section class="bg-indigo-600 text-white py-20">
     <div class="container mx-auto px-4 text-center">
