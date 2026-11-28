@@ -40,6 +40,40 @@
   // Calculate column width based on scale (w-40 = 10rem for scale 1)
   const columnWidth = $derived(`${10 * scale}rem`);
 
+  // bulk story delete: one column per goal can be in selection mode at a time
+  let selectionColumnId: string | null = $state(null);
+  let checkedStoryIds: string[] = $state([]);
+
+  // drop ids of stories that other users have since deleted or moved away
+  const selectedStoryIds = $derived(
+    goal.columns
+      .find(column => column.id === selectionColumnId)
+      ?.stories.map(story => story.id)
+      .filter(id => checkedStoryIds.includes(id)) ?? [],
+  );
+
+  function startSelection(columnId: string) {
+    selectionColumnId = columnId;
+    checkedStoryIds = [];
+  }
+
+  function cancelSelection() {
+    selectionColumnId = null;
+    checkedStoryIds = [];
+  }
+
+  function toggleStorySelection(storyId: string) {
+    checkedStoryIds = checkedStoryIds.includes(storyId)
+      ? checkedStoryIds.filter(id => id !== storyId)
+      : [...checkedStoryIds, storyId];
+  }
+
+  $effect(() => {
+    if (columnOrderEditMode) {
+      cancelSelection();
+    }
+  });
+
   function handleDndConsider(e: CustomEvent) {
     const goalIndex = Number((e.target as HTMLElement)?.dataset.goalindex);
 
@@ -115,6 +149,11 @@
           {columnWidth}
           {sendSocketEvent}
           {personas}
+          selectionMode={selectionColumnId === goalColumn.id}
+          {selectedStoryIds}
+          startSelection={() => startSelection(goalColumn.id)}
+          selectAllStories={() => (checkedStoryIds = goalColumn.stories.map(story => story.id))}
+          {cancelSelection}
         />
       </div>
     {/each}
@@ -148,6 +187,9 @@
           {notifications}
           {colorLegend}
           {users}
+          selectionMode={selectionColumnId === goalColumn.id}
+          {selectedStoryIds}
+          {toggleStorySelection}
         />
 
         {#if columnOrderEditMode}

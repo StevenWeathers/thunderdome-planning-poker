@@ -607,6 +607,7 @@ type StoryboardDataSvc interface {
 	AddUserToStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
 	RetreatStoryboardUser(storyboardID string, userID string) []*thunderdome.StoryboardUser
 	GetStoryboardUserActiveStatus(storyboardID string, userID string) error
+	CanUserAccessStoryboard(ctx context.Context, storyboardID string, userID string) (bool, error)
 	AbandonStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)
 	StoryboardFacilitatorAdd(StoryboardId string, userID string) (*thunderdome.Storyboard, error)
 	StoryboardFacilitatorRemove(StoryboardId string, userID string) (*thunderdome.Storyboard, error)
@@ -642,6 +643,7 @@ type StoryboardDataSvc interface {
 	ReviseStoryLink(storyboardID string, userID string, storyID string, link string) ([]*thunderdome.StoryboardGoal, error)
 	MoveStoryboardStory(storyboardID string, userID string, storyID string, goalID string, columnID string, placeBefore string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardStory(storyboardID string, userID string, storyID string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryboardStories(storyboardID string, userID string, storyIDs []string) ([]*thunderdome.StoryboardGoal, error)
 	AddStoryComment(storyboardID string, userID string, storyID string, comment string) ([]*thunderdome.StoryboardGoal, error)
 	EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error)

@@ -109,7 +109,7 @@ func (s *Service) handleStoryboardStoryNameUpdate(sb *storyboard.Service) http.H
 			return
 		}
 		storyID := r.PathValue("storyId")
-		idErr = validate.Var(storyboardID, "required,uuid")
+		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -193,7 +193,7 @@ func (s *Service) handleStoryboardStoryContentUpdate(sb *storyboard.Service) htt
 			return
 		}
 		storyID := r.PathValue("storyId")
-		idErr = validate.Var(storyboardID, "required,uuid")
+		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -277,7 +277,7 @@ func (s *Service) handleStoryboardStoryColorUpdate(sb *storyboard.Service) http.
 			return
 		}
 		storyID := r.PathValue("storyId")
-		idErr = validate.Var(storyboardID, "required,uuid")
+		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -361,7 +361,7 @@ func (s *Service) handleStoryboardStoryPointsUpdate(sb *storyboard.Service) http
 			return
 		}
 		storyID := r.PathValue("storyId")
-		idErr = validate.Var(storyboardID, "required,uuid")
+		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -445,7 +445,7 @@ func (s *Service) handleStoryboardStoryClosedUpdate(sb *storyboard.Service) http
 			return
 		}
 		storyID := r.PathValue("storyId")
-		idErr = validate.Var(storyboardID, "required,uuid")
+		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -529,7 +529,7 @@ func (s *Service) handleStoryboardStoryLinkUpdate(sb *storyboard.Service) http.H
 			return
 		}
 		storyID := r.PathValue("storyId")
-		idErr = validate.Var(storyboardID, "required,uuid")
+		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -615,7 +615,7 @@ func (s *Service) handleStoryboardStoryMove(sb *storyboard.Service) http.Handler
 			return
 		}
 		storyID := r.PathValue("storyId")
-		idErr = validate.Var(storyboardID, "required,uuid")
+		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
@@ -698,7 +698,7 @@ func (s *Service) handleStoryboardStoryDelete(sb *storyboard.Service) http.Handl
 			return
 		}
 		storyID := r.PathValue("storyId")
-		idErr = validate.Var(storyboardID, "required,uuid")
+		idErr = validate.Var(storyID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return

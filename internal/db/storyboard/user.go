@@ -1,6 +1,7 @@
 package storyboard
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -75,6 +76,25 @@ func (d *Service) RetreatStoryboardUser(storyboardID string, userID string) []*t
 	users := d.GetStoryboardUsers(storyboardID)
 
 	return users
+}
+
+// CanUserAccessStoryboard checks whether a user may change a storyboard: anyone may when it has no join code,
+// otherwise the user must have joined it. Returns sql.ErrNoRows when the storyboard does not exist.
+func (d *Service) CanUserAccessStoryboard(ctx context.Context, storyboardID string, userID string) (bool, error) {
+	var allowed bool
+
+	if err := d.DB.QueryRowContext(ctx, `
+		SELECT COALESCE(s.join_code, '') = '' OR EXISTS (
+			SELECT 1 FROM thunderdome.storyboard_user su WHERE su.storyboard_id = s.id AND su.user_id = $2
+		)
+		FROM thunderdome.storyboard s
+		WHERE s.id = $1;`,
+		storyboardID, userID,
+	).Scan(&allowed); err != nil {
+		return false, fmt.Errorf("can user access storyboard query error: %w", err)
+	}
+
+	return allowed, nil
 }
 
 // GetStoryboardUserActiveStatus checks storyboard active status of User for given storyboard

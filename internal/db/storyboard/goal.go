@@ -110,10 +110,11 @@ func (d *Service) ReviseGoalName(storyboardID string, userID string, goalID stri
 		SET name = $2,
 			default_story_color = $3,
 			updated_date = NOW()
-		WHERE id = $1;`,
+		WHERE id = $1 AND storyboard_id = $4;`,
 		goalID,
 		goalName,
 		defaultStoryColor,
+		storyboardID,
 	); err != nil {
 		d.Logger.Error("update storyboard goal error", zap.Error(err))
 	}
@@ -126,7 +127,7 @@ func (d *Service) ReviseGoalName(storyboardID string, userID string, goalID stri
 // DeleteStoryboardGoal removes a goal from the current board by ID
 func (d *Service) DeleteStoryboardGoal(storyboardID string, userID string, goalID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_goal WHERE id = $1;`, goalID); err != nil {
+		`DELETE FROM thunderdome.storyboard_goal WHERE id = $1 AND storyboard_id = $2;`, goalID, storyboardID); err != nil {
 		d.Logger.Error("storyboard goal delete error", zap.Error(err))
 	}
 

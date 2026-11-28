@@ -574,23 +574,23 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		// Storyboard operations
 		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardDelete(storyboardSvc)))
 		// Storyboard goal operations
-		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/goals", a.userOnly(a.handleStoryboardGoalAdd(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/goals/{goalId}", a.userOnly(a.handleStoryboardGoalUpdate(storyboardSvc)))
-		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}/goals/{goalId}", a.userOnly(a.handleStoryboardGoalDelete(storyboardSvc)))
+		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/goals", a.userOnly(a.storyboardUserOnly(a.handleStoryboardGoalAdd(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/goals/{goalId}", a.userOnly(a.storyboardUserOnly(a.handleStoryboardGoalUpdate(storyboardSvc))))
+		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}/goals/{goalId}", a.userOnly(a.storyboardUserOnly(a.handleStoryboardGoalDelete(storyboardSvc))))
 		// Storyboard column operations
-		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/columns", a.userOnly(a.handleStoryboardColumnAdd(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/columns/{columnId}", a.userOnly(a.handleStoryboardColumnUpdate(storyboardSvc)))
-		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}/columns/{columnId}", a.userOnly(a.handleStoryboardColumnDelete(storyboardSvc)))
+		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/columns", a.userOnly(a.storyboardUserOnly(a.handleStoryboardColumnAdd(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/columns/{columnId}", a.userOnly(a.storyboardUserOnly(a.handleStoryboardColumnUpdate(storyboardSvc))))
+		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}/columns/{columnId}", a.userOnly(a.storyboardUserOnly(a.handleStoryboardColumnDelete(storyboardSvc))))
 		// Storyboard story operations
-		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/stories", a.userOnly(a.handleStoryboardStoryAdd(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/name", a.userOnly(a.handleStoryboardStoryNameUpdate(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/content", a.userOnly(a.handleStoryboardStoryContentUpdate(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/color", a.userOnly(a.handleStoryboardStoryColorUpdate(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/points", a.userOnly(a.handleStoryboardStoryPointsUpdate(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/closed", a.userOnly(a.handleStoryboardStoryClosedUpdate(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/link", a.userOnly(a.handleStoryboardStoryLinkUpdate(storyboardSvc)))
-		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/move", a.userOnly(a.handleStoryboardStoryMove(storyboardSvc)))
-		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}", a.userOnly(a.handleStoryboardStoryDelete(storyboardSvc)))
+		router.Handle("POST "+prefix+"/api/storyboards/{storyboardId}/stories", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryAdd(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/name", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryNameUpdate(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/content", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryContentUpdate(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/color", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryColorUpdate(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/points", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryPointsUpdate(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/closed", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryClosedUpdate(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/link", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryLinkUpdate(storyboardSvc))))
+		router.Handle("PUT "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}/move", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryMove(storyboardSvc))))
+		router.Handle("DELETE "+prefix+"/api/storyboards/{storyboardId}/stories/{storyId}", a.userOnly(a.storyboardUserOnly(a.handleStoryboardStoryDelete(storyboardSvc))))
 		// Storyboard websocket
 		router.Handle(""+prefix+"/api/storyboard/{storyboardId}", storyboardSvc.ServeWs())
 	}
