@@ -21,6 +21,7 @@
     colorLegend: ColorLegend[];
     users: any[];
     personas: any[];
+    pointValues?: string[];
   }
 
   let {
@@ -36,6 +37,7 @@
     colorLegend,
     users,
     personas,
+    pointValues = [],
   }: Props = $props();
 
   // Calculate column width based on scale (w-40 = 10rem for scale 1)
@@ -199,6 +201,7 @@
             {notifications}
             {colorLegend}
             {users}
+            {pointValues}
             selectionMode={selectionColumnId === goalColumn.id}
             {selectedStoryIds}
             {toggleStorySelection}

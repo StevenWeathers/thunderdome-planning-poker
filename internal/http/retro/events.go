@@ -599,6 +599,9 @@ func (s *Service) EditRetro(ctx context.Context, RetroID string, UserID string, 
 		return nil, nil, err, false
 	}
 
+	// this is broadcast to every participant, only facilitators may know the code
+	rb.FacilitatorCode = ""
+
 	updatedRetro, _ := json.Marshal(rb)
 	msg := wshub.CreateSocketEvent("retro_edited", string(updatedRetro), "")
 

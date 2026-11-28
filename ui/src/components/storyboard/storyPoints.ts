@@ -1,4 +1,4 @@
-export const storyboardPointsMaxLength = 3;
+export const storyboardPointsMaxLength = 8;
 
 export const hasStoryboardPoints = (points?: string | null) => (points ?? '').trim() !== '';
 
@@ -17,4 +17,7 @@ export const parseStoryboardPoints = (points?: string | null) => {
 };
 
 export const sanitizeStoryboardPoints = (points?: string | null) =>
-  (points ?? '').trim().slice(0, storyboardPointsMaxLength);
+  // by code point, so that emoji scale values aren't split
+  Array.from((points ?? '').trim())
+    .slice(0, storyboardPointsMaxLength)
+    .join('');

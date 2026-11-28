@@ -743,6 +743,10 @@ definitions:
           $ref: '#/definitions/http.storyboardColorRequestBody'
         maxItems: 32
         type: array
+      estimationScaleId:
+        description: EstimationScaleID is the point scale for story points, empty
+          for free text
+        type: string
       facilitatorCode:
         type: string
       joinCode:
@@ -810,7 +814,7 @@ definitions:
   http.storyboardStoryPointsRequestBody:
     properties:
       points:
-        maxLength: 3
+        maxLength: 8
         type: string
     type: object
   http.subscriptionAssociateRequestBody:
@@ -1874,6 +1878,11 @@ definitions:
           $ref: '#/definitions/thunderdome.Color'
         type: array
       createdDate:
+        type: string
+      estimationScale:
+        $ref: '#/definitions/thunderdome.EstimationScale'
+      estimationScaleId:
+        description: EstimationScaleID is empty when story points are free text
         type: string
       facilitatorCode:
         type: string
@@ -9755,6 +9764,47 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Storyboard Column Update
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}/estimation-scales:
+    get:
+      description: get the estimation scales that can be assigned to a storyboard
+        (facilitator only)
+      parameters:
+      - description: Storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.EstimationScale'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Storyboard Estimation Scales
       tags:
       - storyboard
   /storyboards/{storyboardId}/goals:

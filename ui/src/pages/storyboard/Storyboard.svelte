@@ -48,6 +48,7 @@
     StoryboardGoal,
     StoryboardColumn,
     StoryboardStory,
+    StoryboardEstimationScale,
   } from '../../types/storyboard';
   import ActiveUsers from '../../components/storyboard/ActiveUsers.svelte';
   import type { NotificationService } from '../../types/notifications';
@@ -188,6 +189,11 @@
         const revisedStoryboard = JSON.parse(parsedEvent.value);
         storyboard.name = revisedStoryboard.storyboardName;
         storyboard.joinCode = revisedStoryboard.joinCode;
+        // only present when the point scale changed
+        if (revisedStoryboard.estimationScaleId !== undefined) {
+          storyboard.estimationScaleId = revisedStoryboard.estimationScaleId;
+          storyboard.estimationScale = revisedStoryboard.estimationScale ?? null;
+        }
         break;
       case 'storyboard_conceded':
         // storyboard over, goodbye.
@@ -384,6 +390,11 @@
   const handleLoadPersonaTemplate = (templateId: string) => {
     sendSocketEvent('load_persona_template', templateId);
   };
+
+  const getEstimationScales = (): Promise<StoryboardEstimationScale[]> =>
+    xfetch(`/api/storyboards/${storyboardId}/estimation-scales`)
+      .then(res => res.json())
+      .then(result => result.data);
 
   function handleStoryboardEdit(revisedStoryboard: any) {
     sendSocketEvent('edit_storyboard', JSON.stringify(revisedStoryboard));
@@ -676,6 +687,7 @@
           users={storyboard.users}
           {scale}
           personas={storyboard.personas}
+          pointValues={storyboard.estimationScale?.values}
         />
       {/if}
     </GoalSection>
@@ -723,6 +735,9 @@
     toggleEditStoryboard={toggleEditStoryboard()}
     joinCode={storyboard.joinCode}
     facilitatorCode={storyboard.facilitatorCode}
+    estimationScale={storyboard.estimationScale}
+    {getEstimationScales}
+    onEstimationScalesError={() => notifications.danger($LL.storyboardPointScalesError())}
   />
 {/if}
 

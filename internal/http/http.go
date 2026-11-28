@@ -538,6 +538,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		router.Handle("DELETE "+prefix+"/api/maintenance/clean-storyboards", a.userOnly(a.adminOnly(a.handleCleanStoryboards())))
 		router.Handle("GET "+prefix+"/api/storyboards", a.userOnly(a.adminOnly(a.handleGetStoryboards())))
 		router.Handle("GET "+prefix+"/api/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardGet()))
+		router.Handle("GET "+prefix+"/api/storyboards/{storyboardId}/estimation-scales", a.userOnly(a.handleGetStoryboardEstimationScales()))
 
 		// Storyboard color legend templates
 		router.Handle("GET "+prefix+"/api/organizations/{orgId}/color-legend-templates", a.userOnly(a.subscribedOrgOnly(a.orgUserOnly(a.handleGetOrganizationColorLegendTemplates()))))

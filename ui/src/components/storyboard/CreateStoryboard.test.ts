@@ -83,6 +83,22 @@ describe('CreateStoryboard component', () => {
         } as Response);
       }
 
+      if (endpoint === '/api/estimation-scales/public') {
+        return Promise.resolve({
+          json: () => Promise.resolve({ data: [{ id: 'public-scale', name: 'Fibonacci', values: ['1', '2'] }] }),
+        } as Response);
+      }
+
+      if (endpoint === '/api/teams/team-1/estimation-scales') {
+        return Promise.resolve({
+          json: () => Promise.resolve({ data: [{ id: 'team-scale', name: 'Sizes', values: ['S', 'M'] }] }),
+        } as Response);
+      }
+
+      if (endpoint === '/api/organizations/org-1/estimation-scales') {
+        return Promise.reject([new Error('forbidden'), { status: 403 }]);
+      }
+
       if (endpoint === '/api/teams/team-1/users/user-1/storyboards') {
         return Promise.resolve({
           json: () => Promise.resolve({ data: { id: 'storyboard-1' } }),
@@ -134,5 +150,29 @@ describe('CreateStoryboard component', () => {
       },
     });
     expect(router.route).toHaveBeenCalledWith('/storyboard/storyboard-1');
+  });
+
+  it('submits the selected point scale, offering the team scales', async () => {
+    const xfetch = buildXfetch();
+    const { container } = render(CreateStoryboard, { xfetch, notifications, router });
+    const scaleSelect = () => container.querySelector('select[name="estimationScale"]') as HTMLSelectElement;
+    const optionValues = () => Array.from(scaleSelect().options).map(option => option.value);
+
+    await vi.waitFor(() => expect(optionValues()).toEqual(['', 'public-scale']));
+    await vi.waitFor(() => expect(container.querySelector('option[value="team-1"]')).toBeTruthy());
+
+    await userEvent.fill(container.querySelector('input[name="storyboardName"]') as HTMLInputElement, 'Sized Board');
+    await userEvent.selectOptions(
+      container.querySelector('select[name="selectedTeam"]') as HTMLSelectElement,
+      'team-1',
+    );
+    await vi.waitFor(() => expect(optionValues()).toEqual(['', 'team-scale', 'public-scale']));
+    await userEvent.selectOptions(scaleSelect(), 'team-scale');
+    await userEvent.click(page.getByRole('button', { name: /create storyboard/i }));
+
+    expect(xfetch).toHaveBeenCalledWith('/api/teams/team-1/users/user-1/storyboards', {
+      body: { storyboardName: 'Sized Board', joinCode: '', facilitatorCode: '', estimationScaleId: 'team-scale' },
+    });
+    expect(notifications.danger).not.toHaveBeenCalled();
   });
 });

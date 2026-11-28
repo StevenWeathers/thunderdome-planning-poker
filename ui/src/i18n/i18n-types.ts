@@ -2490,6 +2490,22 @@ type RootTranslation = {
 	 */
 	storyboardNamePlaceholder: string
 	/**
+	 * P​o​i​n​t​ ​S​c​a​l​e
+	 */
+	storyboardPointScale: string
+	/**
+	 * N​o​n​e​ ​(​f​r​e​e​ ​t​e​x​t​)
+	 */
+	storyboardPointScaleNone: string
+	/**
+	 * N​o​ ​p​o​i​n​t​s
+	 */
+	storyboardNoPoints: string
+	/**
+	 * F​a​i​l​e​d​ ​t​o​ ​g​e​t​ ​p​o​i​n​t​ ​s​c​a​l​e​s
+	 */
+	storyboardPointScalesError: string
+	/**
 	 * B​r​a​i​n​s​t​o​r​m​ ​P​h​a​s​e​ ​t​i​m​e​ ​l​i​m​i​t​ ​i​n​ ​m​i​n​u​t​e​s
 	 */
 	retroPhaseTimeLimitMinLabel: string
@@ -5605,6 +5621,22 @@ export type TranslationFunctions = {
 	 * Enter a storyboard name
 	 */
 	storyboardNamePlaceholder: () => LocalizedString
+	/**
+	 * Point Scale
+	 */
+	storyboardPointScale: () => LocalizedString
+	/**
+	 * None (free text)
+	 */
+	storyboardPointScaleNone: () => LocalizedString
+	/**
+	 * No points
+	 */
+	storyboardNoPoints: () => LocalizedString
+	/**
+	 * Failed to get point scales
+	 */
+	storyboardPointScalesError: () => LocalizedString
 	/**
 	 * Brainstorm Phase time limit in minutes
 	 */

@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"slices"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/wshub"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
 // AddGoal handles adding a goal to storyboard
@@ -624,10 +626,27 @@ func (s *Service) EditStoryboard(ctx context.Context, storyboardID string, userI
 		Name            string `json:"storyboardName"`
 		JoinCode        string `json:"joinCode"`
 		FacilitatorCode string `json:"facilitatorCode"`
+		// omitted leaves the point scale unchanged, empty removes it
+		EstimationScaleID *string                      `json:"estimationScaleId,omitempty"`
+		EstimationScale   *thunderdome.EstimationScale `json:"estimationScale,omitempty"`
 	}
 	err := json.Unmarshal([]byte(eventValue), &rb)
 	if err != nil {
 		return nil, nil, err, false
+	}
+
+	// never trust a client supplied scale, it is only sent back to clients after being looked up
+	rb.EstimationScale = nil
+	if rb.EstimationScaleID != nil && *rb.EstimationScaleID != "" {
+		scales, err := s.StoryboardService.GetStoryboardEstimationScales(ctx, storyboardID, s.config.SubscriptionsEnabled)
+		if err != nil {
+			return nil, nil, err, false
+		}
+		i := slices.IndexFunc(scales, func(es *thunderdome.EstimationScale) bool { return es.ID == *rb.EstimationScaleID })
+		if i == -1 {
+			return nil, nil, thunderdome.ErrStoryboardEstimationScaleNotFound, false
+		}
+		rb.EstimationScale = scales[i]
 	}
 
 	err = s.StoryboardService.EditStoryboard(
@@ -635,10 +654,14 @@ func (s *Service) EditStoryboard(ctx context.Context, storyboardID string, userI
 		rb.Name,
 		rb.JoinCode,
 		rb.FacilitatorCode,
+		rb.EstimationScaleID,
 	)
 	if err != nil {
 		return nil, nil, err, false
 	}
+
+	// this is broadcast to every participant, only facilitators may know the code
+	rb.FacilitatorCode = ""
 
 	updatedStoryboard, _ := json.Marshal(rb)
 	msg := wshub.CreateSocketEvent("storyboard_edited", string(updatedStoryboard), "")

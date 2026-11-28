@@ -26,7 +26,7 @@ type Config struct {
 	// Websocket Subdomain (for Websocket origin check)
 	WebsocketSubdomain string
 
-	// Whether team and organization persona templates require a subscription
+	// Whether team and organization persona templates and estimation scales require a subscription
 	SubscriptionsEnabled bool
 }
 
@@ -39,7 +39,8 @@ type UserDataSvc interface {
 }
 
 type StoryboardDataSvc interface {
-	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string) error
+	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string, estimationScaleID *string) error
+	GetStoryboardEstimationScales(ctx context.Context, storyboardID string, subscriptionsEnabled bool) ([]*thunderdome.EstimationScale, error)
 	GetStoryboardByID(storyboardID string, userID string) (*thunderdome.Storyboard, error)
 	ConfirmStoryboardFacilitator(storyboardID string, userID string) error
 	AddUserToStoryboard(storyboardID string, userID string) ([]*thunderdome.StoryboardUser, error)

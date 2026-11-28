@@ -141,4 +141,45 @@ describe('EditStoryboard component', () => {
     await expect.element(joinInput).toHaveValue('join-code');
     await expect.element(facInput).toHaveValue('fac-code');
   });
+
+  it.each([
+    ['another scale', 'scale-2'],
+    ['no scale', ''],
+  ])('should submit a change to %s', async (_, selected) => {
+    const handleStoryboardEdit = vi.fn();
+    const current = { id: 'scale-1', name: 'Sizes', values: ['S', 'M'] };
+    const { container } = render(EditStoryboard, {
+      handleStoryboardEdit,
+      storyboardName: 'Board',
+      estimationScale: current,
+      getEstimationScales: () => Promise.resolve([current, { id: 'scale-2', name: 'Fibonacci', values: ['1', '2'] }]),
+    });
+    const select = container.querySelector('select[name="estimationScale"]') as HTMLSelectElement;
+
+    await expect.element(select).toHaveValue('scale-1');
+    await vi.waitFor(() => expect(select.options.length).toBe(3));
+    await userEvent.selectOptions(select, selected);
+    await page.getByRole('button', { name: /save/i }).click();
+
+    expect(handleStoryboardEdit).toHaveBeenCalledWith({
+      storyboardName: 'Board',
+      joinCode: '',
+      facilitatorCode: '',
+      estimationScaleId: selected,
+    });
+  });
+
+  it('should keep the current scale selected when the scales fail to load', async () => {
+    const onEstimationScalesError = vi.fn();
+    const { container } = render(EditStoryboard, {
+      estimationScale: { id: 'scale-1', name: 'Sizes', values: ['S', 'M'] },
+      getEstimationScales: () => Promise.reject(new Error('boom')),
+      onEstimationScalesError,
+    });
+
+    await vi.waitFor(() => expect(onEstimationScalesError).toHaveBeenCalled());
+    await expect
+      .element(container.querySelector('select[name="estimationScale"]') as HTMLSelectElement)
+      .toHaveValue('scale-1');
+  });
 });

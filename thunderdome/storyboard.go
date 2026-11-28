@@ -1,5 +1,13 @@
 package thunderdome
 
+import "errors"
+
+// StoryboardStoryPointsMaxLength is the number of characters a storyboard story's points can hold
+const StoryboardStoryPointsMaxLength = 8
+
+// ErrStoryboardEstimationScaleNotFound is returned when an estimation scale doesn't exist or isn't available to a storyboard
+var ErrStoryboardEstimationScaleNotFound = errors.New("ESTIMATION_SCALE_NOT_FOUND")
+
 // StoryboardUser aka user
 type StoryboardUser struct {
 	ID           string `json:"id"`
@@ -27,6 +35,9 @@ type Storyboard struct {
 	TeamName        string               `json:"teamName"`
 	CreatedDate     string               `json:"createdDate" db:"created_date"`
 	UpdatedDate     string               `json:"updatedDate" db:"updated_date"`
+	// EstimationScaleID is empty when story points are free text
+	EstimationScaleID string           `json:"estimationScaleId,omitempty" db:"estimation_scale_id"`
+	EstimationScale   *EstimationScale `json:"estimationScale,omitempty"`
 }
 
 // StoryboardGoal A row in a story mapping board

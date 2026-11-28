@@ -17,6 +17,7 @@
   import type { StoryboardStory, StoryboardUser } from '../../types/storyboard';
   import CommentsHeader from '../comments/CommentsHeader.svelte';
   import CommentEmptyState from '../comments/CommentEmptyState.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
 
   interface Props {
     toggleStoryForm?: any;
@@ -25,6 +26,8 @@
     story?: StoryboardStory;
     colorLegend?: any;
     users?: StoryboardUser[];
+    /** values of the storyboard's point scale, empty for free text points */
+    pointValues?: string[];
     discussionExpanded?: boolean;
     additionalDetailsExpanded?: boolean;
   }
@@ -36,6 +39,7 @@
     story = { id: '' } as StoryboardStory,
     colorLegend = [],
     users = [],
+    pointValues = [],
     discussionExpanded = false,
     additionalDetailsExpanded = false,
   }: Props = $props();
@@ -47,6 +51,11 @@
   let focusInput: any = $state();
   let storyPoints = $state('');
   let selectedStoryColor = $state('');
+
+  // keeps points set before the scale was chosen or changed selectable, so they aren't silently lost
+  const pointOptions = $derived(
+    storyPoints === '' || pointValues.includes(storyPoints) ? pointValues : [storyPoints, ...pointValues],
+  );
 
   $effect(() => {
     discussionHidden = !discussionExpanded;
@@ -281,17 +290,26 @@
           <!-- Story Points -->
           <div>
             <label for="storyPoints" class="block text-gray-700 dark:text-gray-300 mb-2 text-lg">Story Points</label>
-            <input
-              class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                        rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                        focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-              id="storyPoints"
-              bind:value={storyPoints}
-              onchange={updatePoints}
-              maxlength={storyboardPointsMaxLength}
-              placeholder="Enter story points"
-              name="storyPoints"
-            />
+            {#if pointValues.length > 0}
+              <SelectInput id="storyPoints" name="storyPoints" value={storyPoints} onchange={updatePoints}>
+                <option value="">{$LL.storyboardNoPoints()}</option>
+                {#each pointOptions as point (point)}
+                  <option value={point}>{point}</option>
+                {/each}
+              </SelectInput>
+            {:else}
+              <input
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                          rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
+                          focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                id="storyPoints"
+                bind:value={storyPoints}
+                onchange={updatePoints}
+                maxlength={storyboardPointsMaxLength}
+                placeholder="Enter story points"
+                name="storyPoints"
+              />
+            {/if}
           </div>
 
           <!-- Story Link -->
