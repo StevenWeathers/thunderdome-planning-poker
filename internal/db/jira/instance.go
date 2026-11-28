@@ -90,7 +90,7 @@ func (s *Service) CreateInstance(ctx context.Context, userID string, host string
 }
 
 // UpdateInstance updates an existing JiraInstance.
-func (s *Service) UpdateInstance(ctx context.Context, instanceID string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error) {
+func (s *Service) UpdateInstance(ctx context.Context, userID string, instanceID string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error) {
 	instance := thunderdome.JiraInstance{}
 	at, err := db.Encrypt(accessToken, s.AESHashKey)
 	if err != nil {
@@ -100,9 +100,9 @@ func (s *Service) UpdateInstance(ctx context.Context, instanceID string, host st
 	err = s.DB.QueryRowContext(ctx,
 		`UPDATE thunderdome.jira_instance
 				SET host = $2, client_mail = $3, access_token = $4
-				WHERE id = $1
+				WHERE id = $1 AND user_id = $5
 				RETURNING id, user_id, host, client_mail, access_token, created_date, updated_date;`,
-		instanceID, host, clientMail, at,
+		instanceID, host, clientMail, at, userID,
 	).Scan(
 		&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken,
 		&instance.CreatedDate, &instance.UpdatedDate,
@@ -115,8 +115,9 @@ func (s *Service) UpdateInstance(ctx context.Context, instanceID string, host st
 }
 
 // DeleteInstance deletes an existing JiraInstance.
-func (s *Service) DeleteInstance(ctx context.Context, instanceID string) error {
-	result, err := s.DB.ExecContext(ctx, `DELETE FROM thunderdome.jira_instance WHERE id = $1;`, instanceID)
+func (s *Service) DeleteInstance(ctx context.Context, userID string, instanceID string) error {
+	result, err := s.DB.ExecContext(ctx, `DELETE FROM thunderdome.jira_instance WHERE id = $1 AND user_id = $2;`,
+		instanceID, userID)
 	if err != nil {
 		return fmt.Errorf("delete jira instance query error: %v", err)
 	}

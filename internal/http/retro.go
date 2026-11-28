@@ -700,8 +700,11 @@ func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 			return
 		}
 
-		action, err := s.RetroDataSvc.RetroActionCommentEdit(retroID, actionID, commentID, ra.Comment)
+		action, err := s.RetroDataSvc.RetroActionCommentEdit(retroID, actionID, commentID, sessionUserID, ra.Comment)
 		if err != nil {
+			if s.ownershipFailure(w, r, err) {
+				return
+			}
 			s.Logger.Ctx(ctx).Error("handleRetroActionCommentEdit error", zap.Error(err),
 				zap.String("retro_id", retroID), zap.String("action_id", actionID),
 				zap.String("comment_id", commentID), zap.String("session_user_id", sessionUserID))
@@ -751,8 +754,11 @@ func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 			return
 		}
 
-		action, err := s.RetroDataSvc.RetroActionCommentDelete(retroID, actionID, commentID)
+		action, err := s.RetroDataSvc.RetroActionCommentDelete(retroID, actionID, commentID, sessionUserID)
 		if err != nil {
+			if s.ownershipFailure(w, r, err) {
+				return
+			}
 			s.Logger.Ctx(ctx).Error("handleRetroActionCommentDelete error", zap.Error(err),
 				zap.String("retro_id", retroID), zap.String("action_id", actionID),
 				zap.String("comment_id", commentID), zap.String("session_user_id", sessionUserID))

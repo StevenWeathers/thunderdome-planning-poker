@@ -10,7 +10,6 @@ import (
 // CheckinCreate creates a checkin
 func (s *Service) CheckinCreate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
-		UserID      string `json:"userId"`
 		CheckinDate string `json:"checkinDate"`
 		TimeZone    string `json:"timeZone"`
 		Yesterday   string `json:"yesterday"`
@@ -24,7 +23,7 @@ func (s *Service) CheckinCreate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = s.CheckinService.CheckinCreate(context.Background(), teamID, c.UserID, c.CheckinDate, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+	err = s.CheckinService.CheckinCreate(context.Background(), teamID, userID, c.CheckinDate, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -49,7 +48,7 @@ func (s *Service) CheckinUpdate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = s.CheckinService.CheckinUpdate(context.Background(), c.CheckinID, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+	err = s.CheckinService.CheckinUpdate(context.Background(), teamID, userID, c.CheckinID, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -69,7 +68,7 @@ func (s *Service) CheckinDelete(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = s.CheckinService.CheckinDelete(context.Background(), c.CheckinID)
+	err = s.CheckinService.CheckinDelete(context.Background(), teamID, userID, c.CheckinID)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -103,9 +102,9 @@ func (s *Service) KudoCreate(ctx context.Context, teamID string, userID string, 
 
 // CommentCreate creates a checkin comment
 func (s *Service) CommentCreate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
+	// the author is always the acting user, never one named in the payload
 	var c struct {
 		CheckinID string `json:"checkinId"`
-		UserID    string `json:"userId"`
 		Comment   string `json:"comment"`
 	}
 	err := json.Unmarshal([]byte(eventValue), &c)
@@ -113,7 +112,7 @@ func (s *Service) CommentCreate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = s.CheckinService.CheckinComment(ctx, teamID, c.CheckinID, c.UserID, c.Comment)
+	err = s.CheckinService.CheckinComment(ctx, teamID, c.CheckinID, userID, c.Comment)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -127,7 +126,6 @@ func (s *Service) CommentCreate(ctx context.Context, teamID string, userID strin
 func (s *Service) CommentUpdate(ctx context.Context, teamID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var c struct {
 		CommentID string `json:"commentId"`
-		UserID    string `json:"userId"`
 		Comment   string `json:"comment"`
 	}
 	err := json.Unmarshal([]byte(eventValue), &c)
@@ -135,7 +133,7 @@ func (s *Service) CommentUpdate(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = s.CheckinService.CheckinCommentEdit(ctx, teamID, c.UserID, c.CommentID, c.Comment)
+	err = s.CheckinService.CheckinCommentEdit(ctx, teamID, userID, c.CommentID, c.Comment)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -155,7 +153,7 @@ func (s *Service) CommentDelete(ctx context.Context, teamID string, userID strin
 		return nil, nil, err, false
 	}
 
-	err = s.CheckinService.CheckinCommentDelete(ctx, c.CommentID)
+	err = s.CheckinService.CheckinCommentDelete(ctx, teamID, userID, c.CommentID)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -178,7 +176,7 @@ func (s *Service) KudoUpdate(ctx context.Context, teamID string, userID string, 
 		return nil, nil, err, false
 	}
 
-	kudo, err := s.CheckinService.KudoUpdate(ctx, teamID, c.KudoID, c.TargetUserID, c.KudosDate, c.Comment)
+	kudo, err := s.CheckinService.KudoUpdate(ctx, teamID, userID, c.KudoID, c.TargetUserID, c.KudosDate, c.Comment)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -198,7 +196,7 @@ func (s *Service) KudoDelete(ctx context.Context, teamID string, userID string, 
 		return nil, nil, err, false
 	}
 
-	err = s.CheckinService.KudoDelete(ctx, teamID, c.KudoID)
+	err = s.CheckinService.KudoDelete(ctx, teamID, userID, c.KudoID)
 	if err != nil {
 		return nil, nil, err, false
 	}

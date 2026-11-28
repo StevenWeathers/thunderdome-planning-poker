@@ -133,6 +133,16 @@ test.describe("Organization API", { tag: ["@api", "@organization"] }, () => {
   });
 
   test.describe("GET /organizations/{orgId}/teams", () => {
+    test("Org Member only lists the teams they belong to", async ({ orgTeamApiUser }) => {
+      const org = orgTeamApiUser.user.orgs[0];
+      const response = await orgTeamApiUser.context.get(`organizations/${org.id}/teams`);
+      expect(response.status()).toBe(200);
+      const teams = await response.json();
+      expect(teams.data.map((t: { id: string }) => t.id)).toEqual([
+        orgTeamApiUser.user.orgTeams[0].id,
+      ]);
+    });
+
     test("Org Admin can list all teams in their organization", async ({
       orgAdminApiUser,
       orgOwnerApiUser,

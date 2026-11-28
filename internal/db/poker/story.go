@@ -3,12 +3,29 @@ package poker
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"go.uber.org/zap"
 )
+
+// requireStoryInGame guards the stored procedures that look stories up by ID alone
+func (d *Service) requireStoryInGame(pokerID string, storyID string) error {
+	var exists bool
+	if err := d.DB.QueryRow(
+		`SELECT EXISTS (SELECT 1 FROM thunderdome.poker_story WHERE poker_id = $1 AND id = $2);`,
+		pokerID, storyID,
+	).Scan(&exists); err != nil {
+		return fmt.Errorf("poker story lookup query error: %v", err)
+	}
+	if !exists {
+		return errors.New("STORY_NOT_FOUND")
+	}
+
+	return nil
+}
 
 // GetStories retrieves stories for given poker game
 func (d *Service) GetStories(pokerID string, userID string) []*thunderdome.Story {
@@ -97,6 +114,9 @@ func (d *Service) CreateStory(pokerID string, name string, storyType string, ref
 
 // ActivateStoryVoting sets the story by ID to active, wipes any previous votes/points, and disables votingLock
 func (d *Service) ActivateStoryVoting(pokerID string, storyID string) ([]*thunderdome.Story, error) {
+	if err := d.requireStoryInGame(pokerID, storyID); err != nil {
+		return nil, err
+	}
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_activate($1, $2);`, pokerID, storyID,
 	); err != nil {
@@ -124,8 +144,8 @@ func (d *Service) SetVote(pokerID string, userID string, storyID string, voteVal
 				ON newVote."warriorId" = oldVote."warriorId"
 			) data
 		)
-		WHERE p1.id = $1;`,
-		storyID, userID, voteValue); err != nil {
+		WHERE p1.id = $1 AND p1.poker_id = $4;`,
+		storyID, userID, voteValue, pokerID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_user_vote_set error", zap.Error(err),
 			zap.String("PokerID", pokerID), zap.String("UserID", userID),
 			zap.String("StoryID", storyID), zap.String("VoteValue", voteValue))
@@ -168,8 +188,8 @@ func (d *Service) RetractVote(pokerID string, userID string, storyID string) ([]
 				WHERE oldVote."warriorId" != $2
 			) data
 		)
-		WHERE p1.id = $1;
-    `, storyID, userID); err != nil {
+		WHERE p1.id = $1 AND p1.poker_id = $3;
+    `, storyID, userID, pokerID); err != nil {
 		d.Logger.Error("poker retract vote query error", zap.Error(err),
 			zap.String("PokerID", pokerID), zap.String("UserID", userID), zap.String("StoryID", storyID))
 		return nil, fmt.Errorf("poker retract vote query error: %v", err)
@@ -226,8 +246,8 @@ func (d *Service) UpdateStory(pokerID string, storyID string, name string, story
         description = $6,
         acceptance_criteria = $7,
         priority = $8
-    WHERE id = $1;`,
-		storyID, name, storyType, referenceID, link, sanitizedDescription, sanitizedAcceptanceCriteria, priority); err != nil {
+    WHERE id = $1 AND poker_id = $9;`,
+		storyID, name, storyType, referenceID, link, sanitizedDescription, sanitizedAcceptanceCriteria, priority, pokerID); err != nil {
 		d.Logger.Error("error getting poker story", zap.Error(err),
 			zap.String("PokerID", pokerID), zap.String("StoryID", storyID))
 	}
@@ -239,6 +259,9 @@ func (d *Service) UpdateStory(pokerID string, storyID string, name string, story
 
 // DeleteStory removes a story from the current game by ID
 func (d *Service) DeleteStory(pokerID string, storyID string) ([]*thunderdome.Story, error) {
+	if err := d.requireStoryInGame(pokerID, storyID); err != nil {
+		return nil, err
+	}
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_delete($1, $2);`, pokerID, storyID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_story_delete error", zap.Error(err),
@@ -255,7 +278,7 @@ func (d *Service) ArrangeStory(pokerID string, storyID string, beforeStoryID str
 	if beforeStoryID == "" {
 		_, err := d.DB.Exec(`UPDATE thunderdome.poker_story SET
 			position = (SELECT max(position) FROM thunderdome.poker_story WHERE poker_id = $1) + 1
-			WHERE id = $2;`,
+			WHERE id = $2 AND poker_id = $1;`,
 			pokerID, storyID)
 		if err != nil {
 			d.Logger.Error("poker ArrangeStory get beforeStoryId error", zap.Error(err),
@@ -267,7 +290,7 @@ func (d *Service) ArrangeStory(pokerID string, storyID string, beforeStoryID str
 			  -- find position of item referenced in before argument (default to 0)
 			  with "before_position" as (
 				select coalesce(
-				  (select "position" from thunderdome.poker_story where id = $3),
+				  (select "position" from thunderdome.poker_story where id = $3 and poker_id = $1),
 				  -- in case item was not found, use last item in list and add 1 to add item to end of list
 				  (select max("position") + 1 from thunderdome.poker_story where poker_id = $1),
 				  -- in case no item exists, use 0
@@ -294,7 +317,7 @@ func (d *Service) ArrangeStory(pokerID string, storyID string, beforeStoryID str
 			  -- average both positions to fit new row into gap
 			  select (b.position + p.position) / 2
 			  from "before_position" b, "before_prev_position" p
-			) WHERE id = $2;`,
+			) WHERE id = $2 AND poker_id = $1;`,
 			pokerID, storyID, beforeStoryID)
 		if err != nil {
 			d.Logger.Error("poker ArrangeStory error", zap.Error(err),
@@ -310,6 +333,9 @@ func (d *Service) ArrangeStory(pokerID string, storyID string, beforeStoryID str
 
 // FinalizeStory sets story to active: false and updates the points
 func (d *Service) FinalizeStory(pokerID string, storyID string, points string) ([]*thunderdome.Story, error) {
+	if err := d.requireStoryInGame(pokerID, storyID); err != nil {
+		return nil, err
+	}
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_finalize($1, $2, $3);`, pokerID, storyID, points); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_story_finalize error", zap.Error(err),

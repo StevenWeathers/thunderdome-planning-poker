@@ -204,9 +204,11 @@ func (d *CheckinService) CheckinCreate(
 	return nil
 }
 
-// CheckinUpdate updates a team checkin
+// CheckinUpdate updates a team checkin on behalf of its owner or an admin
 func (d *CheckinService) CheckinUpdate(
 	ctx context.Context,
+	teamID string,
+	userID string,
 	checkinID string,
 	yesterday string, today string, blockers string, discuss string,
 	goalsMet bool,
@@ -216,10 +218,10 @@ func (d *CheckinService) CheckinUpdate(
 	sanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(blockers)
 	sanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(discuss)
 
-	if _, err := d.DB.ExecContext(ctx, `
-		UPDATE thunderdome.team_checkin
+	result, err := d.DB.ExecContext(ctx, `
+		UPDATE thunderdome.team_checkin c
 		SET Yesterday = $2, today = $3, blockers = $4, discuss = $5, goals_met = $6
-		WHERE id = $1;
+		WHERE c.id = $1 AND c.team_id = $7 AND `+db.AuthorOrTeamAdminCondition("c.user_id", "c.team_id", "$8")+`;
 		`,
 		checkinID,
 		sanitizedYesterday,
@@ -227,25 +229,38 @@ func (d *CheckinService) CheckinUpdate(
 		sanitizedBlockers,
 		sanitizedDiscuss,
 		goalsMet,
-	); err != nil {
+		teamID,
+		userID,
+	)
+	if err != nil {
 		return fmt.Errorf("checkin update query error: %v", err)
 	}
 
-	return nil
+	return d.requireCheckinWrite(ctx, result, teamID, checkinID)
 }
 
-// CheckinDelete deletes a team checkin
-func (d *CheckinService) CheckinDelete(ctx context.Context, checkinID string) error {
-	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.team_checkin WHERE id = $1;`,
+// CheckinDelete deletes a team checkin on behalf of its owner or an admin
+func (d *CheckinService) CheckinDelete(ctx context.Context, teamID string, userID string, checkinID string) error {
+	result, err := d.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.team_checkin c
+		WHERE c.id = $1 AND c.team_id = $2 AND `+db.AuthorOrTeamAdminCondition("c.user_id", "c.team_id", "$3")+`;`,
 		checkinID,
+		teamID,
+		userID,
 	)
 
 	if err != nil {
 		return fmt.Errorf("checkin delete query error: %v", err)
 	}
 
-	return nil
+	return d.requireCheckinWrite(ctx, result, teamID, checkinID)
+}
+
+// requireCheckinWrite explains why a check-in write matched nothing
+func (d *CheckinService) requireCheckinWrite(ctx context.Context, result sql.Result, teamID string, checkinID string) error {
+	return d.requireOwnedWrite(ctx, result,
+		`SELECT EXISTS (SELECT 1 FROM thunderdome.team_checkin WHERE id = $1 AND team_id = $2);`,
+		checkinID, teamID, errCheckinNotFound, "REQUIRES_CHECKIN_OWNER")
 }
 
 // CheckinComment comments on a team checkin
@@ -269,37 +284,31 @@ func (d *CheckinService) CheckinComment(
 		return errors.New("REQUIRES_TEAM_USER")
 	}
 
-	if _, err := d.DB.ExecContext(ctx, `
-		INSERT INTO thunderdome.team_checkin_comment (checkin_id, user_id, comment) VALUES ($1, $2, $3);
+	result, err := d.DB.ExecContext(ctx, `
+		INSERT INTO thunderdome.team_checkin_comment (checkin_id, user_id, comment)
+		SELECT id, $2::uuid, $3 FROM thunderdome.team_checkin WHERE id = $1 AND team_id = $4;
 		`,
 		checkinID,
 		userID,
 		comment,
-	); err != nil {
+		teamID,
+	)
+	if err != nil {
 		return fmt.Errorf("checkin comment query error: %v", err)
 	}
 
-	return nil
+	return requireRow(result, errCheckinNotFound)
 }
 
-// CheckinCommentEdit edits a team checkin comment
+// CheckinCommentEdit edits a team checkin comment on behalf of its author or an admin
 func (d *CheckinService) CheckinCommentEdit(ctx context.Context, teamID string, userID string, commentID string, comment string) error {
-	var userCount int
-	// target user must be on team to comment on checkin
-	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
+	result, err := d.DB.ExecContext(ctx,
+		`UPDATE thunderdome.team_checkin_comment cc SET comment = $4, updated_date = NOW()
+		FROM thunderdome.team_checkin c
+		WHERE cc.id = $1 AND c.id = cc.checkin_id AND c.team_id = $2 AND `+db.AuthorOrTeamAdminCondition("cc.user_id", "c.team_id", "$3")+`;`,
+		commentID,
 		teamID,
 		userID,
-	).Scan(&userCount)
-	if usrErr != nil {
-		return fmt.Errorf("checkin edit comment get team user error: %v", usrErr)
-	}
-	if userCount != 1 {
-		return errors.New("REQUIRES_TEAM_USER")
-	}
-
-	_, err := d.DB.ExecContext(ctx,
-		`UPDATE thunderdome.team_checkin_comment SET comment = $2, updated_date = NOW() WHERE id = $1;`,
-		commentID,
 		comment,
 	)
 
@@ -307,19 +316,72 @@ func (d *CheckinService) CheckinCommentEdit(ctx context.Context, teamID string, 
 		return fmt.Errorf("checkin edit comment query error: %v", err)
 	}
 
-	return nil
+	return d.requireCommentWrite(ctx, result, teamID, commentID)
 }
 
-// CheckinCommentDelete deletes a team checkin comment
-func (d *CheckinService) CheckinCommentDelete(ctx context.Context, commentID string) error {
-	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.team_checkin_comment WHERE id = $1;`,
+// CheckinCommentDelete deletes a team checkin comment on behalf of its author or an admin
+func (d *CheckinService) CheckinCommentDelete(ctx context.Context, teamID string, userID string, commentID string) error {
+	result, err := d.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.team_checkin_comment cc
+		USING thunderdome.team_checkin c
+		WHERE cc.id = $1 AND c.id = cc.checkin_id AND c.team_id = $2 AND `+db.AuthorOrTeamAdminCondition("cc.user_id", "c.team_id", "$3")+`;`,
 		commentID,
+		teamID,
+		userID,
 	)
 
 	if err != nil {
 		return fmt.Errorf("checkin delete comment query error: %v", err)
 	}
 
+	return d.requireCommentWrite(ctx, result, teamID, commentID)
+}
+
+// requireCommentWrite explains why a comment write matched nothing
+func (d *CheckinService) requireCommentWrite(ctx context.Context, result sql.Result, teamID string, commentID string) error {
+	return d.requireOwnedWrite(ctx, result,
+		`SELECT EXISTS (
+			SELECT 1 FROM thunderdome.team_checkin_comment cc
+			JOIN thunderdome.team_checkin c ON c.id = cc.checkin_id
+			WHERE cc.id = $1 AND c.team_id = $2
+		);`,
+		commentID, teamID, errCheckinCommentNotFound, "REQUIRES_COMMENT_OWNER")
+}
+
+// requireOwnedWrite tells apart a missing record (notFound) from one the user may not change (forbidden)
+func (d *CheckinService) requireOwnedWrite(
+	ctx context.Context, result sql.Result, existsQuery string, id string, teamID string, notFound string, forbidden string,
+) error {
+	writeErr := requireRow(result, notFound)
+	if writeErr == nil {
+		return nil
+	}
+
+	var exists bool
+	if err := d.DB.QueryRowContext(ctx, existsQuery, id, teamID).Scan(&exists); err != nil {
+		return fmt.Errorf("ownership lookup query error: %v", err)
+	}
+	if exists {
+		return errors.New(forbidden)
+	}
+
+	return writeErr
+}
+
+// requireRow returns a notFound error when a write scoped to its parent matched nothing
+func requireRow(result sql.Result, notFound string) error {
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("rows affected error: %v", err)
+	}
+	if rows == 0 {
+		return errors.New(notFound)
+	}
+
 	return nil
 }
+
+const (
+	errCheckinNotFound        = "CHECKIN_NOT_FOUND"
+	errCheckinCommentNotFound = "CHECKIN_COMMENT_NOT_FOUND"
+)

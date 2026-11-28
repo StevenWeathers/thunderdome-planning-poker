@@ -69,6 +69,43 @@ func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID s
 	return role, nil
 }
 
+// OrganizationPathExists checks that the team, or the department when teamID is empty, belongs to the organization.
+// When both departmentID and teamID are given the team must also belong to the department.
+func (d *OrganizationService) OrganizationPathExists(ctx context.Context, orgID string, departmentID string, teamID string) (bool, error) {
+	var exists bool
+	var row *sql.Row
+
+	if teamID == "" {
+		row = d.DB.QueryRowContext(ctx,
+			`SELECT EXISTS (
+				SELECT 1 FROM thunderdome.organization_department
+				WHERE organization_id = $1 AND id = $2
+			);`,
+			orgID,
+			departmentID,
+		)
+	} else {
+		row = d.DB.QueryRowContext(ctx,
+			`SELECT EXISTS (
+				SELECT 1 FROM thunderdome.team t
+				LEFT JOIN thunderdome.organization_department od ON od.id = t.department_id
+				WHERE COALESCE(t.organization_id, od.organization_id) = $1
+					AND t.id = $3
+					AND ($2 = '' OR t.department_id = NULLIF($2, '')::uuid)
+			);`,
+			orgID,
+			departmentID,
+			teamID,
+		)
+	}
+
+	if err := row.Scan(&exists); err != nil {
+		return false, fmt.Errorf("organization path exists query error: %v", err)
+	}
+
+	return exists, nil
+}
+
 // OrganizationListByUser gets a list of organizations the user is apart of
 func (d *OrganizationService) OrganizationListByUser(ctx context.Context, userID string, limit int, offset int) []*thunderdome.UserOrganization {
 	var organizations = make([]*thunderdome.UserOrganization, 0)
@@ -291,9 +328,10 @@ func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context,
 }
 
 // OrganizationDeleteUserInvite deletes a user organization invite
-func (d *OrganizationService) OrganizationDeleteUserInvite(ctx context.Context, inviteID string) error {
+func (d *OrganizationService) OrganizationDeleteUserInvite(ctx context.Context, orgID string, inviteID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.organization_user_invite where invite_id = $1;`,
+		`DELETE FROM thunderdome.organization_user_invite WHERE organization_id = $1 AND invite_id = $2;`,
+		orgID,
 		inviteID,
 	)
 
@@ -414,6 +452,54 @@ func (d *OrganizationService) OrganizationTeamList(ctx context.Context, orgID st
 		}
 	} else {
 		d.Logger.Ctx(ctx).Error("organization_team_list query error", zap.Error(err))
+	}
+
+	return teams
+}
+
+// OrganizationTeamListByUser gets a list of the organization teams the user is a member of
+func (d *OrganizationService) OrganizationTeamListByUser(ctx context.Context, orgID string, userID string, limit int, offset int) []*thunderdome.Team {
+	return d.queryTeams(ctx, "OrganizationTeamListByUser",
+		`SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM thunderdome.team t
+        JOIN thunderdome.team_user tu ON tu.team_id = t.id AND tu.user_id = $2
+        WHERE t.organization_id = $1
+        ORDER BY t.created_date
+		LIMIT $3
+		OFFSET $4;`,
+		orgID,
+		userID,
+		limit,
+		offset,
+	)
+}
+
+// queryTeams runs a query selecting team id, name, created_date and updated_date
+func (d *OrganizationService) queryTeams(ctx context.Context, action string, query string, args ...any) []*thunderdome.Team {
+	var teams = make([]*thunderdome.Team, 0)
+	rows, err := d.DB.QueryContext(ctx, query, args...)
+	if err != nil {
+		d.Logger.Ctx(ctx).Error(action+" query error", zap.Error(err))
+		return teams
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var team thunderdome.Team
+
+		if err := rows.Scan(
+			&team.ID,
+			&team.Name,
+			&team.CreatedDate,
+			&team.UpdatedDate,
+		); err != nil {
+			d.Logger.Ctx(ctx).Error(action+" query scan error", zap.Error(err))
+		} else {
+			teams = append(teams, &team)
+		}
+	}
+	if err := rows.Err(); err != nil {
+		d.Logger.Ctx(ctx).Error(action+" rows error", zap.Error(err))
 	}
 
 	return teams

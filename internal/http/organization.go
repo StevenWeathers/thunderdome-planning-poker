@@ -228,7 +228,7 @@ func (s *Service) handleOrganizationUpdate() http.HandlerFunc {
 // handleGetOrganizationTeams gets a list of teams associated to the organization
 //
 //	@Summary		Get Organization Teams
-//	@Description	Get a list of organization teams
+//	@Description	Get a list of organization teams, non organization admins only get teams they are a member of
 //	@Tags			organization
 //	@Produce		json
 //	@Param			orgId	path	string	true	"organization id"
@@ -252,7 +252,13 @@ func (s *Service) handleGetOrganizationTeams() http.HandlerFunc {
 		}
 		limit, offset := getLimitOffsetFromRequest(r)
 
-		teams := s.OrganizationDataSvc.OrganizationTeamList(ctx, orgID, limit, offset)
+		var teams []*thunderdome.Team
+		if ctx.Value(contextKeyOrgRole).(string) == thunderdome.AdminUserType {
+			teams = s.OrganizationDataSvc.OrganizationTeamList(ctx, orgID, limit, offset)
+		} else {
+			sessionUserID := ctx.Value(contextKeyUserID).(string)
+			teams = s.OrganizationDataSvc.OrganizationTeamListByUser(ctx, orgID, sessionUserID, limit, offset)
+		}
 
 		s.Success(w, r, http.StatusOK, teams, nil)
 	}
@@ -814,7 +820,7 @@ func (s *Service) handleDeleteOrganizationUserInvite() http.HandlerFunc {
 			return
 		}
 
-		err := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, inviteID)
+		err := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgID, inviteID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleDeleteOrganizationUserInvite error", zap.Error(err), zap.String("invite_id", inviteID),

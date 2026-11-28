@@ -165,7 +165,7 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 			return
 		}
 
-		instance, err := s.JiraDataSvc.UpdateInstance(ctx, instanceID, req.Host, req.ClientMail, req.AccessToken)
+		instance, err := s.JiraDataSvc.UpdateInstance(ctx, userID, instanceID, req.Host, req.ClientMail, req.AccessToken)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleJiraInstanceUpdate error", zap.Error(err), zap.String("entity_user_id", userID),
@@ -211,7 +211,7 @@ func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 			return
 		}
 
-		err := s.JiraDataSvc.DeleteInstance(ctx, instanceID)
+		err := s.JiraDataSvc.DeleteInstance(ctx, userID, instanceID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleJiraInstanceDelete error", zap.Error(err), zap.String("entity_user_id", userID),
@@ -285,8 +285,15 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 
 		instance, err := s.JiraDataSvc.GetInstanceByID(ctx, instanceID)
 		errorTitle := "handleJiraStoryJQLSearch error"
-
-		s.logJiraSearchError(err, errorTitle, w, r, ctx, userID, instanceID, fields, req)
+		if err != nil {
+			s.logJiraSearchError(err, errorTitle, w, r, ctx, userID, instanceID, fields, req)
+			return
+		}
+		// the search uses the instance's stored credentials, so it must be the user's own
+		if instance.UserID != userID {
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "JIRA_INSTANCE_NOT_FOUND"))
+			return
+		}
 
 		// check here for DataCenter
 		if instance.JiraDataCenter {

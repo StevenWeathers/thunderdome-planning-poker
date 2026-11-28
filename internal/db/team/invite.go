@@ -44,9 +44,10 @@ func (d *Service) TeamUserGetInviteByID(ctx context.Context, inviteID string) (t
 }
 
 // TeamDeleteUserInvite deletes a user team invite
-func (d *Service) TeamDeleteUserInvite(ctx context.Context, inviteID string) error {
+func (d *Service) TeamDeleteUserInvite(ctx context.Context, teamID string, inviteID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.team_user_invite where invite_id = $1;`,
+		`DELETE FROM thunderdome.team_user_invite WHERE team_id = $1 AND invite_id = $2;`,
+		teamID,
 		inviteID,
 	)
 

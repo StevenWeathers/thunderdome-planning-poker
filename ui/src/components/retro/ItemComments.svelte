@@ -12,7 +12,7 @@
     toggleComments?: any;
     item?: RetroAction;
     users?: RetroUser[];
-    isFacilitator?: boolean;
+    
     sendSocketEvent?: any;
   }
 
@@ -23,7 +23,7 @@
       comments: [] as RetroActionComment[],
     } as RetroAction,
     users = [] as RetroUser[],
-    isFacilitator = false,
+    
     sendSocketEvent = (event: string, value: any) => {},
   }: Props = $props();
 
@@ -77,13 +77,7 @@
     <CommentsHeader commentsCount={item.comments.length} />
     <div class="flex flex-col gap-3">
       {#each item.comments as comment}
-        <Comment
-          {comment}
-          {userMap}
-          isAdmin={isFacilitator}
-          handleEdit={handleCommentEdit}
-          handleDelete={handleCommentDelete}
-        />
+        <Comment {comment} {userMap} handleEdit={handleCommentEdit} handleDelete={handleCommentDelete} />
       {/each}
     </div>
     {#if item.comments.length === 0}

@@ -67,7 +67,7 @@ func (s *Service) ItemCommentEdit(ctx context.Context, RetroID string, UserID st
 		return nil, nil, err, false
 	}
 
-	items, err := s.RetroService.ItemCommentEdit(RetroID, rs.CommentID, rs.Comment)
+	items, err := s.RetroService.ItemCommentEdit(RetroID, UserID, rs.CommentID, rs.Comment)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -88,7 +88,7 @@ func (s *Service) ItemCommentDelete(ctx context.Context, RetroID string, UserID 
 		return nil, nil, err, false
 	}
 
-	items, err := s.RetroService.ItemCommentDelete(RetroID, rs.CommentID)
+	items, err := s.RetroService.ItemCommentDelete(RetroID, UserID, rs.CommentID)
 	if err != nil {
 		return nil, nil, err, false
 	}
@@ -131,7 +131,7 @@ func (s *Service) ItemReactionDelete(ctx context.Context, RetroID string, UserID
 		return nil, nil, err, false
 	}
 
-	items, err := s.RetroService.ItemReactionDelete(RetroID, rs.ReactionID)
+	items, err := s.RetroService.ItemReactionDelete(RetroID, UserID, rs.ReactionID)
 	if err != nil {
 		return nil, nil, err, false
 	}

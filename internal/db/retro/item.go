@@ -1,7 +1,9 @@
 package retro
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -54,11 +56,13 @@ func (d *Service) GroupRetroItem(retroID string, itemID string, groupID string) 
 	return ri, nil
 }
 
-// DeleteRetroItem removes item from the current board by ID
+// DeleteRetroItem removes the user's own item from the current board
 func (d *Service) DeleteRetroItem(retroID string, userID string, itemType string, itemID string) ([]*thunderdome.RetroItem, error) {
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.retro_item WHERE id = $1 AND type = $2;`, itemID, itemType); err != nil {
-		d.Logger.Error("delete retro item error", zap.Error(err))
+	result, err := d.DB.Exec(
+		`DELETE FROM thunderdome.retro_item WHERE id = $1 AND type = $2 AND retro_id = $3 AND user_id = $4;`,
+		itemID, itemType, retroID, userID)
+	if err := requireChange(result, err, "ITEM_CHANGE_NOT_ALLOWED"); err != nil {
+		return nil, err
 	}
 
 	items := d.GetRetroItems(retroID)
@@ -209,10 +213,12 @@ func (d *Service) ItemTagRemove(retroID string, itemID string, tag string) ([]*t
 // ItemCommentAdd adds a comment to a retro item
 func (d *Service) ItemCommentAdd(retroID string, itemID string, userID string, comment string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.retro_item_comment (item_id, user_id, comment) VALUES ($1, $2, $3);`,
+		`INSERT INTO thunderdome.retro_item_comment (item_id, user_id, comment)
+		SELECT id, $2::uuid, $3 FROM thunderdome.retro_item WHERE id = $1 AND retro_id = $4;`,
 		itemID,
 		userID,
 		comment,
+		retroID,
 	); err != nil {
 		d.Logger.Error("ItemCommentAdd error", zap.Error(err))
 	}
@@ -222,14 +228,19 @@ func (d *Service) ItemCommentAdd(retroID string, itemID string, userID string, c
 	return items, nil
 }
 
-// ItemCommentEdit edits a retro item comment
-func (d *Service) ItemCommentEdit(retroID string, commentID string, comment string) ([]*thunderdome.RetroItem, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.retro_item_comment SET comment = $2 WHERE id = $1;`,
+// ItemCommentEdit edits the user's own retro item comment
+func (d *Service) ItemCommentEdit(retroID string, userID string, commentID string, comment string) ([]*thunderdome.RetroItem, error) {
+	result, err := d.DB.Exec(
+		`UPDATE thunderdome.retro_item_comment c SET comment = $4
+		FROM thunderdome.retro_item i
+		WHERE c.id = $1 AND i.id = c.item_id AND i.retro_id = $2 AND c.user_id = $3;`,
 		commentID,
+		retroID,
+		userID,
 		comment,
-	); err != nil {
-		d.Logger.Error("ItemCommentEdit error", zap.Error(err))
+	)
+	if err := requireChange(result, err, "COMMENT_CHANGE_NOT_ALLOWED"); err != nil {
+		return nil, err
 	}
 
 	items := d.GetRetroItems(retroID)
@@ -237,13 +248,18 @@ func (d *Service) ItemCommentEdit(retroID string, commentID string, comment stri
 	return items, nil
 }
 
-// ItemCommentDelete deletes a retro item comment
-func (d *Service) ItemCommentDelete(retroID string, commentID string) ([]*thunderdome.RetroItem, error) {
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.retro_item_comment WHERE id = $1;`,
+// ItemCommentDelete deletes the user's own retro item comment
+func (d *Service) ItemCommentDelete(retroID string, userID string, commentID string) ([]*thunderdome.RetroItem, error) {
+	result, err := d.DB.Exec(
+		`DELETE FROM thunderdome.retro_item_comment c
+		USING thunderdome.retro_item i
+		WHERE c.id = $1 AND i.id = c.item_id AND i.retro_id = $2 AND c.user_id = $3;`,
 		commentID,
-	); err != nil {
-		d.Logger.Error("ItemCommentDelete error", zap.Error(err))
+		retroID,
+		userID,
+	)
+	if err := requireChange(result, err, "COMMENT_CHANGE_NOT_ALLOWED"); err != nil {
+		return nil, err
 	}
 
 	items := d.GetRetroItems(retroID)
@@ -254,10 +270,12 @@ func (d *Service) ItemCommentDelete(retroID string, commentID string) ([]*thunde
 // ItemReactionAdd adds a reaction to a retro item
 func (d *Service) ItemReactionAdd(retroID string, itemID string, userID string, reaction string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.retro_item_reaction (item_id, user_id, reaction) VALUES ($1, $2, $3);`,
+		`INSERT INTO thunderdome.retro_item_reaction (item_id, user_id, reaction)
+		SELECT id, $2::uuid, $3 FROM thunderdome.retro_item WHERE id = $1 AND retro_id = $4;`,
 		itemID,
 		userID,
 		reaction,
+		retroID,
 	); err != nil {
 		d.Logger.Error("ItemReactionAdd error", zap.Error(err))
 	}
@@ -267,13 +285,34 @@ func (d *Service) ItemReactionAdd(retroID string, itemID string, userID string, 
 	return items, nil
 }
 
-// ItemReactionDelete deletes a retro item reaction
-func (d *Service) ItemReactionDelete(retroID string, reactionID string) ([]*thunderdome.RetroItem, error) {
-	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.retro_item_reaction WHERE id = $1;`,
+// requireChange fails when a write errored or its ownership conditions matched nothing
+func requireChange(result sql.Result, execErr error, refused string) error {
+	if execErr != nil {
+		return fmt.Errorf("retro write query error: %v", execErr)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("retro write rows affected error: %v", err)
+	}
+	if rows == 0 {
+		return errors.New(refused)
+	}
+
+	return nil
+}
+
+// ItemReactionDelete removes the user's own reaction from a retro item
+func (d *Service) ItemReactionDelete(retroID string, userID string, reactionID string) ([]*thunderdome.RetroItem, error) {
+	result, err := d.DB.Exec(
+		`DELETE FROM thunderdome.retro_item_reaction r
+		USING thunderdome.retro_item i
+		WHERE r.id = $1 AND i.id = r.item_id AND i.retro_id = $2 AND r.user_id = $3;`,
 		reactionID,
-	); err != nil {
-		d.Logger.Error("ItemReactionDelete error", zap.Error(err))
+		retroID,
+		userID,
+	)
+	if err := requireChange(result, err, "REACTION_CHANGE_NOT_ALLOWED"); err != nil {
+		return nil, err
 	}
 
 	items := d.GetRetroItems(retroID)

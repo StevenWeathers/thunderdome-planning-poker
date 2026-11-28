@@ -186,6 +186,6 @@
   {@render children?.()}
 
   {#if showComments}
-    <ItemComments toggleComments={toggleComments(null)} {item} {users} {isFacilitator} {sendSocketEvent} />
+    <ItemComments toggleComments={toggleComments(null)} {item} {users} {sendSocketEvent} />
   {/if}
 </div>

@@ -32,7 +32,7 @@ test.describe("Team Checkin page", { tag: "@checkin" }, () => {
       const testOrgName = "E2E TEST ORGANIZATION";
       const teamPage = new TeamCheckinPage(registeredPage.page);
       const org = await registeredPage.createOrg(testOrgName);
-      const team = await registeredPage.createTeam(testTeamName);
+      const team = await registeredPage.createOrgTeam(org.id, testTeamName);
 
       await teamPage.gotoOrg(org.id, team.id);
       await expect(teamPage.page.locator("a", { hasText: testOrgName })).toBeVisible();

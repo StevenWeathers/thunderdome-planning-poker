@@ -1,6 +1,7 @@
 package retro
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -41,6 +42,27 @@ func (d *Service) RetroGetUsers(retroID string) []*thunderdome.RetroUser {
 	}
 
 	return users
+}
+
+// CanUserAccessRetro checks whether a user may change a retro's actions: they joined, facilitate or own it,
+// or belong to (or administer) its team. Returns sql.ErrNoRows when the retro does not exist.
+func (d *Service) CanUserAccessRetro(ctx context.Context, retroID string, userID string) (bool, error) {
+	var allowed bool
+
+	if err := d.DB.QueryRowContext(ctx, `
+		SELECT COALESCE(r.owner_id = $2, FALSE)
+			OR EXISTS (SELECT 1 FROM thunderdome.retro_user ru WHERE ru.retro_id = r.id AND ru.user_id = $2)
+			OR EXISTS (SELECT 1 FROM thunderdome.retro_facilitator rf WHERE rf.retro_id = r.id AND rf.user_id = $2)
+			OR EXISTS (SELECT 1 FROM thunderdome.team_user tu WHERE tu.team_id = r.team_id AND tu.user_id = $2)
+			OR `+db.TeamAdminCondition("r.team_id", "$2")+`
+		FROM thunderdome.retro r
+		WHERE r.id = $1;`,
+		retroID, userID,
+	).Scan(&allowed); err != nil {
+		return false, fmt.Errorf("can user access retro query error: %w", err)
+	}
+
+	return allowed, nil
 }
 
 // RetroAddUser adds a user by ID to the retro by ID
