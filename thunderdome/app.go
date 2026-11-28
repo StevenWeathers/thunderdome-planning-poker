@@ -48,6 +48,7 @@ type AppConfig struct {
 	FeatureRetro                bool
 	FeatureStoryboard           bool
 	FeatureProject              bool
+	FeatureHealthCheck          bool
 	RequireTeams                bool
 	RepoURL                     string
 	SubscriptionsEnabled        bool

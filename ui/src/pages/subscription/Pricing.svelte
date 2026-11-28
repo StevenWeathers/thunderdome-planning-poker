@@ -14,6 +14,10 @@
     Package,
     RefreshCw,
     GiftIcon,
+    HeartPulse,
+    Tags,
+    SwatchBook,
+    Share2,
   } from '@lucide/svelte';
   import PayPeriodToggle from '../../components/pricing/PayPeriodToggle.svelte';
   import { onMount } from 'svelte';
@@ -23,7 +27,7 @@
   import PlanBox from '../../components/pricing/PlanBox.svelte';
   import GithubIcon from '../../components/icons/Github.svelte';
 
-  const { RepoURL } = AppConfig;
+  const { RepoURL, FeatureHealthCheck } = AppConfig;
 
   let selectedPaymentPeriod = $state('month');
 
@@ -244,7 +248,8 @@
               >
                 <BarChart3 class="w-4 h-4 text-purple-600 dark:text-purple-300" />
               </div>
-              <span class="text-gray-700 dark:text-gray-300 font-medium">Custom Poker Estimation Scales</span>
+              <span class="text-gray-700 dark:text-gray-300 font-medium">Custom estimation scales for Planning Poker and Story Mapping</span
+              >
             </li>
             <li
               class="group flex items-center p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 shadow-sm hover:shadow-md"
@@ -280,6 +285,38 @@
               </div>
               <span class="text-gray-700 dark:text-gray-300 font-medium">Custom Retrospective Templates</span>
             </li>
+            <li
+              class="group flex items-center p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              <div
+                class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-purple-100 dark:bg-purple-800 rounded-full mr-3 group-hover:scale-110 transition-transform duration-200"
+              >
+                <Tags class="w-4 h-4 text-purple-600 dark:text-purple-300" />
+              </div>
+              <span class="text-gray-700 dark:text-gray-300 font-medium">Custom tags for retrospective brainstorm items</span>
+            </li>
+            <li
+              class="group flex items-center p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              <div
+                class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-purple-100 dark:bg-purple-800 rounded-full mr-3 group-hover:scale-110 transition-transform duration-200"
+              >
+                <SwatchBook class="w-4 h-4 text-purple-600 dark:text-purple-300" />
+              </div>
+              <span class="text-gray-700 dark:text-gray-300 font-medium">Custom story map persona and color legend templates</span>
+            </li>
+            {#if FeatureHealthCheck}
+              <li
+                class="group flex items-center p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <div
+                  class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-purple-100 dark:bg-purple-800 rounded-full mr-3 group-hover:scale-110 transition-transform duration-200"
+                >
+                  <HeartPulse class="w-4 h-4 text-purple-600 dark:text-purple-300" />
+                </div>
+                <span class="text-gray-700 dark:text-gray-300 font-medium">Squad Health Checks with anonymous responses and custom templates</span>
+              </li>
+            {/if}
             <li
               class="group flex items-center p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 shadow-sm hover:shadow-md"
             >
@@ -363,6 +400,16 @@
               <span class="text-gray-700 dark:text-gray-300 font-medium"
                 >Configure Organization default settings for creating Team Retrospectives and Planning Poker sessions</span
               >
+            </li>
+            <li
+              class="group flex items-center p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/50 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all duration-200"
+            >
+              <div
+                class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-green-100 dark:bg-green-800 rounded-full mr-3 group-hover:scale-110 transition-transform duration-200"
+              >
+                <Share2 class="w-4 h-4 text-green-600 dark:text-green-300" />
+              </div>
+              <span class="text-gray-700 dark:text-gray-300 font-medium">Share custom templates, tags and estimation scales across all your teams</span>
             </li>
             {#if AppConfig.FeatureProject}
               <li

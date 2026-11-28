@@ -71,6 +71,9 @@
   import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
   import RetroTags from './pages/admin/retro/RetroTags.svelte';
   import PersonaTemplates from './pages/admin/storyboard/PersonaTemplates.svelte';
+  import HealthCheckTemplates from './pages/admin/healthcheck/HealthCheckTemplates.svelte';
+  import TeamHealthChecks from './pages/team/TeamHealthChecks.svelte';
+  import TeamHealthCheck from './pages/team/TeamHealthCheck.svelte';
   import ChangeEmail from './pages/user/ChangeEmail.svelte';
   import Projects from './pages/admin/project/Projects.svelte';
   import OrganizationProjects from './pages/organization/OrganizationProjects.svelte';
@@ -85,8 +88,15 @@
   import AdminListTickets from './pages/admin/support/ListTickets.svelte';
   import AdminTicketDetails from './pages/admin/support/TicketDetails.svelte';
 
-  const { FeaturePoker, FeatureRetro, FeatureStoryboard, FeatureProject, SubscriptionsEnabled, DefaultLocale } =
-    AppConfig;
+  const {
+    FeaturePoker,
+    FeatureRetro,
+    FeatureStoryboard,
+    FeatureProject,
+    FeatureHealthCheck,
+    SubscriptionsEnabled,
+    DefaultLocale,
+  } = AppConfig;
 
   let notifications: NotificationService | undefined = $state();
 
@@ -711,6 +721,44 @@
         route: Project,
         params,
         name: 'project',
+      };
+    });
+  }
+
+  if (FeatureHealthCheck) {
+    const teamRoutes = [
+      `${appRoutes.team}/:teamId`,
+      `${appRoutes.organization}/:organizationId/team/:teamId`,
+      `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId`,
+    ];
+    teamRoutes.forEach(teamRoute => {
+      router.on(`${teamRoute}/health-checks`, params => {
+        currentPage = {
+          route: TeamHealthChecks,
+          params,
+          name: 'team-health-checks',
+        };
+      });
+      router.on(`${teamRoute}/health-checks/:healthCheckId`, params => {
+        currentPage = {
+          route: TeamHealthCheck,
+          params,
+          name: 'team-health-check',
+        };
+      });
+    });
+    router.on(`${appRoutes.login}/health-check/:healthCheckTeamId/:healthCheckId`, params => {
+      currentPage = {
+        route: Login,
+        params,
+        name: 'login',
+      };
+    });
+    router.on(appRoutes.adminHealthCheckTemplates, () => {
+      currentPage = {
+        route: HealthCheckTemplates,
+        params: {},
+        name: 'admin-health-check-templates',
       };
     });
   }

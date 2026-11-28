@@ -371,6 +371,239 @@
                 ]
             }
         },
+        "/admin/health-check-templates": {
+            "get": {
+                "description": "Gets global default health check templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Get Global Health Check Templates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates global default health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Create Global Health Check Template",
+                "parameters": [
+                    {
+                        "description": "health check template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/health-check-templates/{templateId}": {
+            "put": {
+                "description": "Updates global default health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Update Global Health Check Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the health check template ID",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "health check template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes global default health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Delete Global Health Check Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the health check template ID",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/organizations": {
             "get": {
                 "description": "Get a list of organizations",
@@ -7032,6 +7265,269 @@
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/health-check-templates": {
+            "get": {
+                "description": "Gets organization health check templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Get Organization Health Check Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates organization health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Create Organization Health Check Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "health check template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/organizations/{orgId}/health-check-templates/{templateId}": {
+            "put": {
+                "description": "Updates organization health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Update Organization Health Check Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check template ID",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "health check template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes organization health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Delete Organization Health Check Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check template ID",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
                         }
                     },
                     "500": {
@@ -14105,6 +14601,831 @@
                 ]
             }
         },
+        "/teams/{teamId}/health-check-templates": {
+            "get": {
+                "description": "Gets team health check templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Get Team Health Check Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates team health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Create Team Health Check Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "health check template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/health-check-templates/available": {
+            "get": {
+                "description": "get the global, organization and team templates a team can create health checks from",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Get Available Health Check Templates",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/health-check-templates/{templateId}": {
+            "put": {
+                "description": "Updates team health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Update Team Health Check Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check template ID",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "health check template object",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckTemplateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.HealthCheckTemplate"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes team health check template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Delete Team Health Check Template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check template ID",
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/health-checks": {
+            "get": {
+                "description": "get a team's health checks, newest first",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Get Team Health Checks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.HealthCheck"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a health check from a template, optionally emailing the team a link to it",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Create Team Health Check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new health check object",
+                        "name": "healthCheck",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckCreateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.HealthCheck"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/health-checks/{healthCheckId}": {
+            "get": {
+                "description": "get a health check, the requester's answers and, once closed with enough responses, the anonymous results",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Get Team Health Check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check ID",
+                        "name": "healthCheckId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.healthCheckDetail"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "description": "Updates the name and deadline of an open health check",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Update Team Health Check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check ID",
+                        "name": "healthCheckId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated health check object",
+                        "name": "healthCheck",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckUpdateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Deletes a health check and its responses",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Delete Team Health Check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check ID",
+                        "name": "healthCheckId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/health-checks/{healthCheckId}/close": {
+            "post": {
+                "description": "Ends an open health check now, it can't be reopened",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Close Team Health Check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check ID",
+                        "name": "healthCheckId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/teams/{teamId}/health-checks/{healthCheckId}/response": {
+            "put": {
+                "description": "Saves or replaces the requesting team member's anonymous answers to an open health check",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthCheck"
+                ],
+                "summary": "Respond to Team Health Check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the health check ID",
+                        "name": "healthCheckId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "an answer for every area",
+                        "name": "response",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.healthCheckResponseRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
         "/teams/{teamId}/invites": {
             "get": {
                 "description": "Get a list of user invites associated to the team",
@@ -19477,6 +20798,177 @@
                 }
             }
         },
+        "http.healthCheckAnswerRequestBody": {
+            "type": "object",
+            "required": [
+                "area",
+                "rating",
+                "trend"
+            ],
+            "properties": {
+                "area": {
+                    "type": "string"
+                },
+                "comment": {
+                    "type": "string",
+                    "maxLength": 1000
+                },
+                "rating": {
+                    "type": "string",
+                    "enum": [
+                        "green",
+                        "yellow",
+                        "red"
+                    ]
+                },
+                "trend": {
+                    "type": "string",
+                    "enum": [
+                        "improving",
+                        "stable",
+                        "declining"
+                    ]
+                }
+            }
+        },
+        "http.healthCheckAreaRequestBody": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "healthy": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 128
+                },
+                "unhealthy": {
+                    "type": "string",
+                    "maxLength": 500
+                }
+            }
+        },
+        "http.healthCheckCreateRequestBody": {
+            "type": "object",
+            "required": [
+                "deadline",
+                "name",
+                "templateId"
+            ],
+            "properties": {
+                "deadline": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "sendEmail": {
+                    "type": "boolean"
+                },
+                "templateId": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.healthCheckDetail": {
+            "type": "object",
+            "properties": {
+                "canManage": {
+                    "type": "boolean"
+                },
+                "canRespond": {
+                    "type": "boolean"
+                },
+                "healthCheck": {
+                    "$ref": "#/definitions/thunderdome.HealthCheck"
+                },
+                "minResponses": {
+                    "type": "integer"
+                },
+                "myAnswers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.HealthCheckAnswer"
+                    }
+                },
+                "pending": {
+                    "description": "Pending lists the members yet to respond, only given to those who manage the health check",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.HealthCheckParticipant"
+                    }
+                },
+                "results": {
+                    "description": "Results is null until the health check is closed with enough responses",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.HealthCheckAreaResult"
+                    }
+                }
+            }
+        },
+        "http.healthCheckResponseRequestBody": {
+            "type": "object",
+            "required": [
+                "answers"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/http.healthCheckAnswerRequestBody"
+                    }
+                }
+            }
+        },
+        "http.healthCheckTemplateRequestBody": {
+            "type": "object",
+            "required": [
+                "areas",
+                "name"
+            ],
+            "properties": {
+                "areas": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/http.healthCheckAreaRequestBody"
+                    }
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 2000
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "http.healthCheckUpdateRequestBody": {
+            "type": "object",
+            "required": [
+                "deadline",
+                "name"
+            ],
+            "properties": {
+                "deadline": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "http.jiraInstanceRequestBody": {
             "type": "object",
             "required": [
@@ -20658,10 +22150,16 @@
                 "battleCount": {
                     "type": "integer"
                 },
+                "colorLegendTemplateCount": {
+                    "type": "integer"
+                },
                 "departmentCount": {
                     "type": "integer"
                 },
                 "estimationScaleCount": {
+                    "type": "integer"
+                },
+                "healthCheckTemplateCount": {
                     "type": "integer"
                 },
                 "openSupportTicketCount": {
@@ -20670,13 +22168,25 @@
                 "orgSubscriptionActiveCount": {
                     "type": "integer"
                 },
+                "organizationColorLegendTemplateCount": {
+                    "type": "integer"
+                },
                 "organizationCount": {
                     "type": "integer"
                 },
                 "organizationEstimationScaleCount": {
                     "type": "integer"
                 },
+                "organizationHealthCheckTemplateCount": {
+                    "type": "integer"
+                },
+                "organizationPersonaTemplateCount": {
+                    "type": "integer"
+                },
                 "organizationRetroTemplateCount": {
+                    "type": "integer"
+                },
+                "personaTemplateCount": {
                     "type": "integer"
                 },
                 "planCount": {
@@ -20685,7 +22195,16 @@
                 "projectCount": {
                     "type": "integer"
                 },
+                "publicColorLegendTemplateCount": {
+                    "type": "integer"
+                },
                 "publicEstimationScaleCount": {
+                    "type": "integer"
+                },
+                "publicHealthCheckTemplateCount": {
+                    "type": "integer"
+                },
+                "publicPersonaTemplateCount": {
                     "type": "integer"
                 },
                 "publicRetroTemplateCount": {
@@ -20694,13 +22213,25 @@
                 "registeredUserCount": {
                     "type": "integer"
                 },
+                "retroActionCommentCount": {
+                    "type": "integer"
+                },
                 "retroActionCount": {
                     "type": "integer"
                 },
                 "retroCount": {
                     "type": "integer"
                 },
+                "retroGroupCount": {
+                    "type": "integer"
+                },
+                "retroItemCommentCount": {
+                    "type": "integer"
+                },
                 "retroItemCount": {
+                    "type": "integer"
+                },
+                "retroTagCount": {
                     "type": "integer"
                 },
                 "retroTemplateCount": {
@@ -20718,16 +22249,31 @@
                 "storyboardPersonaCount": {
                     "type": "integer"
                 },
+                "storyboardStoryCommentCount": {
+                    "type": "integer"
+                },
                 "storyboardStoryCount": {
                     "type": "integer"
                 },
                 "teamCheckinsCount": {
                     "type": "integer"
                 },
+                "teamColorLegendTemplateCount": {
+                    "type": "integer"
+                },
                 "teamCount": {
                     "type": "integer"
                 },
                 "teamEstimationScaleCount": {
+                    "type": "integer"
+                },
+                "teamHealthCheckTemplateCount": {
+                    "type": "integer"
+                },
+                "teamHealthChecksCount": {
+                    "type": "integer"
+                },
+                "teamPersonaTemplateCount": {
                     "type": "integer"
                 },
                 "teamRetroTemplateCount": {
@@ -20964,6 +22510,178 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "thunderdome.HealthCheck": {
+            "type": "object",
+            "properties": {
+                "areas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.HealthCheckArea"
+                    }
+                },
+                "closed": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "responseCount": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.HealthCheckAnswer": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "string"
+                },
+                "comment": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "string"
+                },
+                "trend": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.HealthCheckArea": {
+            "type": "object",
+            "properties": {
+                "healthy": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "unhealthy": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.HealthCheckAreaResult": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "healthy": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ratings": {
+                    "$ref": "#/definitions/thunderdome.HealthCheckRatingCounts"
+                },
+                "trends": {
+                    "$ref": "#/definitions/thunderdome.HealthCheckTrendCounts"
+                },
+                "unhealthy": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.HealthCheckParticipant": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.HealthCheckRatingCounts": {
+            "type": "object",
+            "properties": {
+                "green": {
+                    "type": "integer"
+                },
+                "red": {
+                    "type": "integer"
+                },
+                "yellow": {
+                    "type": "integer"
+                }
+            }
+        },
+        "thunderdome.HealthCheckTemplate": {
+            "type": "object",
+            "properties": {
+                "areas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.HealthCheckArea"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organizationId": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.HealthCheckTrendCounts": {
+            "type": "object",
+            "properties": {
+                "declining": {
+                    "type": "integer"
+                },
+                "improving": {
+                    "type": "integer"
+                },
+                "stable": {
+                    "type": "integer"
                 }
             }
         },

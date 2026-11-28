@@ -13,6 +13,8 @@
     battleId: any;
     retroId: any;
     storyboardId: any;
+    healthCheckTeamId?: string;
+    healthCheckId?: string;
     subscription?: boolean;
     orgInviteId: any;
     teamInviteId: any;
@@ -25,6 +27,8 @@
     battleId,
     retroId,
     storyboardId,
+    healthCheckTeamId,
+    healthCheckId,
     subscription = false,
     orgInviteId,
     teamInviteId,
@@ -80,6 +84,9 @@
     }
     if (storyboardId) {
       next = `${appRoutes.storyboard}/${storyboardId}`;
+    }
+    if (healthCheckTeamId && healthCheckId) {
+      next = `${appRoutes.team}/${healthCheckTeamId}/health-checks/${healthCheckId}`;
     }
     targetPage = next;
   });

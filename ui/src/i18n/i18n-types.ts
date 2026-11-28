@@ -3260,6 +3260,411 @@ type RootTranslation = {
 	 * C​l​e​a​r
 	 */
 	clear: string
+	/**
+	 * H​e​a​l​t​h​ ​C​h​e​c​k​s
+	 */
+	healthChecks: string
+	/**
+	 * H​e​a​l​t​h​ ​C​h​e​c​k
+	 */
+	healthCheck: string
+	/**
+	 * C​r​e​a​t​e​ ​H​e​a​l​t​h​ ​C​h​e​c​k
+	 */
+	healthCheckCreate: string
+	/**
+	 * E​d​i​t​ ​H​e​a​l​t​h​ ​C​h​e​c​k
+	 */
+	healthCheckEdit: string
+	/**
+	 * D​e​l​e​t​e​ ​H​e​a​l​t​h​ ​C​h​e​c​k
+	 */
+	healthCheckDelete: string
+	/**
+	 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​h​e​a​l​t​h​ ​c​h​e​c​k​ ​a​n​d​ ​a​l​l​ ​o​f​ ​i​t​s​ ​r​e​s​p​o​n​s​e​s​?
+	 */
+	healthCheckDeleteConfirm: string
+	/**
+	 * N​a​m​e
+	 */
+	healthCheckNameLabel: string
+	/**
+	 * e​.​g​.​ ​S​p​r​i​n​t​ ​1​2​ ​h​e​a​l​t​h​ ​c​h​e​c​k
+	 */
+	healthCheckNamePlaceholder: string
+	/**
+	 * T​e​m​p​l​a​t​e
+	 */
+	healthCheckTemplate: string
+	/**
+	 * D​e​a​d​l​i​n​e
+	 */
+	healthCheckDeadline: string
+	/**
+	 * T​h​e​ ​d​e​a​d​l​i​n​e​ ​m​u​s​t​ ​b​e​ ​i​n​ ​t​h​e​ ​f​u​t​u​r​e​.
+	 */
+	healthCheckDeadlineFuture: string
+	/**
+	 * E​m​a​i​l​ ​t​h​e​ ​t​e​a​m​ ​a​ ​l​i​n​k
+	 */
+	healthCheckSendEmail: string
+	/**
+	 * S​a​v​e​ ​H​e​a​l​t​h​ ​C​h​e​c​k
+	 */
+	healthCheckSave: string
+	/**
+	 * H​e​a​l​t​h​ ​c​h​e​c​k​ ​s​a​v​e​d​.
+	 */
+	healthCheckSaveSuccess: string
+	/**
+	 * E​r​r​o​r​ ​s​a​v​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​.
+	 */
+	healthCheckSaveError: string
+	/**
+	 * H​e​a​l​t​h​ ​c​h​e​c​k​ ​d​e​l​e​t​e​d​.
+	 */
+	healthCheckDeleteSuccess: string
+	/**
+	 * E​r​r​o​r​ ​d​e​l​e​t​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​.
+	 */
+	healthCheckDeleteError: string
+	/**
+	 * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​.
+	 */
+	healthCheckGetError: string
+	/**
+	 * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​s​.
+	 */
+	healthChecksGetError: string
+	/**
+	 * N​o​ ​h​e​a​l​t​h​ ​c​h​e​c​k​s​ ​y​e​t​.
+	 */
+	healthChecksEmpty: string
+	/**
+	 * O​p​e​n
+	 */
+	healthCheckOpen: string
+	/**
+	 * C​l​o​s​e​d
+	 */
+	healthCheckClosed: string
+	/**
+	 * R​e​s​p​o​n​s​e​s​:​ ​{​c​o​u​n​t​}
+	 * @param {unknown} count
+	 */
+	healthCheckResponses: RequiredParams<'count'>
+	/**
+	 * C​o​p​y​ ​l​i​n​k
+	 */
+	healthCheckCopyLink: string
+	/**
+	 * L​i​n​k​ ​c​o​p​i​e​d​ ​t​o​ ​c​l​i​p​b​o​a​r​d​.
+	 */
+	healthCheckLinkCopied: string
+	/**
+	 * C​o​u​l​d​n​'​t​ ​c​o​p​y​ ​t​h​e​ ​l​i​n​k​.
+	 */
+	healthCheckLinkCopyError: string
+	/**
+	 * C​l​o​s​e​ ​n​o​w
+	 */
+	healthCheckCloseNow: string
+	/**
+	 * C​l​o​s​e​ ​t​h​i​s​ ​h​e​a​l​t​h​ ​c​h​e​c​k​ ​n​o​w​?​ ​I​t​ ​c​a​n​n​o​t​ ​b​e​ ​r​e​o​p​e​n​e​d​.
+	 */
+	healthCheckCloseConfirm: string
+	/**
+	 * E​r​r​o​r​ ​c​l​o​s​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​.
+	 */
+	healthCheckCloseError: string
+	/**
+	 * R​e​s​p​o​n​s​e​s​ ​a​r​e​ ​a​n​o​n​y​m​o​u​s​.​ ​R​e​s​u​l​t​s​ ​a​p​p​e​a​r​ ​a​f​t​e​r​ ​t​h​e​ ​d​e​a​d​l​i​n​e​ ​w​h​e​n​ ​a​t​ ​l​e​a​s​t​ ​{​m​i​n​}​ ​p​e​o​p​l​e​ ​h​a​v​e​ ​r​e​s​p​o​n​d​e​d​.
+	 * @param {unknown} min
+	 */
+	healthCheckAnonymousNote: RequiredParams<'min'>
+	/**
+	 * Y​o​u​r​ ​r​e​s​p​o​n​s​e
+	 */
+	healthCheckYourResponse: string
+	/**
+	 * Y​o​u​ ​c​a​n​ ​c​h​a​n​g​e​ ​y​o​u​r​ ​r​e​s​p​o​n​s​e​ ​u​n​t​i​l​ ​t​h​e​ ​d​e​a​d​l​i​n​e​.
+	 */
+	healthCheckUpdateUntil: string
+	/**
+	 * S​u​b​m​i​t​ ​R​e​s​p​o​n​s​e
+	 */
+	healthCheckSubmit: string
+	/**
+	 * R​e​s​p​o​n​s​e​ ​s​a​v​e​d​.
+	 */
+	healthCheckSubmitSuccess: string
+	/**
+	 * E​r​r​o​r​ ​s​a​v​i​n​g​ ​r​e​s​p​o​n​s​e​.
+	 */
+	healthCheckSubmitError: string
+	/**
+	 * T​h​i​s​ ​h​e​a​l​t​h​ ​c​h​e​c​k​ ​h​a​s​ ​c​l​o​s​e​d​.
+	 */
+	healthCheckClosedError: string
+	/**
+	 * R​a​t​i​n​g
+	 */
+	healthCheckRating: string
+	/**
+	 * G​o​o​d
+	 */
+	healthCheckRatingGreen: string
+	/**
+	 * S​o​m​e​ ​c​o​n​c​e​r​n​s
+	 */
+	healthCheckRatingYellow: string
+	/**
+	 * N​e​e​d​s​ ​w​o​r​k
+	 */
+	healthCheckRatingRed: string
+	/**
+	 * T​r​e​n​d
+	 */
+	healthCheckTrend: string
+	/**
+	 * I​m​p​r​o​v​i​n​g
+	 */
+	healthCheckTrendImproving: string
+	/**
+	 * S​t​a​b​l​e
+	 */
+	healthCheckTrendStable: string
+	/**
+	 * G​e​t​t​i​n​g​ ​w​o​r​s​e
+	 */
+	healthCheckTrendDeclining: string
+	/**
+	 * C​o​m​m​e​n​t​ ​(​o​p​t​i​o​n​a​l​)
+	 */
+	healthCheckComment: string
+	/**
+	 * G​o​o​d​ ​l​o​o​k​s​ ​l​i​k​e
+	 */
+	healthCheckHealthy: string
+	/**
+	 * B​a​d​ ​l​o​o​k​s​ ​l​i​k​e
+	 */
+	healthCheckUnhealthy: string
+	/**
+	 * R​e​s​u​l​t​s
+	 */
+	healthCheckResults: string
+	/**
+	 * R​e​s​u​l​t​s​ ​w​i​l​l​ ​b​e​ ​a​v​a​i​l​a​b​l​e​ ​a​f​t​e​r​ ​t​h​e​ ​d​e​a​d​l​i​n​e​.
+	 */
+	healthCheckResultsPending: string
+	/**
+	 * R​e​s​u​l​t​s​ ​a​r​e​ ​h​i​d​d​e​n​ ​b​e​c​a​u​s​e​ ​f​e​w​e​r​ ​t​h​a​n​ ​{​m​i​n​}​ ​p​e​o​p​l​e​ ​r​e​s​p​o​n​d​e​d​.
+	 * @param {unknown} min
+	 */
+	healthCheckResultsTooFew: RequiredParams<'min'>
+	/**
+	 * W​a​i​t​i​n​g​ ​o​n
+	 */
+	healthCheckPending: string
+	/**
+	 * Y​o​u​ ​c​a​n​ ​v​i​e​w​ ​t​h​i​s​ ​h​e​a​l​t​h​ ​c​h​e​c​k​ ​b​u​t​ ​o​n​l​y​ ​t​e​a​m​ ​m​e​m​b​e​r​s​ ​c​a​n​ ​r​e​s​p​o​n​d​.
+	 */
+	healthCheckViewOnly: string
+	/**
+	 * R​u​n​ ​S​q​u​a​d​ ​H​e​a​l​t​h​ ​C​h​e​c​k​s​ ​w​i​t​h​ ​y​o​u​r​ ​t​e​a​m​.
+	 */
+	healthCheckSubscribePitch: string
+	/**
+	 * H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e​s
+	 */
+	healthCheckTemplates: string
+	/**
+	 * C​r​e​a​t​e​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e
+	 */
+	healthCheckTemplateCreate: string
+	/**
+	 * E​d​i​t​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e
+	 */
+	healthCheckTemplateEdit: string
+	/**
+	 * D​e​l​e​t​e​ ​T​e​m​p​l​a​t​e
+	 */
+	healthCheckTemplateDelete: string
+	/**
+	 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​t​e​m​p​l​a​t​e​?​ ​E​x​i​s​t​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​s​ ​k​e​e​p​ ​t​h​e​i​r​ ​a​r​e​a​s​.
+	 */
+	healthCheckTemplateDeleteConfirm: string
+	/**
+	 * T​e​m​p​l​a​t​e​ ​N​a​m​e
+	 */
+	healthCheckTemplateName: string
+	/**
+	 * D​e​s​c​r​i​p​t​i​o​n
+	 */
+	healthCheckTemplateDescription: string
+	/**
+	 * A​r​e​a​s
+	 */
+	healthCheckAreas: string
+	/**
+	 * A​r​e​a​ ​{​n​u​m​b​e​r​}
+	 * @param {unknown} number
+	 */
+	healthCheckAreaLabel: RequiredParams<'number'>
+	/**
+	 * A​r​e​a​ ​n​a​m​e
+	 */
+	healthCheckAreaName: string
+	/**
+	 * A​d​d​ ​A​r​e​a
+	 */
+	healthCheckAreaAdd: string
+	/**
+	 * R​e​m​o​v​e​ ​a​r​e​a​ ​{​n​u​m​b​e​r​}
+	 * @param {unknown} number
+	 */
+	healthCheckAreaRemove: RequiredParams<'number'>
+	/**
+	 * A​r​e​a​ ​n​a​m​e​s​ ​m​u​s​t​ ​b​e​ ​u​n​i​q​u​e​.
+	 */
+	healthCheckAreaNamesUnique: string
+	/**
+	 * S​a​v​e​ ​T​e​m​p​l​a​t​e
+	 */
+	healthCheckTemplateSave: string
+	/**
+	 * H​e​a​l​t​h​ ​c​h​e​c​k​ ​t​e​m​p​l​a​t​e​ ​s​a​v​e​d​.
+	 */
+	healthCheckTemplateSaveSuccess: string
+	/**
+	 * E​r​r​o​r​ ​s​a​v​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​ ​t​e​m​p​l​a​t​e​.
+	 */
+	healthCheckTemplateSaveError: string
+	/**
+	 * H​e​a​l​t​h​ ​c​h​e​c​k​ ​t​e​m​p​l​a​t​e​ ​d​e​l​e​t​e​d​.
+	 */
+	healthCheckTemplateDeleteSuccess: string
+	/**
+	 * E​r​r​o​r​ ​d​e​l​e​t​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​ ​t​e​m​p​l​a​t​e​.
+	 */
+	healthCheckTemplateDeleteError: string
+	/**
+	 * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​h​e​a​l​t​h​ ​c​h​e​c​k​ ​t​e​m​p​l​a​t​e​s​.
+	 */
+	healthCheckTemplatesGetError: string
+	/**
+	 * W​h​a​t​ ​i​s​ ​a​ ​S​q​u​a​d​ ​H​e​a​l​t​h​ ​C​h​e​c​k​?
+	 */
+	healthCheckAboutTitle: string
+	/**
+	 * R​e​a​d​ ​S​p​o​t​i​f​y​'​s​ ​a​r​t​i​c​l​e​ ​a​b​o​u​t​ ​t​h​e​ ​m​o​d​e​l
+	 */
+	healthCheckAboutLink: string
+	/**
+	 * (​o​p​e​n​s​ ​i​n​ ​a​ ​n​e​w​ ​t​a​b​)
+	 */
+	healthCheckOpensNewTab: string
+	/**
+	 * A​ ​s​e​l​f​-​a​s​s​e​s​s​m​e​n​t​,​ ​b​a​s​e​d​ ​o​n​ ​S​p​o​t​i​f​y​'​s​ ​m​o​d​e​l​,​ ​t​h​a​t​ ​h​e​l​p​s​ ​a​ ​t​e​a​m​ ​s​e​e​ ​w​h​a​t​ ​i​s​ ​w​o​r​k​i​n​g​ ​a​n​d​ ​w​h​a​t​ ​i​s​n​'​t​.​ ​E​a​c​h​ ​m​e​m​b​e​r​ ​r​a​t​e​s​ ​a​r​e​a​s​ ​s​u​c​h​ ​a​s​ ​d​e​l​i​v​e​r​i​n​g​ ​v​a​l​u​e​,​ ​f​u​n​ ​a​n​d​ ​l​e​a​r​n​i​n​g​,​ ​a​n​d​ ​s​a​y​s​ ​w​h​e​t​h​e​r​ ​e​a​c​h​ ​i​s​ ​i​m​p​r​o​v​i​n​g​,​ ​s​t​a​b​l​e​ ​o​r​ ​g​e​t​t​i​n​g​ ​w​o​r​s​e​.
+	 */
+	healthCheckAboutIntro: string
+	/**
+	 * H​o​w​ ​t​o​ ​r​a​t​e
+	 */
+	healthCheckAboutRatings: string
+	/**
+	 * T​h​e​ ​t​e​a​m​ ​i​s​ ​h​a​p​p​y​ ​a​n​d​ ​s​e​e​s​ ​n​o​ ​m​a​j​o​r​ ​n​e​e​d​ ​t​o​ ​i​m​p​r​o​v​e​ ​r​i​g​h​t​ ​n​o​w​.​ ​I​t​ ​d​o​e​s​n​'​t​ ​h​a​v​e​ ​t​o​ ​b​e​ ​p​e​r​f​e​c​t​.
+	 */
+	healthCheckAboutGreen: string
+	/**
+	 * T​h​e​r​e​ ​a​r​e​ ​i​m​p​o​r​t​a​n​t​ ​p​r​o​b​l​e​m​s​ ​t​o​ ​a​d​d​r​e​s​s​,​ ​b​u​t​ ​i​t​'​s​ ​n​o​t​ ​a​ ​d​i​s​a​s​t​e​r​.
+	 */
+	healthCheckAboutYellow: string
+	/**
+	 * T​h​i​s​ ​i​s​ ​r​e​a​l​l​y​ ​b​a​d​ ​a​n​d​ ​n​e​e​d​s​ ​t​o​ ​b​e​ ​i​m​p​r​o​v​e​d​.
+	 */
+	healthCheckAboutRed: string
+	/**
+	 * G​e​t​t​i​n​g​ ​t​h​e​ ​m​o​s​t​ ​f​r​o​m​ ​i​t
+	 */
+	healthCheckAboutTips: string
+	/**
+	 * D​i​s​c​u​s​s​ ​t​h​e​ ​r​e​s​u​l​t​s​ ​t​o​g​e​t​h​e​r​.​ ​M​o​s​t​ ​o​f​ ​t​h​e​ ​v​a​l​u​e​ ​i​s​ ​i​n​ ​t​h​e​ ​c​o​n​v​e​r​s​a​t​i​o​n​.
+	 */
+	healthCheckAboutTipDiscuss: string
+	/**
+	 * U​s​e​ ​t​h​e​m​ ​t​o​ ​s​u​p​p​o​r​t​ ​a​n​d​ ​i​m​p​r​o​v​e​,​ ​n​e​v​e​r​ ​t​o​ ​j​u​d​g​e​ ​o​r​ ​c​o​m​p​a​r​e​ ​t​e​a​m​s​.
+	 */
+	healthCheckAboutTipSupport: string
+	/**
+	 * Q​u​a​r​t​e​r​l​y​ ​i​s​ ​a​ ​g​o​o​d​ ​p​l​a​c​e​ ​t​o​ ​s​t​a​r​t​.
+	 */
+	healthCheckAboutTipCadence: string
+	/**
+	 * C​o​l​o​r​ ​L​e​g​e​n​d​ ​T​e​m​p​l​a​t​e​s
+	 */
+	colorLegendTemplates: string
+	/**
+	 * P​u​b​l​i​c​ ​C​o​l​o​r​ ​L​e​g​e​n​d​ ​T​e​m​p​l​a​t​e​s
+	 */
+	publicColorLegendTemplates: string
+	/**
+	 * O​r​g​a​n​i​z​a​t​i​o​n​ ​C​o​l​o​r​ ​L​e​g​e​n​d​ ​T​e​m​p​l​a​t​e​s
+	 */
+	organizationColorLegendTemplates: string
+	/**
+	 * T​e​a​m​ ​C​o​l​o​r​ ​L​e​g​e​n​d​ ​T​e​m​p​l​a​t​e​s
+	 */
+	teamColorLegendTemplates: string
+	/**
+	 * P​e​r​s​o​n​a​ ​T​e​m​p​l​a​t​e​s
+	 */
+	personaTemplates: string
+	/**
+	 * P​u​b​l​i​c​ ​P​e​r​s​o​n​a​ ​T​e​m​p​l​a​t​e​s
+	 */
+	publicPersonaTemplates: string
+	/**
+	 * O​r​g​a​n​i​z​a​t​i​o​n​ ​P​e​r​s​o​n​a​ ​T​e​m​p​l​a​t​e​s
+	 */
+	organizationPersonaTemplates: string
+	/**
+	 * T​e​a​m​ ​P​e​r​s​o​n​a​ ​T​e​m​p​l​a​t​e​s
+	 */
+	teamPersonaTemplates: string
+	/**
+	 * R​e​t​r​o​ ​I​t​e​m​ ​G​r​o​u​p​s
+	 */
+	retroGroups: string
+	/**
+	 * R​e​t​r​o​ ​T​a​g​s
+	 */
+	retroTags: string
+	/**
+	 * R​e​t​r​o​ ​I​t​e​m​ ​C​o​m​m​e​n​t​s
+	 */
+	retroItemComments: string
+	/**
+	 * A​c​t​i​o​n​ ​I​t​e​m​ ​C​o​m​m​e​n​t​s
+	 */
+	retroActionItemComments: string
+	/**
+	 * S​t​o​r​y​b​o​a​r​d​ ​S​t​o​r​y​ ​C​o​m​m​e​n​t​s
+	 */
+	storyboardStoryComments: string
+	/**
+	 * P​u​b​l​i​c​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e​s
+	 */
+	publicHealthCheckTemplates: string
+	/**
+	 * O​r​g​a​n​i​z​a​t​i​o​n​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e​s
+	 */
+	organizationHealthCheckTemplates: string
+	/**
+	 * T​e​a​m​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e​s
+	 */
+	teamHealthCheckTemplates: string
 }
 
 export type TranslationFunctions = {
@@ -6453,6 +6858,406 @@ export type TranslationFunctions = {
 	 * Clear
 	 */
 	clear: () => LocalizedString
+	/**
+	 * Health Checks
+	 */
+	healthChecks: () => LocalizedString
+	/**
+	 * Health Check
+	 */
+	healthCheck: () => LocalizedString
+	/**
+	 * Create Health Check
+	 */
+	healthCheckCreate: () => LocalizedString
+	/**
+	 * Edit Health Check
+	 */
+	healthCheckEdit: () => LocalizedString
+	/**
+	 * Delete Health Check
+	 */
+	healthCheckDelete: () => LocalizedString
+	/**
+	 * Are you sure you want to delete this health check and all of its responses?
+	 */
+	healthCheckDeleteConfirm: () => LocalizedString
+	/**
+	 * Name
+	 */
+	healthCheckNameLabel: () => LocalizedString
+	/**
+	 * e.g. Sprint 12 health check
+	 */
+	healthCheckNamePlaceholder: () => LocalizedString
+	/**
+	 * Template
+	 */
+	healthCheckTemplate: () => LocalizedString
+	/**
+	 * Deadline
+	 */
+	healthCheckDeadline: () => LocalizedString
+	/**
+	 * The deadline must be in the future.
+	 */
+	healthCheckDeadlineFuture: () => LocalizedString
+	/**
+	 * Email the team a link
+	 */
+	healthCheckSendEmail: () => LocalizedString
+	/**
+	 * Save Health Check
+	 */
+	healthCheckSave: () => LocalizedString
+	/**
+	 * Health check saved.
+	 */
+	healthCheckSaveSuccess: () => LocalizedString
+	/**
+	 * Error saving health check.
+	 */
+	healthCheckSaveError: () => LocalizedString
+	/**
+	 * Health check deleted.
+	 */
+	healthCheckDeleteSuccess: () => LocalizedString
+	/**
+	 * Error deleting health check.
+	 */
+	healthCheckDeleteError: () => LocalizedString
+	/**
+	 * Error getting health check.
+	 */
+	healthCheckGetError: () => LocalizedString
+	/**
+	 * Error getting health checks.
+	 */
+	healthChecksGetError: () => LocalizedString
+	/**
+	 * No health checks yet.
+	 */
+	healthChecksEmpty: () => LocalizedString
+	/**
+	 * Open
+	 */
+	healthCheckOpen: () => LocalizedString
+	/**
+	 * Closed
+	 */
+	healthCheckClosed: () => LocalizedString
+	/**
+	 * Responses: {count}
+	 */
+	healthCheckResponses: (arg: { count: unknown }) => LocalizedString
+	/**
+	 * Copy link
+	 */
+	healthCheckCopyLink: () => LocalizedString
+	/**
+	 * Link copied to clipboard.
+	 */
+	healthCheckLinkCopied: () => LocalizedString
+	/**
+	 * Couldn't copy the link.
+	 */
+	healthCheckLinkCopyError: () => LocalizedString
+	/**
+	 * Close now
+	 */
+	healthCheckCloseNow: () => LocalizedString
+	/**
+	 * Close this health check now? It cannot be reopened.
+	 */
+	healthCheckCloseConfirm: () => LocalizedString
+	/**
+	 * Error closing health check.
+	 */
+	healthCheckCloseError: () => LocalizedString
+	/**
+	 * Responses are anonymous. Results appear after the deadline when at least {min} people have responded.
+	 */
+	healthCheckAnonymousNote: (arg: { min: unknown }) => LocalizedString
+	/**
+	 * Your response
+	 */
+	healthCheckYourResponse: () => LocalizedString
+	/**
+	 * You can change your response until the deadline.
+	 */
+	healthCheckUpdateUntil: () => LocalizedString
+	/**
+	 * Submit Response
+	 */
+	healthCheckSubmit: () => LocalizedString
+	/**
+	 * Response saved.
+	 */
+	healthCheckSubmitSuccess: () => LocalizedString
+	/**
+	 * Error saving response.
+	 */
+	healthCheckSubmitError: () => LocalizedString
+	/**
+	 * This health check has closed.
+	 */
+	healthCheckClosedError: () => LocalizedString
+	/**
+	 * Rating
+	 */
+	healthCheckRating: () => LocalizedString
+	/**
+	 * Good
+	 */
+	healthCheckRatingGreen: () => LocalizedString
+	/**
+	 * Some concerns
+	 */
+	healthCheckRatingYellow: () => LocalizedString
+	/**
+	 * Needs work
+	 */
+	healthCheckRatingRed: () => LocalizedString
+	/**
+	 * Trend
+	 */
+	healthCheckTrend: () => LocalizedString
+	/**
+	 * Improving
+	 */
+	healthCheckTrendImproving: () => LocalizedString
+	/**
+	 * Stable
+	 */
+	healthCheckTrendStable: () => LocalizedString
+	/**
+	 * Getting worse
+	 */
+	healthCheckTrendDeclining: () => LocalizedString
+	/**
+	 * Comment (optional)
+	 */
+	healthCheckComment: () => LocalizedString
+	/**
+	 * Good looks like
+	 */
+	healthCheckHealthy: () => LocalizedString
+	/**
+	 * Bad looks like
+	 */
+	healthCheckUnhealthy: () => LocalizedString
+	/**
+	 * Results
+	 */
+	healthCheckResults: () => LocalizedString
+	/**
+	 * Results will be available after the deadline.
+	 */
+	healthCheckResultsPending: () => LocalizedString
+	/**
+	 * Results are hidden because fewer than {min} people responded.
+	 */
+	healthCheckResultsTooFew: (arg: { min: unknown }) => LocalizedString
+	/**
+	 * Waiting on
+	 */
+	healthCheckPending: () => LocalizedString
+	/**
+	 * You can view this health check but only team members can respond.
+	 */
+	healthCheckViewOnly: () => LocalizedString
+	/**
+	 * Run Squad Health Checks with your team.
+	 */
+	healthCheckSubscribePitch: () => LocalizedString
+	/**
+	 * Health Check Templates
+	 */
+	healthCheckTemplates: () => LocalizedString
+	/**
+	 * Create Health Check Template
+	 */
+	healthCheckTemplateCreate: () => LocalizedString
+	/**
+	 * Edit Health Check Template
+	 */
+	healthCheckTemplateEdit: () => LocalizedString
+	/**
+	 * Delete Template
+	 */
+	healthCheckTemplateDelete: () => LocalizedString
+	/**
+	 * Are you sure you want to delete this template? Existing health checks keep their areas.
+	 */
+	healthCheckTemplateDeleteConfirm: () => LocalizedString
+	/**
+	 * Template Name
+	 */
+	healthCheckTemplateName: () => LocalizedString
+	/**
+	 * Description
+	 */
+	healthCheckTemplateDescription: () => LocalizedString
+	/**
+	 * Areas
+	 */
+	healthCheckAreas: () => LocalizedString
+	/**
+	 * Area {number}
+	 */
+	healthCheckAreaLabel: (arg: { number: unknown }) => LocalizedString
+	/**
+	 * Area name
+	 */
+	healthCheckAreaName: () => LocalizedString
+	/**
+	 * Add Area
+	 */
+	healthCheckAreaAdd: () => LocalizedString
+	/**
+	 * Remove area {number}
+	 */
+	healthCheckAreaRemove: (arg: { number: unknown }) => LocalizedString
+	/**
+	 * Area names must be unique.
+	 */
+	healthCheckAreaNamesUnique: () => LocalizedString
+	/**
+	 * Save Template
+	 */
+	healthCheckTemplateSave: () => LocalizedString
+	/**
+	 * Health check template saved.
+	 */
+	healthCheckTemplateSaveSuccess: () => LocalizedString
+	/**
+	 * Error saving health check template.
+	 */
+	healthCheckTemplateSaveError: () => LocalizedString
+	/**
+	 * Health check template deleted.
+	 */
+	healthCheckTemplateDeleteSuccess: () => LocalizedString
+	/**
+	 * Error deleting health check template.
+	 */
+	healthCheckTemplateDeleteError: () => LocalizedString
+	/**
+	 * Error getting health check templates.
+	 */
+	healthCheckTemplatesGetError: () => LocalizedString
+	/**
+	 * What is a Squad Health Check?
+	 */
+	healthCheckAboutTitle: () => LocalizedString
+	/**
+	 * Read Spotify's article about the model
+	 */
+	healthCheckAboutLink: () => LocalizedString
+	/**
+	 * (opens in a new tab)
+	 */
+	healthCheckOpensNewTab: () => LocalizedString
+	/**
+	 * A self-assessment, based on Spotify's model, that helps a team see what is working and what isn't. Each member rates areas such as delivering value, fun and learning, and says whether each is improving, stable or getting worse.
+	 */
+	healthCheckAboutIntro: () => LocalizedString
+	/**
+	 * How to rate
+	 */
+	healthCheckAboutRatings: () => LocalizedString
+	/**
+	 * The team is happy and sees no major need to improve right now. It doesn't have to be perfect.
+	 */
+	healthCheckAboutGreen: () => LocalizedString
+	/**
+	 * There are important problems to address, but it's not a disaster.
+	 */
+	healthCheckAboutYellow: () => LocalizedString
+	/**
+	 * This is really bad and needs to be improved.
+	 */
+	healthCheckAboutRed: () => LocalizedString
+	/**
+	 * Getting the most from it
+	 */
+	healthCheckAboutTips: () => LocalizedString
+	/**
+	 * Discuss the results together. Most of the value is in the conversation.
+	 */
+	healthCheckAboutTipDiscuss: () => LocalizedString
+	/**
+	 * Use them to support and improve, never to judge or compare teams.
+	 */
+	healthCheckAboutTipSupport: () => LocalizedString
+	/**
+	 * Quarterly is a good place to start.
+	 */
+	healthCheckAboutTipCadence: () => LocalizedString
+	/**
+	 * Color Legend Templates
+	 */
+	colorLegendTemplates: () => LocalizedString
+	/**
+	 * Public Color Legend Templates
+	 */
+	publicColorLegendTemplates: () => LocalizedString
+	/**
+	 * Organization Color Legend Templates
+	 */
+	organizationColorLegendTemplates: () => LocalizedString
+	/**
+	 * Team Color Legend Templates
+	 */
+	teamColorLegendTemplates: () => LocalizedString
+	/**
+	 * Persona Templates
+	 */
+	personaTemplates: () => LocalizedString
+	/**
+	 * Public Persona Templates
+	 */
+	publicPersonaTemplates: () => LocalizedString
+	/**
+	 * Organization Persona Templates
+	 */
+	organizationPersonaTemplates: () => LocalizedString
+	/**
+	 * Team Persona Templates
+	 */
+	teamPersonaTemplates: () => LocalizedString
+	/**
+	 * Retro Item Groups
+	 */
+	retroGroups: () => LocalizedString
+	/**
+	 * Retro Tags
+	 */
+	retroTags: () => LocalizedString
+	/**
+	 * Retro Item Comments
+	 */
+	retroItemComments: () => LocalizedString
+	/**
+	 * Action Item Comments
+	 */
+	retroActionItemComments: () => LocalizedString
+	/**
+	 * Storyboard Story Comments
+	 */
+	storyboardStoryComments: () => LocalizedString
+	/**
+	 * Public Health Check Templates
+	 */
+	publicHealthCheckTemplates: () => LocalizedString
+	/**
+	 * Organization Health Check Templates
+	 */
+	organizationHealthCheckTemplates: () => LocalizedString
+	/**
+	 * Team Health Check Templates
+	 */
+	teamHealthCheckTemplates: () => LocalizedString
 }
 
 export type Formatters = {}

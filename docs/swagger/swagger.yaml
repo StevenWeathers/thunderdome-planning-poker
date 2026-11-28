@@ -280,6 +280,128 @@ definitions:
     required:
     - name
     type: object
+  http.healthCheckAnswerRequestBody:
+    properties:
+      area:
+        type: string
+      comment:
+        maxLength: 1000
+        type: string
+      rating:
+        enum:
+        - green
+        - yellow
+        - red
+        type: string
+      trend:
+        enum:
+        - improving
+        - stable
+        - declining
+        type: string
+    required:
+    - area
+    - rating
+    - trend
+    type: object
+  http.healthCheckAreaRequestBody:
+    properties:
+      healthy:
+        maxLength: 500
+        type: string
+      name:
+        maxLength: 128
+        type: string
+      unhealthy:
+        maxLength: 500
+        type: string
+    required:
+    - name
+    type: object
+  http.healthCheckCreateRequestBody:
+    properties:
+      deadline:
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      sendEmail:
+        type: boolean
+      templateId:
+        type: string
+    required:
+    - deadline
+    - name
+    - templateId
+    type: object
+  http.healthCheckDetail:
+    properties:
+      canManage:
+        type: boolean
+      canRespond:
+        type: boolean
+      healthCheck:
+        $ref: '#/definitions/thunderdome.HealthCheck'
+      minResponses:
+        type: integer
+      myAnswers:
+        items:
+          $ref: '#/definitions/thunderdome.HealthCheckAnswer'
+        type: array
+      pending:
+        description: Pending lists the members yet to respond, only given to those
+          who manage the health check
+        items:
+          $ref: '#/definitions/thunderdome.HealthCheckParticipant'
+        type: array
+      results:
+        description: Results is null until the health check is closed with enough
+          responses
+        items:
+          $ref: '#/definitions/thunderdome.HealthCheckAreaResult'
+        type: array
+    type: object
+  http.healthCheckResponseRequestBody:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/http.healthCheckAnswerRequestBody'
+        minItems: 1
+        type: array
+        uniqueItems: true
+    required:
+    - answers
+    type: object
+  http.healthCheckTemplateRequestBody:
+    properties:
+      areas:
+        items:
+          $ref: '#/definitions/http.healthCheckAreaRequestBody'
+        maxItems: 20
+        minItems: 1
+        type: array
+        uniqueItems: true
+      description:
+        maxLength: 2000
+        type: string
+      name:
+        maxLength: 255
+        type: string
+    required:
+    - areas
+    - name
+    type: object
+  http.healthCheckUpdateRequestBody:
+    properties:
+      deadline:
+        type: string
+      name:
+        maxLength: 255
+        type: string
+    required:
+    - deadline
+    - name
+    type: object
   http.jiraInstanceRequestBody:
     properties:
       access_token:
@@ -1091,35 +1213,61 @@ definitions:
         type: integer
       battleCount:
         type: integer
+      colorLegendTemplateCount:
+        type: integer
       departmentCount:
         type: integer
       estimationScaleCount:
+        type: integer
+      healthCheckTemplateCount:
         type: integer
       openSupportTicketCount:
         type: integer
       orgSubscriptionActiveCount:
         type: integer
+      organizationColorLegendTemplateCount:
+        type: integer
       organizationCount:
         type: integer
       organizationEstimationScaleCount:
         type: integer
+      organizationHealthCheckTemplateCount:
+        type: integer
+      organizationPersonaTemplateCount:
+        type: integer
       organizationRetroTemplateCount:
+        type: integer
+      personaTemplateCount:
         type: integer
       planCount:
         type: integer
       projectCount:
         type: integer
+      publicColorLegendTemplateCount:
+        type: integer
       publicEstimationScaleCount:
+        type: integer
+      publicHealthCheckTemplateCount:
+        type: integer
+      publicPersonaTemplateCount:
         type: integer
       publicRetroTemplateCount:
         type: integer
       registeredUserCount:
         type: integer
+      retroActionCommentCount:
+        type: integer
       retroActionCount:
         type: integer
       retroCount:
         type: integer
+      retroGroupCount:
+        type: integer
+      retroItemCommentCount:
+        type: integer
       retroItemCount:
+        type: integer
+      retroTagCount:
         type: integer
       retroTemplateCount:
         type: integer
@@ -1131,13 +1279,23 @@ definitions:
         type: integer
       storyboardPersonaCount:
         type: integer
+      storyboardStoryCommentCount:
+        type: integer
       storyboardStoryCount:
         type: integer
       teamCheckinsCount:
         type: integer
+      teamColorLegendTemplateCount:
+        type: integer
       teamCount:
         type: integer
       teamEstimationScaleCount:
+        type: integer
+      teamHealthCheckTemplateCount:
+        type: integer
+      teamHealthChecksCount:
+        type: integer
+      teamPersonaTemplateCount:
         type: integer
       teamRetroTemplateCount:
         type: integer
@@ -1293,6 +1451,118 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  thunderdome.HealthCheck:
+    properties:
+      areas:
+        items:
+          $ref: '#/definitions/thunderdome.HealthCheckArea'
+        type: array
+      closed:
+        type: boolean
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      deadline:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      responseCount:
+        type: integer
+      teamId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  thunderdome.HealthCheckAnswer:
+    properties:
+      area:
+        type: string
+      comment:
+        type: string
+      rating:
+        type: string
+      trend:
+        type: string
+    type: object
+  thunderdome.HealthCheckArea:
+    properties:
+      healthy:
+        type: string
+      name:
+        type: string
+      unhealthy:
+        type: string
+    type: object
+  thunderdome.HealthCheckAreaResult:
+    properties:
+      comments:
+        items:
+          type: string
+        type: array
+      healthy:
+        type: string
+      name:
+        type: string
+      ratings:
+        $ref: '#/definitions/thunderdome.HealthCheckRatingCounts'
+      trends:
+        $ref: '#/definitions/thunderdome.HealthCheckTrendCounts'
+      unhealthy:
+        type: string
+    type: object
+  thunderdome.HealthCheckParticipant:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  thunderdome.HealthCheckRatingCounts:
+    properties:
+      green:
+        type: integer
+      red:
+        type: integer
+      yellow:
+        type: integer
+    type: object
+  thunderdome.HealthCheckTemplate:
+    properties:
+      areas:
+        items:
+          $ref: '#/definitions/thunderdome.HealthCheckArea'
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      organizationId:
+        type: string
+      teamId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  thunderdome.HealthCheckTrendCounts:
+    properties:
+      declining:
+        type: integer
+      improving:
+        type: integer
+      stable:
+        type: integer
     type: object
   thunderdome.JiraInstance:
     properties:
@@ -2817,6 +3087,146 @@ paths:
       summary: Update Estimation Scale
       tags:
       - estimation-scale
+  /admin/health-check-templates:
+    get:
+      description: Gets global default health check templates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Global Health Check Templates
+      tags:
+      - healthCheck
+    post:
+      description: Creates global default health check template
+      parameters:
+      - description: health check template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Global Health Check Template
+      tags:
+      - healthCheck
+  /admin/health-check-templates/{templateId}:
+    delete:
+      description: Deletes global default health check template
+      parameters:
+      - description: the health check template ID
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Global Health Check Template
+      tags:
+      - healthCheck
+    put:
+      description: Updates global default health check template
+      parameters:
+      - description: the health check template ID
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: health check template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Global Health Check Template
+      tags:
+      - healthCheck
   /admin/organizations:
     get:
       description: Get a list of organizations
@@ -6901,6 +7311,167 @@ paths:
       summary: Create Organization Estimation Scale
       tags:
       - estimation-scale
+  /organizations/{orgId}/health-check-templates:
+    get:
+      description: Gets organization health check templates
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Health Check Templates
+      tags:
+      - healthCheck
+    post:
+      description: Creates organization health check template
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: health check template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Health Check Template
+      tags:
+      - healthCheck
+  /organizations/{orgId}/health-check-templates/{templateId}:
+    delete:
+      description: Deletes organization health check template
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the health check template ID
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Organization Health Check Template
+      tags:
+      - healthCheck
+    put:
+      description: Updates organization health check template
+      parameters:
+      - description: Organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the health check template ID
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: health check template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization Health Check Template
+      tags:
+      - healthCheck
   /organizations/{orgId}/invites:
     get:
       description: Get a list of user invites associated to the organization
@@ -11251,6 +11822,523 @@ paths:
       summary: Update Team Estimation Scale
       tags:
       - estimation-scale
+  /teams/{teamId}/health-check-templates:
+    get:
+      description: Gets team health check templates
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Health Check Templates
+      tags:
+      - healthCheck
+    post:
+      description: Creates team health check template
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: health check template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Health Check Template
+      tags:
+      - healthCheck
+  /teams/{teamId}/health-check-templates/{templateId}:
+    delete:
+      description: Deletes team health check template
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the health check template ID
+        in: path
+        name: templateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Health Check Template
+      tags:
+      - healthCheck
+    put:
+      description: Updates team health check template
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the health check template ID
+        in: path
+        name: templateId
+        required: true
+        type: string
+      - description: health check template object
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckTemplateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Health Check Template
+      tags:
+      - healthCheck
+  /teams/{teamId}/health-check-templates/available:
+    get:
+      description: get the global, organization and team templates a team can create
+        health checks from
+      parameters:
+      - description: Team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.HealthCheckTemplate'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Available Health Check Templates
+      tags:
+      - healthCheck
+  /teams/{teamId}/health-checks:
+    get:
+      description: get a team's health checks, newest first
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.HealthCheck'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Health Checks
+      tags:
+      - healthCheck
+    post:
+      description: Creates a health check from a template, optionally emailing the
+        team a link to it
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new health check object
+        in: body
+        name: healthCheck
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.HealthCheck'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Health Check
+      tags:
+      - healthCheck
+  /teams/{teamId}/health-checks/{healthCheckId}:
+    delete:
+      description: Deletes a health check and its responses
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the health check ID
+        in: path
+        name: healthCheckId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Health Check
+      tags:
+      - healthCheck
+    get:
+      description: get a health check, the requester's answers and, once closed with
+        enough responses, the anonymous results
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the health check ID
+        in: path
+        name: healthCheckId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.healthCheckDetail'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Health Check
+      tags:
+      - healthCheck
+    put:
+      description: Updates the name and deadline of an open health check
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the health check ID
+        in: path
+        name: healthCheckId
+        required: true
+        type: string
+      - description: updated health check object
+        in: body
+        name: healthCheck
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Health Check
+      tags:
+      - healthCheck
+  /teams/{teamId}/health-checks/{healthCheckId}/close:
+    post:
+      description: Ends an open health check now, it can't be reopened
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the health check ID
+        in: path
+        name: healthCheckId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Close Team Health Check
+      tags:
+      - healthCheck
+  /teams/{teamId}/health-checks/{healthCheckId}/response:
+    put:
+      description: Saves or replaces the requesting team member's anonymous answers
+        to an open health check
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the health check ID
+        in: path
+        name: healthCheckId
+        required: true
+        type: string
+      - description: an answer for every area
+        in: body
+        name: response
+        required: true
+        schema:
+          $ref: '#/definitions/http.healthCheckResponseRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Respond to Team Health Check
+      tags:
+      - healthCheck
   /teams/{teamId}/invites:
     get:
       description: Get a list of user invites associated to the team

@@ -107,6 +107,8 @@ app:
         value: true
       - key: FEATURE_STORYBOARD
         value: true
+      - key: FEATURE_HEALTH_CHECK
+        value: true
       - key: OTEL_ENABLED
         value: false
       - key: OTEL_SERVICE_NAME
