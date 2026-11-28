@@ -1,6 +1,7 @@
 <script lang="ts">
   import { dndzone } from 'svelte-dnd-action';
   import StoryCard from './StoryCard.svelte';
+  import StoryCommentPreview from './StoryCommentPreview.svelte';
   import StoryForm from './StoryForm.svelte';
   import type { StoryboardGoal, StoryboardColumn, StoryboardStory } from '../../types/storyboard';
   import type { ColorLegend } from '../../types/storyboard';
@@ -60,6 +61,38 @@
   let activeStory = $derived(
     activeStoryId ? goalColumn.stories.find(story => story?.id === activeStoryId) || null : null,
   );
+
+  let commentPreview: { storyId: string; anchor: HTMLElement } | null = $state(null);
+
+  let previewStory = $derived(
+    goalColumn.stories.find(story => story.id === commentPreview?.storyId && story.comments.length > 0),
+  );
+
+  // forget the preview once its story is moved, deleted or left without comments
+  $effect(() => {
+    if (commentPreview && !previewStory) {
+      commentPreview = null;
+    }
+  });
+
+  function toggleCommentPreview(story: StoryboardStory, anchor: HTMLElement) {
+    if (columnOrderEditMode) {
+      return;
+    }
+    commentPreview = commentPreview?.storyId === story.id ? null : { storyId: story.id, anchor };
+  }
+
+  function closeCommentPreview() {
+    commentPreview = null;
+  }
+
+  function openPreviewDiscussion() {
+    const story = previewStory;
+    closeCommentPreview();
+    if (story) {
+      toggleStoryForm(story, { showDiscussion: true })();
+    }
+  }
 
   function handleDndConsider(e: CustomEvent) {
     const goalIndex = Number((e.target as HTMLElement)?.dataset.goalindex);
@@ -135,10 +168,25 @@
         {selectionMode}
         selected={selectedStoryIds.includes(story.id)}
         {toggleStorySelection}
+        {toggleCommentPreview}
+        commentPreviewOpen={commentPreview?.storyId === story.id}
       />
     {/each}
   </div>
 </div>
+
+<!-- outside the drop zone so clicks in the preview don't reach the card or start a drag -->
+{#if commentPreview && previewStory}
+  {#key commentPreview.anchor}
+    <StoryCommentPreview
+      story={previewStory}
+      {users}
+      anchor={commentPreview.anchor}
+      onClose={closeCommentPreview}
+      onOpenDiscussion={openPreviewDiscussion}
+    />
+  {/key}
+{/if}
 
 {#if activeStory}
   <StoryForm
