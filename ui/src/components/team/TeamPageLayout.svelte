@@ -2,7 +2,7 @@
   import SidenavPageLayout, { type PageItem } from '../SidenavPageLayout.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import { Users, User, Package } from '@lucide/svelte';
+  import { Users, User, Package, HeartPulse } from '@lucide/svelte';
 
   const { PathPrefix } = AppConfig;
 
@@ -16,7 +16,7 @@
 
   let { activePage = 'Team', children, teamId, organizationId, departmentId }: Props = $props();
 
-  const { FeatureProject } = AppConfig;
+  const { FeatureProject, FeatureHealthCheck } = AppConfig;
 
   let routePrefix = $derived(
     departmentId
@@ -50,6 +50,13 @@
             path: `${routePrefix}/projects`,
             icon: Package,
             enabled: FeatureProject,
+          },
+          {
+            name: 'Health Checks',
+            label: $LL.healthChecks(),
+            path: `${routePrefix}/health-checks`,
+            icon: HeartPulse,
+            enabled: FeatureHealthCheck,
           },
         ]
       : [],

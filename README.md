@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <b>Remote team collaboration for agile poker planning, sprint retrospectives, user story mapping, and async team stand-ups (checkins).</b>
+  <b>Remote team collaboration for agile poker planning, sprint retrospectives, user story mapping, async team stand-ups (checkins), and squad health checks.</b>
 </p>
 
 ---

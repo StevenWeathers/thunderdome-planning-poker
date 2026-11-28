@@ -16,6 +16,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/alert"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/apikey"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/auth"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/healthcheck"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/poker"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/retrotemplate"
@@ -148,6 +149,7 @@ func serve(embedUseOS bool) {
 	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
 	retroTemplateDataSvc := &retrotemplate.Service{DB: d.DB, Logger: logger}
 	projectDataSvc := &project.Service{DB: d.DB, Logger: logger}
+	healthCheckDataSvc := &healthcheck.Service{DB: d.DB}
 
 	cook := cookie.New(cookie.Config{
 		AppDomain:           c.Http.Domain,
@@ -199,6 +201,7 @@ func serve(embedUseOS bool) {
 			FeatureRetro:              c.Feature.Retro,
 			FeatureStoryboard:         c.Feature.Storyboard,
 			FeatureProject:            c.Feature.Project,
+			FeatureHealthCheck:        c.Feature.HealthCheck,
 			OrganizationsEnabled:      c.Config.OrganizationsEnabled,
 			AvatarService:             c.Config.AvatarService,
 			EmbedUseOS:                embedUseOS,
@@ -274,6 +277,7 @@ func serve(embedUseOS bool) {
 		UserTitleDataSvc:           organizationService,
 		SubscriptionSvc:            subscriptionService,
 		ProjectDataSvc:             projectDataSvc,
+		HealthCheckDataSvc:         healthCheckDataSvc,
 		UIConfig: thunderdome.UIConfig{
 			AppConfig: thunderdome.AppConfig{
 				AllowedPointValues:          c.Config.AllowedPointValues,
@@ -306,6 +310,7 @@ func serve(embedUseOS bool) {
 				FeatureRetro:                c.Feature.Retro,
 				FeatureStoryboard:           c.Feature.Storyboard,
 				FeatureProject:              c.Feature.Project,
+				FeatureHealthCheck:          c.Feature.HealthCheck,
 				RequireTeams:                c.Config.RequireTeams,
 				SubscriptionsEnabled:        c.Config.SubscriptionsEnabled,
 				Subscription:                c.Subscription,

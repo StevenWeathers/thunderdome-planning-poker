@@ -19,6 +19,7 @@
     UserRound,
     Package,
     InboxIcon,
+    HeartPulse,
   } from '@lucide/svelte';
 
   interface Props {
@@ -34,6 +35,7 @@
     FeatureRetro,
     FeatureStoryboard,
     FeatureProject,
+    FeatureHealthCheck,
     OrganizationsEnabled,
     SubscriptionsEnabled,
   } = AppConfig;
@@ -152,6 +154,13 @@
             path: appRoutes.adminPersonaTemplates,
             icon: UserRound,
             enabled: FeatureStoryboard,
+          },
+          {
+            name: 'Healthcheck Templates',
+            label: $LL.healthCheckTemplates(),
+            path: appRoutes.adminHealthCheckTemplates,
+            icon: HeartPulse,
+            enabled: FeatureHealthCheck,
           },
         ]
       : [],

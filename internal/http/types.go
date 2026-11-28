@@ -71,6 +71,8 @@ type Config struct {
 	FeatureRetro bool
 	// Feature flag for Storyboards
 	FeatureStoryboard bool
+	// Enable or Disable Team Health Checks
+	FeatureHealthCheck bool
 	// Feature flag for Projects
 	FeatureProject bool
 	// Whether Organizations (and Departments) feature is enabled
@@ -133,6 +135,7 @@ type Service struct {
 	PersonaTemplateDataSvc     PersonaTemplateDataSvc
 	SubscriptionSvc            *subscription.Service
 	ProjectDataSvc             ProjectDataSvc
+	HealthCheckDataSvc         HealthCheckDataSvc
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -667,6 +670,7 @@ type EmailService interface {
 	SendEmailChangeRequest(userName string, userEmail string, changeId string) error
 	SendEmailChangeConfirmation(userName string, userEmail string, newEmail string) error
 	SendNewTicketToAdmins(adminUser thunderdome.User, ticketID string) error
+	SendHealthCheckInvite(userName string, userEmail string, teamName string, healthCheckName string, deadline time.Time, teamID string, healthCheckID string) error
 }
 
 // ProjectDataSvc represents the interface for project data operations
@@ -710,6 +714,24 @@ type ProjectDataSvc interface {
 	AssociatePoker(ctx context.Context, projectID string, pokerID string) error
 	ListPokerGames(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Poker, error)
 	RemovePokerGame(ctx context.Context, projectID string, pokerID string) error
+}
+
+type HealthCheckDataSvc interface {
+	HealthCheckList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.HealthCheck, int, error)
+	HealthCheckGet(ctx context.Context, teamID string, healthCheckID string) (*thunderdome.HealthCheck, error)
+	HealthCheckCreate(ctx context.Context, teamID string, templateID string, name string, deadline time.Time, createdBy string) (string, error)
+	HealthCheckUpdate(ctx context.Context, teamID string, healthCheckID string, name string, deadline time.Time) error
+	HealthCheckClose(ctx context.Context, teamID string, healthCheckID string) error
+	HealthCheckDelete(ctx context.Context, teamID string, healthCheckID string) error
+	HealthCheckResponseSubmit(ctx context.Context, teamID string, healthCheckID string, userID string, answers []*thunderdome.HealthCheckAnswer) error
+	HealthCheckUserResponse(ctx context.Context, healthCheckID string, userID string) ([]*thunderdome.HealthCheckAnswer, error)
+	HealthCheckResponses(ctx context.Context, healthCheckID string) ([][]*thunderdome.HealthCheckAnswer, error)
+	HealthCheckPendingUsers(ctx context.Context, teamID string, healthCheckID string) ([]*thunderdome.HealthCheckParticipant, error)
+	HealthCheckTemplateList(ctx context.Context, organizationID string, teamID string) ([]*thunderdome.HealthCheckTemplate, error)
+	HealthCheckTemplatesAvailable(ctx context.Context, teamID string) ([]*thunderdome.HealthCheckTemplate, error)
+	HealthCheckTemplateCreate(ctx context.Context, template *thunderdome.HealthCheckTemplate) error
+	HealthCheckTemplateUpdate(ctx context.Context, template *thunderdome.HealthCheckTemplate) error
+	HealthCheckTemplateDelete(ctx context.Context, organizationID string, teamID string, templateID string) error
 }
 
 type UserTitleDataSvc interface {

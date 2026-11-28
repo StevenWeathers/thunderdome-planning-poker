@@ -106,10 +106,11 @@ type AppConfig struct {
 
 // Feature is the application feature enablement configuration
 type Feature struct {
-	Poker      bool
-	Retro      bool
-	Storyboard bool
-	Project    bool
+	Poker       bool
+	Retro       bool
+	Storyboard  bool
+	Project     bool
+	HealthCheck bool `mapstructure:"health_check"`
 }
 
 // Google is the application Google OAuth2 configuration

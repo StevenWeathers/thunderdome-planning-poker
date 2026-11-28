@@ -279,6 +279,7 @@ needs.
 | `feature.poker`                         | FEATURE_POKER                         | Enable or Disable Agile Story Pointing (Poker) feature                                                                                   | true                                                      |
 | `feature.retro`                         | FEATURE_RETRO                         | Enable or Disable Agile Retrospectives feature                                                                                           | true                                                      |
 | `feature.storyboard`                    | FEATURE_STORYBOARD                    | Enable or Disable Agile Storyboard feature                                                                                               | true                                                      |
+| `feature.health_check`                  | FEATURE_HEALTH_CHECK                  | Enable or Disable Team Health Checks feature                                                                                             | true                                                      |
 
 ### Avatar Service configuration
 
