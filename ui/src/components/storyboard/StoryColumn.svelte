@@ -45,29 +45,16 @@
   }: Props = $props();
 
   let activeStoryId: string | null = $state(null);
-  let storyDiscussionExpanded = $state(false);
-  let additionalDetailsExpanded = $state(false);
+  let showStoryDiscussion = $state(false);
 
   const toggleStoryForm =
-    (
-      story: StoryboardStory | null = null,
-      options?: { discussionExpanded?: boolean; additionalDetailsExpanded?: boolean },
-    ) =>
+    (story: StoryboardStory | null = null, options?: { showDiscussion?: boolean }) =>
     () => {
       if (columnOrderEditMode) {
         return;
       }
       activeStoryId = activeStoryId != null ? null : story?.id || null;
-      if (options?.discussionExpanded) {
-        storyDiscussionExpanded = true;
-      } else {
-        storyDiscussionExpanded = false;
-      }
-      if (options?.additionalDetailsExpanded) {
-        additionalDetailsExpanded = true;
-      } else {
-        additionalDetailsExpanded = false;
-      }
+      showStoryDiscussion = options?.showDiscussion ?? false;
     };
 
   let activeStory = $derived(
@@ -162,7 +149,6 @@
     {colorLegend}
     {users}
     {pointValues}
-    discussionExpanded={storyDiscussionExpanded}
-    {additionalDetailsExpanded}
+    showDiscussion={showStoryDiscussion}
   />
 {/if}

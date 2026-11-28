@@ -69,16 +69,10 @@
     e.stopPropagation();
   }
 
-  // Handle click on comments button to prevent triggering story form without expanding comments
+  // Handle click on comments button to prevent triggering story form without scrolling to comments
   function handleCommentsClick(e: Event) {
     e.stopPropagation();
-    toggleStoryForm(story, { discussionExpanded: true })();
-  }
-
-  // Handle click on additional details to prevent triggering story form without expanding additional details
-  function handleAdditionalDetailsClick(e: Event) {
-    e.stopPropagation();
-    toggleStoryForm(story, { additionalDetailsExpanded: true })();
+    toggleStoryForm(story, { showDiscussion: true })();
   }
 </script>
 
@@ -152,7 +146,6 @@
                 class="px-2 bg-gray-300 dark:bg-gray-500 inline-block align-middle rounded-full hover:bg-green-400 dark:hover:bg-lime-400 dark:hover:text-gray-800 transition-all duration-200"
                 data-testid="story-points"
                 title="Story points"
-                onclick={handleAdditionalDetailsClick}
               >
                 {story.points}
               </button>
