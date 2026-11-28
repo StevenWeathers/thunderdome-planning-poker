@@ -1,5 +1,7 @@
 <script lang="ts">
   import { quill } from '../../quill';
+  import '../../../node_modules/quill/dist/quill.core.css';
+  import '../../../node_modules/quill/dist/quill.snow.css';
 
   interface Props {
     content?: string;

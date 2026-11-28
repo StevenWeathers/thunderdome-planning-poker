@@ -916,6 +916,8 @@ const ru: Translation = {
   publicHealthCheckTemplates: 'Публичные шаблоны проверки здоровья',
   organizationHealthCheckTemplates: 'Шаблоны проверки здоровья организаций',
   teamHealthCheckTemplates: 'Шаблоны проверки здоровья команд',
+  pageLoadError: 'Не удалось загрузить эту страницу.',
+  pageLoadReload: 'Перезагрузить',
 };
 
 export default ru;

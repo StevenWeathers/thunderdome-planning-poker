@@ -921,6 +921,8 @@ const de: Translation = {
   publicHealthCheckTemplates: 'Öffentliche Health-Check-Vorlagen',
   organizationHealthCheckTemplates: 'Organisation Health-Check-Vorlagen',
   teamHealthCheckTemplates: 'Team Health-Check-Vorlagen',
+  pageLoadError: 'Diese Seite konnte nicht geladen werden.',
+  pageLoadReload: 'Neu laden',
 };
 
 export default de;

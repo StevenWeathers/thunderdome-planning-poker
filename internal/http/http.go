@@ -725,7 +725,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	a.registerOauthProviderEndpoints(router, prefix, authProviderConfigs)
 
 	// static assets
-	router.Handle(prefix+"/assets/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	router.Handle(prefix+"/assets/", http.StripPrefix(a.Config.PathPrefix, immutableCache(staticHandler)))
 	router.Handle(prefix+"/img/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	router.Handle(prefix+"/content/", http.StripPrefix(a.Config.PathPrefix, staticHandler))
 
@@ -819,6 +819,9 @@ func (s *Service) handleIndex(filesystem fs.FS, uiConfig thunderdome.UIConfig) h
 	return func(w http.ResponseWriter, r *http.Request) {
 		uiConfig.ActiveAlerts = ActiveAlerts // get the latest alerts from memory
 		nonce := secure.CSPNonce(r.Context())
+
+		// revalidate so deploys are picked up and a page with its nonce is never reused
+		w.Header().Set("Cache-Control", "no-cache")
 
 		if s.Config.EmbedUseOS {
 			tmpl = s.getIndexTemplate(filesystem)
