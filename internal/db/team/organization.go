@@ -148,7 +148,7 @@ func (d *OrganizationService) OrganizationUpdate(ctx context.Context, orgID stri
 func (d *OrganizationService) OrganizationUserList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.OrganizationUser {
 	var users = make([]*thunderdome.OrganizationUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT u.id, u.name, COALESCE(u.email, ''), ou.role, u.avatar, COALESCE(u.picture, '')
+		`SELECT u.id, u.name, COALESCE(u.email, ''), ou.role, u.avatar, COALESCE(u.picture, ''), ou.title, ou.notes
         FROM thunderdome.organization_user ou
         LEFT JOIN thunderdome.users u ON ou.user_id = u.id
         WHERE ou.organization_id = $1
@@ -172,6 +172,8 @@ func (d *OrganizationService) OrganizationUserList(ctx context.Context, orgID st
 				&usr.Role,
 				&usr.Avatar,
 				&usr.PictureURL,
+				&usr.Title,
+				&usr.Notes,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("organization_user_list query scan error", zap.Error(err))
 			} else {
@@ -218,13 +220,17 @@ func (d *OrganizationService) OrganizationUpsertUser(ctx context.Context, orgID 
 	return orgID, nil
 }
 
-// OrganizationUpdateUser updates an organization user
-func (d *OrganizationService) OrganizationUpdateUser(ctx context.Context, orgID string, userID string, role string) (string, error) {
+// OrganizationUpdateUser updates an organization user, a nil title or notes leaves the existing value unchanged
+func (d *OrganizationService) OrganizationUpdateUser(ctx context.Context, orgID string, userID string, role string, title *string, notes *string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
-		`UPDATE thunderdome.organization_user SET role = $3 WHERE organization_id = $1 AND user_id = $2;`,
+		`UPDATE thunderdome.organization_user
+		SET role = $3, title = COALESCE($4, title), notes = COALESCE($5, notes)
+		WHERE organization_id = $1 AND user_id = $2;`,
 		orgID,
 		userID,
 		role,
+		title,
+		notes,
 	)
 
 	if err != nil {

@@ -480,7 +480,13 @@ func (s *Service) handleDepartmentUpdateUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := s.OrganizationDataSvc.DepartmentUpdateUser(ctx, departmentID, userID, u.Role)
+		u.trim()
+		if inputErr := validate.Struct(u); inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		_, err := s.OrganizationDataSvc.DepartmentUpdateUser(ctx, departmentID, userID, u.Role, u.Title, u.Notes)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleDepartmentUpdateUser error", zap.Error(err), zap.String("session_user_id", sessionUserID),

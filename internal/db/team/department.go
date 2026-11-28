@@ -197,9 +197,14 @@ func (d *OrganizationService) DepartmentTeamCreate(ctx context.Context, departme
 func (d *OrganizationService) DepartmentUserList(ctx context.Context, departmentID string, limit int, offset int) []*thunderdome.DepartmentUser {
 	var users = make([]*thunderdome.DepartmentUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT u.id, u.name, COALESCE(u.email, ''), du.role, u.avatar, COALESCE(u.picture, '')
+		`SELECT u.id, u.name, COALESCE(u.email, ''), du.role, u.avatar, COALESCE(u.picture, ''), du.title, du.notes,
+			COALESCE(ou.title, ''),
+			CASE WHEN ou.title <> '' THEN 'organization' ELSE '' END
         FROM thunderdome.department_user du
         LEFT JOIN thunderdome.users u ON du.user_id = u.id
+        LEFT JOIN thunderdome.organization_department od ON od.id = du.department_id
+        LEFT JOIN thunderdome.organization_user ou
+            ON ou.organization_id = od.organization_id AND ou.user_id = du.user_id
         WHERE du.department_id = $1
         ORDER BY du.created_date
 		LIMIT $2
@@ -221,6 +226,10 @@ func (d *OrganizationService) DepartmentUserList(ctx context.Context, department
 				&usr.Role,
 				&usr.Avatar,
 				&usr.PictureURL,
+				&usr.Title,
+				&usr.Notes,
+				&usr.InheritedTitle,
+				&usr.InheritedTitleSource,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("department_user_list query scan error", zap.Error(err))
 			} else {
@@ -267,13 +276,17 @@ func (d *OrganizationService) DepartmentUpsertUser(ctx context.Context, departme
 	return departmentID, nil
 }
 
-// DepartmentUpdateUser updates an organization department user
-func (d *OrganizationService) DepartmentUpdateUser(ctx context.Context, departmentID string, userID string, role string) (string, error) {
+// DepartmentUpdateUser updates an organization department user, a nil title or notes leaves the existing value unchanged
+func (d *OrganizationService) DepartmentUpdateUser(ctx context.Context, departmentID string, userID string, role string, title *string, notes *string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
-		`UPDATE thunderdome.department_user SET role = $3 WHERE department_id = $1 AND user_id = $2;`,
+		`UPDATE thunderdome.department_user
+		SET role = $3, title = COALESCE($4, title), notes = COALESCE($5, notes)
+		WHERE department_id = $1 AND user_id = $2;`,
 		departmentID,
 		userID,
 		role,
+		title,
+		notes,
 	)
 
 	if err != nil {

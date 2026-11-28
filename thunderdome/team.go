@@ -27,6 +27,11 @@ type TeamUser struct {
 	Avatar       string `json:"avatar"`
 	GravatarHash string `json:"gravatarHash"`
 	PictureURL   string `json:"pictureUrl"`
+	Title        string `json:"title,omitempty"`
+	Notes        string `json:"notes,omitempty"`
+	// InheritedTitle is the nearest higher level title (department, then organization), shown when Title is empty
+	InheritedTitle       string `json:"inheritedTitle,omitempty"`
+	InheritedTitleSource string `json:"inheritedTitleSource,omitempty"`
 }
 
 type TeamUserInvite struct {

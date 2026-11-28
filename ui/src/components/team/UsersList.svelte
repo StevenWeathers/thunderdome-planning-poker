@@ -15,7 +15,7 @@
   import CrudActions from '../table/CrudActions.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  import type { AddUserRequest, InviteUserRequest } from '../../types/team';
+  import type { AddUserRequest, InviteUserRequest, UserTitle } from '../../types/team';
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
 
@@ -48,6 +48,7 @@
   let showAddUser = $state(false);
   let showUpdateUser = $state(false);
   let updateUser = $state<any>({});
+  let titleOptions = $state<string[]>([]);
   let showRemoveUser = $state(false);
   let removeUserId = $state<string | null>(null);
 
@@ -95,9 +96,10 @@
       });
   }
 
-  function handleUserUpdate(userId: string, role: string) {
+  function handleUserUpdate(userId: string, role: string, details?: { title: string; notes: string }) {
     const body = {
       role,
+      ...details,
     };
 
     xfetch(`${teamPrefix}/users/${userId}`, { body, method: 'PUT' })
@@ -132,6 +134,20 @@
     showUpdateUser = !showUpdateUser;
   };
 
+  // load the organization titles before opening the form, teams without an organization have none
+  function openUpdateUser(user: any) {
+    xfetch(`${teamPrefix}/user-titles`)
+      .then(res => res.json())
+      .then(function (result) {
+        titleOptions = result.data.map((t: UserTitle) => t.name);
+      })
+      .catch(function () {
+        titleOptions = [];
+        notifications.danger($LL.userTitlesGetError());
+      })
+      .finally(toggleUpdateUser(user));
+  }
+
   const toggleRemoveUser = (userId: string | null) => () => {
     showRemoveUser = !showRemoveUser;
     removeUserId = userId;
@@ -155,6 +171,9 @@
           </HeadCol>
           <HeadCol>
             {$LL.email()}
+          </HeadCol>
+          <HeadCol>
+            {$LL.userTitleLabel()}
           </HeadCol>
           <HeadCol>
             {$LL.role()}
@@ -195,6 +214,28 @@
                 <span data-testid="user-email">{user.email}</span>
               </RowCol>
               <RowCol>
+                <div class="min-w-48 max-w-xs whitespace-normal break-words">
+                  <div class="text-gray-900 dark:text-gray-200" data-testid="user-title">
+                    {user.title || user.inheritedTitle}
+                  </div>
+                  {#if !user.title && user.inheritedTitle}
+                    <div class="text-xs font-normal italic text-gray-500 dark:text-gray-400" data-testid="user-title-source">
+                      {user.inheritedTitleSource === 'department'
+                        ? $LL.userTitleFromDepartment()
+                        : $LL.userTitleFromOrganization()}
+                    </div>
+                  {/if}
+                  {#if user.notes}
+                    <div
+                      class="text-sm font-normal whitespace-pre-line text-gray-500 dark:text-gray-400"
+                      data-testid="user-notes"
+                    >
+                      {user.notes}
+                    </div>
+                  {/if}
+                </div>
+              </RowCol>
+              <RowCol>
                 <div class="text-sm text-gray-500 dark:text-gray-300">
                   {user.role}
                 </div>
@@ -202,7 +243,7 @@
               <RowCol type="action">
                 {#if isAdmin}
                   <CrudActions
-                    editBtnClickHandler={toggleUpdateUser(user)}
+                    editBtnClickHandler={() => openUpdateUser(user)}
                     deleteBtnClickHandler={toggleRemoveUser(user.id)}
                   />
                 {/if}
@@ -234,6 +275,10 @@
       userId={updateUser.id}
       userEmail={updateUser.email}
       role={updateUser.role}
+      title={updateUser.title || ''}
+      notes={updateUser.notes || ''}
+      inheritedTitle={updateUser.inheritedTitle || ''}
+      {titleOptions}
     />
   {/if}
 

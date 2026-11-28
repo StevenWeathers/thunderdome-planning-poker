@@ -489,7 +489,13 @@ func (s *Service) handleOrganizationUpdateUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := s.OrganizationDataSvc.OrganizationUpdateUser(ctx, orgID, userID, u.Role)
+		u.trim()
+		if inputErr := validate.Struct(u); inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		_, err := s.OrganizationDataSvc.OrganizationUpdateUser(ctx, orgID, userID, u.Role, u.Title, u.Notes)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleOrganizationInviteUser error", zap.Error(err), zap.String("user_id", userID),

@@ -118,8 +118,69 @@ describe('UpdateUser component', () => {
     await userEvent.selectOptions(select, 'MEMBER');
     await userEvent.click(button);
 
-    expect(handleUpdate).toHaveBeenCalledWith('user-1', 'MEMBER');
+    expect(handleUpdate).toHaveBeenCalledWith('user-1', 'MEMBER', { title: '', notes: '' });
     expect(handleUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  const titleProps = {
+    userId: 'user-1',
+    userEmail: 'user@example.com',
+    role: 'MEMBER',
+    titleOptions: ['Backend Developer', 'Product Manager'],
+  };
+
+  it('should only offer a text input when there are no title options', () => {
+    const { container } = render(UpdateUser, { ...titleProps, titleOptions: [] });
+
+    expect(container.querySelector('select[name="userTitleChoice"]')).toBeNull();
+    expect(container.querySelector('input[name="userTitle"]')).toBeTruthy();
+  });
+
+  it('should submit a title picked from the options', async () => {
+    const handleUpdate = vi.fn();
+    const { container } = render(UpdateUser, { ...titleProps, handleUpdate, notes: 'Knows billing' });
+    const select = container.querySelector('select[name="userTitleChoice"]') as HTMLSelectElement;
+
+    expect(container.querySelector('input[name="userTitle"]')).toBeNull();
+    await userEvent.selectOptions(select, 'Product Manager');
+    await userEvent.click(page.getByRole('button', { name: /update/i }));
+
+    expect(handleUpdate).toHaveBeenCalledWith('user-1', 'MEMBER', {
+      title: 'Product Manager',
+      notes: 'Knows billing',
+    });
+  });
+
+  it('should allow a custom title when there are options', async () => {
+    const handleUpdate = vi.fn();
+    const { container } = render(UpdateUser, { ...titleProps, handleUpdate });
+    const select = container.querySelector('select[name="userTitleChoice"]') as HTMLSelectElement;
+
+    await userEvent.selectOptions(select, '__custom__');
+    await userEvent.fill(container.querySelector('input[name="userTitle"]') as HTMLInputElement, 'Release Captain');
+    await userEvent.click(page.getByRole('button', { name: /update/i }));
+
+    expect(handleUpdate).toHaveBeenCalledWith('user-1', 'MEMBER', { title: 'Release Captain', notes: '' });
+  });
+
+  it('should show an existing custom title as custom', async () => {
+    const { container } = render(UpdateUser, { ...titleProps, title: 'Release Captain' });
+
+    const select = container.querySelector('select[name="userTitleChoice"]') as HTMLSelectElement;
+    const input = container.querySelector('input[name="userTitle"]') as HTMLInputElement;
+    await expect.element(select).toHaveValue('__custom__');
+    expect(input.value).toBe('Release Captain');
+  });
+
+  it('should leave the title empty when it is inherited', async () => {
+    const handleUpdate = vi.fn();
+    const { container } = render(UpdateUser, { ...titleProps, handleUpdate, inheritedTitle: 'Designer' });
+
+    const emptyOption = container.querySelector('select[name="userTitleChoice"] option[value=""]');
+    expect(emptyOption?.textContent).toContain('Designer');
+    await userEvent.click(page.getByRole('button', { name: /update/i }));
+
+    expect(handleUpdate).toHaveBeenCalledWith('user-1', 'MEMBER', { title: '', notes: '' });
   });
 
   it('should update role value when changed', async () => {
