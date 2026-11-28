@@ -8,6 +8,7 @@
   import { ChevronRight } from '@lucide/svelte';
   import UsersList from '../../components/team/UsersList.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
+  import UserTitlesList from '../../components/team/UserTitlesList.svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
@@ -118,4 +119,10 @@
       invitesList.f('user-invited');
     }}
   />
+
+  {#if isAdmin}
+    <div class="w-full mt-6 lg:mt-8">
+      <UserTitlesList {xfetch} {notifications} apiPrefix={orgPrefix} />
+    </div>
+  {/if}
 </OrgPageLayout>

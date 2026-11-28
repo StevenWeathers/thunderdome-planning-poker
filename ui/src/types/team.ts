@@ -16,6 +16,10 @@ export type TeamUser = {
   role: string;
   pictureUrl?: string;
   country?: string;
+  title?: string;
+  notes?: string;
+  inheritedTitle?: string;
+  inheritedTitleSource?: 'department' | 'organization';
 };
 
 export type TeamCheckin = {
@@ -49,4 +53,12 @@ export type InviteUserRequest = {
 export type AddUserRequest = {
   user_id: string;
   role: string;
+};
+
+export type UserTitle = {
+  id: string;
+  organizationId: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
 };

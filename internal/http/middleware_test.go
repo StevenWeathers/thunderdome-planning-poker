@@ -69,7 +69,7 @@ func (m *MockTeamDataSvc) TeamUserList(ctx context.Context, TeamID string, Limit
 	panic("implement me")
 }
 
-func (m *MockTeamDataSvc) TeamUpdateUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error) {
+func (m *MockTeamDataSvc) TeamUpdateUser(ctx context.Context, TeamID string, UserID string, Role string, Title *string, Notes *string) (string, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -744,7 +744,7 @@ func (m *MockOrganizationDataService) OrganizationUpsertUser(ctx context.Context
 	panic("implement me")
 }
 
-func (m *MockOrganizationDataService) OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
+func (m *MockOrganizationDataService) OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string, Title *string, Notes *string) (string, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -859,7 +859,7 @@ func (m *MockOrganizationDataService) DepartmentUpsertUser(ctx context.Context, 
 	panic("implement me")
 }
 
-func (m *MockOrganizationDataService) DepartmentUpdateUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error) {
+func (m *MockOrganizationDataService) DepartmentUpdateUser(ctx context.Context, DepartmentID string, UserID string, Role string, Title *string, Notes *string) (string, error) {
 	//TODO implement me
 	panic("implement me")
 }

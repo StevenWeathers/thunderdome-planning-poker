@@ -128,6 +128,7 @@ type Service struct {
 	SubscriptionDataSvc        SubscriptionDataSvc
 	RetroTemplateDataSvc       RetroTemplateDataSvc
 	RetroTagDataSvc            RetroTagDataSvc
+	UserTitleDataSvc           UserTitleDataSvc
 	ColorLegendTemplateDataSvc ColorLegendTemplateDataSvc
 	PersonaTemplateDataSvc     PersonaTemplateDataSvc
 	SubscriptionSvc            *subscription.Service
@@ -246,7 +247,7 @@ type OrganizationDataSvc interface {
 	OrganizationUserList(ctx context.Context, orgID string, limit int, offset int) []*thunderdome.OrganizationUser
 	OrganizationAddUser(ctx context.Context, orgID string, userID string, Role string) (string, error)
 	OrganizationUpsertUser(ctx context.Context, orgID string, userID string, Role string) (string, error)
-	OrganizationUpdateUser(ctx context.Context, orgID string, userID string, Role string) (string, error)
+	OrganizationUpdateUser(ctx context.Context, orgID string, userID string, Role string, title *string, notes *string) (string, error)
 	OrganizationRemoveUser(ctx context.Context, organizationID string, userID string) error
 	OrganizationInviteUser(ctx context.Context, orgID string, Email string, Role string) (string, error)
 	OrganizationUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.OrganizationUserInvite, error)
@@ -271,7 +272,7 @@ type OrganizationDataSvc interface {
 	DepartmentUserList(ctx context.Context, departmentID string, limit int, offset int) []*thunderdome.DepartmentUser
 	DepartmentAddUser(ctx context.Context, departmentID string, userID string, Role string) (string, error)
 	DepartmentUpsertUser(ctx context.Context, departmentID string, userID string, Role string) (string, error)
-	DepartmentUpdateUser(ctx context.Context, departmentID string, userID string, Role string) (string, error)
+	DepartmentUpdateUser(ctx context.Context, departmentID string, userID string, Role string, title *string, notes *string) (string, error)
 	DepartmentRemoveUser(ctx context.Context, departmentID string, userID string) error
 	DepartmentTeamUserRole(ctx context.Context, userID string, orgID string, departmentID string, teamID string) (string, string, string, error)
 	DepartmentDelete(ctx context.Context, departmentID string) error
@@ -291,7 +292,7 @@ type TeamDataSvc interface {
 	TeamUpdate(ctx context.Context, teamID string, teamName string) (*thunderdome.Team, error)
 	TeamAddUser(ctx context.Context, teamID string, userID string, role string) (string, error)
 	TeamUserList(ctx context.Context, teamID string, limit int, offset int) ([]*thunderdome.TeamUser, int, error)
-	TeamUpdateUser(ctx context.Context, teamID string, userID string, role string) (string, error)
+	TeamUpdateUser(ctx context.Context, teamID string, userID string, role string, title *string, notes *string) (string, error)
 	TeamRemoveUser(ctx context.Context, teamID string, userID string) error
 	TeamInviteUser(ctx context.Context, teamID string, Email string, role string) (string, error)
 	TeamUserGetInviteByID(ctx context.Context, inviteID string) (thunderdome.TeamUserInvite, error)
@@ -706,4 +707,11 @@ type ProjectDataSvc interface {
 	AssociatePoker(ctx context.Context, projectID string, pokerID string) error
 	ListPokerGames(ctx context.Context, projectId string, limit int, offset int) ([]*thunderdome.Poker, error)
 	RemovePokerGame(ctx context.Context, projectID string, pokerID string) error
+}
+
+type UserTitleDataSvc interface {
+	UserTitleList(ctx context.Context, organizationID string, departmentID string, teamID string) ([]*thunderdome.UserTitle, error)
+	UserTitleCreate(ctx context.Context, title *thunderdome.UserTitle) error
+	UserTitleUpdate(ctx context.Context, title *thunderdome.UserTitle) error
+	UserTitleDelete(ctx context.Context, organizationID string, titleID string) error
 }

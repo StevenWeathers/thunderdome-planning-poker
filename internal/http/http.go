@@ -279,6 +279,15 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinSvc))))
 	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinSvc))))
 	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/metrics", a.userOnly(a.teamUserOnly(a.handleTeamMetrics())))
+	// member titles
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/user-titles", a.userOnly(a.orgUserOnly(a.handleGetUserTitles())))
+	router.Handle("POST "+prefix+"/api/organizations/{orgId}/user-titles", a.userOnly(a.orgAdminOnly(a.handleUserTitleCreate())))
+	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/user-titles/{titleId}", a.userOnly(a.orgAdminOnly(a.handleUserTitleUpdate())))
+	router.Handle("DELETE "+prefix+"/api/organizations/{orgId}/user-titles/{titleId}", a.userOnly(a.orgAdminOnly(a.handleUserTitleDelete())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/user-titles", a.userOnly(a.departmentUserOnly(a.handleGetUserTitles())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/departments/{departmentId}/teams/{teamId}/user-titles", a.userOnly(a.teamUserOnly(a.handleGetUserTitles())))
+	router.Handle("GET "+prefix+"/api/organizations/{orgId}/teams/{teamId}/user-titles", a.userOnly(a.teamUserOnly(a.handleGetUserTitles())))
+	router.Handle("GET "+prefix+"/api/teams/{teamId}/user-titles", a.userOnly(a.teamUserOnly(a.handleGetUserTitles())))
 	// org users
 	router.Handle("GET "+prefix+"/api/organizations/{orgId}/users", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUsers())))
 	router.Handle("PUT "+prefix+"/api/organizations/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdateUser())))

@@ -136,7 +136,7 @@ func (s *Service) handleGetTeamsByUserNonOrg() http.HandlerFunc {
 //	@Tags			team
 //	@Produce		json
 //	@Param			teamId	path	string	true	"the team ID"
-//	@Success		200		object	standardJsonResponse{data=[]thunderdome.User}
+//	@Success		200		object	standardJsonResponse{data=[]thunderdome.TeamUser}
 //	@Security		ApiKeyAuth
 //	@Router			/teams/{teamId}/users [get]
 func (s *Service) handleGetTeamUsers() http.HandlerFunc {
@@ -392,6 +392,19 @@ func (s *Service) handleTeamInviteUser() http.HandlerFunc {
 
 type teamUpdateUserRequestBody struct {
 	Role string `json:"role" enums:"MEMBER,ADMIN" validate:"required,oneof=MEMBER ADMIN"`
+	// Title describes what the user does on the team, omit to leave unchanged
+	Title *string `json:"title,omitempty" validate:"omitempty,max=128"`
+	// Notes are visible to other team members, omit to leave unchanged
+	Notes *string `json:"notes,omitempty" validate:"omitempty,max=1000"`
+}
+
+// trim removes surrounding whitespace from the optional descriptive fields
+func (b *teamUpdateUserRequestBody) trim() {
+	for _, field := range []*string{b.Title, b.Notes} {
+		if field != nil {
+			*field = strings.TrimSpace(*field)
+		}
+	}
 }
 
 // handleTeamUpdateUser handles updating a user on the team
@@ -439,13 +452,15 @@ func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
 			return
 		}
 
+		u.trim()
+
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		_, err := s.TeamDataSvc.TeamUpdateUser(ctx, teamID, userID, u.Role)
+		_, err := s.TeamDataSvc.TeamUpdateUser(ctx, teamID, userID, u.Role, u.Title, u.Notes)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(err), zap.String("team_id", teamID),
 				zap.String("user_id", userID), zap.String("team_role", u.Role),

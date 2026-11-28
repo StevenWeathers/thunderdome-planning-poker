@@ -119,9 +119,16 @@ func (d *Service) TeamUserList(ctx context.Context, teamID string, limit int, of
 	}
 
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT u.id, u.name, COALESCE(u.email, ''), tu.role, u.avatar, COALESCE(u.picture, '')
+		`SELECT u.id, u.name, COALESCE(u.email, ''), tu.role, u.avatar, COALESCE(u.picture, ''), tu.title, tu.notes,
+			COALESCE(NULLIF(du.title, ''), NULLIF(ou.title, ''), ''),
+			CASE WHEN du.title <> '' THEN 'department' WHEN ou.title <> '' THEN 'organization' ELSE '' END
         FROM thunderdome.team_user tu
         LEFT JOIN thunderdome.users u ON tu.user_id = u.id
+        LEFT JOIN thunderdome.team t ON t.id = tu.team_id
+        LEFT JOIN thunderdome.organization_department od ON od.id = t.department_id
+        LEFT JOIN thunderdome.department_user du ON du.department_id = t.department_id AND du.user_id = tu.user_id
+        LEFT JOIN thunderdome.organization_user ou
+            ON ou.organization_id = COALESCE(t.organization_id, od.organization_id) AND ou.user_id = tu.user_id
         WHERE tu.team_id = $1
         ORDER BY tu.created_date
 		LIMIT $2
@@ -143,6 +150,10 @@ func (d *Service) TeamUserList(ctx context.Context, teamID string, limit int, of
 				&usr.Role,
 				&usr.Avatar,
 				&usr.PictureURL,
+				&usr.Title,
+				&usr.Notes,
+				&usr.InheritedTitle,
+				&usr.InheritedTitleSource,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_user_list query scan error", zap.Error(err))
 			} else {
@@ -173,13 +184,17 @@ func (d *Service) TeamAddUser(ctx context.Context, teamID string, userID string,
 	return teamID, nil
 }
 
-// TeamUpdateUser updates a team user
-func (d *Service) TeamUpdateUser(ctx context.Context, teamID string, userID string, role string) (string, error) {
+// TeamUpdateUser updates a team user, a nil title or notes leaves the existing value unchanged
+func (d *Service) TeamUpdateUser(ctx context.Context, teamID string, userID string, role string, title *string, notes *string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
-		`UPDATE thunderdome.team_user SET role = $3 WHERE team_id = $1 AND user_id = $2;`,
+		`UPDATE thunderdome.team_user
+		SET role = $3, title = COALESCE($4, title), notes = COALESCE($5, notes)
+		WHERE team_id = $1 AND user_id = $2;`,
 		teamID,
 		userID,
 		role,
+		title,
+		notes,
 	)
 
 	if err != nil {

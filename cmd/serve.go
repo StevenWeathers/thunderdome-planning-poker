@@ -271,6 +271,7 @@ func serve(embedUseOS bool) {
 		ColorLegendTemplateDataSvc: storyboardService,
 		PersonaTemplateDataSvc:     storyboardService,
 		RetroTagDataSvc:            retroService,
+		UserTitleDataSvc:           organizationService,
 		SubscriptionSvc:            subscriptionService,
 		ProjectDataSvc:             projectDataSvc,
 		UIConfig: thunderdome.UIConfig{

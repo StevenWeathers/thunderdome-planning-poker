@@ -2287,6 +2287,99 @@ type RootTranslation = {
 	 */
 	userUpdateError: string
 	/**
+	 * T​i​t​l​e
+	 */
+	userTitleLabel: string
+	/**
+	 * N​o​t​e​s
+	 */
+	userNotesLabel: string
+	/**
+	 * V​i​s​i​b​l​e​ ​t​o​ ​o​t​h​e​r​ ​m​e​m​b​e​r​s​,​ ​f​o​r​ ​e​x​a​m​p​l​e​ ​a​r​e​a​s​ ​o​f​ ​e​x​p​e​r​t​i​s​e​ ​o​r​ ​c​o​m​m​i​t​m​e​n​t​s​.
+	 */
+	userNotesHelp: string
+	/**
+	 * E​n​t​e​r​ ​a​ ​t​i​t​l​e
+	 */
+	userTitlePlaceholder: string
+	/**
+	 * N​o​ ​t​i​t​l​e
+	 */
+	userTitleNone: string
+	/**
+	 * I​n​h​e​r​i​t​e​d​:​ ​{​t​i​t​l​e​}
+	 * @param {string} title
+	 */
+	userTitleInherited: RequiredParams<'title'>
+	/**
+	 * F​r​o​m​ ​d​e​p​a​r​t​m​e​n​t
+	 */
+	userTitleFromDepartment: string
+	/**
+	 * F​r​o​m​ ​o​r​g​a​n​i​z​a​t​i​o​n
+	 */
+	userTitleFromOrganization: string
+	/**
+	 * C​u​s​t​o​m​ ​t​i​t​l​e​…
+	 */
+	userTitleCustom: string
+	/**
+	 * C​u​s​t​o​m​ ​t​i​t​l​e
+	 */
+	userTitleCustomLabel: string
+	/**
+	 * M​e​m​b​e​r​ ​T​i​t​l​e​s
+	 */
+	userTitles: string
+	/**
+	 * O​f​f​e​r​e​d​ ​w​h​e​n​ ​e​d​i​t​i​n​g​ ​m​e​m​b​e​r​s​ ​o​f​ ​t​h​i​s​ ​o​r​g​a​n​i​z​a​t​i​o​n​,​ ​i​t​s​ ​d​e​p​a​r​t​m​e​n​t​s​ ​a​n​d​ ​t​e​a​m​s​.​ ​C​h​a​n​g​i​n​g​ ​t​h​i​s​ ​l​i​s​t​ ​d​o​e​s​ ​n​o​t​ ​c​h​a​n​g​e​ ​t​i​t​l​e​s​ ​a​l​r​e​a​d​y​ ​g​i​v​e​n​ ​t​o​ ​m​e​m​b​e​r​s​.
+	 */
+	userTitlesHelp: string
+	/**
+	 * F​a​i​l​e​d​ ​t​o​ ​g​e​t​ ​t​i​t​l​e​s​.
+	 */
+	userTitlesGetError: string
+	/**
+	 * A​d​d​ ​T​i​t​l​e
+	 */
+	userTitleAdd: string
+	/**
+	 * E​d​i​t​ ​T​i​t​l​e
+	 */
+	userTitleEdit: string
+	/**
+	 * S​a​v​e​ ​T​i​t​l​e
+	 */
+	userTitleSave: string
+	/**
+	 * S​u​c​c​e​s​s​f​u​l​l​y​ ​s​a​v​e​d​ ​t​i​t​l​e​.
+	 */
+	userTitleSaveSuccess: string
+	/**
+	 * E​r​r​o​r​ ​s​a​v​i​n​g​ ​t​i​t​l​e​.
+	 */
+	userTitleSaveError: string
+	/**
+	 * T​h​a​t​ ​t​i​t​l​e​ ​a​l​r​e​a​d​y​ ​e​x​i​s​t​s​.
+	 */
+	userTitleDuplicateError: string
+	/**
+	 * R​e​m​o​v​e​ ​T​i​t​l​e
+	 */
+	userTitleDelete: string
+	/**
+	 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​t​i​t​l​e​?​ ​M​e​m​b​e​r​s​ ​w​h​o​ ​h​a​v​e​ ​i​t​ ​w​i​l​l​ ​k​e​e​p​ ​i​t​.
+	 */
+	userTitleDeleteConfirm: string
+	/**
+	 * S​u​c​c​e​s​s​f​u​l​l​y​ ​r​e​m​o​v​e​d​ ​t​i​t​l​e​.
+	 */
+	userTitleDeleteSuccess: string
+	/**
+	 * E​r​r​o​r​ ​r​e​m​o​v​i​n​g​ ​t​i​t​l​e​.
+	 */
+	userTitleDeleteError: string
+	/**
 	 * I​n​v​i​t​e​s
 	 */
 	invites: string
@@ -5300,6 +5393,98 @@ export type TranslationFunctions = {
 	 * Error updating user.
 	 */
 	userUpdateError: () => LocalizedString
+	/**
+	 * Title
+	 */
+	userTitleLabel: () => LocalizedString
+	/**
+	 * Notes
+	 */
+	userNotesLabel: () => LocalizedString
+	/**
+	 * Visible to other members, for example areas of expertise or commitments.
+	 */
+	userNotesHelp: () => LocalizedString
+	/**
+	 * Enter a title
+	 */
+	userTitlePlaceholder: () => LocalizedString
+	/**
+	 * No title
+	 */
+	userTitleNone: () => LocalizedString
+	/**
+	 * Inherited: {title}
+	 */
+	userTitleInherited: (arg: { title: string }) => LocalizedString
+	/**
+	 * From department
+	 */
+	userTitleFromDepartment: () => LocalizedString
+	/**
+	 * From organization
+	 */
+	userTitleFromOrganization: () => LocalizedString
+	/**
+	 * Custom title…
+	 */
+	userTitleCustom: () => LocalizedString
+	/**
+	 * Custom title
+	 */
+	userTitleCustomLabel: () => LocalizedString
+	/**
+	 * Member Titles
+	 */
+	userTitles: () => LocalizedString
+	/**
+	 * Offered when editing members of this organization, its departments and teams. Changing this list does not change titles already given to members.
+	 */
+	userTitlesHelp: () => LocalizedString
+	/**
+	 * Failed to get titles.
+	 */
+	userTitlesGetError: () => LocalizedString
+	/**
+	 * Add Title
+	 */
+	userTitleAdd: () => LocalizedString
+	/**
+	 * Edit Title
+	 */
+	userTitleEdit: () => LocalizedString
+	/**
+	 * Save Title
+	 */
+	userTitleSave: () => LocalizedString
+	/**
+	 * Successfully saved title.
+	 */
+	userTitleSaveSuccess: () => LocalizedString
+	/**
+	 * Error saving title.
+	 */
+	userTitleSaveError: () => LocalizedString
+	/**
+	 * That title already exists.
+	 */
+	userTitleDuplicateError: () => LocalizedString
+	/**
+	 * Remove Title
+	 */
+	userTitleDelete: () => LocalizedString
+	/**
+	 * Are you sure you want to remove this title? Members who have it will keep it.
+	 */
+	userTitleDeleteConfirm: () => LocalizedString
+	/**
+	 * Successfully removed title.
+	 */
+	userTitleDeleteSuccess: () => LocalizedString
+	/**
+	 * Error removing title.
+	 */
+	userTitleDeleteError: () => LocalizedString
 	/**
 	 * Invites
 	 */

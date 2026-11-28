@@ -893,10 +893,19 @@ definitions:
     type: object
   http.teamUpdateUserRequestBody:
     properties:
+      notes:
+        description: Notes are visible to other team members, omit to leave unchanged
+        maxLength: 1000
+        type: string
       role:
         enum:
         - MEMBER
         - ADMIN
+        type: string
+      title:
+        description: Title describes what the user does on the team, omit to leave
+          unchanged
+        maxLength: 128
         type: string
     required:
     - role
@@ -976,6 +985,14 @@ definitions:
     - name
     - password1
     - password2
+    type: object
+  http.userTitleRequestBody:
+    properties:
+      name:
+        maxLength: 128
+        type: string
+    required:
+    - name
     type: object
   http.userprofileUpdateRequestBody:
     properties:
@@ -1212,11 +1229,19 @@ definitions:
         type: string
       id:
         type: string
+      inheritedTitle:
+        type: string
+      inheritedTitleSource:
+        type: string
       name:
+        type: string
+      notes:
         type: string
       pictureUrl:
         type: string
       role:
+        type: string
+      title:
         type: string
     type: object
   thunderdome.DepartmentUserInvite:
@@ -2111,11 +2136,21 @@ definitions:
         type: string
       id:
         type: string
+      inheritedTitle:
+        description: InheritedTitle is the nearest higher level title (department,
+          then organization), shown when Title is empty
+        type: string
+      inheritedTitleSource:
+        type: string
       name:
+        type: string
+      notes:
         type: string
       pictureUrl:
         type: string
       role:
+        type: string
+      title:
         type: string
     type: object
   thunderdome.TeamUserInvite:
@@ -2229,6 +2264,19 @@ definitions:
       subscribed:
         type: boolean
       updatedDate:
+        type: string
+    type: object
+  thunderdome.UserTitle:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      organizationId:
+        type: string
+      updatedAt:
         type: string
     type: object
   thunderdome.Vote:
@@ -8429,6 +8477,168 @@ paths:
       summary: Add Org Team User
       tags:
       - organization
+  /organizations/{orgId}/user-titles:
+    get:
+      description: get the organization's list of member titles, empty for teams not
+        in an organization
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.UserTitle'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User Titles
+      tags:
+      - organization
+    post:
+      description: Adds a member title to the organization
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new title object
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/http.userTitleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.UserTitle'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create User Title
+      tags:
+      - organization
+  /organizations/{orgId}/user-titles/{titleId}:
+    delete:
+      description: Removes a member title from the organization
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the title ID
+        in: path
+        name: titleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete User Title
+      tags:
+      - organization
+    put:
+      description: Renames a member title of the organization
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the title ID
+        in: path
+        name: titleId
+        required: true
+        type: string
+      - description: updated title object
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/http.userTitleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.UserTitle'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update User Title
+      tags:
+      - organization
   /organizations/{orgId}/users:
     get:
       description: get a list of organization users
@@ -12131,7 +12341,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/thunderdome.User'
+                    $ref: '#/definitions/thunderdome.TeamUser'
                   type: array
               type: object
       security:

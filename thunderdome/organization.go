@@ -31,6 +31,8 @@ type OrganizationUser struct {
 	Avatar       string `json:"avatar"`
 	GravatarHash string `json:"gravatarHash"`
 	PictureURL   string `json:"pictureUrl"`
+	Title        string `json:"title,omitempty"`
+	Notes        string `json:"notes,omitempty"`
 }
 
 type OrganizationUserInvite struct {
@@ -52,13 +54,17 @@ type Department struct {
 }
 
 type DepartmentUser struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	Role         string `json:"role"`
-	Avatar       string `json:"avatar"`
-	GravatarHash string `json:"gravatarHash"`
-	PictureURL   string `json:"pictureUrl"`
+	ID                   string `json:"id"`
+	Name                 string `json:"name"`
+	Email                string `json:"email"`
+	Role                 string `json:"role"`
+	Avatar               string `json:"avatar"`
+	GravatarHash         string `json:"gravatarHash"`
+	PictureURL           string `json:"pictureUrl"`
+	Title                string `json:"title,omitempty"`
+	Notes                string `json:"notes,omitempty"`
+	InheritedTitle       string `json:"inheritedTitle,omitempty"`
+	InheritedTitleSource string `json:"inheritedTitleSource,omitempty"`
 }
 
 type DepartmentUserInvite struct {
