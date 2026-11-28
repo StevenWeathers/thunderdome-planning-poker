@@ -899,6 +899,22 @@ const en: BaseTranslation = {
   healthCheckAboutTipDiscuss: 'Discuss the results together. Most of the value is in the conversation.',
   healthCheckAboutTipSupport: 'Use them to support and improve, never to judge or compare teams.',
   healthCheckAboutTipCadence: 'Quarterly is a good place to start.',
+  colorLegendTemplates: 'Color Legend Templates',
+  publicColorLegendTemplates: 'Public Color Legend Templates',
+  organizationColorLegendTemplates: 'Organization Color Legend Templates',
+  teamColorLegendTemplates: 'Team Color Legend Templates',
+  personaTemplates: 'Persona Templates',
+  publicPersonaTemplates: 'Public Persona Templates',
+  organizationPersonaTemplates: 'Organization Persona Templates',
+  teamPersonaTemplates: 'Team Persona Templates',
+  retroGroups: 'Retro Item Groups',
+  retroTags: 'Retro Tags',
+  retroItemComments: 'Retro Item Comments',
+  retroActionItemComments: 'Action Item Comments',
+  storyboardStoryComments: 'Storyboard Story Comments',
+  publicHealthCheckTemplates: 'Public Health Check Templates',
+  organizationHealthCheckTemplates: 'Organization Health Check Templates',
+  teamHealthCheckTemplates: 'Team Health Check Templates',
 };
 
 export default en;

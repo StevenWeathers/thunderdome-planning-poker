@@ -900,6 +900,22 @@ const ru: Translation = {
   healthCheckAboutTipSupport:
     'Используйте их для поддержки и улучшений, а не для того, чтобы судить или сравнивать команды.',
   healthCheckAboutTipCadence: 'Для начала хорошо проводить проверку раз в квартал.',
+  colorLegendTemplates: 'Шаблоны цветовых легенд',
+  publicColorLegendTemplates: 'Публичные шаблоны цветовых легенд',
+  organizationColorLegendTemplates: 'Шаблоны цветовых легенд организаций',
+  teamColorLegendTemplates: 'Шаблоны цветовых легенд команд',
+  personaTemplates: 'Шаблоны персон',
+  publicPersonaTemplates: 'Публичные шаблоны персон',
+  organizationPersonaTemplates: 'Шаблоны персон организаций',
+  teamPersonaTemplates: 'Шаблоны персон команд',
+  retroGroups: 'Группы элементов ретро',
+  retroTags: 'Теги ретро',
+  retroItemComments: 'Комментарии к элементам ретро',
+  retroActionItemComments: 'Комментарии к задачам по итогам',
+  storyboardStoryComments: 'Комментарии к историям сторибордов',
+  publicHealthCheckTemplates: 'Публичные шаблоны проверки здоровья',
+  organizationHealthCheckTemplates: 'Шаблоны проверки здоровья организаций',
+  teamHealthCheckTemplates: 'Шаблоны проверки здоровья команд',
 };
 
 export default ru;

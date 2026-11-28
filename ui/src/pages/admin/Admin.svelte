@@ -15,22 +15,28 @@
     CreditCard,
     FileText,
     Ghost,
+    HeartPulse,
     Key,
+    Layers,
     LayoutDashboard,
     LibraryBig,
     MapPinCheckInside,
     MessageCircleQuestion,
+    MessageSquare,
+    MessagesSquare,
     Network,
     RefreshCcw,
     Smile,
     SquareCheckBig,
     SquareDashedKanban,
+    Tag,
     User,
     UserRound,
     Users,
     Vote,
     Zap,
     Package,
+    Palette,
     Activity,
   } from '@lucide/svelte';
 
@@ -55,6 +61,7 @@
     FeatureRetro,
     FeatureStoryboard,
     FeatureProject,
+    FeatureHealthCheck,
     OrganizationsEnabled,
   } = AppConfig;
 
@@ -70,6 +77,7 @@
     activeBattleCount: 0,
     activeBattleUserCount: 0,
     teamCheckinsCount: 0,
+    teamHealthChecksCount: 0,
     retroCount: 0,
     activeRetroCount: 0,
     activeRetroUserCount: 0,
@@ -93,6 +101,23 @@
     retroTemplateCount: 0,
     organizationRetroTemplateCount: 0,
     teamRetroTemplateCount: 0,
+    colorLegendTemplateCount: 0,
+    publicColorLegendTemplateCount: 0,
+    organizationColorLegendTemplateCount: 0,
+    teamColorLegendTemplateCount: 0,
+    personaTemplateCount: 0,
+    publicPersonaTemplateCount: 0,
+    organizationPersonaTemplateCount: 0,
+    teamPersonaTemplateCount: 0,
+    retroGroupCount: 0,
+    retroTagCount: 0,
+    retroItemCommentCount: 0,
+    retroActionCommentCount: 0,
+    storyboardStoryCommentCount: 0,
+    healthCheckTemplateCount: 0,
+    publicHealthCheckTemplateCount: 0,
+    organizationHealthCheckTemplateCount: 0,
+    teamHealthCheckTemplateCount: 0,
     projectCount: 0,
     openSupportTicketCount: 0,
   });
@@ -280,6 +305,12 @@
           active: true,
         },
         {
+          name: 'healthChecks',
+          count: appStats.teamHealthChecksCount,
+          icon: HeartPulse,
+          active: FeatureHealthCheck,
+        },
+        {
           name: 'activeSubscriptions',
           count: appStats.teamSubscriptionActiveCount,
           icon: CreditCard,
@@ -355,6 +386,30 @@
           icon: User,
           active: FeatureRetro,
         },
+        {
+          name: 'retroGroups',
+          count: appStats.retroGroupCount,
+          icon: Layers,
+          active: FeatureRetro,
+        },
+        {
+          name: 'retroTags',
+          count: appStats.retroTagCount,
+          icon: Tag,
+          active: FeatureRetro,
+        },
+        {
+          name: 'retroItemComments',
+          count: appStats.retroItemCommentCount,
+          icon: MessageSquare,
+          active: FeatureRetro,
+        },
+        {
+          name: 'retroActionItemComments',
+          count: appStats.retroActionCommentCount,
+          icon: MessagesSquare,
+          active: FeatureRetro,
+        },
       ],
     },
     {
@@ -403,6 +458,12 @@
           name: 'activeStoryboardUsers',
           count: appStats.activeStoryboardUserCount,
           icon: User,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'storyboardStoryComments',
+          count: appStats.storyboardStoryCommentCount,
+          icon: MessageSquare,
           active: FeatureStoryboard,
         },
       ],
@@ -485,6 +546,102 @@
         },
       ],
     },
+    {
+      title: $LL.colorLegendTemplates(),
+      active: FeatureStoryboard,
+      gradient: 'from-purple-500 to-purple-600',
+      iconBg: 'bg-gradient-to-r from-purple-500 to-purple-600',
+      stats: [
+        {
+          name: 'colorLegendTemplates',
+          count: appStats.colorLegendTemplateCount,
+          icon: Palette,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'publicColorLegendTemplates',
+          count: appStats.publicColorLegendTemplateCount,
+          icon: Palette,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'organizationColorLegendTemplates',
+          count: appStats.organizationColorLegendTemplateCount,
+          icon: Palette,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'teamColorLegendTemplates',
+          count: appStats.teamColorLegendTemplateCount,
+          icon: Palette,
+          active: FeatureStoryboard,
+        },
+      ],
+    },
+    {
+      title: $LL.personaTemplates(),
+      active: FeatureStoryboard,
+      gradient: 'from-teal-500 to-teal-600',
+      iconBg: 'bg-gradient-to-r from-teal-500 to-teal-600',
+      stats: [
+        {
+          name: 'personaTemplates',
+          count: appStats.personaTemplateCount,
+          icon: UserRound,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'publicPersonaTemplates',
+          count: appStats.publicPersonaTemplateCount,
+          icon: UserRound,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'organizationPersonaTemplates',
+          count: appStats.organizationPersonaTemplateCount,
+          icon: UserRound,
+          active: FeatureStoryboard,
+        },
+        {
+          name: 'teamPersonaTemplates',
+          count: appStats.teamPersonaTemplateCount,
+          icon: UserRound,
+          active: FeatureStoryboard,
+        },
+      ],
+    },
+    {
+      title: $LL.healthCheckTemplates(),
+      active: FeatureHealthCheck,
+      gradient: 'from-rose-500 to-rose-600',
+      iconBg: 'bg-gradient-to-r from-rose-500 to-rose-600',
+      stats: [
+        {
+          name: 'healthCheckTemplates',
+          count: appStats.healthCheckTemplateCount,
+          icon: HeartPulse,
+          active: FeatureHealthCheck,
+        },
+        {
+          name: 'publicHealthCheckTemplates',
+          count: appStats.publicHealthCheckTemplateCount,
+          icon: HeartPulse,
+          active: FeatureHealthCheck,
+        },
+        {
+          name: 'organizationHealthCheckTemplates',
+          count: appStats.organizationHealthCheckTemplateCount,
+          icon: HeartPulse,
+          active: FeatureHealthCheck,
+        },
+        {
+          name: 'teamHealthCheckTemplates',
+          count: appStats.teamHealthCheckTemplateCount,
+          icon: HeartPulse,
+          active: FeatureHealthCheck,
+        },
+      ],
+    },
   ]);
 </script>
 
@@ -555,7 +712,7 @@
                       </div>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <p class="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
+                      <p class="text-xs font-medium text-gray-900 dark:text-gray-100 break-words">
                         {($LL as any)[stat.name]()}
                       </p>
                       <p

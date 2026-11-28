@@ -3601,6 +3601,70 @@ type RootTranslation = {
 	 * Q​u​a​r​t​e​r​l​y​ ​i​s​ ​a​ ​g​o​o​d​ ​p​l​a​c​e​ ​t​o​ ​s​t​a​r​t​.
 	 */
 	healthCheckAboutTipCadence: string
+	/**
+	 * C​o​l​o​r​ ​L​e​g​e​n​d​ ​T​e​m​p​l​a​t​e​s
+	 */
+	colorLegendTemplates: string
+	/**
+	 * P​u​b​l​i​c​ ​C​o​l​o​r​ ​L​e​g​e​n​d​ ​T​e​m​p​l​a​t​e​s
+	 */
+	publicColorLegendTemplates: string
+	/**
+	 * O​r​g​a​n​i​z​a​t​i​o​n​ ​C​o​l​o​r​ ​L​e​g​e​n​d​ ​T​e​m​p​l​a​t​e​s
+	 */
+	organizationColorLegendTemplates: string
+	/**
+	 * T​e​a​m​ ​C​o​l​o​r​ ​L​e​g​e​n​d​ ​T​e​m​p​l​a​t​e​s
+	 */
+	teamColorLegendTemplates: string
+	/**
+	 * P​e​r​s​o​n​a​ ​T​e​m​p​l​a​t​e​s
+	 */
+	personaTemplates: string
+	/**
+	 * P​u​b​l​i​c​ ​P​e​r​s​o​n​a​ ​T​e​m​p​l​a​t​e​s
+	 */
+	publicPersonaTemplates: string
+	/**
+	 * O​r​g​a​n​i​z​a​t​i​o​n​ ​P​e​r​s​o​n​a​ ​T​e​m​p​l​a​t​e​s
+	 */
+	organizationPersonaTemplates: string
+	/**
+	 * T​e​a​m​ ​P​e​r​s​o​n​a​ ​T​e​m​p​l​a​t​e​s
+	 */
+	teamPersonaTemplates: string
+	/**
+	 * R​e​t​r​o​ ​I​t​e​m​ ​G​r​o​u​p​s
+	 */
+	retroGroups: string
+	/**
+	 * R​e​t​r​o​ ​T​a​g​s
+	 */
+	retroTags: string
+	/**
+	 * R​e​t​r​o​ ​I​t​e​m​ ​C​o​m​m​e​n​t​s
+	 */
+	retroItemComments: string
+	/**
+	 * A​c​t​i​o​n​ ​I​t​e​m​ ​C​o​m​m​e​n​t​s
+	 */
+	retroActionItemComments: string
+	/**
+	 * S​t​o​r​y​b​o​a​r​d​ ​S​t​o​r​y​ ​C​o​m​m​e​n​t​s
+	 */
+	storyboardStoryComments: string
+	/**
+	 * P​u​b​l​i​c​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e​s
+	 */
+	publicHealthCheckTemplates: string
+	/**
+	 * O​r​g​a​n​i​z​a​t​i​o​n​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e​s
+	 */
+	organizationHealthCheckTemplates: string
+	/**
+	 * T​e​a​m​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e​s
+	 */
+	teamHealthCheckTemplates: string
 }
 
 export type TranslationFunctions = {
@@ -7130,6 +7194,70 @@ export type TranslationFunctions = {
 	 * Quarterly is a good place to start.
 	 */
 	healthCheckAboutTipCadence: () => LocalizedString
+	/**
+	 * Color Legend Templates
+	 */
+	colorLegendTemplates: () => LocalizedString
+	/**
+	 * Public Color Legend Templates
+	 */
+	publicColorLegendTemplates: () => LocalizedString
+	/**
+	 * Organization Color Legend Templates
+	 */
+	organizationColorLegendTemplates: () => LocalizedString
+	/**
+	 * Team Color Legend Templates
+	 */
+	teamColorLegendTemplates: () => LocalizedString
+	/**
+	 * Persona Templates
+	 */
+	personaTemplates: () => LocalizedString
+	/**
+	 * Public Persona Templates
+	 */
+	publicPersonaTemplates: () => LocalizedString
+	/**
+	 * Organization Persona Templates
+	 */
+	organizationPersonaTemplates: () => LocalizedString
+	/**
+	 * Team Persona Templates
+	 */
+	teamPersonaTemplates: () => LocalizedString
+	/**
+	 * Retro Item Groups
+	 */
+	retroGroups: () => LocalizedString
+	/**
+	 * Retro Tags
+	 */
+	retroTags: () => LocalizedString
+	/**
+	 * Retro Item Comments
+	 */
+	retroItemComments: () => LocalizedString
+	/**
+	 * Action Item Comments
+	 */
+	retroActionItemComments: () => LocalizedString
+	/**
+	 * Storyboard Story Comments
+	 */
+	storyboardStoryComments: () => LocalizedString
+	/**
+	 * Public Health Check Templates
+	 */
+	publicHealthCheckTemplates: () => LocalizedString
+	/**
+	 * Organization Health Check Templates
+	 */
+	organizationHealthCheckTemplates: () => LocalizedString
+	/**
+	 * Team Health Check Templates
+	 */
+	teamHealthCheckTemplates: () => LocalizedString
 }
 
 export type Formatters = {}

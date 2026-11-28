@@ -22158,10 +22158,16 @@ const docTemplate = `{
                 "battleCount": {
                     "type": "integer"
                 },
+                "colorLegendTemplateCount": {
+                    "type": "integer"
+                },
                 "departmentCount": {
                     "type": "integer"
                 },
                 "estimationScaleCount": {
+                    "type": "integer"
+                },
+                "healthCheckTemplateCount": {
                     "type": "integer"
                 },
                 "openSupportTicketCount": {
@@ -22170,13 +22176,25 @@ const docTemplate = `{
                 "orgSubscriptionActiveCount": {
                     "type": "integer"
                 },
+                "organizationColorLegendTemplateCount": {
+                    "type": "integer"
+                },
                 "organizationCount": {
                     "type": "integer"
                 },
                 "organizationEstimationScaleCount": {
                     "type": "integer"
                 },
+                "organizationHealthCheckTemplateCount": {
+                    "type": "integer"
+                },
+                "organizationPersonaTemplateCount": {
+                    "type": "integer"
+                },
                 "organizationRetroTemplateCount": {
+                    "type": "integer"
+                },
+                "personaTemplateCount": {
                     "type": "integer"
                 },
                 "planCount": {
@@ -22185,7 +22203,16 @@ const docTemplate = `{
                 "projectCount": {
                     "type": "integer"
                 },
+                "publicColorLegendTemplateCount": {
+                    "type": "integer"
+                },
                 "publicEstimationScaleCount": {
+                    "type": "integer"
+                },
+                "publicHealthCheckTemplateCount": {
+                    "type": "integer"
+                },
+                "publicPersonaTemplateCount": {
                     "type": "integer"
                 },
                 "publicRetroTemplateCount": {
@@ -22194,13 +22221,25 @@ const docTemplate = `{
                 "registeredUserCount": {
                     "type": "integer"
                 },
+                "retroActionCommentCount": {
+                    "type": "integer"
+                },
                 "retroActionCount": {
                     "type": "integer"
                 },
                 "retroCount": {
                     "type": "integer"
                 },
+                "retroGroupCount": {
+                    "type": "integer"
+                },
+                "retroItemCommentCount": {
+                    "type": "integer"
+                },
                 "retroItemCount": {
+                    "type": "integer"
+                },
+                "retroTagCount": {
                     "type": "integer"
                 },
                 "retroTemplateCount": {
@@ -22218,16 +22257,31 @@ const docTemplate = `{
                 "storyboardPersonaCount": {
                     "type": "integer"
                 },
+                "storyboardStoryCommentCount": {
+                    "type": "integer"
+                },
                 "storyboardStoryCount": {
                     "type": "integer"
                 },
                 "teamCheckinsCount": {
                     "type": "integer"
                 },
+                "teamColorLegendTemplateCount": {
+                    "type": "integer"
+                },
                 "teamCount": {
                     "type": "integer"
                 },
                 "teamEstimationScaleCount": {
+                    "type": "integer"
+                },
+                "teamHealthCheckTemplateCount": {
+                    "type": "integer"
+                },
+                "teamHealthChecksCount": {
+                    "type": "integer"
+                },
+                "teamPersonaTemplateCount": {
                     "type": "integer"
                 },
                 "teamRetroTemplateCount": {

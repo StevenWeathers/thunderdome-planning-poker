@@ -905,6 +905,22 @@ const fr: Translation = {
   healthCheckAboutTipDiscuss: "Discutez des résultats ensemble. L'essentiel de la valeur vient de la conversation.",
   healthCheckAboutTipSupport: 'Servez-vous-en pour soutenir et améliorer, jamais pour juger ou comparer les équipes.',
   healthCheckAboutTipCadence: 'Une fois par trimestre est un bon point de départ.',
+  colorLegendTemplates: 'Modèles de légende des couleurs',
+  publicColorLegendTemplates: 'Modèles de légende des couleurs publics',
+  organizationColorLegendTemplates: "Modèles de légende des couleurs de l'organisation",
+  teamColorLegendTemplates: "Modèles de légende des couleurs de l'équipe",
+  personaTemplates: 'Modèles de personas',
+  publicPersonaTemplates: 'Modèles de personas publics',
+  organizationPersonaTemplates: "Modèles de personas de l'organisation",
+  teamPersonaTemplates: "Modèles de personas de l'équipe",
+  retroGroups: "Groupes d'éléments de rétro",
+  retroTags: 'Étiquettes de rétro',
+  retroItemComments: 'Commentaires sur les éléments de rétro',
+  retroActionItemComments: 'Commentaires sur les actions',
+  storyboardStoryComments: 'Commentaires de stories du storyboard',
+  publicHealthCheckTemplates: 'Modèles de bilan de santé publics',
+  organizationHealthCheckTemplates: "Modèles de bilan de santé de l'organisation",
+  teamHealthCheckTemplates: "Modèles de bilan de santé de l'équipe",
 };
 
 export default fr;

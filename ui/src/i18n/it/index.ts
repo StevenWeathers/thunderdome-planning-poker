@@ -903,6 +903,22 @@ const it: Translation = {
   healthCheckAboutTipDiscuss: 'Discutete insieme i risultati. Gran parte del valore sta nel confronto.',
   healthCheckAboutTipSupport: 'Usateli per sostenere e migliorare, mai per giudicare o confrontare i team.',
   healthCheckAboutTipCadence: 'Una volta a trimestre è un buon punto di partenza.',
+  colorLegendTemplates: 'Template Legenda Colori',
+  publicColorLegendTemplates: 'Template Legenda Colori Pubblici',
+  organizationColorLegendTemplates: 'Template Legenda Colori Organizzazione',
+  teamColorLegendTemplates: 'Template Legenda Colori Team',
+  personaTemplates: 'Template Personas',
+  publicPersonaTemplates: 'Template Personas Pubblici',
+  organizationPersonaTemplates: 'Template Personas Organizzazione',
+  teamPersonaTemplates: 'Template Personas Team',
+  retroGroups: 'Gruppi di elementi retro',
+  retroTags: 'Tag retro',
+  retroItemComments: 'Commenti agli elementi retro',
+  retroActionItemComments: 'Commenti alle azioni',
+  storyboardStoryComments: 'Commenti alle storie dello storyboard',
+  publicHealthCheckTemplates: 'Template Health Check Pubblici',
+  organizationHealthCheckTemplates: 'Template Health Check Organizzazione',
+  teamHealthCheckTemplates: 'Template Health Check Team',
 };
 
 export default it;

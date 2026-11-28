@@ -901,6 +901,22 @@ const es: Translation = {
   healthCheckAboutTipDiscuss: 'Comentad juntos los resultados. La mayor parte del valor está en la conversación.',
   healthCheckAboutTipSupport: 'Usadlos para apoyar y mejorar, nunca para juzgar o comparar equipos.',
   healthCheckAboutTipCadence: 'Una vez por trimestre es un buen punto de partida.',
+  colorLegendTemplates: 'Plantillas de leyenda de colores',
+  publicColorLegendTemplates: 'Plantillas de leyenda de colores públicas',
+  organizationColorLegendTemplates: 'Plantillas de leyenda de colores de la organización',
+  teamColorLegendTemplates: 'Plantillas de leyenda de colores del equipo',
+  personaTemplates: 'Plantillas de personas',
+  publicPersonaTemplates: 'Plantillas de personas públicas',
+  organizationPersonaTemplates: 'Plantillas de personas de la organización',
+  teamPersonaTemplates: 'Plantillas de personas del equipo',
+  retroGroups: 'Grupos de elementos de retro',
+  retroTags: 'Etiquetas de retro',
+  retroItemComments: 'Comentarios en elementos de retro',
+  retroActionItemComments: 'Comentarios en acciones',
+  storyboardStoryComments: 'Comentarios de historias del storyboard',
+  publicHealthCheckTemplates: 'Plantillas de health check públicas',
+  organizationHealthCheckTemplates: 'Plantillas de health check de la organización',
+  teamHealthCheckTemplates: 'Plantillas de health check del equipo',
 };
 
 export default es;

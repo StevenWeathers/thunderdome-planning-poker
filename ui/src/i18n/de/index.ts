@@ -905,6 +905,22 @@ const de: Translation = {
   healthCheckAboutTipSupport:
     'Nutzt sie, um zu unterstützen und zu verbessern, niemals um Teams zu beurteilen oder zu vergleichen.',
   healthCheckAboutTipCadence: 'Einmal pro Quartal ist ein guter Anfang.',
+  colorLegendTemplates: 'Farblegenden-Vorlagen',
+  publicColorLegendTemplates: 'Öffentliche Farblegenden-Vorlagen',
+  organizationColorLegendTemplates: 'Organisation Farblegenden-Vorlagen',
+  teamColorLegendTemplates: 'Team Farblegenden-Vorlagen',
+  personaTemplates: 'Persona-Vorlagen',
+  publicPersonaTemplates: 'Öffentliche Persona-Vorlagen',
+  organizationPersonaTemplates: 'Organisation Persona-Vorlagen',
+  teamPersonaTemplates: 'Team Persona-Vorlagen',
+  retroGroups: 'Retro-Gruppen',
+  retroTags: 'Retro-Tags',
+  retroItemComments: 'Kommentare zu Retro-Einträgen',
+  retroActionItemComments: 'Kommentare zu Maßnahmen',
+  storyboardStoryComments: 'Storyboard-Story-Kommentare',
+  publicHealthCheckTemplates: 'Öffentliche Health-Check-Vorlagen',
+  organizationHealthCheckTemplates: 'Organisation Health-Check-Vorlagen',
+  teamHealthCheckTemplates: 'Team Health-Check-Vorlagen',
 };
 
 export default de;

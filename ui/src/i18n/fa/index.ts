@@ -897,6 +897,22 @@ const fa: Translation = {
   healthCheckAboutTipDiscuss: 'نتایج را با هم بررسی کنید. بیشترین ارزش در گفتگو است.',
   healthCheckAboutTipSupport: 'از نتایج برای پشتیبانی و بهبود استفاده کنید، نه هرگز برای قضاوت یا مقایسه تیم‌ها.',
   healthCheckAboutTipCadence: 'هر سه ماه یک بار برای شروع مناسب است.',
+  colorLegendTemplates: 'قالب‌های راهنمای رنگ',
+  publicColorLegendTemplates: 'قالب‌های راهنمای رنگ عمومی',
+  organizationColorLegendTemplates: 'قالب‌های راهنمای رنگ سازمان',
+  teamColorLegendTemplates: 'قالب‌های راهنمای رنگ تیم',
+  personaTemplates: 'قالب‌های شخصیت',
+  publicPersonaTemplates: 'قالب‌های شخصیت عمومی',
+  organizationPersonaTemplates: 'قالب‌های شخصیت سازمان',
+  teamPersonaTemplates: 'قالب‌های شخصیت تیم',
+  retroGroups: 'گروه‌های موارد رترو',
+  retroTags: 'برچسب‌های رترو',
+  retroItemComments: 'دیدگاه‌های موارد رترو',
+  retroActionItemComments: 'دیدگاه‌های اقدامات',
+  storyboardStoryComments: 'دیدگاه‌های داستان‌های استوری‌بورد',
+  publicHealthCheckTemplates: 'قالب‌های بررسی سلامت عمومی',
+  organizationHealthCheckTemplates: 'قالب‌های بررسی سلامت سازمان',
+  teamHealthCheckTemplates: 'قالب‌های بررسی سلامت تیم',
 };
 
 export default fa;
