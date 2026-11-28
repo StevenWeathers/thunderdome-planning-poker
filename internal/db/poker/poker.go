@@ -63,9 +63,10 @@ func (d *Service) CreateGame(ctx context.Context, facilitatorID string, name str
 	}
 	b.Facilitators = append(b.Facilitators, facilitatorID)
 
-	tx, err := d.DB.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	tx, err := d.DB.BeginTx(ctx, nil)
 	if err != nil {
 		d.Logger.Error("create poker error", zap.Error(err))
+		return nil, fmt.Errorf("failed to start transaction: %v", err)
 	}
 
 	defer tx.Rollback()
@@ -155,9 +156,10 @@ func (d *Service) TeamCreateGame(ctx context.Context, teamID string, facilitator
 	}
 	b.Facilitators = append(b.Facilitators, facilitatorID)
 
-	tx, err := d.DB.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	tx, err := d.DB.BeginTx(ctx, nil)
 	if err != nil {
 		d.Logger.Error("create poker error", zap.Error(err))
+		return nil, fmt.Errorf("failed to start transaction: %v", err)
 	}
 
 	// Insert into poker table

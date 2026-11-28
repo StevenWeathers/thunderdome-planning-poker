@@ -59,6 +59,7 @@ npm run prettier --prefix e2e
 # Go tests
 go test ./thunderdome ./internal/...
 go test ./internal/http -run TestHandleTeamUpdateUser -v
+TEST_DB_HOST=localhost go test ./internal/db   # database tests, skipped without it; they create and drop their own database
 
 # UI tests (Chromium via Playwright)
 npm test --prefix ui               # full suite with coverage
