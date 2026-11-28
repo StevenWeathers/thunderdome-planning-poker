@@ -2,17 +2,17 @@ package storyboard
 
 import (
 	"context"
-	"errors"
+	"database/sql"
 	"fmt"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracindex"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracdex"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
 )
 
 // CreateStoryboardColumn adds a new column to a Storyboard
 func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, userID string, columnName string, defaultStoryColor *string) (*thunderdome.StoryboardColumn, error) {
-	var betweenAkey *string
+	var betweenAkey sql.NullString
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
 		zap.String("storyboard_id", storyboardID),
@@ -29,12 +29,9 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 	if err := tx.QueryRow(
 		`
 		SELECT
-    COALESCE(
-        (SELECT MAX(display_order)
+    (SELECT MAX(display_order)
          FROM thunderdome.storyboard_column
-         WHERE storyboard_id = $1 AND goal_id = $2),
-        'a0'
-    ) AS last_display_order;`,
+         WHERE storyboard_id = $1 AND goal_id = $2) AS last_display_order;`,
 		storyboardID, goalID,
 	).Scan(&betweenAkey); err != nil {
 		logger.Error("get display_order between query error",
@@ -43,20 +40,13 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 		return nil, err
 	}
 
-	displayOrder, err := fracindex.KeyBetween(betweenAkey, nil)
+	displayOrder, err := fracdex.KeyBetween(betweenAkey.String, "")
 	if err != nil {
 		logger.Error("get display_order between error",
 			zap.Error(err),
-			zap.Stringp("display_order_a", betweenAkey),
+			zap.String("display_order_a", betweenAkey.String),
 		)
 		return nil, err
-	}
-
-	if displayOrder == nil {
-		logger.Error("get display_order returned nil",
-			zap.Stringp("display_order_a", betweenAkey),
-		)
-		return nil, errors.New("display order is nil")
 	}
 
 	column := thunderdome.StoryboardColumn{
@@ -64,7 +54,7 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 		DefaultStoryColor: defaultStoryColor,
 		Personas:          make([]*thunderdome.StoryboardPersona, 0),
 		Stories:           make([]*thunderdome.StoryboardStory, 0),
-		SortOrder:         *displayOrder,
+		SortOrder:         displayOrder,
 	}
 
 	if err := tx.QueryRow(
@@ -77,7 +67,7 @@ func (d *Service) CreateStoryboardColumn(storyboardID string, goalID string, use
 	).Scan(&column.ID); err != nil {
 		logger.Error("CreateStoryboardColumn error",
 			zap.Error(err),
-			zap.Stringp("display_order", displayOrder),
+			zap.String("display_order", displayOrder),
 		)
 		return nil, err
 	}
@@ -158,8 +148,8 @@ func (d *Service) ColumnPersonaRemove(storyboardID string, columnID string, pers
 
 // MoveStoryboardColumn repositions a column within a goal
 func (d *Service) MoveStoryboardColumn(storyboardID string, userID string, columnID string, goalID string, placeBeforeID string) error {
-	var betweenAkey *string
-	var betweenBkey *string
+	var betweenAkey sql.NullString
+	var betweenBkey sql.NullString
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
 		zap.String("storyboard_id", storyboardID),
@@ -222,23 +212,15 @@ func (d *Service) MoveStoryboardColumn(storyboardID string, userID string, colum
 		}
 	}
 
-	// both keys are nil when the target goal has no other columns, which yields the first key
-	displayOrder, err := fracindex.KeyBetween(betweenAkey, betweenBkey)
+	// both keys are empty when the target goal has no other columns, which yields the first key
+	displayOrder, err := fracdex.KeyBetween(betweenAkey.String, betweenBkey.String)
 	if err != nil {
 		logger.Error("get display_order between error",
 			zap.Error(err),
-			zap.Stringp("display_order_a", betweenAkey),
-			zap.Stringp("display_order_b", betweenBkey),
+			zap.String("display_order_a", betweenAkey.String),
+			zap.String("display_order_b", betweenBkey.String),
 		)
 		return err
-	}
-
-	if displayOrder == nil {
-		logger.Error("get display_order returned nil",
-			zap.Stringp("display_order_a", betweenAkey),
-			zap.Stringp("display_order_b", betweenBkey),
-		)
-		return errors.New("display order is nil")
 	}
 
 	if _, err := tx.Exec(
