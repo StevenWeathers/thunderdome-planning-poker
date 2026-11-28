@@ -1,12 +1,15 @@
 <script lang="ts">
   import PageLayout from '../../components/PageLayout.svelte';
+  import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import { onMount } from 'svelte';
+
+  const { PathPrefix } = AppConfig;
   let htmlContent = $state('');
 
   onMount(() => {
     window.scrollTo(0, 0);
-    fetch('/content/privacy-policy.html')
+    fetch(`${PathPrefix}/content/privacy-policy.html`)
       .then(res => res.text())
       .then(data => {
         htmlContent = data;

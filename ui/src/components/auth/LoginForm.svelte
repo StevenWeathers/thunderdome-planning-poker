@@ -180,7 +180,7 @@
             e.preventDefault();
             toggleForgotPassword();
           }}
-          href="/login"
+          href={appRoutes.login}
         >
           {$LL.forgotPassword()}
         </a>

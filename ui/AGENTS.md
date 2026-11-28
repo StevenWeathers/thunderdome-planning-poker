@@ -67,8 +67,8 @@ Reference pair: [UserTitlesList](src/components/team/UserTitlesList.svelte) and
 - Navigate with `router.route(...)`.
 - Guard pages as neighbors do: check `$user.id`, then `validateUserIsRegistered` or `validateUserIsAdmin` as needed.
   These checks are for the interface only; the API must enforce authorization.
-- If you add a page directory or large dependency, check `manualChunks` in `vite.config.ts`. Its comments record chunk
-  splits that break at runtime.
+- Load pages with a literal dynamic `import()` passed to `showPage`. A static page import puts the page in the
+  first load. Import a large dependency's CSS in the component that needs it.
 
 ## API calls
 

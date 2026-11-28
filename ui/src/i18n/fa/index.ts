@@ -913,6 +913,8 @@ const fa: Translation = {
   publicHealthCheckTemplates: 'قالب‌های بررسی سلامت عمومی',
   organizationHealthCheckTemplates: 'قالب‌های بررسی سلامت سازمان',
   teamHealthCheckTemplates: 'قالب‌های بررسی سلامت تیم',
+  pageLoadError: 'بارگیری این صفحه ناموفق بود.',
+  pageLoadReload: 'بارگیری مجدد',
 };
 
 export default fa;

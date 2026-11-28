@@ -917,6 +917,8 @@ const pt: Translation = {
   publicHealthCheckTemplates: 'Templates de health check públicos',
   organizationHealthCheckTemplates: 'Templates de health check da organização',
   teamHealthCheckTemplates: 'Templates de health check da equipe',
+  pageLoadError: 'Não foi possível carregar esta página.',
+  pageLoadReload: 'Recarregar',
 };
 
 export default pt;

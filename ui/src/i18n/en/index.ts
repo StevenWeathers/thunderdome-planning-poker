@@ -915,6 +915,8 @@ const en: BaseTranslation = {
   publicHealthCheckTemplates: 'Public Health Check Templates',
   organizationHealthCheckTemplates: 'Organization Health Check Templates',
   teamHealthCheckTemplates: 'Team Health Check Templates',
+  pageLoadError: 'This page failed to load.',
+  pageLoadReload: 'Reload',
 };
 
 export default en;

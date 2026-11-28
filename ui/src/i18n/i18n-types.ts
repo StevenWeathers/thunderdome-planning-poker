@@ -3665,6 +3665,14 @@ type RootTranslation = {
 	 * T​e​a​m​ ​H​e​a​l​t​h​ ​C​h​e​c​k​ ​T​e​m​p​l​a​t​e​s
 	 */
 	teamHealthCheckTemplates: string
+	/**
+	 * T​h​i​s​ ​p​a​g​e​ ​f​a​i​l​e​d​ ​t​o​ ​l​o​a​d​.
+	 */
+	pageLoadError: string
+	/**
+	 * R​e​l​o​a​d
+	 */
+	pageLoadReload: string
 }
 
 export type TranslationFunctions = {
@@ -7258,6 +7266,14 @@ export type TranslationFunctions = {
 	 * Team Health Check Templates
 	 */
 	teamHealthCheckTemplates: () => LocalizedString
+	/**
+	 * This page failed to load.
+	 */
+	pageLoadError: () => LocalizedString
+	/**
+	 * Reload
+	 */
+	pageLoadReload: () => LocalizedString
 }
 
 export type Formatters = {}

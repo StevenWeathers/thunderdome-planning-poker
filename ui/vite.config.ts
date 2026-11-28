@@ -34,44 +34,13 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
-  optimizeDeps: {
-    include: ['lucide-svelte'],
+  experimental: {
+    // resolve lazy chunks relative to the importing file so they work under a PathPrefix
+    renderBuiltUrl(_filename, { hostType }) {
+      return hostType === 'js' ? { relative: true } : undefined;
+    },
   },
   build: {
     sourcemap: true,
-    chunkSizeWarningLimit: 1200,
-    rollupOptions: {
-      output: {
-        manualChunks(id: string) {
-          const path = id.replace(/\\/g, '/');
-          if (path.includes('node_modules')) {
-            // Keep lucide and lucide-svelte together to avoid circular init issues across chunks
-            if (path.includes('/lucide-svelte/') || path.includes('/lucide/')) return 'vendor_lucide';
-            if (path.includes('/svelte/')) return 'vendor_svelte';
-            if (path.includes('/quill/')) return 'vendor_quill';
-            return 'vendor';
-          }
-          if (path.includes('/src/stores.ts')) return 'shared_state';
-          if (path.includes('/src/components/admin/')) return 'shared_admin';
-          if (path.includes('/src/components/team/') || path.includes('/src/components/organization/'))
-            return 'shared_team';
-          // Poker and retro route code reference shared modules in ways that break when they are forced apart.
-          if (path.includes('/src/pages/poker/') || path.includes('/src/pages/retro/')) return 'poker_retro';
-          if (path.includes('/src/pages/storyboard/')) return 'storyboard';
-          if (path.includes('/src/pages/project/')) return 'project';
-          if (path.includes('/src/pages/admin/')) return 'admin_team';
-          if (
-            path.includes('/src/pages/organization/') ||
-            path.includes('/src/pages/department/') ||
-            path.includes('/src/pages/team/')
-          )
-            return 'admin_team';
-          if (path.includes('/src/pages/user/')) return 'user';
-          if (path.includes('/src/pages/subscription/')) return 'subscription';
-          if (path.includes('/src/pages/support/')) return 'support';
-          return undefined;
-        },
-      },
-    },
   },
 });

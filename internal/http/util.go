@@ -401,3 +401,14 @@ func (s *Service) ssoEnabled() bool {
 		return false
 	}
 }
+
+// immutableCache lets clients cache files forever, only use it for files with a content hash in their name
+func immutableCache(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// directory listings change between builds; http.FileServer drops the header from error responses
+		if !strings.HasSuffix(r.URL.Path, "/") {
+			w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		}
+		next.ServeHTTP(w, r)
+	})
+}

@@ -1,11 +1,7 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import './app.css';
   import './tailwind.css';
   import './unreset.css';
-  import '../node_modules/quill/dist/quill.core.css';
-  import '../node_modules/quill/dist/quill.snow.css';
   import Navaid from './lib/navaid';
   import { onDestroy } from 'svelte';
 
@@ -14,79 +10,20 @@
   import type { ApiClient } from './types/apiclient';
   import type { SessionUser } from './types/user';
   import type { NotificationService } from './types/notifications';
+  import type { Locales } from './i18n/i18n-types';
+  import type { ModuleLoader, Page } from './pageLoader';
   import { dir, user } from './stores';
 
   import Notifications from './components/global/Notifications.svelte';
   import GlobalHeader from './components/global/GlobalHeader.svelte';
   import GlobalAlerts from './components/alert/GlobalAlerts.svelte';
   import GlobalFooter from './components/global/GlobalFooter.svelte';
-  import Landing from './pages/Landing.svelte';
-  import PokerGame from './pages/poker/PokerGame.svelte';
-  import PokerGames from './pages/poker/PokerGames.svelte';
-  import Retros from './pages/retro/Retros.svelte';
-  import Retro from './pages/retro/Retro.svelte';
-  import Storyboards from './pages/storyboard/Storyboards.svelte';
-  import Storyboard from './pages/storyboard/Storyboard.svelte';
-  import Teams from './pages/team/Teams.svelte';
-  import Organization from './pages/organization/Organization.svelte';
-  import Department from './pages/department/Department.svelte';
-  import Team from './pages/team/Team.svelte';
-  import TeamCheckin from './pages/team/TeamCheckin.svelte';
-  import Register from './pages/user/Register.svelte';
-  import Login from './pages/user/Login.svelte';
-  import ResetPassword from './pages/user/ResetPassword.svelte';
-  import VerifyAccount from './pages/user/VerifyAccount.svelte';
-  import WarriorProfile from './pages/user/UserProfile.svelte';
-  import Admin from './pages/admin/Admin.svelte';
-  import AdminUsers from './pages/admin/user/Users.svelte';
-  import AdminUser from './pages/admin/user/User.svelte';
-  import AdminOrganizations from './pages/admin/team/Organizations.svelte';
-  import AdminOrganization from './pages/admin/team/Organization.svelte';
-  import AdminDepartment from './pages/admin/team/Department.svelte';
-  import AdminTeams from './pages/admin/team/Teams.svelte';
-  import AdminTeam from './pages/admin/team/Team.svelte';
-  import AdminApikeys from './pages/admin/user/ApiKeys.svelte';
-  import AdminAlerts from './pages/admin/Alerts.svelte';
-  import AdminPokerGames from './pages/admin/poker/PokerGames.svelte';
-  import AdminPokerGame from './pages/admin/poker/PokerGame.svelte';
-  import AdminRetros from './pages/admin/retro/Retros.svelte';
-  import AdminRetro from './pages/admin/retro/Retro.svelte';
-  import AdminStoryboards from './pages/admin/storyboard/Storyboards.svelte';
-  import AdminStoryboard from './pages/admin/storyboard/Storyboard.svelte';
-  import AdminSubscriptions from './pages/admin/Subscriptions.svelte';
-  import AdminSubscription from './pages/admin/Subscription.svelte';
-  import AdminEstimationScales from './pages/admin/poker/EstimationScales.svelte';
-  import { setLocale } from './i18n/i18n-svelte';
-  import { detectLocale } from './i18n/i18n-util';
-  import Confirmation from './pages/subscription/Confirmation.svelte';
-  import Pricing from './pages/subscription/Pricing.svelte';
-  import PrivacyPolicy from './pages/support/PrivacyPolicy.svelte';
-  import TermsConditions from './pages/support/TermsConditions.svelte';
-  import Support from './pages/support/Support.svelte';
-  import { loadLocale } from './i18n/i18n-util.sync';
-  import Invite from './pages/team/Invite.svelte';
-  import RetroLanding from './pages/retro/RetroLanding.svelte';
-  import PokerLanding from './pages/poker/PokerLanding.svelte';
-  import StoryboardLanding from './pages/storyboard/StoryboardLanding.svelte';
-  import RetroTemplates from './pages/admin/retro/RetroTemplates.svelte';
-  import RetroTags from './pages/admin/retro/RetroTags.svelte';
-  import PersonaTemplates from './pages/admin/storyboard/PersonaTemplates.svelte';
-  import HealthCheckTemplates from './pages/admin/healthcheck/HealthCheckTemplates.svelte';
-  import TeamHealthChecks from './pages/team/TeamHealthChecks.svelte';
-  import TeamHealthCheck from './pages/team/TeamHealthCheck.svelte';
-  import ChangeEmail from './pages/user/ChangeEmail.svelte';
-  import Projects from './pages/admin/project/Projects.svelte';
-  import OrganizationProjects from './pages/organization/OrganizationProjects.svelte';
-  import OrganizationDepartments from './pages/organization/OrganizationDepartments.svelte';
-  import OrganizationTeams from './pages/organization/OrganizationTeams.svelte';
-  import OrganizationUsers from './pages/organization/OrganizationUsers.svelte';
-  import TeamUsers from './pages/team/TeamUsers.svelte';
-  import TeamProjects from './pages/team/TeamProjects.svelte';
-  import Project from './pages/project/Project.svelte';
-  import Dashboard from './pages/Dashboard.svelte';
-  import OpenSource from './pages/support/OpenSource.svelte';
-  import AdminListTickets from './pages/admin/support/ListTickets.svelte';
-  import AdminTicketDetails from './pages/admin/support/TicketDetails.svelte';
+  import FullpageLoader from './components/global/FullpageLoader.svelte';
+  import SolidButton from './components/global/SolidButton.svelte';
+  import LL, { setLocale } from './i18n/i18n-svelte';
+  import { detectLocale, isLocale } from './i18n/i18n-util';
+  import { loadLocaleAsync } from './i18n/i18n-util.async';
+  import { createPageLoader, reloadOnce } from './pageLoader';
 
   const {
     FeaturePoker,
@@ -102,17 +39,39 @@
 
   const detectedLocale = detectLocale() || DefaultLocale;
 
-  const selectedLocale = detectedLocale;
-  loadLocale(selectedLocale);
-  setLocale(selectedLocale);
+  // translations are blank until a locale has loaded, so nothing renders before then
+  let localeReady = $state(false);
+  let localeRequest = 0;
+
+  async function applyLocale(requested: string) {
+    const request = ++localeRequest;
+    let locale: Locales = isLocale(requested) ? requested : 'en';
+
+    try {
+      try {
+        await loadLocaleAsync(locale);
+      } catch (error) {
+        console.error(error);
+        locale = 'en';
+        await loadLocaleAsync(locale);
+      }
+    } catch (error) {
+      console.error(error);
+      // with no translations at all, reloading is the only way to recover
+      if (!localeReady) reloadOnce('localeLoadReloaded');
+      return;
+    }
+
+    if (request !== localeRequest) return;
+    setLocale(locale);
+    localeReady = true;
+  }
 
   let activeWarrior: SessionUser | undefined = $state();
   user.subscribe((w: any) => {
     activeWarrior = w;
 
-    const selectedLocale = w?.locale || detectedLocale;
-    loadLocale(selectedLocale);
-    setLocale(selectedLocale);
+    applyLocale(w?.locale || detectedLocale);
   });
 
   $effect(() => {
@@ -121,409 +80,198 @@
     }
   });
 
-  interface Page {
-    route: any;
-    params: any;
-    name: string;
+  let currentPage: Page | undefined = $state.raw();
+  let pagePending = $state(false);
+  let pageFailed = $state(false);
+  let pageRequested = false;
+
+  const loadPage = createPageLoader({
+    onPage: page => (currentPage = page),
+    onPending: pending => (pagePending = pending),
+    onError: failed => (pageFailed = failed),
+  });
+
+  function showPage(load: ModuleLoader, params: any, name: string) {
+    pageRequested = true;
+    loadPage(load, params, name);
   }
 
-  let currentPage: Page = $state({
-    route: Landing,
-    params: {},
-    name: 'landing',
+  function showLanding() {
+    showPage(() => import('./pages/Landing.svelte'), {}, 'landing');
+  }
+
+  // unmatched URLs show the landing page on first load and otherwise keep the current page
+  const router = Navaid('/', () => {
+    if (!pageRequested) showLanding();
   });
 
-  const router = Navaid('/');
-
-  router.on(appRoutes.landing, () => {
-    currentPage = {
-      route: Landing,
-      params: {},
-      name: 'landing',
-    };
-  });
+  router.on(appRoutes.landing, showLanding);
 
   router.on(appRoutes.dashboard, () => {
-    currentPage = {
-      route: Dashboard,
-      params: {},
-      name: 'dashboard',
-    };
+    showPage(() => import('./pages/Dashboard.svelte'), {}, 'dashboard');
   });
   router.on(appRoutes.privacyPolicy, () => {
-    currentPage = {
-      route: PrivacyPolicy,
-      params: {},
-      name: 'privacy',
-    };
+    showPage(() => import('./pages/support/PrivacyPolicy.svelte'), {}, 'privacy');
   });
   router.on(appRoutes.termsConditions, () => {
-    currentPage = {
-      route: TermsConditions,
-      params: {},
-      name: 'terms-conditions',
-    };
+    showPage(() => import('./pages/support/TermsConditions.svelte'), {}, 'terms-conditions');
   });
   router.on(appRoutes.support, () => {
-    currentPage = {
-      route: Support,
-      params: {},
-      name: 'support',
-    };
+    showPage(() => import('./pages/support/Support.svelte'), {}, 'support');
   });
   router.on(appRoutes.openSource, () => {
-    currentPage = {
-      route: OpenSource,
-      params: {},
-      name: 'open-source',
-    };
+    showPage(() => import('./pages/support/OpenSource.svelte'), {}, 'open-source');
   });
   router.on(`${appRoutes.register}`, params => {
-    currentPage = {
-      route: Register,
-      params,
-      name: 'register',
-    };
+    showPage(() => import('./pages/user/Register.svelte'), params, 'register');
   });
   router.on(`${appRoutes.login}`, params => {
-    currentPage = {
-      route: Login,
-      params,
-      name: 'login',
-    };
+    showPage(() => import('./pages/user/Login.svelte'), params, 'login');
   });
   router.on(`${appRoutes.login}/subscription`, () => {
-    currentPage = {
-      route: Login,
-      params: { subscription: true },
-      name: 'login',
-    };
+    showPage(() => import('./pages/user/Login.svelte'), { subscription: true }, 'login');
   });
   router.on(`${appRoutes.login}/team/:teamInviteId`, params => {
-    currentPage = {
-      route: Login,
-      params,
-      name: 'login',
-    };
+    showPage(() => import('./pages/user/Login.svelte'), params, 'login');
   });
   router.on(`${appRoutes.login}/organization/:orgInviteId`, params => {
-    currentPage = {
-      route: Login,
-      params,
-      name: 'login',
-    };
+    showPage(() => import('./pages/user/Login.svelte'), params, 'login');
   });
   router.on(`${appRoutes.resetPwd}/:resetId`, params => {
-    currentPage = {
-      route: ResetPassword,
-      params,
-      name: 'reset-password',
-    };
+    showPage(() => import('./pages/user/ResetPassword.svelte'), params, 'reset-password');
   });
   router.on(`${appRoutes.verifyAct}/:verifyId`, params => {
-    currentPage = {
-      route: VerifyAccount,
-      params,
-      name: 'verify-account',
-    };
+    showPage(() => import('./pages/user/VerifyAccount.svelte'), params, 'verify-account');
   });
   router.on(appRoutes.profile, params => {
-    currentPage = {
-      route: WarriorProfile,
-      params,
-      name: 'profile',
-    };
+    showPage(() => import('./pages/user/UserProfile.svelte'), params, 'profile');
   });
   router.on(`${appRoutes.profile}/change-email/:changeId`, params => {
-    currentPage = {
-      route: ChangeEmail,
-      params,
-      name: 'change-email',
-    };
+    showPage(() => import('./pages/user/ChangeEmail.svelte'), params, 'change-email');
   });
   router.on(appRoutes.teams, () => {
-    currentPage = {
-      route: Teams,
-      params: {},
-      name: 'teams',
-    };
+    showPage(() => import('./pages/team/Teams.svelte'), {}, 'teams');
   });
   router.on(appRoutes.subscriptionPricing, () => {
-    currentPage = {
-      route: Pricing,
-      params: {},
-      name: 'pricing',
-    };
+    showPage(() => import('./pages/subscription/Pricing.svelte'), {}, 'pricing');
   });
   router.on(appRoutes.subscriptionConfirmation, () => {
-    currentPage = {
-      route: Confirmation,
-      params: {},
-      name: 'subscription-confirmation',
-    };
+    showPage(() => import('./pages/subscription/Confirmation.svelte'), {}, 'subscription-confirmation');
   });
   router.on(`${appRoutes.register}/subscription`, () => {
-    currentPage = {
-      route: Register,
-      params: { subscription: true },
-      name: 'register',
-    };
+    showPage(() => import('./pages/user/Register.svelte'), { subscription: true }, 'register');
   });
   router.on(`${appRoutes.register}/team/:teamInviteId`, params => {
-    currentPage = {
-      route: Register,
-      params,
-      name: 'register',
-    };
+    showPage(() => import('./pages/user/Register.svelte'), params, 'register');
   });
   router.on(`${appRoutes.register}/organization/:orgInviteId`, params => {
-    currentPage = {
-      route: Register,
-      params,
-      name: 'register',
-    };
+    showPage(() => import('./pages/user/Register.svelte'), params, 'register');
   });
   router.on(`${appRoutes.invite}/organization/:inviteId`, params => {
-    currentPage = {
-      route: Invite,
-      params: { inviteType: 'organization', ...params },
-      name: 'invite',
-    };
+    showPage(() => import('./pages/team/Invite.svelte'), { inviteType: 'organization', ...params }, 'invite');
   });
   router.on(`${appRoutes.invite}/department/:inviteId`, params => {
-    currentPage = {
-      route: Invite,
-      params: { inviteType: 'department', ...params },
-      name: 'invite',
-    };
+    showPage(() => import('./pages/team/Invite.svelte'), { inviteType: 'department', ...params }, 'invite');
   });
   router.on(`${appRoutes.invite}/team/:inviteId`, params => {
-    currentPage = {
-      route: Invite,
-      params: { inviteType: 'team', ...params },
-      name: 'invite',
-    };
+    showPage(() => import('./pages/team/Invite.svelte'), { inviteType: 'team', ...params }, 'invite');
   });
   router.on(`${appRoutes.organization}/:organizationId`, params => {
-    currentPage = {
-      route: Organization,
-      params,
-      name: 'organization',
-    };
+    showPage(() => import('./pages/organization/Organization.svelte'), params, 'organization');
   });
   router.on(`${appRoutes.organization}/:organizationId/users`, params => {
-    currentPage = {
-      route: OrganizationUsers,
-      params,
-      name: 'organization-users',
-    };
+    showPage(() => import('./pages/organization/OrganizationUsers.svelte'), params, 'organization-users');
   });
   router.on(`${appRoutes.organization}/:organizationId/teams`, params => {
-    currentPage = {
-      route: OrganizationTeams,
-      params,
-      name: 'organization-teams',
-    };
+    showPage(() => import('./pages/organization/OrganizationTeams.svelte'), params, 'organization-teams');
   });
   router.on(`${appRoutes.organization}/:organizationId/team/:teamId`, params => {
-    currentPage = {
-      route: Team,
-      params,
-      name: 'team',
-    };
+    showPage(() => import('./pages/team/Team.svelte'), params, 'team');
   });
   router.on(`${appRoutes.organization}/:organizationId/team/:teamId/users`, params => {
-    currentPage = {
-      route: TeamUsers,
-      params,
-      name: 'team-users',
-    };
+    showPage(() => import('./pages/team/TeamUsers.svelte'), params, 'team-users');
   });
   router.on(`${appRoutes.organization}/:organizationId/team/:teamId/checkin`, params => {
-    currentPage = {
-      route: TeamCheckin,
-      params,
-      name: 'team-checkin',
-    };
+    showPage(() => import('./pages/team/TeamCheckin.svelte'), params, 'team-checkin');
   });
   router.on(`${appRoutes.organization}/:organizationId/departments`, params => {
-    currentPage = {
-      route: OrganizationDepartments,
-      params,
-      name: 'organization-departments',
-    };
+    showPage(() => import('./pages/organization/OrganizationDepartments.svelte'), params, 'organization-departments');
   });
   router.on(`${appRoutes.organization}/:organizationId/department/:departmentId`, params => {
-    currentPage = {
-      route: Department,
-      params,
-      name: 'department',
-    };
+    showPage(() => import('./pages/department/Department.svelte'), params, 'department');
   });
   router.on(`${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId`, params => {
-    currentPage = {
-      route: Team,
-      params,
-      name: 'team',
-    };
+    showPage(() => import('./pages/team/Team.svelte'), params, 'team');
   });
   router.on(`${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/users`, params => {
-    currentPage = {
-      route: TeamUsers,
-      params,
-      name: 'team-users',
-    };
+    showPage(() => import('./pages/team/TeamUsers.svelte'), params, 'team-users');
   });
   router.on(`${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/checkin`, params => {
-    currentPage = {
-      route: TeamCheckin,
-      params,
-      name: 'team-checkin',
-    };
+    showPage(() => import('./pages/team/TeamCheckin.svelte'), params, 'team-checkin');
   });
   if (FeatureProject) {
     router.on(`${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/projects`, params => {
-      currentPage = {
-        route: TeamProjects,
-        params,
-        name: 'team-projects',
-      };
+      showPage(() => import('./pages/team/TeamProjects.svelte'), params, 'team-projects');
     });
     router.on(`${appRoutes.organization}/:organizationId/team/:teamId/projects`, params => {
-      currentPage = {
-        route: TeamProjects,
-        params,
-        name: 'team-projects',
-      };
+      showPage(() => import('./pages/team/TeamProjects.svelte'), params, 'team-projects');
     });
   }
   router.on(`${appRoutes.team}/:teamId`, params => {
-    currentPage = {
-      route: Team,
-      params,
-      name: 'team',
-    };
+    showPage(() => import('./pages/team/Team.svelte'), params, 'team');
   });
   router.on(`${appRoutes.team}/:teamId/users`, params => {
-    currentPage = {
-      route: TeamUsers,
-      params,
-      name: 'team-users',
-    };
+    showPage(() => import('./pages/team/TeamUsers.svelte'), params, 'team-users');
   });
   if (FeatureProject) {
     router.on(`${appRoutes.team}/:teamId/projects`, params => {
-      currentPage = {
-        route: TeamProjects,
-        params,
-        name: 'team-projects',
-      };
+      showPage(() => import('./pages/team/TeamProjects.svelte'), params, 'team-projects');
     });
   }
   router.on(`${appRoutes.team}/:teamId/checkin`, params => {
-    currentPage = {
-      route: TeamCheckin,
-      params,
-      name: 'team-checkin',
-    };
+    showPage(() => import('./pages/team/TeamCheckin.svelte'), params, 'team-checkin');
   });
   router.on(appRoutes.admin, () => {
-    currentPage = {
-      route: Admin,
-      params: {},
-      name: 'admin',
-    };
+    showPage(() => import('./pages/admin/Admin.svelte'), {}, 'admin');
   });
   router.on(appRoutes.adminSupportTickets, () => {
-    currentPage = {
-      route: AdminListTickets,
-      params: {},
-      name: 'support-tickets',
-    };
+    showPage(() => import('./pages/admin/support/ListTickets.svelte'), {}, 'support-tickets');
   });
   router.on(`${appRoutes.adminSupportTickets}/:ticketId`, params => {
-    currentPage = {
-      route: AdminTicketDetails,
-      params: params,
-      name: 'support-tickets',
-    };
+    showPage(() => import('./pages/admin/support/TicketDetails.svelte'), params, 'support-tickets');
   });
   router.on(`${appRoutes.adminUsers}/:userId`, params => {
-    currentPage = {
-      route: AdminUser,
-      params: params,
-      name: 'admin-user',
-    };
+    showPage(() => import('./pages/admin/user/User.svelte'), params, 'admin-user');
   });
   router.on(`${appRoutes.adminUsers}`, () => {
-    currentPage = {
-      route: AdminUsers,
-      params: {},
-      name: 'admin-users',
-    };
+    showPage(() => import('./pages/admin/user/Users.svelte'), {}, 'admin-users');
   });
   router.on(`${appRoutes.adminOrganizations}`, () => {
-    currentPage = {
-      route: AdminOrganizations,
-      params: {},
-      name: 'admin-organizations',
-    };
+    showPage(() => import('./pages/admin/team/Organizations.svelte'), {}, 'admin-organizations');
   });
   router.on(`${appRoutes.adminOrganizations}/:organizationId`, params => {
-    currentPage = {
-      route: AdminOrganization,
-      params: params,
-      name: 'admin-organization',
-    };
+    showPage(() => import('./pages/admin/team/Organization.svelte'), params, 'admin-organization');
   });
   router.on(`${appRoutes.adminOrganizations}/:organizationId/team/:teamId`, params => {
-    currentPage = {
-      route: AdminTeam,
-      params: params,
-      name: 'admin-team',
-    };
+    showPage(() => import('./pages/admin/team/Team.svelte'), params, 'admin-team');
   });
   router.on(`${appRoutes.adminOrganizations}/:organizationId/department/:departmentId`, params => {
-    currentPage = {
-      route: AdminDepartment,
-      params: params,
-      name: 'admin-department',
-    };
+    showPage(() => import('./pages/admin/team/Department.svelte'), params, 'admin-department');
   });
   router.on(`${appRoutes.adminOrganizations}/:organizationId/department/:departmentId/team/:teamId`, params => {
-    currentPage = {
-      route: AdminTeam,
-      params: params,
-      name: 'admin-team',
-    };
+    showPage(() => import('./pages/admin/team/Team.svelte'), params, 'admin-team');
   });
   router.on(`${appRoutes.adminTeams}`, () => {
-    currentPage = {
-      route: AdminTeams,
-      params: {},
-      name: 'admin-teams',
-    };
+    showPage(() => import('./pages/admin/team/Teams.svelte'), {}, 'admin-teams');
   });
   router.on(`${appRoutes.adminTeams}/:teamId`, params => {
-    currentPage = {
-      route: AdminTeam,
-      params: params,
-      name: 'admin-team',
-    };
+    showPage(() => import('./pages/admin/team/Team.svelte'), params, 'admin-team');
   });
   router.on(`${appRoutes.adminApiKeys}`, () => {
-    currentPage = {
-      route: AdminApikeys,
-      params: {},
-      name: 'admin-apikeys',
-    };
+    showPage(() => import('./pages/admin/user/ApiKeys.svelte'), {}, 'admin-apikeys');
   });
   router.on(`${appRoutes.adminAlerts}`, () => {
-    currentPage = {
-      route: AdminAlerts,
-      params: {},
-      name: 'admin-alerts',
-    };
+    showPage(() => import('./pages/admin/Alerts.svelte'), {}, 'admin-alerts');
   });
 
   if (FeaturePoker) {
@@ -534,32 +282,22 @@
       router.route(`${appRoutes.game}/${params!.battleId}`);
     });
     router.on(appRoutes.games, () => {
-      currentPage = {
-        route: $user.id ? PokerGames : PokerLanding,
-        params: {},
-        name: 'battles',
-      };
+      showPage(
+        $user.id
+          ? () => import('./pages/poker/PokerGames.svelte')
+          : () => import('./pages/poker/PokerLanding.svelte'),
+        {},
+        'battles',
+      );
     });
     router.on(`${appRoutes.game}/:battleId`, params => {
-      currentPage = {
-        route: PokerGame,
-        params,
-        name: 'battle',
-      };
+      showPage(() => import('./pages/poker/PokerGame.svelte'), params, 'battle');
     });
     router.on(`${appRoutes.adminPokerGames}`, () => {
-      currentPage = {
-        route: AdminPokerGames,
-        params: {},
-        name: 'admin-games',
-      };
+      showPage(() => import('./pages/admin/poker/PokerGames.svelte'), {}, 'admin-games');
     });
     router.on(`${appRoutes.adminPokerGames}/:battleId`, params => {
-      currentPage = {
-        route: AdminPokerGame,
-        params: params,
-        name: 'admin-poker',
-      };
+      showPage(() => import('./pages/admin/poker/PokerGame.svelte'), params, 'admin-poker');
     });
     router.on(`${appRoutes.register}/battle/:battleId`, params => {
       router.route(`${appRoutes.register}/game/${params!.battleId}`);
@@ -568,160 +306,88 @@
       router.route(`${appRoutes.login}/game/${params!.battleId}`);
     });
     router.on(`${appRoutes.register}/game/:battleId`, params => {
-      currentPage = {
-        route: Register,
-        params,
-        name: 'register',
-      };
+      showPage(() => import('./pages/user/Register.svelte'), params, 'register');
     });
     router.on(`${appRoutes.login}/game/:battleId`, params => {
-      currentPage = {
-        route: Login,
-        params,
-        name: 'login',
-      };
+      showPage(() => import('./pages/user/Login.svelte'), params, 'login');
     });
     router.on(`${appRoutes.adminEstimationScales}`, () => {
-      currentPage = {
-        route: AdminEstimationScales,
-        params: {},
-        name: 'admin-estimation-scales',
-      };
+      showPage(() => import('./pages/admin/poker/EstimationScales.svelte'), {}, 'admin-estimation-scales');
     });
   }
 
   if (FeatureRetro) {
     router.on(appRoutes.retros, () => {
-      currentPage = {
-        route: $user.id ? Retros : RetroLanding,
-        params: {},
-        name: 'retros',
-      };
+      showPage(
+        $user.id
+          ? () => import('./pages/retro/Retros.svelte')
+          : () => import('./pages/retro/RetroLanding.svelte'),
+        {},
+        'retros',
+      );
     });
     router.on(`${appRoutes.retro}/:retroId`, params => {
-      currentPage = {
-        route: Retro,
-        params,
-        name: 'retro',
-      };
+      showPage(() => import('./pages/retro/Retro.svelte'), params, 'retro');
     });
     router.on(`${appRoutes.adminRetros}`, () => {
-      currentPage = {
-        route: AdminRetros,
-        params: {},
-        name: 'admin-retros',
-      };
+      showPage(() => import('./pages/admin/retro/Retros.svelte'), {}, 'admin-retros');
     });
     router.on(`${appRoutes.adminRetros}/:retroId`, params => {
-      currentPage = {
-        route: AdminRetro,
-        params: params,
-        name: 'admin-retro',
-      };
+      showPage(() => import('./pages/admin/retro/Retro.svelte'), params, 'admin-retro');
     });
     router.on(`${appRoutes.adminPersonaTemplates}`, () => {
-      currentPage = {
-        route: PersonaTemplates,
-        params: {},
-        name: 'admin-persona-templates',
-      };
+      showPage(() => import('./pages/admin/storyboard/PersonaTemplates.svelte'), {}, 'admin-persona-templates');
     });
     router.on(`${appRoutes.adminRetroTags}`, () => {
-      currentPage = {
-        route: RetroTags,
-        params: {},
-        name: 'admin-retro-tags',
-      };
+      showPage(() => import('./pages/admin/retro/RetroTags.svelte'), {}, 'admin-retro-tags');
     });
     router.on(`${appRoutes.adminRetroTemplates}`, () => {
-      currentPage = {
-        route: RetroTemplates,
-        params: {},
-        name: 'admin-retro-templates',
-      };
+      showPage(() => import('./pages/admin/retro/RetroTemplates.svelte'), {}, 'admin-retro-templates');
     });
     router.on(`${appRoutes.register}/retro/:retroId`, params => {
-      currentPage = {
-        route: Register,
-        params,
-        name: 'register',
-      };
+      showPage(() => import('./pages/user/Register.svelte'), params, 'register');
     });
     router.on(`${appRoutes.login}/retro/:retroId`, params => {
-      currentPage = {
-        route: Login,
-        params,
-        name: 'login',
-      };
+      showPage(() => import('./pages/user/Login.svelte'), params, 'login');
     });
   }
 
   if (FeatureStoryboard) {
     router.on(appRoutes.storyboards, () => {
-      currentPage = {
-        route: $user.id ? Storyboards : StoryboardLanding,
-        params: {},
-        name: 'storyboards',
-      };
+      showPage(
+        $user.id
+          ? () => import('./pages/storyboard/Storyboards.svelte')
+          : () => import('./pages/storyboard/StoryboardLanding.svelte'),
+        {},
+        'storyboards',
+      );
     });
     router.on(`${appRoutes.storyboard}/:storyboardId`, params => {
-      currentPage = {
-        route: Storyboard,
-        params,
-        name: 'storyboard',
-      };
+      showPage(() => import('./pages/storyboard/Storyboard.svelte'), params, 'storyboard');
     });
     router.on(`${appRoutes.adminStoryboards}`, () => {
-      currentPage = {
-        route: AdminStoryboards,
-        params: {},
-        name: 'admin-storyboards',
-      };
+      showPage(() => import('./pages/admin/storyboard/Storyboards.svelte'), {}, 'admin-storyboards');
     });
     router.on(`${appRoutes.adminStoryboards}/:storyboardId`, params => {
-      currentPage = {
-        route: AdminStoryboard,
-        params: params,
-        name: 'admin-storyboard',
-      };
+      showPage(() => import('./pages/admin/storyboard/Storyboard.svelte'), params, 'admin-storyboard');
     });
     router.on(`${appRoutes.register}/storyboard/:storyboardId`, params => {
-      currentPage = {
-        route: Register,
-        params,
-        name: 'register',
-      };
+      showPage(() => import('./pages/user/Register.svelte'), params, 'register');
     });
     router.on(`${appRoutes.login}/storyboard/:storyboardId`, params => {
-      currentPage = {
-        route: Login,
-        params,
-        name: 'login',
-      };
+      showPage(() => import('./pages/user/Login.svelte'), params, 'login');
     });
   }
 
   if (FeatureProject) {
     router.on(`${appRoutes.adminProjects}`, () => {
-      currentPage = {
-        route: Projects,
-        params: {},
-        name: 'admin-projects',
-      };
+      showPage(() => import('./pages/admin/project/Projects.svelte'), {}, 'admin-projects');
     });
     router.on(`${appRoutes.organization}/:organizationId/projects`, params => {
-      currentPage = {
-        route: OrganizationProjects,
-        params,
-        name: 'organization-projects',
-      };
+      showPage(() => import('./pages/organization/OrganizationProjects.svelte'), params, 'organization-projects');
     });
     router.on(`${appRoutes.projects}/:projectId`, params => {
-      currentPage = {
-        route: Project,
-        params,
-        name: 'project',
-      };
+      showPage(() => import('./pages/project/Project.svelte'), params, 'project');
     });
   }
 
@@ -733,50 +399,30 @@
     ];
     teamRoutes.forEach(teamRoute => {
       router.on(`${teamRoute}/health-checks`, params => {
-        currentPage = {
-          route: TeamHealthChecks,
-          params,
-          name: 'team-health-checks',
-        };
+        showPage(() => import('./pages/team/TeamHealthChecks.svelte'), params, 'team-health-checks');
       });
       router.on(`${teamRoute}/health-checks/:healthCheckId`, params => {
-        currentPage = {
-          route: TeamHealthCheck,
-          params,
-          name: 'team-health-check',
-        };
+        showPage(() => import('./pages/team/TeamHealthCheck.svelte'), params, 'team-health-check');
       });
     });
     router.on(`${appRoutes.login}/health-check/:healthCheckTeamId/:healthCheckId`, params => {
-      currentPage = {
-        route: Login,
-        params,
-        name: 'login',
-      };
+      showPage(() => import('./pages/user/Login.svelte'), params, 'login');
     });
     router.on(appRoutes.adminHealthCheckTemplates, () => {
-      currentPage = {
-        route: HealthCheckTemplates,
-        params: {},
-        name: 'admin-health-check-templates',
-      };
+      showPage(
+        () => import('./pages/admin/healthcheck/HealthCheckTemplates.svelte'),
+        {},
+        'admin-health-check-templates',
+      );
     });
   }
 
   if (SubscriptionsEnabled) {
     router.on(`${appRoutes.adminSubscriptions}`, () => {
-      currentPage = {
-        route: AdminSubscriptions,
-        params: {},
-        name: 'admin-subscriptions',
-      };
+      showPage(() => import('./pages/admin/Subscriptions.svelte'), {}, 'admin-subscriptions');
     });
     router.on(`${appRoutes.adminSubscriptions}/:subscriptionId`, params => {
-      currentPage = {
-        route: AdminSubscription,
-        params,
-        name: 'admin-subscription',
-      };
+      showPage(() => import('./pages/admin/Subscription.svelte'), params, 'admin-subscription');
     });
   }
 
@@ -800,16 +446,29 @@
   });
 </script>
 
-<Notifications bind:this={notifications} />
+{#if localeReady}
+  <Notifications bind:this={notifications} />
 
-<header class="w-full">
-  <GlobalAlerts registered={!!activeWarrior?.name || false} />
+  <header class="w-full">
+    <GlobalAlerts registered={!!activeWarrior?.name || false} />
 
-  <GlobalHeader {router} {xfetch} {notifications} currentPage={currentPage.name} />
-</header>
+    <GlobalHeader {router} {xfetch} {notifications} currentPage={currentPage?.name ?? ''} />
+  </header>
 
-<main class="flex-grow flex flex-wrap flex-col">
-  <currentPage.route {...currentPage.params} {notifications} {router} {xfetch} />
-</main>
+  <main class="flex-grow flex flex-wrap flex-col">
+    {#if pageFailed}
+      <div class="w-full text-center p-8 text-gray-800 dark:text-gray-200" role="alert">
+        <p class="mb-4">{$LL.pageLoadError()}</p>
+        <SolidButton onClick={() => window.location.reload()}>{$LL.pageLoadReload()}</SolidButton>
+      </div>
+    {:else if currentPage}
+      <currentPage.route {...currentPage.params} {notifications} {router} {xfetch} />
+    {/if}
+  </main>
 
-<GlobalFooter />
+  <GlobalFooter />
+{/if}
+
+{#if !localeReady || pagePending || (!currentPage && !pageFailed)}
+  <FullpageLoader />
+{/if}

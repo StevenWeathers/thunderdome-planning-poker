@@ -921,6 +921,8 @@ const fr: Translation = {
   publicHealthCheckTemplates: 'Modèles de bilan de santé publics',
   organizationHealthCheckTemplates: "Modèles de bilan de santé de l'organisation",
   teamHealthCheckTemplates: "Modèles de bilan de santé de l'équipe",
+  pageLoadError: 'Impossible de charger cette page.',
+  pageLoadReload: 'Recharger',
 };
 
 export default fr;
