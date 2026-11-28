@@ -2,18 +2,18 @@ package storyboard
 
 import (
 	"context"
-	"errors"
+	"database/sql"
 	"fmt"
 	"strings"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracindex"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracdex"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
 )
 
 // CreateStoryboardStory adds a new story to a Storyboard
 func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, columnID string, userID string, storyColor *string) (*thunderdome.StoryboardStory, error) {
-	var betweenAkey *string
+	var betweenAkey sql.NullString
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
 		zap.String("storyboard_id", storyboardID),
@@ -31,12 +31,9 @@ func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, colu
 	if err := tx.QueryRow(
 		`
 		SELECT
-    COALESCE(
-        (SELECT MAX(display_order)
+    (SELECT MAX(display_order)
          FROM thunderdome.storyboard_story
-         WHERE column_id = $1 AND goal_id = $2 AND storyboard_id = $3),
-        'a0'
-    ) AS last_display_order;`,
+         WHERE column_id = $1 AND goal_id = $2 AND storyboard_id = $3) AS last_display_order;`,
 		columnID, goalID, storyboardID,
 	).Scan(&betweenAkey); err != nil {
 		logger.Error("get display_order between query error",
@@ -45,26 +42,19 @@ func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, colu
 		return nil, err
 	}
 
-	displayOrder, err := fracindex.KeyBetween(betweenAkey, nil)
+	displayOrder, err := fracdex.KeyBetween(betweenAkey.String, "")
 	if err != nil {
 		logger.Error("get display_order between error",
 			zap.Error(err),
-			zap.Stringp("display_order_a", betweenAkey),
+			zap.String("display_order_a", betweenAkey.String),
 		)
 		return nil, err
-	}
-
-	if displayOrder == nil {
-		logger.Error("get display_order returned nil",
-			zap.Stringp("display_order_a", betweenAkey),
-		)
-		return nil, errors.New("display order is nil")
 	}
 
 	story := thunderdome.StoryboardStory{
 		Annotations: make([]string, 0),
 		Comments:    make([]*thunderdome.StoryComment, 0),
-		SortOrder:   *displayOrder,
+		SortOrder:   displayOrder,
 	}
 
 	if err := tx.QueryRow(
@@ -88,7 +78,7 @@ func (d *Service) CreateStoryboardStory(storyboardID string, goalID string, colu
 		logger.Error(
 			"create story error",
 			zap.Error(err),
-			zap.Stringp("display_order_a", betweenAkey),
+			zap.String("display_order_a", betweenAkey.String),
 		)
 		return nil, err
 	}
@@ -204,8 +194,8 @@ func (d *Service) ReviseStoryLink(storyboardID string, userID string, storyID st
 
 // MoveStoryboardStory moves the story by ID to Goal/Column by ID
 func (d *Service) MoveStoryboardStory(storyboardID string, userID string, storyID string, goalID string, columnID string, placeBefore string) ([]*thunderdome.StoryboardGoal, error) {
-	var betweenAkey *string
-	var betweenBkey *string
+	var betweenAkey sql.NullString
+	var betweenBkey sql.NullString
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
 		zap.String("storyboard_id", storyboardID),
@@ -269,22 +259,14 @@ func (d *Service) MoveStoryboardStory(storyboardID string, userID string, storyI
 		}
 	}
 
-	displayOrder, err := fracindex.KeyBetween(betweenAkey, betweenBkey)
+	displayOrder, err := fracdex.KeyBetween(betweenAkey.String, betweenBkey.String)
 	if err != nil {
 		logger.Error("get display_order between error",
 			zap.Error(err),
-			zap.Stringp("display_order_a", betweenAkey),
-			zap.Stringp("display_order_b", betweenBkey),
+			zap.String("display_order_a", betweenAkey.String),
+			zap.String("display_order_b", betweenBkey.String),
 		)
 		return nil, err
-	}
-
-	if displayOrder == nil {
-		logger.Error("get display_order returned nil",
-			zap.Stringp("display_order_a", betweenAkey),
-			zap.Stringp("display_order_b", betweenBkey),
-		)
-		return nil, errors.New("display order is nil")
 	}
 
 	if _, err := tx.Exec(
@@ -299,9 +281,9 @@ func (d *Service) MoveStoryboardStory(storyboardID string, userID string, storyI
 		logger.Error(
 			"update story display_order",
 			zap.Error(err),
-			zap.Stringp("display_order_a", betweenAkey),
-			zap.Stringp("display_order_b", betweenBkey),
-			zap.Stringp("display_order", displayOrder),
+			zap.String("display_order_a", betweenAkey.String),
+			zap.String("display_order_b", betweenBkey.String),
+			zap.String("display_order", displayOrder),
 		)
 		return nil, err
 	}

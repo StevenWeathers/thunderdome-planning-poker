@@ -4,10 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracindex"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracdex"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -26,7 +25,7 @@ func nullableStringPointer(value sql.NullString) *string {
 
 // CreateStoryboardGoal adds a new goal to a Storyboard
 func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalName string, defaultStoryColor *string) (*thunderdome.StoryboardGoal, error) {
-	var betweenAkey *string
+	var betweenAkey sql.NullString
 	var logger = d.Logger.With(
 		zap.String("user_id", userID),
 		zap.String("storyboard_id", storyboardID),
@@ -43,12 +42,9 @@ func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalN
 	if err := tx.QueryRow(
 		`
 		SELECT
-    COALESCE(
-        (SELECT MAX(display_order)
+    (SELECT MAX(display_order)
          FROM thunderdome.storyboard_goal
-         WHERE storyboard_id = $1),
-        'a0'
-    ) AS last_display_order;`,
+         WHERE storyboard_id = $1) AS last_display_order;`,
 		storyboardID,
 	).Scan(&betweenAkey); err != nil {
 		logger.Error("get display_order between query error",
@@ -57,20 +53,13 @@ func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalN
 		return nil, err
 	}
 
-	displayOrder, err := fracindex.KeyBetween(betweenAkey, nil)
+	displayOrder, err := fracdex.KeyBetween(betweenAkey.String, "")
 	if err != nil {
 		logger.Error("get display_order between error",
 			zap.Error(err),
-			zap.Stringp("display_order_a", betweenAkey),
+			zap.String("display_order_a", betweenAkey.String),
 		)
 		return nil, err
-	}
-
-	if displayOrder == nil {
-		logger.Error("get display_order returned nil",
-			zap.Stringp("display_order_a", betweenAkey),
-		)
-		return nil, errors.New("display order is nil")
 	}
 
 	goal := thunderdome.StoryboardGoal{
@@ -78,7 +67,7 @@ func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalN
 		DefaultStoryColor: defaultStoryColor,
 		Personas:          make([]*thunderdome.StoryboardPersona, 0),
 		Columns:           make([]*thunderdome.StoryboardColumn, 0),
-		SortOrder:         *displayOrder,
+		SortOrder:         displayOrder,
 	}
 
 	if err := tx.QueryRow(
@@ -90,7 +79,7 @@ func (d *Service) CreateStoryboardGoal(storyboardID string, userID string, goalN
 	).Scan(&goal.ID); err != nil {
 		logger.Error("create storyboard goal error",
 			zap.Error(err),
-			zap.Stringp("display_order", displayOrder),
+			zap.String("display_order", displayOrder),
 		)
 		return nil, err
 	}
