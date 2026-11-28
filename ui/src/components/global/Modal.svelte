@@ -1,3 +1,9 @@
+<script module lang="ts">
+  // open modals, topmost last, so that Escape only closes the one on top
+  const openModals: symbol[] = [];
+  let pageOverflow = '';
+</script>
+
 <script lang="ts">
   import { X } from '@lucide/svelte';
   import { createFocusTrap } from 'focus-trap';
@@ -21,27 +27,50 @@
     ariaDescribedby,
   }: Props = $props();
 
-  const handle_keydown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') return closeModal();
+  const modalId = Symbol();
+
+  const handleKeydown = (e: KeyboardEvent) => {
+    // a held key must not close the whole stack
+    if (e.key !== 'Escape' || e.repeat || e.isComposing || e.defaultPrevented) return;
+    if (openModals[openModals.length - 1] !== modalId) return;
+
+    e.preventDefault();
+    // fires the focused field's change event, so an edit in progress is saved as it is with the close button
+    if (modalElement.contains(document.activeElement)) {
+      (document.activeElement as HTMLElement).blur();
+    }
+    closeModal();
   };
 
   let modalElement: HTMLElement;
   let focusTrap: any;
 
   onMount(() => {
+    // keeps the page behind from scrolling, and showing a second scrollbar, while any modal is open
+    if (openModals.length === 0) {
+      pageOverflow = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+    }
+    openModals.push(modalId);
     focusTrap = createFocusTrap(modalElement, {
       escapeDeactivates: false, // Handle escape separately
       returnFocusOnDeactivate: true,
     });
     focusTrap.activate();
 
-    return () => focusTrap.deactivate();
+    return () => {
+      openModals.splice(openModals.indexOf(modalId), 1);
+      if (openModals.length === 0) {
+        document.documentElement.style.overflow = pageOverflow;
+      }
+      focusTrap.deactivate();
+    };
   });
 </script>
 
-<svelte:window on:keydown|once={handle_keydown} />
+<svelte:window onkeydown={handleKeydown} />
 
-<div class="fixed z-50 inset-0 flex items-center z-40 max-h-screen overflow-y-scroll">
+<div class="fixed z-50 inset-0 flex items-center z-40 max-h-screen overflow-y-auto overscroll-contain">
   <!-- Background overlay -->
   <div class="fixed inset-0 bg-gray-900 opacity-75" aria-hidden="true"></div>
 

@@ -2502,6 +2502,74 @@ type RootTranslation = {
 	 */
 	storyboardNoPoints: string
 	/**
+	 * S​t​o​r​y​ ​N​a​m​e
+	 */
+	storyboardStoryName: string
+	/**
+	 * e​.​g​.​ ​U​s​e​r​ ​A​u​t​h​e​n​t​i​c​a​t​i​o​n​ ​S​y​s​t​e​m
+	 */
+	storyboardStoryNamePlaceholder: string
+	/**
+	 * S​t​o​r​y​ ​C​o​l​o​r
+	 */
+	storyboardStoryColor: string
+	/**
+	 * S​t​o​r​y​ ​D​e​s​c​r​i​p​t​i​o​n
+	 */
+	storyboardStoryDescription: string
+	/**
+	 * E​n​t​e​r​ ​s​t​o​r​y​ ​c​o​n​t​e​n​t
+	 */
+	storyboardStoryDescriptionPlaceholder: string
+	/**
+	 * S​t​o​r​y​ ​d​e​t​a​i​l​s
+	 */
+	storyboardStoryDetails: string
+	/**
+	 * S​t​o​r​y​ ​P​o​i​n​t​s
+	 */
+	storyboardStoryPoints: string
+	/**
+	 * E​n​t​e​r​ ​s​t​o​r​y​ ​p​o​i​n​t​s
+	 */
+	storyboardStoryPointsPlaceholder: string
+	/**
+	 * S​t​o​r​y​ ​L​i​n​k
+	 */
+	storyboardStoryLink: string
+	/**
+	 * L​i​n​k​ ​m​u​s​t​ ​b​e​ ​a​n​ ​a​b​s​o​l​u​t​e​ ​U​R​L
+	 */
+	storyboardStoryLinkAbsoluteError: string
+	/**
+	 * S​t​o​r​y​ ​S​t​a​t​u​s
+	 */
+	storyboardStoryStatus: string
+	/**
+	 * M​a​r​k​ ​a​s​ ​C​l​o​s​e​d
+	 */
+	storyboardStoryMarkClosed: string
+	/**
+	 * R​e​o​p​e​n​ ​s​t​o​r​y
+	 */
+	storyboardStoryReopen: string
+	/**
+	 * D​a​n​g​e​r​ ​Z​o​n​e
+	 */
+	storyboardStoryDangerZone: string
+	/**
+	 * D​e​l​e​t​e​ ​S​t​o​r​y
+	 */
+	storyboardStoryDelete: string
+	/**
+	 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​s​t​o​r​y​?
+	 */
+	storyboardStoryDeleteConfirm: string
+	/**
+	 * B​e​ ​t​h​e​ ​f​i​r​s​t​ ​t​o​ ​s​h​a​r​e​ ​y​o​u​r​ ​t​h​o​u​g​h​t​s​ ​o​n​ ​t​h​i​s​ ​s​t​o​r​y​.
+	 */
+	storyboardStoryNoComments: string
+	/**
 	 * F​a​i​l​e​d​ ​t​o​ ​g​e​t​ ​p​o​i​n​t​ ​s​c​a​l​e​s
 	 */
 	storyboardPointScalesError: string
@@ -5633,6 +5701,74 @@ export type TranslationFunctions = {
 	 * No points
 	 */
 	storyboardNoPoints: () => LocalizedString
+	/**
+	 * Story Name
+	 */
+	storyboardStoryName: () => LocalizedString
+	/**
+	 * e.g. User Authentication System
+	 */
+	storyboardStoryNamePlaceholder: () => LocalizedString
+	/**
+	 * Story Color
+	 */
+	storyboardStoryColor: () => LocalizedString
+	/**
+	 * Story Description
+	 */
+	storyboardStoryDescription: () => LocalizedString
+	/**
+	 * Enter story content
+	 */
+	storyboardStoryDescriptionPlaceholder: () => LocalizedString
+	/**
+	 * Story details
+	 */
+	storyboardStoryDetails: () => LocalizedString
+	/**
+	 * Story Points
+	 */
+	storyboardStoryPoints: () => LocalizedString
+	/**
+	 * Enter story points
+	 */
+	storyboardStoryPointsPlaceholder: () => LocalizedString
+	/**
+	 * Story Link
+	 */
+	storyboardStoryLink: () => LocalizedString
+	/**
+	 * Link must be an absolute URL
+	 */
+	storyboardStoryLinkAbsoluteError: () => LocalizedString
+	/**
+	 * Story Status
+	 */
+	storyboardStoryStatus: () => LocalizedString
+	/**
+	 * Mark as Closed
+	 */
+	storyboardStoryMarkClosed: () => LocalizedString
+	/**
+	 * Reopen story
+	 */
+	storyboardStoryReopen: () => LocalizedString
+	/**
+	 * Danger Zone
+	 */
+	storyboardStoryDangerZone: () => LocalizedString
+	/**
+	 * Delete Story
+	 */
+	storyboardStoryDelete: () => LocalizedString
+	/**
+	 * Are you sure you want to delete this story?
+	 */
+	storyboardStoryDeleteConfirm: () => LocalizedString
+	/**
+	 * Be the first to share your thoughts on this story.
+	 */
+	storyboardStoryNoComments: () => LocalizedString
 	/**
 	 * Failed to get point scales
 	 */
