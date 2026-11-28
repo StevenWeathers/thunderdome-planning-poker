@@ -79,6 +79,7 @@ type StoryboardDataSvc interface {
 	ReviseStoryLink(storyboardID string, userID string, storyID string, link string) ([]*thunderdome.StoryboardGoal, error)
 	MoveStoryboardStory(storyboardID string, userID string, storyID string, goalID string, columnID string, placeBefore string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryboardStory(storyboardID string, userID string, storyID string) ([]*thunderdome.StoryboardGoal, error)
+	DeleteStoryboardStories(storyboardID string, userID string, storyIDs []string) ([]*thunderdome.StoryboardGoal, error)
 	AddStoryComment(storyboardID string, userID string, storyID string, comment string) ([]*thunderdome.StoryboardGoal, error)
 	EditStoryComment(storyboardID string, commentID string, comment string) ([]*thunderdome.StoryboardGoal, error)
 	DeleteStoryComment(storyboardID string, commentID string) ([]*thunderdome.StoryboardGoal, error)
@@ -143,6 +144,7 @@ func New(
 		"edit_story_comment":    sb.EditStoryComment,
 		"delete_story_comment":  sb.DeleteStoryComment,
 		"delete_story":          sb.DeleteStory,
+		"delete_stories":        sb.DeleteStories,
 		"add_persona":           sb.AddPersona,
 		"update_persona":        sb.UpdatePersona,
 		"delete_persona":        sb.DeletePersona,

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, MessageSquareMore } from '@lucide/svelte';
+  import { Link, MessageSquareMore, SquareCheckIcon, SquareIcon } from '@lucide/svelte';
   import { SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import { hasStoryboardPoints } from './storyPoints';
   import type { StoryboardStory, StoryboardColumn, StoryboardGoal } from '../../types/storyboard';
@@ -14,6 +14,9 @@
       story: StoryboardStory,
       options?: { discussionExpanded?: boolean; additionalDetailsExpanded?: boolean },
     ) => () => void;
+    selectionMode?: boolean;
+    selected?: boolean;
+    toggleStorySelection?: (storyId: string) => void;
   }
 
   let {
@@ -34,10 +37,32 @@
     columnOrderEditMode = false,
     scale,
     toggleStoryForm = (story: StoryboardStory) => () => {},
+    selectionMode = false,
+    selected = false,
+    toggleStorySelection = () => {},
   }: Props = $props();
 
   // Calculate content height based on scale (h-20 = 5rem for scale 1)
   const contentHeight = $derived(`${5 * scale}rem`);
+
+  function handleCardClick() {
+    if (selectionMode) {
+      toggleStorySelection(story.id);
+      return;
+    }
+    toggleStoryForm(story)();
+  }
+
+  function handleCardKeypress(e: KeyboardEvent) {
+    if (selectionMode) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleStorySelection(story.id);
+      }
+      return;
+    }
+    toggleStoryForm(story)();
+  }
 
   // Handle click on external link to prevent triggering story form
   function handleExtLinkClick(e: Event) {
@@ -62,16 +87,30 @@
   style="list-style: none;"
   class:cursor-pointer={!columnOrderEditMode}
   class:cursor-not-allowed={columnOrderEditMode}
+  class:ring-2={selected}
+  class:ring-red-500={selected}
+  aria-pressed={selectionMode ? selected : undefined}
+  title={selectionMode ? story.name : undefined}
   role="button"
   tabindex="0"
   data-goalid={goal.id}
   data-columnid={goalColumn.id}
   data-storyid={story.id}
   data-testid="column-story"
-  onclick={toggleStoryForm(story)}
-  onkeypress={toggleStoryForm(story)}
+  onclick={handleCardClick}
+  onkeypress={handleCardKeypress}
 >
-  <div>
+  {#if selectionMode}
+    <div class="absolute top-1 end-1 z-5 bg-white dark:bg-gray-700 rounded" data-testid="story-select-indicator">
+      {#if selected}
+        <SquareCheckIcon class="w-5 h-5 text-red-600 dark:text-red-400" />
+      {:else}
+        <SquareIcon class="w-5 h-5 text-gray-400" />
+      {/if}
+    </div>
+  {/if}
+  <!-- inert while selecting so a click on a link or button inside the card selects the story instead -->
+  <div inert={selectionMode}>
     <div>
       <div
         class="p-2 text-sm overflow-hidden {story.closed ? 'line-through' : ''}"

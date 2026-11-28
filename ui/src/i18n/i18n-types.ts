@@ -1524,6 +1524,24 @@ type RootTranslation = {
 	 */
 	storyboardDeleted: string
 	/**
+	 * D​e​l​e​t​e​ ​S​t​o​r​i​e​s
+	 */
+	storyboardDeleteStories: string
+	/**
+	 * S​e​l​e​c​t​ ​a​l​l
+	 */
+	storyboardSelectAll: string
+	/**
+	 * D​e​l​e​t​e​ ​(​{​c​o​u​n​t​}​)
+	 * @param {number} count
+	 */
+	storyboardDeleteSelected: RequiredParams<'count'>
+	/**
+	 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​{​c​o​u​n​t​}​ ​{​{​s​t​o​r​y​|​s​t​o​r​i​e​s​}​}​?
+	 * @param {number} count
+	 */
+	storyboardDeleteStoriesConfirm: RequiredParams<'count'>
+	/**
 	 * E​d​i​t​ ​C​o​l​u​m​n
 	 */
 	storyboardEditColumn: string
@@ -4536,6 +4554,22 @@ export type TranslationFunctions = {
 	 * Storyboard deleted
 	 */
 	storyboardDeleted: () => LocalizedString
+	/**
+	 * Delete Stories
+	 */
+	storyboardDeleteStories: () => LocalizedString
+	/**
+	 * Select all
+	 */
+	storyboardSelectAll: () => LocalizedString
+	/**
+	 * Delete ({count})
+	 */
+	storyboardDeleteSelected: (arg: { count: number }) => LocalizedString
+	/**
+	 * Are you sure you want to delete {count} {{story|stories}}?
+	 */
+	storyboardDeleteStoriesConfirm: (arg: { count: number }) => LocalizedString
 	/**
 	 * Edit Column
 	 */

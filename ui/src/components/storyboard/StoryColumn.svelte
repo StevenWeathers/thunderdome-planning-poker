@@ -19,6 +19,9 @@
     notifications: NotificationService;
     colorLegend: ColorLegend[];
     users: any[];
+    selectionMode?: boolean;
+    selectedStoryIds?: string[];
+    toggleStorySelection?: (storyId: string) => void;
   }
 
   let {
@@ -34,6 +37,9 @@
     notifications,
     colorLegend,
     users,
+    selectionMode = false,
+    selectedStoryIds = [],
+    toggleStorySelection = () => {},
   }: Props = $props();
 
   let activeStoryId: string | null = $state(null);
@@ -124,13 +130,23 @@
       type: 'story' as const,
       dropTargetStyle: {},
       dropTargetClasses: ['outline', 'outline-2', 'outline-indigo-500', 'dark:outline-yellow-400'],
-      dragDisabled: columnOrderEditMode,
+      dragDisabled: columnOrderEditMode || selectionMode,
     }}
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
   >
     {#each goalColumn.stories as story (story.id)}
-      <StoryCard {story} {goalColumn} {goal} {columnOrderEditMode} {toggleStoryForm} {scale} />
+      <StoryCard
+        {story}
+        {goalColumn}
+        {goal}
+        {columnOrderEditMode}
+        {toggleStoryForm}
+        {scale}
+        {selectionMode}
+        selected={selectedStoryIds.includes(story.id)}
+        {toggleStorySelection}
+      />
     {/each}
   </div>
 </div>

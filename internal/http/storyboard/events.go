@@ -370,6 +370,29 @@ func (s *Service) DeleteStory(ctx context.Context, storyboardID string, userID s
 	return nil, msg, nil, false
 }
 
+// DeleteStories handles deleting multiple storyboard stories at once
+func (s *Service) DeleteStories(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
+	var rs struct {
+		StoryIDs []string `json:"storyIds"`
+	}
+	err := json.Unmarshal([]byte(eventValue), &rs)
+	if err != nil {
+		return nil, nil, err, false
+	}
+	if len(rs.StoryIDs) == 0 {
+		return nil, nil, errors.New("NO_STORIES_SELECTED"), false
+	}
+
+	goals, err := s.StoryboardService.DeleteStoryboardStories(storyboardID, userID, rs.StoryIDs)
+	if err != nil {
+		return nil, nil, err, false
+	}
+	updatedGoals, _ := json.Marshal(goals)
+	msg := wshub.CreateSocketEvent("story_deleted", string(updatedGoals), "")
+
+	return nil, msg, nil, false
+}
+
 // AddStoryComment handles adding a storyboard story comment
 func (s *Service) AddStoryComment(ctx context.Context, storyboardID string, userID string, eventValue string) (any, []byte, error, bool) {
 	var rs struct {

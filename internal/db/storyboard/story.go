@@ -307,8 +307,28 @@ func (d *Service) MoveStoryboardStory(storyboardID string, userID string, storyI
 // DeleteStoryboardStory removes a story from the current board by ID
 func (d *Service) DeleteStoryboardStory(storyboardID string, userID string, storyID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM thunderdome.storyboard_story WHERE id = $1`, storyID); err != nil {
+		`DELETE FROM thunderdome.storyboard_story WHERE storyboard_id = $1 AND id = $2;`,
+		storyboardID, storyID,
+	); err != nil {
 		d.Logger.Error("storyboard story delete error", zap.Error(err))
+	}
+
+	goals := d.GetStoryboardGoals(storyboardID)
+
+	return goals, nil
+}
+
+// DeleteStoryboardStories removes multiple stories from the current board by ID
+func (d *Service) DeleteStoryboardStories(storyboardID string, userID string, storyIDs []string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
+		`DELETE FROM thunderdome.storyboard_story WHERE storyboard_id = $1 AND id = ANY($2);`,
+		storyboardID, storyIDs,
+	); err != nil {
+		d.Logger.Error("storyboard stories delete error", zap.Error(err),
+			zap.String("user_id", userID),
+			zap.String("storyboard_id", storyboardID),
+		)
+		return nil, fmt.Errorf("failed to delete storyboard stories: %v", err)
 	}
 
 	goals := d.GetStoryboardGoals(storyboardID)
