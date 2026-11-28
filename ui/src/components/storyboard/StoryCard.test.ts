@@ -41,4 +41,28 @@ describe('StoryCard', () => {
 
     expect(toggleStoryForm).toHaveBeenCalledExactlyOnceWith(story, { showDiscussion: true });
   });
+
+  it('shows the comment count on an unnamed story that has comments', async () => {
+    const comments = [
+      { id: 'c1', comment: 'Hi', story_id: 'story-1', user_id: 'u', created_date: '', updated_date: '' },
+    ];
+    render(StoryCard, { story: { ...story, name: '', comments }, scale: 1 });
+
+    await expect.element(page.getByTestId('story-comments')).toHaveAccessibleName('1 comment');
+  });
+
+  it('hides the comment count on an unnamed story without comments', () => {
+    render(StoryCard, { story: { ...story, name: '' }, scale: 1 });
+
+    expect(page.getByTestId('story-comments').query()).toBeNull();
+  });
+
+  it.each(['{Enter}', ' '])('acts once when %j is pressed on the comments button', async key => {
+    const { toggleStoryForm } = renderCard();
+    (page.getByTestId('story-comments').element() as HTMLElement).focus();
+
+    await userEvent.keyboard(key);
+
+    expect(toggleStoryForm).toHaveBeenCalledExactlyOnceWith(story, { showDiscussion: true });
+  });
 });

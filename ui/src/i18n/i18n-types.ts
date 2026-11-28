@@ -2570,6 +2570,19 @@ type RootTranslation = {
 	 */
 	storyboardStoryNoComments: string
 	/**
+	 * {​c​o​u​n​t​}​ ​{​{​c​o​m​m​e​n​t​|​c​o​m​m​e​n​t​s​}​}
+	 * @param {number} count
+	 */
+	storyboardStoryCommentCount: RequiredParams<'count'>
+	/**
+	 * L​a​t​e​s​t​ ​c​o​m​m​e​n​t
+	 */
+	storyboardStoryLatestComment: string
+	/**
+	 * O​p​e​n​ ​d​i​s​c​u​s​s​i​o​n
+	 */
+	storyboardStoryOpenDiscussion: string
+	/**
 	 * F​a​i​l​e​d​ ​t​o​ ​g​e​t​ ​p​o​i​n​t​ ​s​c​a​l​e​s
 	 */
 	storyboardPointScalesError: string
@@ -6182,6 +6195,18 @@ export type TranslationFunctions = {
 	 * Be the first to share your thoughts on this story.
 	 */
 	storyboardStoryNoComments: () => LocalizedString
+	/**
+	 * {count} {{comment|comments}}
+	 */
+	storyboardStoryCommentCount: (arg: { count: number }) => LocalizedString
+	/**
+	 * Latest comment
+	 */
+	storyboardStoryLatestComment: () => LocalizedString
+	/**
+	 * Open discussion
+	 */
+	storyboardStoryOpenDiscussion: () => LocalizedString
 	/**
 	 * Failed to get point scales
 	 */

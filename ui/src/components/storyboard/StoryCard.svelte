@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Link, MessageSquareMore, SquareCheckIcon, SquareIcon } from '@lucide/svelte';
   import { SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
+  import LL from '../../i18n/i18n-svelte';
   import { hasStoryboardPoints } from './storyPoints';
   import type { StoryboardStory, StoryboardColumn, StoryboardGoal } from '../../types/storyboard';
 
@@ -12,11 +13,13 @@
     scale: number;
     toggleStoryForm: (
       story: StoryboardStory,
-      options?: { discussionExpanded?: boolean; additionalDetailsExpanded?: boolean },
+      options?: { showDiscussion?: boolean },
     ) => () => void;
     selectionMode?: boolean;
     selected?: boolean;
     toggleStorySelection?: (storyId: string) => void;
+    toggleCommentPreview?: (story: StoryboardStory, anchor: HTMLElement) => void;
+    commentPreviewOpen?: boolean;
   }
 
   let {
@@ -40,6 +43,8 @@
     selectionMode = false,
     selected = false,
     toggleStorySelection = () => {},
+    toggleCommentPreview = () => {},
+    commentPreviewOpen = false,
   }: Props = $props();
 
   // Calculate content height based on scale (h-20 = 5rem for scale 1)
@@ -54,6 +59,10 @@
   }
 
   function handleCardKeypress(e: KeyboardEvent) {
+    // keys pressed on a link or button inside the card belong to that control
+    if (e.target !== e.currentTarget) {
+      return;
+    }
     if (selectionMode) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -69,10 +78,14 @@
     e.stopPropagation();
   }
 
-  // Handle click on comments button to prevent triggering story form without scrolling to comments
-  function handleCommentsClick(e: Event) {
+  // Preview the latest comment, or go straight to the discussion when there is nothing to preview
+  function handleCommentsClick(e: MouseEvent) {
     e.stopPropagation();
-    toggleStoryForm(story, { showDiscussion: true })();
+    if (story.comments.length === 0) {
+      toggleStoryForm(story, { showDiscussion: true })();
+      return;
+    }
+    toggleCommentPreview(story, e.currentTarget as HTMLElement);
   }
 </script>
 
@@ -117,11 +130,15 @@
       <div class="h-10">
         <div class="flex content-center p-2 text-sm">
           <div class="w-1/2 text-gray-600 dark:text-gray-300">
-            {#if story.name.length > 0}
+            <!-- blank cards stay uncluttered, but comments must be reachable even without a name -->
+            {#if story.name.length > 0 || story.comments.length > 0}
               <button
                 class="inline-block align-middle hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"
                 data-testid="story-comments"
-                title="Story has {story.comments.length} {story.comments.length ? 'comments' : 'comment'}"
+                title={$LL.storyboardStoryCommentCount({ count: story.comments.length })}
+                aria-label={$LL.storyboardStoryCommentCount({ count: story.comments.length })}
+                aria-haspopup={story.comments.length > 0 ? 'dialog' : undefined}
+                aria-expanded={story.comments.length > 0 ? commentPreviewOpen : undefined}
                 onclick={handleCommentsClick}
               >
                 {story.comments.length}
@@ -184,7 +201,7 @@
                   <span
                     class="inline-block align-middle"
                     data-testid="story-comments"
-                    title="Story has {story.comments.length} {story.comments.length ? 'comments' : 'comment'}"
+                    title={$LL.storyboardStoryCommentCount({ count: story.comments.length })}
                   >
                     {story.comments.length}
                     <MessageSquareMore class="inline-block" />
