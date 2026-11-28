@@ -595,9 +595,11 @@ type ColorLegendTemplateDataSvc interface {
 }
 
 type StoryboardDataSvc interface {
-	CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error)
-	TeamCreateStoryboard(ctx context.Context, TeamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error)
-	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string) error
+	CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, estimationScaleID string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error)
+	TeamCreateStoryboard(ctx context.Context, TeamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string, estimationScaleID string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error)
+	EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string, estimationScaleID *string) error
+	GetStoryboardEstimationScales(ctx context.Context, storyboardID string, subscriptionsEnabled bool) ([]*thunderdome.EstimationScale, error)
+	ConfirmStoryboardEstimationScale(ctx context.Context, teamID string, organizationID string, scaleID string, subscriptionsEnabled bool) error
 	GetStoryboardByID(storyboardID string, userID string) (*thunderdome.Storyboard, error)
 	GetStoryboardsByUser(userID string, limit int, offset int) ([]*thunderdome.Storyboard, int, error)
 	ConfirmStoryboardFacilitator(storyboardID string, userID string) error

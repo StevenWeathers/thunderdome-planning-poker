@@ -11710,6 +11710,73 @@ const docTemplate = `{
                 ]
             }
         },
+        "/storyboards/{storyboardId}/estimation-scales": {
+            "get": {
+                "description": "get the estimation scales that can be assigned to a storyboard (facilitator only)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storyboard"
+                ],
+                "summary": "Get Storyboard Estimation Scales",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Storyboard ID",
+                        "name": "storyboardId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.EstimationScale"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
         "/storyboards/{storyboardId}/goals": {
             "post": {
                 "description": "Add a goal to a storyboard",
@@ -20094,6 +20161,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/http.storyboardColorRequestBody"
                     }
                 },
+                "estimationScaleId": {
+                    "description": "EstimationScaleID is the point scale for story points, empty for free text",
+                    "type": "string"
+                },
                 "facilitatorCode": {
                     "type": "string"
                 },
@@ -20193,7 +20264,7 @@ const docTemplate = `{
             "properties": {
                 "points": {
                     "type": "string",
-                    "maxLength": 3
+                    "maxLength": 8
                 }
             }
         },
@@ -21792,6 +21863,13 @@ const docTemplate = `{
                     }
                 },
                 "createdDate": {
+                    "type": "string"
+                },
+                "estimationScale": {
+                    "$ref": "#/definitions/thunderdome.EstimationScale"
+                },
+                "estimationScaleId": {
+                    "description": "EstimationScaleID is empty when story points are free text",
                     "type": "string"
                 },
                 "facilitatorCode": {

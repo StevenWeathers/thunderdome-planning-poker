@@ -17,6 +17,14 @@ export type Storyboard = {
   users: Array<StoryboardUser>;
   teamId?: string;
   teamName?: string;
+  estimationScaleId?: string;
+  estimationScale?: StoryboardEstimationScale | null;
+};
+
+export type StoryboardEstimationScale = {
+  id: string;
+  name: string;
+  values: Array<string>;
 };
 
 export type StoryboardColumn = {

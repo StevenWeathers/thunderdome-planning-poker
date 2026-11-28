@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
 
   import SolidButton from '../global/SolidButton.svelte';
   import { user } from '../../stores';
@@ -9,10 +9,11 @@
   import SelectInput from '../forms/SelectInput.svelte';
   import SelectWithSubtext from '../forms/SelectWithSubtext.svelte';
   import { Crown, Lock } from '@lucide/svelte';
+  import EstimationScaleSelect from './EstimationScaleSelect.svelte';
 
   import type { NotificationService } from '../../types/notifications';
   import type { ApiClient } from '../../types/apiclient';
-  import type { ColorLegend, ColorLegendTemplate } from '../../types/storyboard';
+  import type { ColorLegend, ColorLegendTemplate, StoryboardEstimationScale } from '../../types/storyboard';
 
   interface Props {
     xfetch: ApiClient;
@@ -63,6 +64,11 @@
   let templateAccessLoaded = $state(false);
   let templatesLoaded = $state(false);
   let isLoadingTemplates = $state(false);
+  let publicScales: Array<StoryboardEstimationScale> = $state([]);
+  let privateScales: Array<StoryboardEstimationScale> = $state([]);
+  let selectedScaleId = $state('');
+  // the most specific scales are listed first
+  const estimationScales = $derived([...privateScales, ...publicScales]);
 
   /** @type {TextInput} */
   let storyboardNameTextInput: { focus: () => void } | undefined = $state();
@@ -197,6 +203,51 @@
     void loadTemplates();
   });
 
+  function getScales(endpoint: string): Promise<Array<StoryboardEstimationScale>> {
+    return xfetch(endpoint)
+      .then(res => res.json())
+      .then(result => result.data);
+  }
+
+  $effect(() => {
+    const scopeTeamId = templateScopeTeamId;
+    const scopeOrganizationId = templateScopeOrganizationId;
+    const allowed = canCopyFromTemplate;
+    let outdated = false;
+
+    // drop a selection that belongs to the previous scope
+    untrack(() => {
+      privateScales = [];
+      if (!publicScales.some(scale => scale.id === selectedScaleId)) {
+        selectedScaleId = '';
+      }
+    });
+
+    if (!allowed) {
+      return;
+    }
+
+    const prefixes = [
+      ...(scopeTeamId ? [`/api/teams/${scopeTeamId}`] : []),
+      ...(scopeOrganizationId ? [`/api/organizations/${scopeOrganizationId}`] : []),
+    ];
+
+    void Promise.allSettled(prefixes.map(prefix => getScales(`${prefix}/estimation-scales`))).then(results => {
+      if (outdated) {
+        return;
+      }
+      privateScales = results.flatMap(result => (result.status === 'fulfilled' ? result.value : []));
+      // organization scales are forbidden to team members outside the organization, which isn't an error here
+      if (results.some(result => result.status === 'rejected' && result.reason?.[1]?.status !== 403)) {
+        notifications.danger($LL.storyboardPointScalesError());
+      }
+    });
+
+    return () => {
+      outdated = true;
+    };
+  });
+
   function createStoryboard(e: SubmitEvent) {
     e.preventDefault();
     let endpoint = scope === 'project' ? `${apiPrefix}/storyboards` : `${apiPrefix}/users/${$user.id}/storyboards`;
@@ -205,6 +256,7 @@
       joinCode,
       facilitatorCode,
       ...(selectedColorLegend.length > 0 ? { colorLegend: selectedColorLegend } : {}),
+      ...(selectedScaleId ? { estimationScaleId: selectedScaleId } : {}),
     };
 
     if (scope !== 'project' && selectedTeam !== '') {
@@ -246,6 +298,13 @@
     selectedColorLegend = cloneLegend(colorLegend);
 
     getTeams();
+    getScales('/api/estimation-scales/public')
+      .then(scales => {
+        publicScales = scales;
+      })
+      .catch(() => {
+        notifications.danger($LL.storyboardPointScalesError());
+      });
 
     // Focus the storyboard name input field
     storyboardNameTextInput?.focus();
@@ -318,6 +377,10 @@
       {/if}
     </div>
   {/if}
+
+  <div class="mb-4">
+    <EstimationScaleSelect bind:value={selectedScaleId} scales={estimationScales} />
+  </div>
 
   <div class="mb-4">
     <label class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" for="joinCode">

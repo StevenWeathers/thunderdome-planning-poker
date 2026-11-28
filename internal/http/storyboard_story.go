@@ -333,7 +333,7 @@ func (s *Service) handleStoryboardStoryColorUpdate(sb *storyboard.Service) http.
 }
 
 type storyboardStoryPointsRequestBody struct {
-	Points string `json:"points" validate:"max=3"`
+	Points string `json:"points" validate:"max=8"`
 }
 
 // handleStoryboardStoryPointsUpdate handles updating a story points in a storyboard

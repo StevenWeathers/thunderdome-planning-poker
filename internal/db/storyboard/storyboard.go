@@ -36,7 +36,7 @@ func buildStoryboardColorLegendJSON(colorLegend []*thunderdome.Color) ([]byte, e
 	return encodedColorLegend, nil
 }
 
-func (d *Service) createStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, teamID *string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
+func (d *Service) createStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, teamID *string, estimationScaleID string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -76,24 +76,26 @@ func (d *Service) createStoryboard(ctx context.Context, ownerID string, storyboa
 
 	if encodedColorLegend == nil {
 		err = tx.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.storyboard (owner_id, name, join_code, facilitator_code, team_id)
-			VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
+			`INSERT INTO thunderdome.storyboard (owner_id, name, join_code, facilitator_code, team_id, estimation_scale_id)
+			VALUES ($1, $2, $3, $4, $5, NULLIF($6, '')::uuid) RETURNING id;`,
 			ownerID,
 			storyboardName,
 			encryptedJoinCode,
 			encryptedFacilitatorCode,
 			teamID,
+			estimationScaleID,
 		).Scan(&storyboard.ID)
 	} else {
 		err = tx.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.storyboard (owner_id, name, join_code, facilitator_code, team_id, color_legend)
-			VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;`,
+			`INSERT INTO thunderdome.storyboard (owner_id, name, join_code, facilitator_code, team_id, color_legend, estimation_scale_id)
+			VALUES ($1, $2, $3, $4, $5, $6, NULLIF($7, '')::uuid) RETURNING id;`,
 			ownerID,
 			storyboardName,
 			encryptedJoinCode,
 			encryptedFacilitatorCode,
 			teamID,
 			encodedColorLegend,
+			estimationScaleID,
 		).Scan(&storyboard.ID)
 	}
 	if err != nil {
@@ -124,17 +126,18 @@ func (d *Service) createStoryboard(ctx context.Context, ownerID string, storyboa
 }
 
 // CreateStoryboard adds a new storyboard
-func (d *Service) CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
-	return d.createStoryboard(ctx, ownerID, storyboardName, joinCode, facilitatorCode, nil, colorLegend)
+func (d *Service) CreateStoryboard(ctx context.Context, ownerID string, storyboardName string, joinCode string, facilitatorCode string, estimationScaleID string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
+	return d.createStoryboard(ctx, ownerID, storyboardName, joinCode, facilitatorCode, nil, estimationScaleID, colorLegend)
 }
 
 // TeamCreateStoryboard adds a new storyboard associated to a team
-func (d *Service) TeamCreateStoryboard(ctx context.Context, teamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
-	return d.createStoryboard(ctx, ownerID, storyboardName, joinCode, facilitatorCode, &teamID, colorLegend)
+func (d *Service) TeamCreateStoryboard(ctx context.Context, teamID string, ownerID string, storyboardName string, joinCode string, facilitatorCode string, estimationScaleID string, colorLegend []*thunderdome.Color) (*thunderdome.Storyboard, error) {
+	return d.createStoryboard(ctx, ownerID, storyboardName, joinCode, facilitatorCode, &teamID, estimationScaleID, colorLegend)
 }
 
-// EditStoryboard updates the storyboard by ID
-func (d *Service) EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string) error {
+// EditStoryboard updates the storyboard by ID. A nil estimationScaleID leaves the point scale unchanged and an empty
+// one removes it, callers must confirm the scale is available to the storyboard
+func (d *Service) EditStoryboard(storyboardID string, storyboardName string, joinCode string, facilitatorCode string, estimationScaleID *string) error {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -155,9 +158,10 @@ func (d *Service) EditStoryboard(storyboardID string, storyboardName string, joi
 	}
 
 	if _, err := d.DB.Exec(`UPDATE thunderdome.storyboard
-        SET name = $2, join_code = $3, facilitator_code = $4, updated_date = NOW()
+        SET name = $2, join_code = $3, facilitator_code = $4, updated_date = NOW(),
+            estimation_scale_id = CASE WHEN $5::text IS NULL THEN estimation_scale_id ELSE NULLIF($5, '')::uuid END
         WHERE id = $1;`,
-		storyboardID, storyboardName, encryptedJoinCode, encryptedFacilitatorCode,
+		storyboardID, storyboardName, encryptedJoinCode, encryptedFacilitatorCode, estimationScaleID,
 	); err != nil {
 		return fmt.Errorf("edit storyboard query error: %v", err)
 	}
@@ -185,7 +189,7 @@ func (d *Service) GetStoryboardByID(storyboardID string, userID string) (*thunde
 	e := d.DB.QueryRow(
 		`SELECT
 				s.id, s.name, s.owner_id, COALESCE(s.team_id::TEXT, ''), s.color_legend, COALESCE(s.join_code, ''), COALESCE(s.facilitator_code, ''),
-				 s.created_date, s.updated_date,
+				 s.created_date, s.updated_date, COALESCE(s.estimation_scale_id::TEXT, ''),
 				COALESCE(json_agg(sf.user_id) FILTER (WHERE sf.storyboard_id IS NOT NULL), '[]') AS facilitators
 				FROM thunderdome.storyboard s
 				LEFT JOIN thunderdome.storyboard_facilitator sf ON sf.storyboard_id = s.id
@@ -202,6 +206,7 @@ func (d *Service) GetStoryboardByID(storyboardID string, userID string) (*thunde
 		&facilitatorCode,
 		&b.CreatedDate,
 		&b.UpdatedDate,
+		&b.EstimationScaleID,
 		&facilitators,
 	)
 	if e != nil {
@@ -222,6 +227,14 @@ func (d *Service) GetStoryboardByID(storyboardID string, userID string) (*thunde
 	b.Users = d.GetStoryboardUsers(storyboardID)
 	b.Goals = d.GetStoryboardGoals(storyboardID)
 	b.Personas = d.GetStoryboardPersonas(storyboardID)
+
+	if b.EstimationScaleID != "" {
+		scale, scaleErr := d.getEstimationScale(context.Background(), b.EstimationScaleID)
+		if scaleErr != nil {
+			return nil, fmt.Errorf("get storyboard estimation scale error: %w", scaleErr)
+		}
+		b.EstimationScale = scale
+	}
 
 	if joinCode != "" {
 		decryptedCode, codeErr := db.Decrypt(joinCode, d.AESHashKey)

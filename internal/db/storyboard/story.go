@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/fracdex"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -142,8 +143,8 @@ func (d *Service) ReviseStoryColor(storyboardID string, userID string, storyID s
 // ReviseStoryPoints updates the story points by ID
 func (d *Service) ReviseStoryPoints(storyboardID string, userID string, storyID string, points string) ([]*thunderdome.StoryboardGoal, error) {
 	points = strings.TrimSpace(points)
-	if len(points) > 3 {
-		return nil, fmt.Errorf("story points must be 3 characters or less")
+	if utf8.RuneCountInString(points) > thunderdome.StoryboardStoryPointsMaxLength {
+		return nil, fmt.Errorf("story points must be %d characters or less", thunderdome.StoryboardStoryPointsMaxLength)
 	}
 
 	if _, err := d.DB.Exec(

@@ -87,12 +87,33 @@ func (s *Service) handleCreateProjectStoryboard() http.HandlerFunc {
 			return
 		}
 
+		if sb.EstimationScaleID != "" {
+			project, err := s.ProjectDataSvc.GetProjectByID(ctx, projectID)
+			if err != nil {
+				s.Logger.Ctx(ctx).Error("handleCreateProjectStoryboard get project error", zap.Error(err),
+					zap.String("project_id", projectID), zap.String("session_user_id", sessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
+			var teamID, organizationID string
+			if project.TeamID != nil {
+				teamID = *project.TeamID
+			}
+			if project.OrganizationID != nil {
+				organizationID = *project.OrganizationID
+			}
+			if !s.confirmStoryboardEstimationScale(w, r, teamID, organizationID, sb.EstimationScaleID) {
+				return
+			}
+		}
+
 		newStoryboard, err := s.StoryboardDataSvc.CreateStoryboard(
 			ctx,
 			sessionUserID,
 			sb.StoryboardName,
 			sb.JoinCode,
 			sb.FacilitatorCode,
+			sb.EstimationScaleID,
 			storyboardBuildLegendFromRequest(sb.ColorLegend),
 		)
 		if err != nil {

@@ -78,7 +78,7 @@
         c.stories.forEach(s => {
           const safe = (val: string | number | boolean) => `"${String(val).replace(/"/g, '""')}"`;
           rows.push(
-            [safe(g.name), safe(c.name), safe(s.name), s.points ?? 0, s.closed, safe(s.color), safe(s.link || '')].join(
+            [safe(g.name), safe(c.name), safe(s.name), safe(s.points ?? ''), s.closed, safe(s.color), safe(s.link || '')].join(
               ',',
             ),
           );
@@ -104,7 +104,7 @@
       g.columns.forEach(c => {
         xml += `\n    <column id="${esc(c.id)}" name="${esc(c.name)}">`;
         c.stories.forEach(s => {
-          xml += `\n      <story id="${esc(s.id)}" name="${esc(s.name)}" points="${s.points}" closed="${s.closed}" color="${esc(s.color)}">`;
+          xml += `\n      <story id="${esc(s.id)}" name="${esc(s.name)}" points="${esc(s.points ?? '')}" closed="${s.closed}" color="${esc(s.color)}">`;
           if (s.link) xml += `\n        <link>${esc(s.link)}</link>`;
           if (s.comments && s.comments.length) {
             xml += '\n        <comments>';

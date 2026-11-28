@@ -19,6 +19,7 @@
     notifications: NotificationService;
     colorLegend: ColorLegend[];
     users: any[];
+    pointValues?: string[];
     selectionMode?: boolean;
     selectedStoryIds?: string[];
     toggleStorySelection?: (storyId: string) => void;
@@ -37,6 +38,7 @@
     notifications,
     colorLegend,
     users,
+    pointValues = [],
     selectionMode = false,
     selectedStoryIds = [],
     toggleStorySelection = () => {},
@@ -159,6 +161,7 @@
     {notifications}
     {colorLegend}
     {users}
+    {pointValues}
     discussionExpanded={storyDiscussionExpanded}
     {additionalDetailsExpanded}
   />

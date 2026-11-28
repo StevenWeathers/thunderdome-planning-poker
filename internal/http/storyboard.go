@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -18,6 +19,8 @@ type storyboardCreateRequestBody struct {
 	FacilitatorCode string                       `json:"facilitatorCode"`
 	ProjectIds      []string                     `json:"projectIds"`
 	ColorLegend     []storyboardColorRequestBody `json:"colorLegend" validate:"omitempty,max=32,dive"`
+	// EstimationScaleID is the point scale for story points, empty for free text
+	EstimationScaleID string `json:"estimationScaleId" validate:"omitempty,uuid"`
 }
 
 type storyboardColorRequestBody struct {
@@ -35,6 +38,71 @@ func storyboardBuildLegendFromRequest(requestColors []storyboardColorRequestBody
 	}
 
 	return colors
+}
+
+// confirmStoryboardEstimationScale reports whether a storyboard can be created with the point scale,
+// writing the error response when it can't
+func (s *Service) confirmStoryboardEstimationScale(w http.ResponseWriter, r *http.Request, teamID string, organizationID string, scaleID string) bool {
+	if scaleID == "" {
+		return true
+	}
+
+	ctx := r.Context()
+	err := s.StoryboardDataSvc.ConfirmStoryboardEstimationScale(ctx, teamID, organizationID, scaleID, s.Config.SubscriptionsEnabled)
+	if errors.Is(err, thunderdome.ErrStoryboardEstimationScaleNotFound) {
+		s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+		return false
+	}
+	if err != nil {
+		s.Logger.Ctx(ctx).Error("confirmStoryboardEstimationScale error", zap.Error(err),
+			zap.String("team_id", teamID), zap.String("organization_id", organizationID),
+			zap.String("estimation_scale_id", scaleID))
+		s.Failure(w, r, http.StatusInternalServerError, err)
+		return false
+	}
+
+	return true
+}
+
+// handleGetStoryboardEstimationScales gets the point scales a facilitator can assign to a storyboard
+//
+//	@Summary		Get Storyboard Estimation Scales
+//	@Description	get the estimation scales that can be assigned to a storyboard (facilitator only)
+//	@Tags			storyboard
+//	@Produce		json
+//	@Param			storyboardId	path		string	true	"Storyboard ID"
+//	@Success		200				{object}	standardJsonResponse{data=[]thunderdome.EstimationScale}
+//	@Failure		400				{object}	standardJsonResponse{}
+//	@Failure		403				{object}	standardJsonResponse{}
+//	@Failure		500				{object}	standardJsonResponse{}
+//	@Security		ApiKeyAuth
+//	@Router			/storyboards/{storyboardId}/estimation-scales [get]
+func (s *Service) handleGetStoryboardEstimationScales() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		sessionUserID := ctx.Value(contextKeyUserID).(string)
+
+		storyboardID := r.PathValue("storyboardId")
+		if err := validate.Var(storyboardID, "required,uuid"); err != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		if err := s.StoryboardDataSvc.ConfirmStoryboardFacilitator(storyboardID, sessionUserID); err != nil {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_STORYBOARD_FACILITATOR"))
+			return
+		}
+
+		scales, err := s.StoryboardDataSvc.GetStoryboardEstimationScales(ctx, storyboardID, s.Config.SubscriptionsEnabled)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetStoryboardEstimationScales error", zap.Error(err),
+				zap.String("storyboard_id", storyboardID), zap.String("session_user_id", sessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, scales, nil)
+	}
 }
 
 // handleStoryboardCreate handles creating a storyboard (arena)
@@ -98,7 +166,10 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 		// if storyboard created with team association
 		if teamID != "" {
 			if isTeamUserOrAnAdmin(r) {
-				newStoryboard, err = s.StoryboardDataSvc.TeamCreateStoryboard(ctx, teamID, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode, colorLegend)
+				if !s.confirmStoryboardEstimationScale(w, r, teamID, "", sb.EstimationScaleID) {
+					return
+				}
+				newStoryboard, err = s.StoryboardDataSvc.TeamCreateStoryboard(ctx, teamID, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode, sb.EstimationScaleID, colorLegend)
 
 				if err != nil {
 					s.Logger.Ctx(ctx).Error("handleStoryboardCreate error", zap.Error(err),
@@ -112,7 +183,10 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newStoryboard, err = s.StoryboardDataSvc.CreateStoryboard(ctx, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode, colorLegend)
+			if !s.confirmStoryboardEstimationScale(w, r, "", "", sb.EstimationScaleID) {
+				return
+			}
+			newStoryboard, err = s.StoryboardDataSvc.CreateStoryboard(ctx, userID, sb.StoryboardName, sb.JoinCode, sb.FacilitatorCode, sb.EstimationScaleID, colorLegend)
 			if err != nil {
 				s.Logger.Ctx(ctx).Error("handleStoryboardCreate error", zap.Error(err),
 					zap.String("entity_user_id", userID), zap.String("session_user_id", sessionUserID),
