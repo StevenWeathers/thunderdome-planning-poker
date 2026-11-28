@@ -87,7 +87,9 @@ AI agents and code generation tools may be used thoughtfully to produce quality 
 - The Javascript framework is [Svelte](https://svelte.dev/) transpiled
   with [Typescript](https://www.typescriptlang.org/)
 - CSS framework is [Tailwind](https://tailwindcss.com/)
-- All UI code is linted with `npm run prettier` on every commit.
+- All UI and End-to-End test code is formatted with [oxfmt](https://oxc.rs/docs/guide/usage/formatter), and CI checks
+  the formatting on every pull request. Run `npm run format` in `ui` or `e2e` to fix formatting, or `npm run prettier`
+  to check it (the script keeps its old name but runs `oxfmt`).
 - All UI unit tests must pass on every PR before merging.
 
 ### End-to-End tests
