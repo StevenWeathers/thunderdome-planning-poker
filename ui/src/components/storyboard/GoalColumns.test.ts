@@ -61,6 +61,59 @@ async function startSelection() {
 }
 
 const card = (name: string) => page.getByTestId('column-story').filter({ hasText: name });
+
+describe('GoalColumns empty goal drop target', () => {
+  function renderEmptyGoal(columnOrderEditMode: boolean) {
+    const sendSocketEvent = vi.fn();
+    const emptyGoal = { ...goal(), id: 'goal-2', columns: [] as ReturnType<typeof goal>['columns'] };
+    render(GoalColumns, {
+      goals: [emptyGoal],
+      goal: emptyGoal,
+      goalIndex: 0,
+      columnOrderEditMode,
+      scale: 1,
+      toggleColumnEdit: () => () => {},
+      addStory: () => () => {},
+      sendSocketEvent,
+      notifications: {} as any,
+      colorLegend: [],
+      users: [],
+      personas: [],
+    });
+    return { sendSocketEvent };
+  }
+
+  it('shows a drop target with a minimum height in column order edit mode', async () => {
+    renderEmptyGoal(true);
+
+    await expect.element(page.getByTestId('column-drop-hint')).toBeVisible();
+    // Tailwind is not loaded in component tests, so check the class rather than the rendered height
+    const zone = page.getByTestId('goal-columns-dropzone').element();
+    expect(zone.classList).toContain('min-h-40');
+    expect(zone.children).toHaveLength(0);
+  });
+
+  it('shows no drop hint outside column order edit mode', async () => {
+    renderEmptyGoal(false);
+
+    expect(page.getByTestId('column-drop-hint').elements()).toHaveLength(0);
+  });
+
+  it('moves a column dropped onto an empty goal', async () => {
+    const { sendSocketEvent } = renderEmptyGoal(true);
+    const column = goal().columns[0];
+
+    page
+      .getByTestId('goal-columns-dropzone')
+      .element()
+      .dispatchEvent(new CustomEvent('finalize', { detail: { items: [column], info: { id: column.id } } }));
+
+    expect(sendSocketEvent).toHaveBeenCalledExactlyOnceWith(
+      'move_column',
+      JSON.stringify({ goalId: 'goal-2', columnId: 'column-1', placeBefore: '' }),
+    );
+  });
+});
 const deleteButton = () => page.getByTestId('story-selection-delete');
 
 describe('GoalColumns bulk story delete', () => {

@@ -222,16 +222,7 @@ func (d *Service) MoveStoryboardColumn(storyboardID string, userID string, colum
 		}
 	}
 
-	if betweenAkey == nil && betweenBkey == nil {
-		logger.Error("both between keys are nil",
-			zap.String("goal_id", goalID),
-			zap.String("column_id", columnID),
-			zap.Stringp("display_order_a", betweenAkey),
-			zap.Stringp("display_order_b", betweenBkey),
-		)
-		return errors.New("both between keys are nil")
-	}
-
+	// both keys are nil when the target goal has no other columns, which yields the first key
 	displayOrder, err := fracindex.KeyBetween(betweenAkey, betweenBkey)
 	if err != nil {
 		logger.Error("get display_order between error",
@@ -258,6 +249,17 @@ func (d *Service) MoveStoryboardColumn(storyboardID string, userID string, colum
 		displayOrder, goalID, columnID, storyboardID,
 	); err != nil {
 		logger.Error("move storyboard column error", zap.Error(err))
+		return err
+	}
+
+	// stories keep their own goal_id, which must follow the column or deleting the old goal deletes them
+	if _, err := tx.Exec(
+		`UPDATE thunderdome.storyboard_story s SET goal_id = c.goal_id, updated_date = NOW()
+		FROM thunderdome.storyboard_column c
+		WHERE s.column_id = c.id AND c.id = $1 AND c.storyboard_id = $2 AND s.goal_id IS DISTINCT FROM c.goal_id;`,
+		columnID, storyboardID,
+	); err != nil {
+		logger.Error("move storyboard column stories error", zap.Error(err))
 		return err
 	}
 

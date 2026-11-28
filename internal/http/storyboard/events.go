@@ -138,13 +138,10 @@ func (s *Service) MoveColumn(ctx context.Context, storyboardID string, userID st
 		return nil, nil, err, false
 	}
 
-	goal, err := s.StoryboardService.GetStoryboardGoal(storyboardID, moveColumnInput.GoalID)
-	if err != nil {
-		return nil, nil, err, false
-	}
-
-	updatedGoal, _ := json.Marshal(goal)
-	msg := wshub.CreateSocketEvent("column_moved", string(updatedGoal), "")
+	// send every goal, a move between goals changes the source as well as the destination
+	goals := s.StoryboardService.GetStoryboardGoals(storyboardID)
+	updatedGoals, _ := json.Marshal(goals)
+	msg := wshub.CreateSocketEvent("column_moved", string(updatedGoals), "")
 
 	return nil, msg, nil, false
 }
